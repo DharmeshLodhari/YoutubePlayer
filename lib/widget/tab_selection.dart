@@ -1,25 +1,24 @@
 import 'package:Slydo/utils/colors.dart';
 import 'package:flutter/material.dart';
 
-class PaymentTabSelection extends StatefulWidget {
+class TabSelection extends StatefulWidget {
   final Function(int) onTap;
   final int currentIndex;
-  String? tabOne;
-  String? tabTwo;
+  String firstTab = '';
+  String secondTab = '';
 
-  PaymentTabSelection(
+  TabSelection(
       {required this.onTap,
       this.currentIndex = 0,
-      this.tabOne,
-      this.tabTwo,
+      required this.firstTab,
+      required this.secondTab,
       Key? key})
       : super(key: key);
-
   @override
-  State<PaymentTabSelection> createState() => _PaymentTabSelectionState();
+  State<TabSelection> createState() => _TabSelectionState();
 }
 
-class _PaymentTabSelectionState extends State<PaymentTabSelection> {
+class _TabSelectionState extends State<TabSelection> {
   @override
   Widget build(BuildContext context) {
     return _buildMain();
@@ -37,14 +36,14 @@ class _PaymentTabSelectionState extends State<PaymentTabSelection> {
             child: buildTabItem(
                 onTap: widget.onTap,
                 tabIndex: 0,
-                title: widget.tabOne!,
+                title: widget.firstTab,
                 currentIndex: widget.currentIndex),
           ),
           Expanded(
             child: buildTabItem(
                 onTap: widget.onTap,
                 tabIndex: 1,
-                title: widget.tabTwo!,
+                title: widget.secondTab,
                 currentIndex: widget.currentIndex),
           ),
         ],
@@ -74,6 +73,7 @@ class _PaymentTabSelectionState extends State<PaymentTabSelection> {
             style: TextStyle(
               color: currentIndex == tabIndex ? white : yarnBlack,
               fontSize: 14,
+              fontFamily: "Inter",
               fontWeight:
                   currentIndex == tabIndex ? FontWeight.w700 : FontWeight.w700,
             ),

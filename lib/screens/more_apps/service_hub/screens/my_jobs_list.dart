@@ -9,7 +9,7 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
 
-import '../../yarn/widgets/yarn_tab_selection.dart';
+import '../../../../widget/tab_selection.dart';
 
 class JobsMyJobsList extends StatefulWidget {
   const JobsMyJobsList({Key? key}) : super(key: key);
@@ -96,7 +96,7 @@ class _JobsMyJobsListState extends State<JobsMyJobsList> {
           Divider(
             color: darkGrey.withOpacity(.5),
           ),
-          YarnTabSelection(
+          TabSelection(
             onTap: (index) {
               currentIndex = index;
               _showTabs(true);

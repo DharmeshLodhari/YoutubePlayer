@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:Slydo/constant.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_synchronizer.dart';
@@ -15,9 +16,11 @@ import 'package:Slydo/services/app_config_bloc.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
+import 'package:Slydo/widget/permission_protection_widget.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:Slydo/widget/search_text_field.dart';
 import 'package:Slydo/widget/slide_action_button.dart';
@@ -643,9 +646,13 @@ class _VerticalListItemState extends State<VerticalListItem> {
 
         if (mounted) setState(() {});
       },
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 2),
-        child: UserTileForConnection(user: widget.user),
+      child: PermissionProtectionWidget(
+        permissionName: ProtectionPermission.chat,
+        isLockForRead: true,
+        child: Container(
+          padding: EdgeInsets.symmetric(vertical: 2),
+          child: UserTileForConnection(user: widget.user),
+        ),
       ),
     );
   }

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:Slydo/constant.dart';
 import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
@@ -9,6 +10,7 @@ import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_passcode_sheet/bottomsheet_passcode.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
+import 'package:Slydo/widget/permission_protection_widget.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -287,11 +289,15 @@ class _PayoutScreenState extends State<PayoutScreen> {
   }
 
   Widget getSubmitButton() {
-    return CurvedButton(
-      onPressed: onSubmit,
-      backgroundColor: navyBlue,
-      textColor: Colors.white,
-      text: AppLocalization.of(context)!.submit,
+    return PermissionProtectionWidget(
+      permissionName: ProtectionPermission.transaction,
+      isLockForRead: true,
+      child: CurvedButton(
+        onPressed: onSubmit,
+        backgroundColor: navyBlue,
+        textColor: Colors.white,
+        text: AppLocalization.of(context)!.submit,
+      ),
     );
   }
 

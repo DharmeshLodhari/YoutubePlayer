@@ -1,8 +1,8 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/yarn/models/ask_categories_model.dart';
-import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_tab_selection.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/tab_selection.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -263,7 +263,7 @@ class _ShopCategoryScreenState extends State<ShopCategoryScreen> {
     return Column(
       children: [
         if (_tabsVisible) ...[
-          YarnTabSelection(
+          TabSelection(
             onTap: (index) {
               currentAskTapOnHome = index;
               _pageViewCtrl.jumpToPage(currentAskTapOnHome);

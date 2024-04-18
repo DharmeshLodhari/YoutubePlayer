@@ -9,7 +9,6 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/material.dart';
-import 'package:keyboard_actions/keyboard_actions.dart';
 import 'package:provider/provider.dart';
 
 class ShareExperience extends StatefulWidget {
@@ -21,24 +20,6 @@ class _ShareExperienceState extends State<ShareExperience> {
   TextEditingController feedbackController = TextEditingController();
   late RiderDeliveryBloc riderDeliveryBloc;
   bool isLoading = false;
-  final FocusNode _nodeText1 = FocusNode();
-
-  KeyboardActionsConfig _buildConfig(BuildContext context) {
-    return KeyboardActionsConfig(
-      keyboardActionsPlatform: KeyboardActionsPlatform.IOS,
-      keyboardBarColor: const Color(0xFFC5C9D1),
-      nextFocus: false,
-      defaultDoneWidget: const Text(
-        'Done',
-        style: TextStyle(fontWeight: FontWeight.w500),
-      ),
-      actions: [
-        KeyboardActionsItem(
-          focusNode: _nodeText1,
-        ),
-      ],
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,6 +36,7 @@ class _ShareExperienceState extends State<ShareExperience> {
           child: Scaffold(
             resizeToAvoidBottomInset: false,
             backgroundColor: lightGrey,
+            appBar: _buildAppbar(),
             body: _buildBody(context),
             floatingActionButton: _buildSubmitButton(),
             floatingActionButtonLocation:
@@ -65,26 +47,39 @@ class _ShareExperienceState extends State<ShareExperience> {
     );
   }
 
+  PreferredSizeWidget _buildAppbar() {
+    return AppBar(
+      backgroundColor: whiteBackground,
+      elevation: 0,
+      leading: IconButton(
+        icon: Icon(
+          Icons.keyboard_arrow_left,
+          color: navyBlue,
+        ),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+      ),
+    );
+  }
+
   Widget _buildBody(BuildContext context) {
     return Scaffold(
-      body: KeyboardActions(
-        config: _buildConfig(context),
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Center(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 20),
-                  _buildTitle(),
-                  const SizedBox(height: 20),
-                  _buildNote(),
-                  const SizedBox(height: 50),
-                  _buildFeedbackTextField(),
-                ],
-              ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.all(20.0),
+          child: Center(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                SizedBox(height: 20),
+                _buildTitle(),
+                SizedBox(height: 20),
+                _buildNote(),
+                SizedBox(height: 50),
+                _buildFeedbackTextField(),
+              ],
             ),
           ),
         ),
@@ -120,7 +115,7 @@ class _ShareExperienceState extends State<ShareExperience> {
   Widget _buildFeedbackTextField() {
     return TextField(
       controller: feedbackController,
-      focusNode: _nodeText1,
+      textInputAction: TextInputAction.done,
       maxLines: 10,
       decoration: InputDecoration(
         hintText: "Type here",

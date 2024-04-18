@@ -25,6 +25,7 @@ class PackageDetailsModel {
   bool? hasSlydoDispatch;
   bool? hasMerchantDispatch;
   bool? hasCourierDispatch;
+  int? customerServiceFee;
 
   PackageDetailsModel({
     this.addressId,
@@ -45,6 +46,7 @@ class PackageDetailsModel {
     this.hasSlydoDispatch,
     this.hasMerchantDispatch,
     this.hasCourierDispatch,
+    this.customerServiceFee,
   });
 
   factory PackageDetailsModel.fromJson(Map<String, dynamic> json) {
@@ -56,6 +58,7 @@ class PackageDetailsModel {
       hasSlydoDispatch: json["has_slydo_dispatch"],
       hasMerchantDispatch: json["has_merchant_dispatch"],
       hasCourierDispatch: json["has_courier_dispatch"],
+      customerServiceFee: json["customer_service_fee"],
       merchantAddress: json["address"] != null
           ? ShippingAddress.fromJson(json["address"])
           : null,
@@ -70,6 +73,7 @@ class PackageDetailsModel {
         "has_slydo_dispatch": hasSlydoDispatch,
         "has_merchant_dispatch": hasMerchantDispatch,
         "has_courier_dispatch": hasCourierDispatch,
+        "customer_service_fee": customerServiceFee,
       };
 
   bool requireNote() {

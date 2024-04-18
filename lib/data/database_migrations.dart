@@ -10,6 +10,8 @@ const String NUDGE_NOTIFICATION_TABLE = "NudgeNotification";
 const String NOTIFICATION_TABLE = "Notification";
 const String VIRTUAL_ACCOUNT_TABLE = "VirtualAccount";
 const String APP_SETTING_TABLE = "GeneralSettings";
+const String RIDE = "GeneralSettings";
+const String RIDER_AT_LOCATION = "RiderAtLocation";
 const String FEE_STRUCTURE = "FeeStructure";
 const String YARN_CATEGORY = "YarnCategory";
 const String DOWNLOAD_FILE_IN_CHAT_TABLE = "DownloadFileInChatTable";
@@ -211,5 +213,14 @@ List<String> dbMigrations = [
           "user_id" TEXT,
           "categories" TEXT
         );
+    ''',
+
+  // Create the rider at pickup location table
+  '''CREATE TABLE $RIDER_AT_LOCATION (     
+            "id"	INTEGER PRIMARY KEY AUTOINCREMENT,
+            "order_id" INTEGER,
+            "at_pickup_location" BOOLEAN,
+            "at_delivery_location" BOOLEAN
+          );
     ''',
 ];

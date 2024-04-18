@@ -173,7 +173,7 @@ class _TransactionTileForChatState extends State<TransactionTileForChat> {
                   if (widget.chatConversation!.isGroupConversation!)
                     Column(
                       children: [
-                        const SizedBox(
+                        SizedBox(
                           height: 4,
                         ),
                         Container(
@@ -259,7 +259,7 @@ class _TransactionTileForChatState extends State<TransactionTileForChat> {
             if (isSend)
               Container()
             else
-              const SizedBox(
+              SizedBox(
                 width: 20,
               ),
             Text(
@@ -268,7 +268,7 @@ class _TransactionTileForChatState extends State<TransactionTileForChat> {
                   color: darkGrey, fontSize: 10, fontWeight: FontWeight.w500),
             ),
             if (isSend)
-              const SizedBox(
+              SizedBox(
                 width: 20,
               )
             else
@@ -288,10 +288,10 @@ class _TransactionTileForChatState extends State<TransactionTileForChat> {
 
   String getTransactionStatus({bool? isSend}) {
     if (widget.chatConversation!.isGroupConversation!) {
-      if (widget.userBloc!.user.userName == transaction.fromCustomer) {
+      if (widget.userBloc?.user.userName == transaction.fromCustomer) {
         return "You were paid";
       }
-      if (widget.userBloc!.user.userName == transaction.toCustomer) {
+      if (widget.userBloc?.user.userName == transaction.toCustomer) {
         return "You have paid";
       }
       return "Payment made";
@@ -332,9 +332,9 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
 
     Map<String, dynamic>? details;
 
-    if (widget.message!['meta_data'] is Map) {
-      details = widget.message!['meta_data'];
-    } else if (widget.message!['meta_data'] is String) {
+    if (widget.message?['meta_data'] is Map) {
+      details = widget.message?['meta_data'];
+    } else if (widget.message?['meta_data'] is String) {
       details = jsonDecode(widget.message!['meta_data']);
     }
 
@@ -450,7 +450,7 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
                     ),
                   ),
                   if (paymentActionStatus == "None")
-                    const SizedBox(
+                    SizedBox(
                       height: 12,
                     )
                   else
@@ -458,9 +458,9 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
                   if (widget.chatConversation!.isGroupConversation!)
                     paymentActionStatus == "None"
                         ? paymentRequest.toCustomer ==
-                                    widget.userBloc!.user.userName ||
+                                    widget.userBloc?.user.userName ||
                                 paymentRequest.fromCustomer ==
-                                    widget.userBloc!.user.userName
+                                    widget.userBloc?.user.userName
                             ? Container(
                                 child: isSend
                                     ? Row(
@@ -476,7 +476,7 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
                                                   rejectOrCancelPaymentRequest,
                                             ),
                                           ),
-                                          const SizedBox(
+                                          SizedBox(
                                             width: 16,
                                           ),
                                           Expanded(
@@ -497,7 +497,7 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
                                                   rejectOrCancelPaymentRequest,
                                             ),
                                           ),
-                                          const SizedBox(
+                                          SizedBox(
                                             width: 16,
                                           ),
                                           Expanded(
@@ -532,7 +532,7 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
                                               rejectOrCancelPaymentRequest,
                                         ),
                                       ),
-                                      const SizedBox(
+                                      SizedBox(
                                         width: 16,
                                       ),
                                       Expanded(
@@ -553,7 +553,7 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
                                               rejectOrCancelPaymentRequest,
                                         ),
                                       ),
-                                      const SizedBox(
+                                      SizedBox(
                                         width: 16,
                                       ),
                                       Expanded(
@@ -571,7 +571,7 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
                           )
                         : Container(),
                   if (paymentActionStatus != "None")
-                    const SizedBox(
+                    SizedBox(
                       height: 12,
                     )
                   else
@@ -585,7 +585,7 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
                             size: 12,
                             color: getStatusOfPaymentColor(),
                           ),
-                          const SizedBox(
+                          SizedBox(
                             width: 4,
                           ),
                           Row(
@@ -617,7 +617,7 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
                   if (widget.chatConversation!.isGroupConversation!)
                     Column(
                       children: [
-                        const SizedBox(
+                        SizedBox(
                           height: 4,
                         ),
                         Container(
@@ -706,7 +706,7 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
             if (isSend)
               Container()
             else
-              const SizedBox(
+              SizedBox(
                 width: 20,
               ),
             Text(
@@ -715,7 +715,7 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
                   color: darkGrey, fontSize: 10, fontWeight: FontWeight.w500),
             ),
             if (isSend)
-              const SizedBox(
+              SizedBox(
                 width: 20,
               )
             else

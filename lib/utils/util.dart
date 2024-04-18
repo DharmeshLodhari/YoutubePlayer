@@ -15,6 +15,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
@@ -2596,4 +2597,21 @@ Future<List<XFile>> selectMultipleImageVideo() async {
     maxHeight: 1800,
   );
   return file;
+}
+
+Response handleServerErrors(dynamic response) {
+  var message = "Server Error";
+
+  if (response.statusCode >= 200 || response.statusCode < 300) {
+    return response;
+  } else {
+    var jsonResponse = jsonDecode(response.body);
+    if (jsonResponse.containsKey('error')) {
+      message = jsonResponse['error'];
+    } else if (jsonResponse.containsKey('detail')) {
+      message = jsonResponse['detail'];
+    }
+    showToast(message: message);
+  }
+  throw message;
 }

@@ -1,3 +1,4 @@
+import 'package:Slydo/screens/more_apps/rider_delivery/models/near_by_location.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:intl/intl.dart';
 
@@ -40,6 +41,7 @@ class DeliveryModel {
   String? dispatcherNumber;
   String? totalDistance;
   String? totalDuration;
+  NearByLocation? riderAtLocation;
   // bool? isShowDetails;
   // bool? isDeliveryAccepted;
   // bool? isDeliveryStarted;
@@ -84,6 +86,7 @@ class DeliveryModel {
     this.travelDistance,
     this.travelDuration,
     this.dispatcherNumber,
+    this.riderAtLocation,
     // this.isShowDetails = true,
     // this.isDeliveryAccepted = false,
     // this.isDeliveryStarted = false,
@@ -147,6 +150,7 @@ class DeliveryModel {
         deliveryEvidence: json["delivery_evidence"],
         orderId: json["order_id"],
         dispatcherNumber: json["dispatcher_number"],
+        riderAtLocation: json["rider_at_location"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -184,6 +188,7 @@ class DeliveryModel {
         "total_no_of_items": totalNoOfItems,
         "order_id": orderId,
         "dispatcher_number": dispatcherNumber,
+        "rider_at_location": riderAtLocation,
       };
 
   bool isOfferAccepted(String? userName) {

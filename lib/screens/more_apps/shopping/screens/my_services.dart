@@ -1,8 +1,10 @@
-
+import 'package:Slydo/constant.dart';
 import 'package:Slydo/utils/extensions.dart';
+import 'package:Slydo/widget/permission_protection_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
+
 import '../../../../data/state_notifier.dart';
 import '../../../../locale/app_localization.dart';
 import '../../../../routes/route_constants.dart';
@@ -19,7 +21,6 @@ class MyServices extends StatefulWidget {
 }
 
 class _MyServicesState extends State<MyServices> {
-
   late UserBloc userBloc;
   late CustomerProfile customerProfile;
 
@@ -27,7 +28,6 @@ class _MyServicesState extends State<MyServices> {
   void initState() {
     super.initState();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +48,6 @@ class _MyServicesState extends State<MyServices> {
       appBar: _buildAppBar() as PreferredSizeWidget,
       body: _buildBody(),
     );
-
   }
 
   Widget _buildAppBar() {
@@ -84,36 +83,44 @@ class _MyServicesState extends State<MyServices> {
   List<Widget> _buildAppBarActions() {
     return [
       RoundedBackgroundIcon(
-          backgroundColor: Colors.transparent,
-          onTap: () {
-            Navigator.of(context).pushNamed(Routes.USER_PRODUCT_AND_SERVICE_SEARCH,
-                arguments: {"searchedUser": customerProfile, "filter": "Services", "hidePreIcon": true});
-          },
-          height: 15,
-          width: 15,
-          icon: SvgPicture.asset(
-            "yarn/search".toSVG(),
-            height: 12,
-            width: 12,
-          )),
+        backgroundColor: Colors.transparent,
+        onTap: () {
+          Navigator.of(context)
+              .pushNamed(Routes.USER_PRODUCT_AND_SERVICE_SEARCH, arguments: {
+            "searchedUser": customerProfile,
+            "filter": "Services",
+            "hidePreIcon": true
+          });
+        },
+        height: 15,
+        width: 15,
+        icon: SvgPicture.asset(
+          "yarn/search".toSVG(),
+          height: 12,
+          width: 12,
+        ),
+      ),
       SizedBox(width: 30),
       RoundedBackgroundIcon(
-          backgroundColor: Colors.transparent,
-          onTap: () {
-            Navigator.pushNamed(context, Routes.ADD_SERVICE);
-          },
-          height: 15,
-          width: 15,
-          icon: SvgPicture.asset(
+        backgroundColor: Colors.transparent,
+        onTap: () {
+          Navigator.pushNamed(context, Routes.ADD_SERVICE);
+        },
+        height: 15,
+        width: 15,
+        icon: PermissionProtectionWidget(
+          permissionName: ProtectionPermission.services,
+          isLockForRead: true,
+          child: SvgPicture.asset(
             "add_payment".toSVG(),
             height: 12,
             width: 12,
-          )),
+          ),
+        ),
+      ),
       SizedBox(width: 20),
-
     ];
   }
-
 
   Widget _buildBody() {
     return Column(
@@ -124,9 +131,7 @@ class _MyServicesState extends State<MyServices> {
     );
   }
 
-
   Widget _buildServicesView() {
-
     return Expanded(
       child: UserServiceList(
         user: customerProfile,
@@ -134,5 +139,4 @@ class _MyServicesState extends State<MyServices> {
       ),
     );
   }
-
 }

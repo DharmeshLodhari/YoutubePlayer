@@ -119,7 +119,7 @@ class _SearchProductState extends State<SearchProduct> {
           setState(() {});
         }
         String url = widget.arguments != null
-            ? "&${widget.arguments!.keys.first}=${widget.arguments!.values.first}"
+            ? "&${widget.arguments?.keys.first}=${widget.arguments?.values.first}"
             : "";
         Map<String, dynamic>? result =
             await ShoppingAuthService().searchUsersProductsInSuperStore(
@@ -157,7 +157,7 @@ class _SearchProductState extends State<SearchProduct> {
         if (mounted) {
           isLoading = false;
           try {
-            tempList!.forEach((result) {
+            tempList?.forEach((result) {
               products.add(result);
             });
           } catch (e) {
@@ -197,7 +197,7 @@ class _SearchProductState extends State<SearchProduct> {
       productCategories = await ShoppingAuthService().getProductCategories();
       productCategoriesCopy = productCategories;
 
-      productCategoriesCopy!.forEach((element) {
+      productCategoriesCopy?.forEach((element) {
         categoryCheckMark[element.name] = false;
       });
     } catch (e) {
@@ -343,8 +343,8 @@ class _SearchProductState extends State<SearchProduct> {
                 _refreshList();
                 return;
               }
-              String firstWord = newValue!.split(' ')[0];
-              String secondWord = newValue.split(' ')[1];
+              String firstWord = newValue?.split(' ')[0] ?? "";
+              String secondWord = newValue?.split(' ')[1] ?? "";
               sortBy = "$firstWord-$secondWord".toLowerCase();
 
               setState(() {
@@ -511,7 +511,9 @@ class _SearchProductState extends State<SearchProduct> {
       child: ListTile(
         dense: true,
         title: Text(
-          selectedProductCategory != null ? selectedProductCategory!.name : "",
+          selectedProductCategory != null
+              ? selectedProductCategory?.name ?? ""
+              : "",
           style: TextStyle(
               color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
         ),
@@ -592,7 +594,7 @@ class _SearchProductState extends State<SearchProduct> {
                 Expanded(
                   child: ListView.builder(
                     shrinkWrap: true,
-                    itemCount: productCategories!.length,
+                    itemCount: productCategories?.length,
                     itemBuilder: (context, index) {
                       ProductCategory category = productCategories![index];
                       return CheckboxListTile(
@@ -696,7 +698,9 @@ class _SearchProductState extends State<SearchProduct> {
       child: ListTile(
         dense: true,
         title: Text(
-          selectedProductCategory != null ? selectedProductCategory!.name : "",
+          selectedProductCategory != null
+              ? selectedProductCategory?.name ?? ""
+              : "",
           style: TextStyle(
               color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
         ),

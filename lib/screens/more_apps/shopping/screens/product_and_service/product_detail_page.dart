@@ -109,7 +109,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     product = widget.arguments[
         'product']; // We get this when we are coming from the product list page.
     if (product != null) {
-      productId = product!.id;
+      productId = product?.id;
     } else {
       productId = widget.arguments[
           'productId']; // We get this when we are coming from the moment detail page.
@@ -174,7 +174,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     data['provider'] = product?.seller?.toString() ?? "";
     data['buyer'] = userBloc.user.userName!;
     data['type'] = 'products';
-    data['id'] = product!.id!;
+    data['id'] = product?.id ?? "";
 
     debugPrint('product URL :: ${data}');
 
@@ -231,7 +231,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       );
     }
 
-    isValidCustomer = userBloc.user.userName != product!.seller;
+    isValidCustomer = userBloc.user.userName != product?.seller;
     return WillPopScope(
       onWillPop: () async {
         customerProfileBloc.customer = null;
@@ -381,8 +381,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       onTap: () async {
         Navigator.pop(context);
 
-        var shareBody = "http://slydo.co/store/${product!.seller}/products/" +
-            product!.id.toString();
+        var shareBody = "http://slydo.co/store/${product?.seller}/products/" +
+            (product?.id.toString() ?? "");
         Share.share(shareBody,
             subject: "${messageDecoderWithEmoji(product?.name) ?? ""}");
       },
@@ -439,7 +439,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
     String url = AppConfig.baseUrl +
         "/api/v1/${product is Product ? "products" : "services"}/" +
-        product!.id! +
+        (product?.id ?? "") +
         "/";
 
     Map<String, dynamic>? itemData =
@@ -525,7 +525,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       ),
       onTap: () async {
         Navigator.pushNamed(context, '/profile',
-            arguments: {"searchedUserName": product!.seller});
+            arguments: {"searchedUserName": product?.seller});
       },
     );
   }
@@ -544,8 +544,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       onTap: () {
         if (isValidCustomer) {
           Navigator.of(context).pushNamed(Routes.COMPOSE_MESSAGE, arguments: {
-            'recipient': product!.seller,
-            'subject': product!.name,
+            'recipient': product?.seller,
+            'subject': product?.name,
           });
         } else {
           showToast(message: "You can not message yourself !!");
@@ -1258,7 +1258,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         builder: (context, snapshot) {
           return Container(
             padding: EdgeInsets.symmetric(horizontal: 4.0),
-            child: displayProductImages!.length == 0
+            child: displayProductImages?.length == 0
                 ? AspectRatio(
                     aspectRatio: 1.7,
                     child: Center(
@@ -1266,71 +1266,80 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                     ),
                   )
                 : displayProductImages?.length == 1
-                    ? Stack(
-                        children: [
-                          AspectRatio(
-                            aspectRatio: 1.7,
-                            child: Container(
-                              child: Center(
-                                  child: ClipRRect(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(0)),
-                                child: Stack(
-                                  children: [
-                                    CachedNetworkImage(
-                                      placeholder: (context, url) => Center(
-                                          child: CircularLoadingIndicator()),
-                                      imageUrl: displayProductImages?[0] ?? "",
-                                      fit: BoxFit.cover,
-                                      height: double.infinity,
-                                      width: double.infinity,
-                                      errorWidget:
-                                          productAndServiceBigErrorWidget,
-                                    ),
-                                    if (checkDiscount(
-                                        product!.discountIsActive!,
-                                        product!.discountedPrice!,
-                                        product!.price!))
-                                      Positioned(
-                                        top: 20,
-                                        right: 10,
-                                        child: showDiscountValue(
-                                            product!.discountType!,
-                                            product!.discountValue!,
-                                            product!.currency),
+                    ? GestureDetector(
+                        onTap: () {
+                          if (displayProductImages?[0] != null) {
+                            Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
+                                arguments: displayProductImages?[0]);
+                          }
+                        },
+                        child: Stack(
+                          children: [
+                            AspectRatio(
+                              aspectRatio: 1.7,
+                              child: Container(
+                                child: Center(
+                                    child: ClipRRect(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(0)),
+                                  child: Stack(
+                                    children: [
+                                      CachedNetworkImage(
+                                        placeholder: (context, url) => Center(
+                                            child: CircularLoadingIndicator()),
+                                        imageUrl:
+                                            displayProductImages?[0] ?? "",
+                                        fit: BoxFit.cover,
+                                        height: double.infinity,
+                                        width: double.infinity,
+                                        errorWidget:
+                                            productAndServiceBigErrorWidget,
                                       ),
-                                    if (product!.pricePercentageChange !=
-                                        0.0) ...[
-                                      Positioned(
-                                        top: 8,
-                                        right: 100,
-                                        child: Container(
-                                          padding: EdgeInsets.only(
-                                              left: 6.0,
-                                              right: 6.0,
-                                              top: 4.0,
-                                              bottom: 4.0),
-                                          decoration: BoxDecoration(
-                                            color: naturalGreen,
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(8)),
-                                          ),
-                                          child: Text(
-                                            "${product!.pricePercentageChange!.toInt()}% off",
-                                            style: TextStyle(
-                                              color: Colors.white,
+                                      if (checkDiscount(
+                                          product!.discountIsActive!,
+                                          product!.discountedPrice!,
+                                          product!.price!))
+                                        Positioned(
+                                          top: 20,
+                                          right: 10,
+                                          child: showDiscountValue(
+                                              product!.discountType!,
+                                              product!.discountValue!,
+                                              product!.currency),
+                                        ),
+                                      if (product!.pricePercentageChange !=
+                                          0.0) ...[
+                                        Positioned(
+                                          top: 8,
+                                          right: 100,
+                                          child: Container(
+                                            padding: EdgeInsets.only(
+                                                left: 6.0,
+                                                right: 6.0,
+                                                top: 4.0,
+                                                bottom: 4.0),
+                                            decoration: BoxDecoration(
+                                              color: naturalGreen,
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(8)),
+                                            ),
+                                            child: Text(
+                                              "${product!.pricePercentageChange!.toInt()}% off",
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                              ),
                                             ),
                                           ),
                                         ),
-                                      ),
-                                    ]
-                                  ],
-                                ),
-                              )),
+                                      ]
+                                    ],
+                                  ),
+                                )),
+                              ),
                             ),
-                          ),
-                          getOutOfStockTag(),
-                        ],
+                            getOutOfStockTag(),
+                          ],
+                        ),
                       )
                     : Column(
                         children: <Widget>[
@@ -1348,65 +1357,75 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                                     }),
                                 items: displayProductImages!
                                     .map(
-                                      (item) => Stack(
-                                        children: [
-                                          Container(
-                                            child: Center(
-                                                child: ClipRRect(
-                                              borderRadius: BorderRadius.all(
-                                                  Radius.circular(10)),
-                                              child: Stack(
-                                                children: [
-                                                  CachedNetworkImage(
-                                                    placeholder: (context,
-                                                            url) =>
-                                                        Center(
-                                                            child:
-                                                                CircularLoadingIndicator()),
-                                                    imageUrl: item!,
-                                                    fit: BoxFit.cover,
-                                                    height: double.infinity,
-                                                    width: double.infinity,
-                                                    errorWidget:
-                                                        productAndServiceBigErrorWidget,
-                                                  ),
-                                                  if (product!
-                                                          .pricePercentageChange !=
-                                                      0.0) ...[
-                                                    Positioned(
-                                                      top: 8,
-                                                      right: 100,
-                                                      child: Container(
-                                                        padding:
-                                                            EdgeInsets.only(
-                                                                left: 6.0,
-                                                                right: 6.0,
-                                                                top: 4.0,
-                                                                bottom: 4.0),
-                                                        decoration:
-                                                            BoxDecoration(
-                                                          color: naturalGreen,
-                                                          borderRadius:
-                                                              BorderRadius.all(
-                                                                  Radius
-                                                                      .circular(
-                                                                          8)),
-                                                        ),
-                                                        child: Text(
-                                                          "${product!.pricePercentageChange!.toInt()}% off",
-                                                          style: TextStyle(
-                                                            color: Colors.white,
+                                      (item) => GestureDetector(
+                                        onTap: () {
+                                          if (item != null) {
+                                            Navigator.of(context).pushNamed(
+                                                Routes.PHOTO_VIEWER,
+                                                arguments: item);
+                                          }
+                                        },
+                                        child: Stack(
+                                          children: [
+                                            Container(
+                                              child: Center(
+                                                  child: ClipRRect(
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(10)),
+                                                child: Stack(
+                                                  children: [
+                                                    CachedNetworkImage(
+                                                      placeholder: (context,
+                                                              url) =>
+                                                          Center(
+                                                              child:
+                                                                  CircularLoadingIndicator()),
+                                                      imageUrl: item!,
+                                                      fit: BoxFit.cover,
+                                                      height: double.infinity,
+                                                      width: double.infinity,
+                                                      errorWidget:
+                                                          productAndServiceBigErrorWidget,
+                                                    ),
+                                                    if (product!
+                                                            .pricePercentageChange !=
+                                                        0.0) ...[
+                                                      Positioned(
+                                                        top: 8,
+                                                        right: 100,
+                                                        child: Container(
+                                                          padding:
+                                                              EdgeInsets.only(
+                                                                  left: 6.0,
+                                                                  right: 6.0,
+                                                                  top: 4.0,
+                                                                  bottom: 4.0),
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            color: naturalGreen,
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .all(Radius
+                                                                        .circular(
+                                                                            8)),
+                                                          ),
+                                                          child: Text(
+                                                            "${product!.pricePercentageChange!.toInt()}% off",
+                                                            style: TextStyle(
+                                                              color:
+                                                                  Colors.white,
+                                                            ),
                                                           ),
                                                         ),
                                                       ),
-                                                    ),
-                                                  ]
-                                                ],
-                                              ),
-                                            )),
-                                          ),
-                                          getOutOfStockTag(),
-                                        ],
+                                                    ]
+                                                  ],
+                                                ),
+                                              )),
+                                            ),
+                                            getOutOfStockTag(),
+                                          ],
+                                        ),
                                       ),
                                     )
                                     .toList(),

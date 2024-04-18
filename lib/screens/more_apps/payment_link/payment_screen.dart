@@ -386,6 +386,13 @@ class _PaymentLinkScreenState extends State<PaymentLinkScreen> {
                 dynamic res = jsonDecode(value.body);
 
                 response = value;
+
+                try {
+                  handleServerErrors(response);
+                } catch (e) {
+                  return Future.error(response.body);
+                }
+
                 if (response.statusCode == 201) {
                   showDataAlert(res['link']);
                   Navigator.pop(context);

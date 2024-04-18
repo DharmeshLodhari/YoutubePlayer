@@ -40,7 +40,6 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
   final ScrollController _scrollController = ScrollController();
   bool noItemInList = false;
   bool isSearchIsEmpty = true;
-  String autoCompleteSearchText = "";
   ProductCategory? pressedCategory;
   ProductCategory? selectedProductCategory;
   List<ProductCategory>? productCategories;

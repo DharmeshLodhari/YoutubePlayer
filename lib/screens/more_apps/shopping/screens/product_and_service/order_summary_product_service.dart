@@ -166,7 +166,7 @@ class _OrderSummaryProductServiceState
                 Navigator.pushNamed(context, Routes.ORDERS_LIST);
                 showToast(message: 'Order placed successfully');
               } else if (response.statusCode == 500) {
-                showToast(message: AppLocalization.of(context)!.serverError);
+                showToast(message: AppLocalization.of(context)?.serverError);
                 Navigator.pop(context);
               } else {
                 debugPrint("MakePaymentForCartOrder Unsuccessful");

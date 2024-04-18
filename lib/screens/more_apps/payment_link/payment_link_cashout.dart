@@ -1058,6 +1058,13 @@ class _PaymentLinkCashOutState extends State<PaymentLinkCashOut> {
         loading = false;
 
         response = value;
+
+        try {
+          handleServerErrors(response);
+        } catch (e) {
+          return Future.error(response.body);
+        }
+
         if (response.statusCode == 201) {
           showSnackbar(context,
               message: 'Payment link successfully cashed out..',

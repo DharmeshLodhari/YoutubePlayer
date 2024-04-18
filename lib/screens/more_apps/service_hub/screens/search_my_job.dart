@@ -33,7 +33,6 @@ class _SearchMyJobsState extends State<SearchMyJobs> {
   final ScrollController _scrollController = ScrollController();
   bool noItemInList = false;
   bool isSearchIsEmpty = true;
-  String autoCompleteSearchText = "";
   String username = "";
 
   TextEditingController searchController = TextEditingController();

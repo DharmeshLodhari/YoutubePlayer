@@ -26,10 +26,10 @@ import '../services/app_config_bloc.dart';
 import '../widget/custom_slydo_usercard.dart';
 import '../widget/dialog.dart';
 import '../widget/rounded_background_icon.dart';
+import '../widget/tab_selection.dart';
 import 'connection_module/channels.dart';
 import 'more_apps/messaging/chat/helpers/connection_list_manager.dart';
 import 'more_apps/user_profile/user_auth.dart';
-import 'more_apps/yarn/widgets/yarn_tab_selection.dart';
 
 class SearchModule extends StatefulWidget {
   final dynamic arguments;
@@ -197,7 +197,7 @@ class _SearchModuleState extends State<SearchModule> {
           Divider(
             color: darkGrey.withOpacity(.5),
           ),
-          YarnTabSelection(
+          TabSelection(
             onTap: (index) {
               currentIndex = index;
               _showTabs(true);

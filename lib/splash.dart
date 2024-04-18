@@ -45,6 +45,8 @@ class _SplashScreenState extends State<SplashScreen>
   String? countryFromPref;
   String? userPhoneNumber;
   String? userPassword;
+  String? company;
+  bool isStaffLogin = false;
   late SharedPreferences _sharedPreferences;
   late BasketBloc basketBloc;
   late SharedCartBloc sharedCartBloc;
@@ -322,16 +324,16 @@ class _SplashScreenState extends State<SplashScreen>
         final SecureUser secureUser = await SecureStorage().getUser();
         userPhoneNumber = secureUser.phoneNumber;
         userPassword = secureUser.password;
+        company = secureUser.company;
+        isStaffLogin = secureUser.isStaffLogin ?? false;
 
-        final phoneNumber = "+" + country2.phoneCode! + userPhoneNumber!;
-        final password = userPassword;
-
+        var phoneNumber = "+" + country2.phoneCode! + userPhoneNumber!;
         errorText += "phoneNumber $phoneNumber\n";
-        errorText += "password $password\n";
 
         User? user;
         try {
-          user = await _auth.authenticate(phoneNumber, password);
+          user = await _auth.authenticate(phoneNumber, userPassword,
+              isStaffLogin: isStaffLogin, company: company);
         } catch (e) {
           errorText += "ERROR while fetching USER:- $e\n";
           isUserFound = false;

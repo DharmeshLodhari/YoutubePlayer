@@ -305,6 +305,13 @@ class _EditShippingOptionsState extends State<EditShippingOptions> {
         isLoading = false;
 
         response = value;
+
+        try {
+          handleServerErrors(response);
+        } catch (e) {
+          return Future.error(response.body);
+        }
+
         if (response.statusCode == 200 || response.statusCode == 201) {
           widget.callback!(true);
 
@@ -328,7 +335,6 @@ class _EditShippingOptionsState extends State<EditShippingOptions> {
             showToast(message: errorMessage);
           });
         } else {
-          // Navigator.pop(context);
           if (response.statusCode == 406) {
             errorMessage = jsonDecode(value.body)[0];
             showToast(message: "$errorMessage");

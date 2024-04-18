@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:Slydo/constant.dart';
+import 'package:Slydo/widget/permission_protection_widget.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -407,19 +409,6 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
             ratingAndReviewModal();
           }
         });
-      } else if (response.statusCode == 400) {
-        Navigator.pop(context);
-        setState(() {
-          errorMessage = "${jsonDecode(value.body)["errors"]}";
-
-          showToast(message: errorMessage);
-        });
-      } else if (response.statusCode == 500) {
-        Navigator.pop(context);
-        setState(() {
-          errorMessage = AppLocalization.of(context)!.serverError;
-          showToast(message: errorMessage);
-        });
       } else {
         Navigator.pop(context);
         if (response.statusCode == 406) {
@@ -445,11 +434,15 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
   }
 
   sendPayment() {
-    return CurvedButton(
-      onPressed: onSubmit,
-      backgroundColor: navyBlue,
-      textColor: Colors.white,
-      text: 'Send Payment',
+    return PermissionProtectionWidget(
+      permissionName: ProtectionPermission.transaction,
+      isLockForRead: true,
+      child: CurvedButton(
+        onPressed: onSubmit,
+        backgroundColor: navyBlue,
+        textColor: Colors.white,
+        text: 'Send Payment',
+      ),
     );
   }
 

@@ -20,11 +20,24 @@ class _DeliveryOrderTileState extends State<DeliveryOrderTile> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // _buildOrderId(),
           _buildLogoAndDeliveryAndAmount(),
           _buildItemsAndKg(),
           const SizedBox(height: 10.0),
           _buildIconAndAddressAndPickup(),
         ],
+      ),
+    );
+  }
+
+  Widget _buildOrderId() {
+    return Text(
+      'Ride #${widget.jobListing?.orderId.toString() ?? ""}',
+      style: TextStyle(
+        color: black,
+        fontSize: 12,
+        fontWeight: FontWeight.w500,
+        fontFamily: "Inter",
       ),
     );
   }

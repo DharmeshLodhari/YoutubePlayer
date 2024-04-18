@@ -27,7 +27,7 @@ class _DeliveryCompletedState extends State<DeliveryCompleted> {
   late RiderDeliveryBloc riderDeliveryBloc;
   late UserBloc userBloc;
   String? journeyId;
-  bool isLoading = true;
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -415,7 +415,7 @@ class _DeliveryCompletedState extends State<DeliveryCompleted> {
       backgroundColor: navyBlue,
       fontSize: 15,
       onPressed: () {
-        Navigator.of(context).popAndPushNamed(Routes.SHARE_EXPERIENCE);
+        Navigator.of(context).pushNamed(Routes.SHARE_EXPERIENCE);
       },
     );
   }

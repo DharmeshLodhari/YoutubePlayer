@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:Slydo/constant.dart';
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
@@ -57,6 +58,7 @@ import 'package:Slydo/widget/customized_popup_menu.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
+import 'package:Slydo/widget/permission_protection_widget.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:Slydo/widget/sticky_grouped_list/src/item_positions_listener.dart';
 import 'package:Slydo/widget/sticky_grouped_list/sticky_grouped_list.dart';
@@ -2081,10 +2083,14 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
   Widget moreActionBtn() {
     return IconButton(
-        icon: Icon(
-          showMoreAction ? SlydoAppIcon.close_2 : SlydoAppIcon.add,
-          color: navyBlue,
-          size: showMoreAction ? 22 : 20,
+        icon: PermissionProtectionWidget(
+          permissionName: ProtectionPermission.chat,
+          isLockForRead: true,
+          child: Icon(
+            showMoreAction ? SlydoAppIcon.close_2 : SlydoAppIcon.add,
+            color: navyBlue,
+            size: showMoreAction ? 22 : 20,
+          ),
         ),
         onPressed: () async {
           if (FocusScope.of(context).hasFocus) {
@@ -3176,22 +3182,26 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   }
 
   Widget sendMessageBtn() {
-    return InkWell(
+    return GestureDetector(
       onTap: getSendMessageAction,
-      child: Container(
-        padding: const EdgeInsets.all(2),
-        child: Row(
-          children: [
-            const SizedBox(
-              width: 10,
-            ),
-            Icon(
-              SlydoAppIcon.send_message_2,
-              color: navyBlue,
-              size: 22,
-            ),
-            const SizedBox(width: 12),
-          ],
+      child: PermissionProtectionWidget(
+        permissionName: ProtectionPermission.chat,
+        isLockForRead: true,
+        child: Container(
+          padding: EdgeInsets.all(2),
+          child: Row(
+            children: [
+              SizedBox(
+                width: 10,
+              ),
+              Icon(
+                SlydoAppIcon.send_message_2,
+                color: navyBlue,
+                size: 22,
+              ),
+              SizedBox(width: 12),
+            ],
+          ),
         ),
       ),
     );

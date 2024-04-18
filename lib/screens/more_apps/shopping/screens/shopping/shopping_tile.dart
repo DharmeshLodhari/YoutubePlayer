@@ -32,7 +32,7 @@ class ShoppingTile extends StatelessWidget {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(10),
                   child: CachedNetworkImage(
-                    imageUrl: product!.cover!,
+                    imageUrl: product?.cover ?? "",
                     fit: BoxFit.fill,
                     height: 60,
                     width: 68,
@@ -86,7 +86,7 @@ class ShoppingTile extends StatelessWidget {
                           size: 10,
                         ),
                         Text(
-                          product!.price.toString(),
+                          product?.price.toString() ?? "",
                           style: TextStyle(
                             fontWeight: FontWeight.w700,
                             fontSize: 14,
@@ -120,7 +120,9 @@ class _ShoppingTileWithHeartState extends State<ShoppingTileWithHeart> {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        ShoppingAuthService().getProduct(widget.product!.id!).then((value) {
+        ShoppingAuthService()
+            .getProduct(widget.product?.id ?? "")
+            .then((value) {
           Navigator.pushNamed(context, '/product',
               arguments: {"product": value});
         });
@@ -139,7 +141,7 @@ class _ShoppingTileWithHeartState extends State<ShoppingTileWithHeart> {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(10),
                   child: CachedNetworkImage(
-                    imageUrl: widget.product!.cover!,
+                    imageUrl: widget.product?.cover ?? "",
                     fit: BoxFit.fill,
                     height: 60,
                     width: 60,
@@ -165,7 +167,7 @@ class _ShoppingTileWithHeartState extends State<ShoppingTileWithHeart> {
                         ),
                         SizedBox(height: 2),
                         Text(
-                          widget.product!.seller!,
+                          widget.product?.seller ?? "",
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w400,
@@ -177,7 +179,7 @@ class _ShoppingTileWithHeartState extends State<ShoppingTileWithHeart> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Text(
-                              worldCurrencies[widget.product!.currency!]!,
+                              worldCurrencies[widget.product?.currency!]!,
                               style: TextStyle(
                                   fontFamily: "Inter",
                                   color: navyBlue,
@@ -185,7 +187,7 @@ class _ShoppingTileWithHeartState extends State<ShoppingTileWithHeart> {
                                   fontSize: 14),
                             ),
                             Text(
-                              moneyDisplayNormalizer(widget.product!.price!),
+                              moneyDisplayNormalizer(widget.product?.price!),
                               style: TextStyle(
                                 color: navyBlue,
                                 fontWeight: FontWeight.bold,
@@ -198,7 +200,7 @@ class _ShoppingTileWithHeartState extends State<ShoppingTileWithHeart> {
                     ),
                   ),
                 ),
-                getCircularUserAvatar(widget.product!.sellerAvatar!),
+                getCircularUserAvatar(widget.product?.sellerAvatar ?? ""),
                 // Container(
                 //   height: 60,
                 //   child: Center(
@@ -244,7 +246,9 @@ class _ShoppingTileWithHeartWithProductState
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        ShoppingAuthService().getProduct(widget.product!.id!).then((value) {
+        ShoppingAuthService()
+            .getProduct(widget.product?.id ?? "")
+            .then((value) {
           Navigator.pushNamed(context, '/product',
               arguments: {"product": value});
         });
@@ -263,7 +267,7 @@ class _ShoppingTileWithHeartWithProductState
                 ClipRRect(
                   borderRadius: BorderRadius.circular(10),
                   child: CachedNetworkImage(
-                    imageUrl: widget.product!.cover!,
+                    imageUrl: widget.product?.cover ?? "",
                     fit: BoxFit.fill,
                     height: 60,
                     width: 60,
@@ -291,7 +295,7 @@ class _ShoppingTileWithHeartWithProductState
                         ),
                         SizedBox(height: 2),
                         Text(
-                          widget.product!.seller!,
+                          widget.product?.seller ?? "",
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w400,
@@ -303,7 +307,7 @@ class _ShoppingTileWithHeartWithProductState
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Text(
-                              worldCurrencies[widget.product!.currency!]!,
+                              worldCurrencies[widget.product?.currency!]!,
                               style: TextStyle(
                                   fontFamily: "Inter",
                                   color: navyBlue,
@@ -311,7 +315,7 @@ class _ShoppingTileWithHeartWithProductState
                                   fontSize: 14),
                             ),
                             Text(
-                              moneyDisplayNormalizer(widget.product!.price!),
+                              moneyDisplayNormalizer(widget.product?.price!),
                               style: TextStyle(
                                 color: navyBlue,
                                 fontWeight: FontWeight.bold,
@@ -324,7 +328,7 @@ class _ShoppingTileWithHeartWithProductState
                     ),
                   ),
                 ),
-                getCircularUserAvatar(widget.product!.sellerAvatar!),
+                getCircularUserAvatar(widget.product?.sellerAvatar ?? ""),
                 // Container(
                 //   height: 60,
                 //   child: Center(
@@ -480,7 +484,9 @@ class _ShoppingTileWithHeartWithServiceState
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        ShoppingAuthService().getService(widget.service!.id!).then((value) {
+        ShoppingAuthService()
+            .getService(widget.service?.id ?? "")
+            .then((value) {
           Navigator.pushNamed(context, '/service-detail',
               arguments: {"service": value});
         });
@@ -499,7 +505,7 @@ class _ShoppingTileWithHeartWithServiceState
                 ClipRRect(
                   borderRadius: BorderRadius.circular(10),
                   child: CachedNetworkImage(
-                    imageUrl: widget.service!.cover!,
+                    imageUrl: widget.service?.cover ?? "",
                     fit: BoxFit.fill,
                     height: 60,
                     width: 60,
@@ -527,7 +533,7 @@ class _ShoppingTileWithHeartWithServiceState
                         ),
                         // SizedBox(height: 2),
                         // Text(
-                        //   widget.service!.seller!,
+                        //   widget.service?.seller!,
                         //   style: TextStyle(
                         //     fontSize: 12,
                         //     fontWeight: FontWeight.w400,
@@ -539,7 +545,7 @@ class _ShoppingTileWithHeartWithServiceState
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Text(
-                              worldCurrencies[widget.service!.currency!]!,
+                              worldCurrencies[widget.service?.currency!]!,
                               style: TextStyle(
                                   fontFamily: "Inter",
                                   color: navyBlue,
@@ -548,7 +554,7 @@ class _ShoppingTileWithHeartWithServiceState
                             ),
                             Text(
                               moneyDisplayNormalizer(
-                                  int.parse(widget.service!.price!)),
+                                  int.parse(widget.service?.price ?? "")),
                               style: TextStyle(
                                 color: navyBlue,
                                 fontWeight: FontWeight.bold,
@@ -561,7 +567,7 @@ class _ShoppingTileWithHeartWithServiceState
                     ),
                   ),
                 ),
-                // getCircularUserAvatar(widget.service!.sellerAvatar!),
+                // getCircularUserAvatar(widget.service?.sellerAvatar!),
                 // Container(
                 //   height: 60,
                 //   child: Center(

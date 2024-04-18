@@ -10,6 +10,7 @@ import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/Chat
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/SocketQueueChatMessage.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/VirtualAccount.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/fee_structure.dart';
+import 'package:Slydo/screens/more_apps/rider_delivery/models/near_by_location.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/jwt.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/yarn/models/ask_categories_model.dart';
@@ -1146,4 +1147,45 @@ class DatabaseHelper {
 
   Future updateConversationUserAvatar(
       {required String userName, required String newAvatar}) async {}
+
+  /// check rider at location
+  Future<int?> insertRiderAtLocation(NearByLocation atPickupLocation) async {
+    final Database dbClient = await db;
+
+    final int res = await dbClient.insert(
+        RIDER_AT_LOCATION, atPickupLocation.toJson(),
+        conflictAlgorithm: ConflictAlgorithm.ignore);
+    debugPrint('SAVE Location :: $res');
+    return res;
+  }
+
+  Future updateRiderAtLocation(int? orderId, bool atDeliveryLocation) async {
+    final Database dbClient = await db;
+
+    return await dbClient.update(
+      RIDER_AT_LOCATION,
+      {"at_delivery_location": atDeliveryLocation},
+      where: "order_id = ?",
+      whereArgs: [orderId],
+    );
+  }
+
+  Future<NearByLocation?> getRiderAtLocation(int? orderId) async {
+    final Database dbClient = await db;
+
+    final List<Map<String, dynamic>> atPickupLocation = await dbClient
+        .query(RIDER_AT_LOCATION, where: "order_id = ?", whereArgs: [orderId]);
+    if (atPickupLocation.length > 0)
+      return NearByLocation.fromDBJson(atPickupLocation.first);
+    return null;
+  }
+
+  Future<int> deleteSingleJob(int? orderId) async {
+    final Database dbClient = await db;
+
+    final int res = await dbClient
+        .delete(RIDER_AT_LOCATION, where: "order_id = ?", whereArgs: [orderId]);
+    debugPrint("DATABASE:- Job $orderId is Deleted !!");
+    return res;
+  }
 }

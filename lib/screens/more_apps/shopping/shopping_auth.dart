@@ -2469,8 +2469,10 @@ class ShoppingAuthService extends AuthService {
       response = await httpPatch(url, headers: headers, body: _data);
     }
 
-    if (response.statusCode == 400) {
-      throw jsonDecode(response.body);
+    try {
+      handleServerErrors(response);
+    } catch (e) {
+      return Future.error(response.body);
     }
 
     if (response.statusCode == 201) {
@@ -2503,11 +2505,13 @@ class ShoppingAuthService extends AuthService {
       response = await httpPatch(url, headers: headers, body: _data);
     }
 
-    if (response.statusCode == 400) {
-      throw jsonDecode(response.body);
+    try {
+      handleServerErrors(response);
+    } catch (e) {
+      return Future.error(response.body);
     }
 
-    if (response.statusCode == 201) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       DiscountModel item = DiscountModel.fromJson(jsonDecode(response.body));
       return item;
     }

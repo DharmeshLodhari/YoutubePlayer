@@ -28,11 +28,11 @@ class UserBloc extends ChangeNotifier {
     notifyListeners();
   }
 
-  bool get shouldReloadPostPage => _shouldReloadPostPage;
-  bool _shouldReloadPostPage = false;
+  bool get isStaffLogin => _isStaffLogin;
+  bool _isStaffLogin = false;
 
-  set shouldReloadPostPage(bool shouldReload) {
-    _shouldReloadPostPage = shouldReload;
+  set isStaffLogin(bool isStaffLogin) {
+    _isStaffLogin = isStaffLogin;
     notifyListeners();
   }
 

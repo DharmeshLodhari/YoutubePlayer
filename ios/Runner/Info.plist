@@ -80,5 +80,9 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+     <key>com.apple.developer.associated-domains</key>
+      <array>
+        <string>applinks:slydo.co</string>
+      </array>
 </dict>
 </plist>
