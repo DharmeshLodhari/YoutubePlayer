@@ -15,7 +15,7 @@ import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 
 class DeliveryCompleted extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
   DeliveryCompleted({Key? key, this.arguments}) : super(key: key);
 
@@ -41,7 +41,7 @@ class _DeliveryCompletedState extends State<DeliveryCompleted> {
     super.initState();
   }
 
-  fetchJobData() async {
+  Future<void> fetchJobData() async {
     isLoading = true;
     if (mounted) setState(() {});
     await RiderDeliveryAuthService().fetchJob(journeyId).then((value) {
@@ -221,25 +221,22 @@ class _DeliveryCompletedState extends State<DeliveryCompleted> {
               //     .pushNamed("/photo-viewer", arguments: _payee!.avatar);
             },
             child: ClipOval(
-              child: defaultImage != null
-                  ? CachedNetworkImage(
-                      imageUrl: userBloc.user.avatar == ""
-                          ? defaultImage
-                          : userBloc.user.avatar!,
-                      colorBlendMode: BlendMode.darken,
-                      fit: BoxFit.cover,
-                      errorWidget: imageErrorWidget,
-                      height: double.infinity,
-                      filterQuality: FilterQuality.high,
-                      placeholder: (context, _) => CachedNetworkImage(
-                        imageUrl: defaultImage,
-                        colorBlendMode: BlendMode.darken,
-                        fit: BoxFit.fitWidth,
-                        filterQuality: FilterQuality.high,
-                      ),
-                    )
-                  : const SizedBox.shrink(),
-            ),
+                child: CachedNetworkImage(
+              imageUrl: userBloc.user.avatar == ""
+                  ? defaultImage
+                  : userBloc.user.avatar!,
+              colorBlendMode: BlendMode.darken,
+              fit: BoxFit.cover,
+              errorWidget: imageErrorWidget,
+              height: double.infinity,
+              filterQuality: FilterQuality.high,
+              placeholder: (context, _) => CachedNetworkImage(
+                imageUrl: defaultImage,
+                colorBlendMode: BlendMode.darken,
+                fit: BoxFit.fitWidth,
+                filterQuality: FilterQuality.high,
+              ),
+            )),
           ),
         ),
         const SizedBox(width: 10),
@@ -351,11 +348,11 @@ class _DeliveryCompletedState extends State<DeliveryCompleted> {
   }
 
   Widget _buildDuration() {
-    DateTime? pickupTime =
+    final DateTime? pickupTime =
         riderDeliveryBloc.deliveryDetails?.actualDeliveryTime;
-    DateTime? deliveryTime =
+    final DateTime? deliveryTime =
         riderDeliveryBloc.deliveryDetails?.actualPickupTime;
-    Duration? duration = pickupTime?.difference(deliveryTime!);
+    final Duration? duration = pickupTime?.difference(deliveryTime!);
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,

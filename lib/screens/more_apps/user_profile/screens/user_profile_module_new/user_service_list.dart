@@ -5,7 +5,6 @@ import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/custom_box_shadow.dart';
 import 'package:Slydo/widget/item_display_card.dart';
-import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
@@ -173,16 +172,16 @@ class _UserServiceListState extends State<UserServiceList> {
           );
   }
 
-  Widget _buildServiceIndicator() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Center(
-        child: Opacity(
-            opacity: isServiceLoading ? 1.0 : 00,
-            child: isServiceLoading ? CircularLoadingIndicator() : Container()),
-      ),
-    );
-  }
+  // Widget _buildServiceIndicator() {
+  //   return Padding(
+  //     padding: const EdgeInsets.all(8.0),
+  //     child: Center(
+  //       child: Opacity(
+  //           opacity: isServiceLoading ? 1.0 : 00,
+  //           child: isServiceLoading ? CircularLoadingIndicator() : Container()),
+  //     ),
+  //   );
+  // }
 
   void getServiceList() async {
     if (!isServiceLoading) {
@@ -254,27 +253,27 @@ class _UserServiceListState extends State<UserServiceList> {
       ),
     );
 
-    Widget getOutOfStockTag(int index) {
-      if (!serviceList[index].isAvailable!) {
-        if (widget.isOwner) {
-          return Positioned(
-            left: 38,
-            top: 24,
-            child: getColoredLabeledWidget(
-                text: AppLocalization.of(context)!.outOfStock,
-                color: starYellow),
-          );
-        } else {
-          return Positioned(
-            left: 8,
-            top: 20,
-            child: getColoredLabeledWidget(
-                text: AppLocalization.of(context)!.outOfStock,
-                color: starYellow),
-          );
-        }
-      }
-      return const SizedBox.shrink();
-    }
+    // Widget getOutOfStockTag(int index) {
+    //   if (!serviceList[index].isAvailable!) {
+    //     if (widget.isOwner) {
+    //       return Positioned(
+    //         left: 38,
+    //         top: 24,
+    //         child: getColoredLabeledWidget(
+    //             text: AppLocalization.of(context)!.outOfStock,
+    //             color: starYellow),
+    //       );
+    //     } else {
+    //       return Positioned(
+    //         left: 8,
+    //         top: 20,
+    //         child: getColoredLabeledWidget(
+    //             text: AppLocalization.of(context)!.outOfStock,
+    //             color: starYellow),
+    //       );
+    //     }
+    //   }
+    //   return const SizedBox.shrink();
+    // }
   }
 }

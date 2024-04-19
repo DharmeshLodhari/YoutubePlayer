@@ -24,7 +24,7 @@ class ShoppingExploreScreen extends StatefulWidget {
 }
 
 class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
-  CarouselController _carouselController = CarouselController();
+  final CarouselController _carouselController = CarouselController();
 
   late ShoppingDashboardBloc shoppingDashboardBloc;
 
@@ -42,7 +42,7 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
   List<ShoppingProduct> discountProductList = [];
   bool isDiscountProductListLoading = false;
 
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
   @override
@@ -104,7 +104,7 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         getResult();
@@ -154,7 +154,7 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
       ),
       actions: [
         goToCartWidget(),
-        SizedBox(
+        const SizedBox(
           width: 16,
         ),
       ],
@@ -168,7 +168,7 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
       icon: badges.Badge(
         badgeContent: getBadgeContent(),
         position: badges.BadgePosition.topEnd(end: 0, top: 0),
-        badgeAnimation: badges.BadgeAnimation.rotation(
+        badgeAnimation: const badges.BadgeAnimation.rotation(
           animationDuration: Duration(seconds: 1),
           colorChangeAnimationDuration: Duration(seconds: 1),
           loopAnimation: false,
@@ -179,8 +179,8 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
             shape: badges.BadgeShape.circle,
             badgeColor: naturalGreen,
             padding: basketBloc.basketItems.length == 0
-                ? EdgeInsets.all(0)
-                : EdgeInsets.all(4)),
+                ? const EdgeInsets.all(0)
+                : const EdgeInsets.all(4)),
         child: Icon(
           SlydoAppIcon.cart,
           size: 16,
@@ -203,7 +203,7 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
     }
     return Text(
       getBadgeCount().toString(),
-      style: TextStyle(
+      style: const TextStyle(
           fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold),
     );
   }
@@ -228,27 +228,27 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
       child: SingleChildScrollView(
         child: Column(
           children: [
-            SizedBox(
+            const SizedBox(
               height: 6,
             ),
             searchBox(),
-            SizedBox(
+            const SizedBox(
               height: 32,
             ),
             productCarouselSlider(),
-            SizedBox(
+            const SizedBox(
               height: 40,
             ),
             getTodayDealList(),
-            SizedBox(
+            const SizedBox(
               height: 16,
             ),
             trendingProductList(),
-            SizedBox(
+            const SizedBox(
               height: 16,
             ),
             getDiscountDealList(),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
           ],
         ),
       ),
@@ -257,7 +257,7 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
 
   Widget searchBox() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Theme(
         data: Theme.of(context).copyWith(
           textSelectionTheme: TextSelectionThemeData(
@@ -296,8 +296,8 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
                 hintText: "Search",
                 fillColor: Colors.white,
                 filled: true,
-                contentPadding: EdgeInsets.symmetric(vertical: 10),
-                prefix: Padding(
+                contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                prefix: const Padding(
                   padding: EdgeInsets.only(left: 16),
                 ),
                 enabledBorder: OutlineInputBorder(
@@ -366,10 +366,11 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
                         });
                       },
                       child: Container(
-                        padding: EdgeInsets.symmetric(horizontal: 5),
+                        padding: const EdgeInsets.symmetric(horizontal: 5),
                         child: Center(
                             child: ClipRRect(
-                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(10)),
                           child: CachedNetworkImage(
                             imageUrl: product.cover!,
                             fit: BoxFit.fill,
@@ -394,7 +395,7 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
       child: Column(
         children: [
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
@@ -433,12 +434,12 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
                 : SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Container(
-                      padding: EdgeInsets.only(left: 16),
+                      padding: const EdgeInsets.only(left: 16),
                       child: Row(
                         children: trendingProduct
                             .map(
                               (product) => Container(
-                                margin: EdgeInsets.only(right: 12),
+                                margin: const EdgeInsets.only(right: 12),
                                 child: productNameCard(product: product),
                               ),
                             )
@@ -467,7 +468,8 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
           width: 160,
           decoration: decorateBox(borderColor: selectedListItemBackgroundBlue),
           child: Container(
-            padding: EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 12),
+            padding:
+                const EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 12),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -483,7 +485,7 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
                   ),
                   maxLines: 1,
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 12,
                 ),
                 ClipRRect(
@@ -511,7 +513,7 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
       child: Column(
         children: [
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
@@ -540,7 +542,7 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
           ),
           Container(
             color: Colors.white,
-            padding: EdgeInsets.symmetric(vertical: 16),
+            padding: const EdgeInsets.symmetric(vertical: 16),
             child: isTodayDealLoading
                 ? Container(
                     height: 140,
@@ -551,11 +553,11 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
                 : SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Container(
-                      padding: EdgeInsets.only(left: 16),
+                      padding: const EdgeInsets.only(left: 16),
                       child: Row(
                         children: todayDeal
                             .map((product) => Container(
-                                  margin: EdgeInsets.only(right: 12),
+                                  margin: const EdgeInsets.only(right: 12),
                                   child: productPoster(product: product),
                                 ))
                             .toList(),
@@ -573,7 +575,7 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
       child: Column(
         children: [
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
@@ -600,180 +602,172 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
               ],
             ),
           ),
-          isDiscountProductListLoading
-              ? Container(
-                  height: 200,
-                  child: Center(
-                    child: CircularLoadingIndicator(),
-                  ),
-                )
-              : Container(
-                  color: Colors.white,
-                  padding: EdgeInsets.symmetric(vertical: 16),
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.vertical,
-                    child: Container(
-                      padding: EdgeInsets.only(left: 16, right: 16),
-                      child: Column(
-                        children: [
-                          Container(
-                            height: 244,
-                            child: CustomBoxShadow(
-                              child: Card(
-                                  elevation: 3,
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10)),
-                                  margin: EdgeInsets.zero,
-                                  shadowColor: boxShadowTwo,
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(10),
-                                    child: Column(
-                                      children: <Widget>[
-                                        Expanded(
-                                          child: InkWell(
-                                            child: CachedNetworkImage(
-                                              width: double.infinity,
-                                              imageUrl: discountProductList
-                                                  .first.cover!,
-                                              fit: BoxFit.fill,
-                                              errorWidget:
-                                                  productAndServiceErrorWidget,
-                                              memCacheHeight:
-                                                  (MediaQuery.of(context)
-                                                              .size
-                                                              .height *
-                                                          0.6)
-                                                      .toInt(),
-                                            ),
-                                            onTap: () {
-                                              ShoppingAuthService()
-                                                  .getProduct(
-                                                      discountProductList
-                                                          .first.id!)
-                                                  .then((value) {
-                                                Navigator.pushNamed(
-                                                    context, '/product',
-                                                    arguments: {
-                                                      "product": value
-                                                    });
-                                              });
-                                            },
-                                          ),
-                                        ),
-                                        Container(
-                                          padding: EdgeInsets.symmetric(
-                                              horizontal: 16, vertical: 0),
-                                          child: Row(
-                                            children: [
-                                              Expanded(
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Text(
-                                                      messageDecoderWithEmoji(
-                                                              discountProductList
-                                                                  .first
-                                                                  .name) ??
-                                                          "",
-                                                      softWrap: false,
-                                                      overflow:
-                                                          TextOverflow.fade,
-                                                      maxLines: 1,
-                                                      style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.w700,
-                                                        fontSize: 14,
-                                                        color: blackFont,
-                                                      ),
-                                                    ),
-                                                    SizedBox(
-                                                      height: 2,
-                                                    ),
-                                                    Text(
-                                                      messageDecoderWithEmoji(
-                                                              discountProductList
-                                                                  .first
-                                                                  .shortDescription) ??
-                                                          "",
-                                                      // softWrap: false,
-                                                      // overflow:
-                                                      //     TextOverflow.fade,
-                                                      maxLines: 1,
-                                                      style: TextStyle(
-                                                        fontSize: 14,
-                                                        fontWeight:
-                                                            FontWeight.w400,
-                                                        color: darkGrey,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                              Container(
-                                                height: 60,
-                                                child: Center(
-                                                  child: Row(
-                                                    mainAxisSize:
-                                                        MainAxisSize.min,
-                                                    children: [
-                                                      Icon(
-                                                        SlydoAppIcon.naira,
-                                                        color: navyBlue,
-                                                        size: 10,
-                                                      ),
-                                                      Text(
-                                                        discountProductList
-                                                            .first.price
-                                                            .toString(),
-                                                        style: TextStyle(
-                                                          fontWeight:
-                                                              FontWeight.w700,
-                                                          fontSize: 14,
-                                                          color: navyBlue,
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              )
-                                            ],
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                  )),
-                            ),
-                          ),
-                          SizedBox(
-                            height: 12,
-                          ),
-                          Column(
-                            children: discountProductList
-                                .map((product) => Container(
-                                      margin: EdgeInsets.only(bottom: 12),
+          if (isDiscountProductListLoading)
+            Container(
+              height: 200,
+              child: Center(
+                child: CircularLoadingIndicator(),
+              ),
+            )
+          else
+            Container(
+              color: Colors.white,
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+                child: Container(
+                  padding: const EdgeInsets.only(left: 16, right: 16),
+                  child: Column(
+                    children: [
+                      Container(
+                        height: 244,
+                        child: CustomBoxShadow(
+                          child: Card(
+                              elevation: 3,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10)),
+                              margin: EdgeInsets.zero,
+                              shadowColor: boxShadowTwo,
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(10),
+                                child: Column(
+                                  children: <Widget>[
+                                    Expanded(
                                       child: InkWell(
+                                        child: CachedNetworkImage(
+                                          width: double.infinity,
+                                          imageUrl:
+                                              discountProductList.first.cover!,
+                                          fit: BoxFit.fill,
+                                          errorWidget:
+                                              productAndServiceErrorWidget,
+                                          memCacheHeight:
+                                              (MediaQuery.of(context)
+                                                          .size
+                                                          .height *
+                                                      0.6)
+                                                  .toInt(),
+                                        ),
                                         onTap: () {
                                           ShoppingAuthService()
-                                              .getProduct(product.id!)
+                                              .getProduct(
+                                                  discountProductList.first.id!)
                                               .then((value) {
                                             Navigator.pushNamed(
                                                 context, '/product',
                                                 arguments: {"product": value});
                                           });
                                         },
-                                        child: ShoppingTile(
-                                          product: product,
-                                        ),
                                       ),
-                                    ))
-                                .toList(),
-                          ),
-                        ],
+                                    ),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 16, vertical: 0),
+                                      child: Row(
+                                        children: [
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  messageDecoderWithEmoji(
+                                                          discountProductList
+                                                              .first.name) ??
+                                                      "",
+                                                  softWrap: false,
+                                                  overflow: TextOverflow.fade,
+                                                  maxLines: 1,
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.w700,
+                                                    fontSize: 14,
+                                                    color: blackFont,
+                                                  ),
+                                                ),
+                                                const SizedBox(
+                                                  height: 2,
+                                                ),
+                                                Text(
+                                                  messageDecoderWithEmoji(
+                                                          discountProductList
+                                                              .first
+                                                              .shortDescription) ??
+                                                      "",
+                                                  // softWrap: false,
+                                                  // overflow:
+                                                  //     TextOverflow.fade,
+                                                  maxLines: 1,
+                                                  style: TextStyle(
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.w400,
+                                                    color: darkGrey,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          Container(
+                                            height: 60,
+                                            child: Center(
+                                              child: Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  Icon(
+                                                    SlydoAppIcon.naira,
+                                                    color: navyBlue,
+                                                    size: 10,
+                                                  ),
+                                                  Text(
+                                                    discountProductList
+                                                        .first.price
+                                                        .toString(),
+                                                    style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.w700,
+                                                      fontSize: 14,
+                                                      color: navyBlue,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              )),
+                        ),
                       ),
-                    ),
+                      const SizedBox(
+                        height: 12,
+                      ),
+                      Column(
+                        children: discountProductList
+                            .map((product) => Container(
+                                  margin: const EdgeInsets.only(bottom: 12),
+                                  child: InkWell(
+                                    onTap: () {
+                                      ShoppingAuthService()
+                                          .getProduct(product.id!)
+                                          .then((value) {
+                                        Navigator.pushNamed(context, '/product',
+                                            arguments: {"product": value});
+                                      });
+                                    },
+                                    child: ShoppingTile(
+                                      product: product,
+                                    ),
+                                  ),
+                                ))
+                            .toList(),
+                      ),
+                    ],
                   ),
-                )
+                ),
+              ),
+            )
         ],
       ),
     );
@@ -811,7 +805,7 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
               child: Text(
                 messageDecoderWithEmoji(product.name) ?? "",
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: const TextStyle(
                     fontWeight: FontWeight.w700,
                     fontSize: 18,
                     color: Colors.white),

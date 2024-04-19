@@ -11,7 +11,7 @@ import '../../../../routes/route_constants.dart';
 
 // ignore: must_be_immutable
 class AccountType extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
   AccountType({required this.arguments});
 
@@ -20,7 +20,7 @@ class AccountType extends StatefulWidget {
 }
 
 class _AccountTypeState extends State<AccountType> {
-  var arguments;
+  final dynamic arguments;
   String? accountType;
 
   _AccountTypeState({required this.arguments});
@@ -78,17 +78,17 @@ class _AccountTypeState extends State<AccountType> {
         ),
         body: SingleChildScrollView(
           child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 20),
+            padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Container(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   appIcon(),
-                  SizedBox(
+                  const SizedBox(
                     height: 10,
                   ),
                   registerTitle(),
-                  SizedBox(height: 40),
+                  const SizedBox(height: 40),
                   Form(
                     key: _personalDetailFormKey,
                     child: Column(
@@ -98,7 +98,7 @@ class _AccountTypeState extends State<AccountType> {
                           'Account type',
                           style: TextStyle(color: darkGrey, fontSize: 14),
                         ),
-                        SizedBox(height: 6),
+                        const SizedBox(height: 6),
                         Container(
                           height: 50,
                           padding: const EdgeInsets.symmetric(horizontal: 14.0),
@@ -112,8 +112,8 @@ class _AccountTypeState extends State<AccountType> {
                             dropdownDecoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(14),
                             ),
-                            hint: Text('Select an account type'),
-                            underline: SizedBox.shrink(),
+                            hint: const Text('Select an account type'),
+                            underline: const SizedBox.shrink(),
                             items: ['Personal', 'Business'].map((String item) {
                               return DropdownMenuItem(
                                 value: item,
@@ -151,31 +151,31 @@ class _AccountTypeState extends State<AccountType> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(height: 20),
-        Text(
+        const SizedBox(height: 20),
+        const Text(
           'You will have access to :',
           style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
         ),
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
         setTextInfo('Chat'),
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
         setTextInfo('Yarn'),
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
         setTextInfo('Blog'),
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
         setTextInfo('Moment'),
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
         setTextInfo('Contactless Payment'),
-        SizedBox(height: 20),
-        Text(
+        const SizedBox(height: 20),
+        const Text(
           'and every other purchasing features.',
           style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
         ),
-        SizedBox(
+        const SizedBox(
           height: 40,
         ),
         proceedBtn(),
-        SizedBox(height: 40),
+        const SizedBox(height: 40),
       ],
     );
   }
@@ -184,33 +184,33 @@ class _AccountTypeState extends State<AccountType> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(height: 20),
-        Text(
+        const SizedBox(height: 20),
+        const Text(
           'You will have access to :',
           style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
         ),
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
         setTextInfo('Web Dashboard'),
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
         setTextInfo('Store Listing'),
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
         setTextInfo('Invoicing'),
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
         setTextInfo('Digital Contract'),
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
         setTextInfo('Seamless Payment'),
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
         setTextInfo('Business Visibility'),
-        SizedBox(height: 20),
-        Text(
+        const SizedBox(height: 20),
+        const Text(
           'and every other purchasing features.',
           style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
         ),
-        SizedBox(
+        const SizedBox(
           height: 40,
         ),
         proceedBtn(),
-        SizedBox(
+        const SizedBox(
           height: 40,
         ),
       ],
@@ -246,7 +246,6 @@ class _AccountTypeState extends State<AccountType> {
     );
   }
 
-
   Widget proceedBtn() {
     return accountTypeChosen == true
         ? CurvedButton(
@@ -255,7 +254,7 @@ class _AccountTypeState extends State<AccountType> {
             textColor: Colors.white,
             backgroundColor: navyBlue,
           )
-        : SizedBox();
+        : const SizedBox();
   }
 
   // validate the all field in the form then authenticate user and navigate him to dashboard screen
@@ -281,12 +280,12 @@ class _AccountTypeState extends State<AccountType> {
             "checkbox_active".toSVG(),
           ),
         ),
-        SizedBox(
+        const SizedBox(
           width: 12,
         ),
         Text(
           text,
-          style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
+          style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
         ),
         Container(),
       ],

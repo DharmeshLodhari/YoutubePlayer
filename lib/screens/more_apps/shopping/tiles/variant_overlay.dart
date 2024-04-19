@@ -10,7 +10,7 @@ class VariantOverlay extends StatefulWidget {
   final Function onClose;
   final Function(int variantId) onAdd;
   final Function(int variantId) onSubtract;
-  String? currency;
+  final String? currency;
 
   VariantOverlay(
       {Key? key,
@@ -28,7 +28,7 @@ class VariantOverlay extends StatefulWidget {
 class _VariantOverlayState extends State<VariantOverlay> {
   @override
   Widget build(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
+    // final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -78,10 +78,10 @@ class _VariantOverlayState extends State<VariantOverlay> {
                                 placeholder: (context, url) => Container(
                                     height: 20.0,
                                     width: 20.0,
-                                    child: Center(
+                                    child: const Center(
                                         child: CircularProgressIndicator())),
                                 errorWidget: (context, url, error) =>
-                                    Icon(Icons.error),
+                                    const Icon(Icons.error),
                               ),
                               const SizedBox(height: 20),
                               Text('Quantity: ${item['quantity']}'),
@@ -94,7 +94,7 @@ class _VariantOverlayState extends State<VariantOverlay> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   _buildIncreaseButtonWidget(index),
-                                  SizedBox(width: 20),
+                                  const SizedBox(width: 20),
                                   _buildDecreaseButtonWidget(index, item),
                                 ],
                               ),
@@ -135,7 +135,7 @@ class _VariantOverlayState extends State<VariantOverlay> {
   }
 
   Widget getTotalPriceWidget(Map<String, dynamic> item) {
-    var totalPrice = int.parse(item['quantity'].toString()) *
+    final totalPrice = int.parse(item['quantity'].toString()) *
         int.parse(item['current_price']);
 
     return Row(

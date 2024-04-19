@@ -65,7 +65,7 @@ class User {
   factory User.fromJson(Map<String, dynamic> json,
       {Map<String, dynamic>? staff, Map<String, dynamic>? permissions}) {
     // debugPrint('IS-VERIFIED --> ${json['is_verified']}');
-    User user = User(
+    final User user = User(
       nickName: json['nickname'] ?? "",
       type: json['account_type'],
       avatar: json['avatar'] ?? defaultImage,
@@ -118,7 +118,7 @@ class User {
   }
 
   Map<String, dynamic> toMap() {
-    var map = <String, dynamic>{};
+    final map = <String, dynamic>{};
     map["uuid"] = uuid;
     map["fullName"] = fullName;
     map["nickname"] = nickName;
@@ -133,13 +133,13 @@ class User {
   }
 
   UserFollowers toUserFollowerModel() {
-    UserFollowers userFollowers = UserFollowers();
+    final UserFollowers userFollowers = UserFollowers();
     userFollowers.avatar = avatar;
     return userFollowers;
   }
 
   SharedCartMemberModel convertToUser() {
-    SharedCartMemberModel user = SharedCartMemberModel();
+    final SharedCartMemberModel user = SharedCartMemberModel();
 
     user.userName = userName;
     user.avatar = avatar;
@@ -635,7 +635,7 @@ class ShippingAddress {
 class CustomerProfile {
   String? fullName;
   String? userName;
-  String? avatar;
+  String? avatar = "";
   String? qrCode;
   String? nickName;
   String? type;

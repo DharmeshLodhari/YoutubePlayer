@@ -105,8 +105,8 @@ class _SearchTextFieldState extends State<SearchTextField> {
             ),
           ),
           Positioned(
-            child: searchIcon(),
             right: 0,
+            child: searchIcon(),
           )
         ],
       ),

@@ -5,10 +5,10 @@ import '../models/ask_categories_model.dart';
 import 'customize_category_button.dart';
 
 class CustomizeCategory extends StatelessWidget {
-  YarnCategories? askCategory;
-  UsersCategories? usersCategory;
-  bool? isAdd = false;
-  GestureTapCallback? onTap;
+  final YarnCategories? askCategory;
+  final UsersCategories? usersCategory;
+  final bool? isAdd;
+  final GestureTapCallback? onTap;
   CustomizeCategory(
       {this.askCategory, this.isAdd, this.onTap, this.usersCategory});
 
@@ -24,7 +24,7 @@ class CustomizeCategory extends StatelessWidget {
         child: ListTile(
           visualDensity: const VisualDensity(vertical: 0, horizontal: 0),
           title: Text(
-            askCategory!.name!,
+            askCategory?.name ?? "",
             style: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w500,

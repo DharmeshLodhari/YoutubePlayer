@@ -11,7 +11,7 @@ import '../../../widget/no_item_in_list.dart';
 import 'models/Topics/Notifications.dart';
 
 class YarnNotification extends StatefulWidget {
-  Function(bool)? onDeleteNotification;
+  final Function(bool)? onDeleteNotification;
 
   YarnNotification({Key? key, this.onDeleteNotification}) : super(key: key);
 

@@ -1,10 +1,11 @@
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_stacked_image.dart';
+import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_quote_preview.dart';
 import 'package:flutter/material.dart';
 
 import '../../../yarn/models/Topics/yarn_model.dart';
 
-Widget getFollowersWidget(widget,
+Widget getFollowersWidget(YarnQuotePreview widget,
     {double radiusSize: 32,
     double radiusShift: 10,
     double radiusHeight: 32,
@@ -125,7 +126,7 @@ Widget buildMultipleFollowersWidget(
     double radiusSize: 32,
     double radiusShift: 10,
     double radiusHeight: 32,
-    radiusWidth: 32}) {
+    double radiusWidth: 32}) {
   return Padding(
     padding: const EdgeInsets.only(right: 12),
     child: StackedWidgets(
@@ -144,9 +145,9 @@ Widget buildMultipleFollowersWidget(
   );
 }
 
-String capitalizeAndRemoveUnderscores(String input) {
+String capitalizeAndRemoveUnderscores(String? input) {
   if (input == null || input.isEmpty) {
-    return input;
+    return input ?? "";
   }
 
   // Split the input string by underscores

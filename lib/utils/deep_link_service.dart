@@ -14,7 +14,7 @@ class DeepLinkService {
 
   ValueNotifier<String> referrerCode = ValueNotifier<String>('');
 
-  var dynamicLink = FirebaseDynamicLinks.instance;
+  FirebaseDynamicLinks dynamicLink = FirebaseDynamicLinks.instance;
 
   Future<void> handleDynamicLinks(BuildContext context) async {
     final data = await dynamicLink.getInitialLink();
@@ -33,10 +33,10 @@ class DeepLinkService {
   Future<void> _handleDeepLink(
       {required BuildContext context, PendingDynamicLinkData? data}) async {
     final Uri deepLink = data!.link;
-    var profile = deepLink.pathSegments.contains('/profile');
+    final profile = deepLink.pathSegments.contains('/profile');
     // var isBusiness = deepLink.pathSegments.contains('business');
     if (profile) {
-      var code = deepLink.queryParameters['searchedUserName'];
+      final code = deepLink.queryParameters['searchedUserName'];
       if (code != null) {
         Navigator.pushNamed(context, Routes.USER_PROFILE,
             arguments: {"searchedUserName": "cameraman"});

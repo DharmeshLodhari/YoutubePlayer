@@ -81,7 +81,7 @@ class _SearchMyJobsState extends State<SearchMyJobs> {
     super.initState();
   }
 
-  _refreshList() {
+  void _refreshList() {
     count = 0;
     next = "";
     previous = "";
@@ -98,7 +98,7 @@ class _SearchMyJobsState extends State<SearchMyJobs> {
           setState(() {});
         }
 
-        var result = await ServiceHubAuthService().searchMyJobListing(
+        final result = await ServiceHubAuthService().searchMyJobListing(
           next,
           previous,
           username,
@@ -113,7 +113,7 @@ class _SearchMyJobsState extends State<SearchMyJobs> {
         count = result.count;
         next = result.next;
         previous = result.previous;
-        var tempList = result.results;
+        final tempList = result.results;
 
         if (mounted) {
           isLoading = false;
@@ -186,45 +186,48 @@ class _SearchMyJobsState extends State<SearchMyJobs> {
         const SizedBox(height: 6),
         searchBox(),
         const SizedBox(height: 12),
-        isLoading ? const CircularProgressIndicator() : const SizedBox.shrink(),
-        isSearchIsEmpty
-            ? Expanded(
-                child: NoItemInList(
-                  msg: AppLocalization.of(context)!
-                      .pleaseTypeSomethingToGetResult,
-                  isResult: false,
-                ),
-              )
-            : noItemInList
-                ? Expanded(
-                    child: NoItemInList(
-                      msg: AppLocalization.of(context)!.noResultFound,
-                    ),
-                  )
-                : Flexible(
-                    fit: FlexFit.loose,
-                    child: ListView.builder(
-                        itemCount: searchMyJobListing.length,
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemBuilder: (context, index) {
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 10.0),
-                            child: GestureDetector(
-                              onTap: () => Navigator.pushNamed(
-                                  context, Routes.MY_JOB_DETAILS,
-                                  arguments: {
-                                    'jobId': searchMyJobListing[index].id,
-                                    'listingId': '',
-                                    'job': searchMyJobListing[index]
-                                  }),
-                              child: JobDescriptionCard(
-                                job: searchMyJobListing[index],
-                              ),
+        if (isLoading)
+          const CircularProgressIndicator()
+        else
+          const SizedBox.shrink(),
+        if (isSearchIsEmpty)
+          Expanded(
+            child: NoItemInList(
+              msg: AppLocalization.of(context)!.pleaseTypeSomethingToGetResult,
+              isResult: false,
+            ),
+          )
+        else
+          noItemInList
+              ? Expanded(
+                  child: NoItemInList(
+                    msg: AppLocalization.of(context)!.noResultFound,
+                  ),
+                )
+              : Flexible(
+                  fit: FlexFit.loose,
+                  child: ListView.builder(
+                      itemCount: searchMyJobListing.length,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemBuilder: (context, index) {
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 10.0),
+                          child: GestureDetector(
+                            onTap: () => Navigator.pushNamed(
+                                context, Routes.MY_JOB_DETAILS,
+                                arguments: {
+                                  'jobId': searchMyJobListing[index].id,
+                                  'listingId': '',
+                                  'job': searchMyJobListing[index]
+                                }),
+                            child: JobDescriptionCard(
+                              job: searchMyJobListing[index],
                             ),
-                          );
-                        }),
-                  )
+                          ),
+                        );
+                      }),
+                )
       ],
     );
   }

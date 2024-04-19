@@ -8,7 +8,7 @@ import 'package:photo_view/photo_view.dart';
 import 'package:video_player/video_player.dart';
 
 class ViewAskMedia extends StatefulWidget {
-  final arguments;
+  final dynamic arguments;
 
   ViewAskMedia({this.arguments});
 

@@ -27,7 +27,7 @@ class YarnCommentActions extends StatefulWidget {
   final Yarn yarn;
   final bool isCommentDetail;
   final bool? minusComment;
-  String? commentType;
+  final String? commentType;
 
   YarnCommentActions({
     required this.comment,

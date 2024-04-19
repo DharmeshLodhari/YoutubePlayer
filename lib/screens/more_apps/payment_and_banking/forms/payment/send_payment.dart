@@ -5,7 +5,7 @@ import 'package:Slydo/widget/tab_selection.dart';
 import 'package:flutter/material.dart';
 
 class SendPayment extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
   final Function(bool)? callback;
 
   SendPayment({this.arguments, this.callback});
@@ -59,7 +59,7 @@ class _SendPaymentState extends State<SendPayment> {
         onPressed: () async {
           if (FocusScope.of(context).hasFocus) {
             FocusScope.of(context).unfocus();
-            await Future.delayed(Duration(milliseconds: 300));
+            await Future.delayed(const Duration(milliseconds: 300));
           }
           Navigator.pop(context, "back pressed");
         },
@@ -75,7 +75,7 @@ class _SendPaymentState extends State<SendPayment> {
   Widget _buildBody() {
     return Column(
       children: [
-        SizedBox(
+        const SizedBox(
           height: 16,
         ),
         _buildTabs(),
@@ -98,7 +98,7 @@ class _SendPaymentState extends State<SendPayment> {
           firstTab: 'Slydo Account',
           secondTab: 'Bank Transfer',
         ),
-        SizedBox(
+        const SizedBox(
           height: 10,
         ),
       ],

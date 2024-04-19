@@ -110,7 +110,7 @@ class SubscriptionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget avatarImage = Container(
+    final Widget avatarImage = Container(
         height: 48,
         width: 48,
         child: ClipOval(
@@ -123,7 +123,7 @@ class SubscriptionTile extends StatelessWidget {
           ),
         ));
 
-    Widget tile = Card(
+    final Widget tile = Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       shadowColor: boxShadowTwo,

@@ -3,7 +3,6 @@ import 'dart:developer';
 
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
@@ -16,7 +15,7 @@ import '../../../user_profile/models/job_service_model.dart';
 class JobCardChatDescription extends StatefulWidget {
   JobCardChatDescription({Key? key, required this.jobMessage})
       : super(key: key);
-  final jobMessage;
+  final Map<String, dynamic> jobMessage;
 
   @override
   State<JobCardChatDescription> createState() => _JobCardChatDescriptionState();
@@ -55,9 +54,9 @@ class _JobCardChatDescriptionState extends State<JobCardChatDescription> {
     log('message${widget.jobMessage.toString()}');
     userBloc = Provider.of<UserBloc>(context);
 
-    if (widget.jobMessage!["meta_data"] is String) {
+    if (widget.jobMessage["meta_data"] is String) {
       data = jsonDecode(widget.jobMessage["meta_data"]);
-    } else if (widget.jobMessage!["meta_data"] is Map) {
+    } else if (widget.jobMessage["meta_data"] is Map) {
       data = widget.jobMessage["meta_data"];
     }
 
@@ -239,7 +238,7 @@ class _JobCardChatDescriptionState extends State<JobCardChatDescription> {
                   width: 20,
                   child: isSend
                       ? Center(
-                          child: getMessageTick(message: widget.jobMessage!),
+                          child: getMessageTick(message: widget.jobMessage),
                         )
                       : Container(),
                 )

@@ -329,7 +329,7 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
   }
 
   TextInputType getKeyBoardType(TextInputType textInputType) {
-    TextInputType numberInputType = Platform.isIOS
+    final TextInputType numberInputType = Platform.isIOS
         ? const TextInputType.numberWithOptions(decimal: true)
         : TextInputType.number;
     if (widget.isAmountField == true) {

@@ -41,11 +41,11 @@ class MomentCommentTile extends StatefulWidget {
   final Function(Yarn)? onUpdate;
   final Function(YarnComment, bool)? onCommentUpdate;
   Function(bool)? minusComment;
-  String? pinnedCommentId;
-  String? momentUsername;
-  String? momentId;
-  String? commentType;
-  MomentsModel? moment;
+  final String? pinnedCommentId;
+  final String? momentUsername;
+  final String? momentId;
+  final String? commentType;
+  final MomentsModel? moment;
   final Function(bool)? callbackUpdateCommentCount;
 
   MomentCommentTile({
@@ -606,12 +606,13 @@ class _MomentCommentTileState extends State<MomentCommentTile> {
                     width: 5,
                   ),
                   // ignore: unrelated_type_equality_checks
-                  widget.yarnComment.replyCount == '0' ||
-                          // ignore: unrelated_type_equality_checks
-                          widget.yarnComment.replyCount == '0'
-                      ? const SizedBox.shrink()
-                      : Text(
-                          '${widget.yarnComment.replyCount ?? widget.yarnComment.replyCount}'),
+                  if (widget.yarnComment.replyCount == '0' ||
+                      // ignore: unrelated_type_equality_checks
+                      widget.yarnComment.replyCount == '0')
+                    const SizedBox.shrink()
+                  else
+                    Text(
+                        '${widget.yarnComment.replyCount ?? widget.yarnComment.replyCount}'),
                 ],
               ),
             ),

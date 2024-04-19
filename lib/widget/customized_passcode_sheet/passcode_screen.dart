@@ -65,7 +65,7 @@ class _CustomizedPassCodeScreenState extends State<CustomizedPassCodeScreen>
   late Animation<double> animation;
 
   @override
-  initState() {
+  void initState() {
     super.initState();
     streamSubscription = widget.shouldTriggerVerification
         .listen((isValid) => _showValidation(isValid));
@@ -181,7 +181,7 @@ class _CustomizedPassCodeScreenState extends State<CustomizedPassCodeScreen>
     return list;
   }
 
-  _onDeleteCancelButtonPressed() {
+  void _onDeleteCancelButtonPressed() {
     if (enteredPasscode.length > 0) {
       setState(() {
         enteredPasscode =
@@ -195,7 +195,7 @@ class _CustomizedPassCodeScreenState extends State<CustomizedPassCodeScreen>
     }
   }
 
-  _onKeyboardButtonPressed(String text) {
+  void _onKeyboardButtonPressed(String text) {
     setState(() {
       if (enteredPasscode.length < widget.passwordDigits) {
         enteredPasscode += text;
@@ -207,7 +207,7 @@ class _CustomizedPassCodeScreenState extends State<CustomizedPassCodeScreen>
   }
 
   @override
-  didUpdateWidget(CustomizedPassCodeScreen old) {
+  void didUpdateWidget(CustomizedPassCodeScreen old) {
     super.didUpdateWidget(old);
     // in case the stream instance changed, subscribe to the new one
     if (widget.shouldTriggerVerification != old.shouldTriggerVerification) {
@@ -218,13 +218,13 @@ class _CustomizedPassCodeScreenState extends State<CustomizedPassCodeScreen>
   }
 
   @override
-  dispose() {
+  void dispose() {
     controller.dispose();
     streamSubscription.cancel();
     super.dispose();
   }
 
-  _showValidation(bool isValid) {
+  void _showValidation(bool isValid) {
     if (isValid) {
       Navigator.maybePop(context).then((pop) => _validationCallback());
     } else {
@@ -232,7 +232,7 @@ class _CustomizedPassCodeScreenState extends State<CustomizedPassCodeScreen>
     }
   }
 
-  _validationCallback() {
+  void _validationCallback() {
     if (widget.isValidCallback != null) {
       widget.isValidCallback!();
     } else {

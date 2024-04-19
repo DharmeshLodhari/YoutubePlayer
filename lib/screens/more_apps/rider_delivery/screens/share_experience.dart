@@ -4,7 +4,6 @@ import 'package:Slydo/data/state_notifiers/rider_delivery_bloc.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/auth/rider_delivery_auth.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
@@ -67,17 +66,17 @@ class _ShareExperienceState extends State<ShareExperience> {
     return Scaffold(
       body: SingleChildScrollView(
         child: Padding(
-          padding: EdgeInsets.all(20.0),
+          padding: const EdgeInsets.all(20.0),
           child: Center(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 _buildTitle(),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 _buildNote(),
-                SizedBox(height: 50),
+                const SizedBox(height: 50),
                 _buildFeedbackTextField(),
               ],
             ),
@@ -178,7 +177,7 @@ class _ShareExperienceState extends State<ShareExperience> {
   }
 
   Future<void> shareRiserExperience() async {
-    Map<String, dynamic> data = {
+    final Map<String, dynamic> data = {
       "experience": feedbackController.text.trim().toString(),
     };
     await RiderDeliveryAuthService()

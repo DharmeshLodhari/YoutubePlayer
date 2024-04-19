@@ -13,9 +13,9 @@ import '../yarn_auth.dart';
 import '../yarn_detail_screen.dart';
 
 class MyFeedView extends StatefulWidget {
-  String? selectedCategory;
-  String? userName;
-  String? isChannel;
+  final String? selectedCategory;
+  final String? userName;
+  final String? isChannel;
 
   MyFeedView({Key? key, this.selectedCategory, this.userName, this.isChannel})
       : super(key: key);

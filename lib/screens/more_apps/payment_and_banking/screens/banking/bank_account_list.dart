@@ -24,9 +24,9 @@ class BankAccountList extends StatefulWidget {
 }
 
 class _BankAccountListState extends State<BankAccountList> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey =
-      new GlobalKey<ScaffoldMessengerState>();
+      GlobalKey<ScaffoldMessengerState>();
 
   // Get list of users bank account
   final _auth = PaymentAndBankingAuth();
@@ -35,8 +35,8 @@ class _BankAccountListState extends State<BankAccountList> {
   String? next = "";
   String? previous = "";
   List bankAccountList = [];
-  ScrollController _scrollController = new ScrollController();
-  RefreshController _refreshController =
+  final ScrollController _scrollController = ScrollController();
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
   bool isLoading = false;
   bool noItemInList = false;
@@ -362,9 +362,9 @@ class _BankAccountListState extends State<BankAccountList> {
       direction: Axis.horizontal,
       actionPane: const SlidableBehindActionPane(),
       actionExtentRatio: 0.25,
-      child: VerticalListItem(bankAccountTile),
       actions: listActionSlideActions(account: account),
       secondaryActions: listSecondaryActions(account: account),
+      child: VerticalListItem(bankAccountTile),
     );
   }
 

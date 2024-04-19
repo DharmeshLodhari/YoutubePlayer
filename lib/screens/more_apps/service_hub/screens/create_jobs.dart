@@ -52,10 +52,10 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
   String? displayCategory;
 
   final GlobalKey<ScaffoldMessengerState> _jobScaffoldMessengerKey =
-      new GlobalKey<ScaffoldMessengerState>();
+      GlobalKey<ScaffoldMessengerState>();
 
   int imageCount = 5;
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
   List<PickedFile> jobImages = [];
   String jobTitle = "";
   String jobDescription = "";
@@ -113,12 +113,12 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
       RefreshController(initialRefresh: false);
   List<String> categoriesNameList = [];
   // ScrollController _categoryScrollController = ScrollController();
-  ScrollController _locationScrollController = ScrollController();
+  final ScrollController _locationScrollController = ScrollController();
 
   TextEditingController? searchItemTextController;
   GlobalKey searchItemTextFormField = GlobalKey();
 
-  List searchedCategoryList = [];
+  List<CategoryListData> searchedCategoryList = [];
 
   final List<String> items = [
     'Item1',
@@ -262,7 +262,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
     }
   }
 
-  Future<void> getShippingCities(code) async {
+  Future<void> getShippingCities(String? code) async {
     if (mounted) setState(() {});
     if (!isLoader) {
       isLoader = true;
@@ -1688,7 +1688,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
     super.dispose();
   }
 
-  getPickDateStart({
+  Widget getPickDateStart({
     CrossAxisAlignment? crossAxisAlignment,
     String? dateText,
   }) =>
@@ -1755,7 +1755,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
         ),
       );
 
-  getPickDateEnd({
+  Widget getPickDateEnd({
     CrossAxisAlignment? crossAxisAlignment,
     String? dateText,
   }) =>
@@ -1945,7 +1945,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
 
                       FocusScope.of(context).requestFocus();
                     },
-                    child: getResultTile(searchedCategoryList[index]));
+                    child: categoryViewCard(searchedCategoryList[index]));
               }
             },
             controller: _scrollController,
@@ -2068,13 +2068,6 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
         ),
       ),
     );
-  }
-
-  Widget getResultTile(var result) {
-    if (result is CategoryListData) {
-      return categoryViewCard(result);
-    }
-    return Container();
   }
 
   Widget categoryViewCard(CategoryListData category) {

@@ -89,15 +89,16 @@ class _RidersUpdateState extends State<RidersUpdate> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  userBloc.user.rider?.isStatusApproved() == true
-                      ? Image.asset(
-                          'assets/images/rider_status_approve.png',
-                          fit: BoxFit.fill,
-                        )
-                      : Image.asset(
-                          'assets/images/rider_status_pending.png',
-                          fit: BoxFit.fill,
-                        ),
+                  if (userBloc.user.rider?.isStatusApproved() == true)
+                    Image.asset(
+                      'assets/images/rider_status_approve.png',
+                      fit: BoxFit.fill,
+                    )
+                  else
+                    Image.asset(
+                      'assets/images/rider_status_pending.png',
+                      fit: BoxFit.fill,
+                    ),
                   Text(
                     userBloc.user.rider?.isStatusApproved() == true
                         ? 'Your account has been verified to be a slydo rider, you can now start accepting request for delivery in service hub.'

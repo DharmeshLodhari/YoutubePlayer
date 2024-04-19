@@ -24,8 +24,8 @@ import '../yarn_dashboard_bloc.dart';
 class YarnActions extends StatefulWidget {
   final Yarn yarn;
   final Function(Yarn)? onReYarnAdded;
-  bool? minusComment;
-  List<Yarn>? checkIfReyarned;
+  final bool? minusComment;
+  final List<Yarn>? checkIfReyarned;
 
   YarnActions(
       {required this.yarn,
@@ -194,7 +194,7 @@ class _YarnActionsState extends State<YarnActions> {
   Widget _buildReYarnButton() {
     bool canReYarn = true;
     bool canReYarnTemp = true;
-    final bool canReYarnMain = true;
+    // final bool canReYarnMain = true;
     if (widget.yarn.reYarn != null) {
       canReYarn = false;
     }

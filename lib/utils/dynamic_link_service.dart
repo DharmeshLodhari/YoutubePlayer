@@ -12,7 +12,7 @@ class DynamicLinkService {
     final DynamicLinkParameters parameters = DynamicLinkParameters(
       uriPrefix: 'https://slydo.co',
       link: Uri.parse('https://slydo.co/$endpoint$businessId'),
-      androidParameters: AndroidParameters(
+      androidParameters: const AndroidParameters(
         packageName: 'com.slydo.slydo',
       ),
       // socialMetaTagParameters: SocialMetaTagParameters(

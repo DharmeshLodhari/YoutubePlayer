@@ -53,7 +53,7 @@ class _ChooseSubscriptionState extends State<ChooseSubscription> {
     super.initState();
   }
 
-  _onChanged(String value) {
+  void _onChanged(String value) {
     const duration = Duration(milliseconds: 1000);
     if (typingTimer != null) {
       setState(() => typingTimer!.cancel()); // clear timer
@@ -64,7 +64,7 @@ class _ChooseSubscriptionState extends State<ChooseSubscription> {
     );
   }
 
-  _checkBusinessName(String value) {
+  void _checkBusinessName(String value) {
     if (value.isNotEmpty && value.length > 1) {
       if (checkSlydoName(value) != null &&
           checkSlydoName(value)!.contains(slydoNameMsg)) {
@@ -284,7 +284,7 @@ class _ChooseSubscriptionState extends State<ChooseSubscription> {
     }
   }
 
-  _selectSubscriptionsPlan(SubscriptionsModel subscriptionsModel) {
+  void _selectSubscriptionsPlan(SubscriptionsModel subscriptionsModel) {
     setState(() {
       _id = subscriptionsModel.id;
       subscriptionsModelCopy = subscriptionsModel;
@@ -318,7 +318,7 @@ class _ChooseSubscriptionState extends State<ChooseSubscription> {
     );
   }
 
-  _getDialogTitle(SubscriptionsModel subscriptionsModel) {
+  String _getDialogTitle(SubscriptionsModel subscriptionsModel) {
     switch (subscriptionsModel.subscriptionType) {
       case 'Annually':
         return 'Annual ${subscriptionsModel.accountType} Plan';
@@ -326,6 +326,8 @@ class _ChooseSubscriptionState extends State<ChooseSubscription> {
         return 'Monthly ${subscriptionsModel.accountType} Plan';
       case 'Weekly':
         return 'Weekly ${subscriptionsModel.accountType} Plan';
+      default:
+        return "";
     }
   }
 
@@ -355,7 +357,7 @@ class _ChooseSubscriptionState extends State<ChooseSubscription> {
     }
   }
 
-  _verifyBusinessName() async {
+  void _verifyBusinessName() async {
     setState(() => verifyingBusinessName = true);
 
     SubscriptionsAuth()
@@ -379,7 +381,7 @@ class _ChooseSubscriptionState extends State<ChooseSubscription> {
     });
   }
 
-  _upgradeAccount(SubscriptionsModel subscriptionsModel) {
+  void _upgradeAccount(SubscriptionsModel subscriptionsModel) {
     SubscriptionsAuth()
         .upgradeUserAccount(
             accountType: selectedAccountType!,
@@ -392,7 +394,7 @@ class _ChooseSubscriptionState extends State<ChooseSubscription> {
     });
   }
 
-  _refreshUser() async {
+  void _refreshUser() async {
     await _auth
         .authenticate(userBloc.user.phoneNumber, userBloc.user.password)
         .then((newUser) async {

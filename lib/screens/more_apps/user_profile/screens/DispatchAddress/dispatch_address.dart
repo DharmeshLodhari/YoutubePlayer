@@ -19,7 +19,7 @@ import 'package:shimmer/shimmer.dart';
 class DispatchAddress extends StatefulWidget {
   DispatchAddress({Key? key, this.arguments}) : super(key: key);
 
-  var arguments;
+  final dynamic arguments;
 
   @override
   _DispatchAddressState createState() => _DispatchAddressState();

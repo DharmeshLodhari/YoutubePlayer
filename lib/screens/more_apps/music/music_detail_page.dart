@@ -13,7 +13,7 @@ import 'music_player.dart';
 
 // ignore: must_be_immutable
 class MusicDetailPage extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
   MusicDetailPage({this.arguments});
 
@@ -60,7 +60,7 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
     }
   }
 
-  var isWishList = false;
+  bool isWishList = false;
 
   @override
   Widget build(BuildContext context) {

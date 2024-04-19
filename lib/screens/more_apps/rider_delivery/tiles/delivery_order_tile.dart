@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class DeliveryOrderTile extends StatefulWidget {
-  DeliveryModel? jobListing;
+  final DeliveryModel? jobListing;
   DeliveryOrderTile({required this.jobListing, super.key});
 
   @override
@@ -30,17 +30,17 @@ class _DeliveryOrderTileState extends State<DeliveryOrderTile> {
     );
   }
 
-  Widget _buildOrderId() {
-    return Text(
-      'Ride #${widget.jobListing?.orderId.toString() ?? ""}',
-      style: TextStyle(
-        color: black,
-        fontSize: 12,
-        fontWeight: FontWeight.w500,
-        fontFamily: "Inter",
-      ),
-    );
-  }
+  // Widget _buildOrderId() {
+  //   return Text(
+  //     'Ride #${widget.jobListing?.orderId.toString() ?? ""}',
+  //     style: TextStyle(
+  //       color: black,
+  //       fontSize: 12,
+  //       fontWeight: FontWeight.w500,
+  //       fontFamily: "Inter",
+  //     ),
+  //   );
+  // }
 
   Widget _buildLogoAndDeliveryAndAmount() {
     return Row(

@@ -100,7 +100,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
       isLoading = true;
       if (mounted) setState(() {});
 
-      var result =
+      final result =
           await ServiceHubAuthService().retreiveListedJob(listingId: listingId);
 
       if (result == null) {
@@ -113,7 +113,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
       }
 
       log('toror...${result.toJson()}');
-      var tempList = result;
+      final tempList = result;
       if (mounted) {
         setState(() {
           // noJobsInList = false;
@@ -148,43 +148,44 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
           child: Column(
             children: [
               getJobDetails(),
-              isLoading
-                  ? Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Shimmer.fromColors(
-                        baseColor: Colors.white,
-                        highlightColor: greyBorderColor,
-                        child: GridView.builder(
-                          shrinkWrap: true,
-                          physics: NeverScrollableScrollPhysics(),
-                          gridDelegate:
-                              SliverGridDelegateWithMaxCrossAxisExtent(
-                            mainAxisSpacing: 14,
-                            mainAxisExtent: 180,
-                            crossAxisSpacing: 15,
-                            maxCrossAxisExtent: 200,
-                          ),
-                          itemCount: 2,
-                          itemBuilder: (context, index) {
-                            return Card(
-                              color: Colors.grey,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            );
-                          },
-                        ),
+              if (isLoading)
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Shimmer.fromColors(
+                    baseColor: Colors.white,
+                    highlightColor: greyBorderColor,
+                    child: GridView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      gridDelegate:
+                          const SliverGridDelegateWithMaxCrossAxisExtent(
+                        mainAxisSpacing: 14,
+                        mainAxisExtent: 180,
+                        crossAxisSpacing: 15,
+                        maxCrossAxisExtent: 200,
                       ),
-                    )
-                  : SizedBox.shrink(),
+                      itemCount: 2,
+                      itemBuilder: (context, index) {
+                        return Card(
+                          color: Colors.grey,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                )
+              else
+                const SizedBox.shrink(),
               Visibility(
                 visible: !isLoading && job == null,
                 child: Center(
                   child: Column(
                     children: [
                       Lottie.asset('assets/lottie/no_moment_lottie.json'),
-                      SizedBox(height: 20),
-                      Text('No items at the moment'),
+                      const SizedBox(height: 20),
+                      const Text('No items at the moment'),
                     ],
                   ),
                 ),
@@ -286,7 +287,8 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
                 ..attachment = {
                   "job": job?.toJson().cast<String, dynamic>() ?? {},
                 };
-              bool data = await YarnAuth().addYarnAndQuestion(params, '', '');
+              final bool data =
+                  await YarnAuth().addYarnAndQuestion(params, '', '');
               if (data) {
                 showToast(message: "Shared in Yarn successfully");
                 Navigator.pop(context);
@@ -443,10 +445,11 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
                   if (job!.isListed!) getJobActivityStatusRow(),
 
                   getJobOnlineRow(),
-                  job?.status?.toLowerCase() == 'in-progress' ||
-                          job?.status?.toLowerCase() == 'completed'
-                      ? getPaymentStatusRow()
-                      : const SizedBox.shrink(),
+                  if (job?.status?.toLowerCase() == 'in-progress' ||
+                      job?.status?.toLowerCase() == 'completed')
+                    getPaymentStatusRow()
+                  else
+                    const SizedBox.shrink(),
                   const Divider(),
 
                   Padding(
@@ -530,7 +533,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
     return 'Paid';
   }
 
-  getPaymentStatusRow() {
+  Widget getPaymentStatusRow() {
     return job?.assignee == userBloc.user.userName
         ? Column(
             children: [
@@ -572,7 +575,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
               ),
             ],
           )
-        : SizedBox.shrink();
+        : const SizedBox.shrink();
   }
 
   Column getJobOnlineRow() {
@@ -673,7 +676,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
                 ),
                 child: Text(
                   job?.status ?? '',
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: Color(0xff3F61DB),
                     fontSize: 10.80,
                     fontFamily: "Inter",
@@ -685,362 +688,335 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
           ),
         ),
         const Divider(),
-        job!.applicants!.contains(userBloc.user.userName)
-            ? Column(
-                children: [
-                  job?.status?.toLowerCase() == 'open'
-                      ? Padding(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 8.0, horizontal: 16),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        if (job!.applicants!.contains(userBloc.user.userName))
+          Column(
+            children: [
+              if (job?.status?.toLowerCase() == 'open')
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const CustomText(
+                        title: 'Job Activity',
+                        fontSize: 14,
+                        fontweight: FontWeight.w700,
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Column(
+                        children: [
+                          Row(
                             children: [
-                              const CustomText(
-                                title: 'Job Activity',
-                                fontSize: 14,
-                                fontweight: FontWeight.w700,
-                              ),
+                              Container(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(10, 4, 10, 4),
+                                  decoration: BoxDecoration(
+                                      border:
+                                          Border.all(color: greyBorderColor),
+                                      borderRadius: BorderRadius.circular(12)),
+                                  child: Text(
+                                    'Application Submitted',
+                                    style: TextStyle(
+                                        fontFamily: "Inter",
+                                        color: black,
+                                        fontSize: 12),
+                                  )),
                               const SizedBox(
-                                height: 10,
+                                width: 10,
                               ),
-                              Column(
-                                children: [
-                                  Row(
-                                    children: [
-                                      Container(
-                                          padding: const EdgeInsets.fromLTRB(
-                                              10, 4, 10, 4),
-                                          decoration: BoxDecoration(
-                                              border: Border.all(
-                                                  color: greyBorderColor),
-                                              borderRadius:
-                                                  BorderRadius.circular(12)),
-                                          child: Text(
-                                            'Application Submitted',
-                                            style: TextStyle(
-                                                fontFamily: "Inter",
-                                                color: black,
-                                                fontSize: 12),
-                                          )),
-                                      const SizedBox(
-                                        width: 10,
-                                      ),
-                                      job!.applicants!
-                                              .contains(userBloc.user.userName)
-                                          ? Container(
-                                              padding: const EdgeInsets.all(2),
-                                              decoration: BoxDecoration(
-                                                  color: navyBlue,
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          10)),
-                                              child: Icon(
-                                                Icons.check,
-                                                color: white,
-                                                size: 7,
-                                              ))
-                                          : Container(
-                                              padding: const EdgeInsets.all(5),
-                                              decoration: BoxDecoration(
-                                                  color: darkGrey,
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          10)),
-                                              child: Container())
-                                    ],
-                                  ),
-                                  const SizedBox(
-                                    height: 5,
-                                  ),
-                                  Row(
-                                    children: [
-                                      Container(
-                                          padding: const EdgeInsets.fromLTRB(
-                                              10, 4, 10, 4),
-                                          decoration: BoxDecoration(
-                                              border: Border.all(
-                                                  color: greyBorderColor),
-                                              borderRadius:
-                                                  BorderRadius.circular(12)),
-                                          child: Text(
-                                            'Application viewed',
-                                            style: TextStyle(
-                                                fontFamily: "Inter",
-                                                color: black,
-                                                fontSize: 12),
-                                          )),
-                                      const SizedBox(
-                                        width: 25,
-                                      ),
-                                      Container(
-                                        padding: const EdgeInsets.all(5),
-                                        decoration: BoxDecoration(
-                                            color: darkGrey,
-                                            borderRadius:
-                                                BorderRadius.circular(10)),
-                                        child: Container(),
-                                      )
-                                    ],
-                                  ),
-                                  const SizedBox(
-                                    height: 5,
-                                  ),
-                                  Row(
-                                    children: [
-                                      Container(
-                                          padding: const EdgeInsets.fromLTRB(
-                                              10, 4, 10, 4),
-                                          decoration: BoxDecoration(
-                                              border: Border.all(
-                                                  color: greyBorderColor),
-                                              borderRadius:
-                                                  BorderRadius.circular(12)),
-                                          child: Text(
-                                            'Application Accepted',
-                                            style: TextStyle(
-                                                fontFamily: "Inter",
-                                                color: black,
-                                                fontSize: 12),
-                                          )),
-                                      const SizedBox(
-                                        width: 12,
-                                      ),
-                                      Container(
-                                        padding: const EdgeInsets.all(5),
-                                        decoration: BoxDecoration(
-                                            color: darkGrey,
-                                            borderRadius:
-                                                BorderRadius.circular(10)),
-                                        child: Container(),
-                                      )
-                                    ],
-                                  ),
-                                ],
+                              if (job!.applicants!
+                                  .contains(userBloc.user.userName))
+                                Container(
+                                    padding: const EdgeInsets.all(2),
+                                    decoration: BoxDecoration(
+                                        color: navyBlue,
+                                        borderRadius:
+                                            BorderRadius.circular(10)),
+                                    child: Icon(
+                                      Icons.check,
+                                      color: white,
+                                      size: 7,
+                                    ))
+                              else
+                                Container(
+                                    padding: const EdgeInsets.all(5),
+                                    decoration: BoxDecoration(
+                                        color: darkGrey,
+                                        borderRadius:
+                                            BorderRadius.circular(10)),
+                                    child: Container())
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 5,
+                          ),
+                          Row(
+                            children: [
+                              Container(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(10, 4, 10, 4),
+                                  decoration: BoxDecoration(
+                                      border:
+                                          Border.all(color: greyBorderColor),
+                                      borderRadius: BorderRadius.circular(12)),
+                                  child: Text(
+                                    'Application viewed',
+                                    style: TextStyle(
+                                        fontFamily: "Inter",
+                                        color: black,
+                                        fontSize: 12),
+                                  )),
+                              const SizedBox(
+                                width: 25,
+                              ),
+                              Container(
+                                padding: const EdgeInsets.all(5),
+                                decoration: BoxDecoration(
+                                    color: darkGrey,
+                                    borderRadius: BorderRadius.circular(10)),
+                                child: Container(),
                               )
                             ],
                           ),
-                        )
-                      : Padding(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 8.0, horizontal: 16),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          const SizedBox(
+                            height: 5,
+                          ),
+                          Row(
                             children: [
-                              const CustomText(
-                                title: 'Job Activity',
-                                fontSize: 14,
-                                fontweight: FontWeight.w700,
-                              ),
+                              Container(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(10, 4, 10, 4),
+                                  decoration: BoxDecoration(
+                                      border:
+                                          Border.all(color: greyBorderColor),
+                                      borderRadius: BorderRadius.circular(12)),
+                                  child: Text(
+                                    'Application Accepted',
+                                    style: TextStyle(
+                                        fontFamily: "Inter",
+                                        color: black,
+                                        fontSize: 12),
+                                  )),
                               const SizedBox(
-                                height: 10,
+                                width: 12,
                               ),
-                              Column(
-                                children: [
-                                  Row(
-                                    children: [
-                                      Container(
-                                          padding: const EdgeInsets.fromLTRB(
-                                              10, 4, 10, 4),
-                                          decoration: BoxDecoration(
-                                              border: Border.all(
-                                                  color: greyBorderColor),
-                                              borderRadius:
-                                                  BorderRadius.circular(12)),
-                                          child: Text(
-                                            'Application Submitted',
-                                            style: TextStyle(
-                                                fontFamily: "Inter",
-                                                color: black,
-                                                fontSize: 12),
-                                          )),
-                                      const SizedBox(
-                                        width: 10,
-                                      ),
-                                      Container(
-                                          padding: const EdgeInsets.all(2),
-                                          decoration: BoxDecoration(
-                                              color: navyBlue,
-                                              borderRadius:
-                                                  BorderRadius.circular(10)),
-                                          child: Icon(
-                                            Icons.check,
-                                            color: white,
-                                            size: 7,
-                                          ))
-                                    ],
-                                  ),
-                                  const SizedBox(
-                                    height: 5,
-                                  ),
-                                  job?.status?.toLowerCase() == 'canceled'
-                                      ? Row(
-                                          children: [
-                                            Container(
-                                                padding:
-                                                    const EdgeInsets.fromLTRB(
-                                                        10, 4, 10, 4),
-                                                decoration: BoxDecoration(
-                                                    border: Border.all(
-                                                        color: greyBorderColor),
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            12)),
-                                                child: Text(
-                                                  'Application Canceled',
-                                                  style: TextStyle(
-                                                      color: black,
-                                                      fontFamily: "Inter",
-                                                      fontSize: 12),
-                                                )),
-                                            const SizedBox(
-                                              width: 12,
-                                            ),
-                                            Container(
-                                                padding:
-                                                    const EdgeInsets.all(2),
-                                                decoration: BoxDecoration(
-                                                    color: mateRed,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            10)),
-                                                child: Icon(
-                                                  Icons.check,
-                                                  color: white,
-                                                  size: 7,
-                                                ))
-                                          ],
-                                        )
-                                      : Column(
-                                          children: [
-                                            Row(
-                                              children: [
-                                                Container(
-                                                    padding: const EdgeInsets
-                                                        .fromLTRB(10, 4, 10, 4),
-                                                    decoration: BoxDecoration(
-                                                        border: Border.all(
-                                                            color:
-                                                                greyBorderColor),
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(12)),
-                                                    child: Text(
-                                                      'Application viewed',
-                                                      style: TextStyle(
-                                                          color: black,
-                                                          fontFamily: "Inter",
-                                                          fontSize: 12),
-                                                    )),
-                                                const SizedBox(
-                                                  width: 25,
-                                                ),
-                                                Container(
-                                                  padding: job?.status
-                                                                  ?.toLowerCase() ==
-                                                              'in-progress' ||
-                                                          job?.status
-                                                                  ?.toLowerCase() ==
-                                                              'closed'
-                                                      ? const EdgeInsets.all(2)
-                                                      : const EdgeInsets.all(5),
-                                                  decoration: BoxDecoration(
-                                                      color: job?.status
-                                                                      ?.toLowerCase() ==
-                                                                  'in-progress' ||
-                                                              job?.status
-                                                                      ?.toLowerCase() ==
-                                                                  'closed'
-                                                          ? navyBlue
-                                                          : darkGrey,
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              10)),
-                                                  child: job?.status
-                                                                  ?.toLowerCase() ==
-                                                              'in-progress' ||
-                                                          job?.status
-                                                                  ?.toLowerCase() ==
-                                                              'closed'
-                                                      ? Icon(
-                                                          Icons.check,
-                                                          color: white,
-                                                          size: 7,
-                                                        )
-                                                      : Container(),
-                                                )
-                                              ],
-                                            ),
-                                            const SizedBox(
-                                              height: 5,
-                                            ),
-                                            Row(
-                                              children: [
-                                                Container(
-                                                    padding: const EdgeInsets
-                                                        .fromLTRB(10, 4, 10, 4),
-                                                    decoration: BoxDecoration(
-                                                        border: Border.all(
-                                                            color:
-                                                                greyBorderColor),
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(12)),
-                                                    child: Text(
-                                                      'Application Accepted',
-                                                      style: TextStyle(
-                                                          color: black,
-                                                          fontFamily: "Inter",
-                                                          fontSize: 12),
-                                                    )),
-                                                const SizedBox(
-                                                  width: 12,
-                                                ),
-                                                Container(
-                                                  padding: job?.status
-                                                                  ?.toLowerCase() ==
-                                                              'in-progress' ||
-                                                          job?.status
-                                                                  ?.toLowerCase() ==
-                                                              'closed'
-                                                      ? const EdgeInsets.all(2)
-                                                      : const EdgeInsets.all(5),
-                                                  decoration: BoxDecoration(
-                                                      color: job?.status
-                                                                      ?.toLowerCase() ==
-                                                                  'in-progress' ||
-                                                              job?.status
-                                                                      ?.toLowerCase() ==
-                                                                  'closed'
-                                                          ? navyBlue
-                                                          : darkGrey,
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              10)),
-                                                  child: job?.status
-                                                                  ?.toLowerCase() ==
-                                                              'in-progress' ||
-                                                          job?.status
-                                                                  ?.toLowerCase() ==
-                                                              'closed'
-                                                      ? Icon(
-                                                          Icons.check,
-                                                          color: white,
-                                                          size: 7,
-                                                        )
-                                                      : Container(),
-                                                )
-                                              ],
-                                            ),
-                                          ],
-                                        )
-                                ],
+                              Container(
+                                padding: const EdgeInsets.all(5),
+                                decoration: BoxDecoration(
+                                    color: darkGrey,
+                                    borderRadius: BorderRadius.circular(10)),
+                                child: Container(),
                               )
                             ],
                           ),
-                        )
-                ],
-              )
-            : getJobActivityApplied(job!.status!)
+                        ],
+                      )
+                    ],
+                  ),
+                )
+              else
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const CustomText(
+                        title: 'Job Activity',
+                        fontSize: 14,
+                        fontweight: FontWeight.w700,
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Column(
+                        children: [
+                          Row(
+                            children: [
+                              Container(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(10, 4, 10, 4),
+                                  decoration: BoxDecoration(
+                                      border:
+                                          Border.all(color: greyBorderColor),
+                                      borderRadius: BorderRadius.circular(12)),
+                                  child: Text(
+                                    'Application Submitted',
+                                    style: TextStyle(
+                                        fontFamily: "Inter",
+                                        color: black,
+                                        fontSize: 12),
+                                  )),
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              Container(
+                                  padding: const EdgeInsets.all(2),
+                                  decoration: BoxDecoration(
+                                      color: navyBlue,
+                                      borderRadius: BorderRadius.circular(10)),
+                                  child: Icon(
+                                    Icons.check,
+                                    color: white,
+                                    size: 7,
+                                  ))
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 5,
+                          ),
+                          if (job?.status?.toLowerCase() == 'canceled')
+                            Row(
+                              children: [
+                                Container(
+                                    padding:
+                                        const EdgeInsets.fromLTRB(10, 4, 10, 4),
+                                    decoration: BoxDecoration(
+                                        border:
+                                            Border.all(color: greyBorderColor),
+                                        borderRadius:
+                                            BorderRadius.circular(12)),
+                                    child: Text(
+                                      'Application Canceled',
+                                      style: TextStyle(
+                                          color: black,
+                                          fontFamily: "Inter",
+                                          fontSize: 12),
+                                    )),
+                                const SizedBox(
+                                  width: 12,
+                                ),
+                                Container(
+                                    padding: const EdgeInsets.all(2),
+                                    decoration: BoxDecoration(
+                                        color: mateRed,
+                                        borderRadius:
+                                            BorderRadius.circular(10)),
+                                    child: Icon(
+                                      Icons.check,
+                                      color: white,
+                                      size: 7,
+                                    ))
+                              ],
+                            )
+                          else
+                            Column(
+                              children: [
+                                Row(
+                                  children: [
+                                    Container(
+                                        padding: const EdgeInsets.fromLTRB(
+                                            10, 4, 10, 4),
+                                        decoration: BoxDecoration(
+                                            border: Border.all(
+                                                color: greyBorderColor),
+                                            borderRadius:
+                                                BorderRadius.circular(12)),
+                                        child: Text(
+                                          'Application viewed',
+                                          style: TextStyle(
+                                              color: black,
+                                              fontFamily: "Inter",
+                                              fontSize: 12),
+                                        )),
+                                    const SizedBox(
+                                      width: 25,
+                                    ),
+                                    Container(
+                                      padding: job?.status?.toLowerCase() ==
+                                                  'in-progress' ||
+                                              job?.status?.toLowerCase() ==
+                                                  'closed'
+                                          ? const EdgeInsets.all(2)
+                                          : const EdgeInsets.all(5),
+                                      decoration: BoxDecoration(
+                                          color: job?.status?.toLowerCase() ==
+                                                      'in-progress' ||
+                                                  job?.status?.toLowerCase() ==
+                                                      'closed'
+                                              ? navyBlue
+                                              : darkGrey,
+                                          borderRadius:
+                                              BorderRadius.circular(10)),
+                                      child: job?.status?.toLowerCase() ==
+                                                  'in-progress' ||
+                                              job?.status?.toLowerCase() ==
+                                                  'closed'
+                                          ? Icon(
+                                              Icons.check,
+                                              color: white,
+                                              size: 7,
+                                            )
+                                          : Container(),
+                                    )
+                                  ],
+                                ),
+                                const SizedBox(
+                                  height: 5,
+                                ),
+                                Row(
+                                  children: [
+                                    Container(
+                                        padding: const EdgeInsets.fromLTRB(
+                                            10, 4, 10, 4),
+                                        decoration: BoxDecoration(
+                                            border: Border.all(
+                                                color: greyBorderColor),
+                                            borderRadius:
+                                                BorderRadius.circular(12)),
+                                        child: Text(
+                                          'Application Accepted',
+                                          style: TextStyle(
+                                              color: black,
+                                              fontFamily: "Inter",
+                                              fontSize: 12),
+                                        )),
+                                    const SizedBox(
+                                      width: 12,
+                                    ),
+                                    Container(
+                                      padding: job?.status?.toLowerCase() ==
+                                                  'in-progress' ||
+                                              job?.status?.toLowerCase() ==
+                                                  'closed'
+                                          ? const EdgeInsets.all(2)
+                                          : const EdgeInsets.all(5),
+                                      decoration: BoxDecoration(
+                                          color: job?.status?.toLowerCase() ==
+                                                      'in-progress' ||
+                                                  job?.status?.toLowerCase() ==
+                                                      'closed'
+                                              ? navyBlue
+                                              : darkGrey,
+                                          borderRadius:
+                                              BorderRadius.circular(10)),
+                                      child: job?.status?.toLowerCase() ==
+                                                  'in-progress' ||
+                                              job?.status?.toLowerCase() ==
+                                                  'closed'
+                                          ? Icon(
+                                              Icons.check,
+                                              color: white,
+                                              size: 7,
+                                            )
+                                          : Container(),
+                                    )
+                                  ],
+                                ),
+                              ],
+                            )
+                        ],
+                      )
+                    ],
+                  ),
+                )
+            ],
+          )
+        else
+          getJobActivityApplied(job!.status!)
       ],
     );
   }
@@ -1057,7 +1033,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
                 fontSize: 16,
                 fontweight: FontWeight.w700,
               ),
-              SizedBox(
+              const SizedBox(
                 height: 5,
               ),
               Row(
@@ -1080,7 +1056,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
                         fontWeight: FontWeight.bold),
                   ),
                   if (job!.isNegotiable!)
-                    Text(
+                    const Text(
                       " Negotiable",
                       style: TextStyle(
                         color: Color(0xff030e36),
@@ -1094,42 +1070,42 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
             ],
           ),
         ),
-        userBloc.user.userName == job!.ownerName!.toLowerCase() ||
-                userBloc.user.fullName?.toLowerCase() ==
-                    job!.ownerName!.toLowerCase()
-            ? job?.status!.toLowerCase() == 'closed' &&
-                    job?.transactionId == null
-                ? payButton()
-                : const SizedBox.shrink()
-            : searchedChatConnection.isNotEmpty &&
-                    searchedChatConnection[0].userName!.toLowerCase() ==
-                        job!.ownerName!.toLowerCase()
-                ? InkWell(
-                    onTap: () {
-                      Navigator.pushNamed(context, '/chat-screen', arguments: {
-                        "recipientUserName": job!.ownerName!.toLowerCase()
-                      });
-                    },
-                    child: SvgPicture.asset(
-                      'yarn/chaticon'.toSVG(),
-                      height: 34,
-                      width: 34,
-                    ),
-                  )
-                : InkWell(
-                    onTap: () {
-                      Navigator.of(context)
-                          .pushNamed('/compose_message', arguments: {
-                        'recipient': job!.owner,
-                        "subject": job!.title,
-                      });
-                    },
-                    child: SvgPicture.asset(
-                      'yarn/messageicon'.toSVG(),
-                      height: 34,
-                      width: 34,
-                    ),
+        if (userBloc.user.userName == job!.ownerName!.toLowerCase() ||
+            userBloc.user.fullName?.toLowerCase() ==
+                job!.ownerName!.toLowerCase())
+          job?.status!.toLowerCase() == 'closed' && job?.transactionId == null
+              ? payButton()
+              : const SizedBox.shrink()
+        else
+          searchedChatConnection.isNotEmpty &&
+                  searchedChatConnection[0].userName!.toLowerCase() ==
+                      job!.ownerName!.toLowerCase()
+              ? InkWell(
+                  onTap: () {
+                    Navigator.pushNamed(context, '/chat-screen', arguments: {
+                      "recipientUserName": job!.ownerName!.toLowerCase()
+                    });
+                  },
+                  child: SvgPicture.asset(
+                    'yarn/chaticon'.toSVG(),
+                    height: 34,
+                    width: 34,
                   ),
+                )
+              : InkWell(
+                  onTap: () {
+                    Navigator.of(context)
+                        .pushNamed('/compose_message', arguments: {
+                      'recipient': job!.owner,
+                      "subject": job!.title,
+                    });
+                  },
+                  child: SvgPicture.asset(
+                    'yarn/messageicon'.toSVG(),
+                    height: 34,
+                    width: 34,
+                  ),
+                ),
       ],
     );
   }
@@ -1150,7 +1126,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
     }
   }
 
-  getListNowBtn() {
+  Widget getListNowBtn() {
     return CurvedButton(
       onPressed: isAPILoading
           ? () {}
@@ -1170,7 +1146,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
     );
   }
 
-  getUnListNowBtn() {
+  Widget getUnListNowBtn() {
     return CurvedButton(
       onPressed: isAPILoading
           ? () {}
@@ -1190,7 +1166,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
     );
   }
 
-  getApplyNowBtn() {
+  Widget getApplyNowBtn() {
     return CurvedButton(
       onPressed: isAPILoading
           ? () {}
@@ -1208,7 +1184,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
     );
   }
 
-  cancelApplicationNowBtn() {
+  Widget cancelApplicationNowBtn() {
     return CurvedButton(
       onPressed: isAPILoading
           ? () {}
@@ -1259,7 +1235,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
     );
   }
 
-  cancelApplication() async {
+  Future<void> cancelApplication() async {
     await ServiceHubAuthService().cancelApplicationForJob(
         {"applicant": "${userBloc.user.userName}"},
         jobId: job!.id).then((value) {
@@ -1273,11 +1249,11 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
     });
   }
 
-  createJobListing() async {
+  Future<void> createJobListing() async {
     await ServiceHubAuthService().createListing({
       "job": job!.id,
     }).then((value) {
-      print(value.toString() + 'Create Listing');
+      debugPrint(value.toString() + 'Create Listing');
       Navigator.pushNamed(context, Routes.SUPER_HUB, arguments: {'page': 1});
       showToast(message: AppLocalization.of(context)!.jobListSuccessfully);
     }).catchError((error) {
@@ -1286,8 +1262,8 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
     });
   }
 
-  removeJobListing() async {
-    print('print listing id $listingId');
+  Future<void> removeJobListing() async {
+    debugPrint('debugPrint listing id $listingId');
     await ServiceHubAuthService().removeJobListing(listingId).then((value) {
       Navigator.pushNamed(context, Routes.SUPER_HUB, arguments: {'page': 1});
       showToast(message: AppLocalization.of(context)!.jobRemovedFromListing);
@@ -1297,7 +1273,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
     });
   }
 
-  applyForJob() async {
+  Future<void> applyForJob() async {
     await ServiceHubAuthService().applyForJob(
         {"applicant": userBloc.user.userName},
         jobId: job!.id).then((value) {
@@ -1338,7 +1314,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
       ),
       actions: [
         _moreOptionsBtn(),
-        SizedBox(width: 12),
+        const SizedBox(width: 12),
       ],
     );
   }
@@ -1369,7 +1345,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
                                     height: 34,
                                     width: 34,
                                     alignment: Alignment.center,
-                                    decoration: BoxDecoration(
+                                    decoration: const BoxDecoration(
                                       borderRadius: BorderRadius.all(
                                         Radius.circular(10),
                                       ),
@@ -1402,7 +1378,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
                                     height: 34,
                                     width: 34,
                                     alignment: Alignment.center,
-                                    decoration: BoxDecoration(
+                                    decoration: const BoxDecoration(
                                       borderRadius: BorderRadius.all(
                                         Radius.circular(10),
                                       ),
@@ -1491,16 +1467,16 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
   }
 
   void sendItemToUsersInChat() async {
-    List<ChatConversation?> listOfRecipient =
+    final List<ChatConversation?> listOfRecipient =
         await ShareInChat().selectShareCustomer(context);
     debugPrint("Selected users = ${listOfRecipient.length}");
 
-    String url = AppConfig.baseUrl +
+    final String url = AppConfig.baseUrl +
         "/api/v1/job-service/${job is JobModel ? "job" : "services"}/" +
         job!.id! +
         "/";
 
-    Map<String, dynamic>? itemData =
+    final Map<String, dynamic>? itemData =
         await ServiceHubAuthService().getJobOrService(url);
 
     listOfRecipient.forEach((recipient) {
@@ -1514,9 +1490,9 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
       required ChatConversation recipientUser,
       String? url,
       dynamic item}) async {
-    Map<String, dynamic> data = {
+    final Map<String, dynamic> data = {
       "meta_data": jsonEncode(itemData),
-      "check_id": Uuid().v4(),
+      "check_id": const Uuid().v4(),
       "conversation_id": recipientUser.conversationId,
       "author": userBloc.user.userName,
       "message": url,
@@ -1533,7 +1509,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
           arguments: job),
       child: Container(
         alignment: Alignment.center,
-        padding: EdgeInsets.symmetric(vertical: 8, horizontal: 30),
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 30),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: navyBlue),
@@ -1581,13 +1557,13 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
                         : Container(
                             width: 8.0,
                             height: 8.0,
-                            margin: EdgeInsets.symmetric(
+                            margin: const EdgeInsets.symmetric(
                                 vertical: 10.0, horizontal: 2.0),
                             decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 color: currentIndex == index
                                     ? navyBlue
-                                    : Color(0xffBEC2F4)),
+                                    : const Color(0xffBEC2F4)),
                           )),
               ),
             )
@@ -1602,8 +1578,8 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
           enableInfiniteScroll: false,
           reverse: false,
           // autoPlay: true,
-          autoPlayInterval: Duration(seconds: 3),
-          autoPlayAnimationDuration: Duration(milliseconds: 800),
+          autoPlayInterval: const Duration(seconds: 3),
+          autoPlayAnimationDuration: const Duration(milliseconds: 800),
           autoPlayCurve: Curves.fastOutSlowIn,
           enlargeCenterPage: true,
           scrollDirection: Axis.horizontal,
@@ -1611,7 +1587,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
     );
   }
 
-  onPageFunction(index, reason) {
+  void onPageFunction(index, reason) {
     currentIndex = index;
     setState(() {});
   }
@@ -1632,7 +1608,7 @@ class CustomText extends StatelessWidget {
     return Text(
       title,
       style: TextStyle(
-        color: Color(0xff030e36),
+        color: const Color(0xff030e36),
         fontSize: fontSize,
         fontFamily: "Inter",
         fontWeight: fontweight,

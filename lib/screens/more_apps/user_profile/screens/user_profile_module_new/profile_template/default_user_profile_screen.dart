@@ -10,10 +10,10 @@ import 'package:flutter/material.dart';
 import '../utils.dart';
 
 class DefaultUserProfileScreen extends StatefulWidget {
-  CustomerProfile? searchedUser;
-  String? searchedUserName;
-  bool isOwner;
-  bool isLoading;
+  final CustomerProfile? searchedUser;
+  final String? searchedUserName;
+  final bool isOwner;
+  final bool isLoading;
 
   DefaultUserProfileScreen({
     Key? key,
@@ -313,7 +313,7 @@ class _DefaultUserProfileScreenState extends State<DefaultUserProfileScreen>
     );
   }
 
-  getTabViewLayout() {
+  Widget getTabViewLayout() {
     return TabBarView(
       controller: _tabController,
       children:
@@ -359,7 +359,7 @@ class _DefaultUserProfileScreenState extends State<DefaultUserProfileScreen>
     _pageController!.removeListener(_scrollListener);
   }
 
-  refreshTabs(Map<String, bool> val) {
+  void refreshTabs(Map<String, bool> val) {
     if (compareMaps(reorderedBoolMap, val)) {
       debugPrint('The maps are equal.');
     } else {

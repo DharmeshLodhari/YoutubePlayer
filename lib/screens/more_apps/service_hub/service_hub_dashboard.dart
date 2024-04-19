@@ -18,7 +18,7 @@ import '../../../utils/util.dart';
 import '../../../widget/tab_selection.dart';
 
 class ServiceHubDashboard extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
   ServiceHubDashboard({Key? key, this.arguments}) : super(key: key);
 
@@ -106,7 +106,7 @@ class _ServiceHubDashboardState extends State<ServiceHubDashboard> {
     );
   }
 
-  _buildRiderOption() {
+  Widget _buildRiderOption() {
     if (userBloc.user.rider != null &&
         userBloc.user.rider?.isStatusApproved() == true) {
       return GestureDetector(
@@ -290,7 +290,7 @@ class _ServiceHubDashboardState extends State<ServiceHubDashboard> {
           badgeColor: naturalGreen,
           padding: basketBloc.basketItems.length == 0
               ? const EdgeInsets.all(0)
-              : EdgeInsets.all(4),
+              : const EdgeInsets.all(4),
           elevation: 0,
         ),
         badgeAnimation: const badges.BadgeAnimation.rotation(
@@ -342,7 +342,7 @@ class _ServiceHubDashboardState extends State<ServiceHubDashboard> {
         },
         controller: _pageViewController,
         children: [
-          SuperHub(),
+          const SuperHub(),
           getJobList(),
         ],
       ),
@@ -367,7 +367,7 @@ class _ServiceHubDashboardState extends State<ServiceHubDashboard> {
         userBloc.user.rider?.isStatusApproved() == true) {
       return FindJobsTab();
     } else {
-      return JobsDashboard();
+      return const JobsDashboard();
     }
   }
 

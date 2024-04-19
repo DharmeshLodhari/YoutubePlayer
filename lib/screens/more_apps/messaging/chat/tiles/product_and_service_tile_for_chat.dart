@@ -13,7 +13,6 @@ import 'package:Slydo/widget/custom_box_shadow.dart';
 import 'package:Slydo/widget/disclaimer_dialogue_for_goods.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -345,7 +344,7 @@ class _ProductTileForChatMessageState extends State<ProductTileForChatMessage> {
     );
   }
 
-  Widget addToCartWidget({var item}) {
+  Widget addToCartWidget({dynamic item}) {
     return RoundedBackgroundIcon(
       borderRadius: 16,
       height: 38,

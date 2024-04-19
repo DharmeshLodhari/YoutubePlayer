@@ -357,7 +357,7 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
     );
   }
 
-  onPageFunction(index, reason) {
+  void onPageFunction(index, reason) {
     currentIndex = index;
     setState(() {});
   }

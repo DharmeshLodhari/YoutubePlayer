@@ -57,7 +57,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
   Widget _buildBody() {
     return Column(
       children: [
-        SizedBox(
+        const SizedBox(
           height: 8,
         ),
         _buildTabs(),
@@ -127,7 +127,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
           // ),
           Center(
             child: Container(
-              child: Text(
+              child: const Text(
                 "Coming Soon",
                 style: TextStyle(
                     fontSize: 18,
@@ -180,7 +180,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
           onTap: () async {
             showToast(message: 'Coming Soon');
             return;
-            var result = await Navigator.of(context).pushNamed(
+            final result = await Navigator.of(context).pushNamed(
                 Routes.SELECT_USER_FOR_GROUP,
                 arguments: {"create": "basket"});
 
@@ -192,7 +192,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
           backgroundColor: iconBtnGrey,
           enableMargin: true,
         ),
-        SizedBox(width: 8),
+        const SizedBox(width: 8),
         scanQRCodeBtn(),
         const SizedBox(
           width: 16,

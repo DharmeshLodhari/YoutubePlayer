@@ -114,7 +114,7 @@ class CountryPickerDialog extends StatefulWidget {
 
   @override
   SingleChoiceDialogState createState() {
-    return new SingleChoiceDialogState();
+    return SingleChoiceDialogState();
   }
 }
 
@@ -162,7 +162,7 @@ class SingleChoiceDialogState extends State<CountryPickerDialog> {
     );
   }
 
-  _buildContent(BuildContext context) {
+  Widget _buildContent(BuildContext context) {
     return _filteredCountries!.isNotEmpty
         ? ListView(
             shrinkWrap: true,
@@ -186,7 +186,7 @@ class SingleChoiceDialogState extends State<CountryPickerDialog> {
             );
   }
 
-  _buildHeader() {
+  Widget _buildHeader() {
     return widget.isSearchable
         ? Column(
             children: <Widget>[
@@ -206,7 +206,7 @@ class SingleChoiceDialogState extends State<CountryPickerDialog> {
         : widget.title;
   }
 
-  _buildSearchField() {
+  Widget _buildSearchField() {
     return TextField(
       cursorColor: widget.searchCursorColor,
       decoration: widget.searchInputDecoration ??

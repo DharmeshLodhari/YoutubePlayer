@@ -16,7 +16,7 @@ import 'yarn_detail_screen.dart';
 
 class TrendingListScreen extends StatefulWidget {
   final String? selectedCategory;
-  Function(bool)? onPageRefresh;
+  final Function(bool)? onPageRefresh;
 
   TrendingListScreen({Key? key, this.selectedCategory, this.onPageRefresh})
       : super(key: key);

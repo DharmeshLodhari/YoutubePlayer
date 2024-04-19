@@ -38,7 +38,7 @@ class _VerifyRegistrationOTPScreenState
 
   Timer? _timer;
   int _duration = 10 * 60; // 10 minutes in seconds
-  bool _isRunning = false;
+  // bool _isRunning = false;
   Country _selectedDialogCountry = CountryPickerUtils.getCountryByIsoCode('NG');
   TextEditingController phoneNumberController = TextEditingController();
   bool showButton = false;
@@ -58,9 +58,9 @@ class _VerifyRegistrationOTPScreenState
   }
 
   void startTimer() {
-    setState(() {
-      _isRunning = true;
-    });
+    // setState(() {
+    //   _isRunning = true;
+    // });
 
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
@@ -77,7 +77,7 @@ class _VerifyRegistrationOTPScreenState
     _timer?.cancel();
     setState(() {
       showResend = true;
-      _isRunning = false;
+      // _isRunning = false;
     });
   }
 
@@ -373,7 +373,7 @@ class _VerifyRegistrationOTPScreenState
     }
   }
 
-  _processVerifyCreditCardOtp(BuildContext context, String response) {
+  void _processVerifyCreditCardOtp(BuildContext context, String response) {
     Navigator.pop(context); // pop loading indicator;
 
     switch (response) {
@@ -436,7 +436,7 @@ class _VerifyRegistrationOTPScreenState
       isNumberOnlyInput: true,
       keyboardType: TextInputType.phone,
       controller: phoneNumberController,
-      validator: validatePhoneNumber,
+      validator: (val) => validatePhoneNumber(val),
       onChanged: (value) {
         if (value.isEmpty || value.length < 10) {
           setState(() {
@@ -462,7 +462,7 @@ class _VerifyRegistrationOTPScreenState
     );
   }
 
-  String? validatePhoneNumber(number) {
+  String? validatePhoneNumber(String number) {
     if (number.contains('+') ||
         number.contains('-') ||
         number.contains('*') ||

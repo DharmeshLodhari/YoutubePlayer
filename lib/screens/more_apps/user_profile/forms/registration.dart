@@ -144,7 +144,7 @@ class _RegistrationState extends State<Registration> {
       keyboardType: TextInputType.phone,
       textInputAction: TextInputAction.done,
       controller: phoneNumberController,
-      validator: validatePhoneNumber,
+      validator: (val) => validatePhoneNumber(val),
       onChanged: (value) {
         if (value.isEmpty || value.length < 10) {
           setState(() {
@@ -191,7 +191,7 @@ class _RegistrationState extends State<Registration> {
     return verified;
   }
 
-  String? validatePhoneNumber(number) {
+  String? validatePhoneNumber(String number) {
     if (number.contains('+') ||
         number.contains('-') ||
         number.contains('*') ||

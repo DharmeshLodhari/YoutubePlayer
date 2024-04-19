@@ -72,7 +72,7 @@ class PaymentAndBankingAuth extends AuthService {
     final response =
         await httpPost(url, headers: headers, body: jsonEncode(data));
 
-    print('VERIFY CARD RESPONSE ::: $response');
+    debugPrint('VERIFY CARD RESPONSE ::: $response');
     debugPrint(
         "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
     if (response.statusCode == 200) {
@@ -116,7 +116,7 @@ class PaymentAndBankingAuth extends AuthService {
     final _data = jsonEncode(data);
 
     final response = await httpPost(url, body: _data, headers: headers);
-    print('OTP RESPONSE ----> ${response.body}');
+    debugPrint('OTP RESPONSE ----> ${response.body}');
 
     try {
       handleServerErrors(response);
@@ -125,8 +125,6 @@ class PaymentAndBankingAuth extends AuthService {
     }
 
     if (response.statusCode == 200) {
-      final jsonData = jsonDecode(response.body);
-
       responseString = 'successful';
     } else if (response.statusCode == 400) {
       if (jsonDecode(response.body)['errMsg']
@@ -150,7 +148,7 @@ class PaymentAndBankingAuth extends AuthService {
           "URL:- $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
       return Future.error(response.body);
     }
-    print('RESPONSE STRING ::: $responseString');
+    debugPrint('RESPONSE STRING ::: $responseString');
     return responseString;
   }
 
@@ -290,12 +288,12 @@ class PaymentAndBankingAuth extends AuthService {
       url = getSecureUrl(url: next);
     }
 
-    print('Bank List url :::: $url');
+    debugPrint('Bank List url :::: $url');
 
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
 
-    print('Bank List DATA :::: ${json.decode(response.body)}');
+    debugPrint('Bank List DATA :::: ${json.decode(response.body)}');
 
     if (response.statusCode == 200) {
       final jsonData = json.decode(response.body);
@@ -342,7 +340,7 @@ class PaymentAndBankingAuth extends AuthService {
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
 
-    print('SHIPPING OPTIONS List DATA :::: ${json.decode(response.body)}');
+    debugPrint('SHIPPING OPTIONS List DATA :::: ${json.decode(response.body)}');
 
     if (response.statusCode == 200) {
       final jsonData = json.decode(response.body);
@@ -378,17 +376,15 @@ class PaymentAndBankingAuth extends AuthService {
     final _data = jsonEncode(data);
     final response = await httpPost(url, headers: headers, body: _data);
 
-    print('ADD SHIPPING OPTIONS List :::: ${json.decode(response.body)}');
+    debugPrint('ADD SHIPPING OPTIONS List :::: ${json.decode(response.body)}');
 
     return response;
   }
 
   //Delete Shipping Option
   Future<bool?> deleteShippingOption(int shippingId) async {
-    String url = "";
-    if (shippingId != null) {
-      url = "${AppConfig.baseUrl}/api/v1/shipping-options/$shippingId/";
-    }
+    final String url =
+        "${AppConfig.baseUrl}/api/v1/shipping-options/$shippingId/";
     debugPrint(url);
 
     final headers = await getAuthHeaders();
@@ -411,7 +407,7 @@ class PaymentAndBankingAuth extends AuthService {
     final _data = jsonEncode(data);
     final response = await httpPatch(url, headers: headers, body: _data);
 
-    print('EDIT SHIPPING OPTIONS List :::: ${json.decode(response.body)}');
+    debugPrint('EDIT SHIPPING OPTIONS List :::: ${json.decode(response.body)}');
 
     return response;
   }
@@ -427,7 +423,7 @@ class PaymentAndBankingAuth extends AuthService {
     final _data = jsonEncode(data);
     final response = await httpPost(url, headers: headers, body: _data);
 
-    print('ADD CREDIT CARD RESPONSE ----> ${response.body}');
+    debugPrint('ADD CREDIT CARD RESPONSE ----> ${response.body}');
 
     try {
       handleServerErrors(response);
@@ -456,11 +452,11 @@ class PaymentAndBankingAuth extends AuthService {
 
     final Map<String, dynamic> data = creditCardData.toJson();
     data.removeWhere((key, value) => value == null);
-    print('CREDIT CARD DATA :::: $data');
+    debugPrint('CREDIT CARD DATA :::: $data');
 
     final _data = jsonEncode(data);
     final response = await httpPost(url, headers: headers, body: _data);
-    print('FUND WALLET ----> ${response.body}');
+    debugPrint('FUND WALLET ----> ${response.body}');
 
     try {
       handleServerErrors(response);
@@ -497,7 +493,7 @@ class PaymentAndBankingAuth extends AuthService {
     final response = await httpGet(url, headers: headers);
 
     debugPrint('CREDIT CARD LIST STATUS CODE ::: ${response.statusCode}');
-    print('CREDIT CARD LIST ----> ${response.body}');
+    debugPrint('CREDIT CARD LIST ----> ${response.body}');
 
     if (response.statusCode == 200) {
       final jsonData = json.decode(response.body);
@@ -546,7 +542,7 @@ class PaymentAndBankingAuth extends AuthService {
     final _data = jsonEncode({"is_default_cc": true});
     try {
       response = await httpPatch(url, headers: headers, body: _data);
-      print('RESPONSE -----> ${response.body}');
+      debugPrint('RESPONSE -----> ${response.body}');
     } catch (e) {
       debugPrint("update credit card : $e");
     }
@@ -713,9 +709,9 @@ class PaymentAndBankingAuth extends AuthService {
       };
       final List lsts = jsonData['results'];
       lsts.forEach((element) {
-        print(element['created_at']);
+        debugPrint(element['created_at']);
 
-        print("Fola Key : $element");
+        debugPrint("Fola Key : $element");
       });
 
       return result;
@@ -775,7 +771,7 @@ class PaymentAndBankingAuth extends AuthService {
     final headers = await getAuthHeaders();
     debugPrint("URL :::: $url");
 
-    Response response = await httpGet(url, headers: headers);
+    final Response response = await httpGet(url, headers: headers);
     debugPrint("URL resonspose :::: ${response.body}");
 
     try {
@@ -785,11 +781,11 @@ class PaymentAndBankingAuth extends AuthService {
     }
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      List<Transaction> transactions = [];
+      final List<Transaction> transactions = [];
       // This variable will hold list of transactions we got from server
       // var user = await getUser();
 
-      var jsonData = json.decode(response.body);
+      final jsonData = json.decode(response.body);
 
       for (var item in jsonData["results"]) {
         // if sender is not current user then
@@ -856,9 +852,9 @@ class PaymentAndBankingAuth extends AuthService {
     final String url = "${AppConfig.baseUrl}/api/v1/transactions/make-payment/";
     final headers = await getAuthHeaders();
     final _data = jsonEncode(data);
-    print('message data::::$_data');
+    debugPrint('message data::::$_data');
     final response = await httpPost(url, headers: headers, body: _data);
-    print('message::::$response');
+    debugPrint('message::::$response');
     return response;
   }
 
@@ -869,9 +865,9 @@ class PaymentAndBankingAuth extends AuthService {
         "${AppConfig.baseUrl}/api/v1/job-service/job/$jobId/pay-for-job/";
     final headers = await getAuthHeaders();
     final _data = jsonEncode({"transaction_id": transactionId});
-    print('message data::::$_data');
+    debugPrint('message data::::$_data');
     final response = await httpPatch(url, headers: headers, body: _data);
-    print('message::::$response');
+    debugPrint('message::::$response');
     return response;
   }
 
@@ -923,7 +919,6 @@ class PaymentAndBankingAuth extends AuthService {
   //Cancel payment link
   Future<bool> cancelPaymentLinks(String? paymentLinkId) async {
     String url;
-    dynamic result;
     url =
         "${AppConfig.baseUrl}/api/v1/transactions/payment-link/$paymentLinkId/cancel";
 
@@ -935,7 +930,6 @@ class PaymentAndBankingAuth extends AuthService {
     );
     log("message${response.statusCode} and ${response.body}");
     if (response.statusCode == 201 || response.statusCode == 200) {
-      result = jsonDecode(response.body);
       return true;
     } else {
       return false;
@@ -1191,8 +1185,8 @@ class PaymentAndBankingAuth extends AuthService {
     final headers = await getAuthHeaders();
 
     final response = await httpGet(url, headers: headers);
-    print('URL RESPONSE ----> ${response.statusCode}');
-    print('URL RESPONSE ----> ${response.body}');
+    debugPrint('URL RESPONSE ----> ${response.statusCode}');
+    debugPrint('URL RESPONSE ----> ${response.body}');
 
     try {
       handleServerErrors(response);

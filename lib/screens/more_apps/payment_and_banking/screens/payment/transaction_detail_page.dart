@@ -10,7 +10,7 @@ import 'package:maps_launcher/maps_launcher.dart';
 
 // ignore: must_be_immutable
 class TransactionDetail extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
   TransactionDetail({required this.arguments});
 
@@ -20,7 +20,7 @@ class TransactionDetail extends StatefulWidget {
 }
 
 class _TransactionDetailState extends State<TransactionDetail> {
-  var arguments;
+  final dynamic arguments;
   Transaction? transaction;
 
   _TransactionDetailState({this.arguments});

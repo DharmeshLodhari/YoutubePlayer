@@ -32,7 +32,7 @@ class GeneralSettingScreen extends StatefulWidget {
 
 class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
   final GlobalKey<ScaffoldState> _scaffoldGeneralSettingKey =
-      new GlobalKey<ScaffoldState>();
+      GlobalKey<ScaffoldState>();
 
   bool isLoading = false;
   late BasketBloc basketBloc;
@@ -64,9 +64,10 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
   }
 
   void getLanguage() async {
-    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    final SharedPreferences sharedPreferences =
+        await SharedPreferences.getInstance();
     if (sharedPreferences.containsKey("language")) {
-      String? languageCode = sharedPreferences.getString("language");
+      final String? languageCode = sharedPreferences.getString("language");
       setState(() {
         language = getLanguageByLanguageCode(languageCode);
         debugPrint("Set language: => ${language?.name}");
@@ -99,7 +100,7 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
       children: [
         Expanded(
             child: Container(
-          padding: EdgeInsets.symmetric(vertical: 10),
+          padding: const EdgeInsets.symmetric(vertical: 10),
           child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -162,7 +163,8 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
                     title: "Terms of Service",
                     onTap: () async {
                       try {
-                        if (!await launch(AppConfig.termsAndCondition!))
+                        if (!await launchUrl(
+                            Uri.parse(AppConfig.termsAndCondition ?? "")))
                           throw 'Could not launch ${AppConfig.termsAndCondition!}';
                       } catch (error) {
                         debugPrint("Error:- $error");
@@ -172,14 +174,15 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
                     title: "Privacy Policy",
                     onTap: () async {
                       try {
-                        if (!await launch(AppConfig.privacyPolicy!))
+                        if (!await launchUrl(
+                            Uri.parse(AppConfig.privacyPolicy ?? "")))
                           throw 'Could not launch ${AppConfig.privacyPolicy!}';
                       } catch (error) {
                         debugPrint("Error:- $error");
                       }
                     }),
                 Center(child: _infoTile()),
-                SizedBox(
+                const SizedBox(
                   height: 120,
                 ),
                 // getLogoutTile(),
@@ -192,7 +195,7 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
   }
 
   void deactivateAccountDialogue() async {
-    bool? result = await showDialogBox(
+    final bool? result = await showDialogBox(
       context: context,
       actionOneTextColor: white,
       actionOneBgColor: mateRed,
@@ -206,11 +209,11 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
         enableMargin: false,
         width: 90,
         height: 90,
-        image: Icon(SlydoAppIcon.delete),
+        image: const Icon(SlydoAppIcon.delete),
       ),
     );
     if (result != null && result) {
-      bool? result1 = await showDialogBox(
+      final bool? result1 = await showDialogBox(
         context: myGlobals.navigationKey.currentContext!,
         actionOneTextColor: white,
         actionOneBgColor: mateRed,
@@ -225,7 +228,7 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
           enableMargin: false,
           width: 90,
           height: 90,
-          image: Icon(SlydoAppIcon.delete),
+          image: const Icon(SlydoAppIcon.delete),
         ),
       );
 
@@ -237,7 +240,7 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
   }
 
   Future<void> deactivateAccount() async {
-    bool result = await UserAuth().deactivateUserAccount();
+    final bool result = await UserAuth().deactivateUserAccount();
     if (result) {
       showDialog(
           context: (context),
@@ -301,7 +304,7 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
   Widget getSettingsTile({String title = "", Function()? onTap}) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       shadowColor: boxShadowTwo,
       elevation: 0,
       child: Container(
@@ -332,7 +335,7 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
   Widget getIncomingSoundTile() {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       shadowColor: boxShadowTwo,
       elevation: 0,
       child: Container(
@@ -355,7 +358,8 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
             child: Switch(
               value: userBloc.chatMessageSettings.playIncomingMessageSound!,
               onChanged: (value) {
-                ChatMessageSettings chatMessageSettings = ChatMessageSettings();
+                final ChatMessageSettings chatMessageSettings =
+                    ChatMessageSettings();
                 chatMessageSettings.playOutgoingMessageSound =
                     userBloc.chatMessageSettings.playOutgoingMessageSound;
                 chatMessageSettings.playIncomingMessageSound = value;
@@ -377,7 +381,7 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
   Widget getCurrencyTile() {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       shadowColor: boxShadowTwo,
       elevation: 0,
       child: Container(
@@ -416,7 +420,7 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
   Widget getLanguageTile() {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       shadowColor: boxShadowTwo,
       elevation: 0,
       child: Container(
@@ -460,7 +464,7 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
         context: context,
         builder: (BuildContext context) {
           return Card(
-              shape: RoundedRectangleBorder(
+              shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(20),
                     topRight: Radius.circular(20)),
@@ -468,7 +472,8 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
               color: Colors.white,
               margin: EdgeInsets.zero,
               child: Container(
-                padding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: languages.map((data) {
@@ -503,7 +508,7 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
   Widget getOutGoingSoundTile() {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       shadowColor: boxShadowTwo,
       elevation: 0,
       child: Container(
@@ -526,7 +531,8 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
             child: Switch(
               value: userBloc.chatMessageSettings.playOutgoingMessageSound!,
               onChanged: (value) {
-                ChatMessageSettings chatMessageSettings = ChatMessageSettings();
+                final ChatMessageSettings chatMessageSettings =
+                    ChatMessageSettings();
                 chatMessageSettings.playIncomingMessageSound =
                     userBloc.chatMessageSettings.playIncomingMessageSound;
                 chatMessageSettings.playOutgoingMessageSound = value;
@@ -548,7 +554,7 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
   Widget getLogoutTile() {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       shadowColor: boxShadowTwo,
       elevation: 0,
       child: Container(
@@ -597,14 +603,15 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
 
   //to save language in shared preference when user change the language
   void saveIntoSharedPreference(Language? language) async {
-    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    final SharedPreferences sharedPreferences =
+        await SharedPreferences.getInstance();
     if (sharedPreferences.containsKey("language")) {
-      bool result =
+      final bool result =
           await sharedPreferences.setString("language", language!.languageCode);
       debugPrint(
           "${language.name} Language is updated in sharedPreference => $result");
     } else {
-      bool result =
+      final bool result =
           await sharedPreferences.setString("language", language!.languageCode);
       debugPrint(
           "${language.name} Language is set in sharedPreference => $result");

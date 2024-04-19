@@ -116,7 +116,7 @@ class ChatMessage {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = Map<String, dynamic>();
     data['author'] = this.author;
     data['author_full_name'] = this.authorFullName;
     data['check_id'] = this.checkId;
@@ -143,7 +143,7 @@ class ChatMessage {
   }
 
   Map<String, dynamic> toDBJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = Map<String, dynamic>();
     data['author'] = this.author;
     data['author_full_name'] = this.authorFullName;
     data['check_id'] = this.checkId;

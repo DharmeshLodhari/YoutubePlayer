@@ -76,7 +76,7 @@ class BottomSheetPassCode {
             ));
   }
 
-  _onPassCodeEntered(String enteredPassCode) {
+  void _onPassCodeEntered(String enteredPassCode) {
     final bool isValid = userBloc.user.password == enteredPassCode;
     _verificationNotifier.add(isValid);
   }

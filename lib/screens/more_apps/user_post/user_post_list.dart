@@ -11,9 +11,9 @@ import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class UserPostList extends StatefulWidget {
-  CustomerProfile? user;
+  final CustomerProfile? user;
   final String? titleToSearch;
-  String? channelUserName;
+  final String? channelUserName;
 
   UserPostList(
       {@required this.user, this.titleToSearch, this.channelUserName, Key? key})
@@ -54,7 +54,7 @@ class _UserPostListState extends State<UserPostList> {
 
   void _onPostRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         postCount = 0;
@@ -129,9 +129,9 @@ class _UserPostListState extends State<UserPostList> {
         postCount = result['count'];
         postNext = result['next'];
         postPrevious = result['previous'];
-        List tempList = result['results'] as List;
+        final List tempList = result['results'] as List;
 
-        List<UserPost> posts = [];
+        final List<UserPost> posts = [];
 
         tempList.forEach((element) {
           posts.add(UserPost.fromJson(element));

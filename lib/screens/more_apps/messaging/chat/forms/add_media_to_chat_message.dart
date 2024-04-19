@@ -501,7 +501,7 @@ class _AddMediaToChatMessageState extends State<AddMediaToChatMessage> {
   }
 }
 
-getDocumentFileTypeForChat(String extension) {
+DocumentFileTypeForChat getDocumentFileTypeForChat(String extension) {
   switch (extension) {
     case 'pdf':
       return DocumentFileTypeForChat.pdf;
@@ -514,6 +514,7 @@ getDocumentFileTypeForChat(String extension) {
     case 'txt':
       return DocumentFileTypeForChat.txt;
   }
+  return DocumentFileTypeForChat.txt;
 }
 
 String getDocumentFileIcon(DocumentFileTypeForChat docsType) {

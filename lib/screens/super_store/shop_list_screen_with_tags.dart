@@ -25,8 +25,8 @@ import '../more_apps/shopping/models/store.dart';
 import '../more_apps/shopping/shopping_auth.dart';
 
 class ShopListScreenWithTags extends StatefulWidget {
-  Function(bool)? onPageRefresh;
-  String? category;
+  final Function(bool)? onPageRefresh;
+  final String? category;
 
   ShopListScreenWithTags({Key? key, this.onPageRefresh, this.category})
       : super(key: key);
@@ -384,7 +384,7 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
   //   }
   // }
 
-  _refreshPage() {
+  void _refreshPage() {
     productNext = "";
     productCount = 0;
     productPrevious = "";
@@ -637,7 +637,7 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
     );
   }
 
-  getRowTitle(headers) async {
+  Future<List<Product>> getRowTitle(headers) async {
     final List<Product> result = [];
     for (var item in headers['results']) {
       final Product product = await ShoppingAuthService().createProduct(item);
@@ -1024,7 +1024,7 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
     );
   }
 
-  onPageFunction(int index, CarouselPageChangedReason reason) {
+  void onPageFunction(int index, CarouselPageChangedReason reason) {
     currentIndex = index;
     setState(() {});
   }

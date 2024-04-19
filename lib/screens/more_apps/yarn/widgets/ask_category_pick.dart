@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class AskCategoryPick extends StatelessWidget {
-  List<Map<String, dynamic>> categories = [
+  final List<Map<String, dynamic>> categories = [
     {'category': 'Health', 'icon': SvgPicture.asset("ask/health".toSVG())},
     {'category': 'Health', 'icon': SvgPicture.asset("ask/politics".toSVG())},
     {'category': 'Health', 'icon': SvgPicture.asset("ask/technology".toSVG())},
@@ -18,7 +18,7 @@ class AskCategoryPick extends StatelessWidget {
     {'category': 'Health', 'icon': SvgPicture.asset("ask/fashion".toSVG())},
   ];
 
-  Function(String? category)? onCategoryPick;
+  final Function(String? category)? onCategoryPick;
 
   AskCategoryPick({this.onCategoryPick});
 

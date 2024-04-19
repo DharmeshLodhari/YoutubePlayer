@@ -13,8 +13,8 @@ import '../models/Topics/Notifications.dart';
 import '../utils/utils.dart';
 
 class AskNotificationView extends StatelessWidget {
-  Notifications? notification;
-  Function(Notifications)? onDeleteNotification;
+  final Notifications? notification;
+  final Function(Notifications)? onDeleteNotification;
 
   AskNotificationView({Key? key, this.notification, this.onDeleteNotification})
       : super(key: key);
@@ -167,7 +167,8 @@ class AskNotificationView extends StatelessWidget {
     );
   }
 
-  showDeleteNotificationDialog(BuildContext context, String? notificationId) {
+  void showDeleteNotificationDialog(
+      BuildContext context, String? notificationId) {
     showDialogBox(
         context: context,
         actionOneTextColor: white,
@@ -194,7 +195,7 @@ class AskNotificationView extends StatelessWidget {
         });
   }
 
-  deleteNotification(String? notificationId) async {
+  Future<void> deleteNotification(String? notificationId) async {
     final bool? data = await YarnAuth().deleteNotification(notification!.id);
     if (data != null && data) {
       showToast(message: "Notification deleted successfully");

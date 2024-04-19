@@ -16,7 +16,7 @@ import '../../../main.dart';
 import '../../../widget/image_crop.dart';
 
 class CreateMediaMomentScreen extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
   CreateMediaMomentScreen({Key? key, this.arguments}) : super(key: key);
 
@@ -393,7 +393,7 @@ class _CreateMediaMomentScreenState extends State<CreateMediaMomentScreen> {
     }
   }
 
-  setUpVideoPlayer() async {
+  Future<void> setUpVideoPlayer() async {
     videoPlayerController = VideoPlayerController.file(File(videoPath!),
         videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true))
       ..initialize().then((_) => videoPlayerController?.pause());
@@ -465,7 +465,7 @@ class _CreateMediaMomentScreenState extends State<CreateMediaMomentScreen> {
     return Container(color: greyBorderColor);
   }
 
-  pickFileFromMedia() async {
+  Future<void> pickFileFromMedia() async {
     // final file = await ImagePicker()
     //     .pickImage(source: ImageSource.gallery, imageQuality: 70);
 

@@ -35,7 +35,7 @@ class Transport {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = Map<String, dynamic>();
     data['currency'] = this.currency;
     data['date'] = this.date;
     data['from'] = this.from;

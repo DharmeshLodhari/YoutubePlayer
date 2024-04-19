@@ -33,7 +33,7 @@ class ShareManager {
   List<SharedMediaFile>? _sharedFiles;
   String? _sharedText;
   Timer? _timerForSharingDataListen;
-  Duration _refreshDurationInterval = const Duration(seconds: 1);
+  final Duration _refreshDurationInterval = const Duration(seconds: 1);
 
   void initializeShareManager() {
     _initializeMediaStream();
@@ -193,14 +193,14 @@ class ShareManager {
   }
 
   Future<void> sendTextMessage(
-      String message, ChatConversation chatConversation) async {
+      String message, ChatConversation? chatConversation) async {
     final UserBloc userBloc = Provider.of<UserBloc>(
         myGlobals.navigationKey.currentContext!,
         listen: false);
 
     final Map<String, dynamic> data = {
       "check_id": const Uuid().v4(),
-      "conversation_id": chatConversation.conversationId,
+      "conversation_id": chatConversation?.conversationId,
       "author": userBloc.user.userName,
       "author_full_name": userBloc.user.fullName,
       "author_avatar": userBloc.user.avatar,
@@ -216,7 +216,7 @@ class ShareManager {
     debugPrint("ShareContentTextData====> $data");
 
     debugPrint(
-        "recipientUser = $chatConversation  recipientUser.conversationId = ${chatConversation.conversationId}");
+        "recipientUser = $chatConversation  recipientUser.conversationId = ${chatConversation?.conversationId}");
     if (chatConversation != null && chatConversation.conversationId != null) {
       DBSocketMessageHandler()
           .saveMessageToDb(message: SocketQueueChatMessage.fromJson(data));

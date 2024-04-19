@@ -171,7 +171,7 @@ class _VirtualAccountDetailState extends State<VirtualAccountDetail> {
     //for closing the keypad if it is open
     FocusScope.of(context).unfocus();
 
-    var data = {
+    final data = {
       "amount": moneyInputNormalizer(amount.toString()),
       "currency": userBloc!.user.currency,
     };
@@ -187,7 +187,7 @@ class _VirtualAccountDetailState extends State<VirtualAccountDetail> {
       await PaymentAndBankingAuth().topUpAccountByBank(data).then((value) {
         if (value != null) {
           Navigator.pop(context);
-          var result = value;
+          final result = value;
           Navigator.popAndPushNamed(context, Routes.ADD_MONEY_TO_SLYDO_TWO,
               arguments: result);
         }
@@ -370,7 +370,7 @@ class _VirtualAccountDetailState extends State<VirtualAccountDetail> {
         errorWidget: imageErrorWidget,
       ),
       trailing: getCopyButton(onTap: () {
-        Clipboard.setData(new ClipboardData(
+        Clipboard.setData(ClipboardData(
             text:
                 "Bank name: ${virtualAccount!.financialInstitution!.name}\nAccount name: ${virtualAccount!.accountName}\nAccount number: ${virtualAccount!.accountNumber}"));
         showToast(message: "Account details copied !!");
@@ -398,7 +398,7 @@ class _VirtualAccountDetailState extends State<VirtualAccountDetail> {
         getCopyButton(
             onTap: () {
               Clipboard.setData(
-                  new ClipboardData(text: "${virtualAccount!.accountName}"));
+                  ClipboardData(text: "${virtualAccount!.accountName}"));
               showToast(message: "Account name copied !!");
             },
             size: 17)
@@ -426,7 +426,7 @@ class _VirtualAccountDetailState extends State<VirtualAccountDetail> {
         getCopyButton(
             onTap: () {
               Clipboard.setData(
-                  new ClipboardData(text: "${virtualAccount!.accountNumber}"));
+                  ClipboardData(text: "${virtualAccount!.accountNumber}"));
               showToast(message: "Account number copied !!");
             },
             size: 17)
@@ -477,8 +477,8 @@ class _VirtualAccountDetailState extends State<VirtualAccountDetail> {
 
   String getAmountFormatter(String? value) {
     final commaFormatter = NumberFormat('#,###.##');
-    double? amount = double.tryParse(value!);
-    String formattedAmount = commaFormatter.format(amount);
+    final double? amount = double.tryParse(value!);
+    final String formattedAmount = commaFormatter.format(amount);
 
     return formattedAmount;
   }

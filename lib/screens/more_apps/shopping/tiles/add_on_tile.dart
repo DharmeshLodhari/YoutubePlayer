@@ -23,7 +23,7 @@ class _AddOnTileState extends State<AddOnTile> {
     return Card(
       elevation: 0,
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 10),
+        padding: const EdgeInsets.symmetric(vertical: 10),
         child: Column(
           children: [
             Padding(
@@ -40,10 +40,11 @@ class _AddOnTileState extends State<AddOnTile> {
                         fontSize: 15),
                   ),
                   Container(
-                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                     decoration: BoxDecoration(
                       border: Border.all(width: 1, color: navyBlue),
-                      borderRadius: BorderRadius.all(Radius.circular(7)),
+                      borderRadius: const BorderRadius.all(Radius.circular(7)),
                       color:
                           widget.addOns.isRequired == true ? navyBlue : white,
                     ),
@@ -63,7 +64,7 @@ class _AddOnTileState extends State<AddOnTile> {
                 ],
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Divider(
               height: 0,
               color: dividerColor,
@@ -82,7 +83,7 @@ class _AddOnTileState extends State<AddOnTile> {
 
   Widget _displayAddOnOption(AddOnOption addOnOption, AddOns addOns) {
     return Container(
-      padding: EdgeInsets.only(top: 15, right: 16, left: 16),
+      padding: const EdgeInsets.only(top: 15, right: 16, left: 16),
       child: Column(
         children: [
           Row(
@@ -100,9 +101,10 @@ class _AddOnTileState extends State<AddOnTile> {
                         border: Border.all(
                           color: dividerColor,
                         ),
-                        borderRadius: BorderRadius.all(Radius.circular(10))),
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(10))),
                     child: ClipRRect(
-                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                      borderRadius: const BorderRadius.all(Radius.circular(10)),
                       child: CachedNetworkImage(
                         imageUrl: addOnOption.picture!,
                         fit: BoxFit.fill,
@@ -111,7 +113,7 @@ class _AddOnTileState extends State<AddOnTile> {
                     ),
                   ),
                 ),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               Expanded(
                 flex: 4,
                 child: InkWell(
@@ -130,7 +132,7 @@ class _AddOnTileState extends State<AddOnTile> {
                   ),
                 ),
               ),
-              Spacer(),
+              const Spacer(),
               Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.end,
@@ -139,7 +141,7 @@ class _AddOnTileState extends State<AddOnTile> {
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
                       _buildPriceForAddOn(addOnOption: addOnOption),
-                      SizedBox(
+                      const SizedBox(
                         width: 8,
                       ),
                       _buildAddOnSelection(
@@ -155,7 +157,7 @@ class _AddOnTileState extends State<AddOnTile> {
               ),
             ],
           ),
-          SizedBox(height: 15),
+          const SizedBox(height: 15),
           Divider(
             height: 0,
             color: dividerColor,
@@ -173,7 +175,7 @@ class _AddOnTileState extends State<AddOnTile> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        SizedBox(
+        const SizedBox(
           height: 8,
         ),
         Container(
@@ -205,7 +207,7 @@ class _AddOnTileState extends State<AddOnTile> {
                     setState(() {});
                   },
                 ),
-                Expanded(
+                const Expanded(
                   child: SizedBox(
                     width: 10,
                   ),
@@ -219,7 +221,7 @@ class _AddOnTileState extends State<AddOnTile> {
                     fontFamily: "Inter",
                   ),
                 ),
-                Expanded(
+                const Expanded(
                   child: SizedBox(
                     width: 10,
                   ),
@@ -328,7 +330,8 @@ class _AddOnTileState extends State<AddOnTile> {
         barrierDismissible: true,
         context: context,
         builder: (context) => AlertDialog(
-              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              insetPadding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
@@ -349,60 +352,33 @@ class _AddOnTileState extends State<AddOnTile> {
                         child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              addOnOption.picture != null
-                                  ? Row(
-                                      children: [
-                                        Container(
-                                          height: 100,
-                                          width: 100,
-                                          decoration: BoxDecoration(
-                                              border: Border.all(
-                                                color: dividerColor,
-                                              ),
-                                              borderRadius: BorderRadius.all(
-                                                  Radius.circular(10))),
-                                          child: ClipRRect(
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(10)),
-                                            child: CachedNetworkImage(
-                                              imageUrl: addOnOption.picture!,
-                                              fit: BoxFit.fill,
-                                              errorWidget:
-                                                  productAndServiceErrorWidget,
-                                            ),
+                              if (addOnOption.picture != null)
+                                Row(
+                                  children: [
+                                    Container(
+                                      height: 100,
+                                      width: 100,
+                                      decoration: BoxDecoration(
+                                          border: Border.all(
+                                            color: dividerColor,
                                           ),
+                                          borderRadius: const BorderRadius.all(
+                                              Radius.circular(10))),
+                                      child: ClipRRect(
+                                        borderRadius: const BorderRadius.all(
+                                            Radius.circular(10)),
+                                        child: CachedNetworkImage(
+                                          imageUrl: addOnOption.picture!,
+                                          fit: BoxFit.fill,
+                                          errorWidget:
+                                              productAndServiceErrorWidget,
                                         ),
-                                        SizedBox(width: 16),
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              addOnOption.name!,
-                                              style: TextStyle(
-                                                  color: blackFont,
-                                                  fontSize: 24,
-                                                  fontWeight: FontWeight.w600,
-                                                  fontFamily: 'Inter'),
-                                            ),
-                                            SizedBox(
-                                              height: 8,
-                                            ),
-                                            Text(
-                                              '${worldCurrencies[addOnOption.currency!]!}${moneyDisplayNormalizer(int.parse(addOnOption.price.toString()))}',
-                                              style: TextStyle(
-                                                  color: darkGrey,
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.w600,
-                                                  fontFamily: 'Inter'),
-                                            )
-                                          ],
-                                        )
-                                      ],
-                                    )
-                                  : Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 16),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           addOnOption.name!,
@@ -412,7 +388,7 @@ class _AddOnTileState extends State<AddOnTile> {
                                               fontWeight: FontWeight.w600,
                                               fontFamily: 'Inter'),
                                         ),
-                                        SizedBox(
+                                        const SizedBox(
                                           height: 8,
                                         ),
                                         Text(
@@ -424,8 +400,36 @@ class _AddOnTileState extends State<AddOnTile> {
                                               fontFamily: 'Inter'),
                                         )
                                       ],
+                                    )
+                                  ],
+                                )
+                              else
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      addOnOption.name!,
+                                      style: TextStyle(
+                                          color: blackFont,
+                                          fontSize: 24,
+                                          fontWeight: FontWeight.w600,
+                                          fontFamily: 'Inter'),
                                     ),
-                              SizedBox(height: 16),
+                                    const SizedBox(
+                                      height: 8,
+                                    ),
+                                    Text(
+                                      '${worldCurrencies[addOnOption.currency!]!}${moneyDisplayNormalizer(int.parse(addOnOption.price.toString()))}',
+                                      style: TextStyle(
+                                          color: darkGrey,
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w600,
+                                          fontFamily: 'Inter'),
+                                    )
+                                  ],
+                                ),
+                              const SizedBox(height: 16),
                               Text(
                                 "Description",
                                 style: TextStyle(
@@ -434,7 +438,7 @@ class _AddOnTileState extends State<AddOnTile> {
                                     fontWeight: FontWeight.w600,
                                     fontFamily: 'Inter'),
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 8,
                               ),
                               Text(

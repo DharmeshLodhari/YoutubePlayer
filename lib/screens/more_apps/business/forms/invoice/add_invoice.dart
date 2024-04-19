@@ -25,7 +25,7 @@ import '../../business_auth.dart';
 
 // ignore: must_be_immutable
 class AddInvoice extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
   AddInvoice({this.arguments});
 
@@ -232,15 +232,16 @@ class _AddInvoiceState extends State<AddInvoice> {
                               // SizedBox(height: 16),
                               // getPaymentPeriodDropDown(),
                               const SizedBox(height: 8),
-                              errorMessage == ""
-                                  ? Container()
-                                  : Text(
-                                      errorMessage,
-                                      style: TextStyle(
-                                          color: mateRed,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16),
-                                    ),
+                              if (errorMessage == "")
+                                Container()
+                              else
+                                Text(
+                                  errorMessage,
+                                  style: TextStyle(
+                                      color: mateRed,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16),
+                                ),
                               const SizedBox(height: 8),
                             ],
                           ),
@@ -376,8 +377,8 @@ class _AddInvoiceState extends State<AddInvoice> {
       );
     } else {
       return Container(
-        child: const Center(child: Text("No item")),
         height: 100,
+        child: const Center(child: Text("No item")),
       );
     }
   }
@@ -882,7 +883,7 @@ class _AddInvoiceState extends State<AddInvoice> {
     }
   }
 
-  createInvoice() async {
+  Future<void> createInvoice() async {
     try {
       List<InvoiceItem?> invoiceItem = [];
 

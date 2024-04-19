@@ -87,11 +87,11 @@ class _SelectAddressScreenState extends State<SelectAddressScreen> {
                 color: blackFont.withOpacity(0.08),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
             getDestination(),
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
             Row(
@@ -110,7 +110,7 @@ class _SelectAddressScreenState extends State<SelectAddressScreen> {
                 ),
               ],
             ),
-            SizedBox(
+            const SizedBox(
               height: 24,
             ),
             Text(
@@ -131,7 +131,7 @@ class _SelectAddressScreenState extends State<SelectAddressScreen> {
   }
 
   List<Widget> getSearchedResult() {
-    List<Widget> items = [];
+    final List<Widget> items = [];
 
     if (isLoading) {
       items.add(Container(
@@ -158,7 +158,7 @@ class _SelectAddressScreenState extends State<SelectAddressScreen> {
 
   Widget getPlaceTile({required PlaceModal place}) {
     return ListTile(
-      contentPadding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
       leading: RoundedBackgroundIcon(
         backgroundColor: lightGrey,
         height: 32,
@@ -202,7 +202,7 @@ class _SelectAddressScreenState extends State<SelectAddressScreen> {
       child: Container(
         width: double.infinity,
         child: Container(
-          padding: EdgeInsets.only(bottom: 16, left: 16, right: 16),
+          padding: const EdgeInsets.only(bottom: 16, left: 16, right: 16),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
@@ -213,7 +213,7 @@ class _SelectAddressScreenState extends State<SelectAddressScreen> {
                   height: 100,
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 width: 10,
               ),
               Expanded(
@@ -253,7 +253,7 @@ class _SelectAddressScreenState extends State<SelectAddressScreen> {
                         searchPlaces(query: value);
                       },
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 10,
                     ),
                   ],
@@ -292,14 +292,14 @@ class _SelectAddressScreenState extends State<SelectAddressScreen> {
 
   Widget getRideOptions() {
     return Container(
-        padding: EdgeInsets.only(left: 16, right: 16, top: 20),
+        padding: const EdgeInsets.only(left: 16, right: 16, top: 20),
         child: Column(
           // controller: scrollController,
           children: [
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
-            SizedBox(
+            const SizedBox(
               height: 40,
             ),
           ],
@@ -316,14 +316,14 @@ class _SelectAddressScreenState extends State<SelectAddressScreen> {
           shadowColor: dividerColor,
           color: Colors.white,
           margin: EdgeInsets.zero,
-          shape: RoundedRectangleBorder(
+          shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(20), topRight: Radius.circular(20))),
           child: AnimatedContainer(
-            duration: Duration(milliseconds: 500),
+            duration: const Duration(milliseconds: 500),
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-              decoration: BoxDecoration(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              decoration: const BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.only(
                   topRight: Radius.circular(20),

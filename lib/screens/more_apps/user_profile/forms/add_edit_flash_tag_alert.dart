@@ -297,7 +297,7 @@ class _AddEditFlashTagAlertState extends State<AddEditFlashTagAlert> {
               isLoading: isDeleteLoading,
             ),
           ),
-          SizedBox(
+          const SizedBox(
             width: 20,
           ),
           Expanded(

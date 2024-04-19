@@ -42,9 +42,6 @@ class LogoutHelper {
     final BankAccountBloc bankAccountBlocPart = Provider.of<BankAccountBloc>(
         myGlobals.navigationKey.currentContext!,
         listen: false);
-    final DashboardBloc dashboardBloc = Provider.of<DashboardBloc>(
-        myGlobals.navigationKey.currentContext!,
-        listen: false);
 
     bankAccountBlocPart.bankAccount = BankAccount();
     // dashboardBloc.index = 0;

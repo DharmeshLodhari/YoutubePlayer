@@ -60,7 +60,7 @@ class _MomentTileForChatState extends State<MomentTileForChat> {
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
 
-    bool isSend = widget.message!["author"] == userBloc.user.userName;
+    final bool isSend = widget.message!["author"] == userBloc.user.userName;
 
     return GestureDetector(
       onTap: () async {

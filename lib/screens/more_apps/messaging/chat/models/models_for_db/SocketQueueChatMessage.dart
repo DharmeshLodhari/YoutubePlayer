@@ -50,7 +50,7 @@ class SocketQueueChatMessage {
   }
 
   Map<String, dynamic> toJson({bool isForSendingToSocket = false}) {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = Map<String, dynamic>();
     data['author'] = this.author;
     data['author_avatar'] = this.authorAvatar;
     data['author_full_name'] = this.authorName;

@@ -37,7 +37,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   void initState() {
     super.initState();
 
-    BasketBloc basketBloc = Provider.of<BasketBloc>(context, listen: false);
+    final BasketBloc basketBloc =
+        Provider.of<BasketBloc>(context, listen: false);
     basketBloc.merchantData.clear();
     basketBloc.getAllMerchant();
   }
@@ -83,7 +84,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     );
   }
 
-  _scaffoldBody() {
+  Widget _scaffoldBody() {
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(12.0),
@@ -98,7 +99,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 fontWeight: FontWeight.w600,
               ),
             ),
-            SizedBox(height: 14),
+            const SizedBox(height: 14),
             dropDownPickItemWidget(
               label: 'Merchant',
               selectedItem: merchantFullName,
@@ -106,7 +107,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   ? null
                   : pickMerchantNames(),
             ),
-            SizedBox(height: 18),
+            const SizedBox(height: 18),
             Visibility(
               visible: merchantFullName != null,
               child: dropDownPickItemWidget(
@@ -115,24 +116,25 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 onTap: () => pickDeliveryOptions(),
               ),
             ),
-            SizedBox(height: 18),
-            shippingOptionsLoading
-                ? Center(child: CircularLoadingIndicator())
-                : Column(
-                    children: [
-                      Visibility(
-                        visible: shippingOptions.isNotEmpty,
-                        child: dropDownPickItemWidget(
-                          label: 'Shipping Options',
-                          onTap: () => pickShippingOptions(),
-                          selectedItem: selectedShippingOptionName,
-                        ),
-                      ),
-                      SizedBox(
-                        height: 15,
-                      )
-                    ],
+            const SizedBox(height: 18),
+            if (shippingOptionsLoading)
+              Center(child: CircularLoadingIndicator())
+            else
+              Column(
+                children: [
+                  Visibility(
+                    visible: shippingOptions.isNotEmpty,
+                    child: dropDownPickItemWidget(
+                      label: 'Shipping Options',
+                      onTap: () => pickShippingOptions(),
+                      selectedItem: selectedShippingOptionName,
+                    ),
                   ),
+                  const SizedBox(
+                    height: 15,
+                  )
+                ],
+              ),
             // Divider(thickness: 0.3, color: blackFont),
             Visibility(
               visible: merchantFullName != null,
@@ -183,14 +185,14 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                   ? moneyDisplayNormalizer(getOrderTotalPrice())
                                   : moneyDisplayNormalizer(getSubTotalPrice()),
                         ),
-                        SizedBox(height: 20),
+                        const SizedBox(height: 20),
                       ],
                     ),
                   ),
                 ),
               ),
             ),
-            SizedBox(height: 80),
+            const SizedBox(height: 80),
             renderCurvedButton(),
           ],
         ),
@@ -207,7 +209,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             shippingOption != null ? shippingOption?.price ?? 0 : 0);
   }
 
-  getSubTotalPrice() {
+  int getSubTotalPrice() {
     return basketBloc.getSubTotalPriceByMerchant(
         merchantUserName:
             basketBloc.merchantNameMapCopy[merchantFullName] ?? '');
@@ -271,7 +273,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       } else if (shippingOption != null) {
         return getCurvedButton();
       }
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     } else {
       if (merchantFullName != null &&
           deliveryOption != null &&
@@ -280,7 +282,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       }
     }
 
-    return SizedBox.shrink();
+    return const SizedBox.shrink();
   }
 
   Widget getCurvedButton() {
@@ -290,7 +292,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     );
   }
 
-  onNextClicked() {
+  void onNextClicked() {
     basketBloc.orderTotal += getOrderTotalPrice();
     basketBloc.totalShippingCost +=
         shippingOption != null ? shippingOption?.price ?? 0 : 0;
@@ -306,7 +308,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     }
   }
 
-  resetData() {
+  void resetData() {
     deliveryOption = null;
     merchantFullName = null;
     shippingOptions.clear();
@@ -314,16 +316,16 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     if (mounted) setState(() {});
   }
 
-  pickMerchantNames() async {
+  Future<void> pickMerchantNames() async {
     merchantFullNames.clear();
 
-    var allMerchants = basketBloc.merchantData;
+    final allMerchants = basketBloc.merchantData;
 
     allMerchants.forEach((element) {
       merchantFullNames.add(element['name']!);
     });
 
-    String? pickedMerchantName = await showPickItemDialog<String>(
+    final String? pickedMerchantName = await showPickItemDialog<String>(
       context: context,
       items: merchantFullNames,
       selectedItem: merchantFullName,
@@ -342,8 +344,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     }
   }
 
-  pickDeliveryOptions() async {
-    String? pickedDeliveryOption = await showPickItemDialog<String>(
+  Future<void> pickDeliveryOptions() async {
+    final String? pickedDeliveryOption = await showPickItemDialog<String>(
       context: context,
       items: deliveryOptions,
       selectedItem: deliveryOption,
@@ -386,13 +388,13 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
   void selectCategory() async {}
 
-  pickShippingOptions() async {
-    ShippingOptionsModel? pickedShippingOption =
+  Future<void> pickShippingOptions() async {
+    final ShippingOptionsModel? pickedShippingOption =
         await showDialog<ShippingOptionsModel>(
             context: context,
             builder: (context) => AlertDialog(
                   insetPadding:
-                      EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
                   contentPadding: EdgeInsets.zero,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10)),

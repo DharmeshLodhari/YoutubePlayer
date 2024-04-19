@@ -9,7 +9,7 @@ import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
 class BarChart extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
   BarChart({this.arguments});
 
@@ -18,9 +18,9 @@ class BarChart extends StatefulWidget {
 }
 
 class _BarChartState extends State<BarChart> {
-  var arguments;
+  Map<String, dynamic> arguments;
 
-  _BarChartState({this.arguments});
+  _BarChartState({required this.arguments});
 
   late UserBloc userBloc;
   List<dynamic>? expenses;
@@ -243,7 +243,7 @@ class _BarState extends State<Bar> {
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(8), color: blackFont),
               child: Text(
-                moneyConverter(widget.amountSpent),
+                moneyConverter(widget.amountSpent.toString()),
                 style: const TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.bold,

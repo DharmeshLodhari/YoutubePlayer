@@ -17,7 +17,7 @@ class SubscriptionList extends StatefulWidget {
 class _SubscriptionListState extends State<SubscriptionList> {
   List<SubscriptionItem> subscriptionListItem = [];
   bool isLoading = false;
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
   @override
@@ -43,7 +43,7 @@ class _SubscriptionListState extends State<SubscriptionList> {
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         getResult();

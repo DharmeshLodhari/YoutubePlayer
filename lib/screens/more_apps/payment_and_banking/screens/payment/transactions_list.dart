@@ -17,7 +17,7 @@ import '../../../../search_user.dart';
 import '../../../user_profile/models/user.dart';
 
 class TransactionList extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
   TransactionList({Key? key, this.arguments}) : super(key: key);
 
@@ -27,7 +27,7 @@ class TransactionList extends StatefulWidget {
 
 class _TransactionListState extends State<TransactionList> {
   final GlobalKey<ScaffoldState> _scaffoldTransactionKey =
-      new GlobalKey<ScaffoldState>();
+      GlobalKey<ScaffoldState>();
 
   DateTimeRange? newDateTimeRange;
   DateFormat dateFormat = DateFormat('yyyy-MM-dd');
@@ -40,7 +40,7 @@ class _TransactionListState extends State<TransactionList> {
 
   late CustomerProfileBloc customerProfileBloc;
 
-  GlobalKey _key = LabeledGlobalKey("transactionListPopUpMenu");
+  final GlobalKey _key = LabeledGlobalKey("transactionListPopUpMenu");
   late CustomizedPopUpMenu menu;
   int selectedMenuItemIndex = 0;
   bool isPopMenuOpen = false;
@@ -219,7 +219,7 @@ class _TransactionListState extends State<TransactionList> {
             size: 20,
           ),
           onPressed: () async {
-            CustomerProfile? userFound = await NavigationUtil.push(
+            final CustomerProfile? userFound = await NavigationUtil.push(
               context,
               screen: const SearchUser(),
             );

@@ -3,11 +3,12 @@ import 'package:Slydo/screens/more_apps/payment_and_banking/forms/payment/other_
 import 'package:Slydo/screens/more_apps/payment_and_banking/forms/payment/other_bank_transfer/new_beneficiary_transfer.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../../tiles/other_bank_tab_selection.dart';
 
 // ignore: must_be_immutable
 class OtherBankTransfer extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
   final Function(bool)? callback;
 
   OtherBankTransfer({this.arguments, this.callback});
@@ -41,7 +42,7 @@ class _OtherBankTransferState extends State<OtherBankTransfer> {
   }
 
   Widget scaffoldBody() {
-    bool isScreenIsSmall = MediaQuery.of(context).size.height < 600;
+    final bool isScreenIsSmall = MediaQuery.of(context).size.height < 600;
 
     return Container(
       padding: EdgeInsets.symmetric(
@@ -67,7 +68,7 @@ class _OtherBankTransferState extends State<OtherBankTransfer> {
           },
           currentIndex: currentAskTapOnHome,
         ),
-        SizedBox(
+        const SizedBox(
           height: 5,
         ),
       ],
@@ -80,7 +81,7 @@ class _OtherBankTransferState extends State<OtherBankTransfer> {
         onPageChanged: (currentPage) {
           updateCurrentAskTapOnHome(index: currentPage);
         },
-        physics: NeverScrollableScrollPhysics(),
+        physics: const NeverScrollableScrollPhysics(),
         controller: _pageViewController,
         children: [
           NewBeneficiaryTransfer(

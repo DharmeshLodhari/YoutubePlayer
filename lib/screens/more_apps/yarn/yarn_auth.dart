@@ -718,10 +718,10 @@ class YarnAuth extends AuthService {
     debugPrint("MEDIA LENGTH::: ${reYarn.media.length}");
 
     if (response.statusCode == 401) {
-      final headers = await getAuthHeaders();
+      await getAuthHeaders();
       // var response =
       // await httpPost(url, headers: headers, body: jsonEncode(body));
-      final response = await _createYarn(reYarn, url);
+      await _createYarn(reYarn, url);
     }
 
     // debugPrint(

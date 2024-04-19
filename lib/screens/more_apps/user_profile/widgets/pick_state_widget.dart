@@ -8,10 +8,10 @@ import '../models/UserAbout.dart';
 import '../user_auth.dart';
 
 class PickStateWidget extends StatefulWidget {
-  bool disable;
-  String?
+  final bool disable;
+  final String?
       initialStateValue; // If we pass this value, it won't the state from the userbloc.
-  Function(int? stateId, String? pickedStateValue) afterOnChanged;
+  final Function(int? stateId, String? pickedStateValue) afterOnChanged;
   PickStateWidget(
       {Key? key,
       this.disable = false,
@@ -51,7 +51,7 @@ class _PickStateWidgetState extends State<PickStateWidget> {
     getStates();
   }
 
-  getStates({String? state}) {
+  void getStates({String? state}) {
     disableDropDown = true;
     if (mounted) setState(() {});
     UserAuth().getStates().then((value) {

@@ -7,7 +7,7 @@ class BottomSheetItemWithCheck extends StatelessWidget {
   final Function? onTap;
   final IconData? icon;
   final String? title;
-  bool? isLast;
+  final bool? isLast;
   final bool? isChecked;
 
   BottomSheetItemWithCheck(

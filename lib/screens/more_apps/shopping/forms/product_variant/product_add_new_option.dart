@@ -21,7 +21,7 @@ import '../../../../../widget/rounded_background_icon.dart';
 import '../../shopping_auth.dart';
 
 class ProductAddNewOption extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
   ProductAddNewOption({this.arguments, Key? key}) : super(key: key);
 
@@ -258,7 +258,7 @@ class _ProductAddNewOptionState extends State<ProductAddNewOption> {
       ImagePicker().pickImage(source: imageSource).then((value) async {
         if (value != null) {
           /// for cropping the image
-          String? croppedImage = await ImageCrop().cropImage(value.path);
+          final String? croppedImage = await ImageCrop().cropImage(value.path);
           if (croppedImage == null) {
             return;
           }
@@ -628,7 +628,7 @@ class _ProductAddNewOptionState extends State<ProductAddNewOption> {
                     shrinkWrap: true,
                     itemCount: typeList.length,
                     itemBuilder: (context, index) {
-                      var category = typeList[index];
+                      final category = typeList[index];
                       if (selectedType == category) {
                         return Container(
                           color: selectedListItemBackgroundBlue,
@@ -707,7 +707,7 @@ class _ProductAddNewOptionState extends State<ProductAddNewOption> {
       // if (croppedImageList.length >= 1) {
       // if (productImages.length >= 1) {
       if (validateDropdown()) {
-        Variant variant = Variant();
+        final Variant variant = Variant();
         // variant.localImages = productImages.map((file) => File(file.path)).toList();
         variant.localImages =
             croppedImageList.map((filePath) => File(filePath)).toList();
@@ -727,7 +727,7 @@ class _ProductAddNewOptionState extends State<ProductAddNewOption> {
 
           Navigator.pop(context, variant);
         } else if (optionOnWhatToDo == 'edit') {
-          String productId = widget.arguments["productId"];
+          final String productId = widget.arguments["productId"];
           //make api call to save the variant details
           saveVariant(productId, variant);
         }

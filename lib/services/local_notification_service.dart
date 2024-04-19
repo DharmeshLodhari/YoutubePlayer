@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest.dart' as tz;
 
@@ -62,7 +63,7 @@ class LocalNotificationService {
   }
 
   Future selectNotification(String? payload) async {
-    print("Select notification $payload");
+    debugPrint("Select notification $payload");
   }
 
   // void showNotification(Map<String, dynamic> message,

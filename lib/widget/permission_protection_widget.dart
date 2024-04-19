@@ -1,6 +1,5 @@
 import 'package:Slydo/data/state_notifiers/user_bloc.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
@@ -20,8 +19,8 @@ class PermissionProtectionWidget extends StatelessWidget {
 
   final Widget child;
   final String permissionName;
-  double position;
-  late UserBloc userBloc;
+  final double position;
+  late final UserBloc userBloc;
   PermissionType? hasPermission;
   bool isShowLock = false;
   bool isLockForRead = false;
@@ -36,7 +35,7 @@ class PermissionProtectionWidget extends StatelessWidget {
             (hasPermission == PermissionType.READ && isLockForRead)
         ? GestureDetector(
             onTap: () {
-              print("Context: $context"); // Debug print statement
+              debugPrint("Context: $context"); // Debug print statement
               showSnackbar(context,
                   message: AppLocalization.of(context)?.doNotPermission ?? "");
             },

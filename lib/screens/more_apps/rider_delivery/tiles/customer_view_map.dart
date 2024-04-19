@@ -123,7 +123,7 @@ class _CustomerViewMapState extends State<CustomerViewMap> {
                 rotation: (riderLocation?.getHeading() ?? 0) + 12,
                 position: LatLng(riderLocation?.latitude ?? 0.0,
                     riderLocation?.longitude ?? 0.0),
-                anchor: Offset(0.5, 0.5),
+                anchor: const Offset(0.5, 0.5),
                 draggable: false,
                 zIndex: 2,
                 flat: true,
@@ -167,14 +167,14 @@ class _CustomerViewMapState extends State<CustomerViewMap> {
         polylineCoordinates.add(LatLng(point.latitude, point.longitude));
       });
     } else {
-      print(result.errorMessage);
+      debugPrint(result.errorMessage);
     }
     return polylineCoordinates;
   }
 
   void generatePolyLineFromPoints(List<LatLng> polylineCoordinates) async {
-    PolylineId id = PolylineId("poly");
-    Polyline polyline = Polyline(
+    final PolylineId id = const PolylineId("poly");
+    final Polyline polyline = Polyline(
       polylineId: id,
       color: navyBlue,
       points: polylineCoordinates,

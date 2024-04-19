@@ -52,10 +52,6 @@ class _SuperStoreState extends State<SuperStoreIndustry> {
     }
   }
 
-  getIndustryCategories(String industry) {
-    final String url = "/api/v1/products/categories/?industry=$industry";
-  }
-
   @override
   Widget build(BuildContext context) {
     basketBloc = Provider.of<BasketBloc>(context);
@@ -182,8 +178,7 @@ class _SuperStoreState extends State<SuperStoreIndustry> {
     return NotificationListener<ScrollNotification>(
       onNotification: (scrollNotification) {
         /// Check if the scroll direction is horizontal
-        if (scrollNotification is ScrollNotification &&
-            scrollNotification.metrics.axis == Axis.horizontal) {
+        if (scrollNotification.metrics.axis == Axis.horizontal) {
           // Disable horizontal scrolling
           return true;
         }

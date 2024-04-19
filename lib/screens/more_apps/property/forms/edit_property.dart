@@ -71,8 +71,8 @@ class _EditPropertyState extends State<EditProperty> {
   bool isPropertyForLongTerm = true;
 
   int imageCount = 5;
-  ScrollController _imageScrollController = ScrollController();
-  ScrollController _videoScrollController = ScrollController();
+  final ScrollController _imageScrollController = ScrollController();
+  final ScrollController _videoScrollController = ScrollController();
 
   List<File> propertyImages = [];
   List<File> propertyVideos = [];
@@ -568,7 +568,7 @@ class _EditPropertyState extends State<EditProperty> {
             ));
 
     if (videoSource != null) {
-      bool? isConditionAccepted = await videoLengthAlert();
+      final bool? isConditionAccepted = await videoLengthAlert();
       if (isConditionAccepted != null && isConditionAccepted) {
         ImagePicker()
             .pickVideo(
@@ -576,9 +576,9 @@ class _EditPropertyState extends State<EditProperty> {
             .then((value) async {
           if (value != null) {
             final videoInfo = FlutterVideoInfo();
-            var info = await videoInfo.getVideoInfo(value.path);
+            final info = await videoInfo.getVideoInfo(value.path);
             if (info == null) return null;
-            Duration pickedVideoDuration =
+            final Duration pickedVideoDuration =
                 Duration(milliseconds: info.duration!.toInt());
             if (pickedVideoDuration > videoLimit) {
               showToast(
@@ -662,7 +662,7 @@ class _EditPropertyState extends State<EditProperty> {
                                       ),
                                       RichText(
                                         textAlign: TextAlign.justify,
-                                        text: new TextSpan(
+                                        text: TextSpan(
                                           // Note: Styles for TextSpans must be explicitly defined.
                                           // Child text spans will inherit styles from parent
                                           style: TextStyle(
@@ -677,7 +677,7 @@ class _EditPropertyState extends State<EditProperty> {
                                             TextSpan(
                                                 text:
                                                     '${videoLimit.inMinutes} minutes',
-                                                style: new TextStyle(
+                                                style: const TextStyle(
                                                     fontWeight:
                                                         FontWeight.bold)),
                                             const TextSpan(
@@ -910,10 +910,6 @@ class _EditPropertyState extends State<EditProperty> {
                     height: 30,
                     width: (MediaQuery.of(context).size.width - 45) / 2),
                 selectedBorderColor: navyBlue,
-                children: <Widget>[
-                  sellButton(),
-                  rentButton(),
-                ],
                 isSelected: isPropertyForSellOrRent,
                 onPressed: (int index) {
                   if (index == 0) {
@@ -925,6 +921,10 @@ class _EditPropertyState extends State<EditProperty> {
                   }
                   setState(() {});
                 },
+                children: <Widget>[
+                  sellButton(),
+                  rentButton(),
+                ],
               ),
             ],
           ),

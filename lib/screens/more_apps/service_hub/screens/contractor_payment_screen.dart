@@ -27,7 +27,7 @@ import '../models/jobs.dart';
 
 class ContractorPaymentScreen extends StatefulWidget {
   ContractorPaymentScreen({Key? key, this.arguments}) : super(key: key);
-  var arguments;
+  final dynamic arguments;
 
   @override
   State<ContractorPaymentScreen> createState() =>
@@ -56,7 +56,7 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
   bool? isLoading;
   final _auth = PaymentAndBankingAuth();
   String errorMessage = "";
-  var userLocation;
+  UserLocation? userLocation;
   late http.Response response;
 
   final _sendPaymentScaffoldMessenger = GlobalKey<ScaffoldMessengerState>();
@@ -73,7 +73,7 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
     super.initState();
   }
 
-  getContractorDetail() async {
+  Future<void> getContractorDetail() async {
     messageReceiver = await UserAuth().fetchCustomerProfile(jobmodel!.assignee);
     _refNumberController.text = '';
     _categoryController.text = 'Finance';
@@ -201,7 +201,7 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
     );
   }
 
-  ratingAndReviewModal() {
+  void ratingAndReviewModal() {
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
@@ -306,9 +306,9 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
     );
   }
 
-  endJob() async {
+  Future<void> endJob() async {
     await ServiceHubAuthService().endJob(jobmodel!.id).then((value) {
-      print(value);
+      debugPrint("Value : $value");
       if (value == true) {
         makePayment();
       } else {
@@ -320,7 +320,7 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
     });
   }
 
-  submitRatingAndReview() async {
+  Future<void> submitRatingAndReview() async {
     await ServiceHubAuthService()
         .rateAndReviewContrator(jobId: jobmodel!.id, data: {
       "job_contractor": jobmodel!.assignee,
@@ -371,13 +371,13 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
     }
   }
 
-  makePayment() async {
+  Future<void> makePayment() async {
     if (Platform.isIOS) {
       userLocation = await locationService.getLocation();
     }
-    String description = 'General Payment';
+    final String description = 'General Payment';
 
-    var data = {
+    final data = {
       "from_customer": userBloc.user.userName,
       "to_customer": _recipientController.text.trim(),
       "currency": userBloc.user.currency,
@@ -387,18 +387,18 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
       "description": _refNumberController.text.isEmpty
           ? description
           : _refNumberController.text.trim(),
-      "latitude": Platform.isIOS ? userLocation.latitude : "",
-      "longitude": Platform.isIOS ? userLocation.longitude : "",
+      "latitude": Platform.isIOS ? userLocation?.latitude : "",
+      "longitude": Platform.isIOS ? userLocation?.longitude : "",
       "is_anonymous": false,
       "made_from_chat": false,
     };
-    print('ptrint data:::$data');
+    debugPrint('ptrint data:::$data');
 
     await _auth.makePayment(data).then((value) async {
       debugPrint("status code3333:- ${value.statusCode}  body:- ${value.body}");
 
       response = value;
-      var jsonData = json.decode(response.body);
+      final jsonData = json.decode(response.body);
       if (response.statusCode == 200) {
         _auth
             .updateStatusPayment(
@@ -433,7 +433,7 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
     return false;
   }
 
-  sendPayment() {
+  Widget sendPayment() {
     return PermissionProtectionWidget(
       permissionName: ProtectionPermission.transaction,
       isLockForRead: true,
@@ -446,7 +446,7 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
     );
   }
 
-  submitRatingAndReviewButton() {
+  Widget submitRatingAndReviewButton() {
     return CurvedButton(
       onPressed: () => submitRatingAndReview(),
       backgroundColor: navyBlue,
@@ -455,7 +455,7 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
     );
   }
 
-  displayCard() {
+  Widget displayCard() {
     return Column(
       children: [
         ListTile(
@@ -624,7 +624,7 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
       validator: (val) {
         if (val.isNotEmpty) {
           try {
-            double amount = double.parse(val.replaceAll(',', ''));
+            final double amount = double.parse(val.replaceAll(',', ''));
             if (amount > 0.0) {
               return null;
             } else {

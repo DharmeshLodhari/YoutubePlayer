@@ -286,7 +286,7 @@ class DebitCardAuth extends AuthService {
     final response = await httpPatch(url,
         headers: headers,
         body: _data,
-        newTimeOutDuration: Duration(seconds: 45));
+        newTimeOutDuration: const Duration(seconds: 45));
 
     debugPrint(
         "RESPONSE WITHDRAW CARD CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");

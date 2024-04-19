@@ -96,7 +96,7 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
     debugPrint("envelope ${envelope!.toJson()}");
     await getSearchedUser();
     if (envelope!.type != "empty-envelop") {
-      final Envelope envelopeFromServer = await MessageAuth()
+      final Envelope? envelopeFromServer = await MessageAuth()
           .getEnvelope(envelope: envelope!, id: data!['id'])
           .catchError((error) {
         deleteChatMessage();
@@ -393,7 +393,7 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
     }
   }
 
-  Widget getAppbar(var context) {
+  Widget getAppbar(BuildContext context) {
     return SliverOverlapAbsorber(
       handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
       sliver: SliverSafeArea(

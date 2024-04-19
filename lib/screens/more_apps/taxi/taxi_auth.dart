@@ -15,16 +15,16 @@ class TaxiAuth extends AuthService {
     url = url + "&key=${AppConfig.googleMapApiKey}";
 
     url = Uri.encodeFull(url);
-    var headers = await getAuthHeaders();
-    var response = await httpGet(url, headers: headers);
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers);
     if (response.statusCode == 200) {
       debugPrint("URL:- $url statusCode:- ${response.statusCode}");
 
-      Map<String, dynamic> responseBody = jsonDecode(response.body);
+      final Map<String, dynamic> responseBody = jsonDecode(response.body);
 
-      List<PlaceModal> placesModal = [];
+      final List<PlaceModal> placesModal = [];
 
-      List places = responseBody['results'];
+      final List places = responseBody['results'];
 
       places.forEach((element) {
         placesModal.add(PlaceModal.fromJson(element));
@@ -47,10 +47,11 @@ class TaxiAuth extends AuthService {
     url = url + "&key=${AppConfig.googleMapApiKey}";
 
     url = Uri.encodeFull(url);
-    var headers = await getAuthHeaders();
-    var response = await httpGet(url, headers: headers);
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers);
     if (response.statusCode == 200) {
-      Directions directions = Directions.fromMap(jsonDecode(response.body));
+      final Directions directions =
+          Directions.fromMap(jsonDecode(response.body));
 
       return directions;
     } else {
@@ -62,9 +63,9 @@ class TaxiAuth extends AuthService {
   }
 
   List<PlaceModal> getFakePlaces() {
-    List<PlaceModal> places = [];
+    final List<PlaceModal> places = [];
 
-    List<Map<String, dynamic>> fakeJson = [
+    final List<Map<String, dynamic>> fakeJson = [
       {
         "business_status": "OPERATIONAL",
         "formatted_address":

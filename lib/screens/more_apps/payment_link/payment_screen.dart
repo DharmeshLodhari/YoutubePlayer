@@ -35,8 +35,9 @@ class PaymentLinkScreen extends StatefulWidget {
 }
 
 class _PaymentLinkScreenState extends State<PaymentLinkScreen> {
-  TextEditingController _amountController = TextEditingController();
-  late TextEditingController _referenceController = TextEditingController();
+  final TextEditingController _amountController = TextEditingController();
+  late final TextEditingController _referenceController =
+      TextEditingController();
 
   final _sendPaymentScaffold = GlobalKey<ScaffoldState>();
   final _sendPaymentScaffoldMessenger = GlobalKey<ScaffoldMessengerState>();
@@ -81,7 +82,7 @@ class _PaymentLinkScreenState extends State<PaymentLinkScreen> {
     _auth.getPaymentCategory().then((result) {
       if (mounted) {
         setState(() {
-          List categoriesList = result["results"]["data"];
+          final List categoriesList = result["results"]["data"];
           categoriesList.forEach((data) {
             paymentCategories.add(data["name"]);
           });
@@ -215,7 +216,7 @@ class _PaymentLinkScreenState extends State<PaymentLinkScreen> {
     }
   }
 
-  showDataAlert(link) {
+  void showDataAlert(String link) {
     showDialog(
         context: context,
         builder: (context) {
@@ -357,8 +358,8 @@ class _PaymentLinkScreenState extends State<PaymentLinkScreen> {
   }
 
   Future<void> makePaymentLinkDialog() async {
-    String vString = amount!.toInt().toString();
-    int amt = int.parse(vString) + 35;
+    final String vString = amount!.toInt().toString();
+    final int amt = int.parse(vString) + 35;
     await showDialogBox(
       context: context,
       leftButtonOnPressed: () => Navigator.pop(context),
@@ -372,8 +373,7 @@ class _PaymentLinkScreenState extends State<PaymentLinkScreen> {
 
               await Future.delayed(const Duration(seconds: 3));
 
-              String description = 'General Payment';
-              var data = {
+              final data = {
                 "currency": userBloc.user.currency,
                 "amount": moneyInputNormalizer(amount.toString()),
                 "category": selectedCategory!.trim(),
@@ -383,7 +383,7 @@ class _PaymentLinkScreenState extends State<PaymentLinkScreen> {
               await _auth.makePaymentLink(data).then((value) async {
                 debugPrint(
                     "status code:- ${value.statusCode}  body:- ${value.body}");
-                dynamic res = jsonDecode(value.body);
+                final dynamic res = jsonDecode(value.body);
 
                 response = value;
 
@@ -459,7 +459,7 @@ class _PaymentLinkScreenState extends State<PaymentLinkScreen> {
     );
   }
 
-  Widget _displayBarcodeInfo(link) {
+  Widget _displayBarcodeInfo(String link) {
     return Card(
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
@@ -541,20 +541,22 @@ class _PaymentLinkScreenState extends State<PaymentLinkScreen> {
                                 const SizedBox(
                                   height: 40,
                                 ),
-                                errorMessage == ""
-                                    ? Container()
-                                    : Text(
-                                        errorMessage,
-                                        style: TextStyle(
-                                            color: mateRed,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 16),
-                                      ),
-                                errorMessage == ""
-                                    ? Container()
-                                    : const SizedBox(
-                                        height: 20,
-                                      ),
+                                if (errorMessage == "")
+                                  Container()
+                                else
+                                  Text(
+                                    errorMessage,
+                                    style: TextStyle(
+                                        color: mateRed,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16),
+                                  ),
+                                if (errorMessage == "")
+                                  Container()
+                                else
+                                  const SizedBox(
+                                    height: 20,
+                                  ),
                               ],
                             ),
                           ),
@@ -669,7 +671,7 @@ class _PaymentLinkScreenState extends State<PaymentLinkScreen> {
       controller: _amountController,
       onChanged: (val) {
         if (mounted) {
-          print(val);
+          debugPrint(val);
           setState(() {
             amount = double.parse(val.replaceAll(',', ''));
           });
@@ -678,7 +680,7 @@ class _PaymentLinkScreenState extends State<PaymentLinkScreen> {
       validator: (val) {
         if (val.isNotEmpty) {
           try {
-            double amount = double.parse(val.replaceAll(',', ''));
+            final double amount = double.parse(val.replaceAll(',', ''));
             if (amount <= 200000.0) {
               return null;
             }

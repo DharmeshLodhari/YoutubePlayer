@@ -199,7 +199,7 @@ class UserAuth extends AuthService {
     }
   }
 
-  Future<User> verifyUserDetail(File documentPhoto, File userPhoto) async {
+  Future<User> verifyUserDetail(File? documentPhoto, File? userPhoto) async {
     final headers = await getAuthHeaders();
     final String url = AppConfig.baseUrl + "/api/v1/user/kyc/";
 
@@ -284,7 +284,6 @@ class UserAuth extends AuthService {
     debugPrint('REGISTER PHONE NUMBER RESPONSE ::: ${response.body}');
 
     if (response.statusCode == 200 || response.statusCode == 205) {
-      var jsonData = json.decode(response.body);
       return true;
     } else {
       if (AppConfig.enableLogs.value) debugPrint("DATA SENT:- $data");
@@ -376,7 +375,6 @@ class UserAuth extends AuthService {
       String? phoneNumber,
       String otp,
       String passwordToken) async {
-    late String result;
     final String url = AppConfig.baseUrl + "/api/v1/sms/verify/";
     final headers = getNonAuthHeader();
     final data = {

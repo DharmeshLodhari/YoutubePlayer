@@ -155,7 +155,7 @@ class _SearchUserState extends State<SearchUser> {
   }
 
   Widget getUserLeading(CustomerProfile user) {
-    final Color borderColor = getUserTypeColor(user: user);
+    // final Color borderColor = getUserTypeColor(user: user);
 
     return GestureDetector(
       onTap: () {
@@ -212,7 +212,7 @@ class _SearchUserState extends State<SearchUser> {
     });
   }
 
-  _isRefreshing() {
+  void _isRefreshing() {
     count = 0;
     next = "";
     previous = "";

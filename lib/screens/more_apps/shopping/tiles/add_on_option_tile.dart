@@ -14,7 +14,7 @@ class AddOnOptionTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
       shadowColor: boxShadowTwo,
       elevation: 0,
       child: Container(
@@ -38,7 +38,7 @@ class AddOnOptionTile extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                     fontSize: 14),
               ),
-              SizedBox(height: 5.0),
+              const SizedBox(height: 5.0),
               Text(
                 'Created: ${addOnOption.createdAt.toString()}',
                 maxLines: 1,
@@ -75,7 +75,7 @@ class AddOnOptionTile extends StatelessWidget {
           ),
           leading: GestureDetector(
             onTap: () {
-              String? url = addOnOption.picture;
+              final String? url = addOnOption.picture;
               Navigator.of(context).pushNamed("/photo-viewer", arguments: url);
             },
             child: checkProductImage(addOnOption),
@@ -91,7 +91,7 @@ class AddOnOptionTile extends StatelessWidget {
 
     url = addOnOption.picture;
 
-    String? imageUrl = url?.replaceAll('https//', 'https://');
+    final String? imageUrl = url?.replaceAll('https//', 'https://');
     if (url == "") {
       return CircleAvatar(
         backgroundColor: navyBlue,

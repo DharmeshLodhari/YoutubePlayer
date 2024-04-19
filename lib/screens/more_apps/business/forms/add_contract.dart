@@ -25,7 +25,7 @@ import '../../../search_user.dart';
 
 // ignore: must_be_immutable
 class AddContract extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
   AddContract({this.arguments});
 
@@ -712,7 +712,7 @@ class _AddContractState extends State<AddContract> {
     }
   }
 
-  sendContract() async {
+  Future<void> sendContract() async {
     try {
       showDialog(
           context: context,

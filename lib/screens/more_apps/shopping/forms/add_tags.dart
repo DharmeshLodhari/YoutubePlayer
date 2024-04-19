@@ -16,7 +16,7 @@ class AddTags extends StatefulWidget {
     this.arguments,
   });
 
-  var arguments;
+  final dynamic arguments;
 
   @override
   State<AddTags> createState() => _AddTagsState();
@@ -44,7 +44,7 @@ class _AddTagsState extends State<AddTags> {
     // tagList.add(Tags(name: 'React', id: 104));
     // WidgetsBinding.instance.addPostFrameCallback(
     //   (timeStamp) async {
-    UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
+    final UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
 
     getProductTags(userBloc.userAbout?.industry?.id!, "");
 
@@ -167,7 +167,7 @@ class _AddTagsState extends State<AddTags> {
 
   Widget _buildBody() {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 20.0),
+      padding: const EdgeInsets.symmetric(horizontal: 20.0),
       child: Column(
         children: [
           CustomizedTextFormField(
@@ -200,7 +200,7 @@ class _AddTagsState extends State<AddTags> {
                       itemCount: tagList.length + 1,
                       itemBuilder: (context, index) {
                         if (index == tagList.length) {
-                          return SizedBox.shrink();
+                          return const SizedBox.shrink();
                         } else {
                           return Card(
                             elevation: 0,
@@ -208,13 +208,13 @@ class _AddTagsState extends State<AddTags> {
                                 side: BorderSide(
                                     color: selectedListItemBackgroundBlue),
                                 borderRadius: BorderRadius.circular(10)),
-                            margin: EdgeInsets.symmetric(vertical: 2),
+                            margin: const EdgeInsets.symmetric(vertical: 2),
                             shadowColor: boxShadowTwo,
                             color: white,
                             child: Container(
                               decoration: decorateBox(),
                               child: Padding(
-                                padding: EdgeInsets.all(5.0),
+                                padding: const EdgeInsets.all(5.0),
                                 child: _buildTagList(index),
                               ),
                             ),
@@ -251,13 +251,13 @@ class _AddTagsState extends State<AddTags> {
     }
   }
 
-  Future<void> getProductTags(id, searchText) async {
+  Future<void> getProductTags(String? id, String searchText) async {
     if (!isLoading) {
       if (next != null && !isLoading) {
         isLoading = true;
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result = await ShoppingAuthService()
+        final Map<String, dynamic>? result = await ShoppingAuthService()
             .getProductTags(id, next, previous, searchText);
 
         if (result == null) {
@@ -273,7 +273,7 @@ class _AddTagsState extends State<AddTags> {
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
-        var tempList = result['results'];
+        final tempList = result['results'];
         if (mounted) {
           setState(() {
             noCategoryInList = false;
@@ -314,7 +314,7 @@ class _AddTagsState extends State<AddTags> {
           fontFamily: "Inter",
         ),
       ),
-      shape: RoundedRectangleBorder(
+      shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.all(Radius.circular(25.0)),
       ),
       activeColor: navyBlue,

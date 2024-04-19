@@ -341,9 +341,9 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
               child: CachedNetworkImage(
                 imageUrl: "${args.job!.pictures![index].image}",
                 placeholder: (context, url) =>
-                    Center(child: new CircularProgressIndicator()),
+                    const Center(child: CircularProgressIndicator()),
                 errorWidget: (context, url, error) =>
-                    Center(child: new Icon(Icons.error)),
+                    const Center(child: Icon(Icons.error)),
               ),
             ),
             Positioned(
@@ -406,7 +406,7 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
     );
   }
 
-  onPageFunction(index, reason) {
+  void onPageFunction(index, reason) {
     currentIndex = index;
     setState(() {});
   }

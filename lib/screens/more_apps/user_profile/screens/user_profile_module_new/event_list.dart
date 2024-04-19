@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class EventList extends StatefulWidget {
-  CustomerProfile? user;
+  final CustomerProfile? user;
   EventList({@required this.user, Key? key}) : super(key: key);
 
   @override

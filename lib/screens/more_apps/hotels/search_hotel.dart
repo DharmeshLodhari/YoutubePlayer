@@ -39,7 +39,7 @@ class _SearchHotelState extends State<SearchHotel> {
   List<HotelRoomItem> hotelRooms = [];
   bool isLoading = false;
 
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
   @override
@@ -645,7 +645,7 @@ class _SearchHotelState extends State<SearchHotel> {
     );
   }
 
-  Widget getPriceSelection(bottomSheetSetState) {
+  Widget getPriceSelection(StateSetter bottomSheetSetState) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Text(
         "Price",

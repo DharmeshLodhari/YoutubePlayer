@@ -15,7 +15,7 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 class ReviewListScreen extends StatefulWidget {
   ReviewListScreen({Key? key, required this.arguments}) : super(key: key);
 
-  Map<String, dynamic> arguments;
+  final Map<String, dynamic> arguments;
 
   @override
   _ReviewListScreenState createState() => _ReviewListScreenState();
@@ -30,7 +30,7 @@ class _ReviewListScreenState extends State<ReviewListScreen> {
 
   bool isLoading = false;
   bool noReviewInList = false;
-  ScrollController _scrollController = new ScrollController();
+  final ScrollController _scrollController = ScrollController();
 
   CustomerProfile? reviewedUser;
   Product? product;
@@ -38,7 +38,7 @@ class _ReviewListScreenState extends State<ReviewListScreen> {
   double rating = 0.0;
 
   final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey =
-      new GlobalKey<ScaffoldMessengerState>();
+      GlobalKey<ScaffoldMessengerState>();
 
   @override
   void initState() {
@@ -96,10 +96,11 @@ class _ReviewListScreenState extends State<ReviewListScreen> {
         reviewCount = result['count'];
         reviewNext = result['next'];
         reviewPrevious = result['previous'];
-        List? tempList = result['results'];
+        final List? tempList = result['results'];
 
         if (tempList != null) {
-          List<Review> list = tempList.map((e) => Review.fromJson(e)).toList();
+          final List<Review> list =
+              tempList.map((e) => Review.fromJson(e)).toList();
 
           if (mounted) {
             setState(() {
@@ -200,25 +201,26 @@ class _ReviewListScreenState extends State<ReviewListScreen> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                isLoading
-                    ? Expanded(
-                        child: Center(
-                          child: CircularLoadingIndicator(),
-                        ),
-                      )
-                    : noReviewInList
-                        ? Expanded(child: NoItemInList(msg: "No Review yet"))
-                        : Expanded(
-                            child: ListView.builder(
-                              itemBuilder: (context, index) => ReviewTile(
-                                review: reviewList[index],
-                                product: product,
-                                reviewedUser: reviewedUser,
-                                service: service,
-                              ),
-                              itemCount: reviewList.length,
+                if (isLoading)
+                  Expanded(
+                    child: Center(
+                      child: CircularLoadingIndicator(),
+                    ),
+                  )
+                else
+                  noReviewInList
+                      ? Expanded(child: NoItemInList(msg: "No Review yet"))
+                      : Expanded(
+                          child: ListView.builder(
+                            itemBuilder: (context, index) => ReviewTile(
+                              review: reviewList[index],
+                              product: product,
+                              reviewedUser: reviewedUser,
+                              service: service,
                             ),
+                            itemCount: reviewList.length,
                           ),
+                        ),
               ],
             ),
           ),

@@ -62,7 +62,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
             body: SingleChildScrollView(
               scrollDirection: Axis.vertical,
               child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 20),
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 height: MediaQuery.of(context).size.height -
                     (AppBar().preferredSize.height +
                         MediaQuery.of(context).padding.top),
@@ -75,19 +75,21 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             forgotPasswordTitle(),
-                            SizedBox(
+                            const SizedBox(
                               height: 20,
                             ),
                             phoneNumberField(),
-                            isOTPSent
-                                ? SizedBox(
-                                    height: 20,
-                                  )
-                                : Container(),
-                            isOTPSent
-                                ? getVerificationOTPWidget()
-                                : Container(),
-                            SizedBox(
+                            if (isOTPSent)
+                              const SizedBox(
+                                height: 20,
+                              )
+                            else
+                              Container(),
+                            if (isOTPSent)
+                              getVerificationOTPWidget()
+                            else
+                              Container(),
+                            const SizedBox(
                               height: 20,
                             ),
                             submitButton()
@@ -113,7 +115,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         Expanded(flex: 3, child: getCountryDropdown()),
-        SizedBox(
+        const SizedBox(
           width: 8,
         ),
         Expanded(
@@ -143,7 +145,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
           "Phone number",
           style: TextStyle(color: darkGrey, fontSize: 14),
         ),
-        SizedBox(
+        const SizedBox(
           height: 6,
         ),
         Card(
@@ -152,11 +154,11 @@ class _ForgotPasswordState extends State<ForgotPassword> {
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
               side: BorderSide(color: greyBorderColor)),
-          margin: EdgeInsets.all(0),
+          margin: const EdgeInsets.all(0),
           borderOnForeground: true,
           child: ListTile(
             dense: true,
-            contentPadding: EdgeInsets.fromLTRB(8, 0, 0, 0),
+            contentPadding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
             onTap: () {
               _openCountryPickerDialog(isForLogin: true);
             },
@@ -170,9 +172,9 @@ class _ForgotPasswordState extends State<ForgotPassword> {
   Widget _buildDialogItem(Country country) {
     return Row(
       children: <Widget>[
-        SizedBox(width: 4.0),
+        const SizedBox(width: 4.0),
         CountryPickerUtils.getDefaultFlagImage(country),
-        SizedBox(width: 8.0),
+        const SizedBox(width: 8.0),
         Expanded(
           child: Text(
             "+${country.phoneCode}",
@@ -189,7 +191,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
           Icons.keyboard_arrow_down,
           color: blackFont,
         ),
-        SizedBox(width: 4.0),
+        const SizedBox(width: 4.0),
       ],
     );
   }
@@ -198,7 +200,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
     return Row(
       children: <Widget>[
         CountryPickerUtils.getDefaultFlagImage(country),
-        SizedBox(width: 8.0),
+        const SizedBox(width: 8.0),
         Text(
           "+${country.phoneCode}",
           style: TextStyle(
@@ -207,7 +209,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
             fontWeight: FontWeight.w600,
           ),
         ),
-        SizedBox(width: 8.0),
+        const SizedBox(width: 8.0),
         Expanded(
           child: Text(
             "(" + country.name! + ")",
@@ -230,7 +232,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
           data: Theme.of(context).copyWith(primaryColor: navyBlue),
           child: CountryPickerDialog(
             isForLogin: isForLogin,
-            titlePadding: EdgeInsets.all(8.0),
+            titlePadding: const EdgeInsets.all(8.0),
             searchCursorColor: navyBlue,
             searchInputDecoration: InputDecoration(
               hintText: AppLocalization.of(context)!.search,
@@ -263,7 +265,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
       obscureText: false,
       keyboardType: TextInputType.phone,
       decoration: InputDecoration(
-          prefixIcon: Icon(Icons.dialpad),
+          prefixIcon: const Icon(Icons.dialpad),
           fillColor: Colors.white,
           filled: true,
           hintText: AppLocalization.of(context)!.enterYourOtpHere,
@@ -271,7 +273,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
             color: blackFont,
             fontSize: 16,
           ),
-          border: OutlineInputBorder(
+          border: const OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(4)),
               borderSide: BorderSide(
                   width: 1, color: Colors.white, style: BorderStyle.solid))),
@@ -313,7 +315,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
             phoneNumberFromTextField.replaceFirst("0", "");
       }
 
-      String phoneNumber =
+      final String phoneNumber =
           "+" + _selectedDialogCountry.phoneCode! + phoneNumberFromTextField;
 
       UserAuth().passwordResetOtp(phoneNumber).then((value) {

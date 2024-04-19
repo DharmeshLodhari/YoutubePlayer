@@ -47,7 +47,7 @@ class _PayoutScreenState extends State<PayoutScreen> {
   StateSetter? bottomSheetStateSetterGlobal;
   bool bottomSheetMounted = false;
   int bottomSheetSearchIndex = 0;
-  final ScrollController _scrollController = new ScrollController();
+  final ScrollController _scrollController = ScrollController();
   String? next = "", previous = "";
   int count = 0;
   bool noList = false;

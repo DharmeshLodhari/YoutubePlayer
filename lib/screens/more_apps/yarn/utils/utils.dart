@@ -37,7 +37,7 @@ List<String> getAllHashtags(String text) {
     }
   }
 
-  final regexp = RegExp(r'\#[a-zA-Z0-9._-]+\b()');
+  RegExp(r'\#[a-zA-Z0-9._-]+\b()');
   // regexp.allMatches(text).forEach((element) {
   //   if (element.group(0) != null) {
   //     hashtags.add(element.group(0).toString());

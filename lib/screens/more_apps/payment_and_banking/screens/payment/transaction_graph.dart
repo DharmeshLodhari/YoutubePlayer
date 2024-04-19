@@ -41,11 +41,11 @@ class _TransactionGraphState extends State<TransactionGraph> {
   late int week;
   late DateTime start;
   late DateTime end;
-  var barChartData;
+  dynamic barChartData;
   Map<String?, num?>? _measures;
-  var income;
-  var expenditure;
-  var firstData = [
+  dynamic income;
+  dynamic expenditure;
+  List<GraphData> firstData = [
     GraphData(day: 0, amount: 0),
     GraphData(day: 1, amount: 0),
     GraphData(day: 2, amount: 0),
@@ -54,7 +54,7 @@ class _TransactionGraphState extends State<TransactionGraph> {
     GraphData(day: 5, amount: 0),
     GraphData(day: 6, amount: 0),
   ];
-  var secondData = [
+  List<GraphData> secondData = [
     GraphData(day: 0, amount: 0),
     GraphData(day: 1, amount: 0),
     GraphData(day: 2, amount: 0),
@@ -66,7 +66,7 @@ class _TransactionGraphState extends State<TransactionGraph> {
 
   @override
   void initState() {
-    DateTime date = DateTime.now();
+    final DateTime date = DateTime.now();
     week = weekNumber(date);
     start = getStartingOfWeek(date);
     end = getEndingOfWeek(date);
@@ -470,7 +470,7 @@ class _TransactionGraphState extends State<TransactionGraph> {
   }
 
   Widget getSelectedData() {
-    List<Widget> widgets = [];
+    final List<Widget> widgets = [];
     if (_measures != null) {
       _measures!.forEach((String? series, num? value) {
         if (series == "Income") {
@@ -519,7 +519,7 @@ class _TransactionGraphState extends State<TransactionGraph> {
     return AppLocalization.of(context)!.day;
   }
 
-  _onSelectionChanged(charts.SelectionModel model) {
+  void _onSelectionChanged(charts.SelectionModel model) {
     final selectedDatum = model.selectedDatum;
     final measures = <String?, num?>{};
     if (selectedDatum.isNotEmpty) {

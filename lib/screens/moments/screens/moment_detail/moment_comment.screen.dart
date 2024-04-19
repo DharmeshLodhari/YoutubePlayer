@@ -68,7 +68,7 @@ class _MomentCommentScreenState extends State<MomentCommentScreen> {
       GlobalKey<MomentCommentTextFieldState>();
   bool? enableComment = false, enablePayment = false;
   bool? enableAdult = false, viewerAdvice = false;
-  var ageRating;
+  String? ageRating;
 
   ScrollController scrollController = ScrollController();
   List<YarnMedia> selectedMedia = [];
@@ -90,8 +90,7 @@ class _MomentCommentScreenState extends State<MomentCommentScreen> {
     super.initState();
   }
 
-  Widget commentListWidget(
-      {avatar, username, comment, createAt, YarnComment? yarnComment}) {
+  Widget commentListWidget({YarnComment? yarnComment}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[

@@ -305,7 +305,7 @@ class PushNotificationService {
                   context: myGlobals.scaffoldKey.currentContext!,
                   notification: notification);
 
-              if (result != null && result as bool && result == true) {
+              if (result != null && result && result == true) {
                 isDialogueOpen = false;
               } else {
                 isDialogueOpen = false;
@@ -324,7 +324,7 @@ class PushNotificationService {
                   context: myGlobals.scaffoldKey.currentContext!,
                   notification: notification);
 
-              if (result != null && result as bool && result == true) {
+              if (result != null && result && result == true) {
                 isDialogueOpen = false;
               } else {
                 isDialogueOpen = false;
@@ -436,7 +436,7 @@ class PushNotificationService {
       } else if (payload.length > 13 &&
           payload.substring(0, 13) == "/chat-screen/") {
         //this variable will fetch the username of the recipient
-        final String recipientUsername =
+        final String? recipientUsername =
             payload.replaceAll("/chat-screen/", "");
 
         if (recipientUsername != null) {
@@ -444,17 +444,19 @@ class PushNotificationService {
               context: context!,
               builder: (context) => Center(child: CircularLoadingIndicator()));
 
-          final ChatConversation chatConversation =
+          final ChatConversation? chatConversation =
               await UserAuth().fetchContactProfile(recipientUsername);
 
           if (chatConversation == null) {
             Navigator.of(context)
                 .popUntil(ModalRoute.withName(Routes.DASHBOARD));
             return;
+          } else {
+            Navigator.of(context)
+                .popUntil(ModalRoute.withName(Routes.DASHBOARD));
+            Navigator.pushNamed(context, '/chat-screen',
+                arguments: {"searchedUser": chatConversation});
           }
-          Navigator.of(context).popUntil(ModalRoute.withName(Routes.DASHBOARD));
-          Navigator.pushNamed(context, '/chat-screen',
-              arguments: {"searchedUser": chatConversation});
         }
       } else if (payload.toString().contains("orders-list")) {
         Navigator.of(context!).popUntil(ModalRoute.withName(Routes.DASHBOARD));

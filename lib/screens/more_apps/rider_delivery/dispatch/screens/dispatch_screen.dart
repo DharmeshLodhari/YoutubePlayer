@@ -15,14 +15,14 @@ class DispatchScreen extends StatefulWidget {
 }
 
 class _DispatchScreenState extends State<DispatchScreen> {
-  double _initialSheetChildSize = 0.0;
+  // double _initialSheetChildSize = 0.0;
 
   bool isPackageReview = false;
 
   @override
   void initState() {
     isPackageReview = true;
-    _initialSheetChildSize = 0.45;
+    // _initialSheetChildSize = 0.45;
     super.initState();
   }
 
@@ -145,23 +145,23 @@ class _DispatchScreenState extends State<DispatchScreen> {
     );
   }
 
-  Widget _buildPackageReview() {
-    return DraggableScrollableSheet(
-      initialChildSize: _initialSheetChildSize,
-      maxChildSize: _initialSheetChildSize,
-      minChildSize: _initialSheetChildSize,
-      builder: (context, scrollController) => ClipRRect(
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
-        ),
-        child: Container(
-          color: white,
-          child: getPackageReviewDetails(),
-        ),
-      ),
-    );
-  }
+  // Widget _buildPackageReview() {
+  //   return DraggableScrollableSheet(
+  //     initialChildSize: _initialSheetChildSize,
+  //     maxChildSize: _initialSheetChildSize,
+  //     minChildSize: _initialSheetChildSize,
+  //     builder: (context, scrollController) => ClipRRect(
+  //       borderRadius: const BorderRadius.only(
+  //         topLeft: Radius.circular(20),
+  //         topRight: Radius.circular(20),
+  //       ),
+  //       child: Container(
+  //         color: white,
+  //         child: getPackageReviewDetails(),
+  //       ),
+  //     ),
+  //   );
+  // }
 
   Widget getPackageReviewDetails() {
     return Container(
@@ -316,23 +316,23 @@ class _DispatchScreenState extends State<DispatchScreen> {
     );
   }
 
-  Widget _buildSelectDestination() {
-    return DraggableScrollableSheet(
-      initialChildSize: _initialSheetChildSize,
-      maxChildSize: _initialSheetChildSize,
-      minChildSize: _initialSheetChildSize,
-      builder: (context, scrollController) => ClipRRect(
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
-        ),
-        child: Container(
-          color: white,
-          child: getSelectDestinationDetails(),
-        ),
-      ),
-    );
-  }
+  // Widget _buildSelectDestination() {
+  //   return DraggableScrollableSheet(
+  //     initialChildSize: _initialSheetChildSize,
+  //     maxChildSize: _initialSheetChildSize,
+  //     minChildSize: _initialSheetChildSize,
+  //     builder: (context, scrollController) => ClipRRect(
+  //       borderRadius: const BorderRadius.only(
+  //         topLeft: Radius.circular(20),
+  //         topRight: Radius.circular(20),
+  //       ),
+  //       child: Container(
+  //         color: white,
+  //         child: getSelectDestinationDetails(),
+  //       ),
+  //     ),
+  //   );
+  // }
 
   Widget getSelectDestinationDetails() {
     return Container(
@@ -457,23 +457,23 @@ class _DispatchScreenState extends State<DispatchScreen> {
     );
   }
 
-  Widget _buildNoVehicles() {
-    return DraggableScrollableSheet(
-      initialChildSize: _initialSheetChildSize,
-      maxChildSize: _initialSheetChildSize,
-      minChildSize: _initialSheetChildSize,
-      builder: (context, scrollController) => ClipRRect(
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
-        ),
-        child: Container(
-          color: white,
-          child: getVehiclesDetails(),
-        ),
-      ),
-    );
-  }
+  // Widget _buildNoVehicles() {
+  //   return DraggableScrollableSheet(
+  //     initialChildSize: _initialSheetChildSize,
+  //     maxChildSize: _initialSheetChildSize,
+  //     minChildSize: _initialSheetChildSize,
+  //     builder: (context, scrollController) => ClipRRect(
+  //       borderRadius: const BorderRadius.only(
+  //         topLeft: Radius.circular(20),
+  //         topRight: Radius.circular(20),
+  //       ),
+  //       child: Container(
+  //         color: white,
+  //         child: getVehiclesDetails(),
+  //       ),
+  //     ),
+  //   );
+  // }
 
   Widget getVehiclesDetails() {
     return Container(
@@ -550,23 +550,23 @@ class _DispatchScreenState extends State<DispatchScreen> {
     );
   }
 
-  Widget _buildSelectOption() {
-    return DraggableScrollableSheet(
-      initialChildSize: _initialSheetChildSize,
-      maxChildSize: _initialSheetChildSize,
-      minChildSize: _initialSheetChildSize,
-      builder: (context, scrollController) => ClipRRect(
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
-        ),
-        child: Container(
-          color: white,
-          child: getSelectOption(),
-        ),
-      ),
-    );
-  }
+  // Widget _buildSelectOption() {
+  //   return DraggableScrollableSheet(
+  //     initialChildSize: _initialSheetChildSize,
+  //     maxChildSize: _initialSheetChildSize,
+  //     minChildSize: _initialSheetChildSize,
+  //     builder: (context, scrollController) => ClipRRect(
+  //       borderRadius: const BorderRadius.only(
+  //         topLeft: Radius.circular(20),
+  //         topRight: Radius.circular(20),
+  //       ),
+  //       child: Container(
+  //         color: white,
+  //         child: getSelectOption(),
+  //       ),
+  //     ),
+  //   );
+  // }
 
   Widget getSelectOption() {
     return Container(
@@ -681,23 +681,23 @@ class _DispatchScreenState extends State<DispatchScreen> {
     );
   }
 
-  Widget _buildDestinationLocation() {
-    return DraggableScrollableSheet(
-      initialChildSize: _initialSheetChildSize,
-      maxChildSize: _initialSheetChildSize,
-      minChildSize: _initialSheetChildSize,
-      builder: (context, scrollController) => ClipRRect(
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
-        ),
-        child: Container(
-          color: white,
-          child: getDestinationLocation(),
-        ),
-      ),
-    );
-  }
+  // Widget _buildDestinationLocation() {
+  //   return DraggableScrollableSheet(
+  //     initialChildSize: _initialSheetChildSize,
+  //     maxChildSize: _initialSheetChildSize,
+  //     minChildSize: _initialSheetChildSize,
+  //     builder: (context, scrollController) => ClipRRect(
+  //       borderRadius: const BorderRadius.only(
+  //         topLeft: Radius.circular(20),
+  //         topRight: Radius.circular(20),
+  //       ),
+  //       child: Container(
+  //         color: white,
+  //         child: getDestinationLocation(),
+  //       ),
+  //     ),
+  //   );
+  // }
 
   Widget getDestinationLocation() {
     return Container(
@@ -798,23 +798,23 @@ class _DispatchScreenState extends State<DispatchScreen> {
     );
   }
 
-  Widget _buildRiderOption() {
-    return DraggableScrollableSheet(
-      initialChildSize: _initialSheetChildSize,
-      maxChildSize: _initialSheetChildSize,
-      minChildSize: _initialSheetChildSize,
-      builder: (context, scrollController) => ClipRRect(
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
-        ),
-        child: Container(
-          color: white,
-          child: getRiderOptionDetails(),
-        ),
-      ),
-    );
-  }
+  // Widget _buildRiderOption() {
+  //   return DraggableScrollableSheet(
+  //     initialChildSize: _initialSheetChildSize,
+  //     maxChildSize: _initialSheetChildSize,
+  //     minChildSize: _initialSheetChildSize,
+  //     builder: (context, scrollController) => ClipRRect(
+  //       borderRadius: const BorderRadius.only(
+  //         topLeft: Radius.circular(20),
+  //         topRight: Radius.circular(20),
+  //       ),
+  //       child: Container(
+  //         color: white,
+  //         child: getRiderOptionDetails(),
+  //       ),
+  //     ),
+  //   );
+  // }
 
   Widget getRiderOptionDetails() {
     return Container(
@@ -949,23 +949,23 @@ class _DispatchScreenState extends State<DispatchScreen> {
     );
   }
 
-  Widget _buildYouFare() {
-    return DraggableScrollableSheet(
-      initialChildSize: _initialSheetChildSize,
-      maxChildSize: _initialSheetChildSize,
-      minChildSize: _initialSheetChildSize,
-      builder: (context, scrollController) => ClipRRect(
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
-        ),
-        child: Container(
-          color: white,
-          child: getYouFareDetails(),
-        ),
-      ),
-    );
-  }
+  // Widget _buildYouFare() {
+  //   return DraggableScrollableSheet(
+  //     initialChildSize: _initialSheetChildSize,
+  //     maxChildSize: _initialSheetChildSize,
+  //     minChildSize: _initialSheetChildSize,
+  //     builder: (context, scrollController) => ClipRRect(
+  //       borderRadius: const BorderRadius.only(
+  //         topLeft: Radius.circular(20),
+  //         topRight: Radius.circular(20),
+  //       ),
+  //       child: Container(
+  //         color: white,
+  //         child: getYouFareDetails(),
+  //       ),
+  //     ),
+  //   );
+  // }
 
   Widget getYouFareDetails() {
     return Container(
@@ -1031,23 +1031,23 @@ class _DispatchScreenState extends State<DispatchScreen> {
     );
   }
 
-  Widget _buildPaymentFailed() {
-    return DraggableScrollableSheet(
-      initialChildSize: _initialSheetChildSize,
-      maxChildSize: _initialSheetChildSize,
-      minChildSize: _initialSheetChildSize,
-      builder: (context, scrollController) => ClipRRect(
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
-        ),
-        child: Container(
-          color: white,
-          child: getPaymentFailedDetails(),
-        ),
-      ),
-    );
-  }
+  // Widget _buildPaymentFailed() {
+  //   return DraggableScrollableSheet(
+  //     initialChildSize: _initialSheetChildSize,
+  //     maxChildSize: _initialSheetChildSize,
+  //     minChildSize: _initialSheetChildSize,
+  //     builder: (context, scrollController) => ClipRRect(
+  //       borderRadius: const BorderRadius.only(
+  //         topLeft: Radius.circular(20),
+  //         topRight: Radius.circular(20),
+  //       ),
+  //       child: Container(
+  //         color: white,
+  //         child: getPaymentFailedDetails(),
+  //       ),
+  //     ),
+  //   );
+  // }
 
   Widget getPaymentFailedDetails() {
     return Container(
@@ -1113,23 +1113,23 @@ class _DispatchScreenState extends State<DispatchScreen> {
     );
   }
 
-  Widget _buildPaymentRetryProcess() {
-    return DraggableScrollableSheet(
-      initialChildSize: _initialSheetChildSize,
-      maxChildSize: _initialSheetChildSize,
-      minChildSize: _initialSheetChildSize,
-      builder: (context, scrollController) => ClipRRect(
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
-        ),
-        child: Container(
-          color: white,
-          child: getPaymentRetryProcessDetails(),
-        ),
-      ),
-    );
-  }
+  // Widget _buildPaymentRetryProcess() {
+  //   return DraggableScrollableSheet(
+  //     initialChildSize: _initialSheetChildSize,
+  //     maxChildSize: _initialSheetChildSize,
+  //     minChildSize: _initialSheetChildSize,
+  //     builder: (context, scrollController) => ClipRRect(
+  //       borderRadius: const BorderRadius.only(
+  //         topLeft: Radius.circular(20),
+  //         topRight: Radius.circular(20),
+  //       ),
+  //       child: Container(
+  //         color: white,
+  //         child: getPaymentRetryProcessDetails(),
+  //       ),
+  //     ),
+  //   );
+  // }
 
   Widget getPaymentRetryProcessDetails() {
     return Container(
@@ -1186,23 +1186,23 @@ class _DispatchScreenState extends State<DispatchScreen> {
     );
   }
 
-  Widget _buildArriving() {
-    return DraggableScrollableSheet(
-      initialChildSize: _initialSheetChildSize,
-      maxChildSize: _initialSheetChildSize,
-      minChildSize: _initialSheetChildSize,
-      builder: (context, scrollController) => ClipRRect(
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
-        ),
-        child: Container(
-          color: white,
-          child: getArrivingDetails(),
-        ),
-      ),
-    );
-  }
+  // Widget _buildArriving() {
+  //   return DraggableScrollableSheet(
+  //     initialChildSize: _initialSheetChildSize,
+  //     maxChildSize: _initialSheetChildSize,
+  //     minChildSize: _initialSheetChildSize,
+  //     builder: (context, scrollController) => ClipRRect(
+  //       borderRadius: const BorderRadius.only(
+  //         topLeft: Radius.circular(20),
+  //         topRight: Radius.circular(20),
+  //       ),
+  //       child: Container(
+  //         color: white,
+  //         child: getArrivingDetails(),
+  //       ),
+  //     ),
+  //   );
+  // }
 
   Widget getArrivingDetails() {
     return Container(
@@ -1356,23 +1356,23 @@ class _DispatchScreenState extends State<DispatchScreen> {
     );
   }
 
-  Widget _buildPartnerArrivingDetails() {
-    return DraggableScrollableSheet(
-      initialChildSize: _initialSheetChildSize,
-      maxChildSize: _initialSheetChildSize,
-      minChildSize: _initialSheetChildSize,
-      builder: (context, scrollController) => ClipRRect(
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
-        ),
-        child: Container(
-          color: white,
-          child: getArrivingDetailsData(),
-        ),
-      ),
-    );
-  }
+  // Widget _buildPartnerArrivingDetails() {
+  //   return DraggableScrollableSheet(
+  //     initialChildSize: _initialSheetChildSize,
+  //     maxChildSize: _initialSheetChildSize,
+  //     minChildSize: _initialSheetChildSize,
+  //     builder: (context, scrollController) => ClipRRect(
+  //       borderRadius: const BorderRadius.only(
+  //         topLeft: Radius.circular(20),
+  //         topRight: Radius.circular(20),
+  //       ),
+  //       child: Container(
+  //         color: white,
+  //         child: getArrivingDetailsData(),
+  //       ),
+  //     ),
+  //   );
+  // }
 
   Widget getArrivingDetailsData() {
     return Container(
@@ -1458,23 +1458,23 @@ class _DispatchScreenState extends State<DispatchScreen> {
     );
   }
 
-  Widget _buildArrivedRider() {
-    return DraggableScrollableSheet(
-      initialChildSize: _initialSheetChildSize,
-      maxChildSize: _initialSheetChildSize,
-      minChildSize: _initialSheetChildSize,
-      builder: (context, scrollController) => ClipRRect(
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
-        ),
-        child: Container(
-          color: white,
-          child: getArrivedRiderDetails(),
-        ),
-      ),
-    );
-  }
+  // Widget _buildArrivedRider() {
+  //   return DraggableScrollableSheet(
+  //     initialChildSize: _initialSheetChildSize,
+  //     maxChildSize: _initialSheetChildSize,
+  //     minChildSize: _initialSheetChildSize,
+  //     builder: (context, scrollController) => ClipRRect(
+  //       borderRadius: const BorderRadius.only(
+  //         topLeft: Radius.circular(20),
+  //         topRight: Radius.circular(20),
+  //       ),
+  //       child: Container(
+  //         color: white,
+  //         child: getArrivedRiderDetails(),
+  //       ),
+  //     ),
+  //   );
+  // }
 
   Widget getArrivedRiderDetails() {
     return Container(
@@ -1504,23 +1504,23 @@ class _DispatchScreenState extends State<DispatchScreen> {
     );
   }
 
-  Widget _buildOnTripRider() {
-    return DraggableScrollableSheet(
-      initialChildSize: _initialSheetChildSize,
-      maxChildSize: _initialSheetChildSize,
-      minChildSize: _initialSheetChildSize,
-      builder: (context, scrollController) => ClipRRect(
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
-        ),
-        child: Container(
-          color: white,
-          child: getOnTripDetails(),
-        ),
-      ),
-    );
-  }
+  // Widget _buildOnTripRider() {
+  //   return DraggableScrollableSheet(
+  //     initialChildSize: _initialSheetChildSize,
+  //     maxChildSize: _initialSheetChildSize,
+  //     minChildSize: _initialSheetChildSize,
+  //     builder: (context, scrollController) => ClipRRect(
+  //       borderRadius: const BorderRadius.only(
+  //         topLeft: Radius.circular(20),
+  //         topRight: Radius.circular(20),
+  //       ),
+  //       child: Container(
+  //         color: white,
+  //         child: getOnTripDetails(),
+  //       ),
+  //     ),
+  //   );
+  // }
 
   Widget getOnTripDetails() {
     return Container(

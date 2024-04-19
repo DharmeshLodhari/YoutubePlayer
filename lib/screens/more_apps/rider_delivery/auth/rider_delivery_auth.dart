@@ -4,7 +4,6 @@ import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/models/delivery_model.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:location/location.dart';
@@ -102,7 +101,7 @@ class RiderDeliveryAuthService extends AuthService {
   // Fetch a job
   Future<DeliveryModel?> fetchJob(String? journeyId) async {
     try {
-      String url =
+      final String url =
           "${AppConfig.baseUrl}/api/v1/shipping/journeys/$journeyId/?user_current_location=3.6470794,6.6616402";
 
       debugPrint('Fetch Job URL ---> $url');
@@ -111,7 +110,6 @@ class RiderDeliveryAuthService extends AuthService {
       final response = await httpGet(url, headers: headers);
       debugPrint('Fetch Job URL BODY ---> ${response.body}');
 
-      print(response.statusCode);
       if (response.statusCode == 200) {
         final Map<String, dynamic> jsonData = json.decode(response.body);
         return DeliveryModel.fromJson(jsonData);
@@ -136,8 +134,8 @@ class RiderDeliveryAuthService extends AuthService {
     }
     final String url = AppConfig.baseUrl +
         "/api/v1/shipping/journeys/$journeyId/accept-offer/";
-    var headers = await getAuthHeaders();
-    var response = await httpPatch(url, headers: headers);
+    final headers = await getAuthHeaders();
+    final response = await httpPatch(url, headers: headers);
 
     try {
       handleServerErrors(response);
@@ -160,8 +158,8 @@ class RiderDeliveryAuthService extends AuthService {
     }
     final String url = AppConfig.baseUrl +
         "/api/v1/shipping/journeys/$journeyId/reject-offer/";
-    var headers = await getAuthHeaders();
-    var response = await httpPatch(url, headers: headers);
+    final headers = await getAuthHeaders();
+    final response = await httpPatch(url, headers: headers);
 
     try {
       handleServerErrors(response);
@@ -184,8 +182,8 @@ class RiderDeliveryAuthService extends AuthService {
     }
     final String url = AppConfig.baseUrl +
         "/api/v1/shipping/journeys/$journeyId/start-journey/";
-    var headers = await getAuthHeaders();
-    var response = await httpPatch(url, headers: headers);
+    final headers = await getAuthHeaders();
+    final response = await httpPatch(url, headers: headers);
 
     try {
       handleServerErrors(response);
@@ -208,8 +206,8 @@ class RiderDeliveryAuthService extends AuthService {
     }
     final String url =
         AppConfig.baseUrl + "/api/v1/shipping/journeys/$journeyId/end-journey/";
-    var headers = await getAuthHeaders();
-    var response = await httpPatch(url, headers: headers);
+    final headers = await getAuthHeaders();
+    final response = await httpPatch(url, headers: headers);
 
     try {
       handleServerErrors(response);
@@ -323,7 +321,7 @@ class RiderDeliveryAuthService extends AuthService {
 
   // Send Delivery Evidence
   Future<bool> sendDeliveryEvidence(
-      String? journeyId, argument, BuildContext context) async {
+      String? journeyId, String argument, BuildContext context) async {
     if (journeyId == null) {
       return false;
     }
@@ -401,7 +399,6 @@ class RiderDeliveryAuthService extends AuthService {
       final response = await httpGet(url, headers: headers);
       debugPrint('Fetch rider location URL BODY ---> ${response.body}');
 
-      print(response.statusCode);
       if (response.statusCode == 200) {
         final Map<String, dynamic> jsonData = json.decode(response.body);
         return jsonData;
@@ -424,12 +421,12 @@ class RiderDeliveryAuthService extends AuthService {
     if (orderId == null) {
       return false;
     }
-    String url = AppConfig.baseUrl +
+    final String url = AppConfig.baseUrl +
         "/api/v1/order/$orderId/set-rider-in-pickup-location/";
-    var headers = await getAuthHeaders();
+    final headers = await getAuthHeaders();
 
     try {
-      var response = await httpPatch(url, headers: headers);
+      final response = await httpPatch(url, headers: headers);
 
       handleServerErrors(response);
 
@@ -449,12 +446,12 @@ class RiderDeliveryAuthService extends AuthService {
     if (orderId == null) {
       return false;
     }
-    String url = AppConfig.baseUrl +
+    final String url = AppConfig.baseUrl +
         "/api/v1/order/$orderId/set-rider-in-delivery-location/";
-    var headers = await getAuthHeaders();
+    final headers = await getAuthHeaders();
 
     try {
-      var response = await httpPatch(url, headers: headers);
+      final response = await httpPatch(url, headers: headers);
 
       handleServerErrors(response);
 
@@ -474,12 +471,12 @@ class RiderDeliveryAuthService extends AuthService {
     if (orderId == null) {
       return false;
     }
-    String url =
+    final String url =
         AppConfig.baseUrl + "/api/v1/order/$orderId/set-rider-picked-up-order/";
-    var headers = await getAuthHeaders();
+    final headers = await getAuthHeaders();
 
     try {
-      var response = await httpPatch(url, headers: headers);
+      final response = await httpPatch(url, headers: headers);
 
       handleServerErrors(response);
 

@@ -29,9 +29,9 @@ class _JobsCategoryJobsListState extends State<JobsCategoryJobsList> {
   int? listCount = 0;
   List<ActiveListingData> activeListing = [];
 
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
-  ScrollController _jobListScrollController = ScrollController();
+  final ScrollController _jobListScrollController = ScrollController();
   final GlobalKey<ScaffoldMessengerState> _jobScaffoldMessengerKey =
       GlobalKey<ScaffoldMessengerState>();
   void getActiveJobListing() async {
@@ -106,7 +106,7 @@ class _JobsCategoryJobsListState extends State<JobsCategoryJobsList> {
     });
   }
 
-  _refreshPage() {
+  void _refreshPage() {
     listNext = "";
     listCount = 0;
     isLoading = false;

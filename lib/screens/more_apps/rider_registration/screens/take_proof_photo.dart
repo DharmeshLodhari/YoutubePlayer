@@ -166,7 +166,7 @@ class _TakeProofPhotoState extends State<TakeProofPhoto> {
     }
     try {
       await _cameraController?.setFlashMode(FlashMode.off);
-      XFile? picture = await _cameraController?.takePicture();
+      final XFile? picture = await _cameraController?.takePicture();
       riderRegistrationBloc.tempPicture = picture;
       Navigator.of(context).popAndPushNamed(Routes.PREVIEW_SCREEN);
     } on CameraException catch (e) {

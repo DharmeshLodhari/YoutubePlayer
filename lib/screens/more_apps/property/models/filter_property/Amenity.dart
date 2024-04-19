@@ -38,7 +38,7 @@ class Amenity {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = Map<String, dynamic>();
     data['ac'] = this.ac;
     data['any'] = this.any;
     data['dishwasher'] = this.dishwasher;

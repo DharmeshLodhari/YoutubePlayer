@@ -11,8 +11,8 @@ import '../../../../moments/models/comment_model.dart';
 import '../../../messaging/chat/models/channel_model.dart';
 
 class UserChannelsList extends StatefulWidget {
-  String? ownerName;
-  bool? isSearch;
+  final String? ownerName;
+  final bool? isSearch;
   UserChannelsList({this.ownerName, this.isSearch});
   @override
   State<UserChannelsList> createState() => _UserChannelsListState();

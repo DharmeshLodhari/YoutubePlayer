@@ -158,15 +158,16 @@ class _AddOrUpdateInvoiceItemState extends State<AddOrUpdateInvoiceItem> {
                               const SizedBox(height: 20),
                               getTotalText(),
                               const SizedBox(height: 20),
-                              errorMessage == ""
-                                  ? Container()
-                                  : Text(
-                                      errorMessage,
-                                      style: TextStyle(
-                                          color: mateRed,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16),
-                                    ),
+                              if (errorMessage == "")
+                                Container()
+                              else
+                                Text(
+                                  errorMessage,
+                                  style: TextStyle(
+                                      color: mateRed,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16),
+                                ),
                               const SizedBox(height: 20),
                             ],
                           ),
@@ -196,7 +197,7 @@ class _AddOrUpdateInvoiceItemState extends State<AddOrUpdateInvoiceItem> {
     );
   }
 
-  getTotalText() {
+  Widget getTotalText() {
     return _amountController.text.isNotEmpty
         ? Row(
             children: [
@@ -359,7 +360,7 @@ class _AddOrUpdateInvoiceItemState extends State<AddOrUpdateInvoiceItem> {
     }
 
     if (_formKey.currentState!.validate()) {
-      InvoiceItem invoiceItem = InvoiceItem(
+      final InvoiceItem invoiceItem = InvoiceItem(
         amount: int.parse(_amountController.text
                 .trim()
                 .replaceAll(',', '')
@@ -401,7 +402,8 @@ class _AddOrUpdateInvoiceItemState extends State<AddOrUpdateInvoiceItem> {
     }
   }
 
-  _addInvoiceItemToExistingInvoice(int invoiceId, InvoiceItem invoiceItem) {
+  void _addInvoiceItemToExistingInvoice(
+      int invoiceId, InvoiceItem invoiceItem) {
     showDialog(
         context: context,
         builder: (dialogLoadingContext) => LoadingIndicator());
@@ -425,7 +427,7 @@ class _AddOrUpdateInvoiceItemState extends State<AddOrUpdateInvoiceItem> {
     );
   }
 
-  _updateInvoiceItem(int itemId, InvoiceItem invoiceItem) {
+  void _updateInvoiceItem(int itemId, InvoiceItem invoiceItem) {
     showDialog(
         context: context,
         builder: (dialogLoadingContext) => LoadingIndicator());

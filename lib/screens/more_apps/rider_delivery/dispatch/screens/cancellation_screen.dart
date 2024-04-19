@@ -47,7 +47,7 @@ class _CancellationScreenState extends State<CancellationScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildCancellationText(),
-                  SizedBox(height: 30),
+                  const SizedBox(height: 30),
                   _buildCancellationList(),
                 ],
               ),
@@ -94,7 +94,7 @@ class _CancellationScreenState extends State<CancellationScreen> {
     return ListView.builder(
         shrinkWrap: true,
         itemCount: reasons.length,
-        physics: NeverScrollableScrollPhysics(),
+        physics: const NeverScrollableScrollPhysics(),
         itemBuilder: (context, i) {
           return ListTile(
             title: Text(

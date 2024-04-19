@@ -13,10 +13,10 @@ import 'yarn_auth.dart';
 import 'yarn_dashboard_bloc.dart';
 
 class AddReportScreen extends StatefulWidget {
-  Map<String, dynamic>? object;
-  String? type;
-  bool? isCommentMoment;
-  bool? isJobService;
+  final Map<String, dynamic>? object;
+  final String? type;
+  final bool? isCommentMoment;
+  final bool? isJobService;
   AddReportScreen({
     this.object,
     this.type,

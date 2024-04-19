@@ -25,7 +25,7 @@ class DetailedMessage extends StatefulWidget {
 
 class _DetailedMessageState extends State<DetailedMessage> {
   bool isLoading = true;
-  var id;
+  String? id;
   late Message message;
   late UserBloc userBloc;
 
@@ -40,7 +40,7 @@ class _DetailedMessageState extends State<DetailedMessage> {
   }
 
   void fetchMessage() async {
-    await _messageAuth.getMessage(id).then((value) {
+    await _messageAuth.getMessage(id ?? "").then((value) {
       message = value;
       if (mounted) {
         setState(() {

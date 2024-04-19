@@ -93,7 +93,7 @@ class RiderRegistrationModel {
     }
   }
 
-  clearAllProof() {
+  void clearAllProof() {
     mRiderPhoto = null;
     mIdentityCard = null;
     mVehicleInsurance = null;
@@ -102,7 +102,7 @@ class RiderRegistrationModel {
   }
 
   Future<List<MultipartFile>> getMultipartFiles() async {
-    List<http.MultipartFile> files = [];
+    final List<http.MultipartFile> files = [];
     http.MultipartFile? selfie;
     http.MultipartFile? governmentId;
     http.MultipartFile? vehicleInsuranceId;
@@ -151,7 +151,7 @@ class RiderRegistrationModel {
   }
 
   Future<List<MultipartFile>> updateMultipartFiles() async {
-    List<http.MultipartFile> files = [];
+    final List<http.MultipartFile> files = [];
     http.MultipartFile? selfie;
     http.MultipartFile? governmentId;
     http.MultipartFile? vehicleInsuranceId;
@@ -178,7 +178,7 @@ class RiderRegistrationModel {
 
     switch (rideTypeOptions) {
       case RideTypeOptions.car:
-        if (selfie! != null) {
+        if (selfie != null) {
           files.add(selfie);
         }
         if (governmentId != null) {
@@ -192,7 +192,7 @@ class RiderRegistrationModel {
         }
         break;
       case RideTypeOptions.bicycle:
-        if (selfie! != null) {
+        if (selfie != null) {
           files.add(selfie);
         }
         if (governmentId != null) {

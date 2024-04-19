@@ -41,7 +41,7 @@ class AuthService {
     await _db.deleteUsers();
 
     // Create user instance
-    User _user =
+    final User _user =
         User.fromJson(userData, staff: staff, permissions: permissions);
 
     await _db.saveUser(_user);
@@ -133,15 +133,16 @@ class AuthService {
   // }
 
   Future<List<CompanyName>?> listOfCompanyName(String query) async {
-    String url = AppConfig.baseUrl + "/api/v1/user/merchant-search/?q=$query";
+    final String url =
+        AppConfig.baseUrl + "/api/v1/user/merchant-search/?q=$query";
 
     debugPrint(url);
-    var headers = await getAuthHeaders();
-    var response = await httpGet(url, headers: headers);
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers);
 
     if (response.statusCode == 200) {
-      var jsonData = json.decode(response.body) as List<dynamic>;
-      List<CompanyName> result =
+      final jsonData = json.decode(response.body) as List<dynamic>;
+      final List<CompanyName> result =
           jsonData.map((e) => CompanyName.fromJson(e)).toList();
       return result;
     } else if (response.statusCode == 500) {
@@ -165,9 +166,9 @@ class AuthService {
       uri = AppConfig.baseUrl + "/api/v1/user/auth/get-staff-token/";
     }
 
-    var uuid = Uuid();
-    var transactionId = uuid.v4();
-    var headers = {
+    final uuid = const Uuid();
+    final transactionId = uuid.v4();
+    final headers = {
       "TransactionId": transactionId,
       "DeviceType": Platform.isAndroid ? "Android" : "IOS",
       "User-Agent": "Slydo-Mobile",
@@ -179,9 +180,9 @@ class AuthService {
     // where  created and the use that to compute the expiration time of the
     // token. So that we will only use the token if its still valid.
     // We play safe and use 4 minutes
-    DateTime now = DateTime.now();
-    int expirationTime =
-        getEpochTime(now.add(Duration(seconds: 220))); // 3.66667 Minute
+    final DateTime now = DateTime.now();
+    final int expirationTime =
+        getEpochTime(now.add(const Duration(seconds: 220))); // 3.66667 Minute
 
     Map _body;
     if (isStaffLogin) {
@@ -194,7 +195,7 @@ class AuthService {
       _body = {"password": password, "phone_number": phoneNumber};
     }
 
-    var data = await getDeviceInfo();
+    final data = await getDeviceInfo();
     // data['device_id'] = "CB52C6A6-4C0E-4FE0-A753-C9A936AEA8BB";
     _body.addAll(data);
 
@@ -203,25 +204,25 @@ class AuthService {
 
     debugPrint("URL => $url BODY => $_body");
 
-    var response = await http.post(url, body: _body, headers: headers);
+    final response = await http.post(url, body: _body, headers: headers);
 
     if (response.statusCode == 200) {
       debugPrint(
           "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
 
-      Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+      final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
       jsonResponse["expiration"] = expirationTime;
 
-      Jwt jwt = Jwt.fromJson(jsonResponse);
+      final Jwt jwt = Jwt.fromJson(jsonResponse);
       await _db.saveJwt(jwt);
 
       // Save user to database
-      var jsonData = jsonResponse["user"];
+      final jsonData = jsonResponse["user"];
       log("User=> $jsonData");
       jsonData["password"] = password;
       jsonData["url"] =
           AppConfig.baseUrl + "/api/v1/user/customer/" + jsonData["username"];
-      User user = await createUser(jsonData,
+      final User user = await createUser(jsonData,
           staff: jsonResponse["staff"],
           permissions: jsonResponse["permissions"]);
 
@@ -583,7 +584,7 @@ class AuthService {
     return Future.error("$timeOutErrorMessage");
   }
 
-  Future<void> wasTokenBlackListed(var response) async {
+  Future<void> wasTokenBlackListed(Response response) async {
     if (response.statusCode == 401 ||
         response.statusCode == 403 ||
         response.statusCode == 423) {
@@ -610,7 +611,7 @@ class AuthService {
   }
 
   /// TO CHECK IF WE GET TOKEN EXPIRED RESPONSE FROM API
-  Future<bool> isTokenExpire(var response) async {
+  Future<bool> isTokenExpire(Response response) async {
     if (response.statusCode == 401 ||
         response.statusCode == 403 ||
         response.statusCode == 423) {

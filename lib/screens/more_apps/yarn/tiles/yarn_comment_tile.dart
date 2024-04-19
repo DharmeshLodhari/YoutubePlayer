@@ -32,15 +32,15 @@ class YarnCommentTile extends StatefulWidget {
   final Yarn yarn;
   final YarnComment yarnComment;
   final YarnComment? yarnCommentReply;
-  List<YarnComment>? commentDetailsList = [];
+  final List<YarnComment>? commentDetailsList;
   final bool? openReply;
   final bool? isCommentDetail;
   final Function(YarnComment)? onDeleteComment;
   final Function(Yarn)? onUpdate;
-  bool? minusComment;
-  String? pinnedCommentId;
-  String? commentType;
-  String? commentAuthor;
+  final bool? minusComment;
+  final String? pinnedCommentId;
+  final String? commentType;
+  final String? commentAuthor;
 
   YarnCommentTile({
     required this.yarn,

@@ -25,7 +25,7 @@ class _SearchTrainState extends State<SearchTrain> {
   List<Transport> transports = [];
   bool isLoading = false;
 
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
   @override
@@ -47,7 +47,7 @@ class _SearchTrainState extends State<SearchTrain> {
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         getResult();
@@ -107,7 +107,7 @@ class _SearchTrainState extends State<SearchTrain> {
             )
           : SingleChildScrollView(
               child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Column(
                   children: transports
                       .map(
@@ -116,7 +116,7 @@ class _SearchTrainState extends State<SearchTrain> {
                             Navigator.of(context).pushNamed("/ticket-detail");
                           },
                           child: Container(
-                              padding: EdgeInsets.symmetric(vertical: 8),
+                              padding: const EdgeInsets.symmetric(vertical: 8),
                               child: TrainTicketTile(
                                 transport: element,
                               )),
@@ -131,7 +131,7 @@ class _SearchTrainState extends State<SearchTrain> {
 
   Widget swapPlace() {
     return PreferredSize(
-      preferredSize: Size.fromHeight(50),
+      preferredSize: const Size.fromHeight(50),
       child: Container(
         width: double.infinity,
         child: Column(
@@ -149,7 +149,7 @@ class _SearchTrainState extends State<SearchTrain> {
                         color: darkGrey,
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 4,
                     ),
                     Text(
@@ -176,7 +176,7 @@ class _SearchTrainState extends State<SearchTrain> {
                               color: navyBlueLight,
                             ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 4,
                           ),
                           ClipOval(
@@ -186,7 +186,7 @@ class _SearchTrainState extends State<SearchTrain> {
                               color: navyBlueLight,
                             ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 4,
                           ),
                           ClipOval(
@@ -196,7 +196,7 @@ class _SearchTrainState extends State<SearchTrain> {
                               color: navyBlueLight,
                             ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 4,
                           ),
                           InkWell(
@@ -208,7 +208,7 @@ class _SearchTrainState extends State<SearchTrain> {
                             child: ClipOval(
                               child: Card(
                                 elevation: 4,
-                                margin: EdgeInsets.symmetric(
+                                margin: const EdgeInsets.symmetric(
                                     horizontal: 2, vertical: 2),
                                 shadowColor: boxShadow,
                                 color: Colors.white,
@@ -217,7 +217,7 @@ class _SearchTrainState extends State<SearchTrain> {
                                   borderRadius: BorderRadius.circular(25),
                                 ),
                                 child: Container(
-                                  padding: EdgeInsets.all(14),
+                                  padding: const EdgeInsets.all(14),
                                   decoration: BoxDecoration(
                                     color: Colors.white,
                                     borderRadius: BorderRadius.circular(25),
@@ -235,7 +235,7 @@ class _SearchTrainState extends State<SearchTrain> {
                               ),
                             ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 4,
                           ),
                           ClipOval(
@@ -245,7 +245,7 @@ class _SearchTrainState extends State<SearchTrain> {
                               color: navyBlueLight,
                             ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 4,
                           ),
                           ClipOval(
@@ -255,7 +255,7 @@ class _SearchTrainState extends State<SearchTrain> {
                               color: navyBlueLight,
                             ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 4,
                           ),
                           ClipOval(
@@ -281,7 +281,7 @@ class _SearchTrainState extends State<SearchTrain> {
                         color: darkGrey,
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 4,
                     ),
                     Text(
@@ -297,7 +297,7 @@ class _SearchTrainState extends State<SearchTrain> {
                 flexibleSpace(flex: 1),
               ],
             ),
-            SizedBox(
+            const SizedBox(
               height: 20,
             )
           ],

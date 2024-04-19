@@ -20,7 +20,7 @@ class ChatMessagePagination {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = Map<String, dynamic>();
     data['conversation_id'] = this.conversationId;
     data['count'] = this.count;
     data['next'] = this.next;

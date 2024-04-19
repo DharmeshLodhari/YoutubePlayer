@@ -13,7 +13,7 @@ import 'package:flutter/material.dart';
 /// Exp: AnimationTransition.fromRight(animation, secondaryAnimation, child);
 class AnimationTransition {
   /// Slide animation, from right to left (SlideTransition)
-  static fromRight(Animation<double> animation,
+  static SlideTransition fromRight(Animation<double> animation,
       Animation<double> secondaryAnimation, Widget child) {
     return SlideTransition(
       position: Tween<Offset>(
@@ -25,7 +25,7 @@ class AnimationTransition {
   }
 
   /// Slide animation, from left to right (SlideTransition)
-  static fromLeft(Animation<double> animation,
+  static SlideTransition fromLeft(Animation<double> animation,
       Animation<double> secondaryAnimation, Widget child) {
     return SlideTransition(
       position: Tween<Offset>(
@@ -37,7 +37,7 @@ class AnimationTransition {
   }
 
   /// Slide animation, from top to bottom (SlideTransition)
-  static fromTop(Animation<double> animation,
+  static SlideTransition fromTop(Animation<double> animation,
       Animation<double> secondaryAnimation, Widget child) {
     return SlideTransition(
       position: Tween<Offset>(
@@ -49,7 +49,7 @@ class AnimationTransition {
   }
 
   /// Slide animation, from top to bottom (SlideTransition)
-  static fromBottom(Animation<double> animation,
+  static SlideTransition fromBottom(Animation<double> animation,
       Animation<double> secondaryAnimation, Widget child) {
     return SlideTransition(
       position: Tween<Offset>(
@@ -82,7 +82,7 @@ class AnimationTransition {
   }
 
   /// Scale animation, from out to in (ScaleTransition)
-  static shrink(Animation<double> animation,
+  static ScaleTransition shrink(Animation<double> animation,
       Animation<double> secondaryAnimation, Widget child) {
     return ScaleTransition(
       scale: Tween<double>(

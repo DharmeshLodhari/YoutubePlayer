@@ -36,7 +36,7 @@ import '../../../user_profile/screens/user_profile_module_new/profile_template/u
 import '../../payment_and_banking_auth.dart';
 
 class SlydoSlydoTransfer extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
   final Function(bool)? callback;
 
   SlydoSlydoTransfer({this.arguments, this.callback});
@@ -156,7 +156,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
     super.initState();
   }
 
-  getRecipientProfileAndGetCategory() async {
+  Future<void> getRecipientProfileAndGetCategory() async {
     if (widget.arguments['recipient'] != null) {
       Provider.of<CustomerProfileBloc>(context, listen: false).customer =
           await UserAuth().fetchCustomerProfile(widget.arguments['recipient']);
@@ -166,7 +166,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
     }
   }
 
-  void getBankAccountDetail() async {
+  Future<void> getBankAccountDetail() async {
     virtualAccount = await DatabaseHelper().getVirtualAccount();
     // await getAccountBalance();
     currentBalance = await getAccountBalance();
@@ -422,7 +422,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
         const SizedBox(
           height: 20,
         ),
-        isFromChat ? Container() : sendMoneyAnonymouslySwitch(),
+        if (isFromChat) Container() else sendMoneyAnonymouslySwitch(),
       ],
     );
   }
@@ -487,37 +487,37 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
   Widget getDisplayCard() {
     initializeDisplayCard();
 
-    var avatarImage;
+    // var avatarImage;
     var qrCodeImage;
     if (_payee != null) {
-      final Color borderColor = getUserTypeColor(user: _payee!);
+      // final Color borderColor = getUserTypeColor(user: _payee!);
 
-      avatarImage = Container(
-        height: 48,
-        width: 48,
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(
-              25,
-            ),
-            border: Border.all(color: borderColor, width: 2)),
-        child: GestureDetector(
-          onTap: () {
-            Navigator.of(context)
-                .pushNamed("/photo-viewer", arguments: _payee!.avatar);
-          },
-          child: ClipOval(
-            child: _payee!.avatar != null
-                ? CachedNetworkImage(
-                    imageUrl: _payee!.avatar!,
-                    colorBlendMode: BlendMode.darken,
-                    fit: BoxFit.fill,
-                    filterQuality: FilterQuality.high,
-                    errorWidget: imageErrorWidget,
-                  )
-                : const SizedBox.shrink(),
-          ),
-        ),
-      );
+      // avatarImage = Container(
+      //   height: 48,
+      //   width: 48,
+      //   decoration: BoxDecoration(
+      //       borderRadius: BorderRadius.circular(
+      //         25,
+      //       ),
+      //       border: Border.all(color: borderColor, width: 2)),
+      //   child: GestureDetector(
+      //     onTap: () {
+      //       Navigator.of(context)
+      //           .pushNamed("/photo-viewer", arguments: _payee!.avatar);
+      //     },
+      //     child: ClipOval(
+      //       child: _payee!.avatar != null
+      //           ? CachedNetworkImage(
+      //               imageUrl: _payee!.avatar!,
+      //               colorBlendMode: BlendMode.darken,
+      //               fit: BoxFit.fill,
+      //               filterQuality: FilterQuality.high,
+      //               errorWidget: imageErrorWidget,
+      //             )
+      //           : const SizedBox.shrink(),
+      //     ),
+      //   ),
+      // );
       setState(() {
         isValidPayee = true;
       });
@@ -1146,7 +1146,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
 
                           ///check if page is from yarn
                           if (isFromYarn == true) {
-                            var jsonData = json.decode(response.body);
+                            final jsonData = json.decode(response.body);
 
                             updateYarnSupporter =
                                 await _auth.updateYarnSupporter(
@@ -1167,7 +1167,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
 
                           ///check if page is from moment
                           if (isFromMoment == true) {
-                            var jsonData = json.decode(response.body);
+                            final jsonData = json.decode(response.body);
 
                             updateMomentSupporter =
                                 await _auth.updateMomentSupporter(

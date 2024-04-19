@@ -25,11 +25,11 @@ import '../widgets/yarn_media_renderer.dart';
 import '../yarn_dashboard_bloc.dart';
 
 class YarnQuotePreview extends StatefulWidget {
-  Yarn yarn;
-  Function(Yarn)? onDeleteYarn;
-  Function(Yarn)? onReYarn;
-  Function(Yarn)? onUpdateYarn;
-  Function()? navigateToReyarn;
+  final Yarn yarn;
+  final Function(Yarn)? onDeleteYarn;
+  final Function(Yarn)? onReYarn;
+  final Function(Yarn)? onUpdateYarn;
+  final Function()? navigateToReyarn;
   final Color? backGroundColor;
 
   YarnQuotePreview(

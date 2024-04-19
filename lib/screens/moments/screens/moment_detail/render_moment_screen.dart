@@ -45,7 +45,7 @@ class RenderMomentState extends State<RenderMoment>
 
   RenderMomentState({this.key});
 
-  GlobalKey<MomentVideoPlayerState> _momentVideoPlayerKey =
+  final GlobalKey<MomentVideoPlayerState> _momentVideoPlayerKey =
       GlobalKey<MomentVideoPlayerState>();
   PhotoViewController photoViewController = PhotoViewController();
   AnimationController? controller;
@@ -55,7 +55,7 @@ class RenderMomentState extends State<RenderMoment>
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration(seconds: 2), () {
+    Future.delayed(const Duration(seconds: 2), () {
       MomentsService().updateMomentView(widget.momentsModel.id!);
     });
     widget.photoViewController.add(photoViewController);

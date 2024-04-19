@@ -17,7 +17,7 @@ class RentDuration {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = Map<String, dynamic>();
     data['at_few_days'] = this.atFewDays;
     data['at_few_months'] = this.atFewMonths;
     data['at_few_weeks'] = this.atFewWeeks;

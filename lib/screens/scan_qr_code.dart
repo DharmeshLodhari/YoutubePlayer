@@ -46,9 +46,8 @@ class _QRCodeViewState extends State<QRCodeView> {
   AppConfigurationModel? appConfigurationModel;
 
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
-  var qrText = "";
+  String qrText = "";
   QRViewController? controller;
-  late DashboardBloc _dashboardBloc;
 
   @override
   void initState() {
@@ -66,8 +65,6 @@ class _QRCodeViewState extends State<QRCodeView> {
 
   @override
   Widget build(BuildContext context) {
-    _dashboardBloc = Provider.of<DashboardBloc>(context);
-
     return Scaffold(
       backgroundColor: Colors.white,
       body: Stack(

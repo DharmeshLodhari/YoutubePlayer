@@ -117,16 +117,16 @@ class _DisplayProductState extends State<DisplayProduct> {
                     ),
                     if (widget.product.discountedPrice != null)
                       (checkDiscount(
-                              widget.product.discountIsActive!,
-                              widget.product.discountedPrice!,
-                              widget.product.price!))
+                              widget.product.discountIsActive ?? false,
+                              widget.product.discountedPrice ?? 0,
+                              widget.product.price ?? 0))
                           ? Positioned(
                               top: 10,
                               right: 10,
                               child: showDiscountValue(
-                                  widget.product.discountType!,
-                                  widget.product.discountValue!,
-                                  widget.product.currency))
+                                  widget.product.discountType ?? "",
+                                  widget.product.discountValue ?? 0,
+                                  widget.product.currency ?? "NGN"))
                           : const SizedBox()
                     else
                       const SizedBox(),
@@ -611,7 +611,7 @@ class _DisplayProductState extends State<DisplayProduct> {
     );
   }
 
-  showBottomSheetDialog() async {
+  void showBottomSheetDialog() async {
     final result = await androidBottomSheet(
       enableDrag: true,
       context: context,

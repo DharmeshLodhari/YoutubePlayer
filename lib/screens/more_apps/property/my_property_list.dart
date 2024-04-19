@@ -20,7 +20,7 @@ class _MyPropertyListState extends State<MyPropertyList> {
   List<PropertyItem> properties = [];
   bool isLoading = false;
 
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
   late PropertyDashboardBloc _propertyDashboardBloc;
@@ -44,7 +44,7 @@ class _MyPropertyListState extends State<MyPropertyList> {
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         getResult();

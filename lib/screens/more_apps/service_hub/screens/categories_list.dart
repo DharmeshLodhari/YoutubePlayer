@@ -36,7 +36,7 @@ class _CategoriesListState extends State<CategoriesList> {
         isCategoryLoading = true;
         if (mounted) setState(() {});
 
-        var result = await ServiceHubAuthService()
+        final result = await ServiceHubAuthService()
             .getListOfCategories(categoryNext, categoryPrevious);
 
         if (result == null) {
@@ -52,7 +52,7 @@ class _CategoriesListState extends State<CategoriesList> {
         productCount = result.count;
         categoryNext = result.next;
         categoryPrevious = result.previous;
-        var tempList = result.results;
+        final tempList = result.results;
         if (mounted) {
           setState(() {
             noJobsInList = false;
@@ -79,7 +79,7 @@ class _CategoriesListState extends State<CategoriesList> {
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         _refreshPage();
@@ -93,7 +93,7 @@ class _CategoriesListState extends State<CategoriesList> {
     });
   }
 
-  _refreshPage() {
+  void _refreshPage() {
     categoryNext = "";
     productCount = 0;
     isCategoryLoading = false;
@@ -105,7 +105,7 @@ class _CategoriesListState extends State<CategoriesList> {
   }
 
   @override
-  initState() {
+  void initState() {
     super.initState();
     getCategoriesList();
     _categoryScrollController.addListener(() {

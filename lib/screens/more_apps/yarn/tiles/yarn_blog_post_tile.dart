@@ -28,8 +28,8 @@ import '../../../../widget/rounded_background_icon.dart';
 
 class YarnBlogPostTile extends StatefulWidget {
   UserPost? post;
-  bool? isNavigable;
-  Function onDeleteBlog;
+  final bool? isNavigable;
+  final Function onDeleteBlog;
   final bool showAuthorDetails;
   final TileRenderPlace tileRenderPlace;
 

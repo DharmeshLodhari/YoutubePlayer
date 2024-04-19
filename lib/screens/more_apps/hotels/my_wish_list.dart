@@ -18,7 +18,7 @@ class _MyWishListState extends State<MyWishList> {
   List<HotelRoomItem> hotelRooms = [];
   bool isLoading = false;
 
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
   @override

@@ -15,7 +15,7 @@ class _AllActiveCartState extends State<AllActiveCart> {
   bool isLoading = false;
   List<SharedCartModel> cartList = [];
   SharedCartModel selectedCart = SharedCartModel();
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
@@ -26,7 +26,7 @@ class _AllActiveCartState extends State<AllActiveCart> {
   void fetchCartData() async {
     isLoading = true;
     if (mounted) setState(() {});
-    List<SharedCartModel> result = await getCartList();
+    final List<SharedCartModel> result = await getCartList();
     cartList.add(SharedCartModel(id: 'my-cart', name: 'My cart'));
     if (result.isNotEmpty) {
       for (SharedCartModel cart in result) {
@@ -56,55 +56,56 @@ class _AllActiveCartState extends State<AllActiveCart> {
                 ),
               ),
             ),
-            SizedBox(height: 25),
+            const SizedBox(height: 25),
             Divider(
               color: dividerColor,
               thickness: 1,
             ),
             const SizedBox(height: 20),
-            isLoading
-                ? Container(
-                    height: MediaQuery.of(context).size.height / 2,
-                    child: Center(
-                      child: CircularLoadingIndicator(),
-                    ),
-                  )
-                : ListView.builder(
-                    physics: NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    controller: _scrollController,
-                    itemCount: cartList.length,
-                    itemBuilder: (context, index) {
-                      return RadioListTile<SharedCartModel>(
-                        contentPadding: EdgeInsets.zero,
-                        visualDensity:
-                            VisualDensity(horizontal: 0, vertical: -3),
-                        value: cartList[index],
-                        groupValue: selectedCart,
-                        onChanged: (value) {
-                          setState(() {
-                            selectedCart = value!;
-                          });
+            if (isLoading)
+              Container(
+                height: MediaQuery.of(context).size.height / 2,
+                child: Center(
+                  child: CircularLoadingIndicator(),
+                ),
+              )
+            else
+              ListView.builder(
+                physics: const NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                controller: _scrollController,
+                itemCount: cartList.length,
+                itemBuilder: (context, index) {
+                  return RadioListTile<SharedCartModel>(
+                    contentPadding: EdgeInsets.zero,
+                    visualDensity:
+                        const VisualDensity(horizontal: 0, vertical: -3),
+                    value: cartList[index],
+                    groupValue: selectedCart,
+                    onChanged: (value) {
+                      setState(() {
+                        selectedCart = value!;
+                      });
 
-                          Future.delayed(Duration(milliseconds: 500), () {
-                            Navigator.pop(context, selectedCart);
-                          });
-                        },
-                        controlAffinity: ListTileControlAffinity.trailing,
-                        title: Text(
-                          cartList[index].name ?? "",
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                            color: selectedCart.id == cartList[index].id
-                                ? navyBlue
-                                : blackFont,
-                            fontFamily: "Inter",
-                          ),
-                        ),
-                      );
+                      Future.delayed(const Duration(milliseconds: 500), () {
+                        Navigator.pop(context, selectedCart);
+                      });
                     },
-                  ),
+                    controlAffinity: ListTileControlAffinity.trailing,
+                    title: Text(
+                      cartList[index].name ?? "",
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                        color: selectedCart.id == cartList[index].id
+                            ? navyBlue
+                            : blackFont,
+                        fontFamily: "Inter",
+                      ),
+                    ),
+                  );
+                },
+              ),
           ],
         ),
       ),

@@ -14,11 +14,11 @@ class GIFImageForChatMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    UserBloc userBloc = Provider.of<UserBloc>(context);
+    final UserBloc userBloc = Provider.of<UserBloc>(context);
 
-    bool isSend = message!["author"] == userBloc.user.userName;
+    final bool isSend = message!["author"] == userBloc.user.userName;
 
-    String gifImage = message!['text'];
+    final String gifImage = message!['text'];
 
     return Column(
       children: [
@@ -106,6 +106,7 @@ class GIFImageForChatMessage extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 0),
                       child: ClipRRect(
+                        borderRadius: BorderRadius.circular(3),
                         child: CachedNetworkImage(
                           height: MediaQuery.of(context).size.width / 3,
                           width: MediaQuery.of(context).size.width / 1.8,
@@ -123,7 +124,6 @@ class GIFImageForChatMessage extends StatelessWidget {
                           ),
                           errorWidget: imageErrorWidget,
                         ),
-                        borderRadius: BorderRadius.circular(3),
                       ),
                     ),
                   ],

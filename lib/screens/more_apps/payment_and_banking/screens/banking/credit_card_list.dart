@@ -17,7 +17,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import '../../models/VirtualAccount.dart';
 
 class CreditCardList extends StatefulWidget {
-  final arguments;
+  final dynamic arguments;
 
   CreditCardList({this.arguments});
 
@@ -37,7 +37,7 @@ class _CreditCardListState extends State<CreditCardList> {
       RefreshController(initialRefresh: false);
 
   final PaymentAndBankingAuth _auth = PaymentAndBankingAuth();
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   // //slidable tile
   SlidableController? _slideController;
@@ -54,7 +54,7 @@ class _CreditCardListState extends State<CreditCardList> {
     super.initState();
   }
 
-  checkForVirtualAccount() async {
+  Future<void> checkForVirtualAccount() async {
     bool isFromServer = false;
 
     virtualAccount = await DatabaseHelper().getVirtualAccount();

@@ -3,7 +3,6 @@ import 'package:Slydo/screens/more_apps/shipping_process/auth/shared_cart_auth.d
 import 'package:Slydo/screens/more_apps/shipping_process/models/shared_cart_model.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/basket_item_model.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

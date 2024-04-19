@@ -178,7 +178,7 @@ class _AlreadyHaveReferenceScreenState
     //for closing the keypad if it is open
     FocusScope.of(context).unfocus();
 
-    var data = {"amount": "100", "currency": "NGN"};
+    final data = {"amount": "100", "currency": "NGN"};
     // var data = {"reference": referenceNumber.toString()};
 
     showDialog(
@@ -189,7 +189,7 @@ class _AlreadyHaveReferenceScreenState
       PaymentAndBankingAuth().verifyReferenceNumber(data).then((value) {
         if (value != null) {
           Navigator.pop(context);
-          var result = value;
+          final result = value;
           Navigator.popAndPushNamed(context, "/add-money-to-slydo-two",
               arguments: result);
         }

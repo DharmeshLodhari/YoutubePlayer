@@ -17,7 +17,7 @@ class TrendingNewsList extends StatefulWidget {
 class _TrendingNewsListState extends State<TrendingNewsList> {
   List<NewsListItem> newsListItem = [];
   bool isLoading = false;
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
   @override
@@ -43,7 +43,7 @@ class _TrendingNewsListState extends State<TrendingNewsList> {
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         getResult();
@@ -83,11 +83,12 @@ class _TrendingNewsListState extends State<TrendingNewsList> {
                   children: newsListItem
                       .map((news) => GestureDetector(
                             child: Container(
-                              padding: EdgeInsets.symmetric(horizontal: 16),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 16),
                               child: Column(
                                 children: [
                                   NewsTile(newsListItem: news),
-                                  SizedBox(
+                                  const SizedBox(
                                     height: 16,
                                   )
                                 ],

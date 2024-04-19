@@ -20,7 +20,8 @@ class CartAlbumTile extends StatelessWidget {
         child: Container(
           decoration: decorateBox(),
           child: ListTile(
-            contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
             leading: Container(
               height: 68,
               width: 68,
@@ -93,7 +94,8 @@ class CartMusicTile extends StatelessWidget {
         child: Container(
           decoration: decorateBox(),
           child: ListTile(
-            contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
             leading: Container(
               height: 68,
               width: 68,
@@ -166,7 +168,8 @@ class CartMovieTile extends StatelessWidget {
         child: Container(
           decoration: decorateBox(),
           child: ListTile(
-            contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
             leading: Container(
               height: 68,
               width: 68,

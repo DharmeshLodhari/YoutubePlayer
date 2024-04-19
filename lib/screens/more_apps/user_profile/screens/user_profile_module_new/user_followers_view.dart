@@ -5,7 +5,7 @@ import '../../models/user.dart';
 import '../../user_auth.dart';
 
 class UserFollowersView extends StatefulWidget {
-  String? userName;
+  final String? userName;
   UserFollowersView({Key? key, this.userName}) : super(key: key);
 
   @override

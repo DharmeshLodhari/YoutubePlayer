@@ -60,12 +60,12 @@ class YarnCommentTextField extends StatefulWidget {
   final String? userName;
   final VoidCallback? onPressed;
   final bool? isLoading;
-  bool? enableComment;
-  bool? enablePayment;
-  ScrollController? scrollController;
-  bool? enableAdult;
-  bool? viewerAdvice;
-  var ageRating;
+  final bool? enableComment;
+  final bool? enablePayment;
+  final ScrollController? scrollController;
+  final bool? enableAdult;
+  final bool? viewerAdvice;
+  final String? ageRating;
   List<ShareAsYarnModel>? shareAsYarnModel;
   final Function(bool?) onTapEnableComment;
   final Function(int?) onTapAgeRestriction;
@@ -74,7 +74,7 @@ class YarnCommentTextField extends StatefulWidget {
   final Function(bool?) onTapViewerAdvice;
   final Function(List<YarnMedia>)? addedSelectedMedia;
   final Function(bool)? resetScrollingValue;
-  bool isScrolling;
+  final bool isScrolling;
 
   YarnCommentTextField({
     Key? key,
@@ -131,7 +131,7 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
   List<ShareAsYarnModel>? shareAsYarnModelCopy;
   ShareAsYarnModel? _shareAsYarnModel;
 
-  var ageRating;
+  String? ageRating;
   bool isShowExtension = false;
   bool onFocus = true;
 
@@ -1036,7 +1036,7 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
     );
   }
 
-  pickFileFromMedia() async {
+  Future<void> pickFileFromMedia() async {
     // List<Media>? res = await ImagesPicker.pick(
     //   count: 4,
     //   pickType: PickType.all,
@@ -1047,7 +1047,7 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
     //   ),
     // );
 
-    final List<XFile> res = await selectMultipleImageVideo();
+    final List<XFile>? res = await selectMultipleImageVideo();
 
     if (res == null || res.isEmpty) return;
 
@@ -1159,7 +1159,8 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
                           _shareAsYarnModel = category;
                           ageRating = _shareAsYarnModel?.name?.substring(9);
                           logger.d('message $ageRating');
-                          widget.onTapAgeRestriction(int.parse(ageRating));
+                          widget
+                              .onTapAgeRestriction(int.parse(ageRating ?? ""));
                           setState(() {});
                           Navigator.pop(context);
                         },
@@ -1258,7 +1259,7 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
     );
   }
 
-  sendMessageBtn() {
+  Widget sendMessageBtn() {
     return widget.isLoading!
         ? Padding(
             padding: const EdgeInsets.only(right: 12.0),
@@ -1283,7 +1284,7 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
           );
   }
 
-  textMessageField() {
+  Widget textMessageField() {
     return TextFormField(
       textAlignVertical: TextAlignVertical.center,
       onEditingComplete: widget.function,
@@ -1438,7 +1439,7 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
     setState(() {});
   }
 
-  Widget getResultTile(var result) {
+  Widget getResultTile(dynamic result) {
     if (isProductSearch) {
       if (result is Product) {
         return SearchProductTile(
@@ -1548,7 +1549,7 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
     );
   }
 
-  checkHintText(int selectedMenuItemIndex) {
+  String checkHintText(int selectedMenuItemIndex) {
     if (selectedMenuItemIndex == 0) {
       return 'Search blog';
     } else if (selectedMenuItemIndex == 1) {
@@ -1558,6 +1559,7 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
     } else if (selectedMenuItemIndex == 3) {
       return 'Search user';
     }
+    return "";
   }
 }
 

@@ -68,7 +68,6 @@ import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flare_flutter/flare_actor.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_sound/flutter_sound.dart';
@@ -1073,7 +1072,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   }
 
   void checkMessageToAdd({required String message}) {
-    print('CHECK MESSAGE TO ADD :: $message');
+    debugPrint('CHECK MESSAGE TO ADD :: $message');
     final Map<String, dynamic>? newMessage = jsonDecode(message);
 
     if (messageList.length > 0) {
@@ -2877,7 +2876,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     }
   }
 
-  void addProductOrServiceToChat(var item) async {
+  void addProductOrServiceToChat(dynamic item) async {
     final String url = AppConfig.baseUrl +
         "/api/v1/${item is Product ? "products" : "services"}/" +
         item.id +
@@ -3188,10 +3187,10 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         permissionName: ProtectionPermission.chat,
         isLockForRead: true,
         child: Container(
-          padding: EdgeInsets.all(2),
+          padding: const EdgeInsets.all(2),
           child: Row(
             children: [
-              SizedBox(
+              const SizedBox(
                 width: 10,
               ),
               Icon(
@@ -3199,7 +3198,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
                 color: navyBlue,
                 size: 22,
               ),
-              SizedBox(width: 12),
+              const SizedBox(width: 12),
             ],
           ),
         ),
@@ -4979,7 +4978,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       final String payload = convertServerPayload(data);
 
       addMessageToChat(message: payload);
-      print('MESSAGE PAYLOAD :: $payload');
+      debugPrint('MESSAGE PAYLOAD :: $payload');
 
       messageController!.text = "";
       if (mounted) setState(() {});

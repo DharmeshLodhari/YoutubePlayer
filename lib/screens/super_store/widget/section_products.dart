@@ -22,7 +22,7 @@ class _SectionProductsState extends State<SectionProducts> {
   List<Product> result = [];
   bool isLoading = false;
 
-  getRowTitle(headers) async {
+  void getRowTitle(headers) async {
     isLoading = true;
     if (mounted) setState(() {});
     for (var item in headers['results']) {

@@ -211,22 +211,22 @@ List<ProductCondition> deliverTimeCondition = <ProductCondition>[
 ];
 
 List<PaymentCategory> paymentCategories = <PaymentCategory>[
-  PaymentCategory(
+  const PaymentCategory(
     'General',
   ),
-  PaymentCategory(
+  const PaymentCategory(
     'Groceries',
   ),
-  PaymentCategory(
+  const PaymentCategory(
     'Entertainment',
   ),
-  PaymentCategory(
+  const PaymentCategory(
     'Eating out',
   ),
-  PaymentCategory(
+  const PaymentCategory(
     'Bills',
   ),
-  PaymentCategory(
+  const PaymentCategory(
     'Shopping',
   ),
 ];
@@ -373,7 +373,7 @@ class Product extends PurchasableItem {
   });
 
   Map toMap() {
-    var data = {
+    final data = {
       "name": name,
       "description": description,
       "short_description":
@@ -492,7 +492,7 @@ class Product extends PurchasableItem {
 
   factory Product.fromJson(object) {
     List<String> getProductImages(List? data) {
-      List<String> images = [];
+      final List<String> images = [];
 
       if (data != null) {
         for (int i = 0; i < data.length; i++) {
@@ -506,7 +506,7 @@ class Product extends PurchasableItem {
 
     DateTime getProductDateTime(var date) {
       if (date != null) {
-        DateTime dateTime = DateTime.parse(date);
+        final DateTime dateTime = DateTime.parse(date);
         return dateTime;
       }
       return DateTime.now();
@@ -624,7 +624,7 @@ class Product extends PurchasableItem {
   }
 
   List<String> getProductImages(List? data) {
-    List<String> images = [];
+    final List<String> images = [];
 
     if (data != null) {
       for (int i = 0; i < data.length; i++) {
@@ -636,9 +636,9 @@ class Product extends PurchasableItem {
     return images;
   }
 
-  DateTime getProductDateTime(var date) {
+  DateTime getProductDateTime(String? date) {
     if (date != null) {
-      DateTime dateTime = DateTime.parse(date);
+      final DateTime dateTime = DateTime.parse(date);
       return dateTime;
     }
     return DateTime.now();
@@ -656,7 +656,7 @@ class Product extends PurchasableItem {
   }
 
   List<String?> imageDataToList(List<dynamic> pictures) {
-    List<String?> imageLinks = [];
+    final List<String?> imageLinks = [];
     if (pictures.length > 0) {
       for (var data in pictures) {
         imageLinks.add(data["file"]);
@@ -669,7 +669,7 @@ class Product extends PurchasableItem {
   }
 
   Product copyWith({int? quantity, bool withSelectedAddOn = false}) {
-    Product product = Product(
+    final Product product = Product(
       id: this.id,
       name: this.name ?? "",
       description: this.description ?? "",
@@ -747,7 +747,7 @@ class Product extends PurchasableItem {
 
   // Group variants by color
   Map<String, List<Variant>> groupVariantsByColor() {
-    Map<String, List<Variant>> groupedVariants = {};
+    final Map<String, List<Variant>> groupedVariants = {};
 
     for (var variant in variantModels ?? []) {
       if (variant.colour != null && variant.colour!.isNotEmpty) {
@@ -763,7 +763,7 @@ class Product extends PurchasableItem {
 
   // Group variants by size
   Map<String, List<Variant>> groupVariantsBySize() {
-    Map<String, List<Variant>> groupedVariants = {};
+    final Map<String, List<Variant>> groupedVariants = {};
 
     for (var variant in variantModels ?? []) {
       if (variant.value != null && variant.value!.isNotEmpty) {
@@ -780,10 +780,10 @@ class Product extends PurchasableItem {
   // Define a function to group variants by size for the selected color/image
   Map<String, List<Variant>> groupVariantsBySizeForSelectedColor(
       String? selectedColor) {
-    Map<String, List<Variant>> sizeGroups = {};
+    final Map<String, List<Variant>> sizeGroups = {};
 
     // Filter variants that match the selected color
-    List<Variant> selectedColorVariants = (variantModels ?? [])
+    final List<Variant> selectedColorVariants = (variantModels ?? [])
         .where((variant) => variant.colour == selectedColor)
         .toList();
 
@@ -802,7 +802,7 @@ class Product extends PurchasableItem {
 
   List<AddOns> getSelectedAddsOns(
       {bool isRequired = false, List<AddOns>? listOfAddonModel}) {
-    List<AddOns> selectedAddOnsList = [];
+    final List<AddOns> selectedAddOnsList = [];
 
     for (AddOns addOn in listOfAddonModel ?? addOnsModels ?? []) {
       bool isSelected = false;
@@ -960,7 +960,7 @@ class Variant {
   });
 
   Map toMap() {
-    Map<String, dynamic> data = {};
+    final Map<String, dynamic> data = {};
 
     if (id != null && id != "") {
       data.addAll({"id": id});
@@ -1002,7 +1002,7 @@ class Variant {
 
   factory Variant.fromJson(object) {
     List<String> getProductImages(List? data) {
-      List<String> images = [];
+      final List<String> images = [];
 
       if (data != null) {
         for (int i = 0; i < data.length; i++) {
@@ -1016,7 +1016,7 @@ class Variant {
 
     DateTime getProductDateTime(var date) {
       if (date != null) {
-        DateTime dateTime = DateTime.parse(date);
+        final DateTime dateTime = DateTime.parse(date);
         return dateTime;
       }
       return DateTime.now();
@@ -1093,7 +1093,7 @@ class Variant {
   }
 
   static List<String> getProductImages(List? data) {
-    List<String> images = [];
+    final List<String> images = [];
 
     if (data != null) {
       for (int i = 0; i < data.length; i++) {
@@ -1105,9 +1105,9 @@ class Variant {
     return images;
   }
 
-  static DateTime getProductDateTime(var date) {
+  static DateTime getProductDateTime(String? date) {
     if (date != null) {
-      DateTime dateTime = DateTime.parse(date);
+      final DateTime dateTime = DateTime.parse(date);
       return dateTime;
     }
     return DateTime.now();
@@ -1125,7 +1125,7 @@ class Variant {
   }
 
   List<String?> imageDataToList(List<dynamic> pictures) {
-    List<String?> imageLinks = [];
+    final List<String?> imageLinks = [];
     if (pictures.length > 0) {
       for (var data in pictures) {
         imageLinks.add(data["file"]);
@@ -1159,8 +1159,8 @@ class Variant {
   }
 
   static VariantTypes? getVariantType(Map<String, dynamic> object) {
-    String? color = object['colour'];
-    String? size = object['value'];
+    final String? color = object['colour'];
+    final String? size = object['value'];
 
     if (color != null && color != "" && size != null && size != "") {
       return VariantTypes.ColorAndSize;
@@ -1304,14 +1304,14 @@ class AddOnOption {
 
   static DateTime getProductDateTime(var date) {
     if (date != null) {
-      DateTime dateTime = DateTime.parse(date);
+      final DateTime dateTime = DateTime.parse(date);
       return dateTime;
     }
     return DateTime.now();
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = Map<String, dynamic>();
     data['id'] = this.id;
     data['picture'] = this.picture;
     data['name'] = this.name;
@@ -1416,7 +1416,7 @@ class AddOns {
     if (json['options'] != null) {
       options = <AddOnOption>[];
       json['options'].forEach((v) {
-        options!.add(new AddOnOption.fromJson(v));
+        options!.add(AddOnOption.fromJson(v));
       });
     }
     merchant = json['merchant'];
@@ -1459,7 +1459,7 @@ class AddOns {
   }
 
   List<AddOnOption> getSelectedAddsOnsOption(AddOns addOns) {
-    List<AddOnOption> selectedAddOnsList = [];
+    final List<AddOnOption> selectedAddOnsList = [];
 
     for (AddOnOption addOn in options ?? []) {
       if (addOn.isAddOnsSelected(addOns)) selectedAddOnsList.add(addOn);
@@ -1469,14 +1469,14 @@ class AddOns {
 
   static DateTime getProductDateTime(var date) {
     if (date != null) {
-      DateTime dateTime = DateTime.parse(date);
+      final DateTime dateTime = DateTime.parse(date);
       return dateTime;
     }
     return DateTime.now();
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = Map<String, dynamic>();
     data['id'] = this.id;
     if (this.options != null) {
       data['options'] = this.options!.map((v) => v.toJson()).toList();
@@ -1495,10 +1495,10 @@ class AddOns {
   }
 
   static List<AddOns> convertToAddOnList(List<dynamic> dataList) {
-    List<AddOns> addOnList = [];
+    final List<AddOns> addOnList = [];
 
     for (var data in dataList) {
-      AddOns addOns = AddOns(
+      final AddOns addOns = AddOns(
         id: data['id'],
         name: data['name'],
         description: data['description'],
@@ -1515,7 +1515,7 @@ class AddOns {
   }
 
   static List<AddOnOption> getAddOnOption(List? data) {
-    List<AddOnOption> addOnOption = [];
+    final List<AddOnOption> addOnOption = [];
 
     if (data != null) {
       for (int i = 0; i < data.length; i++) {
@@ -1548,7 +1548,7 @@ class Tags {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = Map<String, dynamic>();
     data['id'] = this.id;
     data['name'] = this.name;
     return data;
@@ -1677,7 +1677,7 @@ class Service extends PurchasableItem {
   }
 
   List<String?> imageDataToList(List<dynamic> pictures) {
-    List<String?> imageLinks = [];
+    final List<String?> imageLinks = [];
     if (pictures.length > 0) {
       for (var data in pictures) {
         imageLinks.add(data["file"]);
@@ -1747,7 +1747,7 @@ class Service extends PurchasableItem {
   }
 
   List<String> getServiceImages(List? data) {
-    List<String> images = [];
+    final List<String> images = [];
 
     if (data != null) {
       for (int i = 0; i < data.length; i++) {
@@ -1759,9 +1759,9 @@ class Service extends PurchasableItem {
     return images;
   }
 
-  DateTime getServiceDateTime(var date) {
+  DateTime getServiceDateTime(String date) {
     if (date != null) {
-      DateTime dateTime = DateTime.parse(date);
+      final DateTime dateTime = DateTime.parse(date);
       return dateTime;
     }
     return DateTime.now();
@@ -1935,7 +1935,7 @@ class Order {
         (object["item"] as Map).isNotEmpty) {
       items ??= [];
       if (object["item"].containsKey("manufacturer")) {
-        var product = Product.fromJson(object["item"]);
+        final product = Product.fromJson(object["item"]);
         items?.add({
           "type": "product",
           "item": product,
@@ -1943,7 +1943,7 @@ class Order {
         });
       }
       if (!object["item"].containsKey("manufacturer")) {
-        var service = Service.fromJson(object["item"]);
+        final service = Service.fromJson(object["item"]);
         items?.add({
           "type": "service",
           "item": service,

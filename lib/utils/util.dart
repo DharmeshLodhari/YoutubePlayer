@@ -5,6 +5,7 @@ import 'dart:ui';
 
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
 import 'package:Slydo/utils/date_time_and_money_converter.dart';
+import 'package:Slydo/utils/enums.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -156,10 +157,10 @@ Widget imageFrameBuilder(BuildContext context, Widget child, int? frame,
     return child;
   }
   return AnimatedOpacity(
-    child: child,
     opacity: frame == null ? 0 : 1,
     duration: const Duration(milliseconds: 100),
     curve: Curves.easeOut,
+    child: child,
   );
 }
 
@@ -209,7 +210,7 @@ Widget wallpaperErrorWidget(BuildContext context, String url, dynamic error) =>
       filterQuality: FilterQuality.high,
     );
 
-getLoggedInUserName(BuildContext context) {
+String? getLoggedInUserName(BuildContext context) {
   return Provider.of<UserBloc>(context, listen: false).user.userName;
 }
 
@@ -537,7 +538,7 @@ Widget transactionOrPayoutTile(
   );
 }
 
-checkStatusBgColor(String status) {
+Color? checkStatusBgColor(String status) {
   if (status == 'done') {
     return naturalGreen.withOpacity(0.1);
   } else if (status == 'processing') {
@@ -547,9 +548,10 @@ checkStatusBgColor(String status) {
   } else if (status == "") {
     return Colors.transparent;
   }
+  return blackFont;
 }
 
-checkStatusForColor(String status) {
+Color checkStatusForColor(String status) {
   if (status == 'done') {
     return naturalGreen;
   } else if (status == 'processing') {
@@ -559,6 +561,7 @@ checkStatusForColor(String status) {
   } else if (status == "") {
     return blackFont;
   }
+  return blackFont;
 }
 
 Widget getSettingTile(
@@ -693,7 +696,7 @@ Widget flexibleSpace({int flex = 1}) {
   );
 }
 
-showSnackbar(BuildContext context,
+void showSnackbar(BuildContext context,
     {required String message, int duration = 500}) {
   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
     content: Text(message),
@@ -810,12 +813,12 @@ List<String> errorImageList = [
   "https://slydo-assets.s3.amazonaws.com/media/customer/avatar/me.jpeg"
 ];
 
-Widget getAmount(amount, currency, {double fontSize = 14}) {
+Widget getAmount(int amount, String currency, {double fontSize = 14}) {
   return Row(
     mainAxisSize: MainAxisSize.min,
     children: <Widget>[
       Text(
-        worldCurrencies[currency!]!,
+        worldCurrencies[currency]!,
         style: TextStyle(
             fontFamily: "Inter",
             color: blackFont,
@@ -832,7 +835,7 @@ Widget getAmount(amount, currency, {double fontSize = 14}) {
 }
 
 Widget getDateTime(BuildContext context, String dateTime,
-    {double fontSize = 10, color}) {
+    {double fontSize = 10, Color? color}) {
   final DateTime transactionTime = DateTime.parse(dateTime).toLocal();
   final String date = DateFormat("dd/MM/yyyy").format(transactionTime);
   final String time = DateFormat("hh:mm a").format(transactionTime);
@@ -1084,7 +1087,7 @@ double formatRating(double rating) {
 class BlogSettingsTitles extends StatefulWidget {
   final bool isEnabled;
   final Function()? onTap;
-  bool? isSwitched;
+  final bool? isSwitched;
   final Widget icon;
   final String title;
   final bool hasSwitch;
@@ -1210,7 +1213,7 @@ Color getRatingColor(int? numberOfRating, int i) {
       : Colors.grey;
 }
 
-String enumToString(mEnum) {
+String enumToString(UtilitiesProvidersEnum mEnum) {
   //UtilitiesProvidersEnum.Electricity
 
   return mEnum.toString().split('.')[1].replaceAll('_', ' ');
@@ -1370,6 +1373,7 @@ String? toTimeAgoLabel({required DateTime dateTime}) {
   }
 
   debugPrint('IN MINUTES --> $inMinutes');
+  return "";
 }
 
 String elapsedTime({required DateTime dateTime}) {
@@ -2605,7 +2609,7 @@ Response handleServerErrors(dynamic response) {
   if (response.statusCode >= 200 || response.statusCode < 300) {
     return response;
   } else {
-    var jsonResponse = jsonDecode(response.body);
+    final jsonResponse = jsonDecode(response.body);
     if (jsonResponse.containsKey('error')) {
       message = jsonResponse['error'];
     } else if (jsonResponse.containsKey('detail')) {

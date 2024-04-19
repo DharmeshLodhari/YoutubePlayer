@@ -71,7 +71,7 @@ class CurvedButton extends StatelessWidget {
     );
   }
 
-  onBtnPressed() {
+  void onBtnPressed() {
     if (isPaymentBtn) {
       if (getIt<AppConfigurationBloc>().appConfigurationModel?.enablePayment ==
           false) {

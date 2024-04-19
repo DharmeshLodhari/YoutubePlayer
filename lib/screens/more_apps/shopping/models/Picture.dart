@@ -14,7 +14,7 @@ class Picture {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = Map<String, dynamic>();
     data['file'] = this.path;
     data['id'] = this.id;
     data['title'] = this.title;

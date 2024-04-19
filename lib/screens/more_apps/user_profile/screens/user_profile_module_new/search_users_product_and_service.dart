@@ -804,7 +804,7 @@ class _SearchUsersProductAndServiceState
   }
 
   // ignore: missing_return
-  Widget getResultTile(var result) {
+  Widget getResultTile(dynamic result) {
     switch (filterValue) {
       case "Products":
         return getProductTile(result);

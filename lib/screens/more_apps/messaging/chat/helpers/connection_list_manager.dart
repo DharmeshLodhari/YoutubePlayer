@@ -5,7 +5,7 @@ import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.d
 
 /// For performing all the db operation related to user's connections
 class ConnectionListManager {
-  DatabaseHelper _db = DatabaseHelper();
+  final DatabaseHelper _db = DatabaseHelper();
 
   ///Store Connections in to the db
   Future<void> saveConnectionsToDB(

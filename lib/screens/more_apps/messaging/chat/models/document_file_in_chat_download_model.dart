@@ -10,7 +10,7 @@ class DocumentFileInChatDownloadModel {
   });
 
   Map<String, dynamic> toDBJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = Map<String, dynamic>();
 
     data['check_id'] = this.checkID;
     data['file_path_in_os'] = this.filePathInOs;

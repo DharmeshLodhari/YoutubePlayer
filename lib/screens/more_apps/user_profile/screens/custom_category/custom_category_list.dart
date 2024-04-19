@@ -97,8 +97,8 @@ class _CustomCategoryListState extends State<CustomCategoryList> {
         isLoading = true;
         if (mounted) setState(() {});
 
-        final List<ProductCategory> result = await ShoppingAuthService()
-            .obtainCustomCategory(userBloc!.user.userName);
+        final List<ProductCategory>? result = await ShoppingAuthService()
+            .obtainCustomCategory(userBloc?.user.userName ?? "");
 
         if (result == null) {
           isLoading = false;
@@ -137,7 +137,7 @@ class _CustomCategoryListState extends State<CustomCategoryList> {
     }
   }
 
-  addCategory() {
+  void addCategory() {
     showDialogBoxWithInput(
       context: context,
       actionOneTextColor: white,
@@ -188,8 +188,7 @@ class _CustomCategoryListState extends State<CustomCategoryList> {
       ),
       leftButtonOnPressed: () async {
         if (_controller.text.isNotEmpty) {
-          final bool result = await ShoppingAuthService()
-              .createCustomCategory(_controller.text);
+          await ShoppingAuthService().createCustomCategory(_controller.text);
           _onProductRefresh();
           _controller.clear();
           Navigator.pop(context);
@@ -198,7 +197,7 @@ class _CustomCategoryListState extends State<CustomCategoryList> {
     );
   }
 
-  deleteOrEditCategory(ProductCategory prod) {
+  void deleteOrEditCategory(ProductCategory prod) {
     _controller.text = prod.name;
     showDialogBoxWithInput(
         context: context,
@@ -252,14 +251,13 @@ class _CustomCategoryListState extends State<CustomCategoryList> {
           ],
         ),
         leftButtonOnPressed: () async {
-          final bool result =
-              await ShoppingAuthService().deleteCustomCategory(prod.id);
+          await ShoppingAuthService().deleteCustomCategory(prod.id);
           _onProductRefresh();
           _controller.clear();
           Navigator.pop(context);
         },
         rightButtonOnPressed: () async {
-          final bool result = await ShoppingAuthService()
+          await ShoppingAuthService()
               .editCustomCategory(_controller.text, prod.id);
           _onProductRefresh();
           _controller.clear();

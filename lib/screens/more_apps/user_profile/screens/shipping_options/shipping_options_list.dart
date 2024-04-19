@@ -344,7 +344,7 @@ class _ShippingOptionsListState extends State<ShippingOptionsList> {
     if (mounted) setState(() {});
   }
 
-  showDeleteShippingOptionDialog(ShippingOptionsListModel? shippingModel) {
+  void showDeleteShippingOptionDialog(ShippingOptionsListModel? shippingModel) {
     showDialogBox(
         context: context,
         actionOneTextColor: white,
@@ -374,8 +374,9 @@ class _ShippingOptionsListState extends State<ShippingOptionsList> {
     super.dispose();
   }
 
-  deleteShippingOption(ShippingOptionsListModel? shippingModel) async {
-    final bool? data = await _auth.deleteShippingOption(shippingModel!.id!);
+  Future<void> deleteShippingOption(
+      ShippingOptionsListModel? shippingModel) async {
+    final bool? data = await _auth.deleteShippingOption(shippingModel?.id ?? 0);
     if (data != null && data) {
       showToast(message: "Shipping Option Deleted Successfully");
       //refresh list

@@ -125,219 +125,219 @@ class AppTutorialController {
         ]);
   }
 
-  TargetFocus _getSendPaymentTutorial() {
-    return TargetFocus(
-        identify: "Target 2",
-        keyTarget: tutorialSendPaymentKey,
-        shape: ShapeLightFocus.RRect,
-        // color: naturalGreen,
-        contents: [
-          TargetContent(
-              align: ContentAlign.top,
-              child: Container(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    const Text(
-                      "Make Payment",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          fontSize: 20.0),
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.only(top: 10.0),
-                      child: Text(
-                        "Click here to initiate payment.",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                    nextButton()
-                  ],
-                ),
-              )),
-        ]);
-  }
-
-  TargetFocus _getRequestPaymentTutorial() {
-    return TargetFocus(
-        identify: "Target 3",
-        keyTarget: tutorialRequestPaymentKey,
-        shape: ShapeLightFocus.RRect,
-        // color: navyBlue,
-        contents: [
-          TargetContent(
-              align: ContentAlign.top,
-              child: Container(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    const Text(
-                      "Payment Request",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          fontSize: 20.0),
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.only(top: 10.0),
-                      child: Text(
-                        "Click here to initiate payment request.",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                    nextButton()
-                  ],
-                ),
-              ))
-        ]);
-  }
-
-  TargetFocus _getQrCodeTutorial() {
-    return TargetFocus(
-        identify: "Target 4",
-        keyTarget: tutorialQrCodeKey,
-        shape: ShapeLightFocus.RRect,
-
-        // color: navyBlue,
-        contents: [
-          TargetContent(
-              align: ContentAlign.bottom,
-              child: Container(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    const Text(
-                      "User QR Code",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          fontSize: 20.0),
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.only(top: 10.0),
-                      child: Text(
-                        "The current user's QR code.",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                    nextButton()
-                  ],
-                ),
-              ))
-        ]);
-  }
-
-  TargetFocus _getTransactionTutorial() {
-    return TargetFocus(
-        identify: "Target 5",
-        keyTarget: tutorialTransactionKey,
-        shape: ShapeLightFocus.RRect,
-
-        // color: navyBlue,
-        contents: [
-          TargetContent(
-              align: ContentAlign.top,
-              child: Container(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    const Text(
-                      "Transactions",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          fontSize: 20.0),
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.only(top: 10.0),
-                      child: Text(
-                        "Access all your completed and pending transactions.",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                    nextButton()
-                  ],
-                ),
-              ))
-        ]);
-  }
-
-  TargetFocus _getWalletTutorial() {
-    return TargetFocus(
-        identify: "Target 6",
-        keyTarget: tutorialWalletKey,
-        shape: ShapeLightFocus.RRect,
-
-        // color: navyBlue,
-        contents: [
-          TargetContent(
-              align: ContentAlign.top,
-              child: Container(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    const Text(
-                      "Wallet",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          fontSize: 20.0),
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.only(top: 10.0),
-                      child: Text(
-                        "Fund your Slydo account with direct transfers or debit card.",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                    nextButton()
-                  ],
-                ),
-              ))
-        ]);
-  }
-
-  TargetFocus _getSearchItemTutorial() {
-    return TargetFocus(
-        identify: "Target 7",
-        keyTarget: tutorialSearchItemsKey,
-        shape: ShapeLightFocus.RRect,
-
-        // color: navyBlue,
-        contents: [
-          TargetContent(
-              align: ContentAlign.left,
-              child: Container(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    const Text(
-                      "Search",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          fontSize: 20.0),
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.only(top: 10.0),
-                      child: Text(
-                        "Click here to search for users, products and services.",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                    nextButton()
-                  ],
-                ),
-              ))
-        ]);
-  }
+  // TargetFocus _getSendPaymentTutorial() {
+  //   return TargetFocus(
+  //       identify: "Target 2",
+  //       keyTarget: tutorialSendPaymentKey,
+  //       shape: ShapeLightFocus.RRect,
+  //       // color: naturalGreen,
+  //       contents: [
+  //         TargetContent(
+  //             align: ContentAlign.top,
+  //             child: Container(
+  //               child: Column(
+  //                 mainAxisSize: MainAxisSize.min,
+  //                 crossAxisAlignment: CrossAxisAlignment.start,
+  //                 children: <Widget>[
+  //                   const Text(
+  //                     "Make Payment",
+  //                     style: TextStyle(
+  //                         fontWeight: FontWeight.bold,
+  //                         color: Colors.white,
+  //                         fontSize: 20.0),
+  //                   ),
+  //                   const Padding(
+  //                     padding: EdgeInsets.only(top: 10.0),
+  //                     child: Text(
+  //                       "Click here to initiate payment.",
+  //                       style: TextStyle(color: Colors.white),
+  //                     ),
+  //                   ),
+  //                   nextButton()
+  //                 ],
+  //               ),
+  //             )),
+  //       ]);
+  // }
+  //
+  // TargetFocus _getRequestPaymentTutorial() {
+  //   return TargetFocus(
+  //       identify: "Target 3",
+  //       keyTarget: tutorialRequestPaymentKey,
+  //       shape: ShapeLightFocus.RRect,
+  //       // color: navyBlue,
+  //       contents: [
+  //         TargetContent(
+  //             align: ContentAlign.top,
+  //             child: Container(
+  //               child: Column(
+  //                 mainAxisSize: MainAxisSize.min,
+  //                 crossAxisAlignment: CrossAxisAlignment.start,
+  //                 children: <Widget>[
+  //                   const Text(
+  //                     "Payment Request",
+  //                     style: TextStyle(
+  //                         fontWeight: FontWeight.bold,
+  //                         color: Colors.white,
+  //                         fontSize: 20.0),
+  //                   ),
+  //                   const Padding(
+  //                     padding: EdgeInsets.only(top: 10.0),
+  //                     child: Text(
+  //                       "Click here to initiate payment request.",
+  //                       style: TextStyle(color: Colors.white),
+  //                     ),
+  //                   ),
+  //                   nextButton()
+  //                 ],
+  //               ),
+  //             ))
+  //       ]);
+  // }
+  //
+  // TargetFocus _getQrCodeTutorial() {
+  //   return TargetFocus(
+  //       identify: "Target 4",
+  //       keyTarget: tutorialQrCodeKey,
+  //       shape: ShapeLightFocus.RRect,
+  //
+  //       // color: navyBlue,
+  //       contents: [
+  //         TargetContent(
+  //             align: ContentAlign.bottom,
+  //             child: Container(
+  //               child: Column(
+  //                 mainAxisSize: MainAxisSize.min,
+  //                 crossAxisAlignment: CrossAxisAlignment.start,
+  //                 children: <Widget>[
+  //                   const Text(
+  //                     "User QR Code",
+  //                     style: TextStyle(
+  //                         fontWeight: FontWeight.bold,
+  //                         color: Colors.white,
+  //                         fontSize: 20.0),
+  //                   ),
+  //                   const Padding(
+  //                     padding: EdgeInsets.only(top: 10.0),
+  //                     child: Text(
+  //                       "The current user's QR code.",
+  //                       style: TextStyle(color: Colors.white),
+  //                     ),
+  //                   ),
+  //                   nextButton()
+  //                 ],
+  //               ),
+  //             ))
+  //       ]);
+  // }
+  //
+  // TargetFocus _getTransactionTutorial() {
+  //   return TargetFocus(
+  //       identify: "Target 5",
+  //       keyTarget: tutorialTransactionKey,
+  //       shape: ShapeLightFocus.RRect,
+  //
+  //       // color: navyBlue,
+  //       contents: [
+  //         TargetContent(
+  //             align: ContentAlign.top,
+  //             child: Container(
+  //               child: Column(
+  //                 mainAxisSize: MainAxisSize.min,
+  //                 crossAxisAlignment: CrossAxisAlignment.start,
+  //                 children: <Widget>[
+  //                   const Text(
+  //                     "Transactions",
+  //                     style: TextStyle(
+  //                         fontWeight: FontWeight.bold,
+  //                         color: Colors.white,
+  //                         fontSize: 20.0),
+  //                   ),
+  //                   const Padding(
+  //                     padding: EdgeInsets.only(top: 10.0),
+  //                     child: Text(
+  //                       "Access all your completed and pending transactions.",
+  //                       style: TextStyle(color: Colors.white),
+  //                     ),
+  //                   ),
+  //                   nextButton()
+  //                 ],
+  //               ),
+  //             ))
+  //       ]);
+  // }
+  //
+  // TargetFocus _getWalletTutorial() {
+  //   return TargetFocus(
+  //       identify: "Target 6",
+  //       keyTarget: tutorialWalletKey,
+  //       shape: ShapeLightFocus.RRect,
+  //
+  //       // color: navyBlue,
+  //       contents: [
+  //         TargetContent(
+  //             align: ContentAlign.top,
+  //             child: Container(
+  //               child: Column(
+  //                 mainAxisSize: MainAxisSize.min,
+  //                 crossAxisAlignment: CrossAxisAlignment.start,
+  //                 children: <Widget>[
+  //                   const Text(
+  //                     "Wallet",
+  //                     style: TextStyle(
+  //                         fontWeight: FontWeight.bold,
+  //                         color: Colors.white,
+  //                         fontSize: 20.0),
+  //                   ),
+  //                   const Padding(
+  //                     padding: EdgeInsets.only(top: 10.0),
+  //                     child: Text(
+  //                       "Fund your Slydo account with direct transfers or debit card.",
+  //                       style: TextStyle(color: Colors.white),
+  //                     ),
+  //                   ),
+  //                   nextButton()
+  //                 ],
+  //               ),
+  //             ))
+  //       ]);
+  // }
+  //
+  // TargetFocus _getSearchItemTutorial() {
+  //   return TargetFocus(
+  //       identify: "Target 7",
+  //       keyTarget: tutorialSearchItemsKey,
+  //       shape: ShapeLightFocus.RRect,
+  //
+  //       // color: navyBlue,
+  //       contents: [
+  //         TargetContent(
+  //             align: ContentAlign.left,
+  //             child: Container(
+  //               child: Column(
+  //                 mainAxisSize: MainAxisSize.min,
+  //                 crossAxisAlignment: CrossAxisAlignment.start,
+  //                 children: <Widget>[
+  //                   const Text(
+  //                     "Search",
+  //                     style: TextStyle(
+  //                         fontWeight: FontWeight.bold,
+  //                         color: Colors.white,
+  //                         fontSize: 20.0),
+  //                   ),
+  //                   const Padding(
+  //                     padding: EdgeInsets.only(top: 10.0),
+  //                     child: Text(
+  //                       "Click here to search for users, products and services.",
+  //                       style: TextStyle(color: Colors.white),
+  //                     ),
+  //                   ),
+  //                   nextButton()
+  //                 ],
+  //               ),
+  //             ))
+  //       ]);
+  // }
 
   TargetFocus _getShoppingCartTutorial() {
     return TargetFocus(
@@ -376,43 +376,43 @@ class AppTutorialController {
     );
   }
 
-  TargetFocus _getYarnTutorial() {
-    return TargetFocus(
-      identify: "Target 9",
-      keyTarget: tutorialYarnKey,
-      shape: ShapeLightFocus.RRect,
-      alignSkip: Alignment.bottomLeft,
-      // color: navyBlue,
-      contents: [
-        TargetContent(
-          align: ContentAlign.top,
-          child: Container(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                const Text(
-                  "Yarn",
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      fontSize: 20.0),
-                ),
-                const Padding(
-                  padding: EdgeInsets.only(top: 10.0),
-                  child: Text(
-                    "Connect with others and stay up to date on worldwide trends.",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-                nextButton()
-              ],
-            ),
-          ),
-        )
-      ],
-    );
-  }
+  // TargetFocus _getYarnTutorial() {
+  //   return TargetFocus(
+  //     identify: "Target 9",
+  //     keyTarget: tutorialYarnKey,
+  //     shape: ShapeLightFocus.RRect,
+  //     alignSkip: Alignment.bottomLeft,
+  //     // color: navyBlue,
+  //     contents: [
+  //       TargetContent(
+  //         align: ContentAlign.top,
+  //         child: Container(
+  //           child: Column(
+  //             mainAxisSize: MainAxisSize.min,
+  //             crossAxisAlignment: CrossAxisAlignment.start,
+  //             children: <Widget>[
+  //               const Text(
+  //                 "Yarn",
+  //                 style: TextStyle(
+  //                     fontWeight: FontWeight.bold,
+  //                     color: Colors.white,
+  //                     fontSize: 20.0),
+  //               ),
+  //               const Padding(
+  //                 padding: EdgeInsets.only(top: 10.0),
+  //                 child: Text(
+  //                   "Connect with others and stay up to date on worldwide trends.",
+  //                   style: TextStyle(color: Colors.white),
+  //                 ),
+  //               ),
+  //               nextButton()
+  //             ],
+  //           ),
+  //         ),
+  //       )
+  //     ],
+  //   );
+  // }
 
   TargetFocus _getScanQrCodeTutorial() {
     return TargetFocus(
@@ -452,309 +452,309 @@ class AppTutorialController {
     );
   }
 
-  TargetFocus _getChatMessagesTutorial() {
-    return TargetFocus(
-      identify: "Target 11",
-      keyTarget: tutorialChatMessageKey,
-      shape: ShapeLightFocus.RRect,
-
-      // color: navyBlue,
-      contents: [
-        TargetContent(
-          align: ContentAlign.top,
-          child: Container(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                const Text(
-                  "Chat",
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      fontSize: 20.0),
-                ),
-                const Padding(
-                  padding: EdgeInsets.only(top: 10.0),
-                  child: Text(
-                    "View and exchange messages with buyers, sellers and friends.",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-                nextButton()
-              ],
-            ),
-          ),
-        )
-      ],
-    );
-  }
-
-  TargetFocus _getSettingsTutorial() {
-    return TargetFocus(
-      identify: "Target 12",
-      keyTarget: tutorialSettingsKey,
-      shape: ShapeLightFocus.RRect,
-
-      // color: navyBlue,
-      contents: [
-        TargetContent(
-          align: ContentAlign.left,
-          child: Container(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                const Text(
-                  "Settings",
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      fontSize: 20.0),
-                ),
-                const Padding(
-                  padding: EdgeInsets.only(top: 10.0),
-                  child: Text(
-                    "Control and manage every account function.",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-                nextButton()
-              ],
-            ),
-          ),
-        )
-      ],
-    );
-  }
-
-  TargetFocus _getSuperStoreTutorial() {
-    return TargetFocus(
-      identify: "Target 13",
-      keyTarget: tutorialSuperStoreKey,
-      shape: ShapeLightFocus.RRect,
-
-      // color: navyBlue,
-      contents: [
-        TargetContent(
-          align: ContentAlign.top,
-          child: Container(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                const Text(
-                  "Super Store",
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      fontSize: 20.0),
-                ),
-                const Padding(
-                  padding: EdgeInsets.only(top: 10.0),
-                  child: Text(
-                    "Check out an unlimited variety of goods available for sale.",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-                nextButton()
-              ],
-            ),
-          ),
-        )
-      ],
-    );
-  }
-
-  TargetFocus _getMomentTutorial() {
-    return TargetFocus(
-      identify: "Target 14",
-      keyTarget: tutorialMomentKey,
-      shape: ShapeLightFocus.RRect,
-      alignSkip: Alignment.bottomLeft,
-      // color: navyBlue,
-      contents: [
-        TargetContent(
-          align: ContentAlign.top,
-          child: Container(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                const Text(
-                  "Moment",
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      fontSize: 20.0),
-                ),
-                const Padding(
-                  padding: EdgeInsets.only(top: 10.0),
-                  child: Text(
-                    "Share and view unforgettable memories.",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-                nextButton()
-              ],
-            ),
-          ),
-        )
-      ],
-    );
-  }
-
-  TargetFocus _getOrderTutorial() {
-    return TargetFocus(
-      identify: "Target 15",
-      keyTarget: tutorialOrderKey,
-      shape: ShapeLightFocus.RRect,
-      alignSkip: Alignment.bottomLeft,
-      // color: navyBlue,
-      contents: [
-        TargetContent(
-          align: ContentAlign.top,
-          child: Container(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                const Text(
-                  "Orders",
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      fontSize: 20.0),
-                ),
-                const Padding(
-                  padding: EdgeInsets.only(top: 10.0),
-                  child: Text(
-                    "View all open and closed orders.",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-                nextButton()
-              ],
-            ),
-          ),
-        )
-      ],
-    );
-  }
-
-  TargetFocus _getInboxTutorial() {
-    return TargetFocus(
-      identify: "Target 16",
-      keyTarget: tutorialInboxKey,
-      shape: ShapeLightFocus.RRect,
-      alignSkip: Alignment.bottomLeft,
-      // color: navyBlue,
-      contents: [
-        TargetContent(
-          align: ContentAlign.top,
-          child: Container(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                const Text(
-                  "Inbox",
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      fontSize: 20.0),
-                ),
-                const Padding(
-                  padding: EdgeInsets.only(top: 10.0),
-                  child: Text(
-                    "Check all sent and received messages.",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-                nextButton()
-              ],
-            ),
-          ),
-        )
-      ],
-    );
-  }
-
-  TargetFocus _getBlogsTutorial() {
-    return TargetFocus(
-      identify: "Target 17",
-      keyTarget: tutorialBlogsKey,
-      shape: ShapeLightFocus.RRect,
-      alignSkip: Alignment.bottomLeft,
-      // color: navyBlue,
-      contents: [
-        TargetContent(
-          align: ContentAlign.top,
-          child: Container(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                const Text(
-                  "Blogs",
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      fontSize: 20.0),
-                ),
-                const Padding(
-                  padding: EdgeInsets.only(top: 10.0),
-                  child: Text(
-                    "Discover insightful write upd on your preferred topics and many more.",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-                nextButton()
-              ],
-            ),
-          ),
-        )
-      ],
-    );
-  }
-
-  TargetFocus _getServicesTutorial() {
-    return TargetFocus(
-      identify: "Target 18",
-      keyTarget: tutorialServicesKey,
-      shape: ShapeLightFocus.RRect,
-      alignSkip: Alignment.bottomLeft,
-      // color: navyBlue,
-      contents: [
-        TargetContent(
-          align: ContentAlign.top,
-          child: Container(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                const Text(
-                  "Services",
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      fontSize: 20.0),
-                ),
-                const Padding(
-                  padding: EdgeInsets.only(top: 10.0),
-                  child: Text(
-                    "Take a look at all services offered by Slydo users at the best prices.",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-                nextButton()
-              ],
-            ),
-          ),
-        )
-      ],
-    );
-  }
+  // TargetFocus _getChatMessagesTutorial() {
+  //   return TargetFocus(
+  //     identify: "Target 11",
+  //     keyTarget: tutorialChatMessageKey,
+  //     shape: ShapeLightFocus.RRect,
+  //
+  //     // color: navyBlue,
+  //     contents: [
+  //       TargetContent(
+  //         align: ContentAlign.top,
+  //         child: Container(
+  //           child: Column(
+  //             mainAxisSize: MainAxisSize.min,
+  //             crossAxisAlignment: CrossAxisAlignment.start,
+  //             children: <Widget>[
+  //               const Text(
+  //                 "Chat",
+  //                 style: TextStyle(
+  //                     fontWeight: FontWeight.bold,
+  //                     color: Colors.white,
+  //                     fontSize: 20.0),
+  //               ),
+  //               const Padding(
+  //                 padding: EdgeInsets.only(top: 10.0),
+  //                 child: Text(
+  //                   "View and exchange messages with buyers, sellers and friends.",
+  //                   style: TextStyle(color: Colors.white),
+  //                 ),
+  //               ),
+  //               nextButton()
+  //             ],
+  //           ),
+  //         ),
+  //       )
+  //     ],
+  //   );
+  // }
+  //
+  // TargetFocus _getSettingsTutorial() {
+  //   return TargetFocus(
+  //     identify: "Target 12",
+  //     keyTarget: tutorialSettingsKey,
+  //     shape: ShapeLightFocus.RRect,
+  //
+  //     // color: navyBlue,
+  //     contents: [
+  //       TargetContent(
+  //         align: ContentAlign.left,
+  //         child: Container(
+  //           child: Column(
+  //             mainAxisSize: MainAxisSize.min,
+  //             crossAxisAlignment: CrossAxisAlignment.start,
+  //             children: <Widget>[
+  //               const Text(
+  //                 "Settings",
+  //                 style: TextStyle(
+  //                     fontWeight: FontWeight.bold,
+  //                     color: Colors.white,
+  //                     fontSize: 20.0),
+  //               ),
+  //               const Padding(
+  //                 padding: EdgeInsets.only(top: 10.0),
+  //                 child: Text(
+  //                   "Control and manage every account function.",
+  //                   style: TextStyle(color: Colors.white),
+  //                 ),
+  //               ),
+  //               nextButton()
+  //             ],
+  //           ),
+  //         ),
+  //       )
+  //     ],
+  //   );
+  // }
+  //
+  // TargetFocus _getSuperStoreTutorial() {
+  //   return TargetFocus(
+  //     identify: "Target 13",
+  //     keyTarget: tutorialSuperStoreKey,
+  //     shape: ShapeLightFocus.RRect,
+  //
+  //     // color: navyBlue,
+  //     contents: [
+  //       TargetContent(
+  //         align: ContentAlign.top,
+  //         child: Container(
+  //           child: Column(
+  //             mainAxisSize: MainAxisSize.min,
+  //             crossAxisAlignment: CrossAxisAlignment.start,
+  //             children: <Widget>[
+  //               const Text(
+  //                 "Super Store",
+  //                 style: TextStyle(
+  //                     fontWeight: FontWeight.bold,
+  //                     color: Colors.white,
+  //                     fontSize: 20.0),
+  //               ),
+  //               const Padding(
+  //                 padding: EdgeInsets.only(top: 10.0),
+  //                 child: Text(
+  //                   "Check out an unlimited variety of goods available for sale.",
+  //                   style: TextStyle(color: Colors.white),
+  //                 ),
+  //               ),
+  //               nextButton()
+  //             ],
+  //           ),
+  //         ),
+  //       )
+  //     ],
+  //   );
+  // }
+  //
+  // TargetFocus _getMomentTutorial() {
+  //   return TargetFocus(
+  //     identify: "Target 14",
+  //     keyTarget: tutorialMomentKey,
+  //     shape: ShapeLightFocus.RRect,
+  //     alignSkip: Alignment.bottomLeft,
+  //     // color: navyBlue,
+  //     contents: [
+  //       TargetContent(
+  //         align: ContentAlign.top,
+  //         child: Container(
+  //           child: Column(
+  //             mainAxisSize: MainAxisSize.min,
+  //             crossAxisAlignment: CrossAxisAlignment.start,
+  //             children: <Widget>[
+  //               const Text(
+  //                 "Moment",
+  //                 style: TextStyle(
+  //                     fontWeight: FontWeight.bold,
+  //                     color: Colors.white,
+  //                     fontSize: 20.0),
+  //               ),
+  //               const Padding(
+  //                 padding: EdgeInsets.only(top: 10.0),
+  //                 child: Text(
+  //                   "Share and view unforgettable memories.",
+  //                   style: TextStyle(color: Colors.white),
+  //                 ),
+  //               ),
+  //               nextButton()
+  //             ],
+  //           ),
+  //         ),
+  //       )
+  //     ],
+  //   );
+  // }
+  //
+  // TargetFocus _getOrderTutorial() {
+  //   return TargetFocus(
+  //     identify: "Target 15",
+  //     keyTarget: tutorialOrderKey,
+  //     shape: ShapeLightFocus.RRect,
+  //     alignSkip: Alignment.bottomLeft,
+  //     // color: navyBlue,
+  //     contents: [
+  //       TargetContent(
+  //         align: ContentAlign.top,
+  //         child: Container(
+  //           child: Column(
+  //             mainAxisSize: MainAxisSize.min,
+  //             crossAxisAlignment: CrossAxisAlignment.start,
+  //             children: <Widget>[
+  //               const Text(
+  //                 "Orders",
+  //                 style: TextStyle(
+  //                     fontWeight: FontWeight.bold,
+  //                     color: Colors.white,
+  //                     fontSize: 20.0),
+  //               ),
+  //               const Padding(
+  //                 padding: EdgeInsets.only(top: 10.0),
+  //                 child: Text(
+  //                   "View all open and closed orders.",
+  //                   style: TextStyle(color: Colors.white),
+  //                 ),
+  //               ),
+  //               nextButton()
+  //             ],
+  //           ),
+  //         ),
+  //       )
+  //     ],
+  //   );
+  // }
+  //
+  // TargetFocus _getInboxTutorial() {
+  //   return TargetFocus(
+  //     identify: "Target 16",
+  //     keyTarget: tutorialInboxKey,
+  //     shape: ShapeLightFocus.RRect,
+  //     alignSkip: Alignment.bottomLeft,
+  //     // color: navyBlue,
+  //     contents: [
+  //       TargetContent(
+  //         align: ContentAlign.top,
+  //         child: Container(
+  //           child: Column(
+  //             mainAxisSize: MainAxisSize.min,
+  //             crossAxisAlignment: CrossAxisAlignment.start,
+  //             children: <Widget>[
+  //               const Text(
+  //                 "Inbox",
+  //                 style: TextStyle(
+  //                     fontWeight: FontWeight.bold,
+  //                     color: Colors.white,
+  //                     fontSize: 20.0),
+  //               ),
+  //               const Padding(
+  //                 padding: EdgeInsets.only(top: 10.0),
+  //                 child: Text(
+  //                   "Check all sent and received messages.",
+  //                   style: TextStyle(color: Colors.white),
+  //                 ),
+  //               ),
+  //               nextButton()
+  //             ],
+  //           ),
+  //         ),
+  //       )
+  //     ],
+  //   );
+  // }
+  //
+  // TargetFocus _getBlogsTutorial() {
+  //   return TargetFocus(
+  //     identify: "Target 17",
+  //     keyTarget: tutorialBlogsKey,
+  //     shape: ShapeLightFocus.RRect,
+  //     alignSkip: Alignment.bottomLeft,
+  //     // color: navyBlue,
+  //     contents: [
+  //       TargetContent(
+  //         align: ContentAlign.top,
+  //         child: Container(
+  //           child: Column(
+  //             mainAxisSize: MainAxisSize.min,
+  //             crossAxisAlignment: CrossAxisAlignment.start,
+  //             children: <Widget>[
+  //               const Text(
+  //                 "Blogs",
+  //                 style: TextStyle(
+  //                     fontWeight: FontWeight.bold,
+  //                     color: Colors.white,
+  //                     fontSize: 20.0),
+  //               ),
+  //               const Padding(
+  //                 padding: EdgeInsets.only(top: 10.0),
+  //                 child: Text(
+  //                   "Discover insightful write upd on your preferred topics and many more.",
+  //                   style: TextStyle(color: Colors.white),
+  //                 ),
+  //               ),
+  //               nextButton()
+  //             ],
+  //           ),
+  //         ),
+  //       )
+  //     ],
+  //   );
+  // }
+  //
+  // TargetFocus _getServicesTutorial() {
+  //   return TargetFocus(
+  //     identify: "Target 18",
+  //     keyTarget: tutorialServicesKey,
+  //     shape: ShapeLightFocus.RRect,
+  //     alignSkip: Alignment.bottomLeft,
+  //     // color: navyBlue,
+  //     contents: [
+  //       TargetContent(
+  //         align: ContentAlign.top,
+  //         child: Container(
+  //           child: Column(
+  //             mainAxisSize: MainAxisSize.min,
+  //             crossAxisAlignment: CrossAxisAlignment.start,
+  //             children: <Widget>[
+  //               const Text(
+  //                 "Services",
+  //                 style: TextStyle(
+  //                     fontWeight: FontWeight.bold,
+  //                     color: Colors.white,
+  //                     fontSize: 20.0),
+  //               ),
+  //               const Padding(
+  //                 padding: EdgeInsets.only(top: 10.0),
+  //                 child: Text(
+  //                   "Take a look at all services offered by Slydo users at the best prices.",
+  //                   style: TextStyle(color: Colors.white),
+  //                 ),
+  //               ),
+  //               nextButton()
+  //             ],
+  //           ),
+  //         ),
+  //       )
+  //     ],
+  //   );
+  // }
 
   void _fillTargets() {
     _targets.add(_getUserProfileTutorial());

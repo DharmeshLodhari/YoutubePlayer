@@ -54,7 +54,7 @@ class _EnterAddressOrPinPinPageState extends State<EnterAddressOrPinPinPage> {
         ),
       ),
       body: Container(
-        padding: EdgeInsets.symmetric(horizontal: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 20),
         height: MediaQuery.of(context).size.height -
             (AppBar().preferredSize.height +
                 MediaQuery.of(context).padding.top),
@@ -106,7 +106,7 @@ class _EnterAddressOrPinPinPageState extends State<EnterAddressOrPinPinPage> {
 
       showDialog(context: context, builder: (context) => LoadingIndicator());
 
-      print('CREDIT CARD :::: ${creditCardData.toJson()}');
+      debugPrint('CREDIT CARD :::: ${creditCardData.toJson()}');
       if (widget.isWalletFunding) {
         PaymentAndBankingAuth().fundWallet(creditCardData).then(
           (walletFunded) {
@@ -137,7 +137,7 @@ class _EnterAddressOrPinPinPageState extends State<EnterAddressOrPinPinPage> {
     }
   }
 
-  _processResponse(String response) {
+  void _processResponse(String response) {
     switch (response) {
       case 'otp':
         Navigator.of(context).popAndPushNamed('/verify-registration-otp',
@@ -200,7 +200,7 @@ class _EnterAddressOrPinPinPageState extends State<EnterAddressOrPinPinPage> {
           side: BorderSide(color: whiteBackground)),
       shadowColor: whiteBackground,
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 30, vertical: 28),
+        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 28),
         child: PinPut(
           eachFieldWidth: 40,
           eachFieldHeight: 45,

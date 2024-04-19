@@ -14,10 +14,10 @@ import 'package:text_scroll/text_scroll.dart';
 import '../utils.dart';
 
 class BusinessProfileScreen extends StatefulWidget {
-  CustomerProfile? searchedUser;
-  String? searchedUserName;
-  bool isOwner;
-  bool isLoading;
+  final CustomerProfile? searchedUser;
+  final String? searchedUserName;
+  final bool isOwner;
+  final bool isLoading;
 
   BusinessProfileScreen({
     Key? key,
@@ -91,19 +91,17 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
     final orderedKeys = <String>[];
 
     // Iterate through the 'ordering' array and add keys that exist in boolMap to orderedKeys
-    if (result is Map<String, dynamic>) {
-      // Iterate through the JSON object and filter boolean values
-      result.forEach((key, value) {
-        if (value is bool) {
-          boolMap[key] = value;
-        }
-      });
+    // Iterate through the JSON object and filter boolean values
+    result.forEach((key, value) {
+      if (value is bool) {
+        boolMap[key] = value;
+      }
+    });
 
-      // Iterate through the JSON object and add tabs for boolean values that are true
-      for (var key in orderingList) {
-        if (boolMap.containsKey(key)) {
-          orderedKeys.add(key);
-        }
+    // Iterate through the JSON object and add tabs for boolean values that are true
+    for (var key in orderingList) {
+      if (boolMap.containsKey(key)) {
+        orderedKeys.add(key);
       }
     }
 
@@ -535,7 +533,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
     );
   }
 
-  getData() async {
+  Future<List> getData() async {
     Map<String, dynamic>? data;
     try {
       data = await ShoppingAuthService().listOfProduct(
@@ -664,7 +662,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
     _pageController?.removeListener(_scrollListener);
   }
 
-  refreshTabs(Map<String, bool> val) {
+  void refreshTabs(Map<String, bool> val) {
     if (compareMaps(reorderedBoolMap, val)) {
       debugPrint('The maps are equal.');
     } else {
@@ -708,7 +706,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
     }
   }
 
-  productServiceTabReload(Map<String, dynamic> val) {
+  void productServiceTabReload(Map<String, dynamic> val) {
     productLabel = val['product_label'].toString();
     serviceLabel = val['service_label'].toString();
     if (mounted) setState(() {});

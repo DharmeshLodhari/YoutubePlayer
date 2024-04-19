@@ -140,7 +140,7 @@ class _ProductAndServiceReviewTileState
           ),
           itemSize: 10,
           onRatingUpdate: (rating) {
-            print(rating);
+            debugPrint("Rating : $rating");
           },
           unratedColor: starYellow.withOpacity(0.2),
           glowColor: starYellow.withOpacity(0.2),
@@ -310,8 +310,8 @@ class _ProductAndServiceReviewTileState
     date = "jan 20, 2022";
     if (date != "") {
       debugPrint("Date ==> $date");
-      DateFormat dateFormat = DateFormat("MMM dd, yyyy");
-      DateTime dateTime = DateTime.parse(date);
+      final DateFormat dateFormat = DateFormat("MMM dd, yyyy");
+      final DateTime dateTime = DateTime.parse(date);
       date = dateFormat.format(dateTime);
     }
     return date;

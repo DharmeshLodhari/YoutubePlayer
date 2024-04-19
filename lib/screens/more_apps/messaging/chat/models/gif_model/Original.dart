@@ -38,7 +38,7 @@ class Original {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = Map<String, dynamic>();
     data['frames'] = this.frames;
     data['hash'] = this.hash;
     data['height'] = this.height;

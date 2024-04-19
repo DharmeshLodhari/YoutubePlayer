@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 
 class ReviewDetailScreen extends StatefulWidget {
   ReviewDetailScreen({Key? key, required this.arguments}) : super(key: key);
-  Map<String, dynamic> arguments;
+  final Map<String, dynamic> arguments;
 
   @override
   _ReviewDetailScreenState createState() => _ReviewDetailScreenState();
@@ -74,13 +74,13 @@ class _ReviewDetailScreenState extends State<ReviewDetailScreen> {
                         height: 20,
                       ),
                       ClipRRect(
+                        borderRadius: BorderRadius.circular(16),
                         child: CachedNetworkImage(
                           imageUrl: getImageUrl(),
                           height: 200,
                           width: 200,
                           fit: BoxFit.fill,
                         ),
-                        borderRadius: BorderRadius.circular(16),
                       ),
                       const SizedBox(
                         height: 20,

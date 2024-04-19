@@ -96,7 +96,7 @@ class _HomeState extends State<Home> {
   bool isExploreMomentsLoading = false;
   List<ExploreMomentsModel> exploreMomentsList = [];
   List<MomentsModel> momentsList = [];
-  ScrollController _myConnectionsScrollController = ScrollController();
+  final ScrollController _myConnectionsScrollController = ScrollController();
 
   List<Yarn> yarnTopicList = [];
   late YarnDashboardBloc yarnDashboardBloc;
@@ -450,7 +450,7 @@ class _HomeState extends State<Home> {
                       "View Moment",
                     ),
                   ),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   if (nextContactMoments == '' && isExploreMomentsLoading)
                     Shimmer.fromColors(
                       baseColor: Colors.white,
@@ -460,7 +460,7 @@ class _HomeState extends State<Home> {
                         child: ListView.builder(
                           shrinkWrap: true,
                           scrollDirection: Axis.horizontal,
-                          physics: NeverScrollableScrollPhysics(),
+                          physics: const NeverScrollableScrollPhysics(),
                           itemCount: 4,
                           itemBuilder: (context, index) {
                             return SizedBox(
@@ -482,7 +482,7 @@ class _HomeState extends State<Home> {
                         shrinkWrap: true,
                         controller: _myConnectionsScrollController,
                         scrollDirection: Axis.horizontal,
-                        padding: EdgeInsets.symmetric(vertical: 4),
+                        padding: const EdgeInsets.symmetric(vertical: 4),
                         itemCount: momentsList.length,
                         itemBuilder: (BuildContext context, int index) {
                           if (index == momentsList.length) {
@@ -813,7 +813,7 @@ class _HomeState extends State<Home> {
     );
   }
 
-  Widget sectionHeader(title, more) {
+  Widget sectionHeader(String title, String more) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -1035,9 +1035,9 @@ class _HomeState extends State<Home> {
       ),
       actions: <Widget>[
         _searchBtn(),
-        SizedBox(width: 15),
+        const SizedBox(width: 15),
         _cartBtn(),
-        SizedBox(width: 5),
+        const SizedBox(width: 5),
       ],
     );
   }
@@ -1082,19 +1082,19 @@ class _HomeState extends State<Home> {
           badgeColor: naturalGreen,
           padding: basketBloc.basketItems.length == 0
               ? const EdgeInsets.all(0)
-              : EdgeInsets.all(4),
+              : const EdgeInsets.all(4),
           elevation: 0,
         ),
         child: SizedBox(
           child: Card(
             color: Colors.white,
             elevation: 0,
-            margin: EdgeInsets.symmetric(vertical: 10),
+            margin: const EdgeInsets.symmetric(vertical: 10),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
             ),
             child: IconButton(
-              icon: Icon(
+              icon: const Icon(
                 SlydoAppIconNew.cart,
                 color: Colors.black,
                 size: 17,
@@ -1463,7 +1463,7 @@ class _HomeState extends State<Home> {
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              SizedBox(width: 5),
+              const SizedBox(width: 5),
               GestureDetector(
                 onTap: copyAccountNumber,
                 child: SvgPicture.asset(
@@ -1486,7 +1486,7 @@ class _HomeState extends State<Home> {
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  SizedBox(width: 5),
+                  const SizedBox(width: 5),
                   GestureDetector(
                     onTap: copyAccountDetails,
                     child: SvgPicture.asset(

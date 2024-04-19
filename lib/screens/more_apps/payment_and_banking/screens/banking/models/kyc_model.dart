@@ -1,3 +1,5 @@
+import 'package:flutter/cupertino.dart';
+
 class KycModel {
   String? bvnResult;
   String? documentResult;
@@ -10,7 +12,7 @@ class KycModel {
   });
 
   factory KycModel.fromJson(Map<String, dynamic> json) {
-    print('KYCMODEL JSON ----> $json');
+    debugPrint('KYCMODEL JSON ----> $json');
     return KycModel(
       bvnResult: json['bvn_number_result'],
       documentResult: json['document_result'],

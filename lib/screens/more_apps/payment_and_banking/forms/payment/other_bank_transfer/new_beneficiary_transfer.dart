@@ -33,7 +33,7 @@ import '../../../payment_and_banking_auth.dart';
 
 // ignore: must_be_immutable
 class NewBeneficiaryTransfer extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
   final Function(bool)? callback;
 
   NewBeneficiaryTransfer({this.arguments, this.callback});
@@ -78,7 +78,7 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
       RefreshController(initialRefresh: false);
   int bottomSheetSearchIndex = 0;
   bool noSearchedItem = false;
-  final ScrollController _scrollController = new ScrollController();
+  final ScrollController _scrollController = ScrollController();
   int? amount = 0;
   late http.Response response;
   VirtualAccount? virtualAccount;
@@ -1083,7 +1083,7 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
     );
   }
 
-  checkBankUrl(BankModel bankModel) {
+  Widget checkBankUrl(BankModel bankModel) {
     if (bankModel.logoUrl == "") {
       return CircleAvatar(
         backgroundColor: navyBlue,

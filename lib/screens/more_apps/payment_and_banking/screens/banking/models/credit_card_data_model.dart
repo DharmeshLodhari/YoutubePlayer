@@ -19,7 +19,7 @@ class CreditCardData {
     required this.cardNumber,
   });
 
-  copyWith({
+  CreditCardData copyWith({
     int? amount,
     String? pin,
     String? cvv,

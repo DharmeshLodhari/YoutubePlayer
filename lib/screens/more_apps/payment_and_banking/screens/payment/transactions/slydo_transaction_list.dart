@@ -28,7 +28,7 @@ class SlydoTransactionList extends StatefulWidget {
 
 class _SlydoTransactionListState extends State<SlydoTransactionList> {
   final GlobalKey<ScaffoldState> _scaffoldTransactionKey =
-      new GlobalKey<ScaffoldState>();
+      GlobalKey<ScaffoldState>();
 
   // Get list of users transactions
   final _auth = PaymentAndBankingAuth();
@@ -81,7 +81,7 @@ class _SlydoTransactionListState extends State<SlydoTransactionList> {
     });
   }
 
-  _refresh() {
+  void _refresh() {
     count = 0;
     next = "";
     previous = "";
@@ -96,7 +96,7 @@ class _SlydoTransactionListState extends State<SlydoTransactionList> {
   void _onRefresh() async {
     //check network connectivity and if true then refresh the list
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         _refresh();
@@ -276,7 +276,7 @@ class _SlydoTransactionListState extends State<SlydoTransactionList> {
             isLoading = true;
           });
         }
-        Map<String, dynamic>? result = await _auth.getTransactions(
+        final Map<String, dynamic>? result = await _auth.getTransactions(
           next,
           previous,
           moneyIn,
@@ -290,7 +290,7 @@ class _SlydoTransactionListState extends State<SlydoTransactionList> {
         next = result['next'];
         count = result['count'];
         previous = result['previous'];
-        var tempList = result['results'];
+        final tempList = result['results'];
 
         isLoading = false;
         transactionList.addAll(tempList);
@@ -413,13 +413,13 @@ class _SlydoTransactionListState extends State<SlydoTransactionList> {
       direction: Axis.horizontal,
       actionPane: const SlidableBehindActionPane(),
       actionExtentRatio: 0.25,
+      actions: listActionSlideActions(transaction),
+      secondaryActions: listSecondaryActions(transaction),
       child: VerticalListItem(
         transaction,
         key: Key(
             "Transaction:${transaction.amount.toString() + transaction.createdAt!}"),
       ),
-      actions: listActionSlideActions(transaction),
-      secondaryActions: listSecondaryActions(transaction),
     );
   }
 

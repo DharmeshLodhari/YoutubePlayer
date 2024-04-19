@@ -13,13 +13,13 @@ class BankList {
     if (json['results'] != null) {
       results = <BankModel>[];
       json['results'].forEach((v) {
-        results!.add(new BankModel.fromJson(v));
+        results!.add(BankModel.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = Map<String, dynamic>();
     data['count'] = this.count;
     data['next'] = this.next;
     data['previous'] = this.previous;
@@ -53,7 +53,7 @@ class BankModel {
     shortName = json['short_name'];
     providerCode = json['provider_code'];
     if (json['logo_url'].isNotEmpty) {
-      String url = json['logo_url'];
+      final String url = json['logo_url'];
       logoUrl = url.replaceAll('https//', 'https://');
     } else {
       logoUrl = json['logo_url'];
@@ -64,7 +64,7 @@ class BankModel {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = Map<String, dynamic>();
     data['name'] = this.name;
     data['short_name'] = this.shortName;
     data['provider_code'] = this.providerCode;

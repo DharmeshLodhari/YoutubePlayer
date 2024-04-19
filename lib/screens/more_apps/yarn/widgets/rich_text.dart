@@ -9,9 +9,9 @@ import '../utils/utils.dart';
 import '../yarn_search_screen.dart';
 
 class RichTextForTitle extends StatelessWidget {
-  String? description;
-  double? fontSize;
-  FontWeight? fontWeight;
+  final String? description;
+  final double? fontSize;
+  final FontWeight? fontWeight;
   RichTextForTitle(
       {Key? key,
       this.description,

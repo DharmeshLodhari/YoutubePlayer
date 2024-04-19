@@ -25,7 +25,7 @@ class LoadingIndicator extends StatelessWidget {
 }
 
 class CircularLoadingIndicator extends StatefulWidget {
-  Color? color;
+  late final Color? color;
 
   CircularLoadingIndicator({this.color});
 

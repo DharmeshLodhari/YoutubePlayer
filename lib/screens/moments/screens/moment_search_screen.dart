@@ -31,7 +31,7 @@ class _MomentSearchScreenState extends State<MomentSearchScreen> {
   bool searchMomentLoading = false;
   List<SearchMomentModel> searchMomentModelList = [];
   List<SearchMomentModel> tempSearchMomentModelList = [];
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
   bool noItemInList = false;
 
   @override
@@ -50,7 +50,7 @@ class _MomentSearchScreenState extends State<MomentSearchScreen> {
   }
 
   // We intend to call getMoments after every 1 second that the user typed in something.
-  _onChanged(String value) {
+  void _onChanged(String value) {
     /*To prevent the changed function to be called when keyboard dismisses, we have this check here.  */
     if (value.isNotEmpty && lastInputValue != value) {
       lastInputValue = value;
@@ -65,7 +65,7 @@ class _MomentSearchScreenState extends State<MomentSearchScreen> {
     }
   }
 
-  getMoments(String value) {
+  void getMoments(String value) {
     nextPage = null;
     userSearchedText = value;
     searchMomentModelList.clear();
@@ -103,7 +103,7 @@ class _MomentSearchScreenState extends State<MomentSearchScreen> {
     );
   }
 
-  _getSearchedMoments({String? searchedText}) {
+  void _getSearchedMoments({String? searchedText}) {
     MomentsService()
         .searchMoment(nextPage: nextPage, searchText: searchedText)
         .then((value) {
@@ -218,7 +218,7 @@ class _MomentSearchScreenState extends State<MomentSearchScreen> {
               );
   }
 
-  searchMomentSingleWidgetOnTap(SearchMomentModel searchMomentModel) {
+  void searchMomentSingleWidgetOnTap(SearchMomentModel searchMomentModel) {
     if (_isLoading == true) return;
     if (mounted) setState(() {});
     _isLoading = true;
@@ -288,19 +288,20 @@ class _SearchMomentSingleWidgetState extends State<SearchMomentSingleWidget> {
                 ),
               ),
             ),
-            isLoading
-                ? Align(
-                    alignment: Alignment.topRight,
-                    child: SizedBox(
-                        width: 40,
-                        height: 40,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 8.0, vertical: 8),
-                          child: CircularLoadingIndicator(),
-                        )),
-                  )
-                : const SizedBox.shrink(),
+            if (isLoading)
+              Align(
+                alignment: Alignment.topRight,
+                child: SizedBox(
+                    width: 40,
+                    height: 40,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8.0, vertical: 8),
+                      child: CircularLoadingIndicator(),
+                    )),
+              )
+            else
+              const SizedBox.shrink(),
             Align(
               alignment: Alignment.bottomLeft,
               child: Padding(

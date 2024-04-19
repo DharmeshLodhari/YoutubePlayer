@@ -32,7 +32,7 @@ class _PropertyExploreScreenState extends State<PropertyExploreScreen> {
   List<CityData> listOfCity = [];
   bool isExploreByCityLoading = false;
 
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
   PropertyFilterBloc? _propertyFilterBloc;
@@ -84,7 +84,7 @@ class _PropertyExploreScreenState extends State<PropertyExploreScreen> {
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         getResult();
@@ -534,7 +534,7 @@ class _PropertyExploreScreenState extends State<PropertyExploreScreen> {
   }
 
   Widget eventPoster(String url) {
-    bool temp = Random().nextBool();
+    final bool temp = Random().nextBool();
     return GestureDetector(
       onTap: () {
         Navigator.of(context).pushNamed("/property-detail");

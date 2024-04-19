@@ -10,9 +10,9 @@ import '../models/Topics/CommentDetails.dart';
 import 'yarn_options.dart';
 
 class AskReplyView extends StatelessWidget {
-  Yarn? yarnTopic;
-  YarnComment? commentDetail;
-  YarnComment? replyCommentDetail;
+  final Yarn? yarnTopic;
+  final YarnComment? commentDetail;
+  final YarnComment? replyCommentDetail;
 
   AskReplyView({this.yarnTopic, this.replyCommentDetail, this.commentDetail});
 

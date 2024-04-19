@@ -72,7 +72,7 @@ class _UserProductListState extends State<UserProductList> {
     super.initState();
   }
 
-  getNextUrl() {
+  void getNextUrl() {
     setState(() {
       if (widget.next != null) {
         productNext = widget.next;

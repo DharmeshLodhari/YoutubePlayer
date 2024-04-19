@@ -26,7 +26,6 @@ class JobsSearchFilter extends StatefulWidget {
 }
 
 class _JobsSearchFilterState extends State<JobsSearchFilter> {
-  TextEditingController _controller = TextEditingController();
   String productPrice = "";
   String priceFrom = "";
   String priceTo = "";
@@ -64,8 +63,8 @@ class _JobsSearchFilterState extends State<JobsSearchFilter> {
   List<String> categoriesNameList = [];
   final GlobalKey<ScaffoldMessengerState> _filterScaffoldMessengerKey =
       GlobalKey<ScaffoldMessengerState>();
-  ScrollController _categoriesScrollController = ScrollController();
-  ScrollController _locationScrollController = ScrollController();
+  final ScrollController _categoriesScrollController = ScrollController();
+  final ScrollController _locationScrollController = ScrollController();
 
   final List<String> items = [
     'Item1',
@@ -90,7 +89,7 @@ class _JobsSearchFilterState extends State<JobsSearchFilter> {
         isCategoryLoading = true;
         if (mounted) setState(() {});
 
-        var result = await ServiceHubAuthService()
+        final result = await ServiceHubAuthService()
             .getListOfCategories(categoryNext, categoryPrevious);
 
         if (result == null) {
@@ -106,7 +105,7 @@ class _JobsSearchFilterState extends State<JobsSearchFilter> {
         categoryCount = result.count;
         categoryNext = result.next;
         categoryPrevious = result.previous;
-        var tempList = result.results;
+        final tempList = result.results;
         if (mounted) {
           setState(() {
             noCatinList = false;
@@ -142,7 +141,7 @@ class _JobsSearchFilterState extends State<JobsSearchFilter> {
         isLocationLoading = true;
         if (mounted) setState(() {});
 
-        var result = await ServiceHubAuthService()
+        final result = await ServiceHubAuthService()
             .getJobLocation(locationNext, locationPrevious);
 
         if (result == null) {
@@ -158,7 +157,7 @@ class _JobsSearchFilterState extends State<JobsSearchFilter> {
         locationCount = result.count;
         locationNext = result.next;
         locationPrevious = result.previous;
-        var tempList = result.results;
+        final tempList = result.results;
 
         if (mounted) {
           setState(() {
@@ -224,32 +223,33 @@ class _JobsSearchFilterState extends State<JobsSearchFilter> {
           child: Column(
             children: [
               getFilterField(context),
-              isCategoryLoading
-                  ? Shimmer.fromColors(
-                      baseColor: Colors.white,
-                      highlightColor: greyBorderColor,
-                      child: GridView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        gridDelegate:
-                            const SliverGridDelegateWithMaxCrossAxisExtent(
-                          mainAxisSpacing: 14,
-                          mainAxisExtent: 180,
-                          crossAxisSpacing: 15,
-                          maxCrossAxisExtent: 200,
+              if (isCategoryLoading)
+                Shimmer.fromColors(
+                  baseColor: Colors.white,
+                  highlightColor: greyBorderColor,
+                  child: GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate:
+                        const SliverGridDelegateWithMaxCrossAxisExtent(
+                      mainAxisSpacing: 14,
+                      mainAxisExtent: 180,
+                      crossAxisSpacing: 15,
+                      maxCrossAxisExtent: 200,
+                    ),
+                    itemCount: 2,
+                    itemBuilder: (context, index) {
+                      return Card(
+                        color: Colors.grey,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
                         ),
-                        itemCount: 2,
-                        itemBuilder: (context, index) {
-                          return Card(
-                            color: Colors.grey,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          );
-                        },
-                      ),
-                    )
-                  : const SizedBox.shrink(),
+                      );
+                    },
+                  ),
+                )
+              else
+                const SizedBox.shrink(),
               Visibility(
                 visible: !isCategoryLoading && categoriesList.isEmpty,
                 child: Center(
@@ -389,9 +389,9 @@ class _JobsSearchFilterState extends State<JobsSearchFilter> {
                     onNotification: (scrollEnd) {
                       final metrics = scrollEnd.metrics;
                       if (metrics.atEdge) {
-                        bool isTop = metrics.pixels == 0;
+                        final bool isTop = metrics.pixels == 0;
                         if (!isTop) {
-                          print('At the bottom');
+                          debugPrint('At the bottom');
                           changeState(() {});
                         }
                       }
@@ -402,7 +402,8 @@ class _JobsSearchFilterState extends State<JobsSearchFilter> {
                       shrinkWrap: true,
                       itemCount: categoriesList.length,
                       itemBuilder: (context, index) {
-                        CategoryListData category = categoriesList[index]!;
+                        final CategoryListData category =
+                            categoriesList[index]!;
 
                         return ListTile(
                           title: Text(
@@ -432,13 +433,14 @@ class _JobsSearchFilterState extends State<JobsSearchFilter> {
                 const SizedBox(
                   height: 10,
                 ),
-                isCategoryLoading
-                    ? SpinKitRing(
-                        size: 30,
-                        lineWidth: 3,
-                        color: darkGreyYarn,
-                      )
-                    : const SizedBox.shrink(),
+                if (isCategoryLoading)
+                  SpinKitRing(
+                    size: 30,
+                    lineWidth: 3,
+                    color: darkGreyYarn,
+                  )
+                else
+                  const SizedBox.shrink(),
                 const SizedBox(
                   height: 10,
                 ),
@@ -652,7 +654,7 @@ class _JobsSearchFilterState extends State<JobsSearchFilter> {
           flex: 1,
           child: CurvedButton(
             onPressed: () {
-              print(filterMap);
+              debugPrint("FilterMap : $filterMap");
 
               Navigator.pushNamed(context, Routes.JOBS_SEARCH,
                   arguments: {'filterMap': filterMap});

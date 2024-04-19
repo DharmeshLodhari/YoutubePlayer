@@ -41,12 +41,12 @@ class ShoppingCartTileForProduct extends StatelessWidget {
         child: Card(
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          margin: EdgeInsets.symmetric(vertical: 5),
+          margin: const EdgeInsets.symmetric(vertical: 5),
           shadowColor: boxShadowTwo,
           elevation: 0,
           child: Container(
             decoration: decorateBox(),
-            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
             child: Column(
               children: [
                 ListTile(
@@ -60,13 +60,13 @@ class ShoppingCartTileForProduct extends StatelessWidget {
                         arguments: {"product": product});
                   },
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    SizedBox(),
+                    const SizedBox(),
                     Text(
                       "Subtotal",
                       style: TextStyle(
@@ -76,7 +76,7 @@ class ShoppingCartTileForProduct extends StatelessWidget {
                         fontFamily: "Inter",
                       ),
                     ),
-                    SizedBox(width: 60),
+                    const SizedBox(width: 60),
                     getSubTotalPriceWidget(),
                   ],
                 )
@@ -111,7 +111,7 @@ class ShoppingCartTileForProduct extends StatelessWidget {
               errorWidget: productAndServiceErrorWidget,
               filterQuality: FilterQuality.high,
               placeholder: (context, url) => product.cover == null
-                  ? Icon(Icons.widgets)
+                  ? const Icon(Icons.widgets)
                   : CircularLoadingIndicator(),
             ),
           )
@@ -119,7 +119,7 @@ class ShoppingCartTileForProduct extends StatelessWidget {
             children: [
               Container(
                 height: 100,
-                padding: EdgeInsets.only(top: 10, right: 25),
+                padding: const EdgeInsets.only(top: 10, right: 25),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(10.0),
                   child: CachedNetworkImage(
@@ -132,7 +132,7 @@ class ShoppingCartTileForProduct extends StatelessWidget {
                     errorWidget: productAndServiceErrorWidget,
                     filterQuality: FilterQuality.high,
                     placeholder: (context, url) => product.cover == null
-                        ? Icon(Icons.widgets)
+                        ? const Icon(Icons.widgets)
                         : CircularLoadingIndicator(),
                   ),
                 ),
@@ -191,7 +191,7 @@ class ShoppingCartTileForProduct extends StatelessWidget {
                 ),
                 onTap: onDecreaseQty,
               ),
-              SizedBox(
+              const SizedBox(
                 width: 10,
               ),
               Text(
@@ -203,7 +203,7 @@ class ShoppingCartTileForProduct extends StatelessWidget {
                   fontFamily: "Inter",
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 width: 10,
               ),
               RoundedBackgroundIcon(
@@ -245,7 +245,7 @@ class ShoppingCartTileForProduct extends StatelessWidget {
             AddOnTotal += int.parse(option.price.toString()) * option.quantity;
           }
         }
-        int priceQuantity =
+        final int priceQuantity =
             (basketItem.qty ?? 0) * int.parse(getProductPrice());
         totalPrice += AddOnTotal + priceQuantity;
       } else {
@@ -261,8 +261,8 @@ class ShoppingCartTileForProduct extends StatelessWidget {
     String size = '';
 
     if (basketItem.variants?.first != null) {
-      String variantColor = basketItem.variants?.first.colour ?? '';
-      String variantSize = basketItem.variants?.first.value ?? '';
+      final String variantColor = basketItem.variants?.first.colour ?? '';
+      final String variantSize = basketItem.variants?.first.value ?? '';
 
       if (variantColor.isNotEmpty) {
         color = variantColor;
@@ -272,36 +272,36 @@ class ShoppingCartTileForProduct extends StatelessWidget {
         size = variantSize;
       }
     }
-    List<String>? names = [];
+    final List<String>? names = [];
 
     if (basketItem.hasAddOns) {
       for (AddOns addOn in basketItem.addOns ?? []) {
-        List<String>? optionName =
+        final List<String>? optionName =
             addOn.options?.map((e) => e.name ?? "").toList();
-        names.addAll(optionName ?? []);
+        names?.addAll(optionName ?? []);
       }
     }
 
-    final concatenatedText = names.join(', ');
+    final concatenatedText = names?.join(', ');
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        SizedBox(
+        const SizedBox(
           height: 2,
         ),
         getSellerName(context),
-        SizedBox(
+        const SizedBox(
           height: 10,
         ),
         if (color.isNotEmpty) ...[
-          SizedBox(
+          const SizedBox(
             height: 2,
           ),
           getColor(color),
         ],
         if (size.isNotEmpty) ...[
-          SizedBox(
+          const SizedBox(
             height: 2,
           ),
           getSize(size)
@@ -462,7 +462,7 @@ class _ShoppingCartTileForServiceState
         child: Card(
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
           shadowColor: boxShadowTwo,
           elevation: 0,
           child: Container(
@@ -470,7 +470,7 @@ class _ShoppingCartTileForServiceState
             child: Column(
               children: <Widget>[
                 Padding(
-                  padding: EdgeInsets.symmetric(vertical: 8),
+                  padding: const EdgeInsets.symmetric(vertical: 8),
                   child: ListTile(
                     leading: getLeading(),
                     title: getTitle(),
@@ -508,10 +508,10 @@ class _ShoppingCartTileForServiceState
           errorWidget: productAndServiceErrorWidget,
           filterQuality: FilterQuality.high,
           placeholder: (context, url) => widget.item?.cover == null
-              ? Icon(Icons.widgets)
+              ? const Icon(Icons.widgets)
               : CircularProgressIndicator(
                   strokeWidth: 2.5,
-                  valueColor: AlwaysStoppedAnimation(Colors.white),
+                  valueColor: const AlwaysStoppedAnimation(Colors.white),
                   backgroundColor: navyBlue,
                 ),
         ),
@@ -529,7 +529,7 @@ class _ShoppingCartTileForServiceState
   }
 
   Widget getTrailing() {
-    int? qty = basketBloc.items[widget.index!]["qty"] != 0
+    final int? qty = basketBloc.items[widget.index!]["qty"] != 0
         ? basketBloc.items[widget.index!]["qty"]
         : 0;
     return Container(
@@ -548,7 +548,7 @@ class _ShoppingCartTileForServiceState
                   size: 2,
                 ),
                 onTap: widget.onDecreaseQty),
-            Expanded(
+            const Expanded(
               child: SizedBox(
                 width: 10,
               ),
@@ -558,7 +558,7 @@ class _ShoppingCartTileForServiceState
               style: TextStyle(
                   fontSize: 14, fontWeight: FontWeight.w600, color: blackFont),
             ),
-            Expanded(
+            const Expanded(
               child: SizedBox(
                 width: 10,
               ),
@@ -586,7 +586,7 @@ class _ShoppingCartTileForServiceState
   }
 
   String getTotalPrice() {
-    var price =
+    final price =
         basketBloc.items[widget.index!]["qty"] * int.parse(widget.item!.price!);
     return price.toString();
   }
@@ -595,7 +595,7 @@ class _ShoppingCartTileForServiceState
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        SizedBox(
+        const SizedBox(
           height: 2,
         ),
         getSellerName(context),

@@ -7,6 +7,7 @@ import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+
 import '../../../../routes/route_constants.dart';
 
 // ignore: must_be_immutable
@@ -23,7 +24,7 @@ class OrderTile extends StatelessWidget {
     userBloc = Provider.of<UserBloc>(context);
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       shadowColor: boxShadowTwo,
       elevation: 0,
       child: Container(
@@ -32,7 +33,7 @@ class OrderTile extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             Padding(
-              padding: EdgeInsets.symmetric(vertical: 8),
+              padding: const EdgeInsets.symmetric(vertical: 8),
               child: ListTile(
                   dense: true,
                   leading: getLeading(),
@@ -48,7 +49,7 @@ class OrderTile extends StatelessWidget {
   }
 
   String? getCustomerOrMerchant() {
-    var customerOrMerchant = order!.customerName == userBloc.user.userName
+    final customerOrMerchant = order!.customerName == userBloc.user.userName
         ? order!.merchant
         : order!.customerName;
     return customerOrMerchant;
@@ -93,9 +94,9 @@ class OrderTile extends StatelessWidget {
     );
   }
 
-  Widget getTitle(context) {
+  Widget getTitle(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(bottom: 2),
+      padding: const EdgeInsets.only(bottom: 2),
       child: Text(
         AppLocalization.of(context)!.ref + " # : ${order!.id}",
         style: TextStyle(
@@ -141,18 +142,18 @@ class OrderTile extends StatelessWidget {
           style: TextStyle(color: darkGrey, fontSize: 12),
           maxLines: 1,
         ),
-        SizedBox(height: 2),
-        order!.totalPrice! >= amountLimit ? getTrailing() : Container(),
+        const SizedBox(height: 2),
+        if (order!.totalPrice! >= amountLimit) getTrailing() else Container(),
         getDateTime(context)
       ],
     );
   }
 
   Widget getDateTime(BuildContext context) {
-    print(order?.createdAt);
-    DateTime orderTime = DateTime.parse(order?.createdAt ?? '').toLocal();
-    String date = DateFormat("hh:mm a").format(orderTime);
-    String time = DateFormat("dd/MM/yyyy").format(orderTime);
+    debugPrint(order?.createdAt);
+    final DateTime orderTime = DateTime.parse(order?.createdAt ?? '').toLocal();
+    final String date = DateFormat("hh:mm a").format(orderTime);
+    final String time = DateFormat("dd/MM/yyyy").format(orderTime);
     return Text(
       "$date • $time",
       softWrap: false,

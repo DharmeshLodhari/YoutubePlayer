@@ -391,7 +391,7 @@ class GenerateDebitCardState extends State<GenerateDebitCard> {
     await PaymentAndBankingAuth().getAccountBalance().then((value) {
       final data = value!;
       final spendableBalance = data["spendable_balance"];
-      final actualBalance = data["balance"];
+      // final actualBalance = data["balance"];
 
       balance = spendableBalance;
       // isLoading = false;

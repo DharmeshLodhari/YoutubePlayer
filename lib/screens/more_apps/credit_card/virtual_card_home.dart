@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ui';
 
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
@@ -73,7 +72,7 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
   int _currentIndex = 0;
   List<CardAction> cardActions = [];
   final TextEditingController labelController = TextEditingController();
-  Map<int, FocusNode> _focusNodes = {};
+  final Map<int, FocusNode> _focusNodes = {};
   Timer? _debounce;
 
   @protected
@@ -578,7 +577,7 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
                         ),
                       const SizedBox(width: 5.0),
                       if (cardData.cardBrand == 'Visa')
-                        SizedBox.shrink()
+                        const SizedBox.shrink()
                       else
                         Column(
                           children: [

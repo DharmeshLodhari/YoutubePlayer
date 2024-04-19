@@ -25,7 +25,7 @@ import '../../../../../../locator.dart';
 import '../../../../../../services/app_config_bloc.dart';
 
 class SetNameAndProfileOfGroup extends StatefulWidget {
-  final arguments;
+  final dynamic arguments;
 
   SetNameAndProfileOfGroup({this.arguments});
 

@@ -839,7 +839,7 @@ class _AddAccountState extends State<AddAccount> {
                     child: Column(
                       children: [
                         if (bankList.length >= 1) ...[
-                          getResultTile(bankList[index]),
+                          bankCardDisplay(bankList[index]),
                         ] else ...[
                           // print('The array does not have a second element.');
                         ]
@@ -910,13 +910,6 @@ class _AddAccountState extends State<AddAccount> {
     }
   }
 
-  Widget getResultTile(var result) {
-    if (result is BankModel) {
-      return bankCardDisplay(result);
-    }
-    return Container();
-  }
-
   Widget bankCardDisplay(BankModel bankModel) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
@@ -967,7 +960,7 @@ class _AddAccountState extends State<AddAccount> {
     );
   }
 
-  checkBankUrl(BankModel bankModel) {
+  StatelessWidget checkBankUrl(BankModel bankModel) {
     if (bankModel.logoUrl == "") {
       return CircleAvatar(
         backgroundColor: navyBlue,

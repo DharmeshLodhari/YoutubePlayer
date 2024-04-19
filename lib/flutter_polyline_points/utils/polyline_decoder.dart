@@ -6,8 +6,10 @@ import 'package:Slydo/flutter_polyline_points/PointLatLng.dart';
 class PolylineDecoder {
   static List<PointLatLng> run(String encoded) {
     final List<PointLatLng> points = [];
-    int index = 0, len = encoded.length;
-    int lat = 0, lng = 0;
+    int index = 0;
+    final int len = encoded.length;
+    int lat = 0;
+    int lng = 0;
     final BigInt big0 = BigInt.from(0);
     final BigInt big0x1f = BigInt.from(0x1f);
     final BigInt big0x20 = BigInt.from(0x20);

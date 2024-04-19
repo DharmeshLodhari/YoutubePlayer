@@ -31,9 +31,9 @@ class _PostedMyJobsState extends State<PostedMyJobs> {
   String? listNext = "";
   String? listPrevious = "";
 
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
-  ScrollController _postedScrollController = ScrollController();
+  final ScrollController _postedScrollController = ScrollController();
   final GlobalKey<ScaffoldMessengerState> _myJobsScaffoldMessengerKey =
       GlobalKey<ScaffoldMessengerState>();
 
@@ -43,7 +43,7 @@ class _PostedMyJobsState extends State<PostedMyJobs> {
         isLoading = true;
         if (mounted) setState(() {});
 
-        var result = await ServiceHubAuthService().getMyJobListing(
+        final result = await ServiceHubAuthService().getMyJobListing(
             listNext, listPrevious,
             myJobType: 'posted', userId: userBloc.user.userName);
 
@@ -62,7 +62,7 @@ class _PostedMyJobsState extends State<PostedMyJobs> {
         listCount = result.count;
         listNext = result.next;
         listPrevious = result.previous;
-        var tempList = result.results;
+        final tempList = result.results;
         if (mounted) {
           setState(() {
             noJobsInPostedList = false;
@@ -160,32 +160,32 @@ class _PostedMyJobsState extends State<PostedMyJobs> {
             // !isLoading && myJobListing.isNotEmpty
             //     ?
             //     : SizedBox.shrink(),
-            isLoading
-                ? Shimmer.fromColors(
-                    baseColor: Colors.white,
-                    highlightColor: greyBorderColor,
-                    child: GridView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      gridDelegate:
-                          const SliverGridDelegateWithMaxCrossAxisExtent(
-                        mainAxisSpacing: 14,
-                        mainAxisExtent: 180,
-                        crossAxisSpacing: 15,
-                        maxCrossAxisExtent: 200,
+            if (isLoading)
+              Shimmer.fromColors(
+                baseColor: Colors.white,
+                highlightColor: greyBorderColor,
+                child: GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                    mainAxisSpacing: 14,
+                    mainAxisExtent: 180,
+                    crossAxisSpacing: 15,
+                    maxCrossAxisExtent: 200,
+                  ),
+                  itemCount: 2,
+                  itemBuilder: (context, index) {
+                    return Card(
+                      color: Colors.grey,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                      itemCount: 2,
-                      itemBuilder: (context, index) {
-                        return Card(
-                          color: Colors.grey,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        );
-                      },
-                    ),
-                  )
-                : const SizedBox.shrink(),
+                    );
+                  },
+                ),
+              )
+            else
+              const SizedBox.shrink(),
             Visibility(
               visible: !isLoading && postedMyJobListing.isEmpty,
               child: Center(
@@ -206,7 +206,7 @@ class _PostedMyJobsState extends State<PostedMyJobs> {
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         _refreshPage();
@@ -220,7 +220,7 @@ class _PostedMyJobsState extends State<PostedMyJobs> {
     });
   }
 
-  _refreshPage() {
+  void _refreshPage() {
     listNext = "";
     listPrevious = "";
     listCount = 0;

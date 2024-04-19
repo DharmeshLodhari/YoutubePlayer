@@ -48,7 +48,7 @@ class _PickAttachmentScreenState extends State<PickAttachmentScreen> {
     getAttachmentFromAPI();
   }
 
-  getAttachmentFunction() {
+  void getAttachmentFunction() {
     switch (widget.attachmentType) {
       case AttachmentType.Product:
         getAttachmentFromAPI();
@@ -81,7 +81,7 @@ class _PickAttachmentScreenState extends State<PickAttachmentScreen> {
     }
   }
 
-  getAttachmentFromAPI() async {
+  Future<void> getAttachmentFromAPI() async {
     if (mounted) {
       setState(() {
         attachmentLoading = true;

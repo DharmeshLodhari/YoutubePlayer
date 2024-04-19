@@ -57,12 +57,12 @@ import 'yarn_dashboard_bloc.dart';
 
 class AddOrEditYarn extends StatefulWidget {
   List<YarnCategories>? askCategories;
-  YarnCategories? askCategory;
+  final YarnCategories? askCategory;
   bool? isYarn = false;
   Yarn? yarn;
-  String? passedCategory;
-  Function(Yarn)? onUpdateYarn;
-  String? channel;
+  final String? passedCategory;
+  final Function(Yarn)? onUpdateYarn;
+  final String? channel;
 
   List<ShareAsYarnModel>? shareAsYarnModel;
 
@@ -113,7 +113,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
 
   bool isSensitiveContent = false;
   bool isAdultContent = false;
-  var ageRating;
+  String? ageRating;
 
   ///variable for message actions
   bool showMoreAction = false;
@@ -145,7 +145,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
   GlobalKey searchItemTextFormField = GlobalKey();
   int bottomSheetSearchIndex = 0;
   bool noSearchedItem = false;
-  var productServicePreview;
+  dynamic productServicePreview;
   Product? productMode;
   Service? serviceMode;
   CustomerProfile? customerProfileMode;
@@ -1303,7 +1303,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     _showListAlert(context);
   }
 
-  _showListAlert(BuildContext context) {
+  void _showListAlert(BuildContext context) {
     showPlatformDialog(
       context: context,
       builder: (_) => BasicDialogAlert(
@@ -1434,7 +1434,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     //   ),
     // );
 
-    final List<XFile> res = await selectMultipleImageVideo();
+    final List<XFile>? res = await selectMultipleImageVideo();
 
     if (res == null || res.isEmpty) return;
 
@@ -1701,7 +1701,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     yarn.author = userBloc.user.userName;
     yarn.enablePayMe = enablePayMe;
     yarn.enableCommenting = enableCommenting;
-    yarn.ageRestriction = int.parse(ageRating);
+    yarn.ageRestriction = int.parse(ageRating ?? "");
     yarn.isAdultContent = isAdultContent;
     yarn.isSensitiveContent = isSensitiveContent;
 
@@ -2485,7 +2485,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     }
   }
 
-  checkHintText(int selectedMenuItemIndex) {
+  String checkHintText(int selectedMenuItemIndex) {
     if (selectedMenuItemIndex == 0) {
       return 'Search blog';
     } else if (selectedMenuItemIndex == 1) {
@@ -2495,6 +2495,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     } else if (selectedMenuItemIndex == 3) {
       return 'Search user';
     }
+    return "";
   }
 
   buildCreateMediaScreen() {

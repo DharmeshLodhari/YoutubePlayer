@@ -37,7 +37,7 @@ class _SearchMusicState extends State<SearchMusic> {
   RangeValues selectedPriceValue = const RangeValues(5, 56);
 
   List<PartialMusicItem> musicList = [];
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
   bool isLoading = false;
   @override
@@ -58,7 +58,7 @@ class _SearchMusicState extends State<SearchMusic> {
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         getResult();
@@ -643,7 +643,7 @@ class _SearchMusicState extends State<SearchMusic> {
     );
   }
 
-  Widget getPriceSelection(bottomSheetSetState) {
+  Widget getPriceSelection(StateSetter bottomSheetSetState) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Text(
         "Price",

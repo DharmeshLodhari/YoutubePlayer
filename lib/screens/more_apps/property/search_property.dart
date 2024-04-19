@@ -18,7 +18,7 @@ import 'property_tile.dart';
 
 // ignore: must_be_immutable
 class SearchProperty extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
   SearchProperty({this.arguments});
 
@@ -1538,7 +1538,7 @@ class _SearchPropertyState extends State<SearchProperty> {
     }
   }
 
-  Widget getPriceSelection(bottomSheetSetState) {
+  Widget getPriceSelection(StateSetter bottomSheetSetState) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Text(
         "Price",

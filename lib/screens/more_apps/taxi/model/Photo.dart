@@ -10,7 +10,7 @@ class Photo {
     return Photo(
       height: json['height'],
       htmlAttributions: json['html_attributions'] != null
-          ? new List<String>.from(json['html_attributions'])
+          ? List<String>.from(json['html_attributions'])
           : null,
       photoReference: json['photo_reference'],
       width: json['width'],
@@ -18,7 +18,7 @@ class Photo {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = Map<String, dynamic>();
     data['height'] = this.height;
     data['photo_reference'] = this.photoReference;
     data['width'] = this.width;

@@ -279,39 +279,38 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
         ),
       );
     }
-
-    return Container(
-      height: 36,
-      width: 36,
-      child: Container(
-        height: 36,
-        width: 36,
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(
-              25,
-            ),
-            border: Border.all(color: borderColor, width: 2)),
-        child: GestureDetector(
-          onTap: () {
-            Navigator.of(context).pushNamed("/photo-viewer",
-                arguments: groupDetail != null
-                    ? groupDetail!.avatar ?? defaultImage
-                    : defaultImage);
-          },
-          child: ClipOval(
-            child: CachedNetworkImage(
-              imageUrl: groupDetail != null
-                  ? groupDetail!.avatar ?? defaultImage
-                  : defaultImage,
-              colorBlendMode: BlendMode.darken,
-              fit: BoxFit.fill,
-              filterQuality: FilterQuality.high,
-              errorWidget: imageErrorWidget,
-            ),
-          ),
-        ),
-      ),
-    );
+    // return Container(
+    //   height: 36,
+    //   width: 36,
+    //   child: Container(
+    //     height: 36,
+    //     width: 36,
+    //     decoration: BoxDecoration(
+    //         borderRadius: BorderRadius.circular(
+    //           25,
+    //         ),
+    //         border: Border.all(color: borderColor, width: 2)),
+    //     child: GestureDetector(
+    //       onTap: () {
+    //         Navigator.of(context).pushNamed("/photo-viewer",
+    //             arguments: groupDetail != null
+    //                 ? groupDetail!.avatar ?? defaultImage
+    //                 : defaultImage);
+    //       },
+    //       child: ClipOval(
+    //         child: CachedNetworkImage(
+    //           imageUrl: groupDetail != null
+    //               ? groupDetail!.avatar ?? defaultImage
+    //               : defaultImage,
+    //           colorBlendMode: BlendMode.darken,
+    //           fit: BoxFit.fill,
+    //           filterQuality: FilterQuality.high,
+    //           errorWidget: imageErrorWidget,
+    //         ),
+    //       ),
+    //     ),
+    //   ),
+    // );
   }
 
   List<Widget> getGroupActions() {

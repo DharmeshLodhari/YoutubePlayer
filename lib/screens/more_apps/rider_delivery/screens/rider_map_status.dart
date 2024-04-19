@@ -13,7 +13,7 @@ import 'package:sizer/sizer.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class RiderMapStatus extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
   RiderMapStatus({super.key, this.arguments});
 
   @override

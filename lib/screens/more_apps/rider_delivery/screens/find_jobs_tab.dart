@@ -21,7 +21,7 @@ class FindJobsTab extends StatefulWidget {
     this.onPageRefresh,
   }) : super(key: key);
 
-  Function(bool)? onPageRefresh;
+  final Function(bool)? onPageRefresh;
 
   @override
   State<FindJobsTab> createState() => FindJobsTabState();
@@ -29,12 +29,12 @@ class FindJobsTab extends StatefulWidget {
 
 class FindJobsTabState extends State<FindJobsTab> {
   final GlobalKey<ScaffoldMessengerState> _findJobScaffoldMessengerKey =
-      new GlobalKey<ScaffoldMessengerState>();
+      GlobalKey<ScaffoldMessengerState>();
 
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
-  ScrollController _findJobScrollController = new ScrollController();
+  final ScrollController _findJobScrollController = ScrollController();
   int? listCount = 0;
   bool isLoading = false;
   String? listNext = "";
@@ -78,7 +78,7 @@ class FindJobsTabState extends State<FindJobsTab> {
         isLoading = true;
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result = await RiderDeliveryAuthService()
+        final Map<String, dynamic>? result = await RiderDeliveryAuthService()
             .getJobListing(listNext, listPrevious);
 
         if (result == null) {
@@ -94,7 +94,7 @@ class FindJobsTabState extends State<FindJobsTab> {
         listCount = result['count'];
         listNext = result['next'];
         listPrevious = result['previous'];
-        var tempList = result['results'];
+        final tempList = result['results'];
         if (mounted) {
           setState(() {
             noJobsInList = false;
@@ -148,7 +148,7 @@ class FindJobsTabState extends State<FindJobsTab> {
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         listNext = "";
@@ -228,7 +228,7 @@ class FindJobsTabState extends State<FindJobsTab> {
                             child: Column(
                               children: [
                                 Padding(
-                                  padding: EdgeInsets.only(
+                                  padding: const EdgeInsets.only(
                                       left: 10.0, right: 10.0, top: 12.0),
                                   child: _buildDateAndWaitingButton(index),
                                 ),
@@ -267,7 +267,7 @@ class FindJobsTabState extends State<FindJobsTab> {
   }
 
   Widget _buildDate(int index) {
-    String date =
+    final String date =
         DateFormat("dd MMMM,yyyy").format(jobListing[index].createdAt!);
     return Text(
       date,
@@ -281,10 +281,10 @@ class FindJobsTabState extends State<FindJobsTab> {
   }
 
   Widget _buildWaitingButton(int index) {
-    Color color = getStatusColor(index);
+    final Color color = getStatusColor(index);
 
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         color: color.withOpacity(0.1),
@@ -301,7 +301,7 @@ class FindJobsTabState extends State<FindJobsTab> {
     );
   }
 
-  getStatusColor(int index) {
+  Color getStatusColor(int index) {
     switch (jobListing[index].status) {
       case 'Awaiting Pickup':
         return starYellow;

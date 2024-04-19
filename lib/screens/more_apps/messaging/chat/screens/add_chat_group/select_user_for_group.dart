@@ -24,7 +24,7 @@ import '../../../../user_profile/screens/user_profile_module_new/profile_templat
 
 // ignore: must_be_immutable
 class SelectUserForGroup extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
   SelectUserForGroup({this.arguments});
 
@@ -35,17 +35,17 @@ class SelectUserForGroup extends StatefulWidget {
 class _SelectUserForGroupState extends State<SelectUserForGroup> {
   late SharedCartBloc sharedCartBloc;
   final GlobalKey<ScaffoldState> _scaffoldSelectUserForGroupKey =
-      new GlobalKey<ScaffoldState>();
+      GlobalKey<ScaffoldState>();
   final GlobalKey<ScaffoldMessengerState>
       _scaffoldMessengerSelectUserForGroupKey =
-      new GlobalKey<ScaffoldMessengerState>();
+      GlobalKey<ScaffoldMessengerState>();
 
   int? count = 0;
   String? next = "";
   String? previous = "";
   List<CustomerProfile> connectionList = [];
   List<CustomerProfile> selectedConnectionList = [];
-  ScrollController _scrollController = new ScrollController();
+  final ScrollController _scrollController = ScrollController();
 
   TextEditingController? searchUserController;
 
@@ -315,7 +315,7 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
     );
   }
 
-  Widget showSelectedUser(String imageUrl, String fullName) {
+  Widget showSelectedUser(String? imageUrl, String fullName) {
     if (imageUrl == null ||
         imageUrl == "" ||
         imageUrl ==
@@ -371,10 +371,10 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
   }
 
   Widget _buildIndicator() {
-    return new Padding(
+    return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: new Center(
-        child: new Opacity(
+      child: Center(
+        child: Opacity(
             opacity: isLoading ? 1.0 : 00,
             child: isLoading ? CircularLoadingIndicator() : Container()),
       ),

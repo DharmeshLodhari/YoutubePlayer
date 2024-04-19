@@ -21,7 +21,7 @@ import 'connection_request_list.dart';
 import 'connections_list.dart';
 
 class ConnectionDashboard extends StatefulWidget {
-  final arguments;
+  final dynamic arguments;
 
   ConnectionDashboard({this.arguments});
 
@@ -32,7 +32,7 @@ class ConnectionDashboard extends StatefulWidget {
 class _ConnectionDashboardState extends State<ConnectionDashboard> {
   int currentIndex = 0;
 
-  var filterValue = "Friends";
+  String filterValue = "Friends";
   late AppLocalization appLocalization;
   AppConfigurationModel? appConfigurationModel;
 

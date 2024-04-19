@@ -5,7 +5,7 @@ import '../models/ask_categories_model.dart';
 import '../yarn_auth.dart';
 
 class CustomizeCategoryButton extends StatefulWidget {
-  YarnCategories? askCategory;
+  final YarnCategories? askCategory;
   UsersCategories? usersCategory;
   CustomizeCategoryButton({Key? key, this.askCategory, this.usersCategory})
       : super(key: key);

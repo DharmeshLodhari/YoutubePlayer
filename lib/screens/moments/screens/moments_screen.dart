@@ -117,7 +117,7 @@ class _MomentsScreenState extends State<MomentsScreen> {
     });
   }
 
-  _refreshPage() {
+  void _refreshPage() {
     nextContactMoments = "";
     nextExploreMoments = "";
     countContactMoments = 0;
@@ -135,7 +135,7 @@ class _MomentsScreenState extends State<MomentsScreen> {
     getExploreMoments();
   }
 
-  getConnectionMoments() async {
+  Future<void> getConnectionMoments() async {
     if (!isContactMomentsLoading) {
       if (nextContactMoments != null && !isContactMomentsLoading) {
         if (mounted) {
@@ -172,7 +172,7 @@ class _MomentsScreenState extends State<MomentsScreen> {
     }
   }
 
-  getExploreMoments() async {
+  Future<void> getExploreMoments() async {
     if (!isExploreMomentsLoading) {
       if (nextExploreMoments != null && !isExploreMomentsLoading) {
         if (mounted) {

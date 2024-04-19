@@ -19,6 +19,5 @@ class CustomPagination extends StatelessWidget {
       },
       child: child,
     );
-    ;
   }
 }

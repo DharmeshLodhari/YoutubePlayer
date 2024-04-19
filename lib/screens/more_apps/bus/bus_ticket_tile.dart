@@ -11,7 +11,7 @@ class BusTicketTile extends StatelessWidget {
   const BusTicketTile({Key? key, this.transport}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    UserBloc userBloc = Provider.of<UserBloc>(context);
+    final UserBloc userBloc = Provider.of<UserBloc>(context);
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       margin: EdgeInsets.zero,

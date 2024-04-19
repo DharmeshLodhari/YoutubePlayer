@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/data/state_notifiers/rider_delivery_bloc.dart';
 import 'package:Slydo/locale/app_localization.dart';
@@ -18,7 +17,7 @@ import 'package:sizer/sizer.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class DeliveryDetails extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
   DeliveryDetails({Key? key, this.arguments}) : super(key: key);
 
@@ -27,7 +26,7 @@ class DeliveryDetails extends StatefulWidget {
 }
 
 class _DeliveryDetailsState extends State<DeliveryDetails> {
-  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   String? journeyId;
   bool isRejectAPILoading = false;
@@ -40,7 +39,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
   // bool startRide = false;
   // bool isMapLoading = false;
 
-  Key key = Key("map");
+  Key key = const Key("map");
   bool? isDeliveryCancel = false;
   bool? isChecked = false;
   late UserBloc userBloc;
@@ -98,7 +97,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
     super.initState();
   }
 
-  fetchJobData() async {
+  Future<void> fetchJobData() async {
     isLoading = true;
     if (mounted) setState(() {});
     await RiderDeliveryAuthService().fetchJob(journeyId).then((value) {
@@ -169,7 +168,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
 
   Widget _buildBody() {
     return isLoading
-        ? Center(child: CircularProgressIndicator())
+        ? const Center(child: CircularProgressIndicator())
         : Stack(
             children: [
               // MapUI(),
@@ -383,7 +382,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
 
   Widget getDeliveryDetails() {
     return Container(
-        padding: EdgeInsets.only(left: 16, right: 16, top: 8),
+        padding: const EdgeInsets.only(left: 16, right: 16, top: 8),
         child: Column(
           children: [
             Container(
@@ -394,7 +393,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
                 color: greyBorderColor,
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
             Column(
@@ -407,7 +406,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
 
                 DeliveryOrderTile(
                     jobListing: riderDeliveryBloc.deliveryDetails),
-                SizedBox(height: 10.0),
+                const SizedBox(height: 10.0),
                 _buildButtonAcceptReject(),
               ],
             ),
@@ -417,7 +416,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
 
   Widget startDelivery() {
     return Container(
-        padding: EdgeInsets.only(left: 16, right: 16, top: 8),
+        padding: const EdgeInsets.only(left: 16, right: 16, top: 8),
         child: Column(
           children: [
             Container(
@@ -428,25 +427,25 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
                 color: greyBorderColor,
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildDrivingToPickupLocation(),
-                SizedBox(height: 15.0),
+                const SizedBox(height: 15.0),
                 _buildDistanceAndHoursAndImageAndAddress(
                   pickupAddress: "Your Current Location",
                   deliveryAddress:
                       '${riderDeliveryBloc.deliveryDetails?.pickupAddress?.addressLineOne}, ${riderDeliveryBloc.deliveryDetails?.pickupAddress?.addressLineTwo}',
                 ),
-                SizedBox(height: 10.0),
+                const SizedBox(height: 10.0),
                 _buildCheckBoxAndItems(),
                 _buildStartDelivery(),
-                SizedBox(height: 15.0),
+                const SizedBox(height: 15.0),
                 _buildCancelDelivery(),
-                SizedBox(height: 15.0),
+                const SizedBox(height: 15.0),
                 _buildCallSender(),
               ],
             ),
@@ -456,7 +455,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
 
   Widget endDelivery() {
     return Container(
-        padding: EdgeInsets.only(left: 16, right: 16, top: 8),
+        padding: const EdgeInsets.only(left: 16, right: 16, top: 8),
         child: Column(
           children: [
             Container(
@@ -467,24 +466,24 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
                 color: greyBorderColor,
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildDrivingToDestination(),
-                SizedBox(height: 10.0),
+                const SizedBox(height: 10.0),
                 _buildDistanceAndHoursAndImageAndAddress(
                     pickupAddress:
                         '${riderDeliveryBloc.deliveryDetails?.pickupAddress?.addressLineOne}, ${riderDeliveryBloc.deliveryDetails?.pickupAddress?.addressLineTwo}',
                     deliveryAddress:
                         '${riderDeliveryBloc.deliveryDetails?.deliveryAddress?.addressLineOne}, ${riderDeliveryBloc.deliveryDetails?.deliveryAddress?.addressLineTwo}'),
-                SizedBox(height: 10.0),
+                const SizedBox(height: 10.0),
                 _buildItems(),
-                SizedBox(height: 15.0),
+                const SizedBox(height: 15.0),
                 _buildEndDelivery(),
-                SizedBox(height: 15.0),
+                const SizedBox(height: 15.0),
                 _buildCallReceiver(),
               ],
             ),
@@ -494,7 +493,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
 
   Widget deliveryProof() {
     return Container(
-      padding: EdgeInsets.only(left: 16, right: 16, top: 8),
+      padding: const EdgeInsets.only(left: 16, right: 16, top: 8),
       child: Column(
         children: [
           Container(
@@ -505,16 +504,16 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
               color: greyBorderColor,
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               _buildDeliveryProofTitle(),
-              SizedBox(height: 20.0),
+              const SizedBox(height: 20.0),
               _buildQRCode(),
-              SizedBox(height: 20.0),
+              const SizedBox(height: 20.0),
               _buildTakePicture(),
             ],
           ),
@@ -527,7 +526,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
     return Form(
       key: _formKey,
       child: Container(
-          padding: EdgeInsets.only(left: 16, right: 16, top: 8),
+          padding: const EdgeInsets.only(left: 16, right: 16, top: 8),
           child: Column(
             children: [
               Container(
@@ -538,16 +537,16 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
                   color: greyBorderColor,
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildTitle(),
-                  SizedBox(height: 10.0),
+                  const SizedBox(height: 10.0),
                   _buildCancelDeliveryReason(),
-                  SizedBox(height: 10.0),
+                  const SizedBox(height: 10.0),
                   _buildSubmitButton(),
                 ],
               ),
@@ -556,195 +555,195 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
     );
   }
 
-  Widget _buildLogoAndDeliveryAndAmount() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Row(
-          children: [
-            _buildLogo(),
-            _buildVerticalDivider(),
-            _buildDelivery(),
-          ],
-        ),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildCurrencySymbols(),
-            _buildAmount(),
-          ],
-        )
-      ],
-    );
-  }
-
-  Widget _buildLogo() {
-    return Image.network(
-      riderDeliveryBloc.deliveryDetails?.merchantAvatar ?? "",
-      height: 24,
-      width: 24,
-      fit: BoxFit.fill,
-      filterQuality: FilterQuality.high,
-      cacheHeight: 24,
-      cacheWidth: 24,
-      frameBuilder: imageFrameBuilder,
-      errorBuilder: (context, error, stackTrace) {
-        return Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Image.network(
-            defaultImage,
-            colorBlendMode: BlendMode.darken,
-            fit: BoxFit.fill,
-            filterQuality: FilterQuality.high,
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildVerticalDivider() {
-    return Container(
-      height: 55,
-      child: VerticalDivider(
-        color: greySecondaryYarn,
-        thickness: 1,
-        indent: 10,
-        endIndent: 10,
-        width: 20,
-      ),
-    );
-  }
-
-  Widget _buildDelivery() {
-    return Text(
-      riderDeliveryBloc.deliveryDetails?.merchantFullName ?? "",
-      style: TextStyle(
-        color: black,
-        fontSize: 12,
-        fontWeight: FontWeight.w500,
-        fontFamily: "Inter",
-      ),
-    );
-  }
-
-  Widget _buildCurrencySymbols() {
-    return Text(
-      worldCurrencies[riderDeliveryBloc.deliveryDetails?.currency]!,
-      style: TextStyle(
-        color: yarnBlack,
-        fontSize: 13,
-        fontWeight: FontWeight.w700,
-        fontFamily: "Inter",
-      ),
-    );
-  }
-
-  Widget _buildAmount() {
-    return Text(
-      "0",
-      style: TextStyle(
-        color: yarnBlack,
-        fontSize: 26,
-        fontWeight: FontWeight.w700,
-        fontFamily: "Inter",
-      ),
-    );
-  }
-
-  Widget _buildItemsAndKg() {
-    return Text(
-      "${riderDeliveryBloc.deliveryDetails?.totalNoOfItems} Items (${riderDeliveryBloc.deliveryDetails?.totalWeight}Kg)",
-      style: TextStyle(
-        color: black,
-        fontSize: 13,
-        fontWeight: FontWeight.w500,
-        fontFamily: "Inter",
-      ),
-    );
-  }
-
-  Widget _buildIconAndAddressAndPickup() {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        _buildIconImage(),
-        SizedBox(width: MediaQuery.of(context).size.width * 0.02),
-        Expanded(child: _buildMainAddressColumn())
-      ],
-    );
-  }
-
-  Widget _buildIconImage() {
-    return SvgPicture.asset(
-      'assets/images/rider/ic_route.svg',
-      height: 65,
-    );
-  }
-
-  Widget _buildMainAddressColumn() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              '${riderDeliveryBloc.deliveryDetails?.pickupAddress?.addressLineOne}, ${riderDeliveryBloc.deliveryDetails?.pickupAddress?.addressLineTwo}',
-              style: TextStyle(
-                fontWeight: FontWeight.w500,
-                color: darkGrey,
-                fontSize: 12,
-                fontFamily: "Inter",
-              ),
-              overflow: TextOverflow.ellipsis,
-            ),
-            Text(
-              riderDeliveryBloc.deliveryDetails?.expectedPickupTime
-                      .toString() ??
-                  "",
-              style: TextStyle(
-                color: navyBlue,
-                fontSize: 12,
-                fontWeight: FontWeight.w400,
-                fontFamily: "Inter",
-              ),
-            ),
-          ],
-        ),
-        SizedBox(height: 19),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              '${riderDeliveryBloc.deliveryDetails?.deliveryAddress?.addressLineOne}, ${riderDeliveryBloc.deliveryDetails?.deliveryAddress?.addressLineTwo}',
-              style: TextStyle(
-                fontWeight: FontWeight.w500,
-                color: darkGrey,
-                fontSize: 12,
-                fontFamily: "Inter",
-              ),
-              overflow: TextOverflow.ellipsis,
-            ),
-            Text(
-              riderDeliveryBloc.deliveryDetails?.expectedDeliveryTime
-                      .toString() ??
-                  "",
-              style: TextStyle(
-                color: navyBlue,
-                fontSize: 12,
-                fontWeight: FontWeight.w400,
-                fontFamily: "Inter",
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
+  // Widget _buildLogoAndDeliveryAndAmount() {
+  //   return Row(
+  //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //     children: [
+  //       Row(
+  //         children: [
+  //           _buildLogo(),
+  //           _buildVerticalDivider(),
+  //           _buildDelivery(),
+  //         ],
+  //       ),
+  //       Row(
+  //         crossAxisAlignment: CrossAxisAlignment.start,
+  //         children: [
+  //           _buildCurrencySymbols(),
+  //           _buildAmount(),
+  //         ],
+  //       )
+  //     ],
+  //   );
+  // }
+  //
+  // Widget _buildLogo() {
+  //   return Image.network(
+  //     riderDeliveryBloc.deliveryDetails?.merchantAvatar ?? "",
+  //     height: 24,
+  //     width: 24,
+  //     fit: BoxFit.fill,
+  //     filterQuality: FilterQuality.high,
+  //     cacheHeight: 24,
+  //     cacheWidth: 24,
+  //     frameBuilder: imageFrameBuilder,
+  //     errorBuilder: (context, error, stackTrace) {
+  //       return Padding(
+  //         padding: const EdgeInsets.all(8.0),
+  //         child: Image.network(
+  //           defaultImage,
+  //           colorBlendMode: BlendMode.darken,
+  //           fit: BoxFit.fill,
+  //           filterQuality: FilterQuality.high,
+  //         ),
+  //       );
+  //     },
+  //   );
+  // }
+  //
+  // Widget _buildVerticalDivider() {
+  //   return Container(
+  //     height: 55,
+  //     child: VerticalDivider(
+  //       color: greySecondaryYarn,
+  //       thickness: 1,
+  //       indent: 10,
+  //       endIndent: 10,
+  //       width: 20,
+  //     ),
+  //   );
+  // }
+  //
+  // Widget _buildDelivery() {
+  //   return Text(
+  //     riderDeliveryBloc.deliveryDetails?.merchantFullName ?? "",
+  //     style: TextStyle(
+  //       color: black,
+  //       fontSize: 12,
+  //       fontWeight: FontWeight.w500,
+  //       fontFamily: "Inter",
+  //     ),
+  //   );
+  // }
+  //
+  // Widget _buildCurrencySymbols() {
+  //   return Text(
+  //     worldCurrencies[riderDeliveryBloc.deliveryDetails?.currency]!,
+  //     style: TextStyle(
+  //       color: yarnBlack,
+  //       fontSize: 13,
+  //       fontWeight: FontWeight.w700,
+  //       fontFamily: "Inter",
+  //     ),
+  //   );
+  // }
+  //
+  // Widget _buildAmount() {
+  //   return Text(
+  //     "0",
+  //     style: TextStyle(
+  //       color: yarnBlack,
+  //       fontSize: 26,
+  //       fontWeight: FontWeight.w700,
+  //       fontFamily: "Inter",
+  //     ),
+  //   );
+  // }
+  //
+  // Widget _buildItemsAndKg() {
+  //   return Text(
+  //     "${riderDeliveryBloc.deliveryDetails?.totalNoOfItems} Items (${riderDeliveryBloc.deliveryDetails?.totalWeight}Kg)",
+  //     style: TextStyle(
+  //       color: black,
+  //       fontSize: 13,
+  //       fontWeight: FontWeight.w500,
+  //       fontFamily: "Inter",
+  //     ),
+  //   );
+  // }
+  //
+  // Widget _buildIconAndAddressAndPickup() {
+  //   return Row(
+  //     crossAxisAlignment: CrossAxisAlignment.center,
+  //     children: [
+  //       _buildIconImage(),
+  //       SizedBox(width: MediaQuery.of(context).size.width * 0.02),
+  //       Expanded(child: _buildMainAddressColumn())
+  //     ],
+  //   );
+  // }
+  //
+  // Widget _buildIconImage() {
+  //   return SvgPicture.asset(
+  //     'assets/images/rider/ic_route.svg',
+  //     height: 65,
+  //   );
+  // }
+  //
+  // Widget _buildMainAddressColumn() {
+  //   return Column(
+  //     crossAxisAlignment: CrossAxisAlignment.start,
+  //     children: [
+  //       Column(
+  //         crossAxisAlignment: CrossAxisAlignment.start,
+  //         children: [
+  //           Text(
+  //             '${riderDeliveryBloc.deliveryDetails?.pickupAddress?.addressLineOne}, ${riderDeliveryBloc.deliveryDetails?.pickupAddress?.addressLineTwo}',
+  //             style: TextStyle(
+  //               fontWeight: FontWeight.w500,
+  //               color: darkGrey,
+  //               fontSize: 12,
+  //               fontFamily: "Inter",
+  //             ),
+  //             overflow: TextOverflow.ellipsis,
+  //           ),
+  //           Text(
+  //             riderDeliveryBloc.deliveryDetails?.expectedPickupTime
+  //                     .toString() ??
+  //                 "",
+  //             style: TextStyle(
+  //               color: navyBlue,
+  //               fontSize: 12,
+  //               fontWeight: FontWeight.w400,
+  //               fontFamily: "Inter",
+  //             ),
+  //           ),
+  //         ],
+  //       ),
+  //       const SizedBox(height: 19),
+  //       Column(
+  //         crossAxisAlignment: CrossAxisAlignment.start,
+  //         children: [
+  //           Text(
+  //             '${riderDeliveryBloc.deliveryDetails?.deliveryAddress?.addressLineOne}, ${riderDeliveryBloc.deliveryDetails?.deliveryAddress?.addressLineTwo}',
+  //             style: TextStyle(
+  //               fontWeight: FontWeight.w500,
+  //               color: darkGrey,
+  //               fontSize: 12,
+  //               fontFamily: "Inter",
+  //             ),
+  //             overflow: TextOverflow.ellipsis,
+  //           ),
+  //           Text(
+  //             riderDeliveryBloc.deliveryDetails?.expectedDeliveryTime
+  //                     .toString() ??
+  //                 "",
+  //             style: TextStyle(
+  //               color: navyBlue,
+  //               fontSize: 12,
+  //               fontWeight: FontWeight.w400,
+  //               fontFamily: "Inter",
+  //             ),
+  //           ),
+  //         ],
+  //       ),
+  //     ],
+  //   );
+  // }
 
   Widget _buildButtonAcceptReject() {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
       child: Row(
         children: [
           Expanded(
@@ -766,7 +765,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
               isLoading: isRejectAPILoading,
             ),
           ),
-          SizedBox(width: 20),
+          const SizedBox(width: 20),
           Expanded(
             child: CurvedButton(
               text: 'Accept',
@@ -797,7 +796,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
         .rejectOffer(riderDeliveryBloc.deliveryDetails?.id)
         .then((value) {
       if (value == true) {
-        Future.delayed(Duration(seconds: 2)).then((value) => () {
+        Future.delayed(const Duration(seconds: 2)).then((value) => () {
               showToast(
                   message: AppLocalization.of(context)!.jobRemovedFromListing);
               Navigator.pop(context, 'HomeScreen');
@@ -867,7 +866,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         _buildDistanceAndHours(),
-        SizedBox(width: 15.0),
+        const SizedBox(width: 15.0),
         _buildRouteIconImage(),
         _buildAddressColumn(pickupAddress, deliveryAddress),
       ],
@@ -875,7 +874,8 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
   }
 
   Widget _buildDistanceAndHours() {
-    Duration? duration = riderDeliveryBloc.deliveryDetails?.travelDuration;
+    final Duration? duration =
+        riderDeliveryBloc.deliveryDetails?.travelDuration;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -889,7 +889,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
             fontFamily: "Inter",
           ),
         ),
-        SizedBox(
+        const SizedBox(
           height: 8,
         ),
         Row(
@@ -903,7 +903,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
                 fontFamily: "Inter",
               ),
             ),
-            SizedBox(width: 5),
+            const SizedBox(width: 5),
             Text(
               'minutes to your\nPickup location',
               style: TextStyle(
@@ -946,7 +946,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),
-          SizedBox(height: 25),
+          const SizedBox(height: 25),
           Text(
             deliveryAddress ?? "",
             style: TextStyle(
@@ -971,7 +971,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
     return Row(
       children: [
         Checkbox(
-            shape: RoundedRectangleBorder(
+            shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.all(
                 Radius.circular(4.0),
               ),
@@ -1063,11 +1063,11 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
+          const Icon(
             Icons.phone_in_talk_outlined,
             size: 25,
           ),
-          SizedBox(width: 10.0),
+          const SizedBox(width: 10.0),
           Text(
             "Tap to call package sender",
             style: TextStyle(
@@ -1091,11 +1091,11 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
+          const Icon(
             Icons.phone_in_talk_outlined,
             size: 25,
           ),
-          SizedBox(width: 10.0),
+          const SizedBox(width: 10.0),
           Text(
             "Tap to call package receiver",
             style: TextStyle(
@@ -1189,7 +1189,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
 
   Widget _buildCancelDeliveryReason() {
     return ListView.builder(
-        physics: NeverScrollableScrollPhysics(),
+        physics: const NeverScrollableScrollPhysics(),
         shrinkWrap: true,
         itemCount: reasons.length,
         itemBuilder: (context, i) {
@@ -1263,7 +1263,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
         .cancelJourney(riderDeliveryBloc.deliveryDetails?.id, userChecked)
         .then((value) {
       if (value == true) {
-        Future.delayed(Duration(seconds: 2)).then((value) => () {
+        Future.delayed(const Duration(seconds: 2)).then((value) => () {
               showToast(
                   message: AppLocalization.of(context)!
                       .cancelledApplicactionForJobSuccessfully);
@@ -1278,7 +1278,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
 
   Widget _buildDeliveryProofTitle() {
     return Padding(
-      padding: EdgeInsets.all(15.0),
+      padding: const EdgeInsets.all(15.0),
       child: Text(
         "Kindly take a picture of the receiver and the package for proof of delivery.",
         style: TextStyle(
@@ -1310,7 +1310,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
             height: 22,
             fit: BoxFit.fill,
           ),
-          SizedBox(width: 15.0),
+          const SizedBox(width: 15.0),
           Text(
             "Scan QRCode",
             style: TextStyle(
@@ -1339,7 +1339,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
             width: 22,
             height: 22,
           ),
-          SizedBox(width: 15.0),
+          const SizedBox(width: 15.0),
           Text(
             "Tap to take a picture",
             style: TextStyle(

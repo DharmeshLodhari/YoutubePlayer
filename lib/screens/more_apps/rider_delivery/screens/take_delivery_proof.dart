@@ -6,7 +6,6 @@ import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:camera/camera.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -220,7 +219,7 @@ class _TakeDeliveryProofState extends State<TakeDeliveryProof> {
     }
     try {
       await _cameraController?.setFlashMode(FlashMode.off);
-      XFile? picture = await _cameraController?.takePicture();
+      final XFile? picture = await _cameraController?.takePicture();
       Navigator.of(context).popAndPushNamed(
           Routes.PREVIEW_DELIVERY_PROOF_SCREEN,
           arguments: {"filePath": picture?.path});

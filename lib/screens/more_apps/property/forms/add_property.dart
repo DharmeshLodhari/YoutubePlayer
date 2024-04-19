@@ -71,8 +71,8 @@ class _AddPropertyState extends State<AddProperty> {
   bool isPropertyForLongTerm = true;
 
   int imageCount = 5;
-  ScrollController _imageScrollController = ScrollController();
-  ScrollController _videoScrollController = ScrollController();
+  final ScrollController _imageScrollController = ScrollController();
+  final ScrollController _videoScrollController = ScrollController();
 
   List<File> propertyImages = [];
   List<File> propertyVideos = [];
@@ -681,7 +681,7 @@ class _AddPropertyState extends State<AddProperty> {
                                       ),
                                       RichText(
                                         textAlign: TextAlign.justify,
-                                        text: new TextSpan(
+                                        text: TextSpan(
                                           // Note: Styles for TextSpans must be explicitly defined.
                                           // Child text spans will inherit styles from parent
                                           style: TextStyle(
@@ -696,7 +696,7 @@ class _AddPropertyState extends State<AddProperty> {
                                             TextSpan(
                                                 text:
                                                     '${videoLimit.inMinutes} minutes',
-                                                style: new TextStyle(
+                                                style: const TextStyle(
                                                     fontWeight:
                                                         FontWeight.bold)),
                                             const TextSpan(
@@ -929,10 +929,6 @@ class _AddPropertyState extends State<AddProperty> {
                     height: 30,
                     width: (MediaQuery.of(context).size.width - 45) / 2),
                 selectedBorderColor: navyBlue,
-                children: <Widget>[
-                  sellButton(),
-                  rentButton(),
-                ],
                 isSelected: isPropertyForSellOrRent,
                 onPressed: (int index) {
                   if (index == 0) {
@@ -944,6 +940,10 @@ class _AddPropertyState extends State<AddProperty> {
                   }
                   setState(() {});
                 },
+                children: <Widget>[
+                  sellButton(),
+                  rentButton(),
+                ],
               ),
             ],
           ),

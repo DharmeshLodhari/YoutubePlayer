@@ -21,7 +21,7 @@ import 'yarn_list_screen.dart';
 import 'yarn_search_screen.dart';
 
 class YarnCategoryIndividualTag extends StatefulWidget {
-  YarnCategories? askCategories;
+  final YarnCategories? askCategories;
   YarnCategoryIndividualTag({this.askCategories});
 
   @override

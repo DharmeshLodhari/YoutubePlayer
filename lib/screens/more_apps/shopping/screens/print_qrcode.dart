@@ -8,7 +8,7 @@ import 'package:printing/printing.dart';
 
 // ignore: must_be_immutable
 class PrintQRCode extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
   PrintQRCode({required this.arguments});
 
@@ -56,7 +56,7 @@ class _PrintQRCodeState extends State<PrintQRCode> {
                       BoxDecoration(color: Colors.white, boxShadow: [
                     BoxShadow(
                         color: boxShadowTwo,
-                        offset: Offset(2, 2),
+                        offset: const Offset(2, 2),
                         blurRadius: 5,
                         spreadRadius: 5)
                   ]),
@@ -80,7 +80,7 @@ class _PrintQRCodeState extends State<PrintQRCode> {
 
     // final image = await imageFromAssetBundle('assets/image.png');
 
-    var imageProvider = await networkImage(imageUrl!);
+    final imageProvider = await networkImage(imageUrl!);
 
     // final file = await getFileFromNetworkImage("<your network image Url here>");
     //

@@ -64,13 +64,13 @@ class PlaceModal {
           ? double.parse(json['rating'].toString())
           : json['rating'],
       reference: json['reference'],
-      types:
-          json['types'] != null ? new List<String>.from(json['types']) : null,
+      types: json['types'] != null ? List<String>.from(json['types']) : null,
       userRatingsTotal: json['user_ratings_total'],
     );
   }
 
   Map<String, dynamic> toJson() {
+    // ignore: unnecessary_new
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['business_status'] = this.businessStatus;
     data['formatted_address'] = this.formattedAddress;

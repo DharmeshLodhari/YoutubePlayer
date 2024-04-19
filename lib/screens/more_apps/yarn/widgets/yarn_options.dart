@@ -29,18 +29,18 @@ import '../yarn_list_screen.dart';
 import '../yarn_report_screen.dart';
 
 class YarnOptions extends StatefulWidget {
-  Yarn? yarnTopic;
-  YarnComment? commentDetail;
-  bool? isComment;
-  bool? isShareOption;
-  Function(Yarn)? onDeleteYarn;
-  Function(YarnComment)? onDeleteComment;
-  Function(Yarn)? onUpdate;
-  Function(YarnComment, bool)? onUpdateMomentComment;
-  Function(bool)? minusComment;
-  String? momentUsername;
-  MomentsModel? moment;
-  Function(bool)? reloadView;
+  final Yarn? yarnTopic;
+  final YarnComment? commentDetail;
+  final bool? isComment;
+  final bool? isShareOption;
+  final Function(Yarn)? onDeleteYarn;
+  final Function(YarnComment)? onDeleteComment;
+  final Function(Yarn)? onUpdate;
+  final Function(YarnComment, bool)? onUpdateMomentComment;
+  final Function(bool)? minusComment;
+  final String? momentUsername;
+  final MomentsModel? moment;
+  final Function(bool)? reloadView;
   final Function(bool)? callbackUpdateCommentCount;
 
   YarnOptions(
@@ -64,7 +64,7 @@ class YarnOptions extends StatefulWidget {
 
 class _YarnOptionsState extends State<YarnOptions> {
   late YarnDashboardBloc yarnDashboardBloc;
-  late PageController _pageViewController;
+  // late PageController _pageViewController;
   int currentAskTapOnHome = 0;
   bool? pinned = false;
 
@@ -339,7 +339,7 @@ class _YarnOptionsState extends State<YarnOptions> {
     );
   }
 
-  showDeleteYarnDialog() {
+  void showDeleteYarnDialog() {
     showDialogBox(
         context: context,
         actionOneTextColor: white,
@@ -362,7 +362,7 @@ class _YarnOptionsState extends State<YarnOptions> {
         });
   }
 
-  showDeleteYarnCommentDialog() {
+  void showDeleteYarnCommentDialog() {
     showDialogBox(
         context: context,
         actionOneTextColor: white,
@@ -616,7 +616,6 @@ class _YarnOptionsState extends State<YarnOptions> {
 
   Widget _buildTile(
       {String? icon,
-      double? width,
       String? title,
       String? subTitle,
       GestureTapCallback? onTap}) {
@@ -629,7 +628,7 @@ class _YarnOptionsState extends State<YarnOptions> {
             Container(
               padding: const EdgeInsets.all(10.0),
               width: 40,
-              decoration: new BoxDecoration(
+              decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: Colors.blue.withOpacity(0.05),
               ),

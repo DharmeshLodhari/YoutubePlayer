@@ -21,7 +21,7 @@ import '../../../../../widget/rounded_background_icon.dart';
 import '../../shopping_auth.dart';
 
 class ProductVariantUpdate extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
   ProductVariantUpdate({this.arguments, Key? key}) : super(key: key);
 
@@ -160,14 +160,16 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      checkImageLimitForServerImage()
-                          ? viewServerImages()
-                          : Container(),
+                      if (checkImageLimitForServerImage())
+                        viewServerImages()
+                      else
+                        Container(),
 
                       const SizedBox(height: 10),
-                      checkImageLimitForLocalImage()
-                          ? addLocalImages()
-                          : Container(),
+                      if (checkImageLimitForLocalImage())
+                        addLocalImages()
+                      else
+                        Container(),
                       // addImages(),
 
                       const SizedBox(height: 10),
@@ -307,7 +309,7 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
       ImagePicker().pickImage(source: imageSource).then((value) async {
         if (value != null) {
           /// for cropping the image
-          String? croppedImage = await ImageCrop().cropImage(value.path);
+          final String? croppedImage = await ImageCrop().cropImage(value.path);
           if (croppedImage == null) {
             return;
           }
@@ -388,7 +390,7 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
         scrollDirection: Axis.horizontal,
         itemCount: productImagesFromServer.length,
         itemBuilder: (context, index) => Container(
-          padding: EdgeInsets.only(right: 6),
+          padding: const EdgeInsets.only(right: 6),
           child: showServerImage(index),
         ),
       ),
@@ -407,7 +409,8 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
                 borderRadius: BorderRadius.circular(10),
               ),
               shadowColor: boxShadowTwo,
-              margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+              margin:
+                  const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
               child: Container(
                 width: 100,
                 decoration: BoxDecoration(
@@ -425,10 +428,10 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
             right: 0,
             top: 0,
             child: IconButton(
-              padding: EdgeInsets.only(right: 6, top: 6),
+              padding: const EdgeInsets.only(right: 6, top: 6),
               alignment: Alignment.topRight,
               icon: Container(
-                padding: EdgeInsets.all(2.0),
+                padding: const EdgeInsets.all(2.0),
                 decoration: BoxDecoration(
                   color: iconBtnGrey,
                   borderRadius: BorderRadius.circular(5),
@@ -488,7 +491,7 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
         scrollDirection: Axis.horizontal,
         itemCount: croppedImageList.length + 1,
         itemBuilder: (context, index) => Container(
-          padding: EdgeInsets.only(right: 6),
+          padding: const EdgeInsets.only(right: 6),
           child: index != croppedImageList.length
               ? showLocalImage(index)
               : croppedImageList.length + productImagesFromServer.length !=
@@ -509,7 +512,7 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
             borderRadius: BorderRadius.circular(10),
           ),
           shadowColor: dividerColor,
-          margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+          margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
           child: Container(
             width: 100,
             child: Image.file(
@@ -524,10 +527,10 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
           right: 0,
           top: 0,
           child: IconButton(
-            padding: EdgeInsets.only(right: 6, top: 6),
+            padding: const EdgeInsets.only(right: 6, top: 6),
             alignment: Alignment.topRight,
             icon: Container(
-              padding: EdgeInsets.all(2.0),
+              padding: const EdgeInsets.all(2.0),
               decoration: BoxDecoration(
                 color: iconBtnGrey,
                 borderRadius: BorderRadius.circular(5),
@@ -860,7 +863,7 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
                     shrinkWrap: true,
                     itemCount: typeList.length,
                     itemBuilder: (context, index) {
-                      var category = typeList[index];
+                      final category = typeList[index];
                       if (selectedType == category) {
                         return Container(
                           color: selectedListItemBackgroundBlue,
@@ -941,7 +944,7 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
     if (_formKey.currentState!.validate()) {
       if (croppedImageList.length >= 1 || productImagesFromServer.length >= 1) {
         if (validateDropdown()) {
-          Variant variant = Variant();
+          final Variant variant = Variant();
           variant.id = id;
           // variant.localImages = productLocalImages.map((file) => File(file.path)).toList();
           variant.localImages =

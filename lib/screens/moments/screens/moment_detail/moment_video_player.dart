@@ -134,22 +134,23 @@ class MomentVideoPlayerState extends State<MomentVideoPlayer> {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            widget.momentsModel.mediaPoster != null
-                ? CachedNetworkImage(
-                    imageUrl: widget.momentsModel.mediaPoster!,
-                    fit: BoxFit.fitWidth,
-                    memCacheHeight:
-                        (MediaQuery.of(context).size.height * 0.8).toInt(),
-                    placeholder: (context, _) {
-                      return Container(color: Colors.grey);
-                    },
-                  )
-                : Container(
-                    decoration: BoxDecoration(
-                      color: const Color(0XFFdcdcdc).withOpacity(0.5),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
+            if (widget.momentsModel.mediaPoster != null)
+              CachedNetworkImage(
+                imageUrl: widget.momentsModel.mediaPoster!,
+                fit: BoxFit.fitWidth,
+                memCacheHeight:
+                    (MediaQuery.of(context).size.height * 0.8).toInt(),
+                placeholder: (context, _) {
+                  return Container(color: Colors.grey);
+                },
+              )
+            else
+              Container(
+                decoration: BoxDecoration(
+                  color: const Color(0XFFdcdcdc).withOpacity(0.5),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
             Center(child: CircularLoadingIndicator()),
           ],
         ),
@@ -157,7 +158,7 @@ class MomentVideoPlayerState extends State<MomentVideoPlayer> {
     );
   }
 
-  showMediaIconFor2Seconds() {
+  void showMediaIconFor2Seconds() {
     setState(() => showMediaIcon = true);
     Future.delayed(const Duration(seconds: 2), () {
       if (mounted)

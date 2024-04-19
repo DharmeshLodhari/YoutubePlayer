@@ -63,7 +63,7 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
   StateSetter? bottomSheetStateSetterGlobal;
   bool bottomSheetMounted = false;
   int bottomSheetSearchIndex = 0;
-  final ScrollController _scrollController = new ScrollController();
+  final ScrollController _scrollController = ScrollController();
   String? next = "", previous = "";
   int count = 0;
   bool noList = false;
@@ -71,7 +71,7 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
   List bankAccountListStore = [];
   bool noItemInList = false;
   BankAccount? selectedBank;
-  final TextEditingController _amountController = TextEditingController();
+  // final TextEditingController _amountController = TextEditingController();
   final searchItemTextController = TextEditingController();
   GlobalKey searchItemTextFormField = GlobalKey();
   //slidable tile

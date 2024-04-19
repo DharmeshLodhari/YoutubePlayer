@@ -19,8 +19,8 @@ import '../more_apps/shopping/models/store.dart';
 import '../more_apps/shopping/shopping_auth.dart';
 
 class ShopListScreen extends StatefulWidget {
-  Function(bool)? onPageRefresh;
-  String? category;
+  final Function(bool)? onPageRefresh;
+  final String? category;
   final String industry;
   final String? nextUrl;
   final String? type;
@@ -66,7 +66,7 @@ class ShopListScreenState extends State<ShopListScreen> {
 
   // final ScrollController _productScrollController = ScrollController();
   String _currentCategory = '';
-  late DashboardBloc _dashboardBloc;
+  // late DashboardBloc _dashboardBloc;
 
   AppBar appBar() {
     return AppBar(
@@ -90,7 +90,7 @@ class ShopListScreenState extends State<ShopListScreen> {
     );
   }
 
-  listOfSuperStores() async {
+  void listOfSuperStores() async {
     if (mounted) {
       isProductLoading = true;
     }

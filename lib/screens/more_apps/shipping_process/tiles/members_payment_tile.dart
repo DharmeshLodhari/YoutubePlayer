@@ -26,8 +26,8 @@ class MemberPaymentTile extends StatefulWidget {
 
 class _MemberPaymentTileState extends State<MemberPaymentTile> {
   double percentageValue = 0.0;
-  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  TextEditingController _controller = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final TextEditingController _controller = TextEditingController();
   late SharedCartBloc sharedCartBloc;
   late UserBloc userBloc;
 
@@ -43,7 +43,7 @@ class _MemberPaymentTileState extends State<MemberPaymentTile> {
     userBloc = Provider.of<UserBloc>(context);
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+      margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
       shadowColor: boxShadowTwo,
       elevation: 0,
       child: Container(
@@ -99,7 +99,7 @@ class _MemberPaymentTileState extends State<MemberPaymentTile> {
       data: Theme.of(context).sliderTheme.copyWith(
           overlayShape: SliderComponentShape.noOverlay,
           trackHeight: 4,
-          thumbShape: RoundSliderThumbShape(
+          thumbShape: const RoundSliderThumbShape(
               disabledThumbRadius: 0,
               enabledThumbRadius: 0,
               elevation: 0,
@@ -129,7 +129,7 @@ class _MemberPaymentTileState extends State<MemberPaymentTile> {
   Widget getTrailing() {
     return Container(
       width: 110,
-      padding: EdgeInsets.symmetric(vertical: 3),
+      padding: const EdgeInsets.symmetric(vertical: 3),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
@@ -143,7 +143,7 @@ class _MemberPaymentTileState extends State<MemberPaymentTile> {
                   fontFamily: "Inter"),
             ),
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
@@ -155,7 +155,7 @@ class _MemberPaymentTileState extends State<MemberPaymentTile> {
                     fontSize: 14,
                     fontFamily: "Inter"),
               ),
-              SizedBox(width: 3),
+              const SizedBox(width: 3),
               if (widget.isUserPaymentDone == true)
                 Image.asset(
                   height: 15,
@@ -204,7 +204,7 @@ class _MemberPaymentTileState extends State<MemberPaymentTile> {
                     percentageValue = 0.0;
                     _controller.clear();
                   },
-                  icon: Icon(Icons.highlight_off_rounded),
+                  icon: const Icon(Icons.highlight_off_rounded),
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -220,7 +220,7 @@ class _MemberPaymentTileState extends State<MemberPaymentTile> {
                                 fontSize: 16.0),
                             textAlign: TextAlign.center),
                       ),
-                      SizedBox(height: 30),
+                      const SizedBox(height: 30),
                       Text('Name : @${widget.member?.userName}',
                           style: TextStyle(
                               color: darkGrey,
@@ -228,7 +228,7 @@ class _MemberPaymentTileState extends State<MemberPaymentTile> {
                               fontFamily: "Inter",
                               fontSize: 16.0),
                           textAlign: TextAlign.center),
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       CustomizedTextFormField(
                         controller: _controller,
                         labelText: "Percentage",
@@ -254,12 +254,12 @@ class _MemberPaymentTileState extends State<MemberPaymentTile> {
                           }
                         },
                       ),
-                      SizedBox(height: 15),
+                      const SizedBox(height: 15),
                       SliderTheme(
                         data: Theme.of(context).sliderTheme.copyWith(
                             overlayShape: SliderComponentShape.noOverlay,
                             trackHeight: 3,
-                            thumbShape: RoundSliderThumbShape(
+                            thumbShape: const RoundSliderThumbShape(
                                 disabledThumbRadius: 10,
                                 enabledThumbRadius: 10,
                                 elevation: 1,
@@ -281,7 +281,7 @@ class _MemberPaymentTileState extends State<MemberPaymentTile> {
                       if (errorMessage.isNotEmpty)
                         Text(
                           errorMessage,
-                          style: TextStyle(
+                          style: const TextStyle(
                               color: Colors.red,
                               fontWeight: FontWeight.w600,
                               fontFamily: "Inter",

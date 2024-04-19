@@ -24,7 +24,7 @@ class MyMusicList extends StatefulWidget {
 
 class _MyMusicListState extends State<MyMusicList> {
   List<PartialMusicItem> musicList = [];
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
   bool isLoading = false;
   @override
@@ -46,7 +46,7 @@ class _MyMusicListState extends State<MyMusicList> {
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         getResult();

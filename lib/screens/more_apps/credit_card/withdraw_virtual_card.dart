@@ -206,11 +206,9 @@ class WithdrawVirtualCardState extends State<WithdrawVirtualCard> {
   }
 
   Widget mainCreditCardContent(AllCards cardData) {
-    var cardColors = [];
     var cardColor;
 
     if (cardData.color == null) {
-      cardColors = [navyBlue, richPink, black, orange];
       cardColor = navyBlue;
     } else {
       final String? color = cardData.color;

@@ -88,7 +88,7 @@ class PackageDetailsModel {
   }
 
   Map<String, dynamic> toCartPlaceOrder() {
-    Map<String, dynamic> data = {
+    final Map<String, dynamic> data = {
       "merchant": merchant,
       "pickup_address_id": addressId ?? "",
       "note": shippingNote,
@@ -120,7 +120,7 @@ class PackageDetailsModel {
   }
 
   Map<String, dynamic> toBuyNowPlaceOrder(String? userName) {
-    List<Map<String, dynamic>> addOnsDataList = addOns
+    final List<Map<String, dynamic>> addOnsDataList = addOns
             ?.map((e) => {
                   "id": e.id,
                   "options": e.options
@@ -131,15 +131,15 @@ class PackageDetailsModel {
             .toList() ??
         [];
 
-    List<Variant?> getListOfVariant = [variants];
+    final List<Variant?> getListOfVariant = [variants];
 
-    List<Map<String, dynamic>> variantData = getListOfVariant
+    final List<Map<String, dynamic>> variantData = getListOfVariant
         .where((element) => element != null)
         .toList()
         .map((e) => <String, dynamic>{"id": e?.id, "quantity": e?.quantity})
         .toList();
 
-    Map<String, dynamic> data = {
+    final Map<String, dynamic> data = {
       "id": buyNow?.id ?? "",
       "qty": buyNow?.quantity ?? 1,
       "type": buyNow?.type ?? 'product',

@@ -187,7 +187,7 @@ class _FileTileForChatState extends State<FileTileForChat> {
     send.send([id, status, progress]);
   }
 
-  getIfFileIsDownloadable() async {
+  Future<void> getIfFileIsDownloadable() async {
     final DocumentFileInChatDownloadModel model =
         DocumentFileInChatDownloadModel(
       checkID: checkID,
@@ -414,7 +414,7 @@ String getDocumentFileIcon(DocumentFileTypeForChat docsType) {
   }
 }
 
-getDocumentFileTypeForChat(String extension) {
+DocumentFileTypeForChat getDocumentFileTypeForChat(String extension) {
   switch (extension) {
     case 'pdf':
       return DocumentFileTypeForChat.pdf;
@@ -427,4 +427,5 @@ getDocumentFileTypeForChat(String extension) {
     case 'txt':
       return DocumentFileTypeForChat.txt;
   }
+  return DocumentFileTypeForChat.txt;
 }

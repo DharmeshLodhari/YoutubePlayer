@@ -63,6 +63,7 @@ class VirtualAccount {
   }
 
   Map<String, dynamic> toJson() {
+    // ignore: unnecessary_new
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['account_name'] = this.accountName;
     data['account_number'] = this.accountNumber;
@@ -81,7 +82,7 @@ class VirtualAccount {
   }
 
   Map<String, dynamic> toDBJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = Map<String, dynamic>();
     data['account_name'] = this.accountName;
     data['account_number'] = this.accountNumber;
     data['created_at'] = this.createdAt;

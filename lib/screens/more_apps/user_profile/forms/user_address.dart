@@ -17,8 +17,8 @@ import '../user_auth.dart';
 import '../widgets/pick_state_widget.dart';
 
 class UserAddress extends StatefulWidget {
-  String? customerName;
-  bool fromCheckoutScreen;
+  final String? customerName;
+  final bool fromCheckoutScreen;
 
   UserAddress({this.customerName, this.fromCheckoutScreen = false});
   @override

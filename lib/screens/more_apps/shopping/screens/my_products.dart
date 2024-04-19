@@ -102,7 +102,7 @@ class _MyProductsState extends State<MyProducts> {
           width: 12,
         ),
       ),
-      SizedBox(width: 10),
+      const SizedBox(width: 10),
       RoundedBackgroundIcon(
           backgroundColor: Colors.transparent,
           onTap: () {
@@ -111,7 +111,7 @@ class _MyProductsState extends State<MyProducts> {
           icon: SvgPicture.asset(
             "link_icon".toSVG(),
           )),
-      SizedBox(width: 10),
+      const SizedBox(width: 10),
       RoundedBackgroundIcon(
           backgroundColor: Colors.transparent,
           onTap: () {
@@ -129,7 +129,7 @@ class _MyProductsState extends State<MyProducts> {
               width: 12,
             ),
           )),
-      SizedBox(width: 20),
+      const SizedBox(width: 20),
     ];
   }
 

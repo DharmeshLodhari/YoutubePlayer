@@ -19,7 +19,7 @@ class MovieExploreScreen extends StatefulWidget {
 }
 
 class _MovieExploreScreenState extends State<MovieExploreScreen> {
-  CarouselController _carouselController = CarouselController();
+  final CarouselController _carouselController = CarouselController();
 
   List<MovieItem> mostRecentDiscoveryList = [];
   bool isMostRecentDiscoveryLoading = false;
@@ -33,7 +33,7 @@ class _MovieExploreScreenState extends State<MovieExploreScreen> {
   List<PartialMovieItem> indiePicksList = [];
   bool isIndiePicksLoading = false;
 
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
   @override
@@ -95,7 +95,7 @@ class _MovieExploreScreenState extends State<MovieExploreScreen> {
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         getResult();

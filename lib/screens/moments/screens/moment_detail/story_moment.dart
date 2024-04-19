@@ -156,87 +156,84 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
                 const SizedBox(height: 16),
-                isMyMoment()
-                    ? CustomMomentDetailButton(
-                        iconEnabled: true,
-                        iconData: Icons.more_horiz_outlined,
-                        text: '',
-                        onPressed: () {
-                          androidBottomSheet(
-                            context: context,
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                momentVisibilityOption(currentMoment!),
-                                momentPermanentOption(currentMoment!),
-                                enablePayment(currentMoment!),
-                                momentCommentingOption(currentMoment!),
-                                momentLikeOption(currentMoment!),
-                                bottomSheetItem(
-                                    title: 'Share in chat',
-                                    iconData: Icons.send_outlined,
-                                    onTap: () async {
-                                      await sendMomentToUserInChat(
-                                          momentsModel: currentMoment!);
-                                    }),
-                                bottomSheetItem(
-                                  title: 'Delete',
-                                  iconData: Icons.delete,
-                                  onTap: () {
-                                    Navigator.pop(context);
+                if (isMyMoment())
+                  CustomMomentDetailButton(
+                    iconEnabled: true,
+                    iconData: Icons.more_horiz_outlined,
+                    text: '',
+                    onPressed: () {
+                      androidBottomSheet(
+                        context: context,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            momentVisibilityOption(currentMoment!),
+                            momentPermanentOption(currentMoment!),
+                            enablePayment(currentMoment!),
+                            momentCommentingOption(currentMoment!),
+                            momentLikeOption(currentMoment!),
+                            bottomSheetItem(
+                                title: 'Share in chat',
+                                iconData: Icons.send_outlined,
+                                onTap: () async {
+                                  await sendMomentToUserInChat(
+                                      momentsModel: currentMoment!);
+                                }),
+                            bottomSheetItem(
+                              title: 'Delete',
+                              iconData: Icons.delete,
+                              onTap: () {
+                                Navigator.pop(context);
 
-                                    showDialogBox(
-                                      context: context,
-                                      actionOneTextColor: white,
-                                      actionOneBgColor: mateRed,
-                                      actionTwoTextColor: blackFont,
-                                      actionTwoBgColor: greyBorderColor,
-                                      title:
-                                          AppLocalization.of(context)!.delete,
-                                      actionTwoText:
-                                          AppLocalization.of(context)!.cancel,
-                                      actionOneText:
-                                          AppLocalization.of(context)!.delete,
-                                      description:
-                                          'Are you sure you want to delete this moment?',
-                                      roundedBackgroundIcon:
-                                          RoundedBackgroundIcon(
-                                        enableMargin: false,
-                                        width: 90,
-                                        height: 90,
-                                        image: Image.asset(
-                                            'assets/images/delete_dialog_icon.png'),
-                                      ),
-                                      leftButtonOnPressed: () {
-                                        showDialog(
-                                            context: context,
-                                            builder: (dialogLoadingContext) =>
-                                                LoadingIndicator());
-                                        MomentsService()
-                                            .deleteMoment(
-                                                currentMoment!.id!, "")
-                                            .then(
-                                          (value) {
-                                            Navigator.pop(
-                                                context); // Dismiss loading indicator
-                                            Navigator.pop(context);
-                                            showToast(
-                                                message: 'Moment deleted');
-                                          },
-                                        ).catchError((e) {
-                                          Navigator.pop(context);
-                                          showToast(message: e.toString());
-                                        });
+                                showDialogBox(
+                                  context: context,
+                                  actionOneTextColor: white,
+                                  actionOneBgColor: mateRed,
+                                  actionTwoTextColor: blackFont,
+                                  actionTwoBgColor: greyBorderColor,
+                                  title: AppLocalization.of(context)!.delete,
+                                  actionTwoText:
+                                      AppLocalization.of(context)!.cancel,
+                                  actionOneText:
+                                      AppLocalization.of(context)!.delete,
+                                  description:
+                                      'Are you sure you want to delete this moment?',
+                                  roundedBackgroundIcon: RoundedBackgroundIcon(
+                                    enableMargin: false,
+                                    width: 90,
+                                    height: 90,
+                                    image: Image.asset(
+                                        'assets/images/delete_dialog_icon.png'),
+                                  ),
+                                  leftButtonOnPressed: () {
+                                    showDialog(
+                                        context: context,
+                                        builder: (dialogLoadingContext) =>
+                                            LoadingIndicator());
+                                    MomentsService()
+                                        .deleteMoment(currentMoment!.id!, "")
+                                        .then(
+                                      (value) {
+                                        Navigator.pop(
+                                            context); // Dismiss loading indicator
+                                        Navigator.pop(context);
+                                        showToast(message: 'Moment deleted');
                                       },
-                                    );
+                                    ).catchError((e) {
+                                      Navigator.pop(context);
+                                      showToast(message: e.toString());
+                                    });
                                   },
-                                ),
-                              ],
+                                );
+                              },
                             ),
-                          );
-                        },
-                      )
-                    : const SizedBox.shrink(),
+                          ],
+                        ),
+                      );
+                    },
+                  )
+                else
+                  const SizedBox.shrink(),
                 _buildShareMomentOption(),
                 Column(
                   children: [

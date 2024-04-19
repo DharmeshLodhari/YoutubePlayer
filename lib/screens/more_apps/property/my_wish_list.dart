@@ -23,7 +23,7 @@ class _MyWishListState extends State<MyWishList> {
 
   bool isLoading = false;
 
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
   @override

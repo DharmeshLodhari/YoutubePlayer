@@ -21,7 +21,7 @@ import '../business_auth.dart';
 
 // ignore: must_be_immutable
 class ContractDetail extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
   ContractDetail({required this.arguments});
 

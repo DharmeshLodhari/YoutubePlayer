@@ -18,7 +18,7 @@ import 'music_tile.dart';
 
 // ignore: must_be_immutable
 class AlbumDetailPage extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
   AlbumDetailPage({this.arguments});
 

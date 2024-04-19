@@ -69,7 +69,7 @@ class _RideOptionState extends State<RideOption> {
 
   @override
   void initState() {
-    TaxiBloc taxiBloc =
+    final TaxiBloc taxiBloc =
         Provider.of(myGlobals.navigationKey.currentContext!, listen: false);
     if (taxiBloc.rideDetail != null) {
       isRideSelected = true;
@@ -111,16 +111,18 @@ class _RideOptionState extends State<RideOption> {
         appBar: appBar() as PreferredSizeWidget?,
         body: Stack(
           children: [
-            isLoading
-                ? Center(child: CircularLoadingIndicator())
-                : MapUI(
-                    showStartingPointToDestinationPolyline: true,
-                  ),
-            isRideSelected
-                ? getBottomUI(bookingConfirmation())
-                : toggleCarOption
-                    ? getBottomUI(getCarSelectionListView())
-                    : getBottomUI(getRideSelectionListView()),
+            if (isLoading)
+              Center(child: CircularLoadingIndicator())
+            else
+              MapUI(
+                showStartingPointToDestinationPolyline: true,
+              ),
+            if (isRideSelected)
+              getBottomUI(bookingConfirmation())
+            else
+              toggleCarOption
+                  ? getBottomUI(getCarSelectionListView())
+                  : getBottomUI(getRideSelectionListView()),
           ],
         ),
       ),
@@ -154,14 +156,14 @@ class _RideOptionState extends State<RideOption> {
 
   Widget getRideOptions() {
     return Container(
-        padding: EdgeInsets.only(left: 16, right: 16, top: 20),
+        padding: const EdgeInsets.only(left: 16, right: 16, top: 20),
         child: Column(
           // controller: scrollController,
           children: [
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
-            SizedBox(
+            const SizedBox(
               height: 40,
             ),
           ],
@@ -178,14 +180,14 @@ class _RideOptionState extends State<RideOption> {
           shadowColor: dividerColor,
           color: Colors.white,
           margin: EdgeInsets.zero,
-          shape: RoundedRectangleBorder(
+          shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(20), topRight: Radius.circular(20))),
           child: AnimatedContainer(
-            duration: Duration(milliseconds: 500),
+            duration: const Duration(milliseconds: 500),
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-              decoration: BoxDecoration(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              decoration: const BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.only(
                   topRight: Radius.circular(20),
@@ -201,7 +203,7 @@ class _RideOptionState extends State<RideOption> {
   Widget bookingConfirmation() {
     return Container(
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
           children: [
             Row(
@@ -219,17 +221,17 @@ class _RideOptionState extends State<RideOption> {
                     ),
                     Text(
                       selectedRide!["name"],
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w400,
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 12,
                     ),
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 20,
                 ),
                 Column(
@@ -238,7 +240,7 @@ class _RideOptionState extends State<RideOption> {
                   children: [
                     Row(
                       children: [
-                        Text(
+                        const Text(
                           "₦",
                           style: TextStyle(
                               fontSize: 18,
@@ -254,16 +256,16 @@ class _RideOptionState extends State<RideOption> {
                         )
                       ],
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 8,
                     ),
                     Container(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 16, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 2),
                         decoration: BoxDecoration(
                             color: darkGrey.withAlpha(100),
                             borderRadius: BorderRadius.circular(100)),
-                        child: Text(
+                        child: const Text(
                           "3 mins",
                           style: TextStyle(
                               fontSize: 14, fontWeight: FontWeight.w600),
@@ -286,7 +288,7 @@ class _RideOptionState extends State<RideOption> {
         child: Row(
           children: rideOption.map((ride) {
             return Container(
-              padding: EdgeInsets.only(right: 8, bottom: 8),
+              padding: const EdgeInsets.only(right: 8, bottom: 8),
               child: GestureDetector(
                 onTap: () {
                   if (ride["name"] == "Car") {
@@ -307,7 +309,8 @@ class _RideOptionState extends State<RideOption> {
                       borderRadius: BorderRadius.circular(15)),
                   child: Container(
                     width: MediaQuery.of(context).size.width / 3.5,
-                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                     child: Column(
                       children: [
                         Image.asset(
@@ -315,21 +318,21 @@ class _RideOptionState extends State<RideOption> {
                           height: 50,
                           fit: BoxFit.fill,
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 10,
                         ),
                         Text(
                           ride["name"],
-                          style: TextStyle(
+                          style: const TextStyle(
                               fontSize: 14, fontWeight: FontWeight.w400),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 8,
                         ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text(
+                            const Text(
                               "₦",
                               style: TextStyle(
                                   fontSize: 18,
@@ -338,23 +341,23 @@ class _RideOptionState extends State<RideOption> {
                             ),
                             Text(
                               ride["price"],
-                              style: TextStyle(
+                              style: const TextStyle(
                                   fontSize: 18, fontWeight: FontWeight.w700),
                             ),
                           ],
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 8,
                         ),
                         Container(
-                            padding: EdgeInsets.symmetric(
+                            padding: const EdgeInsets.symmetric(
                                 horizontal: 16, vertical: 2),
                             decoration: BoxDecoration(
                                 color: darkGrey.withAlpha(100),
                                 borderRadius: BorderRadius.circular(100)),
                             child: Text(
                               ride["time"],
-                              style: TextStyle(
+                              style: const TextStyle(
                                   fontSize: 14, fontWeight: FontWeight.w600),
                             )),
                       ],
@@ -376,7 +379,7 @@ class _RideOptionState extends State<RideOption> {
       child: Row(
         children: carOption.map((car) {
           return Container(
-            padding: EdgeInsets.only(right: 8, bottom: 8),
+            padding: const EdgeInsets.only(right: 8, bottom: 8),
             child: GestureDetector(
               onTap: () {
                 isRideSelected = !isRideSelected;
@@ -390,7 +393,8 @@ class _RideOptionState extends State<RideOption> {
                     borderRadius: BorderRadius.circular(15)),
                 child: Container(
                   width: MediaQuery.of(context).size.width / 3.5,
-                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                   child: Column(
                     children: [
                       Image.asset(
@@ -398,21 +402,21 @@ class _RideOptionState extends State<RideOption> {
                         height: 50,
                         fit: BoxFit.fill,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 10,
                       ),
                       Text(
                         car["name"],
-                        style: TextStyle(
+                        style: const TextStyle(
                             fontSize: 14, fontWeight: FontWeight.w400),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 8,
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(
+                          const Text(
                             "₦",
                             style: TextStyle(
                                 fontSize: 18,
@@ -421,23 +425,23 @@ class _RideOptionState extends State<RideOption> {
                           ),
                           Text(
                             car["price"],
-                            style: TextStyle(
+                            style: const TextStyle(
                                 fontSize: 18, fontWeight: FontWeight.w700),
                           ),
                         ],
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 8,
                       ),
                       Container(
-                          padding:
-                              EdgeInsets.symmetric(horizontal: 16, vertical: 2),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 2),
                           decoration: BoxDecoration(
                               color: darkGrey.withAlpha(100),
                               borderRadius: BorderRadius.circular(100)),
                           child: Text(
                             car["time"],
-                            style: TextStyle(
+                            style: const TextStyle(
                                 fontSize: 14, fontWeight: FontWeight.w600),
                           )),
                     ],

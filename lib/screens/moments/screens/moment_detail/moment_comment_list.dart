@@ -199,7 +199,7 @@ class _CommentListWidgetState extends State<CommentListWidget> {
     );
   }
 
-  Widget singleCommentWidget(YarnComment yarnComment, index) {
+  Widget singleCommentWidget(YarnComment yarnComment, int index) {
     return SingleChildScrollView(
         child: _buildCommentDescriptionMain(yarnComment));
   }
@@ -325,7 +325,7 @@ class _CommentListWidgetState extends State<CommentListWidget> {
         debugPrint('Fola gif:::: ${selectedGif!.images!.original!.url}');
 
         //mimic image selected for the gif and send as comment
-        final String? mediaType = 'gif';
+        // final String? mediaType = 'gif';
 
         // selectedMedia.add(YarnMedia(mediaFile: File(selectedGif!.images!.original!.url!), mediaType: mediaType));
         // isAPILoading = true;

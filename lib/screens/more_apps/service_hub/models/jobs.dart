@@ -197,8 +197,8 @@ class Category {
 class Video {
   String? id;
   String? file;
-  Null imagePoster;
-  Null caption;
+  dynamic imagePoster;
+  dynamic caption;
 
   Video({this.id, this.file, this.imagePoster, this.caption});
 

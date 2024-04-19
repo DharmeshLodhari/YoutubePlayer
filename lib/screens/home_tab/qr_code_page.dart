@@ -27,7 +27,7 @@ import '../more_apps/user_profile/models/user.dart';
 import '../more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 
 class QrCodePage extends StatefulWidget {
-  final arguments;
+  final dynamic arguments;
 
   QrCodePage({this.arguments, Key? key}) : super(key: key);
 
@@ -268,7 +268,7 @@ class _QrCodePageState extends State<QrCodePage> {
                   fontWeight: FontWeight.w600),
             )
           else
-            SizedBox.shrink(),
+            const SizedBox.shrink(),
           Text(
             appendStringDot(virtualAccount!.accountNumber!, 15),
             maxLines: 1,
@@ -357,7 +357,7 @@ class _QrCodePageState extends State<QrCodePage> {
                   fontSize: 16, color: white, fontWeight: FontWeight.w600),
             )
           else
-            SizedBox.shrink(),
+            const SizedBox.shrink(),
           Text(
             appendStringDot(virtualAccount!.accountNumber!, 15),
             maxLines: 1,
@@ -615,7 +615,7 @@ class _QrCodePageState extends State<QrCodePage> {
     }
   }
 
-  getCurrentDate() {
+  String getCurrentDate() {
     return DateFormat('_yyyyMMdd_kkmmss').format(DateTime.now());
   }
 

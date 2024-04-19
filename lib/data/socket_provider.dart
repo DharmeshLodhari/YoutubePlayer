@@ -62,7 +62,7 @@ class MainSocketProvider extends ChangeNotifier {
 
   /// ping server variables
   static Timer? _timerForPingServer;
-  static final Duration _pingInterval = Duration(seconds: 2);
+  static final Duration _pingInterval = const Duration(seconds: 2);
   static DateTime _lastSent = DateTime.now();
   static DateTime _lastReceive = DateTime.now();
   static final Duration _socketTimeout =

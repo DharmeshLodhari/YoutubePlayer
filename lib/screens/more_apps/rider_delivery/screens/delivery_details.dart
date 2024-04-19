@@ -19,7 +19,7 @@ import 'package:sizer/sizer.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class DeliveryDetails extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
   DeliveryDetails({Key? key, this.arguments}) : super(key: key);
 
@@ -28,7 +28,7 @@ class DeliveryDetails extends StatefulWidget {
 }
 
 class _DeliveryDetailsState extends State<DeliveryDetails> {
-  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   String? journeyId;
   bool isRejectAPILoading = false;
@@ -47,7 +47,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
   late UserBloc userBloc;
   late RiderDeliveryBloc riderDeliveryBloc;
   String? username = "";
-  DatabaseHelper _db = DatabaseHelper();
+  final DatabaseHelper _db = DatabaseHelper();
 
   List<String> reasons = [
     "Wrong destination",
@@ -71,7 +71,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
     super.initState();
   }
 
-  fetchJobData() async {
+  Future<void> fetchJobData() async {
     isLoading = true;
     if (mounted) setState(() {});
     await RiderDeliveryAuthService().fetchJob(journeyId).then((value) {
@@ -617,7 +617,8 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
   }
 
   Widget _buildDistanceAndHours() {
-    Duration? duration = riderDeliveryBloc.deliveryDetails?.travelDuration;
+    final Duration? duration =
+        riderDeliveryBloc.deliveryDetails?.travelDuration;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -907,12 +908,12 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
         // riderDeliveryBloc.deliveryDetails?.isDeliveryAccepted = false;
         // riderDeliveryBloc.deliveryDetails?.isDeliveryStarted = true;
         // _initialSheetChildSize = 0.35;
-        Map<String, dynamic> data = {
+        final Map<String, dynamic> data = {
           "order_id": riderDeliveryBloc.deliveryDetails?.orderId,
           "at_pickup_location": true,
           "at_delivery_location": false,
         };
-        NearByLocation atLocation = NearByLocation.fromJson(data);
+        final NearByLocation atLocation = NearByLocation.fromJson(data);
         await _db.insertRiderAtLocation(atLocation);
 
         await riderDeliveryBloc

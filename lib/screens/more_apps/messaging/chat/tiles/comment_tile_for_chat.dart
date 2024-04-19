@@ -46,7 +46,7 @@ class CommentTileForChat extends StatefulWidget {
 class _CommentTileForChatState extends State<CommentTileForChat> {
   late UserBloc userBloc;
   late YarnQuestionForChatModel yarnQuestionForChatModel;
-  late YarnComment yarnComment;
+  late YarnComment? yarnComment;
   bool isLoading = false;
   bool isMediaPresent = false;
   bool isNewModel = false;
@@ -70,7 +70,7 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
       yarnComment = YarnComment.fromJson(jsonDecode(meta));
       if (yarnComment != null) {
         final Map<String, dynamic> linkData =
-            detectLinkInText(messageDecoderWithEmoji(yarnComment.comment)!);
+            detectLinkInText(messageDecoderWithEmoji(yarnComment?.comment)!);
 
         if (linkData["hasLink"]) {
           isUrlPresent = true;
@@ -82,11 +82,11 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
             linkToBePreview = "http://" + linkToBePreview!;
           }
         }
-        if (yarnComment.attachment != null) {
+        if (yarnComment?.attachment != null) {
           isAttachmentPresent = true;
         }
 
-        if (yarnComment.media.isNotEmpty) {
+        if (yarnComment?.media != null) {
           isMediaPresent = true;
         }
       }
@@ -368,7 +368,7 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
     var removedLink = '';
 
     removedLink = removeLinksAndWords(
-        yarnComment.comment != null ? yarnComment.comment! : '', []);
+        yarnComment?.comment != null ? yarnComment?.comment ?? "" : '', []);
 
     if (isUrlPresent) {
       return Column(
@@ -725,8 +725,8 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
         ),
 
         if (isAttachmentPresent &&
-            yarnComment.attachment != null &&
-            yarnComment.attachment?.isEmpty != true) ...[
+            yarnComment?.attachment != null &&
+            yarnComment?.attachment?.isEmpty != true) ...[
           getDisplayWidget(_buildAttachment),
           const SizedBox(
             height: 8,
@@ -762,7 +762,7 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
               child: InkWell(
                 onTap: () {
                   Navigator.pushNamed(context, Routes.USER_PROFILE, arguments: {
-                    "searchedUserName": yarnComment.authorUsername
+                    "searchedUserName": yarnComment?.authorUsername
                   });
                 },
                 child: Column(
@@ -775,7 +775,7 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
                           flex: 3,
                           child: Text(
                             messageDecoderWithEmoji(
-                                    yarnComment.authorName ?? "") ??
+                                    yarnComment?.authorName ?? "") ??
                                 "",
                             style: TextStyle(fontSize: 12, color: yarnBlack),
                           ),
@@ -784,8 +784,8 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
                           width: 4,
                         ),
                         Text(
-                          yarnComment.createdAt != null
-                              ? '${getGetYarnQuestionDateTime(yarnComment.createdAt!)}'
+                          yarnComment?.createdAt != null
+                              ? '${getGetYarnQuestionDateTime(yarnComment?.createdAt ?? "")}'
                               : "",
                           overflow: TextOverflow.fade,
                           style: TextStyle(fontSize: 12, color: yarnBlack),
@@ -793,7 +793,7 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
                       ],
                     ),
                     Text(
-                      "@${yarnComment.authorUsername!}",
+                      "@${yarnComment?.authorUsername}",
                       style: TextStyle(
                         color: yarnBlack,
                         fontSize: 14,
@@ -814,7 +814,7 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
     return InkWell(
       onTap: () {
         Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
-            arguments: yarnComment.authorAvatar!);
+            arguments: yarnComment?.authorAvatar);
       },
       child: Container(
         height: 36,
@@ -822,7 +822,7 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
         decoration: const BoxDecoration(shape: BoxShape.circle),
         child: ClipOval(
           child: CachedNetworkImage(
-            imageUrl: yarnComment.authorAvatar!,
+            imageUrl: yarnComment?.authorAvatar ?? "",
             fit: BoxFit.cover,
             errorWidget: imageErrorWidget,
           ),
@@ -835,7 +835,7 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
     var newString = '';
     final list = [];
 
-    yarnComment.comment.toString().split(' ').forEach((ch) {
+    yarnComment?.comment.toString().split(' ').forEach((ch) {
       list.add(ch);
       // print(ch);
     });
@@ -964,26 +964,26 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
 
   Widget _buildAttachment() {
     Widget childWidget;
-    if (yarnComment.attachmentType == 'service') {
-      final Service service = Service.fromJson(yarnComment.attachment);
+    if (yarnComment?.attachmentType == 'service') {
+      final Service service = Service.fromJson(yarnComment?.attachment);
       childWidget = YarnServiceTile(
         service: service,
       );
-    } else if (yarnComment.attachmentType == 'product') {
-      final Product product = Product.fromJson(yarnComment.attachment);
+    } else if (yarnComment?.attachmentType == 'product') {
+      final Product product = Product.fromJson(yarnComment?.attachment);
       childWidget = YarnProductTile(
         product: product,
       );
-    } else if (yarnComment.attachmentType == 'blog') {
-      final UserPost post = UserPost.fromJson(yarnComment.attachment);
+    } else if (yarnComment?.attachmentType == 'blog') {
+      final UserPost post = UserPost.fromJson(yarnComment?.attachment);
       childWidget = YarnBlogPostTile(
         post: post,
         showAuthorDetails: true,
         onDeleteBlog: () {},
       );
-    } else if (yarnComment.attachmentType == 'profile') {
+    } else if (yarnComment?.attachmentType == 'profile') {
       final CustomerProfile customerProfile =
-          CustomerProfile.fromJson(yarnComment.attachment ?? {});
+          CustomerProfile.fromJson(yarnComment?.attachment ?? {});
       childWidget = YarnCustomerPostTile(
         customerProfile: customerProfile,
         showAuthorDetails: true,
@@ -1015,7 +1015,7 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
 
   Widget _buildImagesRowNew() {
     return YarnCommentMediaRender(
-      yarnTopic: yarnComment,
+      yarnTopic: yarnComment!,
     );
   }
 }

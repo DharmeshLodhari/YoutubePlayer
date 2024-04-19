@@ -17,7 +17,7 @@ import 'package:shimmer/shimmer.dart';
 
 // ignore: must_be_immutable
 class FlashTagList extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
   CustomerProfile? user;
 
   FlashTagList({required this.arguments, Key? key}) : super(key: key) {

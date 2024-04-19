@@ -26,9 +26,9 @@ import '../../../../widget/dialog.dart';
 import '../../../../widget/rounded_background_icon.dart';
 
 class YarnCustomerPostTile extends StatefulWidget {
-  CustomerProfile? customerProfile;
-  bool? isNavigable;
-  Function onDeleteBlog;
+  final CustomerProfile? customerProfile;
+  final bool? isNavigable;
+  final Function onDeleteBlog;
   final bool showAuthorDetails;
   final TileRenderPlace tileRenderPlace;
 

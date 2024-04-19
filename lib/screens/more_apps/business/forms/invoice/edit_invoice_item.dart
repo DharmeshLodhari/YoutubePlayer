@@ -9,13 +9,12 @@ import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
 class EditInvoiceItem extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
   EditInvoiceItem({this.arguments});
 
   // Declare a field that holds the userData.

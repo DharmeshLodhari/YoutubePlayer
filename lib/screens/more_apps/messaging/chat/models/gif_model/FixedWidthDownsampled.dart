@@ -21,7 +21,7 @@ class FixedWidthDownSampled {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = Map<String, dynamic>();
     data['height'] = this.height;
     data['size'] = this.size;
     data['url'] = this.url;

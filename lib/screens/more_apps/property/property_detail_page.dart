@@ -330,7 +330,7 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
                       crossAxisAlignment: CrossAxisAlignment.end,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: property.images!.map((url) {
-                        int index = property.images!.indexOf(url);
+                        final int index = property.images!.indexOf(url);
                         return Container(
                           width: 5.0,
                           height: 5.0,
@@ -917,7 +917,7 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
   }
 
   Widget dateAndTimeTile(String type, String date) {
-    bool isSelected = Random().nextBool();
+    final bool isSelected = Random().nextBool();
     return Container(
       clipBehavior: Clip.hardEdge,
       decoration: BoxDecoration(

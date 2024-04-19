@@ -10,7 +10,7 @@ import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
 class VideoRecorder extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
   VideoRecorder({this.arguments});
 
@@ -63,7 +63,7 @@ class _VideoRecorderState extends State<VideoRecorder> {
         _onCameraSwitched(cameras![selectedCameraIdx!]).then((void v) {});
       }
     }).catchError((err) {
-      print('Error: $err.code\nError Message: $err.message');
+      debugPrint('Error: $err.code\nError Message: $err.message');
     });
   }
 
@@ -498,7 +498,7 @@ class _VideoRecorderState extends State<VideoRecorder> {
   void _showCameraException(CameraException e) {
     final String errorText =
         'Error: ${e.code}\nError Message: ${e.description}';
-    print(errorText);
+    debugPrint(errorText);
     showToast(message: 'Error: ${e.code}\n${e.description}');
   }
 

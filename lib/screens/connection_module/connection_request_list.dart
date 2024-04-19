@@ -384,7 +384,7 @@ class VerticalListItem extends StatelessWidget {
 
   late UserBloc userBloc;
 
-  Map<String, dynamic>? cleanDisplayData(var data) {
+  Map<String, dynamic>? cleanDisplayData(Map data) {
     if (data["from_user"]["username"] == userBloc.user.userName) {
       return data["to_user"];
     } else {

@@ -28,7 +28,7 @@ import '../../payment_and_banking_auth.dart';
 
 // ignore: must_be_immutable
 class RequestPayment extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
   RequestPayment({this.arguments});
 
@@ -41,10 +41,10 @@ class RequestPayment extends StatefulWidget {
 class _RequestPaymentState extends State<RequestPayment> {
   bool isConnection = true;
 
-  TextEditingController _recipientController = TextEditingController();
-  FocusNode _recipientFocus = FocusNode();
+  final TextEditingController _recipientController = TextEditingController();
+  final FocusNode _recipientFocus = FocusNode();
 
-  var arguments;
+  final dynamic arguments;
 
   late DashboardBloc _dashboardBloc;
 
@@ -71,7 +71,6 @@ class _RequestPaymentState extends State<RequestPayment> {
   String? selectedCategory;
   PaymentCategory? selectedPaymentCategory;
   String? paymentCategory;
-  late ConnectionListBloc _connectionListBloc;
   final requestPaymentScaffold = GlobalKey<ScaffoldState>();
   final requestPaymentScaffoldMessenger = GlobalKey<ScaffoldMessengerState>();
 
@@ -112,7 +111,7 @@ class _RequestPaymentState extends State<RequestPayment> {
     super.initState();
   }
 
-  getRecipientProfileAndGetCategory() async {
+  Future<void> getRecipientProfileAndGetCategory() async {
     if (widget.arguments['recipient'] != null) {
       Provider.of<CustomerProfileBloc>(context, listen: false).customer =
           await UserAuth().fetchCustomerProfile(widget.arguments['recipient']);
@@ -165,7 +164,6 @@ class _RequestPaymentState extends State<RequestPayment> {
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
     _dashboardBloc = Provider.of<DashboardBloc>(context);
-    _connectionListBloc = Provider.of<ConnectionListBloc>(context);
     customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
 
     return WillPopScope(
@@ -525,7 +523,7 @@ class _RequestPaymentState extends State<RequestPayment> {
             if (amount > 0.0) {
               return null;
             } else {
-              print('throw invalid');
+              debugPrint('throw invalid');
 
               throw Exception("Invalid amount");
             }

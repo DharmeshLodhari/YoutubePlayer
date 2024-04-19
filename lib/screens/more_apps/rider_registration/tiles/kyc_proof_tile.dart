@@ -7,8 +7,8 @@ import 'package:provider/provider.dart';
 class KYCProofTile extends StatelessWidget {
   KYCProofTile({super.key, required this.item});
 
-  late RiderRegistrationBloc riderRegistrationBloc;
-  Map<String, dynamic> item;
+  late final RiderRegistrationBloc riderRegistrationBloc;
+  final Map<String, dynamic> item;
 
   @override
   Widget build(BuildContext context) {

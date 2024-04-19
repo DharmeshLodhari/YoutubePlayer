@@ -17,7 +17,7 @@ import '../../../../../routes/route_constants.dart';
 import '../../shopping_auth.dart';
 
 class CreateAddOn extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
   CreateAddOn({this.arguments, Key? key}) : super(key: key);
 
@@ -36,7 +36,7 @@ class _CreateAddOnState extends State<CreateAddOn> {
   bool isRequired = false;
   bool isLoading = false;
   bool isAPILoading = false;
-  var typeList = ['Single', 'Multiple'];
+  List<String> typeList = ['Single', 'Multiple'];
   String selectedType = "";
   String name = "";
   String description = "";
@@ -257,7 +257,7 @@ class _CreateAddOnState extends State<CreateAddOn> {
                     shrinkWrap: true,
                     itemCount: typeList.length,
                     itemBuilder: (context, index) {
-                      var category = typeList[index];
+                      final category = typeList[index];
                       if (selectedType == category) {
                         return Container(
                           color: selectedListItemBackgroundBlue,
@@ -432,9 +432,9 @@ class _CreateAddOnState extends State<CreateAddOn> {
             ),
           ],
         ),
-        SizedBox(height: 5.0),
+        const SizedBox(height: 5.0),
         _buildAddOnOptionList(),
-        SizedBox(height: 5.0),
+        const SizedBox(height: 5.0),
         GestureDetector(
           onTap: () async {
             //disable click if add-on option is not empty

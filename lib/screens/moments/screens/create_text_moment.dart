@@ -10,6 +10,6 @@ class CreateTextMomentScreen extends StatefulWidget {
 class _CreateTextMomentScreenState extends State<CreateTextMomentScreen> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold();
+    return const Scaffold();
   }
 }

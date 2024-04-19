@@ -68,7 +68,7 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
       isLoading = true;
       if (mounted) setState(() {});
 
-      Map<String, dynamic>? result =
+      final Map<String, dynamic>? result =
           await ShoppingAuthService().getShippingStates();
 
       if (result == null) {
@@ -79,7 +79,7 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
         return;
       }
 
-      List<StatesModel> tempList = result['results'];
+      final List<StatesModel> tempList = result['results'];
       // tempList.forEach((element) {
       //   states.add(element.name!);
       // });
@@ -99,7 +99,7 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
         }
       }
       if (selectedStateModel != null) {
-        String? code = selectedStateModel.isoCode;
+        final String? code = selectedStateModel.isoCode;
         if (code != null) {
           getShippingCities(code);
         }
@@ -107,13 +107,13 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
     }
   }
 
-  Future<void> getShippingCities(code) async {
+  Future<void> getShippingCities(String? code) async {
     if (mounted) setState(() {});
     if (!isLoading) {
       isLoading = true;
       if (mounted) setState(() {});
 
-      Map<String, dynamic>? result =
+      final Map<String, dynamic>? result =
           await ShoppingAuthService().getShippingCities(code);
 
       if (result == null) {
@@ -124,7 +124,7 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
         return;
       }
 
-      List<Cities> tempList = result['results'];
+      final List<Cities> tempList = result['results'];
       cityList = [];
       if (mounted) {
         setState(() {
@@ -203,7 +203,7 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
                   'Country',
                   style: TextStyle(color: darkGrey, fontSize: 14),
                 ),
-                SizedBox(height: 6),
+                const SizedBox(height: 6),
                 countryDropdown(),
                 const SizedBox(
                   height: 16,
@@ -212,7 +212,7 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
                   'State',
                   style: TextStyle(color: darkGrey, fontSize: 14),
                 ),
-                SizedBox(height: 6),
+                const SizedBox(height: 6),
                 stateDropdownSearch(),
                 const SizedBox(
                   height: 16,
@@ -221,7 +221,7 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
                   'City',
                   style: TextStyle(color: darkGrey, fontSize: 14),
                 ),
-                SizedBox(height: 6),
+                const SizedBox(height: 6),
                 cityDropdownSearch(),
                 const SizedBox(
                   height: 16,
@@ -384,7 +384,7 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
         fontWeight: FontWeight.w600,
       ),
       decoration: InputDecoration(
-        contentPadding: EdgeInsets.symmetric(horizontal: 0),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 0),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
           borderSide: BorderSide(
@@ -440,7 +440,7 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
         fontWeight: FontWeight.w600,
       ),
       decoration: InputDecoration(
-        contentPadding: EdgeInsets.symmetric(horizontal: 0),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 0),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
           borderSide: BorderSide(
@@ -470,7 +470,7 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
         );
       }).toList(),
       onChanged: (String? value) async {
-        StatesModel picked =
+        final StatesModel picked =
             itemList.firstWhere((element) => element.name == value);
         selectedCity = null;
         await getShippingCities(picked.isoCode);
@@ -567,7 +567,7 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
         ),
       ),
       onChanged: (String? value) async {
-        StatesModel picked =
+        final StatesModel picked =
             itemList.firstWhere((element) => element.name == value);
         selectedCity = null;
         await getShippingCities(picked.isoCode);
@@ -586,59 +586,59 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
       selectedItem: selectedState,
     );
 
-    return DropdownButtonFormField2(
-      buttonHeight: 50,
-      isExpanded: true,
-      value: selectedCity,
-      style: TextStyle(
-        fontSize: 16,
-        color: blackFont,
-        fontWeight: FontWeight.w600,
-      ),
-      decoration: InputDecoration(
-        contentPadding: EdgeInsets.symmetric(horizontal: 0),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(
-            color: greyBorderColor,
-            width: 1.0,
-          ),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(
-            color: greyBorderColor,
-            width: 1.0,
-          ),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(
-            color: greyBorderColor,
-            width: 1.0,
-          ),
-        ),
-      ),
-      items: cityList.map((Cities item) {
-        return DropdownMenuItem<String>(
-          value: item.name,
-          child: Text(item.name!),
-        );
-      }).toList(),
-      onChanged: (String? value) {
-        shippingAddress.city = value;
-        setState(() {
-          selectedCity = value!;
-        });
-      },
-      validator: (String? value) {
-        if (value != null && value.isNotEmpty) {
-          return null;
-        } else {
-          return 'Pick a city';
-        }
-      },
-    );
+    // return DropdownButtonFormField2(
+    //   buttonHeight: 50,
+    //   isExpanded: true,
+    //   value: selectedCity,
+    //   style: TextStyle(
+    //     fontSize: 16,
+    //     color: blackFont,
+    //     fontWeight: FontWeight.w600,
+    //   ),
+    //   decoration: InputDecoration(
+    //     contentPadding: const EdgeInsets.symmetric(horizontal: 0),
+    //     enabledBorder: OutlineInputBorder(
+    //       borderRadius: BorderRadius.circular(10),
+    //       borderSide: BorderSide(
+    //         color: greyBorderColor,
+    //         width: 1.0,
+    //       ),
+    //     ),
+    //     focusedBorder: OutlineInputBorder(
+    //       borderRadius: BorderRadius.circular(10),
+    //       borderSide: BorderSide(
+    //         color: greyBorderColor,
+    //         width: 1.0,
+    //       ),
+    //     ),
+    //     errorBorder: OutlineInputBorder(
+    //       borderRadius: BorderRadius.circular(10),
+    //       borderSide: BorderSide(
+    //         color: greyBorderColor,
+    //         width: 1.0,
+    //       ),
+    //     ),
+    //   ),
+    //   items: cityList.map((Cities item) {
+    //     return DropdownMenuItem<String>(
+    //       value: item.name,
+    //       child: Text(item.name!),
+    //     );
+    //   }).toList(),
+    //   onChanged: (String? value) {
+    //     shippingAddress.city = value;
+    //     setState(() {
+    //       selectedCity = value!;
+    //     });
+    //   },
+    //   validator: (String? value) {
+    //     if (value != null && value.isNotEmpty) {
+    //       return null;
+    //     } else {
+    //       return 'Pick a city';
+    //     }
+    //   },
+    // );
   }
 
   // Widget cityDropdown() {
@@ -790,59 +790,59 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
       selectedItem: selectedCity,
     );
 
-    return DropdownButtonFormField2(
-      buttonHeight: 50,
-      isExpanded: true,
-      value: selectedCity,
-      style: TextStyle(
-        fontSize: 16,
-        color: blackFont,
-        fontWeight: FontWeight.w600,
-      ),
-      decoration: InputDecoration(
-        contentPadding: EdgeInsets.symmetric(horizontal: 0),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(
-            color: greyBorderColor,
-            width: 1.0,
-          ),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(
-            color: greyBorderColor,
-            width: 1.0,
-          ),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(
-            color: greyBorderColor,
-            width: 1.0,
-          ),
-        ),
-      ),
-      items: cityList.map((Cities item) {
-        return DropdownMenuItem<String>(
-          value: item.name,
-          child: Text(item.name!),
-        );
-      }).toList(),
-      onChanged: (String? value) {
-        shippingAddress.city = value;
-        setState(() {
-          selectedCity = value!;
-        });
-      },
-      validator: (String? value) {
-        if (value != null && value.isNotEmpty) {
-          return null;
-        } else {
-          return 'Pick a city';
-        }
-      },
-    );
+    // return DropdownButtonFormField2(
+    //   buttonHeight: 50,
+    //   isExpanded: true,
+    //   value: selectedCity,
+    //   style: TextStyle(
+    //     fontSize: 16,
+    //     color: blackFont,
+    //     fontWeight: FontWeight.w600,
+    //   ),
+    //   decoration: InputDecoration(
+    //     contentPadding: const EdgeInsets.symmetric(horizontal: 0),
+    //     enabledBorder: OutlineInputBorder(
+    //       borderRadius: BorderRadius.circular(10),
+    //       borderSide: BorderSide(
+    //         color: greyBorderColor,
+    //         width: 1.0,
+    //       ),
+    //     ),
+    //     focusedBorder: OutlineInputBorder(
+    //       borderRadius: BorderRadius.circular(10),
+    //       borderSide: BorderSide(
+    //         color: greyBorderColor,
+    //         width: 1.0,
+    //       ),
+    //     ),
+    //     errorBorder: OutlineInputBorder(
+    //       borderRadius: BorderRadius.circular(10),
+    //       borderSide: BorderSide(
+    //         color: greyBorderColor,
+    //         width: 1.0,
+    //       ),
+    //     ),
+    //   ),
+    //   items: cityList.map((Cities item) {
+    //     return DropdownMenuItem<String>(
+    //       value: item.name,
+    //       child: Text(item.name!),
+    //     );
+    //   }).toList(),
+    //   onChanged: (String? value) {
+    //     shippingAddress.city = value;
+    //     setState(() {
+    //       selectedCity = value!;
+    //     });
+    //   },
+    //   validator: (String? value) {
+    //     if (value != null && value.isNotEmpty) {
+    //       return null;
+    //     } else {
+    //       return 'Pick a city';
+    //     }
+    //   },
+    // );
   }
 
   Widget getSubmitButton() {
@@ -870,7 +870,7 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
                 isLoading: isDeleteLoading,
               ),
             ),
-            SizedBox(
+            const SizedBox(
               width: 20,
             ),
           ],

@@ -17,7 +17,7 @@ class SpecificCategoryMovieList extends StatefulWidget {
 
 class _SpecificCategoryMovieListState extends State<SpecificCategoryMovieList> {
   List<MovieItem> movieItem = [];
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
   bool isLoading = false;
 
@@ -40,7 +40,7 @@ class _SpecificCategoryMovieListState extends State<SpecificCategoryMovieList> {
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         getResult();

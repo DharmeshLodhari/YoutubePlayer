@@ -8,7 +8,7 @@ class ChatSettingViewModel extends ChangeNotifier {
   void pickBlogImage(
       {Function(String image)? imagePickedCallBack,
       BuildContext? context}) async {
-    String? croppedImage = await getFile(context!);
+    final String? croppedImage = await getFile(context!);
 
     if (imagePickedCallBack != null && croppedImage != null) {
       imagePickedCallBack(croppedImage);

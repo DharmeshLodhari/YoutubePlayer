@@ -62,8 +62,8 @@ class _ExploreListState extends State<ExploreList> {
             duration: const Duration(milliseconds: 500),
             transitionBuilder: (Widget child, Animation<double> animation) =>
                 ScaleTransition(
-              child: child,
               scale: animation,
+              child: child,
             ),
             child: search(),
           ),

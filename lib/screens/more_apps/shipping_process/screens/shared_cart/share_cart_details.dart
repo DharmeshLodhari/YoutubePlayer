@@ -24,7 +24,7 @@ import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class SharedCartDetails extends StatefulWidget {
-  // var arguments;
+  // final dynamic arguments;
   //
   // SharedCartDetails({Key? key, this.arguments}) : super(key: key);
 
@@ -35,7 +35,7 @@ class SharedCartDetails extends StatefulWidget {
 class _SharedCartDetailsState extends State<SharedCartDetails> {
   late SharedCartBloc sharedCartBloc;
   late UserBloc userBloc;
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
   AppConfigurationModel? appConfigurationModel;
   bool isLoading = false;
@@ -43,7 +43,7 @@ class _SharedCartDetailsState extends State<SharedCartDetails> {
   // SharedCartModel sharedCartModel = SharedCartModel();
 
   final GlobalKey<ScaffoldMessengerState> _cartItemScaffoldMessengerKey =
-      new GlobalKey<ScaffoldMessengerState>();
+      GlobalKey<ScaffoldMessengerState>();
 
   @override
   void dispose() {
@@ -121,7 +121,7 @@ class _SharedCartDetailsState extends State<SharedCartDetails> {
       actions: [
         InkWell(
           onTap: () async {
-            var result = await Navigator.of(context)
+            final result = await Navigator.of(context)
                 .pushNamed(Routes.SHARED_CART_MEMBERS);
 
             if (result != null && result is bool && result == true) {
@@ -240,7 +240,7 @@ class _SharedCartDetailsState extends State<SharedCartDetails> {
       elevation: 4,
       child: Container(
         decoration: decorateBox(),
-        margin: EdgeInsets.symmetric(horizontal: 16.0),
+        margin: const EdgeInsets.symmetric(horizontal: 16.0),
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -323,7 +323,7 @@ class _SharedCartDetailsState extends State<SharedCartDetails> {
           } else {
             if (sharedCartBloc.getSharedCartModel().customerUsername ==
                 userBloc.user.userName) {
-              ShippingProcessBloc shippingProcessBloc =
+              final ShippingProcessBloc shippingProcessBloc =
                   Provider.of<ShippingProcessBloc>(context, listen: false);
               shippingProcessBloc.currentSelectedIndex = null;
 
@@ -382,7 +382,7 @@ class _SharedCartDetailsState extends State<SharedCartDetails> {
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) async {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         if (mounted) setState(() {});

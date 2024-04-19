@@ -19,7 +19,7 @@ import '../../messaging/chat/share_in_chat/ShareInChat.dart';
 import '../yarn_auth.dart';
 
 class YarnCommentReplyActions extends StatefulWidget {
-  YarnComment? replyCommentDetail;
+  final YarnComment? replyCommentDetail;
   YarnCommentReplyActions({this.replyCommentDetail});
 
   @override

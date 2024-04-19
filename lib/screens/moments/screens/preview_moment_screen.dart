@@ -30,7 +30,7 @@ import 'moments_service.dart';
 
 class PreviewMomentScreen extends StatefulWidget {
   final String filePath;
-  var arguments;
+  final dynamic arguments;
 
   PreviewMomentScreen({Key? key, required this.filePath, this.arguments})
       : super(key: key);
@@ -341,7 +341,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
                             onChanged: (value) {
                               setState(() {
                                 isPublic = !isPublic;
-                                print(value.toString());
+                                debugPrint(value.toString());
                               });
                             },
                           ),
@@ -939,7 +939,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
     super.dispose();
   }
 
-  pickAttachmentWidget() async {
+  Future<void> pickAttachmentWidget() async {
     final String? pickedAttachmentOption = await showPickItemDialog<String>(
       context: context,
       items: attachmentList,
@@ -1002,7 +1002,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
     }
   }
 
-  pickAttachmentItemWidget() async {
+  Future<void> pickAttachmentItemWidget() async {
     final AttachmentItemModel? pickedItemAttachment =
         await showDialog<AttachmentItemModel>(
       context: context,

@@ -112,7 +112,7 @@ class ShareInChat {
       shareMessageToChatBloc.clearRecipient();
       return [];
     } else {
-      final List<ChatConversation?> tempList =
+      final List<ChatConversation?>? tempList =
           shareMessageToChatBloc.getRecipients();
 
       final List<ChatConversation?> recipientList = [];

@@ -10,7 +10,7 @@ import 'package:video_player/video_player.dart';
 import '../../../../../utils/common.dart';
 
 class ViewChatMedia extends StatefulWidget {
-  final arguments;
+  final dynamic arguments;
 
   ViewChatMedia({this.arguments});
 

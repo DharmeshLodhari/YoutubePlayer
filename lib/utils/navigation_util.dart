@@ -22,7 +22,7 @@ class NavigationUtil {
     return Navigator.of(context).pushNamed(routeName);
   }
 
-  static pop(BuildContext context) {
-    Navigator.of(context).pop();
+  static void pop(BuildContext context) {
+    return Navigator.of(context).pop();
   }
 }

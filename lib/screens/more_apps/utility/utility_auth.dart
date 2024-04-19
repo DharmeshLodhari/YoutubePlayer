@@ -184,11 +184,11 @@ class UtilityAuth extends AuthService {
 
     debugPrint('VERIFY REFERENCE RESPONSE ::: ${response.body}');
     return 'a';
-    if (response.statusCode == 200) {
-      // return jsonDecode(response.body)['customer_id'];
-    } else {
-      return null;
-    }
+    // if (response.statusCode == 200) {
+    // return jsonDecode(response.body)['customer_id'];
+    // } else {
+    //   return null;
+    // }
   }
 
   Future<bool> payUtilityBill(

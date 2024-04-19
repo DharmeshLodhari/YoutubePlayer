@@ -22,7 +22,7 @@ import '../shopping_auth.dart';
 
 // ignore: must_be_immutable
 class EditService extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
   EditService({this.arguments});
 
@@ -31,7 +31,7 @@ class EditService extends StatefulWidget {
 }
 
 class _EditServiceState extends State<EditService> {
-  var arguments;
+  final dynamic arguments;
 
   _EditServiceState({this.arguments});
 
@@ -43,7 +43,7 @@ class _EditServiceState extends State<EditService> {
   Service currentService = Service();
 
   int imageCount = 5;
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
   List<PickedFile> serviceLocalImages = [];
   List<String?> serviceImagesFromServer = [];
   String? serviceName = "";
@@ -184,44 +184,47 @@ class _EditServiceState extends State<EditService> {
           )
         : SingleChildScrollView(
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Center(
                 child: Form(
                   key: _formKey,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      SizedBox(height: 10),
-                      checkImageLimitForServerImage()
-                          ? viewServerImages()
-                          : Container(),
-                      checkImageLimitForServerImage()
-                          ? SizedBox(height: 8)
-                          : Container(),
-                      checkImageLimitForLocalImage()
-                          ? addLocalImages()
-                          : Container(),
-                      SizedBox(
+                      const SizedBox(height: 10),
+                      if (checkImageLimitForServerImage())
+                        viewServerImages()
+                      else
+                        Container(),
+                      if (checkImageLimitForServerImage())
+                        const SizedBox(height: 8)
+                      else
+                        Container(),
+                      if (checkImageLimitForLocalImage())
+                        addLocalImages()
+                      else
+                        Container(),
+                      const SizedBox(
                         height: 10,
                       ),
                       addTitleField(),
-                      SizedBox(
+                      const SizedBox(
                         height: 10,
                       ),
                       getAmountField(),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       getCategoryField(),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
                       getIsAvailableField(),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
                       getAvailableFromField(),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       getServiceShortDescription(),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       getServiceDescription(),
-                      SizedBox(height: 40),
+                      const SizedBox(height: 40),
                       getSubmitButton(),
-                      SizedBox(height: 40),
+                      const SizedBox(height: 40),
                     ],
                   ),
                 ),
@@ -232,7 +235,7 @@ class _EditServiceState extends State<EditService> {
 
   Widget showBackArrow() {
     return IconButton(
-      icon: Icon(Icons.arrow_back_ios),
+      icon: const Icon(Icons.arrow_back_ios),
       onPressed: () {
         Navigator.pop(context);
       },
@@ -247,7 +250,7 @@ class _EditServiceState extends State<EditService> {
         scrollDirection: Axis.horizontal,
         itemCount: serviceLocalImages.length + 1,
         itemBuilder: (context, index) => Container(
-          padding: EdgeInsets.only(right: 6),
+          padding: const EdgeInsets.only(right: 6),
           child: index != serviceLocalImages.length
               ? showLocalImage(index)
               : serviceLocalImages.length + serviceImagesFromServer.length !=
@@ -267,7 +270,7 @@ class _EditServiceState extends State<EditService> {
         scrollDirection: Axis.horizontal,
         itemCount: serviceImagesFromServer.length,
         itemBuilder: (context, index) => Container(
-          padding: EdgeInsets.only(right: 6),
+          padding: const EdgeInsets.only(right: 6),
           child: showServerImage(index),
         ),
       ),
@@ -280,7 +283,7 @@ class _EditServiceState extends State<EditService> {
         elevation: 3,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         shadowColor: boxShadowTwo,
-        margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+        margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
         child: Container(
           width: 100,
           decoration: BoxDecoration(
@@ -294,7 +297,7 @@ class _EditServiceState extends State<EditService> {
                   SlydoAppIcon.add_image,
                   color: darkGrey,
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 4,
                 ),
                 Text(
@@ -337,7 +340,7 @@ class _EditServiceState extends State<EditService> {
       ImagePicker().pickImage(source: imageSource).then((value) async {
         if (value != null) {
           /// for cropping the image
-          String? croppedImage = await ImageCrop().cropImage(value.path);
+          final String? croppedImage = await ImageCrop().cropImage(value.path);
           if (croppedImage == null) {
             return;
           }
@@ -358,7 +361,7 @@ class _EditServiceState extends State<EditService> {
             borderRadius: BorderRadius.circular(10),
           ),
           shadowColor: dividerColor,
-          margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+          margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
           child: Container(
             width: 100,
             decoration: BoxDecoration(
@@ -375,10 +378,10 @@ class _EditServiceState extends State<EditService> {
           right: 0,
           top: 0,
           child: IconButton(
-            padding: EdgeInsets.only(right: 6, top: 6),
+            padding: const EdgeInsets.only(right: 6, top: 6),
             alignment: Alignment.topRight,
             icon: Container(
-              padding: EdgeInsets.all(2.0),
+              padding: const EdgeInsets.all(2.0),
               decoration: BoxDecoration(
                 color: iconBtnGrey,
                 borderRadius: BorderRadius.circular(5),
@@ -412,7 +415,7 @@ class _EditServiceState extends State<EditService> {
               borderRadius: BorderRadius.circular(10),
             ),
             shadowColor: boxShadowTwo,
-            margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+            margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
             child: Container(
               width: 100,
               decoration: BoxDecoration(
@@ -430,10 +433,10 @@ class _EditServiceState extends State<EditService> {
           right: 0,
           top: 0,
           child: IconButton(
-            padding: EdgeInsets.only(right: 6, top: 6),
+            padding: const EdgeInsets.only(right: 6, top: 6),
             alignment: Alignment.topRight,
             icon: Container(
-              padding: EdgeInsets.all(2.0),
+              padding: const EdgeInsets.all(2.0),
               decoration: BoxDecoration(
                 color: iconBtnGrey,
                 borderRadius: BorderRadius.circular(5),
@@ -445,7 +448,7 @@ class _EditServiceState extends State<EditService> {
               ),
             ),
             onPressed: () {
-              var imageId =
+              final imageId =
                   currentService.getImageId(serviceImagesFromServer[index]);
               _auth.deleteProductOrServiceImage(imageId).then((value) {
                 if (value) {
@@ -557,7 +560,8 @@ class _EditServiceState extends State<EditService> {
     final pressedCategory = await showDialog<ServiceCategory>(
         context: context,
         builder: (context) => AlertDialog(
-              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              insetPadding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
@@ -634,7 +638,7 @@ class _EditServiceState extends State<EditService> {
     return CustomizedTextFormField(
       controller: servicePriceController,
       keyboardType: Platform.isIOS
-          ? TextInputType.numberWithOptions(decimal: true)
+          ? const TextInputType.numberWithOptions(decimal: true)
           : TextInputType.number,
       isAmountField: true,
       labelText: "Price of service",
@@ -674,7 +678,7 @@ class _EditServiceState extends State<EditService> {
                 deleteProduct();
               }),
         ),
-        SizedBox(
+        const SizedBox(
           width: 8,
         ),
         Expanded(
@@ -798,7 +802,7 @@ class _EditServiceState extends State<EditService> {
   }
 
   void deleteProduct() async {
-    bool? result = await showDialog(
+    final bool? result = await showDialog(
       context: context,
       builder: (context) => ConfirmDelete(),
     );

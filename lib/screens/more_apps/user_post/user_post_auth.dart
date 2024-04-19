@@ -15,7 +15,7 @@ class UserPostAuth extends AuthService {
       {String? next = "",
       String? titleToSearch,
       required SlydoBlogsMenu slydoBlogsMenu}) async {
-    String slydoBlogsMenuString = slydoBlogsMenu.name.toLowerCase();
+    final String slydoBlogsMenuString = slydoBlogsMenu.name.toLowerCase();
 
     String url = "";
     if (next == null) {
@@ -38,14 +38,14 @@ class UserPostAuth extends AuthService {
       url = getSecureUrl(url: next);
     }
 
-    var headers = await getAuthHeaders();
-    var response = await httpGet(url, headers: headers);
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers);
 
     debugPrint(
         "ALL POST URL $url STATUS CODE:- ${response.statusCode} LIST USER POST BODY:- ${response.body}");
 
     if (response.statusCode == 200) {
-      Map<String, dynamic> jsonData = jsonDecode(response.body);
+      final Map<String, dynamic> jsonData = jsonDecode(response.body);
 
       return jsonData;
     }
@@ -79,14 +79,14 @@ class UserPostAuth extends AuthService {
       url = getSecureUrl(url: next);
     }
 
-    var headers = await getAuthHeaders();
-    var response = await httpGet(url, headers: headers);
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers);
 
     debugPrint(
         "URL $url STATUS CODE:- ${response.statusCode} LIST USER POST BODY:- ${response.body}");
 
     if (response.statusCode == 200) {
-      Map<String, dynamic> jsonData = jsonDecode(response.body);
+      final Map<String, dynamic> jsonData = jsonDecode(response.body);
       return jsonData;
     }
     debugPrint(
@@ -95,17 +95,17 @@ class UserPostAuth extends AuthService {
   }
 
   Future<List<UserPost>> getSimilarPosts({required String postID}) async {
-    var url =
+    final url =
         AppConfig.baseUrl + "/api/v1/social/posts/list-similar-post/$postID/";
-    var headers = await getAuthHeaders();
-    var response = await httpGet(url, headers: headers);
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers);
     debugPrint(
         "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
     if (response.statusCode == 200) {
-      List jsonData = jsonDecode(response.body)['results'];
-      print('JSON RESULT :::: $jsonData');
+      final List jsonData = jsonDecode(response.body)['results'];
+      debugPrint('JSON RESULT :::: $jsonData');
 
-      List<UserPost> userPostList =
+      final List<UserPost> userPostList =
           jsonData.map((json) => UserPost.fromJson(json)).toList();
 
       return userPostList;
@@ -115,9 +115,9 @@ class UserPostAuth extends AuthService {
   }
 
   Future<UserPost?> getSinglePost({required String postID}) async {
-    var url = AppConfig.baseUrl + "/api/v1/social/posts/$postID/";
-    var headers = await getAuthHeaders();
-    var response = await httpGet(url, headers: headers);
+    final url = AppConfig.baseUrl + "/api/v1/social/posts/$postID/";
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers);
     debugPrint(
         "URL GET POST $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
 
@@ -132,10 +132,10 @@ class UserPostAuth extends AuthService {
   }
 
   Future<bool> updateBlogView({required String postId}) async {
-    var url =
+    final url =
         AppConfig.baseUrl + "/api/v1/social/post/update-post-views/$postId/";
-    Map<String, String> headers = await getAuthHeaders();
-    var response = await httpGet(url, headers: headers);
+    final Map<String, String> headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers);
 
     debugPrint(
         "UPDATE POST VIEW URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
@@ -144,7 +144,7 @@ class UserPostAuth extends AuthService {
       return true;
     } else {
       if (response.statusCode != 500) {
-        var jsonData = jsonDecode(response.body);
+        final jsonData = jsonDecode(response.body);
         debugPrint(
             "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
         return Future.error(jsonData is Map
@@ -159,36 +159,36 @@ class UserPostAuth extends AuthService {
 
   Future<dynamic> uploadPickedMediaForPostBody(
       {required String mediaFile}) async {
-    var url =
+    final url =
         AppConfig.baseUrl + "/api/v1/social/posts/blog-post-inline-media-file/";
-    var headers = await getAuthHeaders();
+    final headers = await getAuthHeaders();
 
-    print('MEDIA FILE ::: $mediaFile');
+    debugPrint('MEDIA FILE ::: $mediaFile');
 
-    var request = http.MultipartRequest("POST", Uri.parse(url));
+    final request = http.MultipartRequest("POST", Uri.parse(url));
 
-    http.MultipartFile mediaMultipartFile =
+    final http.MultipartFile mediaMultipartFile =
         await http.MultipartFile.fromPath("media", mediaFile);
 
     request.files.add(mediaMultipartFile);
 
     headers.forEach((k, v) => request.headers[k] = v);
-    var response = await request.send();
+    final response = await request.send();
 
     if (response.statusCode == 413) {
       return Future.error(
           "Please upload smaller video, This video is too large.");
     }
-    var responseBody = await response.stream.bytesToString();
-    var responseBodyDecoded = jsonDecode(responseBody);
+    final responseBody = await response.stream.bytesToString();
+    final responseBodyDecoded = jsonDecode(responseBody);
 
-    print('MEDIA RESPONSE ::: ${responseBody}');
+    debugPrint('MEDIA RESPONSE ::: ${responseBody}');
 
     debugPrint(
         "URL $url STATUS CODE:- ${response.statusCode} BODY:- $responseBody");
 
     if (response.statusCode == 201 || response.statusCode == 200) {
-      print('MEDIA RESPONSE SUCCESS ::: ${responseBody}');
+      debugPrint('MEDIA RESPONSE SUCCESS ::: ${responseBody}');
       return responseBodyDecoded;
     } else {
       return Future.error(
@@ -225,8 +225,8 @@ class UserPostAuth extends AuthService {
           "${AppConfig.baseUrl}/api/v1/social/posts/channel/$blogId/";
     }
 
-    String url = isUpdating ? urlToUpdateBlog : urlToPostBlog;
-    var headers = await getAuthHeaders();
+    final String url = isUpdating ? urlToUpdateBlog : urlToPostBlog;
+    final headers = await getAuthHeaders();
 
     debugPrint('fola blog post::: ${url}');
 
@@ -234,7 +234,7 @@ class UserPostAuth extends AuthService {
     String? blogVideoPath;
     http.MultipartFile imageMultipartFile;
     http.MultipartFile videoMultipartFile;
-    var request =
+    final request =
         http.MultipartRequest(isUpdating ? "PATCH" : "POST", Uri.parse(url));
 
     if (blogImage != null && blogImage.path.isNotEmpty) {
@@ -267,13 +267,13 @@ class UserPostAuth extends AuthService {
 
     headers.forEach((k, v) => request.headers[k] = v);
 
-    var response = await request.send();
+    final response = await request.send();
 
     if (response.statusCode == 413) {
       return Future.error(
           "Please upload smaller video, This video is too large.");
     }
-    var responseBody = await response.stream.bytesToString();
+    final responseBody = await response.stream.bytesToString();
     debugPrint(
         "URL FOR POSTING BLOG $url STATUS CODE:- ${response.statusCode} BODY:- $responseBody");
 
@@ -286,9 +286,9 @@ class UserPostAuth extends AuthService {
   }
 
   Future<bool> deleteBlog({required String blogId}) async {
-    var url = AppConfig.baseUrl + "/api/v1/social/posts/$blogId/";
-    Map<String, String> headers = await getAuthHeaders();
-    var response = await httpDelete(url, headers: headers);
+    final url = AppConfig.baseUrl + "/api/v1/social/posts/$blogId/";
+    final Map<String, String> headers = await getAuthHeaders();
+    final response = await httpDelete(url, headers: headers);
 
     if (response.statusCode == 200 ||
         response.statusCode == 201 ||
@@ -304,21 +304,21 @@ class UserPostAuth extends AuthService {
   }
 
   Future<UserPost> likeUserPost(UserPost post) async {
-    var url = AppConfig.baseUrl + "/api/v1/social/posts/like/${post.id}/";
-    Map<String, String> headers = await getAuthHeaders();
-    var response = await httpPost(url, headers: headers);
+    final url = AppConfig.baseUrl + "/api/v1/social/posts/like/${post.id}/";
+    final Map<String, String> headers = await getAuthHeaders();
+    final response = await httpPost(url, headers: headers);
 
     debugPrint(
         "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
 
     debugPrint('LIKE URL :: $url');
     if (response.statusCode == 200 || response.statusCode == 201) {
-      UserPost userPost = UserPost.fromJson(jsonDecode(response.body));
+      final UserPost userPost = UserPost.fromJson(jsonDecode(response.body));
 
       return userPost;
     } else {
       if (response.statusCode != 500) {
-        var jsonData = jsonDecode(response.body);
+        final jsonData = jsonDecode(response.body);
         debugPrint(
             "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
         return Future.error(jsonData is Map
@@ -332,19 +332,19 @@ class UserPostAuth extends AuthService {
   }
 
   Future<UserPost> dislikeUserPost(UserPost post) async {
-    var url = AppConfig.baseUrl + "/api/v1/social/posts/dislike/${post.id}/";
-    Map<String, String> headers = await getAuthHeaders();
-    var response = await httpPost(url, headers: headers);
+    final url = AppConfig.baseUrl + "/api/v1/social/posts/dislike/${post.id}/";
+    final Map<String, String> headers = await getAuthHeaders();
+    final response = await httpPost(url, headers: headers);
 
     debugPrint(
         "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
     if (response.statusCode == 200 || response.statusCode == 201) {
-      UserPost userPost = UserPost.fromJson(jsonDecode(response.body));
+      final UserPost userPost = UserPost.fromJson(jsonDecode(response.body));
 
       return userPost;
     } else {
       if (response.statusCode != 500) {
-        var jsonData = jsonDecode(response.body);
+        final jsonData = jsonDecode(response.body);
         debugPrint(
             "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
         return Future.error(jsonData is Map

@@ -24,8 +24,8 @@ import 'widgets/ask_mention_view.dart';
 
 class YarnDetailScreen extends StatefulWidget {
   final Yarn yarn;
-  String? yarnId;
-  Function(Yarn)? onDeleteYarn;
+  final String? yarnId;
+  final Function(Yarn)? onDeleteYarn;
 
   YarnDetailScreen({required this.yarn, this.yarnId, this.onDeleteYarn});
 
@@ -51,7 +51,7 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
   bool? adultOnly = false;
   bool isMentionName = false;
   String? searchString;
-  var ageRating;
+  String? ageRating;
   List<YarnMedia> selectedMedia = [];
   bool isScrolling = false;
   Yarn? finalYarn;
@@ -316,7 +316,7 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
         if (mounted) setState(() {});
       },
       onTapAgeRestriction: (value) {
-        ageRating = value;
+        ageRating = value.toString();
         logger.d('age $ageRating');
         setState(() {});
       },

@@ -66,7 +66,7 @@ class MomentCommentTextField extends StatefulWidget {
   ScrollController? scrollController;
   bool? enableAdult;
   bool? viewerAdvice;
-  var ageRating;
+  String ageRating;
   List<ShareAsYarnModel>? shareAsYarnModel;
   final Function(bool?) onTapEnableComment;
   final Function(int?) onTapAgeRestriction;
@@ -89,7 +89,7 @@ class MomentCommentTextField extends StatefulWidget {
     this.height = 60,
     this.isScrolling = false,
     this.function,
-    this.ageRating,
+    this.ageRating = "",
     this.keyboardType = TextInputType.text,
     this.readOnly = false,
     this.userName,
@@ -133,7 +133,7 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
   List<ShareAsYarnModel>? shareAsYarnModelCopy;
   ShareAsYarnModel? _shareAsYarnModel;
 
-  var ageRating;
+  String ageRating = "";
   bool isShowExtension = false;
   bool onFocus = true;
 
@@ -162,7 +162,7 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
   String? productOrServicePrevious = "";
   final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
-  final ScrollController _scrollController = new ScrollController();
+  final ScrollController _scrollController = ScrollController();
 
   TextEditingController? searchItemTextController;
   final GlobalKey _key = LabeledGlobalKey("itemSearchTypeSelectionKey");
@@ -172,7 +172,7 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
   GlobalKey searchItemTextFormField = GlobalKey();
   int bottomSheetSearchIndex = 0;
   bool noSearchedItem = false;
-  var productServicePreview;
+  String productServicePreview;
   Product? productMode;
   Service? serviceMode;
   CustomerProfile? customerProfileMode;
@@ -1107,7 +1107,7 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
     );
   }
 
-  pickFileFromMedia() async {
+  Future<void> pickFileFromMedia() async {
     // List<Media>? res = await ImagesPicker.pick(
     //   count: 4,
     //   pickType: PickType.all,
@@ -1118,7 +1118,7 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
     //   ),
     // );
 
-    final List<XFile> res = await selectMultipleImageVideo();
+    final List<XFile>? res = await selectMultipleImageVideo();
 
     if (res == null || res.isEmpty) return;
 
@@ -1229,7 +1229,8 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
                         dense: true,
                         onTap: () {
                           _shareAsYarnModel = category;
-                          ageRating = _shareAsYarnModel?.name?.substring(9);
+                          ageRating =
+                              _shareAsYarnModel?.name?.substring(9) ?? "";
                           logger.d('message $ageRating');
                           widget.onTapAgeRestriction(int.parse(ageRating));
                           setState(() {});
@@ -1330,7 +1331,7 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
     );
   }
 
-  sendMessageBtn() {
+  Widget sendMessageBtn() {
     return widget.isLoading!
         ? Padding(
             padding: const EdgeInsets.only(right: 12.0, left: 4.0),
@@ -1643,7 +1644,7 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
     );
   }
 
-  checkHintText(int selectedMenuItemIndex) {
+  String checkHintText(int selectedMenuItemIndex) {
     if (selectedMenuItemIndex == 0) {
       return 'Search blog';
     } else if (selectedMenuItemIndex == 1) {
@@ -1653,6 +1654,7 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
     } else if (selectedMenuItemIndex == 3) {
       return 'Search user';
     }
+    return "";
   }
 
   void searchGiFListener() {

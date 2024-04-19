@@ -58,7 +58,7 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
-  _DashboardState({this.arguments});
+  _DashboardState({required this.arguments});
 
   //newUI Variables
   late DashboardBloc _dashboardBloc;
@@ -86,27 +86,27 @@ class _DashboardState extends State<Dashboard> {
     'home/settings',
   ];
 
-  var list = ['Home', 'Store', 'Chat', 'Settings'];
+  List<String> list = ['Home', 'Store', 'Chat', 'Settings'];
   List<Widget> _pages = [Container(), Container(), Container(), Container()];
 
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
       initialLink = await FirebaseDynamicLinks.instance.getInitialLink();
-      print("=========dash board initialLink : ${initialLink?.asMap()}");
+      debugPrint("=========dash board initialLink : ${initialLink?.asMap()}");
 
       ShareManager().initializeShareManager();
 
       _pages = [
         KeepAlivePage(wantKeepAlive: false, child: Home()),
-        SuperStoreHome(),
+        const SuperStoreHome(),
         KeepAlivePage(wantKeepAlive: true, child: ConnectionDashboard()),
         GeneralSettingScreen(),
       ];
 
       if (initialLink != null) {
         DeepLinkService.instance?.handleDynamicLinks(context);
-        print("widget.initialLink :==================== $initialLink");
+        debugPrint("widget.initialLink :==================== $initialLink");
       }
     });
 
@@ -674,7 +674,7 @@ class _DashboardState extends State<Dashboard> {
         onTap: (index) {
           setState(() {
             // Unfocus the keyboard
-            FocusScope.of(context).requestFocus(new FocusNode());
+            FocusScope.of(context).requestFocus(FocusNode());
             if (userBloc.user.staff != null && index == 2) {
               showToast(message: AppLocalization.of(context)?.doNotPermission);
               return;

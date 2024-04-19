@@ -45,7 +45,7 @@ class RiderDeliveryBloc extends ChangeNotifier {
 
   Future<void> updateDeliveryModel(DeliveryModel data) async {
     deliveryDetails = data;
-    NearByLocation? rideAtLocation =
+    final NearByLocation? rideAtLocation =
         await DatabaseHelper().getRiderAtLocation(data.orderId);
     deliveryDetails?.riderAtLocation = rideAtLocation;
     notifyListeners();

@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';
 
 class PhotoViewer extends StatefulWidget {
-  String? imageUrl;
+  final String? imageUrl;
 
   PhotoViewer({Key? key, required this.imageUrl}) : super(key: key);
 

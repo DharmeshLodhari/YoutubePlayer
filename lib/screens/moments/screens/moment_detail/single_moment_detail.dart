@@ -49,7 +49,7 @@ class SingleMomentDetailScreen extends StatefulWidget {
   final void Function() onRightSwipe;
   final void Function() onMomentPop;
 
-  MomentsModel currentMoment;
+  final MomentsModel currentMoment;
 
   final PageController pageCtrl;
 

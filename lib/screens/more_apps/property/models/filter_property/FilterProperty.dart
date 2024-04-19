@@ -66,7 +66,7 @@ class FilterProperty {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = Map<String, dynamic>();
     data['check_in_date'] = this.checkInDate;
     data['check_out_date'] = this.checkOutDate;
     data['is_for_buy'] = this.isForBuy;

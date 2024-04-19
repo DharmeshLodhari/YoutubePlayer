@@ -56,7 +56,7 @@ class DiscountModel {
     }
 
     if (json['end_date'] != null) {
-      final List<int> parse = json['end_date']
+      final List<int>? parse = json['end_date']
           .toString()
           .split("-")
           .toList()

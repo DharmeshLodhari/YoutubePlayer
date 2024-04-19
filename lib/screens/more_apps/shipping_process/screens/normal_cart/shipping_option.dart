@@ -37,7 +37,7 @@ class _ShippingOptionState extends State<ShippingOption> {
     WidgetsBinding.instance.addPostFrameCallback(
       (timeStamp) async {
         await getCartId();
-        ShippingProcessBloc shippingProcessBloc =
+        final ShippingProcessBloc shippingProcessBloc =
             Provider.of<ShippingProcessBloc>(context, listen: false);
 
         getShippingEstimation(shippingProcessBloc.getPackageDetailModel());
@@ -105,7 +105,7 @@ class _ShippingOptionState extends State<ShippingOption> {
 
     return SafeArea(
       child: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: shippingList.length != 0 || shippingList.isNotEmpty
             ? Column(
                 children: [
@@ -152,7 +152,7 @@ class _ShippingOptionState extends State<ShippingOption> {
 
   Widget _buildShippingItem(int index) {
     Widget logo;
-    String? logoImage =
+    final String? logoImage =
         shippingProcessBloc.getPackageDetailModel().getShippingLogo();
     if ((logoImage?.contains('http') ?? false) ||
         shippingProcessBloc.getPackageDetailModel().shippingType ==
@@ -188,13 +188,13 @@ class _ShippingOptionState extends State<ShippingOption> {
       shape: RoundedRectangleBorder(
           side: BorderSide(color: selectedListItemBackgroundBlue),
           borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.symmetric(vertical: 5),
+      margin: const EdgeInsets.symmetric(vertical: 5),
       shadowColor: boxShadowTwo,
       color: white,
       child: Container(
         decoration: decorateBox(),
         child: Padding(
-          padding: EdgeInsets.all(10.0),
+          padding: const EdgeInsets.all(10.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -202,7 +202,7 @@ class _ShippingOptionState extends State<ShippingOption> {
                 minVerticalPadding: 0,
                 minLeadingWidth: 10,
                 contentPadding: EdgeInsets.zero,
-                visualDensity: VisualDensity(horizontal: 0, vertical: 0),
+                visualDensity: const VisualDensity(horizontal: 0, vertical: 0),
                 leading: logo,
                 title: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -221,7 +221,7 @@ class _ShippingOptionState extends State<ShippingOption> {
                         fontFamily: "Inter",
                       ),
                     ),
-                    SizedBox(height: 5.0),
+                    const SizedBox(height: 5.0),
                     Radio<ShippingOptionModel>(
                       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       visualDensity: const VisualDensity(
@@ -277,7 +277,7 @@ class _ShippingOptionState extends State<ShippingOption> {
                       ),
                     ),
                   ),
-                  SizedBox(width: 5.0),
+                  const SizedBox(width: 5.0),
                   _buildTrackingTag(),
                 ],
               ),
@@ -290,7 +290,7 @@ class _ShippingOptionState extends State<ShippingOption> {
 
   Widget _buildTrackingTag() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(7),
         color: greyTagColor,

@@ -11,7 +11,7 @@ import '../models/custom_profile_model.dart';
 import '../user_auth.dart';
 
 class CustomizeProfileScreen extends StatefulWidget {
-  final arguments;
+  final dynamic arguments;
 
   CustomizeProfileScreen({required this.arguments, Key? key}) : super(key: key);
 
@@ -33,7 +33,7 @@ class CustomizeProfileScreenState extends State<CustomizeProfileScreen> {
   CustomProfileModel customProfileModel = CustomProfileModel();
   // Create a new map to store boolean values
   Map<String, bool> boolMap = {};
-  var orderedKeys = <String>[];
+  List<String> orderedKeys = <String>[];
   String productLabel = "";
   String serviceLabel = "";
   final TextEditingController productLabelController = TextEditingController();
@@ -181,7 +181,7 @@ class CustomizeProfileScreenState extends State<CustomizeProfileScreen> {
   Widget getTile({
     required String titleText,
     required bool switchValue,
-    required Function(bool) onTapCallback,
+    required Function(bool)? onTapCallback,
   }) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),

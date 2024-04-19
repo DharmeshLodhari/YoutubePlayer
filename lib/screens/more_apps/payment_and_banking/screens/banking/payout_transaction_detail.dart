@@ -15,7 +15,7 @@ import '../../../user_profile/screens/user_profile_module_new/profile_template/u
 import '../../models/payout.dart';
 
 class PayoutTransactionDetail extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
   PayoutTransactionDetail({required this.arguments});
 
@@ -25,17 +25,17 @@ class PayoutTransactionDetail extends StatefulWidget {
 }
 
 class _PayoutTransactionDetailState extends State<PayoutTransactionDetail> {
-  var arguments;
+  Map<String, dynamic> arguments;
   Payout? payout;
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey =
-      new GlobalKey<ScaffoldMessengerState>();
+      GlobalKey<ScaffoldMessengerState>();
 
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
   bool isLoading = false;
 
-  _PayoutTransactionDetailState({this.arguments});
+  _PayoutTransactionDetailState({required this.arguments});
 
   @override
   void initState() {
@@ -122,7 +122,7 @@ class _PayoutTransactionDetailState extends State<PayoutTransactionDetail> {
       ),
       actions: <Widget>[
         showMap(),
-        SizedBox(width: 16),
+        const SizedBox(width: 16),
       ],
     );
   }
@@ -149,7 +149,7 @@ class _PayoutTransactionDetailState extends State<PayoutTransactionDetail> {
             (AppBar().preferredSize.height +
                 MediaQuery.of(context).padding.top),
         width: MediaQuery.of(context).size.width,
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         child: Column(
           children: [
             displayPayoutInfo(),
@@ -220,7 +220,7 @@ class _PayoutTransactionDetailState extends State<PayoutTransactionDetail> {
             fit: BoxFit.cover,
             filterQuality: FilterQuality.high,
             placeholder: (context, url) => imageUrl == ""
-                ? Icon(Icons.person)
+                ? const Icon(Icons.person)
                 : CircularLoadingIndicator(),
           ),
         ),

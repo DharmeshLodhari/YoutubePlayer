@@ -44,7 +44,7 @@ class _YarnCommentDetailScreenState extends State<YarnCommentDetailScreen> {
   GlobalKey<ScaffoldState> yarnCommentScreenKey = GlobalKey<ScaffoldState>();
   bool? enableComment = false, enablePayment = false;
   bool? enableAdult = false, viewerAdvice = false;
-  var ageRating;
+  String? ageRating;
 
   ScrollController scrollController = ScrollController();
   List<YarnMedia> selectedMedia = [];

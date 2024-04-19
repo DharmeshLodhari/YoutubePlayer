@@ -42,12 +42,12 @@ import '../../yarn/yarn_search_screen.dart';
 import '../screens/user_profile_module_new/utils.dart';
 
 class GetAppbarTile extends StatefulWidget {
-  CustomerProfile? searchedUser;
+  final CustomerProfile? searchedUser;
   bool isLoading = true;
   bool isShrink = false;
-  ScrollController? scrollController;
-  String? userType;
-  Map<String, dynamic>? channelDetail;
+  final ScrollController? scrollController;
+  final String? userType;
+  final Map<String, dynamic>? channelDetail;
   final Function(Map<String, bool>)? callback;
   final Function(Map<String, dynamic>)? callbackProductService;
 
@@ -678,9 +678,9 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
           child: ClipOval(
             child: CachedNetworkImage(
               imageUrl:
-                  searchedUser!.avatar! == "" || searchedUser!.avatar! == null
+                  searchedUser?.avatar == "" || searchedUser?.avatar == null
                       ? defaultImage
-                      : searchedUser!.avatar!,
+                      : searchedUser?.avatar ?? "",
               colorBlendMode: BlendMode.darken,
               fit: BoxFit.cover,
               filterQuality: FilterQuality.high,
@@ -688,12 +688,12 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
             ),
           ),
         );
-        return CircleAvatar(
-          radius: 25,
-          backgroundImage: CachedNetworkImageProvider(
-            searchedUser!.avatar!,
-          ),
-        );
+        // return CircleAvatar(
+        //   radius: 25,
+        //   backgroundImage: CachedNetworkImageProvider(
+        //     searchedUser!.avatar!,
+        //   ),
+        // );
       }
     }
   }
@@ -1744,9 +1744,9 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
   }
 
   void sendProfileToUsersInChat() async {
-    final List<ChatConversation?> listOfRecipient =
+    final List<ChatConversation?>? listOfRecipient =
         await ShareInChat().selectShareCustomer(context);
-    debugPrint("Selected users = ${listOfRecipient.length}");
+    debugPrint("Selected users = ${listOfRecipient?.length}");
 
     final Map<String, dynamic> itemData =
         searchedUser?.toJsonToSendInToChat() ?? {};
@@ -1831,9 +1831,9 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
           child: ClipOval(
             child: CachedNetworkImage(
               imageUrl:
-                  searchedUser!.avatar! == "" || searchedUser!.avatar! == null
+                  searchedUser?.avatar == "" || searchedUser?.avatar == null
                       ? defaultImage
-                      : searchedUser!.avatar!,
+                      : searchedUser?.avatar ?? "",
               colorBlendMode: BlendMode.darken,
               fit: BoxFit.cover,
               filterQuality: FilterQuality.high,

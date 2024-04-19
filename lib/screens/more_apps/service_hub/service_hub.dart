@@ -40,12 +40,12 @@ class _SuperHubState extends State<SuperHub> {
   late AppLocalization appLocalization;
 
   final GlobalKey<ScaffoldMessengerState> _productScaffoldMessengerKey =
-      new GlobalKey<ScaffoldMessengerState>();
+      GlobalKey<ScaffoldMessengerState>();
 
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
-  ScrollController _productScrollController = new ScrollController();
+  final ScrollController _productScrollController = ScrollController();
 
   AppBar appBar() {
     return AppBar(
@@ -160,7 +160,7 @@ class _SuperHubState extends State<SuperHub> {
         isProductLoading = true;
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result = await ShoppingAuthService()
+        final Map<String, dynamic>? result = await ShoppingAuthService()
             .listOfServices(productNext, productPrevious, otherDeals: true);
 
         if (result == null) {
@@ -176,7 +176,7 @@ class _SuperHubState extends State<SuperHub> {
         productCount = result['count'];
         productNext = result['next'];
         productPrevious = result['previous'];
-        var tempList = result['results'];
+        final tempList = result['results'];
         if (mounted) {
           setState(() {
             noProductInList = false;
@@ -203,7 +203,7 @@ class _SuperHubState extends State<SuperHub> {
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         _refreshPage();
@@ -217,7 +217,7 @@ class _SuperHubState extends State<SuperHub> {
     });
   }
 
-  _refreshPage() {
+  void _refreshPage() {
     productNext = "";
     productCount = 0;
     productPrevious = "";
@@ -257,32 +257,33 @@ class _SuperHubState extends State<SuperHub> {
                   // const SizedBox(height: 22),
                   superStoreProducts(),
                   const SizedBox(height: 16),
-                  isProductLoading
-                      ? Shimmer.fromColors(
-                          baseColor: Colors.white,
-                          highlightColor: greyBorderColor,
-                          child: GridView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            gridDelegate:
-                                const SliverGridDelegateWithMaxCrossAxisExtent(
-                              mainAxisSpacing: 14,
-                              mainAxisExtent: 180,
-                              crossAxisSpacing: 15,
-                              maxCrossAxisExtent: 200,
+                  if (isProductLoading)
+                    Shimmer.fromColors(
+                      baseColor: Colors.white,
+                      highlightColor: greyBorderColor,
+                      child: GridView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        gridDelegate:
+                            const SliverGridDelegateWithMaxCrossAxisExtent(
+                          mainAxisSpacing: 14,
+                          mainAxisExtent: 180,
+                          crossAxisSpacing: 15,
+                          maxCrossAxisExtent: 200,
+                        ),
+                        itemCount: 2,
+                        itemBuilder: (context, index) {
+                          return Card(
+                            color: Colors.grey,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
                             ),
-                            itemCount: 2,
-                            itemBuilder: (context, index) {
-                              return Card(
-                                color: Colors.grey,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              );
-                            },
-                          ),
-                        )
-                      : const SizedBox.shrink(),
+                          );
+                        },
+                      ),
+                    )
+                  else
+                    const SizedBox.shrink(),
                   Visibility(
                     visible: !isProductLoading &&
                         !isTodayDealLoading &&

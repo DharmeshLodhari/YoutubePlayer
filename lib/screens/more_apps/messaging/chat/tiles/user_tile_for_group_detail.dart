@@ -50,7 +50,7 @@ class _UserTileForGroupDetailState extends State<UserTileForGroupDetail> {
     return tile;
   }
 
-  Widget showSelectedUserAvatar(String imageUrl, String fullName) {
+  Widget showSelectedUserAvatar(String? imageUrl, String fullName) {
     final Color borderColor = getUserTypeColor(user: widget.user!);
 
     if (imageUrl == null ||

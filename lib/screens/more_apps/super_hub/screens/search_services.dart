@@ -41,8 +41,9 @@ class _SearchServicesState extends State<SearchServices> {
   ];
   List<Service> products = [];
 
-  GlobalKey<ScaffoldState> _scaffoldSearchKey = GlobalKey<ScaffoldState>();
-  GlobalKey<ScaffoldMessengerState> _scaffoldMessengerSearchKey =
+  final GlobalKey<ScaffoldState> _scaffoldSearchKey =
+      GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerSearchKey =
       GlobalKey<ScaffoldMessengerState>();
 
   bool isLoading = false;
@@ -51,7 +52,7 @@ class _SearchServicesState extends State<SearchServices> {
   int? count = 0;
   String? next = "";
   String? previous = "";
-  ScrollController _scrollController = new ScrollController();
+  final ScrollController _scrollController = ScrollController();
   bool noItemInList = false;
   bool isSearchIsEmpty = true;
   ServiceCategory? pressedCategory;
@@ -101,7 +102,7 @@ class _SearchServicesState extends State<SearchServices> {
     super.initState();
   }
 
-  _refreshList() {
+  void _refreshList() {
     count = 0;
     next = "";
     previous = "";
@@ -118,7 +119,7 @@ class _SearchServicesState extends State<SearchServices> {
           setState(() {});
         }
 
-        Map<String, dynamic>? result =
+        final Map<String, dynamic>? result =
             await ShoppingAuthService().searchServiceInServices(
           next,
           previous,
@@ -148,7 +149,7 @@ class _SearchServicesState extends State<SearchServices> {
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
-        List? tempList = result['results'];
+        final List? tempList = result['results'];
         debugPrint('TEMP LIST --> $tempList');
         if (mounted) {
           isLoading = false;
@@ -156,7 +157,7 @@ class _SearchServicesState extends State<SearchServices> {
             tempList!.forEach((result) {
               products.add(result);
             });
-            print("PRODUCTS:- $products");
+            debugPrint("PRODUCTS:- $products");
           } catch (e) {
             debugPrint("error adding products $e");
           }
@@ -174,7 +175,7 @@ class _SearchServicesState extends State<SearchServices> {
           SnackBar(
             content: Text(
                 AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-            duration: Duration(milliseconds: 500),
+            duration: const Duration(milliseconds: 500),
           ),
         );
       }
@@ -242,24 +243,25 @@ class _SearchServicesState extends State<SearchServices> {
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
       actions: <Widget>[
-        products.isNotEmpty
-            ? RoundedBackgroundIcon(
-                height: 34,
-                width: 34,
-                icon: Icon(
-                  SlydoAppIcon.filter,
-                  size: 16,
-                  color: blackFont,
-                ),
-                onTap: () {
-                  setState(() {
-                    showSortByBox = !showSortByBox;
-                  });
-                },
-                backgroundColor: iconBtnGrey,
-                enableMargin: true,
-              )
-            : SizedBox.shrink(),
+        if (products.isNotEmpty)
+          RoundedBackgroundIcon(
+            height: 34,
+            width: 34,
+            icon: Icon(
+              SlydoAppIcon.filter,
+              size: 16,
+              color: blackFont,
+            ),
+            onTap: () {
+              setState(() {
+                showSortByBox = !showSortByBox;
+              });
+            },
+            backgroundColor: iconBtnGrey,
+            enableMargin: true,
+          )
+        else
+          const SizedBox.shrink(),
         GestureDetector(
           onTap: () => Navigator.pushNamed(context, Routes.JOB_SEARCH_FILTER),
           child: Icon(
@@ -268,7 +270,7 @@ class _SearchServicesState extends State<SearchServices> {
             color: blackFont,
           ),
         ),
-        SizedBox(width: 16),
+        const SizedBox(width: 16),
       ],
     );
   }
@@ -277,39 +279,43 @@ class _SearchServicesState extends State<SearchServices> {
     return Container(
       child: Column(
         children: [
-          showSortByBox ? sortByDropDown() : SizedBox.shrink(),
-          SizedBox(height: 6),
+          if (showSortByBox) sortByDropDown() else const SizedBox.shrink(),
+          const SizedBox(height: 6),
           searchBox(),
-          SizedBox(height: 12),
-          isLoading ? CircularProgressIndicator() : SizedBox.shrink(),
-          isSearchIsEmpty
-              ? Expanded(
-                  child: NoItemInList(
-                    msg: AppLocalization.of(context)!
-                        .pleaseTypeSomethingToGetResult,
-                    isResult: false,
-                  ),
-                )
-              : noItemInList
-                  ? Expanded(
-                      child: NoItemInList(
-                        msg: AppLocalization.of(context)!.noResultFound,
-                      ),
-                    )
-                  : Expanded(
-                      child: ListView(
-                          children: products
-                              .map(
-                                (product) => Container(
-                                  padding: EdgeInsets.symmetric(
-                                      vertical: 8, horizontal: 16),
-                                  child: ShoppingTileWithHeartWithService(
-                                    service: product,
-                                  ),
-                                ),
-                              )
-                              .toList()),
+          const SizedBox(height: 12),
+          if (isLoading)
+            const CircularProgressIndicator()
+          else
+            const SizedBox.shrink(),
+          if (isSearchIsEmpty)
+            Expanded(
+              child: NoItemInList(
+                msg:
+                    AppLocalization.of(context)!.pleaseTypeSomethingToGetResult,
+                isResult: false,
+              ),
+            )
+          else
+            noItemInList
+                ? Expanded(
+                    child: NoItemInList(
+                      msg: AppLocalization.of(context)!.noResultFound,
                     ),
+                  )
+                : Expanded(
+                    child: ListView(
+                        children: products
+                            .map(
+                              (product) => Container(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 8, horizontal: 16),
+                                child: ShoppingTileWithHeartWithService(
+                                  service: product,
+                                ),
+                              ),
+                            )
+                            .toList()),
+                  ),
         ],
       ),
     );
@@ -328,7 +334,7 @@ class _SearchServicesState extends State<SearchServices> {
           ),
           child: DropdownButton2(
             isExpanded: true,
-            underline: SizedBox.shrink(),
+            underline: const SizedBox.shrink(),
             dropdownDecoration: BoxDecoration(
               borderRadius: BorderRadius.circular(14),
             ),
@@ -348,8 +354,8 @@ class _SearchServicesState extends State<SearchServices> {
                 _refreshList();
                 return;
               }
-              String firstWord = newValue!.split(' ')[0];
-              String secondWord = newValue.split(' ')[1];
+              final String firstWord = newValue!.split(' ')[0];
+              final String secondWord = newValue.split(' ')[1];
               sortBy = "$firstWord-$secondWord".toLowerCase();
 
               setState(() {
@@ -365,7 +371,7 @@ class _SearchServicesState extends State<SearchServices> {
 
   Widget searchBox() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Theme(
         data: Theme.of(context).copyWith(
           textSelectionTheme: TextSelectionThemeData(
@@ -408,15 +414,15 @@ class _SearchServicesState extends State<SearchServices> {
               ),
               onPressed: () async {
                 FocusScope.of(context).unfocus();
-                await Future.delayed(Duration(milliseconds: 100))
+                await Future.delayed(const Duration(milliseconds: 100))
                     .then((value) => showFilterProductSheet());
               },
             ),
             hintText: "Search anything",
             fillColor: Colors.white,
             filled: true,
-            contentPadding: EdgeInsets.symmetric(vertical: 10),
-            prefix: Padding(
+            contentPadding: const EdgeInsets.symmetric(vertical: 10),
+            prefix: const Padding(
               padding: EdgeInsets.only(left: 16),
             ),
             enabledBorder: OutlineInputBorder(
@@ -463,7 +469,7 @@ class _SearchServicesState extends State<SearchServices> {
           return StatefulBuilder(
             builder: (BuildContext context, StateSetter bottomSheetSetState) =>
                 Card(
-              shape: RoundedRectangleBorder(
+              shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(20),
                     topRight: Radius.circular(20)),
@@ -471,7 +477,8 @@ class _SearchServicesState extends State<SearchServices> {
               color: Colors.white,
               margin: EdgeInsets.zero,
               child: Container(
-                padding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
@@ -482,28 +489,28 @@ class _SearchServicesState extends State<SearchServices> {
                           fontWeight: FontWeight.w700,
                           color: blackFont),
                     ),
-                    SizedBox(height: 40),
+                    const SizedBox(height: 40),
                     getCategoryField(bottomSheetSetState),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     getPikedCategoryNames(),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     getProductRatingSelection(bottomSheetSetState),
-                    SizedBox(height: 24),
+                    const SizedBox(height: 24),
                     Padding(
                       padding: EdgeInsets.only(
                           bottom: MediaQuery.of(context).viewInsets.bottom),
                       child: getPriceRange(bottomSheetSetState),
                     ),
-                    SizedBox(height: 20),
-                    SizedBox(height: 50),
+                    const SizedBox(height: 20),
+                    const SizedBox(height: 50),
                     Row(
                       children: [
                         Expanded(child: getClearAllBtn()),
-                        SizedBox(width: 20),
+                        const SizedBox(width: 20),
                         Expanded(child: getFilterSubmitBtn()),
                       ],
                     ),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                   ],
                 ),
               ),
@@ -543,8 +550,8 @@ class _SearchServicesState extends State<SearchServices> {
         children: pickedCategoryList
             .map(
               (e) => Container(
-                margin: EdgeInsets.all(6),
-                padding: EdgeInsets.all(12),
+                margin: const EdgeInsets.all(6),
+                padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                     color: greyBorderColor,
                     borderRadius: BorderRadius.circular(12)),
@@ -589,10 +596,10 @@ class _SearchServicesState extends State<SearchServices> {
                     }
                   },
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 InkWell(
                   onTap: () {},
-                  child: Text(
+                  child: const Text(
                     '',
                     textAlign: TextAlign.right,
                     style: TextStyle(color: Colors.red),
@@ -603,7 +610,8 @@ class _SearchServicesState extends State<SearchServices> {
                     shrinkWrap: true,
                     itemCount: servicesCategories!.length,
                     itemBuilder: (context, index) {
-                      ServiceCategory category = servicesCategories![index];
+                      final ServiceCategory category =
+                          servicesCategories![index];
                       return CheckboxListTile(
                         value: categoryCheckMark[category.name] ?? false,
                         onChanged: (isChecked) {
@@ -747,10 +755,10 @@ class _SearchServicesState extends State<SearchServices> {
                     }
                   },
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 InkWell(
                   onTap: () {},
-                  child: Text(
+                  child: const Text(
                     '',
                     textAlign: TextAlign.right,
                     style: TextStyle(color: Colors.red),
@@ -811,7 +819,7 @@ class _SearchServicesState extends State<SearchServices> {
           style: TextStyle(
               color: blackFont, fontSize: 14, fontWeight: FontWeight.w600),
         ),
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
         Row(
           children: List.generate(5, (index) {
             if (selectedRating != null) {
@@ -847,7 +855,7 @@ class _SearchServicesState extends State<SearchServices> {
       {bool isSelected = false, required int index}) {
     return GestureDetector(
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 6, horizontal: 14),
+        padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 14),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8),
           color:
@@ -862,7 +870,7 @@ class _SearchServicesState extends State<SearchServices> {
                   fontSize: 14,
                   fontWeight: FontWeight.w600),
             ),
-            SizedBox(width: 2),
+            const SizedBox(width: 2),
             Icon(
               SlydoAppIcon.star,
               size: 10,
@@ -878,7 +886,7 @@ class _SearchServicesState extends State<SearchServices> {
     );
   }
 
-  Widget getPriceRange(bottomSheetSetState) {
+  Widget getPriceRange(StateSetter bottomSheetSetState) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -887,7 +895,7 @@ class _SearchServicesState extends State<SearchServices> {
           style: TextStyle(
               color: blackFont, fontSize: 14, fontWeight: FontWeight.w600),
         ),
-        SizedBox(height: 12),
+        const SizedBox(height: 12),
         Row(
           children: [
             Expanded(
@@ -901,7 +909,7 @@ class _SearchServicesState extends State<SearchServices> {
                 isNumberOnlyInput: true,
               ),
             ),
-            SizedBox(width: 12),
+            const SizedBox(width: 12),
             Expanded(
               child: CustomizedTextFormField(
                 labelText: 'To',
@@ -915,7 +923,7 @@ class _SearchServicesState extends State<SearchServices> {
             ),
           ],
         ),
-        SizedBox(height: 12),
+        const SizedBox(height: 12),
       ],
     );
   }

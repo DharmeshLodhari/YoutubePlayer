@@ -17,7 +17,7 @@ import 'yarn_detail_screen.dart';
 
 class YarnListScreen extends StatefulWidget {
   final String? selectedCategory;
-  Function(bool)? onPageRefresh;
+  final Function(bool)? onPageRefresh;
 
   YarnListScreen({
     Key? key,

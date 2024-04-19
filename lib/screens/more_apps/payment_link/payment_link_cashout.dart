@@ -60,7 +60,7 @@ class _PaymentLinkCashOutState extends State<PaymentLinkCashOut> {
       RefreshController(initialRefresh: false);
   GlobalKey searchItemTextFormField = GlobalKey();
   BankModel? selectedBank;
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
   bool isLoading = false;
   final FocusNode _pinPutFocusNode = FocusNode();
 
@@ -70,7 +70,7 @@ class _PaymentLinkCashOutState extends State<PaymentLinkCashOut> {
     super.initState();
   }
 
-  Widget getMessage(amount, currency, {double fontSize = 18}) {
+  Widget getMessage(int amount, String currency, {double fontSize = 18}) {
     return SizedBox(
       width: 200,
       child: Row(
@@ -330,7 +330,7 @@ class _PaymentLinkCashOutState extends State<PaymentLinkCashOut> {
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
                       Padding(
-                        padding: EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.all(8.0),
                         child: Text(
                           "Link ${_paymentLinkModel!.status.toString()}",
                           style: TextStyle(
@@ -829,7 +829,7 @@ class _PaymentLinkCashOutState extends State<PaymentLinkCashOut> {
     );
   }
 
-  checkBankUrl(BankModel bankModel) {
+  Widget checkBankUrl(BankModel bankModel) {
     if (bankModel.logoUrl == "") {
       return CircleAvatar(
         backgroundColor: navyBlue,
@@ -871,7 +871,7 @@ class _PaymentLinkCashOutState extends State<PaymentLinkCashOut> {
 
   bool obscureChange = true;
 
-  obscureTextWidget() {
+  Widget obscureTextWidget() {
     if (obscureChange) {
       return IconButton(
           onPressed: () => setState(() => obscureChange = !obscureChange),
@@ -944,7 +944,7 @@ class _PaymentLinkCashOutState extends State<PaymentLinkCashOut> {
     }
   }
 
-  cashOut() {
+  void cashOut() {
     if (_formKey.currentState!.validate()) {
       final dynamic data = {
         "bank": bankPaymentLinkSlug,
@@ -969,7 +969,7 @@ class _PaymentLinkCashOutState extends State<PaymentLinkCashOut> {
     setState(() {});
   }
 
-  successfulPopUp() {
+  void successfulPopUp() {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await showDialog(
           context: context,

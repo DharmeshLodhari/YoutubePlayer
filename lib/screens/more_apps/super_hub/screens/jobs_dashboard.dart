@@ -27,13 +27,13 @@ class _JobsDashboardState extends State<JobsDashboard> {
   String? productNext = "";
   String? todayDealPrevious = "";
   String? productPrevious = "";
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
   List status = ['Active', 'Closed', 'Pending'];
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         _refreshPage();
@@ -47,7 +47,7 @@ class _JobsDashboardState extends State<JobsDashboard> {
     });
   }
 
-  _refreshPage() {
+  void _refreshPage() {
     productNext = "";
     productCount = 0;
     productPrevious = "";
@@ -81,7 +81,7 @@ class _JobsDashboardState extends State<JobsDashboard> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               browseCategoryRow(),
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
               SizedBox(
@@ -102,10 +102,10 @@ class _JobsDashboardState extends State<JobsDashboard> {
                       );
                     }),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 15,
               ),
-              Text(
+              const Text(
                 "Jobs you might like",
                 style: TextStyle(
                   color: Color(0xff030e36),
@@ -114,7 +114,7 @@ class _JobsDashboardState extends State<JobsDashboard> {
                   fontWeight: FontWeight.w700,
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
               Flexible(
@@ -122,14 +122,14 @@ class _JobsDashboardState extends State<JobsDashboard> {
                 child: ListView.builder(
                     itemCount: 6,
                     shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
+                    physics: const NeverScrollableScrollPhysics(),
                     itemBuilder: (context, index) {
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 10.0),
                         child: GestureDetector(
                           onTap: () =>
                               Navigator.pushNamed(context, Routes.JOB_DETAILS),
-                          child: JobDescriptionCard(),
+                          child: const JobDescriptionCard(),
                         ),
                       );
                     }),
@@ -150,7 +150,7 @@ class _JobsDashboardState extends State<JobsDashboard> {
         borderRadius: BorderRadius.circular(5),
         // color: Color(0x7f000000),
         image: DecorationImage(
-          image: AssetImage("assets/images/bg1.png"),
+          image: const AssetImage("assets/images/bg1.png"),
           colorFilter: ColorFilter.mode(
               Colors.black.withOpacity(0.5), BlendMode.srcOver),
           fit: BoxFit.cover,

@@ -73,7 +73,7 @@ class GIFModel {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = Map<String, dynamic>();
     data['analytics_response_payload'] = this.analyticsResponsePayload;
     data['bitly_gif_url'] = this.bitlyGifUrl;
     data['bitly_url'] = this.bitlyUrl;

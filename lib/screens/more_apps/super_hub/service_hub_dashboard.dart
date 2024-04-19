@@ -52,11 +52,11 @@ class _ServiceHubDashboardState extends State<ServiceHubDashboard> {
       ),
       actions: [
         _searchBtn(),
-        SizedBox(
+        const SizedBox(
           width: 10,
         ),
         _cartBtn(),
-        SizedBox(width: 12),
+        const SizedBox(width: 12),
       ],
       bottom: tabBar() as PreferredSizeWidget,
     );
@@ -64,10 +64,10 @@ class _ServiceHubDashboardState extends State<ServiceHubDashboard> {
 
   Widget tabBar() {
     return PreferredSize(
-      preferredSize: Size.fromHeight(50),
+      preferredSize: const Size.fromHeight(50),
       child: TabBar(
         labelPadding: EdgeInsets.zero,
-        indicator: BoxDecoration(),
+        indicator: const BoxDecoration(),
         onTap: (int index) {
           currentIndex = index;
           setState(() {});
@@ -75,7 +75,7 @@ class _ServiceHubDashboardState extends State<ServiceHubDashboard> {
         tabs: [
           Tab(
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
                 shape: BoxShape.rectangle,
@@ -96,7 +96,7 @@ class _ServiceHubDashboardState extends State<ServiceHubDashboard> {
           ),
           Tab(
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
                 shape: BoxShape.rectangle,
@@ -126,7 +126,7 @@ class _ServiceHubDashboardState extends State<ServiceHubDashboard> {
     }
     return Text(
       getBadgeCount(),
-      style: TextStyle(
+      style: const TextStyle(
           fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold),
     );
   }
@@ -200,7 +200,7 @@ class _ServiceHubDashboardState extends State<ServiceHubDashboard> {
   Widget tabViews() {
     return IndexedStack(
       index: currentIndex,
-      children: [SuperHub(), JobsDashboard()],
+      children: [const SuperHub(), const JobsDashboard()],
     );
   }
 

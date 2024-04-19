@@ -258,11 +258,11 @@ class ItemScrollController {
 class _ScrollablePositionedListState extends State<ScrollablePositionedList>
     with TickerProviderStateMixin {
   /// Details for the primary (active) [ListView].
-  var primary = _ListDisplayDetails(const ValueKey('Ping'));
+  _ListDisplayDetails primary = _ListDisplayDetails(const ValueKey('Ping'));
 
   /// Details for the secondary (transitional) [ListView] that is temporarily
   /// shown when scrolling a long distance.
-  var secondary = _ListDisplayDetails(const ValueKey('Pong'));
+  _ListDisplayDetails secondary = _ListDisplayDetails(const ValueKey('Pong'));
 
   final opacity = ProxyAnimation(const AlwaysStoppedAnimation<double>(0));
 

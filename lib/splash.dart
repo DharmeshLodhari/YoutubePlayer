@@ -53,7 +53,7 @@ class _SplashScreenState extends State<SplashScreen>
   late UserBloc userBloc;
 
   // bool for to check if internet connection is available or not
-  var hasConnection = true;
+  bool hasConnection = true;
   String errorText = "";
 
   VideoPlayerController? playerController;
@@ -327,7 +327,7 @@ class _SplashScreenState extends State<SplashScreen>
         company = secureUser.company;
         isStaffLogin = secureUser.isStaffLogin ?? false;
 
-        var phoneNumber = "+" + country2.phoneCode! + userPhoneNumber!;
+        final phoneNumber = "+" + country2.phoneCode! + userPhoneNumber!;
         errorText += "phoneNumber $phoneNumber\n";
 
         User? user;

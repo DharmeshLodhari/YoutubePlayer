@@ -21,7 +21,7 @@ import '../../widget/rounded_background_icon.dart';
 import '../../widget/tab_selection.dart';
 
 class SuperStore extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
   SuperStore({Key? key, this.arguments}) : super(key: key);
 
@@ -65,7 +65,7 @@ class _SuperStoreState extends State<SuperStore> {
     super.dispose();
   }
 
-  getIndustryUrls(ProductIndustryResults industry) {
+  void getIndustryUrls(ProductIndustryResults industry) {
     setState(() {
       url = AppConfig.baseUrl +
           "/api/v1/products/categories/?industry=${industry.id}";
@@ -74,7 +74,7 @@ class _SuperStoreState extends State<SuperStore> {
     });
   }
 
-  updateAppSetup(ProductIndustryResults industry) {
+  void updateAppSetup(ProductIndustryResults industry) {
     switch (industry.name) {
       case 'Restaurant/Cafe':
         setState(() {

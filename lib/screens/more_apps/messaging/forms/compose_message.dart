@@ -17,7 +17,7 @@ import '../../../search_user.dart';
 
 // ignore: must_be_immutable
 class ComposeMessage extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
   String? username;
 
   ComposeMessage({this.arguments, this.username});
@@ -79,7 +79,7 @@ class _ComposeMessageState extends State<ComposeMessage> {
   }
 
   void fetchCustomer() async {
-    print('recipient:::: $recipient');
+    debugPrint('recipient:::: $recipient');
     final customerProfile = await UserAuth().fetchCustomerProfile(recipient);
 
     messageReceiver = customerProfile;

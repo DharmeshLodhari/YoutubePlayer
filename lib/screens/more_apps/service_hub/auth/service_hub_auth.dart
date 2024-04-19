@@ -81,7 +81,7 @@ class ServiceHubAuthService extends AuthService {
 
   // get active job listing
   Future<ActiveJobListing?> getActiveJobListing(String? next, String? previous,
-      {String? category, search, sortby, priceFrom, priceTo, location}) async {
+      {String? category,String? search,String? sortby,String? priceFrom,String? priceTo,String? location}) async {
     String url = "/api/v1/job-service/listing/?";
     if (next == null) {
       return null;

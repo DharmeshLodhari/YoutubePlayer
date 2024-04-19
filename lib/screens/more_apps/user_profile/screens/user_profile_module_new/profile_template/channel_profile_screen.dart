@@ -9,11 +9,11 @@ import 'package:flutter/material.dart';
 import '../utils.dart';
 
 class ChannelProfileScreen extends StatefulWidget {
-  CustomerProfile? searchedUser;
-  String? searchedUserName;
-  Map<String, dynamic>? channelDetail;
-  bool isOwner;
-  bool isLoading;
+  final CustomerProfile? searchedUser;
+  final String? searchedUserName;
+  final Map<String, dynamic>? channelDetail;
+  final bool isOwner;
+  final bool isLoading;
   // Map<String, dynamic>? result = {};
 
   ChannelProfileScreen({
@@ -320,7 +320,7 @@ class _ChannelProfileScreenState extends State<ChannelProfileScreen>
     );
   }
 
-  getTabViewLayout() {
+  Widget getTabViewLayout() {
     return TabBarView(
       controller: _tabController,
       children:
@@ -391,7 +391,7 @@ class _ChannelProfileScreenState extends State<ChannelProfileScreen>
     _pageController!.removeListener(_scrollListener);
   }
 
-  refreshTabs(Map<String, bool> val) {
+  void refreshTabs(Map<String, bool> val) {
     if (compareMaps(reorderedBoolMap, val)) {
       debugPrint('The maps are equal.');
     } else {

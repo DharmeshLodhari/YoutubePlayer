@@ -196,7 +196,7 @@ class _DeliveryOptionState extends State<DeliveryOption> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(
+        const SizedBox(
           height: 16,
         ),
         Text(
@@ -208,14 +208,14 @@ class _DeliveryOptionState extends State<DeliveryOption> {
             fontFamily: "Inter",
           ),
         ),
-        SizedBox(height: 5),
+        const SizedBox(height: 5),
         _buildNoteTextField(),
       ],
     );
   }
 
-  pickDeliveryOptions() async {
-    String? pickedDeliveryOption = await showPickItemDialog<String>(
+  Future<void> pickDeliveryOptions() async {
+    final String? pickedDeliveryOption = await showPickItemDialog<String>(
       context: context,
       items: deliveryOption,
       selectedItem:
@@ -466,9 +466,9 @@ class _DeliveryOptionState extends State<DeliveryOption> {
 
   Widget _buildShipping() {
     Widget logo;
-    String? logoImage =
+    final String? logoImage =
         shippingProcessBloc.getPackageDetailModel().getShippingLogo() ?? "";
-    if ((logoImage.contains('http')) ||
+    if ((logoImage!.contains('http')) ||
         shippingProcessBloc.getPackageDetailModel().shippingType ==
             ShippingTypes.courier) {
       logo = Image.network(
@@ -504,7 +504,7 @@ class _DeliveryOptionState extends State<DeliveryOption> {
           minVerticalPadding: 0,
           minLeadingWidth: 10,
           contentPadding: EdgeInsets.zero,
-          visualDensity: VisualDensity(horizontal: 0, vertical: 0),
+          visualDensity: const VisualDensity(horizontal: 0, vertical: 0),
           leading: logo,
           title: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -526,7 +526,8 @@ class _DeliveryOptionState extends State<DeliveryOption> {
                 ),
               ),
               Checkbox(
-                visualDensity: VisualDensity(horizontal: -4, vertical: -4),
+                visualDensity:
+                    const VisualDensity(horizontal: -4, vertical: -4),
                 checkColor: Colors.white,
                 activeColor: navyBlue,
                 value: true,
@@ -573,7 +574,7 @@ class _DeliveryOptionState extends State<DeliveryOption> {
                 ),
               ),
             ),
-            SizedBox(width: 5.0),
+            const SizedBox(width: 5.0),
             _buildTrackingTag(),
           ],
         ),
@@ -583,7 +584,7 @@ class _DeliveryOptionState extends State<DeliveryOption> {
 
   Widget _buildTrackingTag() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(7),
         color: greyBorderColor,

@@ -52,7 +52,7 @@ class MainSocketMessageModel {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = Map<String, dynamic>();
     data['author'] = this.author;
     data['conversation'] = this.conversation;
     data['created_at'] = this.createdAt;
@@ -71,7 +71,7 @@ class MainSocketMessageModel {
   }
 
   Map<String, dynamic> toHashedJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = Map<String, dynamic>();
     data['author'] = this.author;
     data['conversation'] = this.conversation;
     data['created_at'] = generateCreatedAt();

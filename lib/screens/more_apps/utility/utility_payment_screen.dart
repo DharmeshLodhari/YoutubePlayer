@@ -49,7 +49,7 @@ class _UtilityPaymentScreenState extends State<UtilityPaymentScreen> {
     super.dispose();
   }
 
-  getProviderListDetails() {
+  void getProviderListDetails() {
     UtilityAuth()
         .getUtilityProviderProduct(providerId: widget.providerModel.providerId)
         .then(

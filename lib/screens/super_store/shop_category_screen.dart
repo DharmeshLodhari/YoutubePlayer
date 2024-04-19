@@ -11,7 +11,7 @@ import '../more_apps/shopping/shopping_auth.dart';
 import '../more_apps/yarn/yarn_dashboard_bloc.dart';
 
 class ShopCategoryScreen extends StatefulWidget {
-  ProductCategory? productCategories;
+  final ProductCategory? productCategories;
   ShopCategoryScreen({this.productCategories});
 
   @override

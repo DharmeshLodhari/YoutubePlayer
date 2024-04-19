@@ -100,7 +100,7 @@ class _MyServicesState extends State<MyServices> {
           width: 12,
         ),
       ),
-      SizedBox(width: 30),
+      const SizedBox(width: 30),
       RoundedBackgroundIcon(
         backgroundColor: Colors.transparent,
         onTap: () {
@@ -118,7 +118,7 @@ class _MyServicesState extends State<MyServices> {
           ),
         ),
       ),
-      SizedBox(width: 20),
+      const SizedBox(width: 20),
     ];
   }
 

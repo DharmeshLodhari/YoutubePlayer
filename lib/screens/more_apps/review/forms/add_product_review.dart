@@ -127,7 +127,7 @@ class _AddReviewState extends State<AddReview> {
                             color: starYellow,
                           ),
                           onRatingUpdate: (rating) {
-                            print(rating);
+                            debugPrint("Rating : $rating");
                           },
                           unratedColor: starYellow.withOpacity(0.2),
                           glowColor: starYellow.withOpacity(0.2),

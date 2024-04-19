@@ -318,7 +318,7 @@ class _AddEditDiscountState extends State<AddEditDiscount> {
               isLoading: isDeleteLoading,
             ),
           ),
-          SizedBox(
+          const SizedBox(
             width: 20,
           ),
           Expanded(
@@ -428,7 +428,7 @@ class _AddEditDiscountState extends State<AddEditDiscount> {
       children: [
         GestureDetector(
           onTap: () async {
-            var result = await NavigationUtil.push(
+            final result = await NavigationUtil.push(
               context,
               screen: UserProductListForDiscount(item: discountModel),
             );
@@ -455,7 +455,7 @@ class _AddEditDiscountState extends State<AddEditDiscount> {
                     color: blackFont,
                     fontWeight: FontWeight.w600),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 18,
               ),
               Row(
@@ -483,7 +483,7 @@ class _AddEditDiscountState extends State<AddEditDiscount> {
         if (isItemSelected || isEdit)
           Column(
             children: [
-              SizedBox(
+              const SizedBox(
                 height: 16,
               ),
               Text(

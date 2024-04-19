@@ -28,7 +28,6 @@ class SuperStoreHome extends StatefulWidget {
 class _SuperStoreHomeState extends State<SuperStoreHome> {
   int? productCount = 0;
   late BasketBloc basketBloc;
-  late PageController _pageViewController;
   int currentAskTapOnHome = 0;
   bool _tabsVisible = true;
   String categoryName = '';
@@ -37,12 +36,11 @@ class _SuperStoreHomeState extends State<SuperStoreHome> {
 
   @override
   void initState() {
-    _pageViewController = PageController(initialPage: 0);
     getProductIndustries();
     super.initState();
   }
 
-  getProductIndustries() async {
+  void getProductIndustries() async {
     isLoading = true;
     if (mounted) setState(() {});
     final result = await ShoppingAuthService().listOfIndustries();
@@ -168,8 +166,7 @@ class _SuperStoreHomeState extends State<SuperStoreHome> {
     return NotificationListener<ScrollNotification>(
       onNotification: (scrollNotification) {
         /// Check if the scroll direction is horizontal
-        if (scrollNotification is ScrollNotification &&
-            scrollNotification.metrics.axis == Axis.horizontal) {
+        if (scrollNotification.metrics.axis == Axis.horizontal) {
           // Disable horizontal scrolling
           return true;
         }

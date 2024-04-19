@@ -12,8 +12,8 @@ class PackageDetailTile extends StatelessWidget {
 
   final PackageDetailsModel packageDetailsModel;
   final int index;
-  late ShippingProcessBloc shippingProcessBloc;
-  late UserBloc userBloc;
+  late final ShippingProcessBloc shippingProcessBloc;
+  late final UserBloc userBloc;
 
   @override
   Widget build(BuildContext context) {
@@ -39,11 +39,11 @@ class PackageDetailTile extends StatelessWidget {
                 )
               : decorateBox(),
           // decoration: decorateBox(),
-          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
           child: Column(
             children: [
               _buildPackageDetail(context),
-              SizedBox(
+              const SizedBox(
                 height: 5.0,
               ),
               if (shippingProcessBloc.isPaymentSuccessful == false)
@@ -91,7 +91,8 @@ class PackageDetailTile extends StatelessWidget {
                     .packagesList[index].isShippingProcessCompleted ==
                 true)
               Checkbox(
-                visualDensity: VisualDensity(horizontal: -4, vertical: -4),
+                visualDensity:
+                    const VisualDensity(horizontal: -4, vertical: -4),
                 checkColor: Colors.white,
                 activeColor: navyBlue,
                 value: true,
@@ -168,7 +169,7 @@ class PackageDetailTile extends StatelessWidget {
                   ),
                 ],
               ),
-              SizedBox(
+              const SizedBox(
                 height: 3,
               ),
               Text(
@@ -219,7 +220,7 @@ class PackageDetailTile extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Expanded(child: child),
-          Padding(
+          const Padding(
             padding: EdgeInsets.only(right: 7.0),
             child: Icon(
               Icons.keyboard_arrow_right_outlined,

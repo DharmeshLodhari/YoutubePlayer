@@ -11,15 +11,15 @@ class JobDescriptionCard extends StatelessWidget {
     return Container(
       // width: 343,
       height: 100,
-      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
         border: Border.all(
-          color: Color(0xfffafbff),
+          color: const Color(0xfffafbff),
           width: 1,
         ),
         boxShadow: [
-          BoxShadow(
+          const BoxShadow(
             color: Color(0x0c31378c),
             blurRadius: 20,
             offset: Offset(0, 8),
@@ -42,7 +42,7 @@ class JobDescriptionCard extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 18,
                   height: 6,
                   child: Text(
@@ -57,7 +57,7 @@ class JobDescriptionCard extends StatelessWidget {
                 ),
               ],
             ),
-            Spacer(),
+            const Spacer(),
             Text(
               "₦1,000,000.00",
               style: TextStyle(
@@ -69,7 +69,7 @@ class JobDescriptionCard extends StatelessWidget {
             )
           ],
         ),
-        SizedBox(
+        const SizedBox(
           height: 12,
         ),
         Text(
@@ -79,7 +79,7 @@ class JobDescriptionCard extends StatelessWidget {
             fontSize: 10,
           ),
         ),
-        SizedBox(
+        const SizedBox(
           height: 10,
         ),
         Row(
@@ -93,8 +93,8 @@ class JobDescriptionCard extends StatelessWidget {
                 fontWeight: FontWeight.w600,
               ),
             ),
-            Spacer(),
-            Text(
+            const Spacer(),
+            const Text(
               "IbadanIkeja, Lagos",
               style: TextStyle(
                 color: Color(0xff030e36),

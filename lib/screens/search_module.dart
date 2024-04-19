@@ -1411,7 +1411,7 @@ class _SearchModuleState extends State<SearchModule> {
   }
 
   void connectUserAlert(CustomerProfile user) async {
-    final bool? result = await showDialogBox(
+    await showDialogBox(
       context: context,
       roundedBackgroundIcon: RoundedBackgroundIcon(
         backgroundColor: navyBlue.withOpacity(0.08),

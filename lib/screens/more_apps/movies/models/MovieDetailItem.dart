@@ -44,7 +44,7 @@ class MovieDetailItem {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = Map<String, dynamic>();
     data['category'] = this.category;
     data['currency'] = this.currency;
     data['description'] = this.description;

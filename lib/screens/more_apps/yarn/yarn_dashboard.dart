@@ -225,8 +225,7 @@ class _YarnDashboardState extends State<YarnDashboard> {
     return NotificationListener<ScrollNotification>(
       onNotification: (scrollNotification) {
         /// Check if the scroll direction is horizontal
-        if (scrollNotification is ScrollNotification &&
-            scrollNotification.metrics.axis == Axis.horizontal) {
+        if (scrollNotification.metrics.axis == Axis.horizontal) {
           // Disable horizontal scrolling
           return true;
         }

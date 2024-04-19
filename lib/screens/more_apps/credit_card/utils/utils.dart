@@ -1,4 +1,3 @@
-
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -17,7 +16,7 @@ String formatAsNaira(double amount) {
 }
 
 String convertCurrency(double value, double inputValue) {
-  double finalOutput = value * inputValue;
+  final double finalOutput = value * inputValue;
 
   return formatCurrency(finalOutput);
 }
@@ -37,7 +36,9 @@ String insertSpacesInCardNumber(String cardNumber) {
 
 Widget blurredText(String text, bool shouldBlur, double fontSize) {
   return BackdropFilter(
-    filter: shouldBlur ? ImageFilter.blur(sigmaX: 0, sigmaY: 0) : ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+    filter: shouldBlur
+        ? ImageFilter.blur(sigmaX: 0, sigmaY: 0)
+        : ImageFilter.blur(sigmaX: 5, sigmaY: 5),
     child: Text(
       text,
       style: TextStyle(

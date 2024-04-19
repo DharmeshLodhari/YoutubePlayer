@@ -23,9 +23,9 @@ class DeliveryHistory extends StatefulWidget {
 
 class _DeliveryHistoryState extends State<DeliveryHistory> {
   final GlobalKey<ScaffoldMessengerState> _historyScaffoldMessengerKey =
-      new GlobalKey<ScaffoldMessengerState>();
-  ScrollController _historyScrollController = new ScrollController();
-  RefreshController _refreshController =
+      GlobalKey<ScaffoldMessengerState>();
+  final ScrollController _historyScrollController = ScrollController();
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
   int? listCount = 0;
   bool isLoading = false;
@@ -60,7 +60,7 @@ class _DeliveryHistoryState extends State<DeliveryHistory> {
         isLoading = true;
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result = await RiderDeliveryAuthService()
+        final Map<String, dynamic>? result = await RiderDeliveryAuthService()
             .getRiderHistory(listNext, listPrevious);
 
         if (result == null) {
@@ -76,7 +76,7 @@ class _DeliveryHistoryState extends State<DeliveryHistory> {
         listCount = result['count'];
         listNext = result['next'];
         listPrevious = result['previous'];
-        var tempList = result['results'];
+        final tempList = result['results'];
         if (mounted) {
           setState(() {
             noJobsInList = false;
@@ -217,7 +217,7 @@ class _DeliveryHistoryState extends State<DeliveryHistory> {
                             child: Column(
                               children: [
                                 Padding(
-                                  padding: EdgeInsets.only(
+                                  padding: const EdgeInsets.only(
                                       left: 10.0, right: 10.0, top: 12.0),
                                   child: _buildDateAndWaitingButton(index),
                                 ),
@@ -226,7 +226,7 @@ class _DeliveryHistoryState extends State<DeliveryHistory> {
                               ],
                             ),
                           ),
-                          SizedBox(height: 10.0),
+                          const SizedBox(height: 10.0),
                         ],
                       ),
                     );
@@ -254,7 +254,7 @@ class _DeliveryHistoryState extends State<DeliveryHistory> {
   }
 
   Widget _buildDate(int index) {
-    String date =
+    final String date =
         DateFormat("dd MMMM,yyyy").format(jobListing[index].createdAt!);
     return Text(
       date,
@@ -268,10 +268,10 @@ class _DeliveryHistoryState extends State<DeliveryHistory> {
   }
 
   Widget _buildWaitingButton(int index) {
-    Color color = getStatusColor(index);
+    final Color color = getStatusColor(index);
 
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         color: color.withOpacity(0.1),
@@ -288,7 +288,7 @@ class _DeliveryHistoryState extends State<DeliveryHistory> {
     );
   }
 
-  getStatusColor(int index) {
+  Color getStatusColor(int index) {
     switch (jobListing[index].status) {
       case 'Awaiting Pickup':
         return starYellow;
@@ -307,7 +307,7 @@ class _DeliveryHistoryState extends State<DeliveryHistory> {
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         listNext = "";

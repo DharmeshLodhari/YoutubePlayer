@@ -19,14 +19,14 @@ import 'package:provider/provider.dart';
 class ConfirmOrder extends StatefulWidget {
   ConfirmOrder({this.arguments, Key? key}) : super(key: key);
 
-  var arguments;
+  final dynamic arguments;
 
   @override
   State<ConfirmOrder> createState() => _ConfirmOrderState();
 }
 
 class _ConfirmOrderState extends State<ConfirmOrder> {
-  ScrollController _confirmOrderScrollController = new ScrollController();
+  final ScrollController _confirmOrderScrollController = ScrollController();
 
   late BasketBloc basketBloc;
   late UserBloc userBloc;
@@ -156,7 +156,7 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
             child: SingleChildScrollView(
               controller: _confirmOrderScrollController,
               child: Padding(
-                padding: EdgeInsets.all(10.0),
+                padding: const EdgeInsets.all(10.0),
                 child: Column(
                   children: [
                     ListView.builder(
@@ -170,7 +170,7 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
                             index: index);
                       },
                     ),
-                    SizedBox(height: 10.0),
+                    const SizedBox(height: 10.0),
                     if (shippingProcessBloc.isAllShippingProcessCompleted() ==
                             true &&
                         shippingProcessBloc.isPaymentSuccessful == false)
@@ -180,9 +180,10 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
               ),
             ),
           ),
-          shippingProcessBloc.isPaymentSuccessful == true
-              ? _buildDoneButton()
-              : _buildPayButton(),
+          if (shippingProcessBloc.isPaymentSuccessful == true)
+            _buildDoneButton()
+          else
+            _buildPayButton(),
         ],
       ),
     );
@@ -213,23 +214,23 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
                   fontFamily: "Inter",
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 15.0,
               ),
               _buildTotalItemCost(),
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
               _buildTotalShipping(),
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
               _buildServiceCharge(),
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
               _buildInsurance(),
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
               _buildOrderTotal(),
@@ -304,7 +305,7 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
             for (int i = 0; i < value.length; i++) {
               orders.add(value[i]["id"]);
             }
-            var response = await PaymentAndBankingAuth()
+            final response = await PaymentAndBankingAuth()
                 .makePaymentForCartOrder({"orders": orders});
 
             if (response.statusCode == 200) {

@@ -333,7 +333,7 @@ class _UtilityHistoryDetailScreenState
     );
   }
 
-  getStatusWidget() {
+  Widget getStatusWidget() {
     return Container(
       padding: const EdgeInsets.all(7),
       decoration: BoxDecoration(

@@ -640,13 +640,13 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
     );
   }
 
-  Widget displayUserAvatar(userBloc) {
+  Widget displayUserAvatar(UserBloc userBloc) {
     return Padding(
       padding: const EdgeInsets.all(10.0),
       child: GestureDetector(
         child: ClipOval(
           child: CachedNetworkImage(
-            imageUrl: userBloc.user.avatar,
+            imageUrl: userBloc.user.avatar ?? "",
             height: 40,
             width: 40,
             colorBlendMode: BlendMode.darken,

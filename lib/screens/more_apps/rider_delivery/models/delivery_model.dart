@@ -223,9 +223,9 @@ class DeliveryModel {
     return false;
   }
 
-  String convertDateFormat(String time) {
+  String convertDateFormat(String? time) {
     if (time != null && time != "null") {
-      DateTime pickupTime = DateTime.parse(time);
+      final DateTime pickupTime = DateTime.parse(time);
       // Format into AM/PM time
       return DateFormat('h:mm a').format(pickupTime.toLocal());
     }

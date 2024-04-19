@@ -38,7 +38,7 @@ class NudgeNotification {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = Map<String, dynamic>();
     data['actions'] = this.actions;
     data['author'] = this.author;
     data['author_avatar'] = this.authorAvatar;

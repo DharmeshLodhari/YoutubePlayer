@@ -18,7 +18,7 @@ import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 
 class PreviewDeliveryProofScreen extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
   PreviewDeliveryProofScreen({
     Key? key,
@@ -39,11 +39,11 @@ class _PreviewDeliveryProofScreenState
   VideoPlayerController? videoPlayerController;
   String? generatedVideoThumbnail;
   bool isLoading = false;
-  DatabaseHelper _db = DatabaseHelper();
+  final DatabaseHelper _db = DatabaseHelper();
 
   @override
   void initState() {
-    String? fType = getFileTypeByPath(path: widget.arguments["filePath"]);
+    final String? fType = getFileTypeByPath(path: widget.arguments["filePath"]);
     if (fType == null) return;
     fileType = fType;
     /*If the media to be previewed is a video, generate a thumbnail from it (the video)*/
@@ -149,16 +149,17 @@ class _PreviewDeliveryProofScreenState
             widget: Stack(
               children: [
                 VideoPlayer(videoPlayerController!),
-                isTapped == false
-                    ? Align(
-                        alignment: Alignment.center,
-                        child: SvgPicture.asset(
-                          "yarn/cam_vec".toSVG(),
-                          height: 50,
-                          width: 50,
-                        ),
-                      )
-                    : const SizedBox.shrink()
+                if (isTapped == false)
+                  Align(
+                    alignment: Alignment.center,
+                    child: SvgPicture.asset(
+                      "yarn/cam_vec".toSVG(),
+                      height: 50,
+                      width: 50,
+                    ),
+                  )
+                else
+                  const SizedBox.shrink()
               ],
             ),
           ),

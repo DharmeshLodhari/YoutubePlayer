@@ -15,8 +15,8 @@ import '../more_apps/yarn/utils/yarn_enum.dart';
 import '../more_apps/yarn/widgets/yarn_shimmer.dart';
 
 class FindBusinessListScreen extends StatefulWidget {
-  Function(bool)? onPageRefresh;
-  String? category;
+  final Function(bool)? onPageRefresh;
+  final String? category;
   final String? industry;
 
   FindBusinessListScreen(

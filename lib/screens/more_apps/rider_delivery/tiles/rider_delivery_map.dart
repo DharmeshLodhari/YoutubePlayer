@@ -109,10 +109,10 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
     LocationData? currentLocation;
     try {
       currentLocation = await _locationTracker.getLocation();
-      double? accuracy = currentLocation.accuracy;
-      print('Location Accuracy: $accuracy meters');
+      final double? accuracy = currentLocation.accuracy;
+      debugPrint('Location Accuracy: $accuracy meters');
     } catch (e) {
-      print('Error getting location: $e');
+      debugPrint('Error getting location: $e');
     }
     // final LocationData location = await _locationTracker.getLocation();
     return currentLocation;
@@ -271,11 +271,11 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
 
   Future<void> _cameraToPosition(LocationData pos) async {
     controller = await _mapController.future;
-    final double zoomLevel = await controller?.getZoomLevel() ?? 13;
-    final CameraPosition _newCameraPosition = CameraPosition(
-      target: LatLng(pos.latitude!, pos.longitude!),
-      zoom: zoomLevel,
-    );
+    // final double zoomLevel = await controller?.getZoomLevel() ?? 13;
+    // final CameraPosition _newCameraPosition = CameraPosition(
+    //   target: LatLng(pos.latitude!, pos.longitude!),
+    //   zoom: zoomLevel,
+    // );
     // await controller?.animateCamera(
     //   CameraUpdate.newCameraPosition(_newCameraPosition),
     // );
@@ -300,14 +300,15 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
   Duration calculateDurationInMinutes(
       double distanceInMeters, double riderSpeedMetersPerSecond) {
     // Calculate duration in seconds
-    double durationInSeconds = distanceInMeters / riderSpeedMetersPerSecond;
+    final double durationInSeconds =
+        distanceInMeters / riderSpeedMetersPerSecond;
 
     // Convert duration to minutes
     // double durationInMinutes = durationInSeconds / 60;
 
     // return durationInMinutes.floor();
 
-    Duration d = Duration(seconds: durationInSeconds.floor());
+    final Duration d = Duration(seconds: durationInSeconds.floor());
 
     return d;
   }

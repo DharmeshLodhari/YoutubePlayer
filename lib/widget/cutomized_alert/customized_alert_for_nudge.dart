@@ -182,7 +182,7 @@ class CustomizedAlertForNudge {
   }
 
 // Shows alert with selected animation
-  _showAnimation(animation, secondaryAnimation, child) {
+  dynamic _showAnimation(animation, secondaryAnimation, child) {
     if (style.animationType == AnimationType.fromRight) {
       return AnimationTransition.fromRight(
           animation, secondaryAnimation, child);

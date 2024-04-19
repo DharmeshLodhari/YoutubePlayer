@@ -13,8 +13,8 @@ import 'yarn_auth.dart';
 import 'yarn_detail_screen.dart';
 
 class SearchScreen extends StatefulWidget {
-  YarnCategories? askCategory;
-  String? searchText;
+  final YarnCategories? askCategory;
+  final String? searchText;
   SearchScreen({Key? key, this.askCategory, this.searchText}) : super(key: key);
 
   @override

@@ -19,7 +19,7 @@ import 'package:provider/provider.dart';
 import '../../shopping_auth.dart';
 
 class ProductAddOnOptionCreate extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
   ProductAddOnOptionCreate({this.arguments, Key? key}) : super(key: key);
 
@@ -225,7 +225,7 @@ class _ProductAddOnOptionCreateState extends State<ProductAddOnOptionCreate> {
       ImagePicker().pickImage(source: imageSource).then((value) async {
         if (value != null) {
           /// for cropping the image
-          String? croppedImage = await ImageCrop().cropImage(value.path);
+          final String? croppedImage = await ImageCrop().cropImage(value.path);
           if (croppedImage == null) {
             return;
           }

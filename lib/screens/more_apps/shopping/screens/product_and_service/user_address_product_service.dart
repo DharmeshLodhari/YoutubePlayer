@@ -17,8 +17,8 @@ import '../../../user_profile/user_auth.dart';
 import '../../../user_profile/widgets/pick_state_widget.dart';
 
 class UserAddressProductService extends StatefulWidget {
-  String? customerName;
-  bool fromCheckoutScreen;
+  final String? customerName;
+  final bool fromCheckoutScreen;
 
   UserAddressProductService(
       {this.customerName, this.fromCheckoutScreen = false});
@@ -138,7 +138,7 @@ class _UserAddressProductServiceState extends State<UserAddressProductService> {
             (AppBar().preferredSize.height +
                 MediaQuery.of(context).padding.top),
         width: MediaQuery.of(context).size.width,
-        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         child: Column(
           children: [
             Expanded(
@@ -173,15 +173,15 @@ class _UserAddressProductServiceState extends State<UserAddressProductService> {
                     ),
                     flexibleSpace(),
                     getSubmitButton(),
-                    SizedBox(height: 12),
-                    widget.customerName == null
-                        ? Text(
-                            billingAddressDesc,
-                            style: TextStyle(
-                                color: Colors.black.withOpacity(0.4),
-                                fontSize: 14),
-                          )
-                        : SizedBox.shrink()
+                    const SizedBox(height: 12),
+                    if (widget.customerName == null)
+                      Text(
+                        billingAddressDesc,
+                        style: TextStyle(
+                            color: Colors.black.withOpacity(0.4), fontSize: 14),
+                      )
+                    else
+                      const SizedBox.shrink()
                   ],
                 ),
               ),
@@ -196,7 +196,7 @@ class _UserAddressProductServiceState extends State<UserAddressProductService> {
   Widget getDeliveryNote() {
     return widget.fromCheckoutScreen
         ? getDeliveryNoteTextField()
-        : SizedBox.shrink();
+        : const SizedBox.shrink();
   }
 
   Widget getDeliveryNoteTextField() {
@@ -247,14 +247,14 @@ class _UserAddressProductServiceState extends State<UserAddressProductService> {
               : AppLocalization.of(context)!.country,
           style: TextStyle(color: darkGrey, fontSize: 14),
         ),
-        SizedBox(height: 6),
+        const SizedBox(height: 6),
         Card(
           elevation: 0,
           color: Colors.white,
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
               side: BorderSide(color: greyBorderColor)),
-          margin: EdgeInsets.all(0),
+          margin: const EdgeInsets.all(0),
           borderOnForeground: true,
           child: ListTile(
             dense: true,
@@ -275,13 +275,13 @@ class _UserAddressProductServiceState extends State<UserAddressProductService> {
     return Row(
       children: <Widget>[
         CountryPickerUtils.getDefaultFlagImage(country),
-        SizedBox(width: 8.0),
+        const SizedBox(width: 8.0),
         Text(
           "+${country.phoneCode}",
           style: TextStyle(
               fontSize: 16, fontWeight: FontWeight.w600, color: blackFont),
         ),
-        SizedBox(width: 8.0),
+        const SizedBox(width: 8.0),
         Flexible(
             child: Text(
           country.name!,
@@ -297,7 +297,7 @@ class _UserAddressProductServiceState extends State<UserAddressProductService> {
         builder: (context) => Theme(
           data: Theme.of(context).copyWith(primaryColor: Colors.pink),
           child: CountryPickerDialog(
-            titlePadding: EdgeInsets.all(8.0),
+            titlePadding: const EdgeInsets.all(8.0),
             searchCursorColor: Colors.pinkAccent,
             searchInputDecoration:
                 InputDecoration(hintText: AppLocalization.of(context)!.search),
@@ -321,11 +321,11 @@ class _UserAddressProductServiceState extends State<UserAddressProductService> {
             textColor: Colors.white,
             backgroundColor: navyBlue,
           )
-        : SizedBox.shrink();
+        : const SizedBox.shrink();
   }
 
   void goToOrderSummaryPage() {
-    ShippingAddress address = ShippingAddress(
+    final ShippingAddress address = ShippingAddress(
       city: cityController.text,
       stateName: pickedStateValue,
       country: selectedCountry.name,
@@ -342,7 +342,7 @@ class _UserAddressProductServiceState extends State<UserAddressProductService> {
 
   void onSubmit() async {
     if (_formKey.currentState!.validate()) {
-      Map data = {
+      final Map data = {
         "city": cityController.text,
         "state": pickedStateId,
         "country": selectedCountry.name,

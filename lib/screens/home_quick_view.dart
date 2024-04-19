@@ -31,7 +31,7 @@ import 'more_apps/yarn/yarn_dashboard.dart';
 import 'more_apps/yarn/yarn_dashboard_bloc.dart';
 
 class HomeQuickView extends StatefulWidget {
-  final arguments;
+  final dynamic arguments;
 
   const HomeQuickView({this.arguments, Key? key}) : super(key: key);
 
@@ -564,7 +564,7 @@ class _HomeQuickViewState extends State<HomeQuickView> {
         NavigationUtil.push(context, screen: YarnDashboard());
         break;
       case ProtectionPermission.moment:
-        NavigationUtil.push(context, screen: MomentsScreen());
+        NavigationUtil.push(context, screen: const MomentsScreen());
         break;
       case ProtectionPermission.blog:
         // if (appConfigurationModel?.enableSuperBlog == true) {
@@ -586,7 +586,7 @@ class _HomeQuickViewState extends State<HomeQuickView> {
         Navigator.pushNamed(context, Routes.ORDERS_LIST);
         break;
       case ProtectionPermission.superStore:
-        NavigationUtil.push(context, screen: SuperStoreHome());
+        NavigationUtil.push(context, screen: const SuperStoreHome());
         break;
       case ProtectionPermission.servicesHub:
         Navigator.pushNamed(context, Routes.SUPER_HUB, arguments: {'page': 0});

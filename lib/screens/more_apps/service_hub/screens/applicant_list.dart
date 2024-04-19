@@ -53,7 +53,7 @@ class _ApplicantListState extends State<ApplicantList> {
             listNext, listPrevious,
             jobId: widget.job!.id);
 
-        print("message::$result");
+        debugPrint("message::$result");
 
         if (result == null) {
           noApplicantInList = true;
@@ -103,7 +103,7 @@ class _ApplicantListState extends State<ApplicantList> {
     });
   }
 
-  _refreshPage() {
+  void _refreshPage() {
     listNext = "";
     listPrevious = "";
     listCount = 0;
@@ -137,32 +137,33 @@ class _ApplicantListState extends State<ApplicantList> {
             mainAxisSize: MainAxisSize.min,
             children: [
               getAppicantListView(),
-              isLoading
-                  ? Shimmer.fromColors(
-                      baseColor: Colors.white,
-                      highlightColor: greyBorderColor,
-                      child: GridView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        gridDelegate:
-                            const SliverGridDelegateWithMaxCrossAxisExtent(
-                          mainAxisSpacing: 14,
-                          mainAxisExtent: 180,
-                          crossAxisSpacing: 15,
-                          maxCrossAxisExtent: 200,
+              if (isLoading)
+                Shimmer.fromColors(
+                  baseColor: Colors.white,
+                  highlightColor: greyBorderColor,
+                  child: GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate:
+                        const SliverGridDelegateWithMaxCrossAxisExtent(
+                      mainAxisSpacing: 14,
+                      mainAxisExtent: 180,
+                      crossAxisSpacing: 15,
+                      maxCrossAxisExtent: 200,
+                    ),
+                    itemCount: 2,
+                    itemBuilder: (context, index) {
+                      return Card(
+                        color: Colors.grey,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
                         ),
-                        itemCount: 2,
-                        itemBuilder: (context, index) {
-                          return Card(
-                            color: Colors.grey,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          );
-                        },
-                      ),
-                    )
-                  : const SizedBox.shrink(),
+                      );
+                    },
+                  ),
+                )
+              else
+                const SizedBox.shrink(),
               Visibility(
                 visible: !isLoading && applicantList.isEmpty,
                 child: Center(
@@ -354,11 +355,11 @@ class _ApplicantListState extends State<ApplicantList> {
       actionPane: const SlidableBehindActionPane(),
       actionExtentRatio: 0.25,
       enabled: widget.job!.assignee == null,
+      actions: listActionSlideActions(index),
+      secondaryActions: listSecondaryActions(index),
       child: VerticalListItem(
         applicant: applicantList[index],
       ),
-      actions: listActionSlideActions(index),
-      secondaryActions: listSecondaryActions(index),
     );
   }
 }
@@ -368,7 +369,7 @@ class VerticalListItem extends StatelessWidget {
 
   final JobApplicantModel? applicant;
 
-  double rating = 3;
+  final double rating = 3;
 
   @override
   Widget build(BuildContext context) {

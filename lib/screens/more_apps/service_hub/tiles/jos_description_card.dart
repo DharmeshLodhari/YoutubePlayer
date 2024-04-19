@@ -19,10 +19,10 @@ class JobDescriptionCard extends StatelessWidget {
   String? user;
 
   String getTimeDifference() {
-    var difference =
+    final difference =
         DateTime.now().difference(DateTime.parse(job!.creationDate!));
     String time = '';
-    print(difference.toString() + '-----');
+    debugPrint(difference.toString() + '-----');
     if (difference > const Duration(hours: 24)) {
       time = difference.inDays.toString() + ' days';
     } else if (difference > const Duration(hours: 1)) {
@@ -87,7 +87,7 @@ class JobDescriptionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     user = Provider.of<UserBloc>(context).user.userName;
-    print('$user && ${job?.owner}');
+    debugPrint('$user && ${job?.owner}');
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
       decoration: BoxDecoration(
@@ -121,45 +121,46 @@ class JobDescriptionCard extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                job?.assignee != null &&
-                        user != job?.assignee &&
-                        job!.isListed == false &&
-                        job!.applicants!.contains(user)
-                    ? Container(
-                        width: 54,
-                        // height: 20,
-                        alignment: Alignment.center,
-                        padding: const EdgeInsets.all(6),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: red),
-                          color: red.withOpacity(0.1),
-                        ),
-                        child: Text(
-                          'closed',
-                          style: TextStyle(
-                            color: red,
-                            fontSize: 10.80,
-                            fontFamily: "Inter",
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      )
-                    : Container(
-                        padding: const EdgeInsets.fromLTRB(20, 6, 20, 6),
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            color: colorStatus(job!.status!).withOpacity(.4)),
-                        child: Text(
-                          textStatus(job!.status!),
-                          style: TextStyle(
-                            color: colorStatus(job!.status!),
-                            fontSize: 12,
-                            fontFamily: "Inter",
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
+                if (job?.assignee != null &&
+                    user != job?.assignee &&
+                    job!.isListed == false &&
+                    job!.applicants!.contains(user))
+                  Container(
+                    width: 54,
+                    // height: 20,
+                    alignment: Alignment.center,
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: red),
+                      color: red.withOpacity(0.1),
+                    ),
+                    child: Text(
+                      'closed',
+                      style: TextStyle(
+                        color: red,
+                        fontSize: 10.80,
+                        fontFamily: "Inter",
+                        fontWeight: FontWeight.w600,
                       ),
+                    ),
+                  )
+                else
+                  Container(
+                    padding: const EdgeInsets.fromLTRB(20, 6, 20, 6),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        color: colorStatus(job!.status!).withOpacity(.4)),
+                    child: Text(
+                      textStatus(job!.status!),
+                      style: TextStyle(
+                        color: colorStatus(job!.status!),
+                        fontSize: 12,
+                        fontFamily: "Inter",
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
               ],
             ),
             const SizedBox(

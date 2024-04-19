@@ -11,11 +11,11 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class ReviewTile extends StatefulWidget {
-  Review? review;
-  CustomerProfile? reviewedUser;
-  Product? product;
-  Service? service;
-  bool? isNavigable;
+  late final Review? review;
+  final CustomerProfile? reviewedUser;
+  final Product? product;
+  final Service? service;
+  final bool? isNavigable;
 
   ReviewTile({
     this.review,

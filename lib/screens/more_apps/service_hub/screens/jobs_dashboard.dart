@@ -31,7 +31,7 @@ class _JobsDashboardState extends State<JobsDashboard> {
   bool isTodayDealLoading = false;
   final GlobalKey<ScaffoldMessengerState> _jobScaffoldMessengerKey =
       GlobalKey<ScaffoldMessengerState>();
-  ScrollController _jobsScrollController = ScrollController();
+  final ScrollController _jobsScrollController = ScrollController();
 
   final TextEditingController searchController = TextEditingController();
   late UserBloc userBloc;
@@ -54,7 +54,7 @@ class _JobsDashboardState extends State<JobsDashboard> {
   int? activeListingCount = 0;
   String? activeListingNext = "";
   String? activeListingPrevious = "";
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
   List status = ['Active', 'Closed', 'Pending'];
 
@@ -63,7 +63,7 @@ class _JobsDashboardState extends State<JobsDashboard> {
 
   bool isItemLoading = false;
   int? categoryCount = 0;
-  final ScrollController _scrollController = new ScrollController();
+  final ScrollController _scrollController = ScrollController();
 
   RefreshController refreshController =
       RefreshController(initialRefresh: false);
@@ -94,7 +94,7 @@ class _JobsDashboardState extends State<JobsDashboard> {
     });
   }
 
-  void getActiveJobListing({category}) async {
+  void getActiveJobListing({String? category}) async {
     if (!isActiveListLoading) {
       if (productNext != null && !isActiveListLoading) {
         isActiveListLoading = true;
@@ -143,7 +143,7 @@ class _JobsDashboardState extends State<JobsDashboard> {
   }
 
   @override
-  initState() {
+  void initState() {
     getActiveJobListing();
     _jobsScrollController.addListener(() {
       if (_jobsScrollController.position.pixels ==
@@ -158,7 +158,7 @@ class _JobsDashboardState extends State<JobsDashboard> {
     super.initState();
   }
 
-  _refreshPage() {
+  void _refreshPage() {
     productNext = "";
     productCount = 0;
     productPrevious = "";
@@ -209,32 +209,33 @@ class _JobsDashboardState extends State<JobsDashboard> {
                       height: 15,
                     ),
                     getJobsListData(),
-                    isCategoryLoading || isActiveListLoading
-                        ? Shimmer.fromColors(
-                            baseColor: Colors.white,
-                            highlightColor: greyBorderColor,
-                            child: GridView.builder(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              gridDelegate:
-                                  const SliverGridDelegateWithMaxCrossAxisExtent(
-                                mainAxisSpacing: 14,
-                                mainAxisExtent: 180,
-                                crossAxisSpacing: 15,
-                                maxCrossAxisExtent: 200,
+                    if (isCategoryLoading || isActiveListLoading)
+                      Shimmer.fromColors(
+                        baseColor: Colors.white,
+                        highlightColor: greyBorderColor,
+                        child: GridView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          gridDelegate:
+                              const SliverGridDelegateWithMaxCrossAxisExtent(
+                            mainAxisSpacing: 14,
+                            mainAxisExtent: 180,
+                            crossAxisSpacing: 15,
+                            maxCrossAxisExtent: 200,
+                          ),
+                          itemCount: 2,
+                          itemBuilder: (context, index) {
+                            return Card(
+                              color: Colors.grey,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
                               ),
-                              itemCount: 2,
-                              itemBuilder: (context, index) {
-                                return Card(
-                                  color: Colors.grey,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                );
-                              },
-                            ),
-                          )
-                        : const SizedBox.shrink(),
+                            );
+                          },
+                        ),
+                      )
+                    else
+                      const SizedBox.shrink(),
                     Visibility(
                       visible: !isCategoryLoading &&
                           !isActiveListLoading &&

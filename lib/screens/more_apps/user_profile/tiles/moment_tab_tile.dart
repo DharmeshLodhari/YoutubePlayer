@@ -13,8 +13,8 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shimmer/shimmer.dart';
 
 class MomentsTab extends StatefulWidget {
-  CustomerProfile? searchedUser;
-  String? channelUsername;
+  final CustomerProfile? searchedUser;
+  final String? channelUsername;
   MomentsTab({Key? key, required this.searchedUser, this.channelUsername})
       : super(key: key);
 
@@ -40,7 +40,7 @@ class _MomentsTabState extends State<MomentsTab> {
     getSearchedUserMoments();
   }
 
-  getSearchedUserMoments() async {
+  Future<void> getSearchedUserMoments() async {
     if (!isMyMomentsLoading) {
       if (myMomentsNext != null && !isMyMomentsLoading) {
         if (mounted) {

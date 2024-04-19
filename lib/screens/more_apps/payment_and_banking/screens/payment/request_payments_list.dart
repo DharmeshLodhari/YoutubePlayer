@@ -35,9 +35,9 @@ class PaymentRequestList extends StatefulWidget {
 
 class _PaymentRequestListState extends State<PaymentRequestList> {
   final GlobalKey<ScaffoldState> _scaffoldPaymentListKey =
-      new GlobalKey<ScaffoldState>();
+      GlobalKey<ScaffoldState>();
   final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerPaymentListKey =
-      new GlobalKey<ScaffoldMessengerState>();
+      GlobalKey<ScaffoldMessengerState>();
 
   final _auth = PaymentAndBankingAuth();
   SlidableController? _slideController;
@@ -45,8 +45,8 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
   String? next = "";
   String? previous = "";
   List requestPaymentList = [];
-  ScrollController _scrollController = new ScrollController();
-  RefreshController _refreshController =
+  final ScrollController _scrollController = ScrollController();
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
   bool isLoading = false;
   bool noItemInList = false;
@@ -59,7 +59,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
   DateTimeRange? newDateTimeRange;
   DateFormat dateFormat = DateFormat('yyyy-MM-dd');
 
-  GlobalKey _key = LabeledGlobalKey("paymentRequestListPopUpMenu");
+  final GlobalKey _key = LabeledGlobalKey("paymentRequestListPopUpMenu");
   late CustomizedPopUpMenu menu;
   int selectedMenuItemIndex = 0;
   bool isPopMenuOpen = false;
@@ -106,7 +106,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
       });
   }
 
-  _refresh() {
+  void _refresh() {
     count = 0;
     next = "";
     previous = "";
@@ -526,10 +526,10 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
   }
 
   Widget _buildIndicator() {
-    return new Padding(
+    return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: new Center(
-        child: new Opacity(
+      child: Center(
+        child: Opacity(
             opacity: isLoading ? 1.0 : 00,
             child: isLoading ? CircularLoadingIndicator() : Container()),
       ),

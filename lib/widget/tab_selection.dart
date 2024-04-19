@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 class TabSelection extends StatefulWidget {
   final Function(int) onTap;
   final int currentIndex;
-  String firstTab = '';
-  String secondTab = '';
+  final String firstTab;
+  final String secondTab;
 
   TabSelection(
       {required this.onTap,

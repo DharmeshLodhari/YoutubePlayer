@@ -65,7 +65,7 @@ class _EditJobState extends State<EditJob> {
   List<Cities> cityList = [];
 
   int imageCount = 5;
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
   TextEditingController titleController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
   TextEditingController locationController = TextEditingController();
@@ -120,9 +120,9 @@ class _EditJobState extends State<EditJob> {
   List<String> categoriesNameList = [];
   List<PickedFile> jobLocalImages = [];
   List<Pictures?> jobImagesFromServer = [];
-  ScrollController _categoryScrollController = ScrollController();
+  final ScrollController _categoryScrollController = ScrollController();
   final GlobalKey<ScaffoldMessengerState> _jobScaffoldMessengerKey =
-      new GlobalKey<ScaffoldMessengerState>();
+      GlobalKey<ScaffoldMessengerState>();
   RefreshController refreshController =
       RefreshController(initialRefresh: false);
 
@@ -499,8 +499,7 @@ class _EditJobState extends State<EditJob> {
       isLoading = true;
       if (mounted) setState(() {});
 
-      final result =
-          await ServiceHubAuthService().retreiveJob(jobId: jobId).then((value) {
+      await ServiceHubAuthService().retreiveJob(jobId: jobId).then((value) {
         if (mounted) {
           setState(() {
             currentJob = value;
@@ -603,7 +602,7 @@ class _EditJobState extends State<EditJob> {
     }
   }
 
-  Future<void> getShippingCities(code) async {
+  Future<void> getShippingCities(String? code) async {
     if (mounted) setState(() {});
     if (!isLoader) {
       isLoader = true;
@@ -717,15 +716,19 @@ class _EditJobState extends State<EditJob> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 const SizedBox(height: 20),
-                checkImageLimitForServerImage()
-                    ? viewServerImages()
-                    : Container(),
+                if (checkImageLimitForServerImage())
+                  viewServerImages()
+                else
+                  Container(),
                 // checkImageLimitForServerImage()
                 //     ? const SizedBox(
                 //         height: 8,
                 //       )
                 //     : Container(),
-                checkImageLimitForLocalImage() ? addLocalImages() : Container(),
+                if (checkImageLimitForLocalImage())
+                  addLocalImages()
+                else
+                  Container(),
                 const SizedBox(height: 20),
                 addJobTitleField(),
                 const SizedBox(
@@ -805,7 +808,7 @@ class _EditJobState extends State<EditJob> {
     );
   }
 
-  getPickDateStart({
+  Widget getPickDateStart({
     CrossAxisAlignment? crossAxisAlignment,
     String? dateText,
   }) =>
@@ -869,7 +872,7 @@ class _EditJobState extends State<EditJob> {
         ],
       );
 
-  getPickDateEnd({
+  Widget getPickDateEnd({
     CrossAxisAlignment? crossAxisAlignment,
     String? dateText,
   }) =>
@@ -2094,7 +2097,7 @@ class _EditJobState extends State<EditJob> {
             'localImages':
                 jobLocalImages.map((file) => File(file.path)).toList(),
           }, jobId: currentJob!.id!).then((value) {
-            print(value.toString() + 'My job');
+            debugPrint(value.toString() + 'My job');
             Navigator.pop(context);
             // Navigator.pushNamed(context, Routes.MY_JOB_DETAILS,
             //     arguments: {'jobId': value!.id, 'listingId': '', 'job': value});

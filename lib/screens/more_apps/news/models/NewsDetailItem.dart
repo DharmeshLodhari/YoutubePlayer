@@ -45,7 +45,7 @@ class NewsDetailItem {
       readTime: json['read'],
       shortDescription: json['short_description'],
       subHeader: json['sub_header'],
-      tags: json['tags'] != null ? new List<String>.from(json['tags']) : null,
+      tags: json['tags'] != null ? List<String>.from(json['tags']) : null,
       title: json['title'],
       uploadTime: json['upload_time'],
       video: json['video'],
@@ -53,7 +53,7 @@ class NewsDetailItem {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = Map<String, dynamic>();
     data['author'] = this.author;
     data['author_avatar'] = this.authorAvatar;
     data['description'] = this.description;

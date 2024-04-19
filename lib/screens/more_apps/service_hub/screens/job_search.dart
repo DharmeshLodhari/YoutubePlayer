@@ -15,7 +15,7 @@ import '../../../../widget/debouncer_widget.dart';
 
 class JobsSearch extends StatefulWidget {
   JobsSearch({Key? key, this.filterMap}) : super(key: key);
-  Map<String, dynamic>? filterMap;
+  final Map<String, dynamic>? filterMap;
 
   @override
   State<JobsSearch> createState() => _JobsSearchState();
@@ -146,7 +146,7 @@ class _JobsSearchState extends State<JobsSearch> {
               .then((value) {
             final Map<String, dynamic> filterData =
                 value as Map<String, dynamic>;
-            print('stores map ${searchController.text}');
+            debugPrint('stores map ${searchController.text}');
 
             category = filterData['category'];
             if (filterData['sortby'] != '') {

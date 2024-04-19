@@ -33,7 +33,7 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
 
   NewsDetailItem newsDetailItem = NewsDetailItem();
   bool isLoading = false;
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
   @override

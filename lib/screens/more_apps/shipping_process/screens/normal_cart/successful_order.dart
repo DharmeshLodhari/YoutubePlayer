@@ -50,7 +50,7 @@ class _SuccessfulOrderState extends State<SuccessfulOrder> {
   Widget _buildBody() {
     return SafeArea(
       child: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
             Expanded(

@@ -22,15 +22,15 @@ class _JobsSearchFilterState extends State<JobsSearchFilter> {
             padding: const EdgeInsets.all(10.0),
             child: Container(
               // width: MediaQuery.of(context).size.width,
-              padding: EdgeInsets.all(20),
+              padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(
-                  color: Color(0xfffafbff),
+                  color: const Color(0xfffafbff),
                   width: 1,
                 ),
                 boxShadow: [
-                  BoxShadow(
+                  const BoxShadow(
                     color: Color(0x0c31378c),
                     blurRadius: 20,
                     offset: Offset(0, 8),
@@ -41,14 +41,14 @@ class _JobsSearchFilterState extends State<JobsSearchFilter> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  const Text(
                     "Categories",
                     style: TextStyle(
                       color: Color(0xff75818f),
                       fontSize: 14,
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 6,
                   ),
                   FilterDropdown(
@@ -60,7 +60,7 @@ class _JobsSearchFilterState extends State<JobsSearchFilter> {
                       setState(() {});
                     },
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 18,
                   ),
                   FilterDropdown(
@@ -72,10 +72,10 @@ class _JobsSearchFilterState extends State<JobsSearchFilter> {
                       setState(() {});
                     },
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 20,
                   ),
-                  Text(
+                  const Text(
                     "Price",
                     style: TextStyle(
                       color: Color(0xff75818f),
@@ -141,11 +141,11 @@ class FilterDropdown extends StatelessWidget {
     return Container(
       width: MediaQuery.of(context).size.width,
       height: 44,
-      padding: EdgeInsets.symmetric(horizontal: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 10),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
         border: Border.all(
-          color: Color(0xffdce0e7),
+          color: const Color(0xffdce0e7),
           width: 1,
         ),
         color: Colors.white,
@@ -153,10 +153,10 @@ class FilterDropdown extends StatelessWidget {
       child: DropdownButtonHideUnderline(
         child: DropdownButton(
           value: selectedFilter,
-          icon: Icon(Icons.keyboard_arrow_down),
+          icon: const Icon(Icons.keyboard_arrow_down),
           hint: Text(
             hintText,
-            style: TextStyle(
+            style: const TextStyle(
               color: Color(0xff75818f),
               fontSize: 16,
               fontFamily: "Inter",

@@ -22,7 +22,7 @@ import 'payment_transaction_info.dart';
 
 class PaymentLink extends StatefulWidget {
   PaymentLink({Key? key, this.listMap}) : super(key: key);
-  List? listMap = [];
+  final List? listMap;
 
   @override
   State<PaymentLink> createState() => _PaymentLinkState();
@@ -40,11 +40,11 @@ class _PaymentLinkState extends State<PaymentLink> {
   bool isLoading = false;
   bool noItemInList = false;
 
-  ScrollController _scrollController = new ScrollController();
+  final ScrollController _scrollController = ScrollController();
 
   SlidableController? _slideController;
 
-  getPaymentLinks() async {
+  Future<void> getPaymentLinks() async {
     if (!isLoading) {
       if (next != null && !isLoading) {
         if (mounted) {
@@ -52,7 +52,7 @@ class _PaymentLinkState extends State<PaymentLink> {
             isLoading = true;
           });
         }
-        dynamic result = await _auth.getPaymentLinks();
+        final dynamic result = await _auth.getPaymentLinks();
 
         if (result == null) {
           isLoading = false;
@@ -61,7 +61,7 @@ class _PaymentLinkState extends State<PaymentLink> {
         next = result['next'];
         count = result['count'];
         previous = result['previous'];
-        var tempList = result['results'];
+        final tempList = result['results'];
 
         isLoading = false;
         paymentLinkList.addAll(tempList);
@@ -76,13 +76,13 @@ class _PaymentLinkState extends State<PaymentLink> {
     }
   }
 
-  cancelPaymentLinks(String cancelPaymentLink) async {
+  Future<void> cancelPaymentLinks(String cancelPaymentLink) async {
     if (mounted) {
       setState(() {
         isLoading = true;
       });
     }
-    dynamic result = await _auth.cancelPaymentLinks(cancelPaymentLink);
+    final dynamic result = await _auth.cancelPaymentLinks(cancelPaymentLink);
 
     if (result == true) {
       getPaymentLinks();
@@ -96,14 +96,14 @@ class _PaymentLinkState extends State<PaymentLink> {
     setState(() {});
   }
 
-  filterPaymentLinks(String filter) async {
+  Future<void> filterPaymentLinks(String filter) async {
     if (mounted) {
       setState(() {
         isLoading = true;
       });
     }
     paymentLinkList.clear();
-    dynamic result = await _auth.filterPaymentLinks(filter: filter);
+    final dynamic result = await _auth.filterPaymentLinks(filter: filter);
     log('filter link results::::: ${result.toString()}');
 
     if (result == null) {
@@ -113,7 +113,7 @@ class _PaymentLinkState extends State<PaymentLink> {
     next = result['next'];
     count = result['count'];
     previous = result['previous'];
-    var tempList = result['results'];
+    final tempList = result['results'];
 
     isLoading = false;
     paymentLinkList.addAll(tempList);
@@ -127,16 +127,17 @@ class _PaymentLinkState extends State<PaymentLink> {
     }
   }
 
-  Widget paymentLinkCard(
-      {String? name,
-      String? date,
-      String? id,
-      amount,
-      currency,
-      status,
-      passcode,
-      link,
-      category}) {
+  Widget paymentLinkCard({
+    String? name,
+    String? date,
+    String? id,
+    String? amount,
+    String? currency,
+    String? status,
+    String? passcode,
+    String? link,
+    String? category,
+  }) {
     return Padding(
       padding: const EdgeInsets.only(top: 10.0),
       child: GestureDetector(
@@ -182,7 +183,7 @@ class _PaymentLinkState extends State<PaymentLink> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      getAmount(amount, currency),
+                      getAmount(int.parse(amount ?? ""), currency ?? ""),
                       const SizedBox(
                         height: 10,
                       ),
@@ -199,7 +200,7 @@ class _PaymentLinkState extends State<PaymentLink> {
                               ? 'Pending'
                               : status,
                           style: TextStyle(
-                            color: colorStats(status!),
+                            color: colorStats(status),
                             fontSize: 10.80,
                             fontFamily: "Inter",
                             fontWeight: FontWeight.w600,
@@ -567,8 +568,8 @@ class _PaymentLinkState extends State<PaymentLink> {
     super.initState();
   }
 
-  void rejectRequestAlert(data, index) async {
-    bool? result = await showDialogBox(
+  void rejectRequestAlert(Map data, int index) async {
+    final bool? result = await showDialogBox(
       context: context,
       roundedBackgroundIcon: RoundedBackgroundIcon(
         backgroundColor: mateRed.withOpacity(0.08),
@@ -594,7 +595,7 @@ class _PaymentLinkState extends State<PaymentLink> {
       actionTwoText: "Ignore",
     );
     if (result != null && result) {
-      bool done = true;
+      final bool done = true;
       if (done) {
         setState(() {
           // paymentLinkList.removeAt(index);

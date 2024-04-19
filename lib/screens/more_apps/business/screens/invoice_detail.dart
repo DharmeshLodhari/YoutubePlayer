@@ -29,7 +29,7 @@ import '../models/Invoice.dart';
 
 // ignore: must_be_immutable
 class InvoiceDetail extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
   InvoiceDetail({required this.arguments});
 
@@ -830,7 +830,7 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
     });
   }
 
-  _downloadInvoice() async {
+  Future<void> _downloadInvoice() async {
     final String fileName = 'Invoice_${invoice.id}.pdf';
     final PermissionStatus status = await Permission.storage.request();
 
@@ -856,7 +856,7 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
     }
   }
 
-  showDeleteDialogForInvoiceItem(InvoiceItem item) {
+  void showDeleteDialogForInvoiceItem(InvoiceItem item) {
     showDialogBox(
       context: context,
       actionOneTextColor: blackFont,

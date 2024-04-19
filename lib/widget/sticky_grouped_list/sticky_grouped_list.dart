@@ -157,12 +157,12 @@ class StickyGroupedListView<T, E> extends StatefulWidget {
 
 class _StickyGroupedListViewState<T, E>
     extends State<StickyGroupedListView<T, E>> {
-  StreamController<int> _streamController = StreamController<int>();
+  final StreamController<int> _streamController = StreamController<int>();
   ItemPositionsListener? _listener;
   GroupedItemScrollController? _controller;
   GlobalKey? _groupHeaderKey;
   List<T> _sortedElements = [];
-  GlobalKey _key = GlobalKey();
+  final GlobalKey _key = GlobalKey();
   int _topElementIndex = 0;
   RenderBox? _headerBox;
   RenderBox? _listBox;
@@ -264,7 +264,7 @@ class _StickyGroupedListViewState<T, E>
             context, _sortedElements[actualIndex], actualIndex);
   }
 
-  _positionListener() {
+  void _positionListener() {
     _headerBox ??=
         _groupHeaderKey?.currentContext?.findRenderObject() as RenderBox?;
     final double headerHeight = _headerBox?.size.height ?? 0;

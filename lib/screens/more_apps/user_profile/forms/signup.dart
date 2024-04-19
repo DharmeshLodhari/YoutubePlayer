@@ -27,7 +27,7 @@ import '../screens/subscriptions/subscription_model.dart';
 
 // ignore: must_be_immutable
 class SignUp extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
   SignUp({required this.arguments});
 
@@ -36,7 +36,7 @@ class SignUp extends StatefulWidget {
 }
 
 class _SignUpState extends State<SignUp> {
-  var arguments;
+  Map<String, dynamic> arguments;
   String? accountType;
   int? subscriptionsId;
   String? industryType;
@@ -151,7 +151,7 @@ class _SignUpState extends State<SignUp> {
     super.initState();
   }
 
-  getProductIndustries() async {
+  Future<void> getProductIndustries() async {
     loading = !loading;
     if (mounted) setState(() {});
     final result = await _auth.listOfIndustries();
@@ -801,7 +801,8 @@ class _SignUpState extends State<SignUp> {
                         fontWeight: FontWeight.w600),
                     recognizer: TapGestureRecognizer()
                       ..onTap = () {
-                        launch('http://https://slydo.co/termsandconditions');
+                        launchUrl(Uri.parse(
+                            'http://https://slydo.co/termsandconditions'));
                       },
                   ),
                   TextSpan(
@@ -812,7 +813,7 @@ class _SignUpState extends State<SignUp> {
                         fontWeight: FontWeight.w600),
                     recognizer: TapGestureRecognizer()
                       ..onTap = () {
-                        launch('http://https://slydo.co/privacypolicy');
+                        Uri.parse(('http://https://slydo.co/privacypolicy'));
                       },
                   ),
                   TextSpan(
@@ -827,7 +828,8 @@ class _SignUpState extends State<SignUp> {
                         fontWeight: FontWeight.w600),
                     recognizer: TapGestureRecognizer()
                       ..onTap = () {
-                        launch('http://https://slydo.co/termsandconditions');
+                        launchUrl(Uri.parse(
+                            'http://https://slydo.co/termsandconditions'));
                       },
                   ),
                 ],
@@ -1105,7 +1107,7 @@ class _SignUpState extends State<SignUp> {
     }
   }
 
-  clearAllFields() {
+  void clearAllFields() {
     _bvnController.clear();
     _firstNameController.clear();
     _lastNameController.clear();
@@ -1117,7 +1119,7 @@ class _SignUpState extends State<SignUp> {
     industryType = null;
   }
 
-  chooseYourPlanWidget() {
+  Widget chooseYourPlanWidget() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1226,7 +1228,7 @@ class _SignUpState extends State<SignUp> {
 
   SubscriptionsModel? subscriptionsModel;
   List<SubscriptionsModel>? subscriptionsModelList = [];
-  getSubscriptionList() async {
+  Future<void> getSubscriptionList() async {
     setState(() {
       subscriptionsModel = null;
       subscriptionsModelList = null;

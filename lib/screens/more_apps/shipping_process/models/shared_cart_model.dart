@@ -24,7 +24,7 @@ class SharedCartModel {
   // bool? splitBill;
   bool? splitBillEvenly = false;
 
-  List<BasketItem> _basketItems = [];
+  final List<BasketItem> _basketItems = [];
 
   List<BasketItem> get basketItems => _basketItems;
 
@@ -159,7 +159,7 @@ class SharedCartModel {
   }
 
   void addItemInBasketWithQtyService(
-      var item, String type, SharedCartMemberModel? currentUser,
+      PurchasableItem item, String type, SharedCartMemberModel? currentUser,
       {bool withApiCall = true, bool replaceUpdatedBy = false}) {
     /// if we create or update existing basket item we will store that item to this variable
     /// for sending to server
@@ -172,9 +172,9 @@ class SharedCartModel {
         flag = true;
 
         if (replaceUpdatedBy == true) {
-          (element.item as Product).itemAddedBy = item.itemAddedBy;
+          (element.item as Product).itemAddedBy = (item as Product).itemAddedBy;
           element.itemAddedBy = item.itemAddedBy;
-          element.qty = (item as Product).quantity;
+          element.qty = item.quantity;
         }
 
         if (withApiCall == true) {
@@ -194,7 +194,7 @@ class SharedCartModel {
             actionType: BasketListModifierAction.increaseQty);
       }
 
-      BasketItem basketItem = BasketItem(
+      final BasketItem basketItem = BasketItem(
         item: item,
         qty: (item as Product).quantity,
         type: type,
@@ -208,7 +208,7 @@ class SharedCartModel {
 
     /// add or update this item to the server
     if (withApiCall && addedOrUpdatedItem != null) {
-      BasketListModifierPayload data = _basketItems.toPayload(
+      final BasketListModifierPayload data = _basketItems.toPayload(
           addedOrUpdatedItem!,
           actionType: BasketListModifierAction.increaseQty);
       if (data.payload.isNotEmpty) {
@@ -232,7 +232,7 @@ class SharedCartModel {
             actionType: BasketListModifierAction.increaseQty);
       }
 
-      BasketItem basketItem = BasketItem(
+      final BasketItem basketItem = BasketItem(
         type: type,
         item: item,
         qty: variant.quantity,
@@ -249,8 +249,8 @@ class SharedCartModel {
         /// if item is product
         if (item.isProduct) {
           if (basketItem.item is Product) {
-            Product alreadyPresentProduct = basketItem.item as Product;
-            Product newProduct = item as Product;
+            final Product alreadyPresentProduct = basketItem.item as Product;
+            final Product newProduct = item as Product;
 
             /// check for product id is same then check for variant
             if (alreadyPresentProduct.id == newProduct.id) {
@@ -297,7 +297,7 @@ class SharedCartModel {
               actionType: BasketListModifierAction.increaseQty);
         }
 
-        BasketItem basketItem = BasketItem(
+        final BasketItem basketItem = BasketItem(
           type: type,
           item: item,
           qty: variant.quantity,
@@ -311,7 +311,7 @@ class SharedCartModel {
 
     /// add or update this item to the server
     if (withApiCall && addedOrUpdatedItem != null) {
-      BasketListModifierPayload data = _basketItems.toPayload(
+      final BasketListModifierPayload data = _basketItems.toPayload(
           addedOrUpdatedItem,
           actionType: BasketListModifierAction.increaseQty);
       if (data.payload.isNotEmpty) {
@@ -335,8 +335,8 @@ class SharedCartModel {
       /// if item is product
       if (item.isProduct) {
         if (basketItem.item is Product) {
-          Product alreadyPresentProduct = basketItem.item as Product;
-          Product newProduct = item as Product;
+          final Product alreadyPresentProduct = basketItem.item as Product;
+          final Product newProduct = item as Product;
 
           /// check for product id is same then check for addOns
           if (alreadyPresentProduct.id == newProduct.id) {
@@ -396,7 +396,7 @@ class SharedCartModel {
             }
 
             if (withApiCall == true) {
-              Product presentProduct = (basketItem.item as Product);
+              final Product presentProduct = (basketItem.item as Product);
 
               for (AddOns addOn in addOns ?? []) {
                 for (AddOns presentAddOn in presentProduct.addOnsModels ?? []) {
@@ -463,7 +463,7 @@ class SharedCartModel {
         }
       }
 
-      BasketItem basketItem = BasketItem(
+      final BasketItem basketItem = BasketItem(
           type: type,
           item: item,
           qty: (item as Product).quantity,
@@ -476,7 +476,7 @@ class SharedCartModel {
 
     /// add or update this item to the server
     if (withApiCall && addedOrUpdatedItem != null) {
-      BasketListModifierPayload data = _basketItems.toPayload(
+      final BasketListModifierPayload data = _basketItems.toPayload(
           addedOrUpdatedItem,
           actionType: BasketListModifierAction.increaseQty);
       if (data.payload.isNotEmpty) {
@@ -507,7 +507,7 @@ class SharedCartModel {
       if (data?.hasVariant ?? false) {
         for (BasketItem basketItem in _basketItems) {
           if (basketItem.item?.id == data?.item?.id) {
-            Variant? variant = basketItem.variants?.first;
+            final Variant? variant = basketItem.variants?.first;
             if (variant != null) {
               if (variant.id == data?.variants?.first.id) {
                 variant.quantity = (variant.quantity ?? 0) + 1;
@@ -529,7 +529,7 @@ class SharedCartModel {
         /// if basket item has add0ns
       } else if (data?.hasAddOns ?? false) {
         for (BasketItem basketItem in _basketItems) {
-          Product product = basketItem.item as Product;
+          final Product product = basketItem.item as Product;
 
           if (basketItem.item?.id == data?.item?.id) {
             for (AddOns addOns in basketItem.addOns ?? []) {
@@ -559,7 +559,7 @@ class SharedCartModel {
       } else {
         for (BasketItem basketItem in _basketItems) {
           if (basketItem.item?.id == data?.item?.id) {
-            Product product = basketItem.item as Product;
+            final Product product = basketItem.item as Product;
 
             basketItem.qty = (basketItem.qty ?? 0) + 1;
             product.quantity = (product.quantity ?? 0) + 1;
@@ -576,7 +576,7 @@ class SharedCartModel {
     }
 
     if (withApiCall && addedOrUpdatedItem != null) {
-      BasketListModifierPayload data = _basketItems.toPayload(
+      final BasketListModifierPayload data = _basketItems.toPayload(
           addedOrUpdatedItem,
           actionType: BasketListModifierAction.increaseQty);
       if (data.payload.isNotEmpty) {
@@ -607,7 +607,7 @@ class SharedCartModel {
       if (data?.hasVariant ?? false) {
         for (BasketItem basketItem in _basketItems) {
           if (basketItem.item?.id == data?.item?.id) {
-            Variant? variant = basketItem.variants?.first;
+            final Variant? variant = basketItem.variants?.first;
             if (variant != null) {
               if (variant.id == data?.variants?.first.id) {
                 variant.quantity = (variant.quantity ?? 0) - 1;
@@ -629,7 +629,7 @@ class SharedCartModel {
         /// if basket item has add0ns
       } else if (data?.hasAddOns ?? false) {
         for (BasketItem basketItem in _basketItems) {
-          Product product = basketItem.item as Product;
+          final Product product = basketItem.item as Product;
 
           if (basketItem.item?.id == data?.item?.id) {
             // for (AddOns addOns in basketItem.addOns ?? []) {
@@ -651,7 +651,7 @@ class SharedCartModel {
       } else {
         for (BasketItem basketItem in _basketItems) {
           if (basketItem.item?.id == data?.item?.id) {
-            Product product = basketItem.item as Product;
+            final Product product = basketItem.item as Product;
 
             basketItem.qty = (basketItem.qty ?? 0) - 1;
             product.quantity = (product.quantity ?? 0) - 1;
@@ -669,7 +669,7 @@ class SharedCartModel {
     }
 
     if (withApiCall && addedOrUpdatedItem != null) {
-      BasketListModifierPayload data = _basketItems.toPayload(
+      final BasketListModifierPayload data = _basketItems.toPayload(
         addedOrUpdatedItem,
         actionType: BasketListModifierAction.decreaseQty,
       );
@@ -693,13 +693,13 @@ class SharedCartModel {
       int normalTotal = 0;
       if (item.item?.isProduct ?? false) {
         if (item.hasVariant) {
-          int variantPrice =
+          final int variantPrice =
               int.parse(item.variants?.first.price.toString() ?? "");
-          int quantity = item.variants?.first.quantity ?? 0;
+          final int quantity = item.variants?.first.quantity ?? 0;
           variantTotal += variantPrice * quantity;
           totalPrice += variantTotal;
         } else if (item.hasAddOns) {
-          Product product = item.item as Product;
+          final Product product = item.item as Product;
           for (AddOns itemAddOn in item.addOns ?? []) {
             for (var option in itemAddOn.options!) {
               AddOnOptionTotal +=
@@ -711,7 +711,7 @@ class SharedCartModel {
           AddOnTotal = AddOnOptionTotal + normalTotal;
           totalPrice += AddOnTotal;
         } else {
-          Product product = item.item as Product;
+          final Product product = item.item as Product;
 
           normalTotal = product.getProductRealPrice() *
               int.parse(product.quantity.toString());
@@ -725,7 +725,7 @@ class SharedCartModel {
   void getSplitBillEvenlyPercentage() {
     if (splitBillEvenly == true) {
       if (members != null) {
-        int? listLength = members?.length ?? 0;
+        final int listLength = members?.length ?? 0;
 
         for (var item in members!) {
           item.percentageValue =
@@ -738,7 +738,7 @@ class SharedCartModel {
   void getSplitBillEvenlyPayment(int? totalOrder) {
     if (splitBillEvenly == true) {
       if (members != null) {
-        int? listLength = members?.length ?? 0;
+        final int listLength = members?.length ?? 0;
 
         for (var item in members!) {
           item.paymentValue = ((totalOrder ?? 0) / listLength).floor();
@@ -806,7 +806,7 @@ class SharedCartMemberModel {
     avatar = json['avatar'];
     fullName = json['full_name'];
     if (mataDataJson != null) {
-      List<UserData>? userData = mataDataJson.userData
+      final List<UserData>? userData = mataDataJson.userData
               ?.where((element) => element.username == userName)
               .toList() ??
           [];
@@ -828,7 +828,7 @@ class SharedCartMemberModel {
   }
 
   UserFollowers toUserFollowerModel() {
-    UserFollowers userFollowers = UserFollowers();
+    final UserFollowers userFollowers = UserFollowers();
     userFollowers.userName = userName;
     userFollowers.avatar = avatar;
     userFollowers.fullName = fullName;
