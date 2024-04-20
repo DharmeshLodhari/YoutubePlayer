@@ -342,6 +342,7 @@ class Permissions {
   String? paymentRequest;
   String? invoice;
   String? contract;
+  String? profile;
 
   Permissions({
     this.payment,
@@ -356,6 +357,7 @@ class Permissions {
     this.paymentRequest,
     this.invoice,
     this.contract,
+    this.profile,
   });
 
   factory Permissions.fromJson(Map<String, dynamic> json) => Permissions(
@@ -371,6 +373,7 @@ class Permissions {
         paymentRequest: json["payment-request"],
         invoice: json["invoice"],
         contract: json["contract"],
+        profile: json["profile"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -386,6 +389,7 @@ class Permissions {
         "payment-request": paymentRequest,
         "invoice": invoice,
         "contract": contract,
+        "profile": profile,
       };
 
   PermissionType? getPermissionLevel(String? permission) {
@@ -448,6 +452,8 @@ class Permissions {
         return getPermissionLevel(payment);
       case ProtectionPermission.request:
         return getPermissionLevel(paymentRequest);
+      case ProtectionPermission.profile:
+        return getPermissionLevel(profile);
     }
     return null;
   }

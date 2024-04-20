@@ -36,19 +36,20 @@ class PermissionProtectionWidget extends StatelessWidget {
             (hasPermission == PermissionType.READ && isLockForRead)
         ? GestureDetector(
             onTap: () {
-              print("Context: $context"); // Debug print statement
               showSnackbar(context,
                   message: AppLocalization.of(context)?.doNotPermission ?? "");
             },
             child: Stack(
               children: [
-                IgnorePointer(
-                    ignoring:
-                        hasPermission == PermissionType.READ && isLockForRead
-                            ? true
-                            : false,
-                    child: child),
-                if (hasPermission == null && isShowLock)
+                child,
+                // IgnorePointer(
+                //     ignoring:
+                //         hasPermission == PermissionType.READ && isLockForRead
+                //             ? true
+                //             : false,
+                //     child: child),
+                if ((hasPermission == null && isShowLock) ||
+                    (hasPermission == PermissionType.READ && isShowLock))
                   Positioned(
                     top: position, // Adjust the top value as needed
                     right: -3, // Adjust the right value as needed

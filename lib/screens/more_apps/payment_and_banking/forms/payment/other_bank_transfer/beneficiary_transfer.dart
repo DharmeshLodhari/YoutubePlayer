@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:Slydo/constant.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
@@ -376,6 +377,9 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
   }
 
   void onSubmit() async {
+    PermissionType? hasPermission =
+    userBloc.user.hasWritePermission(ProtectionPermission.transaction);
+    if (hasPermission == PermissionType.WRITE) {
     FocusScope.of(context).unfocus();
 
     // duration for close keyboard and open passcode bottomsheet
@@ -463,6 +467,11 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
             message:
                 "Please Upgrade your account tier to make bigger transactions.");
       }
+    }
+
+    } else {
+      showSnackbar(context,
+          message: AppLocalization.of(context)?.doNotPermission ?? "");
     }
   }
 

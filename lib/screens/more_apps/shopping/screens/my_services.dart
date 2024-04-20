@@ -1,6 +1,6 @@
 import 'package:Slydo/constant.dart';
 import 'package:Slydo/utils/extensions.dart';
-import 'package:Slydo/widget/permission_protection_widget.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
@@ -104,18 +104,21 @@ class _MyServicesState extends State<MyServices> {
       RoundedBackgroundIcon(
         backgroundColor: Colors.transparent,
         onTap: () {
-          Navigator.pushNamed(context, Routes.ADD_SERVICE);
+          PermissionType? hasPermission =
+              userBloc.user.hasWritePermission(ProtectionPermission.services);
+          if (hasPermission == PermissionType.WRITE) {
+            Navigator.pushNamed(context, Routes.ADD_SERVICE);
+          } else {
+            showSnackbar(context,
+                message: AppLocalization.of(context)?.doNotPermission ?? "");
+          }
         },
         height: 15,
         width: 15,
-        icon: PermissionProtectionWidget(
-          permissionName: ProtectionPermission.services,
-          isLockForRead: true,
-          child: SvgPicture.asset(
-            "add_payment".toSVG(),
-            height: 12,
-            width: 12,
-          ),
+        icon: SvgPicture.asset(
+          "add_payment".toSVG(),
+          height: 12,
+          width: 12,
         ),
       ),
       SizedBox(width: 20),

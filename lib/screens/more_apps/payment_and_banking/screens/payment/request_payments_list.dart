@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:Slydo/constant.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
@@ -352,11 +353,18 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
         color: blackFont,
       ),
       onTap: () async {
-        Navigator.of(context).pushNamed(Routes.REQUEST_PAYMENT,
-            arguments: <String, bool>{
-              'isRequest': true,
-              'isFromProfile': true
-            });
+        PermissionType? hasPermission =
+            userBloc.user.hasWritePermission(ProtectionPermission.request);
+        if (hasPermission == PermissionType.WRITE) {
+          Navigator.of(context).pushNamed(Routes.REQUEST_PAYMENT,
+              arguments: <String, bool>{
+                'isRequest': true,
+                'isFromProfile': true
+              });
+        } else {
+          showToast(
+              message: AppLocalization.of(context)?.doNotPermission ?? "");
+        }
       },
       backgroundColor: iconBtnGrey,
       enableMargin: true,
@@ -636,21 +644,28 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
   void handleSlideIsOpenChanged(bool? isOpen) {}
 
   void _showSnackBar(BuildContext context, String text) {
-    _scaffoldMessengerPaymentListKey.currentState?.showSnackBar(SnackBar(content: Text(text)));
+    _scaffoldMessengerPaymentListKey.currentState
+        ?.showSnackBar(SnackBar(content: Text(text)));
   }
 
   List<Widget> listSecondaryActions(PaymentRequest paymentRequest, int index) {
-    if (paymentRequest.isCredit!) {
-      return [
-        SlideActionButton(
-            backgroundColor: navyBlue,
-            icon: SlydoAppIcon.send,
-            onTap: () {
-              acceptPaymentRequestAlert(paymentRequest, index);
-            },
-            title: "Pay",
-            slideController: _slideController),
-      ];
+    PermissionType? hasPermission =
+        userBloc.user.hasWritePermission(ProtectionPermission.request);
+    if (hasPermission == PermissionType.WRITE) {
+      if (paymentRequest.isCredit!) {
+        return [
+          SlideActionButton(
+              backgroundColor: navyBlue,
+              icon: SlydoAppIcon.send,
+              onTap: () {
+                acceptPaymentRequestAlert(paymentRequest, index);
+              },
+              title: "Pay",
+              slideController: _slideController),
+        ];
+      } else {
+        return [];
+      }
     } else {
       return [];
     }
@@ -661,20 +676,26 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
     String caption = paymentRequest.isCredit!
         ? AppLocalization.of(context)!.reject
         : AppLocalization.of(context)!.cancel;
-    return [
-      SlideActionButton(
-          backgroundColor: mateRed,
-          icon: SlydoAppIcon.remove,
-          onTap: () {
-            if (paymentRequest.isCredit!) {
-              rejectPaymentRequestAlert(paymentRequest, index);
-            } else {
-              cancelPaymentRequestAlert(paymentRequest, index);
-            }
-          },
-          title: caption,
-          slideController: _slideController),
-    ];
+    PermissionType? hasPermission =
+        userBloc.user.hasWritePermission(ProtectionPermission.request);
+    if (hasPermission == PermissionType.WRITE) {
+      return [
+        SlideActionButton(
+            backgroundColor: mateRed,
+            icon: SlydoAppIcon.remove,
+            onTap: () {
+              if (paymentRequest.isCredit!) {
+                rejectPaymentRequestAlert(paymentRequest, index);
+              } else {
+                cancelPaymentRequestAlert(paymentRequest, index);
+              }
+            },
+            title: caption,
+            slideController: _slideController),
+      ];
+    } else {
+      return [];
+    }
   }
 
   Future<bool> checkAccountBalance(PaymentRequest paymentRequest) async {

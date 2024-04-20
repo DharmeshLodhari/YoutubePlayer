@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:Slydo/constant.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
@@ -439,91 +440,98 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
   }
 
   void onSubmit() async {
-    if (FocusScope.of(context).hasFocus) {
-      FocusScope.of(context).unfocus();
-    }
+    PermissionType? hasPermission =
+        userBloc.user.hasWritePermission(ProtectionPermission.transaction);
+    if (hasPermission == PermissionType.WRITE) {
+      if (FocusScope.of(context).hasFocus) {
+        FocusScope.of(context).unfocus();
+      }
 
-    if (bankId == "") {
-      showToast(message: "Bank Account not added yet");
-      return;
-    }
+      if (bankId == "") {
+        showToast(message: "Bank Account not added yet");
+        return;
+      }
 
-    await Future.delayed(const Duration(milliseconds: 500));
+      await Future.delayed(const Duration(milliseconds: 500));
 
-    isLoading = true;
-    if (mounted) setState(() {});
+      isLoading = true;
+      if (mounted) setState(() {});
 
-    if (canSendMoney(amount,
-        virtualAccount?.accountTier?.dailyCumulativeTransactionLimit!)) {
-      try {
-        var data = {
-          "amount": moneyInputNormalizer(amount.toString()),
-          "currency": userBloc.user.currency,
-          "customer_bank_account": int.tryParse(bankId),
-          "description": description,
-        };
-        BottomSheetPassCode(
-            context: context,
-            isValidCallback: () {
-              showDialog(
-                  context: context,
-                  builder: (context) =>
-                      // Center(child: CircularLoadingIndicator()));
-                      const Center(child: SizedBox()));
-              //show loading screen
-              Navigator.pop(context);
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => PaymentLoadingScreen(
-                          text: 'Bank Transfer Processing...',
-                          imagePath: 'assets/images/app_logo.png',
-                        )),
-              );
-
-              _auth.accountPayout(data).then((value) {
-                response = value;
-
+      if (canSendMoney(amount,
+          virtualAccount?.accountTier?.dailyCumulativeTransactionLimit!)) {
+        try {
+          var data = {
+            "amount": moneyInputNormalizer(amount.toString()),
+            "currency": userBloc.user.currency,
+            "customer_bank_account": int.tryParse(bankId),
+            "description": description,
+          };
+          BottomSheetPassCode(
+              context: context,
+              isValidCallback: () {
+                showDialog(
+                    context: context,
+                    builder: (context) =>
+                        // Center(child: CircularLoadingIndicator()));
+                        const Center(child: SizedBox()));
+                //show loading screen
                 Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => PaymentLoadingScreen(
+                            text: 'Bank Transfer Processing...',
+                            imagePath: 'assets/images/app_logo.png',
+                          )),
+                );
 
-                if (response.statusCode == 201) {
+                _auth.accountPayout(data).then((value) {
+                  response = value;
+
                   Navigator.pop(context);
-                  Navigator.of(context)
-                      .pushNamed(Routes.TRANSACTIONS, arguments: {'page': 1});
-                } else if (response.statusCode == 500) {
-                  Navigator.pop(context);
-                  if (mounted) {
-                    setState(() {
-                      errorMessage = AppLocalization.of(context)!.serverError;
-                      showToast(message: errorMessage);
-                    });
+
+                  if (response.statusCode == 201) {
+                    Navigator.pop(context);
+                    Navigator.of(context)
+                        .pushNamed(Routes.TRANSACTIONS, arguments: {'page': 1});
+                  } else if (response.statusCode == 500) {
+                    Navigator.pop(context);
+                    if (mounted) {
+                      setState(() {
+                        errorMessage = AppLocalization.of(context)!.serverError;
+                        showToast(message: errorMessage);
+                      });
+                    }
+                  } else {
+                    Navigator.pop(context);
+                    if (mounted) {
+                      setState(() {
+                        errorMessage =
+                            AppLocalization.of(context)!.somethingWentWrong;
+                        showToast(message: errorMessage);
+                      });
+                    }
                   }
-                } else {
-                  Navigator.pop(context);
-                  if (mounted) {
-                    setState(() {
-                      errorMessage =
-                          AppLocalization.of(context)!.somethingWentWrong;
-                      showToast(message: errorMessage);
-                    });
-                  }
-                }
+                });
+              },
+              cancelCallBack: () {
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: Text(AppLocalization.of(context)!.invalidPassword),
+                ));
               });
-            },
-            cancelCallBack: () {
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content: Text(AppLocalization.of(context)!.invalidPassword),
-              ));
-            });
-      } catch (e) {
-        debugPrint(e.toString());
-        showToast(message: e.toString());
+        } catch (e) {
+          debugPrint(e.toString());
+          showToast(message: e.toString());
+        }
+      } else {
+        showToast(
+            message:
+                "Please Upgrade your account tier to make bigger transactions.");
       }
     } else {
-      showToast(
-          message:
-              "Please Upgrade your account tier to make bigger transactions.");
+      showSnackbar(context,
+          message: AppLocalization.of(context)?.doNotPermission ?? "");
     }
   }
 

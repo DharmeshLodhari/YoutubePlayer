@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:Slydo/constant.dart';
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/data/state_notifier.dart';
@@ -12,6 +13,7 @@ import 'package:Slydo/screens/more_apps/review/review_auth.dart';
 import 'package:Slydo/screens/more_apps/review/tiles/review_tile.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/product_and_service/checkout_product_service.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/bottom_sheet_item.dart';
@@ -330,26 +332,34 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   List<Widget> generateBottomSheetItem() {
     List<Widget> list = [];
 
+    PermissionType? hasPermission =
+        userBloc.user.hasWritePermission(ProtectionPermission.product);
+
     list.add(
       bottomSheetItem(
         title: "Edit",
         iconData: SlydoAppIcon.edit,
         onTap: () async {
-          Navigator.pop(context);
-          var result = await Navigator.of(context).pushNamed(
-            '/edit-service',
-            arguments: {
-              "serviceId": serviceId,
-            },
-          );
+          if (hasPermission == PermissionType.WRITE) {
+            Navigator.pop(context);
+            var result = await Navigator.of(context).pushNamed(
+              '/edit-service',
+              arguments: {
+                "serviceId": serviceId,
+              },
+            );
 
-          if (result != null) {
-            if (result is String) {
-              if (result == "delete_item" || result == "update_item") {
-                //To refresh the service list page
-                Navigator.pop(context, 'update_item');
+            if (result != null) {
+              if (result is String) {
+                if (result == "delete_item" || result == "update_item") {
+                  //To refresh the service list page
+                  Navigator.pop(context, 'update_item');
+                }
               }
             }
+          } else {
+            showToast(
+                message: AppLocalization.of(context)?.doNotPermission ?? "");
           }
         },
       ),

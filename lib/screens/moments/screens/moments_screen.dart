@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:Slydo/constant.dart';
 import 'package:Slydo/screens/moments/models/moments_model.dart';
 import 'package:Slydo/screens/moments/screens/create_moment_screen.dart';
 import 'package:Slydo/screens/moments/screens/moment_detail/custom_story_view.dart';
@@ -305,9 +306,16 @@ class _MomentsScreenState extends State<MomentsScreen> {
   }
 
   Widget addMomentsBtn() {
+    PermissionType? hasPermission =
+        userBloc.user.hasWritePermission(ProtectionPermission.moment);
     return InkWell(
       onTap: () async {
-        NavigationUtil.push(context, screen: CreateMediaMomentScreen());
+        if (hasPermission == PermissionType.WRITE) {
+          NavigationUtil.push(context, screen: CreateMediaMomentScreen());
+        } else {
+          showSnackbar(context,
+              message: AppLocalization.of(context)?.doNotPermission ?? "");
+        }
       },
       child: Icon(
         Icons.camera_alt_rounded,

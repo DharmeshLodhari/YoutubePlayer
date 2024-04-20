@@ -458,7 +458,7 @@ class _HomeQuickViewState extends State<HomeQuickView> {
               permissionName: title,
               isShowLock: true,
               position: 10,
-              isLockForRead: false,
+              isLockForRead: appBarTitle == 'Create' ? true : false,
               child: Row(
                 children: [
                   SvgPicture.asset(

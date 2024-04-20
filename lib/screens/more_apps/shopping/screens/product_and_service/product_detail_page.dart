@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:ui';
 
+import 'package:Slydo/constant.dart';
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/data/state_notifier.dart';
@@ -348,27 +349,35 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   List<Widget> generateBottomSheetItem() {
     List<Widget> list = [];
 
+    PermissionType? hasPermission =
+        userBloc.user.hasWritePermission(ProtectionPermission.product);
+
     if (!isValidCustomer) {
       list.add(
         bottomSheetItem(
           title: "Edit",
           iconData: SlydoAppIcon.edit,
           onTap: () async {
-            Navigator.pop(context);
-            var result = await Navigator.of(context).pushNamed(
-              '/edit-product',
-              arguments: {
-                "productId": productId,
-              },
-            );
+            if (hasPermission == PermissionType.WRITE) {
+              Navigator.pop(context);
+              var result = await Navigator.of(context).pushNamed(
+                '/edit-product',
+                arguments: {
+                  "productId": productId,
+                },
+              );
 
-            if (result != null) {
-              if (result is String) {
-                if (result == "delete_item" || result == "update_item") {
-                  //To refresh the product list page
-                  Navigator.pop(context, 'update_item');
+              if (result != null) {
+                if (result is String) {
+                  if (result == "delete_item" || result == "update_item") {
+                    //To refresh the product list page
+                    Navigator.pop(context, 'update_item');
+                  }
                 }
               }
+            } else {
+              showToast(
+                  message: AppLocalization.of(context)?.doNotPermission ?? "");
             }
           },
         ),

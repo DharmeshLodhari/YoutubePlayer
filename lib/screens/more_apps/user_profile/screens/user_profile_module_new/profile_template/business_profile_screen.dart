@@ -507,17 +507,35 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
                             padding: const EdgeInsets.only(
                               left: 24,
                             ),
-                            child: Text(
-                              e.name.toTitleCase(),
-                              style: TextStyle(
+                            child: Container(
+                              padding: EdgeInsets.only(
+                                bottom:
+                                    3, // This can be the space you need between text and underline
+                              ),
+                              decoration: selectedCategory == e.id
+                                  ? BoxDecoration(
+                                      border: Border(
+                                        bottom: BorderSide(
+                                          color: navyBlue,
+                                          width:
+                                              2.0, // This would be the width of the underline
+                                        ),
+                                      ),
+                                    )
+                                  : BoxDecoration(),
+                              child: Text(
+                                e.name.toTitleCase(),
+                                style: TextStyle(
                                   fontSize: 14,
                                   fontFamily: "Inter",
                                   color: selectedCategory == e.id
-                                      ? blackFont
+                                      ? navyBlue
                                       : darkGrey,
                                   fontWeight: selectedCategory == e.id
                                       ? FontWeight.w600
-                                      : FontWeight.w500),
+                                      : FontWeight.w500,
+                                ),
+                              ),
                             ),
                           ),
                         ))

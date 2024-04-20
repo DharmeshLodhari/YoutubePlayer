@@ -1023,20 +1023,15 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
   }
 
   void onSubmit() async {
-    if (FocusScope.of(context).hasFocus) {
-      FocusScope.of(context).unfocus();
-    }
+    PermissionType? hasPermission =
+        userBloc.user.hasWritePermission(ProtectionPermission.transaction);
+    if (hasPermission == PermissionType.WRITE) {
+      if (FocusScope.of(context).hasFocus) {
+        FocusScope.of(context).unfocus();
+      }
 
-    await Future.delayed(const Duration(milliseconds: 500));
+      await Future.delayed(const Duration(milliseconds: 500));
 
-    if (!isValidPayee) {
-      setState(() {
-        errorMessage = AppLocalization.of(context)!.invalidRecipient;
-        return;
-      });
-    }
-
-    if (_recipientController.text == _payee!.userName) {
       if (!isValidPayee) {
         setState(() {
           errorMessage = AppLocalization.of(context)!.invalidRecipient;
@@ -1044,198 +1039,213 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
         });
       }
 
-      if (isValidPayee &&
-          _formKey.currentState!.validate() &&
-          validateDropdown()) {
-        if (userBloc.user.userName != recipient) {
-          var userLocation;
-          Map deviceData;
-          try {
-            BottomSheetPassCode(
-                context: context,
-                isValidCallback: () async {
-                  showDialog(
-                      context: context,
-                      builder: (context) => const Center(child: SizedBox()));
-                  // Center(child: CircularLoadingIndicator()));
-
-                  try {
-                    if (Platform.isIOS) {
-                      try {
-                        userLocation =
-                            await locationService.getLocationEndless();
-                      } catch (e) {
-                        Navigator.pop(context);
-                        debugPrint(e.toString());
-                        showToast(message: e.toString());
-                        return;
-                      }
-                    }
-
-                    // double currentBalance = await getAccountBalance();
-                    // double transactionalAmount = double.parse(amount.toString());
-
-                    //show loading screen
-                    Navigator.pop(context);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => PaymentLoadingScreen(
-                                text: 'Sending Payment...',
-                                imagePath: 'assets/images/app_logo.png',
-                              )),
-                    );
-
-                    await Future.delayed(const Duration(seconds: 3));
-
-                    deviceData = await getDeviceInfo();
-
-                    String description = 'General Payment';
-                    var data = {
-                      "from_customer": userBloc.user.userName,
-                      "to_customer": _recipientController.text.trim(),
-                      "currency": userBloc.user.currency,
-                      "amount": moneyInputNormalizer(amount.toString()),
-                      "category": selectedCategory?.trim(),
-                      "notes":
-                          reference.isEmpty ? description : reference.trim(),
-                      "description":
-                          reference.isEmpty ? description : reference.trim(),
-                      "latitude": Platform.isIOS ? userLocation.latitude : "",
-                      "longitude": Platform.isIOS ? userLocation.longitude : "",
-                      "deviceData": deviceData,
-                      "is_anonymous": sendMoneyAnonymous,
-                      "made_from_chat": isFromChat,
-                    };
-                    bool updateYarnSupporter = false;
-                    bool updateMomentSupporter = false;
-
-                    if (isFromYarn == true) {
-                      data['category'] = "Gift";
-                      data['description'] = "Merchandise Payment in Yarn";
-                    }
-
-                    if (isFromMoment == true) {
-                      data['category'] = "Gift";
-                      data['description'] = "Merchandise Payment in Moment";
-                    }
-
-                    if (conversationId != null) {
-                      data["conversation_id"] = conversationId;
-                    }
-
-                    await _auth.makePayment(data).then((value) async {
-                      debugPrint(
-                          "status code:- ${value.statusCode}  body:- ${value.body}");
-
-                      response = value;
-
-                      try {
-                        handleServerErrors(response);
-                      } catch (e) {
-                        return Future.error(response.body);
-                      }
-
-                      if (response.statusCode == 200) {
-                        try {
-                          popFromShoppingCart(product);
-                          //Pop Circular Progress Indicator
-
-                          ///check if page is from yarn
-                          if (isFromYarn == true) {
-                            var jsonData = json.decode(response.body);
-
-                            updateYarnSupporter =
-                                await _auth.updateYarnSupporter(
-                                    widget.arguments['yarnId'],
-                                    jsonData['transaction_id']);
-
-                            if (updateYarnSupporter == false) {
-                              showToast(
-                                  message: 'Unable to update yarn payment');
-                            } else {
-                              widget.callback?.call(true);
-                              // Navigator.pop(context);
-                              //Pop send payment page
-                              Navigator.pop(context);
-                              return;
-                            }
-                          }
-
-                          ///check if page is from moment
-                          if (isFromMoment == true) {
-                            var jsonData = json.decode(response.body);
-
-                            updateMomentSupporter =
-                                await _auth.updateMomentSupporter(
-                                    widget.arguments['momentId'],
-                                    jsonData['transaction_id']);
-
-                            if (updateMomentSupporter == false) {
-                              showToast(
-                                  message: 'Unable to update moment payment');
-                            } else {
-                              widget.callback?.call(true);
-                              Navigator.pop(context);
-                              //Pop send payment page
-                              Navigator.pop(context);
-                              return;
-                            }
-                          }
-
-                          Navigator.pop(context);
-                          //Pop send payment page
-                          Navigator.pop(context);
-
-                          debugPrint(" isFromChat:- $isFromChat");
-
-                          if (!isFromChat) {
-                            Navigator.of(context).pushNamed(Routes.TRANSACTIONS,
-                                arguments: {'page': 0});
-                          }
-                        } catch (e) {
-                          debugPrint("Error : $e");
-                          Navigator.pop(context);
-                        }
-                      } else {
-                        Navigator.pop(context);
-                        if (response.statusCode == 406) {
-                          errorMessage = jsonDecode(value.body)[0];
-                          showToast(message: "$errorMessage");
-                          setState(() {});
-                        } else {
-                          debugPrint("ERROR:- ${response.body}");
-                          setState(() {
-                            errorMessage =
-                                AppLocalization.of(context)!.somethingWentWrong;
-                            showToast(message: "$errorMessage");
-                          });
-                        }
-                      }
-                    });
-                  } catch (e) {
-                    debugPrint(e.toString());
-                    showToast(message: e.toString());
-                  }
-                },
-                cancelCallBack: () {
-                  Navigator.pop(context);
-                  _sendPaymentScaffoldMessenger.currentState
-                      ?.showSnackBar(SnackBar(
-                    content: Text(AppLocalization.of(context)!.invalidPassword),
-                  ));
-                });
-          } catch (e) {
-            debugPrint(e.toString());
-            showToast(message: e.toString());
-          }
-        } else {
-          showToast(message: AppLocalization.of(context)!.invalidRecipient);
+      if (_recipientController.text == _payee!.userName) {
+        if (!isValidPayee) {
+          setState(() {
+            errorMessage = AppLocalization.of(context)!.invalidRecipient;
+            return;
+          });
         }
+
+        if (isValidPayee &&
+            _formKey.currentState!.validate() &&
+            validateDropdown()) {
+          if (userBloc.user.userName != recipient) {
+            var userLocation;
+            Map deviceData;
+            try {
+              BottomSheetPassCode(
+                  context: context,
+                  isValidCallback: () async {
+                    showDialog(
+                        context: context,
+                        builder: (context) => const Center(child: SizedBox()));
+                    // Center(child: CircularLoadingIndicator()));
+
+                    try {
+                      if (Platform.isIOS) {
+                        try {
+                          userLocation =
+                              await locationService.getLocationEndless();
+                        } catch (e) {
+                          Navigator.pop(context);
+                          debugPrint(e.toString());
+                          showToast(message: e.toString());
+                          return;
+                        }
+                      }
+
+                      // double currentBalance = await getAccountBalance();
+                      // double transactionalAmount = double.parse(amount.toString());
+
+                      //show loading screen
+                      Navigator.pop(context);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => PaymentLoadingScreen(
+                                  text: 'Sending Payment...',
+                                  imagePath: 'assets/images/app_logo.png',
+                                )),
+                      );
+
+                      await Future.delayed(const Duration(seconds: 3));
+
+                      deviceData = await getDeviceInfo();
+
+                      String description = 'General Payment';
+                      var data = {
+                        "from_customer": userBloc.user.userName,
+                        "to_customer": _recipientController.text.trim(),
+                        "currency": userBloc.user.currency,
+                        "amount": moneyInputNormalizer(amount.toString()),
+                        "category": selectedCategory?.trim(),
+                        "notes":
+                            reference.isEmpty ? description : reference.trim(),
+                        "description":
+                            reference.isEmpty ? description : reference.trim(),
+                        "latitude": Platform.isIOS ? userLocation.latitude : "",
+                        "longitude":
+                            Platform.isIOS ? userLocation.longitude : "",
+                        "deviceData": deviceData,
+                        "is_anonymous": sendMoneyAnonymous,
+                        "made_from_chat": isFromChat,
+                      };
+                      bool updateYarnSupporter = false;
+                      bool updateMomentSupporter = false;
+
+                      if (isFromYarn == true) {
+                        data['category'] = "Gift";
+                        data['description'] = "Merchandise Payment in Yarn";
+                      }
+
+                      if (isFromMoment == true) {
+                        data['category'] = "Gift";
+                        data['description'] = "Merchandise Payment in Moment";
+                      }
+
+                      if (conversationId != null) {
+                        data["conversation_id"] = conversationId;
+                      }
+
+                      await _auth.makePayment(data).then((value) async {
+                        debugPrint(
+                            "status code:- ${value.statusCode}  body:- ${value.body}");
+
+                        response = value;
+
+                        try {
+                          handleServerErrors(response);
+                        } catch (e) {
+                          return Future.error(response.body);
+                        }
+
+                        if (response.statusCode == 200) {
+                          try {
+                            popFromShoppingCart(product);
+                            //Pop Circular Progress Indicator
+
+                            ///check if page is from yarn
+                            if (isFromYarn == true) {
+                              var jsonData = json.decode(response.body);
+
+                              updateYarnSupporter =
+                                  await _auth.updateYarnSupporter(
+                                      widget.arguments['yarnId'],
+                                      jsonData['transaction_id']);
+
+                              if (updateYarnSupporter == false) {
+                                showToast(
+                                    message: 'Unable to update yarn payment');
+                              } else {
+                                widget.callback?.call(true);
+                                // Navigator.pop(context);
+                                //Pop send payment page
+                                Navigator.pop(context);
+                                return;
+                              }
+                            }
+
+                            ///check if page is from moment
+                            if (isFromMoment == true) {
+                              var jsonData = json.decode(response.body);
+
+                              updateMomentSupporter =
+                                  await _auth.updateMomentSupporter(
+                                      widget.arguments['momentId'],
+                                      jsonData['transaction_id']);
+
+                              if (updateMomentSupporter == false) {
+                                showToast(
+                                    message: 'Unable to update moment payment');
+                              } else {
+                                widget.callback?.call(true);
+                                Navigator.pop(context);
+                                //Pop send payment page
+                                Navigator.pop(context);
+                                return;
+                              }
+                            }
+
+                            Navigator.pop(context);
+                            //Pop send payment page
+                            Navigator.pop(context);
+
+                            debugPrint(" isFromChat:- $isFromChat");
+
+                            if (!isFromChat) {
+                              Navigator.of(context).pushNamed(
+                                  Routes.TRANSACTIONS,
+                                  arguments: {'page': 0});
+                            }
+                          } catch (e) {
+                            debugPrint("Error : $e");
+                            Navigator.pop(context);
+                          }
+                        } else {
+                          Navigator.pop(context);
+                          if (response.statusCode == 406) {
+                            errorMessage = jsonDecode(value.body)[0];
+                            showToast(message: "$errorMessage");
+                            setState(() {});
+                          } else {
+                            debugPrint("ERROR:- ${response.body}");
+                            setState(() {
+                              errorMessage = AppLocalization.of(context)!
+                                  .somethingWentWrong;
+                              showToast(message: "$errorMessage");
+                            });
+                          }
+                        }
+                      });
+                    } catch (e) {
+                      debugPrint(e.toString());
+                      showToast(message: e.toString());
+                    }
+                  },
+                  cancelCallBack: () {
+                    Navigator.pop(context);
+                    _sendPaymentScaffoldMessenger.currentState
+                        ?.showSnackBar(SnackBar(
+                      content:
+                          Text(AppLocalization.of(context)!.invalidPassword),
+                    ));
+                  });
+            } catch (e) {
+              debugPrint(e.toString());
+              showToast(message: e.toString());
+            }
+          } else {
+            showToast(message: AppLocalization.of(context)!.invalidRecipient);
+          }
+        }
+      } else {
+        var msg = AppLocalization.of(context)!.invalidRecipient;
+        showToast(message: msg);
       }
     } else {
-      var msg = AppLocalization.of(context)!.invalidRecipient;
-      showToast(message: msg);
+      showSnackbar(context,
+          message: AppLocalization.of(context)?.doNotPermission ?? "");
     }
   }
 

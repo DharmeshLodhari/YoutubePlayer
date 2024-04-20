@@ -3,7 +3,6 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/permission_protection_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -113,22 +112,26 @@ class _MyProductsState extends State<MyProducts> {
           )),
       SizedBox(width: 10),
       RoundedBackgroundIcon(
-          backgroundColor: Colors.transparent,
-          onTap: () {
+        backgroundColor: Colors.transparent,
+        onTap: () {
+          PermissionType? hasPermission =
+              userBloc.user.hasWritePermission(ProtectionPermission.product);
+          if (hasPermission == PermissionType.WRITE) {
             Navigator.pushNamed(context, Routes.ADD_PRODUCT,
                 arguments: {"channelUsername": ""});
-          },
-          height: 15,
-          width: 15,
-          icon: PermissionProtectionWidget(
-            permissionName: ProtectionPermission.product,
-            isLockForRead: true,
-            child: SvgPicture.asset(
-              "add_payment".toSVG(),
-              height: 12,
-              width: 12,
-            ),
-          )),
+          } else {
+            showSnackbar(context,
+                message: AppLocalization.of(context)?.doNotPermission ?? "");
+          }
+        },
+        height: 15,
+        width: 15,
+        icon: SvgPicture.asset(
+          "add_payment".toSVG(),
+          height: 12,
+          width: 12,
+        ),
+      ),
       SizedBox(width: 20),
     ];
   }
