@@ -122,7 +122,7 @@ class _AccountTypeState extends State<AccountType> {
                             }).toList(),
                             onChanged: (String? value) {
                               setState(() {
-                                accountType = value!;
+                                accountType = value;
                                 accountTypeChosen = true;
                                 isPersonalAccount = accountType == 'Personal';
                               });
@@ -245,7 +245,6 @@ class _AccountTypeState extends State<AccountType> {
       ),
     );
   }
-
 
   Widget proceedBtn() {
     return accountTypeChosen == true

@@ -108,7 +108,7 @@ class _SignUpState extends State<SignUp> {
     _confirmPasswordController = TextEditingController();
     _accountTypeController = TextEditingController();
 
-    _accountTypeController.text = accountType!;
+    _accountTypeController.text = accountType ?? "";
     accountTypeChosen = true;
     isPersonalAccount = accountType == 'Personal';
     getSubscriptionList();
@@ -1233,7 +1233,7 @@ class _SignUpState extends State<SignUp> {
     if (accountType != null) {
       List<SubscriptionsModel> _subscriptionsModelList =
           await SubscriptionsAuth()
-              .getSubscriptionList(accountType: accountType!);
+              .getSubscriptionList(accountType: accountType ?? "");
       subscriptionsModelList = _subscriptionsModelList;
 
       setState(() {});
