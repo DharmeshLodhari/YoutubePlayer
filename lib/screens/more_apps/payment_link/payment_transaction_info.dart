@@ -137,7 +137,7 @@ class _TransactionPaymentLinkState extends State<TransactionPaymentLink> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   getAmount(int.parse(widget.amount!),
-                                      widget.currency,
+                                      widget.currency!,
                                       fontSize: 20),
                                   const SizedBox(
                                     height: 8,

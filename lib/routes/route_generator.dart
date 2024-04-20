@@ -122,6 +122,7 @@ import 'package:Slydo/screens/more_apps/shopping/screens/product_and_service/pro
 import 'package:Slydo/screens/more_apps/shopping/screens/product_and_service/service_detail_page.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/shopping/search_product.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/shopping/specific_category_product_list.dart';
+import 'package:Slydo/screens/more_apps/super_blog/super_blog.dart';
 import 'package:Slydo/screens/more_apps/taxi/arriving_driver.dart';
 import 'package:Slydo/screens/more_apps/taxi/cancle_booking.dart';
 import 'package:Slydo/screens/more_apps/taxi/contact_driver.dart';
@@ -384,7 +385,9 @@ class RouteGenerator {
         );
       case Routes.CONTRACTOR_SCREEN:
         return PageTransition(
-          child: ContractorPaymentScreen(arguments: settings.arguments),
+          child: ContractorPaymentScreen(
+            arguments: settings.arguments,
+          ),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -420,7 +423,17 @@ class RouteGenerator {
 
       case Routes.USER_PROFILE:
         return PageTransition(
-          child: UserProfileScreen(arguments: settings.arguments),
+          child: UserProfileScreen(
+            arguments: settings.arguments,
+          ),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case Routes.SUPER_BLOG:
+        return PageTransition(
+          child: SuperBlog(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -451,14 +464,18 @@ class RouteGenerator {
 
       case Routes.USER_PRODUCT_AND_SERVICE_SEARCH:
         return PageTransition(
-          child: SearchUsersProductAndService(arguments: settings.arguments),
+          child: SearchUsersProductAndService(
+            arguments: settings.arguments,
+          ),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
       case Routes.PRODUCT:
         return PageTransition(
-          child: ProductDetailPage(arguments: settings.arguments),
+          child: ProductDetailPage(
+            arguments: settings.arguments,
+          ),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,

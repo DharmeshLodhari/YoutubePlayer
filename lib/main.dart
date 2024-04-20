@@ -178,7 +178,6 @@ class _MyAppState extends State<MyApp> {
         return OrientationBuilder(builder: (context, orientation) {
           SizerUtil.setScreenSize(constraints, orientation);
           return GetMaterialApp(
-            // navigatorKey: ContextUtility.navigatorKey,
             navigatorKey: MyGlobals().navigationKey,
             localizationsDelegates: [
               GlobalMaterialLocalizations.delegate,

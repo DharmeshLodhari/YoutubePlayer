@@ -421,7 +421,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
           onTap: () {
             Navigator.pop(context);
             var shareBody =
-                "https://slydo.co/${userPost!.authorUsername}/blog/${userPost!.id}";
+                "https://slydo.co/store/${userPost!.authorUsername}/blogs/${userPost!.id}";
             Share.share(shareBody, subject: "${userPost!.authorName}");
           },
         ),

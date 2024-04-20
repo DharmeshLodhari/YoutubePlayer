@@ -224,7 +224,7 @@ class _PaymentLinkCashOutState extends State<PaymentLinkCashOut> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      'Account Bank',
+                                      'Recipient\'s Bank Name',
                                       style: TextStyle(
                                           fontSize: 16,
                                           color: blackFont,
@@ -431,7 +431,7 @@ class _PaymentLinkCashOutState extends State<PaymentLinkCashOut> {
 
   Widget getAccountNumber() {
     return CustomizedTextFormField(
-      labelText: AppLocalization.of(context)!.accountNumberHint,
+      labelText: 'Recipient\'s Account Number',
       fontWeight: FontWeight.w600,
       labelColor: blackFont,
       keyboardType: TextInputType.number,
@@ -458,7 +458,7 @@ class _PaymentLinkCashOutState extends State<PaymentLinkCashOut> {
 
   Widget getAccountName() {
     return CustomizedTextFormField(
-      labelText: AppLocalization.of(context)!.accountNameHint,
+      labelText: 'Recipient\'s Account Name',
       keyboardType: TextInputType.text,
       controller: accountNameController,
       fontWeight: FontWeight.w600,

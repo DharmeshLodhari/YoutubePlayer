@@ -551,7 +551,7 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile>
         onTap: () {
           Navigator.pop(context);
           var shareBody =
-              "https://slydo.co/${widget.customerProfile?.userName}/blog/${widget.customerProfile?.uuid}";
+              "https://slydo.co/store/${widget.customerProfile?.userName}/blogs/${widget.customerProfile?.uuid}";
           Share.share(shareBody,
               subject: "${widget.customerProfile?.userName}");
         },

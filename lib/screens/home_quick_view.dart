@@ -24,7 +24,6 @@ import 'moments/screens/moments_screen.dart';
 import 'more_apps/payment_link/payment_link.dart';
 import 'more_apps/shopping/screens/my_products.dart';
 import 'more_apps/shopping/screens/my_services.dart';
-import 'more_apps/super_blog/super_blog.dart';
 import 'more_apps/yarn/add_or_edit_yarn_screen.dart';
 import 'more_apps/yarn/models/share_as_yarn_model.dart';
 import 'more_apps/yarn/yarn_dashboard.dart';
@@ -568,9 +567,9 @@ class _HomeQuickViewState extends State<HomeQuickView> {
         break;
       case ProtectionPermission.blog:
         // if (appConfigurationModel?.enableSuperBlog == true) {
-        NavigationUtil.push(
+        NavigationUtil.pushNamed(
           context,
-          screen: const SuperBlog(),
+          routeName: Routes.SUPER_BLOG,
         );
         // } else {
         //   showToast(message: 'Feature not available at the moment');

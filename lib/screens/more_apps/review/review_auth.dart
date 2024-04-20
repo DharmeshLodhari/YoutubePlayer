@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/screens/more_apps/review/models/review.dart';
-import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:flutter/material.dart';
 
@@ -244,9 +243,9 @@ class ReviewAuth extends AuthService {
   }
 
   // Fetch Product Reviews
-  Future<Map<String, dynamic>> fetchProductReviews({Product? product}) async {
+  Future<Map<String, dynamic>> fetchProductReviews({String? productId}) async {
     String url =
-        AppConfig.baseUrl + "/api/v1/social/review/products/${product?.id}/";
+        AppConfig.baseUrl + "/api/v1/social/review/products/$productId/";
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
     debugPrint(
@@ -281,9 +280,9 @@ class ReviewAuth extends AuthService {
   }
 
   // Fetch Service Reviews
-  Future<Map<String, dynamic>> fetchServiceReviews({Service? service}) async {
+  Future<Map<String, dynamic>> fetchServiceReviews({String? serviceId}) async {
     String url =
-        AppConfig.baseUrl + "/api/v1/social/review/services/${service?.id}/";
+        AppConfig.baseUrl + "/api/v1/social/review/services/serviceId/";
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
     debugPrint(

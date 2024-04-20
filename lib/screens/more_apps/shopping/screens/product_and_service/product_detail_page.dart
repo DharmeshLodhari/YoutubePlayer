@@ -144,7 +144,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     isReviewLoading = true;
     if (mounted) setState(() {});
 
-    await ReviewAuth().fetchProductReviews(product: product).then((value) {
+    await ReviewAuth().fetchProductReviews(productId: productId).then((value) {
       List? tempList =
           value.containsKey('results') ? value['results'] as List : [];
       value.containsKey('count') ? reviewCount = value["count"] : 0;

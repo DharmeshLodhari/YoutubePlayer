@@ -18,7 +18,6 @@ import 'package:Slydo/services/awesome_notification_service.dart';
 import 'package:Slydo/services/fcm_push_notification.dart';
 import 'package:Slydo/services/list_refresher.dart';
 import 'package:Slydo/services/share_manager.dart';
-import 'package:Slydo/utils/deep_link_service.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/util.dart';
@@ -27,7 +26,6 @@ import 'package:Slydo/widget/keep_alive_page.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'package:badges/badges.dart' as badges;
-import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -77,7 +75,6 @@ class _DashboardState extends State<Dashboard> {
   bool? isNFCPermissionAccepted;
   late AppLocalization appLocalization;
   var _bottomNavIndex = 0; //default index of a first screen
-  PendingDynamicLinkData? initialLink;
 
   final iconList = [
     'home/home',
@@ -91,11 +88,9 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   void initState() {
+    // UniLinksService.init();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-      initialLink = await FirebaseDynamicLinks.instance.getInitialLink();
-      print("=========dash board initialLink : ${initialLink?.asMap()}");
-
-      ShareManager().initializeShareManager();
+      // ShareManager().initializeShareManager();
 
       _pages = [
         KeepAlivePage(wantKeepAlive: false, child: Home()),
@@ -103,11 +98,6 @@ class _DashboardState extends State<Dashboard> {
         KeepAlivePage(wantKeepAlive: true, child: ConnectionDashboard()),
         GeneralSettingScreen(),
       ];
-
-      if (initialLink != null) {
-        DeepLinkService.instance?.handleDynamicLinks(context);
-        print("widget.initialLink :==================== $initialLink");
-      }
     });
 
     if (mounted) MainSocketMessageHandler().dispose();

@@ -155,7 +155,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
     isReviewLoading = true;
     if (mounted) setState(() {});
 
-    await ReviewAuth().fetchServiceReviews(service: service).then((value) {
+    await ReviewAuth().fetchServiceReviews(serviceId: serviceId).then((value) {
       List? tempList =
           value.containsKey('results') ? value['results'] as List : [];
       value.containsKey('count') ? reviewCount = value["count"] : 0;
