@@ -151,12 +151,12 @@ class _EditJobState extends State<EditJob> {
   TextEditingController? searchItemTextController;
   GlobalKey searchItemTextFormField = GlobalKey();
 
-  List searchedCategoryList = [];
+  List<CategoryListData> searchedCategoryList = [];
 
   StateSetter? bottomSheetStateSetterGlobal;
   bool bottomSheetMounted = false;
 
-  final _debouncer = Debouncer(milliseconds: 500);
+  final Debouncer _debouncer = Debouncer(milliseconds: 500);
   bool noSearchedItem = false;
   bool isItemLoading = false;
 
@@ -456,11 +456,8 @@ class _EditJobState extends State<EditJob> {
     );
   }
 
-  Widget getResultTile(var result) {
-    if (result is CategoryListData) {
-      return categoryViewCard(result);
-    }
-    return Container();
+  Widget getResultTile(CategoryListData result) {
+    return categoryViewCard(result);
   }
 
   Widget categoryViewCard(CategoryListData category) {

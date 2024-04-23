@@ -510,15 +510,15 @@ class _HomeState extends State<Home> {
             onTap: () {
               showSnackbar(context, message: "Coming soon");
               return;
-              if (userBloc.user.rider == null) {
-                Navigator.of(context).pushNamed(Routes.RIDE_TYPE);
-              } else {
-                if (userBloc.user.rider?.isStatusApproved() == false) {
-                  getKYCStatus();
-                } else {
-                  Navigator.of(context).pushNamed(Routes.RIDERS_UPDATE);
-                }
-              }
+              // if (userBloc.user.rider == null) {
+              //   Navigator.of(context).pushNamed(Routes.RIDE_TYPE);
+              // } else {
+              //   if (userBloc.user.rider?.isStatusApproved() == false) {
+              //     getKYCStatus();
+              //   } else {
+              //     Navigator.of(context).pushNamed(Routes.RIDERS_UPDATE);
+              //   }
+              // }
             },
             child: Container(
               margin: const EdgeInsets.symmetric(horizontal: 16),

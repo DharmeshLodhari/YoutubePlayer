@@ -113,14 +113,12 @@ class _DashboardState extends State<Dashboard> {
     if (mounted) MainSocketMessageHandler().dispose();
     if (mounted) {
       setState(() {
-        if (arguments != null) {
-          final int? indexFromRoute = arguments['dashboardIndex'];
+        final int? indexFromRoute = arguments['dashboardIndex'];
 
-          if (indexFromRoute != null) {
-            setState(() {
-              _currentIndex = indexFromRoute;
-            });
-          }
+        if (indexFromRoute != null) {
+          setState(() {
+            _currentIndex = indexFromRoute;
+          });
         }
       });
     }
