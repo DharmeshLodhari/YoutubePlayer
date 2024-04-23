@@ -1012,7 +1012,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
   Widget getSubmitButton() {
     return PermissionProtectionWidget(
       permissionName: ProtectionPermission.transaction,
-      isLockForRead: true,
+      isLockForRead: '1',
       child: CurvedButton(
         onPressed: onSubmit,
         backgroundColor: navyBlue,

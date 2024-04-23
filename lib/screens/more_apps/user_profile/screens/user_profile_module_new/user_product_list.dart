@@ -147,7 +147,8 @@ class _UserProductListState extends State<UserProductList> {
           productList.length > 6 &&
           !_isSnackBarShowing) {
         _isSnackBarShowing = true;
-        _productMessengerScaffoldKey.currentState?.showSnackBar(SnackBar(
+        _productMessengerScaffoldKey.currentState
+            ?.showSnackBar(SnackBar(
               content: Text(
                   AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
               duration: Duration(milliseconds: 500),
@@ -202,7 +203,8 @@ class _UserProductListState extends State<UserProductList> {
           productList.length > 6 &&
           !_isSnackBarShowing) {
         _isSnackBarShowing = true;
-        _productMessengerScaffoldKey.currentState?.showSnackBar(SnackBar(
+        _productMessengerScaffoldKey.currentState
+            ?.showSnackBar(SnackBar(
               content: Text(
                   AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
               duration: Duration(milliseconds: 500),
@@ -236,7 +238,7 @@ class _UserProductListState extends State<UserProductList> {
         key: _productScaffoldKey,
         body: Container(
           color: lightGrey,
-          // padding: EdgeInsets.symmetric(horizontal: 4),
+          padding: EdgeInsets.all(16),
           child: SmartRefresher(
             enablePullDown: true,
             header: WaterDropHeader(
@@ -245,46 +247,50 @@ class _UserProductListState extends State<UserProductList> {
             ),
             controller: _productsRefreshController,
             onRefresh: _onProductRefresh,
-            child: SingleChildScrollView(
-              child: noProductInList
-                  ? Container(
-                      constraints: BoxConstraints(
-                          maxHeight: MediaQuery.of(context).size.height / 2),
-                      child: NoItemInList(
-                          msg: AppLocalization.of(context)!.noResultFound
-                          // msg: AppLocalization.of(context)!.noProducts,
-                          ),
-                    )
-                  : isProductLoading && productList.isEmpty
-                      ? Shimmer.fromColors(
-                          baseColor: Colors.white,
-                          highlightColor: greyBorderColor,
-                          child: GridView.builder(
-                            shrinkWrap: true,
-                            physics: NeverScrollableScrollPhysics(),
-                            gridDelegate:
-                                SliverGridDelegateWithMaxCrossAxisExtent(
-                              mainAxisExtent: 180,
-                              mainAxisSpacing: 16,
-                              crossAxisSpacing: 15,
-                              maxCrossAxisExtent: 200,
-                            ),
-                            itemCount: 2,
-                            itemBuilder: (context, index) {
-                              return Card(
-                                color: Colors.grey,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              );
-                            },
-                          ),
-                        )
-                      : _buildProductList(),
-            ),
+            child: _buildList(),
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildList() {
+    return SingleChildScrollView(
+      physics: ScrollPhysics(),
+      child: noProductInList
+          ? Container(
+              constraints: BoxConstraints(
+                  maxHeight: MediaQuery.of(context).size.height / 2),
+              child:
+                  NoItemInList(msg: AppLocalization.of(context)!.noResultFound
+                      // msg: AppLocalization.of(context)!.noProducts,
+                      ),
+            )
+          : isProductLoading && productList.isEmpty
+              ? Shimmer.fromColors(
+                  baseColor: Colors.white,
+                  highlightColor: greyBorderColor,
+                  child: GridView.builder(
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                      mainAxisExtent: 180,
+                      mainAxisSpacing: 16,
+                      crossAxisSpacing: 15,
+                      maxCrossAxisExtent: 200,
+                    ),
+                    itemCount: 2,
+                    itemBuilder: (context, index) {
+                      return Card(
+                        color: Colors.grey,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      );
+                    },
+                  ),
+                )
+              : _buildProductList(),
     );
   }
 
@@ -305,53 +311,73 @@ class _UserProductListState extends State<UserProductList> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (widget.type == null)
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Text(
-                    "Found ${productCount} products",
-                    style: TextStyle(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 18,
-                      fontFamily: "Inter",
-                      color: blackFont,
-                    ),
+                Text(
+                  "Found ${productCount} products",
+                  style: TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 18,
+                    fontFamily: "Inter",
+                    color: blackFont,
                   ),
                 ),
-              Padding(
-                padding: const EdgeInsets.only(
-                  left: 8.0,
-                  right: 8.0,
-                  top: 8.0,
-                  bottom: 16,
-                ),
-                child: (widget.type != null)
-                    ? sectionProducts()
-                    : GridView.builder(
-                        shrinkWrap: true,
-                        padding: EdgeInsets.symmetric(horizontal: 4),
-                        controller: _productScrollController,
-                        physics: NeverScrollableScrollPhysics(),
-                        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                          mainAxisSpacing: 8,
-                          mainAxisExtent: 274,
-                          crossAxisSpacing: 15,
-                          maxCrossAxisExtent: 200,
-                        ),
-                        itemCount: productList.length,
-                        itemBuilder: (context, index) {
-                          return SizedBox(
-                            child: DisplayProduct(
-                              product: productList[index],
-                              onProductRefresh: () {
-                                _onProductRefresh();
-                              },
-                            ),
-                          );
-                        },
-                      ),
-              ),
+              SizedBox(height: 10),
+              (widget.type != null) ? sectionProducts() : _buildGridView(),
             ],
           );
+  }
+
+  Widget _buildGridView() {
+    return CustomScrollView(
+      physics: ScrollPhysics(),
+      controller: _productScrollController,
+      shrinkWrap: true,
+      slivers: <Widget>[
+        SliverGrid(
+          delegate: SliverChildBuilderDelegate(
+            (c, i) => SizedBox(
+              child: DisplayProduct(
+                product: productList[i],
+                onProductRefresh: () {
+                  _onProductRefresh();
+                },
+              ),
+            ),
+            childCount: productList.length,
+          ),
+          gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+            mainAxisSpacing: 8,
+            mainAxisExtent: 274,
+            crossAxisSpacing: 15,
+            maxCrossAxisExtent: 200,
+          ),
+        ),
+        SliverToBoxAdapter(
+          child: buildLoadingIndicator(isLoading: isProductLoading),
+        ),
+      ],
+    );
+    // return GridView.builder(
+    //   shrinkWrap: true,
+    //   padding: EdgeInsets.symmetric(horizontal: 4),
+    //   controller: _productScrollController,
+    //   physics: NeverScrollableScrollPhysics(),
+    //   gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+    //     mainAxisSpacing: 8,
+    //     mainAxisExtent: 274,
+    //     crossAxisSpacing: 15,
+    //     maxCrossAxisExtent: 200,
+    //   ),
+    //   itemCount: productList.length + 1,
+    //   itemBuilder: SizedBox(
+    //         child: DisplayProduct(
+    //           product: productList[index],
+    //           onProductRefresh: () {
+    //             _onProductRefresh();
+    //           },
+    //         ),
+    //       );
+    //   },
+    // );
   }
 
   Widget productTile(int index) {

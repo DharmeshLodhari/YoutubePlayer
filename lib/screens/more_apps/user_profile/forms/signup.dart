@@ -152,13 +152,18 @@ class _SignUpState extends State<SignUp> {
   }
 
   getProductIndustries() async {
-    loading = !loading;
+    loading = true;
     if (mounted) setState(() {});
     var result = await _auth.listOfIndustries();
-    setState(() {
-      industries = result!["product"];
-      loading = !loading;
-    });
+    if (result != null) {
+      industries = result["product"];
+      loading = false;
+      if (mounted) setState(() {});
+    } else {
+      industries = [];
+      loading = false;
+      if (mounted) setState(() {});
+    }
   }
 
   @override

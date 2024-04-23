@@ -301,6 +301,7 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
       return _buildLoadingIndicator();
     } else {
       return SingleChildScrollView(
+        physics: ScrollPhysics(),
         child: Column(
           children: [
             if (customerProfileList.isNotEmpty) ...[

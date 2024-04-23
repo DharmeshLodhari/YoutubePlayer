@@ -333,13 +333,13 @@ class ShoppingAuthService extends AuthService {
 
   // List Products
   Future<Map<String, dynamic>?> listOfProduct(
-      String? next, String? previous, String? category, bool? channel,
-      {String? userName,
-      bool otherDeals = false,
-      num page_size = 20,
-      String tag = "",
-      String industry = "",
-      String nearby = ""}) async {
+    String? next,
+    String? previous,
+    String? category,
+    bool? channel, {
+    String? userName,
+    bool otherDeals = false,
+  }) async {
     debugPrint('CALLING PRODUCT');
 
     debugPrint('CALLING PRODUCT channel::: ${channel}');
@@ -348,17 +348,10 @@ class ShoppingAuthService extends AuthService {
     if (next == null) {
       return null;
     }
-    // if(nearby.isNotEmpty){
-    //   url = AppConfig.baseUrl + "/api/v1/products/nearby/";
-    // }
     if (next == "") {
       if (otherDeals == true) {
         url = AppConfig.baseUrl + "/api/v1/products/?other_deals=true";
-      }
-      // else if (nearby.isNotEmpty) {
-      //   url = AppConfig.baseUrl + "/api/v1/products/nearby/";
-      // }
-      else {
+      } else {
         url =
             AppConfig.baseUrl + "/api/v1/products/by-seller/" + userName! + "/";
       }
@@ -377,15 +370,7 @@ class ShoppingAuthService extends AuthService {
     if (channel == true) {
       url = AppConfig.baseUrl + "/api/v1/channels-merchandise/$userName";
     }
-    // if (page_size != "") {
-    //   if (url.contains("page_size")) {
-    //     url = url;
-    //   } else if (url.contains("?")) {
-    //     url = url + "&page_size=$page_size";
-    //   } else {
-    //     url = url + "?page_size=$page_size";
-    //   }
-    // }
+
     debugPrint("product list url _______________________" + url);
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
@@ -417,8 +402,6 @@ class ShoppingAuthService extends AuthService {
         "previous": jsonData["previous"],
         "results": productList
       };
-
-      // debugPrint('CALLING OTHER check ---> ${result}');
 
       return result;
     } else if (response.statusCode == 500) {

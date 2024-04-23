@@ -7,6 +7,7 @@ import 'package:Slydo/utils/navigation_util.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uni_links/uni_links.dart';
 
 class UniLinksService {
@@ -50,39 +51,49 @@ class UniLinksService {
     List<String> parts = uri.toString().split('/');
 
     if (parts[2] == "slydo.co") {
+      SharedPreferences _sharedPreferences =
+          await SharedPreferences.getInstance();
+      var result = _sharedPreferences.getBool('isLoggedOut');
+
+      if (result != null && result == true) return;
+
       debugPrint("slydo ===>");
-      if (parts[3] == "user") {
-        Navigator.pushNamed(myGlobals.context!, Routes.USER_PROFILE,
-            arguments: {
-              "searchedUserName": parts[4],
-            });
-      } else if (parts[3] == "payment-link") {
-        NavigationUtil.push(myGlobals.context!,
-            screen: PaymentLinkCashOut(
-              id: parts[4],
-            ));
-      } else if (parts[3] == "store") {
-        if (parts[5] == "products") {
-          Navigator.pushNamed(myGlobals.context!, Routes.PRODUCT, arguments: {
-            "productId": parts[6],
-          });
-        } else if (parts[5] == "services") {
-          Navigator.pushNamed(myGlobals.context!, Routes.SERVICE_DETAIL,
+      if (parts.length >= 3) if (parts[3] == "user") {
+        if (parts.length >= 4)
+          Navigator.pushNamed(myGlobals.context!, Routes.USER_PROFILE,
               arguments: {
-                "serviceId": parts[6],
+                "searchedUserName": parts[4],
               });
-        } else if (parts[5] == "blogs") {
-          Navigator.of(myGlobals.context!).push(
-            MaterialPageRoute(
-              builder: (context) {
-                return PostDetailPage(
-                  onDeleteBlog: () {},
-                  postType: PostType.blog,
-                  postId: parts[6],
-                );
-              },
-            ),
-          );
+      } else if (parts[3] == "payment-link") {
+        if (parts.length >= 4)
+          NavigationUtil.push(myGlobals.context!,
+              screen: PaymentLinkCashOut(
+                id: parts[4],
+              ));
+      } else if (parts[3] == "store") {
+        if (parts.length >= 5) {
+          if (parts[5] == "products") {
+            Navigator.pushNamed(myGlobals.context!, Routes.PRODUCT, arguments: {
+              "productId": parts[6],
+            });
+          } else if (parts[5] == "services") {
+            Navigator.pushNamed(myGlobals.context!, Routes.SERVICE_DETAIL,
+                arguments: {
+                  "serviceId": parts[6],
+                });
+          } else if (parts[5] == "blogs") {
+            Navigator.of(myGlobals.context!).push(
+              MaterialPageRoute(
+                builder: (context) {
+                  return PostDetailPage(
+                    onDeleteBlog: () {},
+                    postType: PostType.blog,
+                    postId: parts[6],
+                  );
+                },
+              ),
+            );
+          }
         } else {
           Navigator.pushNamed(myGlobals.context!, Routes.USER_PROFILE,
               arguments: {

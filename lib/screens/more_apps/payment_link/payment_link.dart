@@ -649,10 +649,14 @@ class _PaymentLinkState extends State<PaymentLink> {
           )
         : ListView.builder(
             padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 18),
-            itemCount: paymentLinkList.length,
-            itemBuilder: (BuildContext context, int index) {
-              return _getSlidableWithLists(
-                  context, paymentLinkList[index], index);
+            itemCount: paymentLinkList.length + 1,
+            itemBuilder: (context, index) {
+              if (index == paymentLinkList.length) {
+                return buildLoadingIndicator(isLoading: isLoading);
+              } else {
+                return _getSlidableWithLists(
+                    context, paymentLinkList[index], index);
+              }
             },
             controller: _scrollController,
           );

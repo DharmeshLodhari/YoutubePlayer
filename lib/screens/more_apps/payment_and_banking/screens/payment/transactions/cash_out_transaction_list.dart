@@ -2,7 +2,6 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/payout.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/tiles/payout_tile.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
@@ -100,41 +99,31 @@ class _CashoutTransactionsListState extends State<CashoutTransactionsList> {
         ? NoItemInList(
             msg: AppLocalization.of(context)!.payoutHistoryEmpty,
           )
-        : ListView.builder(
-            //+1 for progressbar
-            itemCount: payoutList.length + 1,
-            itemBuilder: (BuildContext context, int index) {
-              if (index == payoutList.length) {
-                return _buildIndicator();
-              } else {
-                return Container(
-                  padding: EdgeInsets.symmetric(vertical: 2),
-                  child: Column(
-                    children: [
-                      PayoutTile(
-                        payout: payoutList[index],
-                        key: Key(
-                            "Payout:${payoutList[index].uuid! + payoutList[index].timeStamp!}"),
+        : isLoading && payoutList.isEmpty
+            ? buildLoadingIndicator(isLoading: isLoading)
+            : ListView.builder(
+                //+1 for progressbar
+                itemCount: payoutList.length + 1,
+                itemBuilder: (BuildContext context, int index) {
+                  if (index == payoutList.length) {
+                    return buildJumpingLoadingIndicator(isLoading: isLoading);
+                  } else {
+                    return Container(
+                      padding: EdgeInsets.symmetric(vertical: 2),
+                      child: Column(
+                        children: [
+                          PayoutTile(
+                            payout: payoutList[index],
+                            key: Key(
+                                "Payout:${payoutList[index].uuid! + payoutList[index].timeStamp!}"),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                );
-              }
-            },
-            controller: _scrollController,
-          );
-  }
-
-  Widget _buildIndicator() {
-    return new Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: new Center(
-        child: new Opacity(
-          opacity: isLoading ? 1.0 : 00,
-          child: CircularLoadingIndicator(),
-        ),
-      ),
-    );
+                    );
+                  }
+                },
+                controller: _scrollController,
+              );
   }
 
   void getList() async {

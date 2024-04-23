@@ -18,6 +18,7 @@ import 'package:Slydo/services/awesome_notification_service.dart';
 import 'package:Slydo/services/fcm_push_notification.dart';
 import 'package:Slydo/services/list_refresher.dart';
 import 'package:Slydo/services/share_manager.dart';
+import 'package:Slydo/services/uni_links_service.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/util.dart';
@@ -88,7 +89,7 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   void initState() {
-    // UniLinksService.init();
+    UniLinksService.init();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
       // ShareManager().initializeShareManager();
 

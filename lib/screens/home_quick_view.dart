@@ -77,127 +77,160 @@ class _HomeQuickViewState extends State<HomeQuickView> {
       {
         'imagePath': 'home/transaction',
         'title': ProtectionPermission.transaction,
+        'ForReadPermission': '2', // 1 : Read, 2 : Write
       },
       {
         'imagePath': 'home/send',
         'title': ProtectionPermission.sendMoney,
+        'ForReadPermission': '1',
       },
       {
         'imagePath': 'home/request',
         'title': ProtectionPermission.requestMoney,
+        'ForReadPermission': '2',
       },
       {
         'imagePath': 'home/payment_link',
         'title': ProtectionPermission.paymentLinks,
+        'ForReadPermission': '2',
       },
       {
         'imagePath': 'home/wallet',
         'title': ProtectionPermission.wallet,
+        'ForReadPermission': '2',
       },
       {
         'imagePath': 'home/credit_card',
         'title': ProtectionPermission.creditCard,
+        'ForReadPermission': '2',
       },
       {
         'imagePath': 'home/utility',
         'title': ProtectionPermission.utility,
+        'ForReadPermission': '2',
       },
     ];
     final List<Map<String, String>> business = [
       {
         'imagePath': 'home/product',
         'title': ProtectionPermission.product,
+        'ForReadPermission': '2',
       },
       {
         'imagePath': 'home/service',
         'title': ProtectionPermission.services,
+        'ForReadPermission': '2',
       },
       {
         'imagePath': 'home/invoice',
         'title': ProtectionPermission.invoice,
+        'ForReadPermission': '2',
       },
       {
         'imagePath': 'home/contract',
         'title': ProtectionPermission.contract,
+        'ForReadPermission': '2',
       },
     ];
     final List<Map<String, String>> socials = [
       {
         'imagePath': 'home/chat_social',
         'title': ProtectionPermission.chat,
+        'ForReadPermission': '2',
       },
       {
         'imagePath': 'home/inbox_social',
         'title': ProtectionPermission.inbox,
+        'ForReadPermission': '2',
       },
       {
         'imagePath': 'home/yarn',
         'title': ProtectionPermission.yarn,
+        'ForReadPermission': '2',
       },
       {
         'imagePath': 'home/moment',
         'title': ProtectionPermission.moment,
+        'ForReadPermission': '2',
       },
       {
         'imagePath': 'home/blog',
         'title': ProtectionPermission.blog,
+        'ForReadPermission': '2',
       },
       {
         'imagePath': 'home/channel',
         'title': ProtectionPermission.channel,
+        'ForReadPermission': '2',
       },
     ];
     final List<Map<String, String>> lifestyle = [
       {
         'imagePath': 'home/order',
         'title': ProtectionPermission.order,
+        'ForReadPermission': '2',
       },
       {
         'imagePath': 'home/super_store',
         'title': ProtectionPermission.superStore,
+        'ForReadPermission': '2',
       },
       {
         'imagePath': 'home/service',
         'title': ProtectionPermission.servicesHub,
+        'ForReadPermission': '2',
       },
     ];
     final List<Map<String, String>> create = [
       {
         'imagePath': 'home/yarn',
         'title': ProtectionPermission.yarn,
+        'ForReadPermission': '1',
       },
       {
         'imagePath': 'home/moment',
         'title': ProtectionPermission.moment,
+        'ForReadPermission': '1',
       },
       {
         'imagePath': 'home/product',
         'title': ProtectionPermission.product,
+        'ForReadPermission': '1',
       },
       {
         'imagePath': 'home/service',
         'title': ProtectionPermission.services,
+        'ForReadPermission': '1',
       },
       {
         'imagePath': 'home/inbox',
         'title': ProtectionPermission.inbox,
+        'ForReadPermission': '1',
       },
-      {'imagePath': 'home/blog', 'title': ProtectionPermission.blog},
+      {
+        'imagePath': 'home/blog',
+        'title': ProtectionPermission.blog,
+        'ForReadPermission': '1',
+      },
       {
         'imagePath': 'home/contract',
         'title': ProtectionPermission.contract,
+        'ForReadPermission': '1',
       },
       {
         'imagePath': 'home/invoice',
         'title': ProtectionPermission.invoice,
+        'ForReadPermission': '1',
       },
       {
         'imagePath': 'home/channel',
         'title': ProtectionPermission.channel,
+        'ForReadPermission': '1',
       },
       {
         'imagePath': 'home/group',
         'title': ProtectionPermission.group,
+        'ForReadPermission': '1',
       },
     ];
 
@@ -262,18 +295,6 @@ class _HomeQuickViewState extends State<HomeQuickView> {
       ),
     );
   }
-
-  // Widget _buildIndicator() {
-  //   return Padding(
-  //     padding: const EdgeInsets.all(8.0),
-  //     child: Center(
-  //       child: Opacity(
-  //         opacity: isLoading ? 1.0 : 00,
-  //         child: CircularLoadingIndicator(),
-  //       ),
-  //     ),
-  //   );
-  // }
 
   Widget searchBox() {
     try {
@@ -421,6 +442,7 @@ class _HomeQuickViewState extends State<HomeQuickView> {
                         child: shortcutView(
                           shortcut['imagePath']!,
                           shortcut['title']!,
+                          shortcut['ForReadPermission']!,
                         ),
                       ),
                     );
@@ -434,7 +456,8 @@ class _HomeQuickViewState extends State<HomeQuickView> {
     );
   }
 
-  Widget shortcutView(String imagePath, String title) {
+  Widget shortcutView(
+      String imagePath, String title, String ForReadPermission) {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 8.0),
       padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 8.0),
@@ -458,7 +481,7 @@ class _HomeQuickViewState extends State<HomeQuickView> {
               permissionName: title,
               isShowLock: true,
               position: 10,
-              isLockForRead: appBarTitle == 'Create' ? true : false,
+              isLockForRead: ForReadPermission,
               child: Row(
                 children: [
                   SvgPicture.asset(

@@ -2073,7 +2073,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     return IconButton(
         icon: PermissionProtectionWidget(
           permissionName: ProtectionPermission.chat,
-          isLockForRead: true,
+          isLockForRead: '1',
           child: Icon(
             showMoreAction ? SlydoAppIcon.close_2 : SlydoAppIcon.add,
             color: navyBlue,
@@ -3172,7 +3172,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       onTap: getSendMessageAction,
       child: PermissionProtectionWidget(
         permissionName: ProtectionPermission.chat,
-        isLockForRead: true,
+        isLockForRead: '1',
         child: Container(
           padding: EdgeInsets.all(2),
           child: Row(

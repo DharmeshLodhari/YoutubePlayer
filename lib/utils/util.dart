@@ -18,6 +18,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:jumping_dot/jumping_dot.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path_provider/path_provider.dart' as pathProvider;
 import 'package:permission_handler/permission_handler.dart';
@@ -632,7 +633,25 @@ Widget buildLoadingIndicator({required bool isLoading}) {
     child: Center(
       child: Opacity(
         opacity: isLoading ? 1.0 : 00,
-        child: CircularLoadingIndicator(),
+        child: isLoading ? CircularLoadingIndicator() : Container(),
+      ),
+    ),
+  );
+}
+
+Widget buildJumpingLoadingIndicator({required bool isLoading}) {
+  return Padding(
+    padding: const EdgeInsets.all(15.0),
+    child: Center(
+      child: Opacity(
+        opacity: isLoading ? 1.0 : 00,
+        child: isLoading
+            ? JumpingDots(
+                color: navyBlue,
+                radius: 15,
+                numberOfDots: 3,
+              )
+            : Container(),
       ),
     ),
   );

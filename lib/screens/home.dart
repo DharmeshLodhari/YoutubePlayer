@@ -568,14 +568,17 @@ class _HomeState extends State<Home> {
       {
         'imagePath': 'home/transaction',
         'title': ProtectionPermission.transaction,
+        'ForReadPermission': '2', // 1 : Read, 2 : Write
       },
       {
         'imagePath': 'home/send',
         'title': ProtectionPermission.send,
+        'ForReadPermission': '1',
       },
       {
         'imagePath': 'home/request',
         'title': ProtectionPermission.request,
+        'ForReadPermission': '2',
       },
       // {
       //   'imagePath': 'home/request',
@@ -584,18 +587,22 @@ class _HomeState extends State<Home> {
       {
         'imagePath': 'home/yarn',
         'title': ProtectionPermission.yarn,
+        'ForReadPermission': '2',
       },
       {
         'imagePath': 'home/moment',
         'title': ProtectionPermission.moment,
+        'ForReadPermission': '2',
       },
       {
         'imagePath': 'home/service',
         'title': ProtectionPermission.services,
+        'ForReadPermission': '2',
       },
       {
         'imagePath': 'home/blog',
         'title': ProtectionPermission.blog,
+        'ForReadPermission': '2',
       },
     ];
 
@@ -613,15 +620,16 @@ class _HomeState extends State<Home> {
                   onTap: () {
                     onClickShortcut(shortcut['title'] ?? "");
                   },
-                  child:
-                      shortcutView(shortcut['imagePath']!, shortcut['title']!)),
+                  child: shortcutView(shortcut['imagePath']!,
+                      shortcut['title']!, shortcut['ForReadPermission']!)),
             ),
         ],
       ),
     );
   }
 
-  Widget shortcutView(String imagePath, String title) {
+  Widget shortcutView(
+      String imagePath, String title, String ForReadPermission) {
     // return !userBloc.user.hasWritePermission(title)
     //     ? Stack(
     //         children: [
@@ -637,15 +645,16 @@ class _HomeState extends State<Home> {
     //         ],
     //       )
     //     : _buildIconAndText(imagePath, title);
-    return _buildIconAndText(imagePath, title);
+    return _buildIconAndText(imagePath, title, ForReadPermission);
   }
 
-  Widget _buildIconAndText(String imagePath, String title) {
+  Widget _buildIconAndText(
+      String imagePath, String title, String ForReadPermission) {
     return PermissionProtectionWidget(
       permissionName: title,
       isShowLock: true,
       position: 0,
-      isLockForRead: false,
+      isLockForRead: ForReadPermission,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,

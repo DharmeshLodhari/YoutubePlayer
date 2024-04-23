@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:Slydo/screens/more_apps/payment_link/payment_link.dart';
+import 'package:Slydo/screens/more_apps/payment_loading_screen.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:custom_qr_generator/custom_qr_generator.dart';
 import 'package:flutter/material.dart';
@@ -370,6 +371,17 @@ class _PaymentLinkScreenState extends State<PaymentLinkScreen> {
                   context: context,
                   builder: (context) => const Center(child: SizedBox()));
 
+              //show loading screen
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => PaymentLoadingScreen(
+                          text: 'Payment Link Processing......',
+                          imagePath: 'assets/images/app_logo.png',
+                        )),
+              );
+
               await Future.delayed(const Duration(seconds: 3));
 
               String description = 'General Payment';
@@ -386,6 +398,8 @@ class _PaymentLinkScreenState extends State<PaymentLinkScreen> {
                 dynamic res = jsonDecode(value.body);
 
                 response = value;
+
+                Navigator.pop(context);
 
                 try {
                   handleServerErrors(response);

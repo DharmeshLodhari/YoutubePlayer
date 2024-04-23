@@ -5,7 +5,6 @@ import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/custom_box_shadow.dart';
 import 'package:Slydo/widget/item_display_card.dart';
-import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
@@ -83,7 +82,7 @@ class _UserServiceListState extends State<UserServiceList> {
         key: _serviceScaffoldKey,
         body: Container(
           color: lightGrey,
-          padding: EdgeInsets.fromLTRB(4, 4, 4, 4),
+          padding: EdgeInsets.all(16),
           child: SmartRefresher(
             enablePullDown: true,
             header: WaterDropHeader(
@@ -92,95 +91,96 @@ class _UserServiceListState extends State<UserServiceList> {
             ),
             controller: _servicesRefreshController,
             onRefresh: _onServiceRefresh,
-            child: Column(
-              children: [
-                noServiceInList
-                    ? Expanded(
-                        child: NoItemInList(
-                          msg: AppLocalization.of(context)!.noProducts,
-                        ),
-                      )
-                    : Expanded(
-                        child: ListView(
-                          children: [
-                            _buildServiceList(),
-                            isServiceLoading
-                                ? Shimmer.fromColors(
-                                    baseColor: Colors.white,
-                                    highlightColor: greyBorderColor,
-                                    child: GridView.builder(
-                                      shrinkWrap: true,
-                                      physics: NeverScrollableScrollPhysics(),
-                                      gridDelegate:
-                                          SliverGridDelegateWithMaxCrossAxisExtent(
-                                        mainAxisExtent: 180,
-                                        mainAxisSpacing: 16,
-                                        crossAxisSpacing: 15,
-                                        maxCrossAxisExtent: 200,
-                                      ),
-                                      itemCount: 2,
-                                      itemBuilder: (context, index) {
-                                        return Card(
-                                          color: Colors.grey,
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(12),
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                  )
-                                : SizedBox.shrink(),
-                          ],
-                        ),
-                      ),
-              ],
-            ),
+            child: _buildList(),
           ),
         ),
       ),
     );
   }
 
+  Widget _buildList() {
+    return Column(
+      children: [
+        noServiceInList
+            ? Expanded(
+                child: NoItemInList(
+                  msg: AppLocalization.of(context)!.noProducts,
+                ),
+              )
+            : Expanded(
+                child: ListView(
+                  children: [
+                    _buildServiceList(),
+                    isServiceLoading
+                        ? Shimmer.fromColors(
+                            baseColor: Colors.white,
+                            highlightColor: greyBorderColor,
+                            child: GridView.builder(
+                              shrinkWrap: true,
+                              physics: NeverScrollableScrollPhysics(),
+                              gridDelegate:
+                                  SliverGridDelegateWithMaxCrossAxisExtent(
+                                mainAxisExtent: 180,
+                                mainAxisSpacing: 16,
+                                crossAxisSpacing: 15,
+                                maxCrossAxisExtent: 200,
+                              ),
+                              itemCount: 2,
+                              itemBuilder: (context, index) {
+                                return Card(
+                                  color: Colors.grey,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                );
+                              },
+                            ),
+                          )
+                        : SizedBox.shrink(),
+                  ],
+                ),
+              ),
+      ],
+    );
+  }
+
   Widget _buildServiceList() {
     return serviceNext == "" && isServiceLoading
         ? SizedBox.shrink()
-        : Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 8.0, vertical: 20.0),
-            child: GridView.builder(
-              shrinkWrap: true,
-              padding: EdgeInsets.zero,
-              controller: _serviceScrollController,
-              physics: NeverScrollableScrollPhysics(),
-              gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                mainAxisSpacing: 8,
-                mainAxisExtent: 274,
-                crossAxisSpacing: 15,
-                maxCrossAxisExtent: 200,
+        : CustomScrollView(
+            physics: ScrollPhysics(),
+            controller: _serviceScrollController,
+            shrinkWrap: true,
+            slivers: <Widget>[
+              SliverGrid(
+                delegate: SliverChildBuilderDelegate(
+                  (c, i) => SizedBox(
+                    child: DisplayService(
+                      service: serviceList[i],
+                      onServiceRefresh: () {
+                        _onServiceRefresh();
+                      },
+                    ),
+                  ),
+                  childCount: serviceList.length,
+                ),
+                gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                  mainAxisSpacing: 8,
+                  mainAxisExtent: 274,
+                  crossAxisSpacing: 15,
+                  maxCrossAxisExtent: 200,
+                ),
               ),
-              itemCount: serviceList.length,
-              itemBuilder: (context, index) {
-                return DisplayService(
-                  service: serviceList[index],
-                  onServiceRefresh: () {
-                    _onServiceRefresh();
-                  },
-                );
-              },
-            ),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Center(
+                    child: buildLoadingIndicator(isLoading: isServiceLoading),
+                  ),
+                ),
+              ),
+            ],
           );
-  }
-
-  Widget _buildServiceIndicator() {
-    return new Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: new Center(
-        child: new Opacity(
-            opacity: isServiceLoading ? 1.0 : 00,
-            child: isServiceLoading ? CircularLoadingIndicator() : Container()),
-      ),
-    );
   }
 
   void getServiceList() async {

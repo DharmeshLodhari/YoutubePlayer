@@ -136,8 +136,7 @@ class AuthService {
     String url = AppConfig.baseUrl + "/api/v1/user/merchant-search/?q=$query";
 
     debugPrint(url);
-    var headers = await getAuthHeaders();
-    var response = await httpGet(url, headers: headers);
+    var response = await httpGet(url);
 
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body) as List<dynamic>;

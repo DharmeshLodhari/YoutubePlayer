@@ -647,7 +647,7 @@ class _VerticalListItemState extends State<VerticalListItem> {
       },
       child: PermissionProtectionWidget(
         permissionName: ProtectionPermission.chat,
-        isLockForRead: true,
+        isLockForRead: '1',
         child: Container(
           padding: EdgeInsets.symmetric(vertical: 2),
           child: UserTileForConnection(user: widget.user),

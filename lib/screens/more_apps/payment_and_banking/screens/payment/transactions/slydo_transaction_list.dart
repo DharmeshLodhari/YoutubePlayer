@@ -247,29 +247,31 @@ class _SlydoTransactionListState extends State<SlydoTransactionList> {
         ? NoItemInList(
             msg: AppLocalization.of(context)!.transactionHistoryEmpty,
           )
-        : SmartRefresher(
-            enablePullDown: true,
-            header: WaterDropHeader(
-              complete: Container(),
-              waterDropColor: navyBlue,
-            ),
-            controller: _refreshController,
-            onRefresh: _onRefresh,
-            child: ListView.builder(
-              padding: EdgeInsets.symmetric(vertical: 4),
-              //+1 for progressbar
-              itemCount: transactionList.length + 1,
-              itemBuilder: (BuildContext context, int index) {
-                if (index == transactionList.length) {
-                  return buildLoadingIndicator(isLoading: isLoading);
-                } else {
-                  return _getSlidableWithLists(
-                      context, transactionList[index], index);
-                }
-              },
-              controller: _scrollController,
-            ),
-          );
+        : isLoading && transactionList.isEmpty
+            ? buildLoadingIndicator(isLoading: isLoading)
+            : SmartRefresher(
+                enablePullDown: true,
+                header: WaterDropHeader(
+                  complete: Container(),
+                  waterDropColor: navyBlue,
+                ),
+                controller: _refreshController,
+                onRefresh: _onRefresh,
+                child: ListView.builder(
+                  padding: EdgeInsets.symmetric(vertical: 4),
+                  //+1 for progressbar
+                  itemCount: transactionList.length + 1,
+                  itemBuilder: (BuildContext context, int index) {
+                    if (index == transactionList.length) {
+                      return buildJumpingLoadingIndicator(isLoading: isLoading);
+                    } else {
+                      return _getSlidableWithLists(
+                          context, transactionList[index], index);
+                    }
+                  },
+                  controller: _scrollController,
+                ),
+              );
   }
 
   void getList() async {

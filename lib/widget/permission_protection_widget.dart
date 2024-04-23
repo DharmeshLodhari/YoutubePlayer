@@ -15,7 +15,7 @@ class PermissionProtectionWidget extends StatelessWidget {
       required this.permissionName,
       this.position = 0,
       this.isShowLock = false,
-      this.isLockForRead = false,
+      this.isLockForRead, // 1 : Read, 2 : Write
       super.key});
 
   final Widget child;
@@ -24,7 +24,7 @@ class PermissionProtectionWidget extends StatelessWidget {
   late UserBloc userBloc;
   PermissionType? hasPermission;
   bool isShowLock = false;
-  bool isLockForRead = false;
+  String? isLockForRead;
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +33,7 @@ class PermissionProtectionWidget extends StatelessWidget {
         permissionName); // if user have permission for given variable
 
     return hasPermission == null ||
-            (hasPermission == PermissionType.READ && isLockForRead)
+            (hasPermission == PermissionType.READ && isLockForRead == "1")
         ? GestureDetector(
             onTap: () {
               showSnackbar(context,

@@ -5,6 +5,7 @@ import 'package:Slydo/screens/super_store/super_store_industry.dart';
 import 'package:Slydo/screens/super_store/widget/single_store_card.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/navigation_util.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 
 class SectionProducts extends StatefulWidget {
@@ -75,12 +76,16 @@ class _SectionProductsState extends State<SectionProducts> {
                     shrinkWrap: true,
                     physics: const ScrollPhysics(),
                     scrollDirection: Axis.horizontal,
-                    itemCount: result.length,
+                    itemCount: result.length + 1,
                     itemBuilder: (context, index) {
-                      return SuperStoreSingleCard(
-                        product: result[index],
-                        // next: headers['next_url']
-                      );
+                      if (index == result.length) {
+                        return buildLoadingIndicator(isLoading: isLoading);
+                      } else {
+                        return SuperStoreSingleCard(
+                          product: result[index],
+                          // next: headers['next_url']
+                        );
+                      }
                     },
                   ),
                 ),

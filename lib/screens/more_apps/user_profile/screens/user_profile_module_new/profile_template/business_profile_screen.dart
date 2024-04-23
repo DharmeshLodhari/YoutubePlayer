@@ -554,25 +554,25 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
     );
   }
 
-  getData() async {
-    Map<String, dynamic>? data;
-    try {
-      data = await ShoppingAuthService().listOfProduct(
-          selectedCategory == "main"
-              ? "https://api.slydo.co/api/v1/products/seller-products-by-custom-category/${widget.searchedUser!.userName}/"
-              : "https://api.slydo.co/api/v1/products/by-seller/${widget.searchedUser!.userName}/?custom_category=$selectedCategory",
-          "",
-          "",
-          false,
-          userName: searchedUserName);
-    } catch (error) {}
-    if (data != null) {
-      debugPrint('IS SHOW PRODUCT ---> $data');
-      List<dynamic> result = data["results"];
-      if (result.isNotEmpty) return result;
-    }
-    return [];
-  }
+  // getData() async {
+  //   Map<String, dynamic>? data;
+  //   try {
+  //     data = await ShoppingAuthService().listOfProduct(
+  //         selectedCategory == "main"
+  //             ? "https://api.slydo.co/api/v1/products/seller-products-by-custom-category/${widget.searchedUser!.userName}/"
+  //             : "https://api.slydo.co/api/v1/products/by-seller/${widget.searchedUser!.userName}/?custom_category=$selectedCategory",
+  //         "",
+  //         "",
+  //         false,
+  //         userName: searchedUserName);
+  //   } catch (error) {}
+  //   if (data != null) {
+  //     debugPrint('IS SHOW PRODUCT ---> $data');
+  //     List<dynamic> result = data["results"];
+  //     if (result.isNotEmpty) return result;
+  //   }
+  //   return [];
+  // }
 
   Widget _getTabViewLayout() {
     return Column(

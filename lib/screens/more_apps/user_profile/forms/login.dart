@@ -47,6 +47,7 @@ class _UserLoginState extends State<UserLogin> {
   final _yarnAuth = YarnAuth();
   String phoneNumber = '';
   String? password = '';
+  String? companyName = '';
 
   //for remember user
   bool isChecked = false;
@@ -71,7 +72,6 @@ class _UserLoginState extends State<UserLogin> {
 
   List<CompanyName> companyList = [];
   // String businessName = "";
-  String companyName = "";
   List<String> _dropdownItems = [];
 
   ScrollController scrollController = ScrollController();
@@ -84,7 +84,6 @@ class _UserLoginState extends State<UserLogin> {
     passwordController = TextEditingController();
     companyController = TextEditingController();
 
-    // searchCompanyName("");
     super.initState();
   }
 
@@ -114,7 +113,7 @@ class _UserLoginState extends State<UserLogin> {
         passwordController?.text = passwordFromPref!;
       }
       if (companyFromPref != null) {
-        companyName = companyFromPref!;
+        companyController?.text = companyFromPref!;
       }
 
       if (phoneNumberFromPref != null) {
@@ -123,6 +122,7 @@ class _UserLoginState extends State<UserLogin> {
       }
 
       password = passwordFromPref;
+      companyName = companyFromPref;
     }
     if (mounted) setState(() {});
   }
@@ -348,7 +348,7 @@ class _UserLoginState extends State<UserLogin> {
                           title: Text(value),
                           onTap: () {
                             companyController?.text = value;
-                            companyName = value;
+                            companyController?.text = value;
                             _dropdownItems.clear();
                             setState(() {});
                             companyFocusNode?.unfocus();
@@ -453,7 +453,7 @@ class _UserLoginState extends State<UserLogin> {
             //         ?.firstWhere((element) => element.businessName == value)
             //         .businessName ??
             // "";
-            companyName = companyList
+            companyController?.text = companyList
                     .firstWhere((element) => element.businessName == value)
                     .username ??
                 "";
@@ -471,7 +471,7 @@ class _UserLoginState extends State<UserLogin> {
             return null;
           }
         },
-        selectedItem: companyName,
+        selectedItem: companyController?.text,
       ),
     );
   }
@@ -810,6 +810,7 @@ class _UserLoginState extends State<UserLogin> {
       phoneNumber =
           "+" + _selectedDialogCountry.phoneCode! + phoneNumberFromTextField;
       password = passwordController!.text.trim();
+      companyName = companyController!.text.trim();
       bool isStaffLogin;
       if (currentIndex == 1) {
         isStaffLogin = true;
