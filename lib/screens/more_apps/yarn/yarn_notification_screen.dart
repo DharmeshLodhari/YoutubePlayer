@@ -1,5 +1,4 @@
 import 'package:Slydo/screens/more_apps/yarn/widgets/notification_view.dart';
-import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_shimmer.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:connectivity/connectivity.dart';
@@ -140,7 +139,7 @@ class _YarnNotificationState extends State<YarnNotification> {
         itemCount: notificationList.length + 1,
         itemBuilder: (context, index) {
           if (index == notificationList.length) {
-            return _buildLoadingIndicator();
+            return buildShimmerLoadingIndicator(isLoading: isLoading);
           }
           return AskNotificationView(
             notification: notificationList[index],
@@ -164,13 +163,6 @@ class _YarnNotificationState extends State<YarnNotification> {
     }
     return NoItemInList(
       msg: AppLocalization.of(context)!.noResultFound,
-    );
-  }
-
-  Widget _buildLoadingIndicator() {
-    return Opacity(
-      opacity: isLoading ? 1.0 : 00,
-      child: isLoading ? YarnShimmer() : Container(),
     );
   }
 

@@ -516,7 +516,8 @@ class _MomentsScreenState extends State<MomentsScreen> {
             itemCount: contactMomentsList.length + 1,
             itemBuilder: (BuildContext context, int index) {
               if (index == contactMomentsList.length) {
-                return buildIndicator(isLoading: isContactMomentsLoading);
+                return buildLoadingIndicator(
+                    isLoading: isContactMomentsLoading);
               } else {
                 return ContactMomentsCard(
                   index: index,
@@ -579,18 +580,6 @@ class _MomentsScreenState extends State<MomentsScreen> {
                 },
               ),
       ],
-    );
-  }
-
-  Widget buildIndicator({required bool isLoading}) {
-    return new Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: new Center(
-        child: new Opacity(
-          opacity: isLoading ? 1.0 : 00,
-          child: CircularLoadingIndicator(),
-        ),
-      ),
     );
   }
 

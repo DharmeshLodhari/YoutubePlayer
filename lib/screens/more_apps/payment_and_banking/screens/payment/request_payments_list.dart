@@ -508,40 +508,31 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
         ? NoItemInList(
             msg: AppLocalization.of(context)!.noPendingPaymentRequest,
           )
-        : SmartRefresher(
-            enablePullDown: true,
-            header: WaterDropHeader(
-              complete: Container(),
-              waterDropColor: navyBlue,
-            ),
-            controller: _refreshController,
-            onRefresh: _onRefresh,
-            child: ListView.builder(
-              padding: EdgeInsets.symmetric(vertical: 4),
-              //+1 for progressbar
-              itemCount: requestPaymentList.length + 1,
-              itemBuilder: (BuildContext context, int index) {
-                if (index == requestPaymentList.length) {
-                  return _buildIndicator();
-                } else {
-                  return _getSlideLists(
-                      context, requestPaymentList[index], index);
-                }
-              },
-              controller: _scrollController,
-            ),
-          );
-  }
-
-  Widget _buildIndicator() {
-    return new Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: new Center(
-        child: new Opacity(
-            opacity: isLoading ? 1.0 : 00,
-            child: isLoading ? CircularLoadingIndicator() : Container()),
-      ),
-    );
+        : isLoading && requestPaymentList.isEmpty
+            ? buildLoadingIndicator(isLoading: isLoading)
+            : SmartRefresher(
+                enablePullDown: true,
+                header: WaterDropHeader(
+                  complete: Container(),
+                  waterDropColor: navyBlue,
+                ),
+                controller: _refreshController,
+                onRefresh: _onRefresh,
+                child: ListView.builder(
+                  padding: EdgeInsets.symmetric(vertical: 4),
+                  //+1 for progressbar
+                  itemCount: requestPaymentList.length + 1,
+                  itemBuilder: (BuildContext context, int index) {
+                    if (index == requestPaymentList.length) {
+                      return buildJumpingLoadingIndicator(isLoading: isLoading);
+                    } else {
+                      return _getSlideLists(
+                          context, requestPaymentList[index], index);
+                    }
+                  },
+                  controller: _scrollController,
+                ),
+              );
   }
 
   bool isRefreshing = false;

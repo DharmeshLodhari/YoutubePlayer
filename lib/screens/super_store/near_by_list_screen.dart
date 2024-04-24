@@ -9,7 +9,6 @@ import '../../widget/no_item_in_list.dart';
 import '../more_apps/shopping/shopping_auth.dart';
 import '../more_apps/user_profile/models/user.dart';
 import '../more_apps/yarn/utils/yarn_enum.dart';
-import '../more_apps/yarn/widgets/yarn_shimmer.dart';
 
 class NearByListScreen extends StatefulWidget {
   var arguments;
@@ -147,75 +146,62 @@ class _NearByListScreenState extends State<NearByListScreen> {
   }
 
   Widget _buildListView() {
-    if (!isNearbyLoading) {
-      return nearByBuildView();
-    }
+    return !isNearbyLoading && customerProfileList.isEmpty
+        ? NoItemInList(
+            msg: AppLocalization.of(context)!.noResultFound,
+          )
+        : ListView.builder(
+            physics: const ClampingScrollPhysics(),
+            padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
+            controller: _scrollController,
+            itemCount: customerProfileList.length + 1,
+            itemBuilder: (BuildContext context, int index) {
+              if (index == customerProfileList.length) {
+                return buildShimmerLoadingIndicator(isLoading: isNearbyLoading);
+              }
 
-    return NoItemInList(
-      msg: AppLocalization.of(context)!.noResultFound,
-    );
-  }
+              return Container(
+                margin: const EdgeInsets.all(10.0),
+                child: FindBusiness(
+                  customerProfile: customerProfileList[index],
+                  tileRenderPlace: TileRenderPlace.YarnTimeLine,
+                  callback: (username, value) {
+                    //create a list to edit
+                    List<CustomerProfile> customerProfileListEdit =
+                        customerProfileList;
 
-  Widget nearByBuildView() {
-    return ListView.separated(
-      physics: const ClampingScrollPhysics(),
-      padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
-      controller: _scrollController,
-      itemCount: customerProfileList.length + 1,
-      itemBuilder: (BuildContext context, int index) {
-        if (index == customerProfileList.length) {
-          return _buildLoadingIndicator();
-        }
+                    // modify customerProfileList for the username and refresh the list
+                    // set the isFollowing for that particular user
+                    customerProfileListEdit.forEach((customer) {
+                      if (customer.userName == username) {
+                        customer.isFollowing =
+                            value; // Modify the isFollowing property
+                      }
+                    });
 
-        return Container(
-          margin: EdgeInsets.all(10.0),
-          child: FindBusiness(
-            customerProfile: customerProfileList[index],
-            tileRenderPlace: TileRenderPlace.YarnTimeLine,
-            callback: (username, value) {
-              //create a list to edit
-              List<CustomerProfile> customerProfileListEdit =
-                  customerProfileList;
+                    customerProfileList = [];
+                    customerProfileList = customerProfileListEdit;
 
-              // modify customerProfileList for the username and refresh the list
-              // set the isFollowing for that particular user
-              customerProfileListEdit.forEach((customer) {
-                if (customer.userName == username) {
-                  customer.isFollowing =
-                      value; // Modify the isFollowing property
-                }
-              });
-
-              customerProfileList = [];
-              customerProfileList = customerProfileListEdit;
-
-              if (mounted) setState(() {});
-            },
-          ),
-        );
-      },
-      separatorBuilder: (context, int) {
-        return Column(
-          children: [
-            const SizedBox(
-              height: 20,
-            ),
-            Divider(
-              height: 0,
-              thickness: 0.5,
-              color: greySecondaryYarn,
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Widget _buildLoadingIndicator() {
-    return Opacity(
-      opacity: isNearbyLoading ? 1.0 : 00,
-      child: isNearbyLoading ? const YarnShimmer() : Container(),
-    );
+                    if (mounted) setState(() {});
+                  },
+                ),
+              );
+            }
+            //   separatorBuilder: (context, int) {
+            //     return Column(
+            //       children: [
+            //         const SizedBox(
+            //           height: 20,
+            //         ),
+            //         Divider(
+            //           height: 0,
+            //           thickness: 0.5,
+            //           color: greySecondaryYarn,
+            //         ),
+            //       ],
+            //     );
+            //   },
+            );
   }
 
   void onRefresh() async {

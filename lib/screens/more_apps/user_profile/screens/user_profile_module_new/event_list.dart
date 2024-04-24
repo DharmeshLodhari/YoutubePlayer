@@ -3,7 +3,6 @@ import 'package:Slydo/screens/more_apps/review/models/review.dart';
 import 'package:Slydo/screens/more_apps/review/tiles/review_tile.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
@@ -157,33 +156,25 @@ class _EventListState extends State<EventList> {
         ? NoItemInList(
             msg: AppLocalization.of(context)!.noResultFound,
           )
-        : ListView.builder(
-            physics: ClampingScrollPhysics(),
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 32),
-            controller: _eventScrollController,
-            itemCount: eventList.length + 1,
-            itemBuilder: (BuildContext context, int index) {
-              if (index == eventList.length) {
-                return _buildReviewIndicator();
-              } else {
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 16),
-                  child: ReviewTile(
-                      review: eventList[index], reviewedUser: widget.user),
-                );
-              }
-            },
-          );
-  }
-
-  Widget _buildReviewIndicator() {
-    return new Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: new Center(
-        child: new Opacity(
-            opacity: isEventLoading ? 1.0 : 00,
-            child: isEventLoading ? CircularLoadingIndicator() : Container()),
-      ),
-    );
+        : isEventLoading && eventList.isEmpty
+            ? buildLoadingIndicator(isLoading: isEventLoading)
+            : ListView.builder(
+                physics: ClampingScrollPhysics(),
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 32),
+                controller: _eventScrollController,
+                itemCount: eventList.length + 1,
+                itemBuilder: (BuildContext context, int index) {
+                  if (index == eventList.length) {
+                    return buildJumpingLoadingIndicator(
+                        isLoading: isEventLoading);
+                  } else {
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 16),
+                      child: ReviewTile(
+                          review: eventList[index], reviewedUser: widget.user),
+                    );
+                  }
+                },
+              );
   }
 }

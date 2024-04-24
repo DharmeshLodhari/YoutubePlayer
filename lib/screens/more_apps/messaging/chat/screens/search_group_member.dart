@@ -12,7 +12,6 @@ import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:Slydo/widget/search_text_field.dart';
 import 'package:Slydo/widget/slide_action_button.dart';
@@ -219,32 +218,25 @@ class _SearchGroupMemberState extends State<SearchGroupMember> {
             ? NoItemInList(
                 msg: AppLocalization.of(context)!.noResultFound,
               )
-            : ListView.builder(
-                padding: EdgeInsets.symmetric(
-                  vertical: 4,
-                ),
-                //+1 for progressbar
-                itemCount: groupMember.length + 1,
-                itemBuilder: (BuildContext context, int index) {
-                  if (index == groupMember.length) {
-                    return _buildIndicator();
-                  } else {
-                    return getUserTile(index: index, user: groupMember[index]);
-                  }
-                },
-                controller: _scrollController,
-              );
-  }
-
-  Widget _buildIndicator() {
-    return new Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: new Center(
-        child: new Opacity(
-            opacity: isLoading ? 1.0 : 00,
-            child: isLoading ? CircularLoadingIndicator() : Container()),
-      ),
-    );
+            : isLoading && groupMember.isEmpty
+                ? buildLoadingIndicator(isLoading: isLoading)
+                : ListView.builder(
+                    padding: EdgeInsets.symmetric(
+                      vertical: 4,
+                    ),
+                    //+1 for progressbar
+                    itemCount: groupMember.length + 1,
+                    itemBuilder: (BuildContext context, int index) {
+                      if (index == groupMember.length) {
+                        return buildJumpingLoadingIndicator(
+                            isLoading: isLoading);
+                      } else {
+                        return getUserTile(
+                            index: index, user: groupMember[index]);
+                      }
+                    },
+                    controller: _scrollController,
+                  );
   }
 
   Future<void> getList() async {
@@ -284,7 +276,8 @@ class _SearchGroupMemberState extends State<SearchGroupMember> {
         noItemInList = true;
         if (mounted) setState(() {});
       } else if (next == null && groupMember.length > 6) {
-        _scaffoldMessengerSearchGroupMemberKey.currentState?.showSnackBar(SnackBar(
+        _scaffoldMessengerSearchGroupMemberKey.currentState
+            ?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: Duration(milliseconds: 500),

@@ -125,72 +125,70 @@ class _ListCategoryProductState extends State<ListCategoryProduct> {
   Widget superStoreProducts() {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16),
-      child: nextUrl == "" && isProductLoading
-          ? SizedBox.shrink()
-          : Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (productList.isNotEmpty)
-                  Container(
-                    margin: const EdgeInsets.only(bottom: 15.0),
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        "Found ${productCount} ${widget.categoryName}",
-                        style: TextStyle(
-                          fontWeight: FontWeight.w700,
-                          fontSize: 18,
-                          fontFamily: "Inter",
-                          color: blackFont,
-                        ),
-                      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (productList.isNotEmpty)
+            Container(
+              margin: const EdgeInsets.only(bottom: 15.0),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  "Found ${productCount} ${widget.categoryName}",
+                  style: TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 18,
+                    fontFamily: "Inter",
+                    color: blackFont,
+                  ),
+                ),
+              ),
+            ),
+          CustomScrollView(
+            physics: ScrollPhysics(),
+            controller: _productScrollController,
+            shrinkWrap: true,
+            slivers: <Widget>[
+              SliverGrid(
+                delegate: SliverChildBuilderDelegate(
+                  (c, i) => SizedBox(
+                    child: SuperStoreSingleCard(
+                      product: productList[i],
                     ),
                   ),
-                CustomScrollView(
-                  physics: ScrollPhysics(),
-                  controller: _productScrollController,
-                  shrinkWrap: true,
-                  slivers: <Widget>[
-                    SliverGrid(
-                      delegate: SliverChildBuilderDelegate(
-                        (c, i) => SizedBox(
-                          child: SuperStoreSingleCard(
-                            product: productList[i],
-                          ),
-                        ),
-                        childCount: productList.length,
-                      ),
-                      gridDelegate:
-                          const SliverGridDelegateWithMaxCrossAxisExtent(
-                        mainAxisSpacing: 22,
-                        mainAxisExtent: 274,
-                        crossAxisSpacing: 15,
-                        maxCrossAxisExtent: 200,
-                      ),
-                    ),
-                    SliverToBoxAdapter(
-                      child: buildLoadingIndicator(isLoading: isProductLoading),
-                    ),
-                  ],
+                  childCount: productList.length,
                 ),
-                // GridView.builder(
-                //   shrinkWrap: true,
-                //   physics: const NeverScrollableScrollPhysics(),
-                //   gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                //     mainAxisSpacing: 22,
-                //     mainAxisExtent: 274,
-                //     crossAxisSpacing: 15,
-                //     maxCrossAxisExtent: 200,
-                //   ),
-                //   itemCount: productList.length,
-                //   itemBuilder: (context, index) {
-                //     return SuperStoreSingleCard(
-                //       product: productList[index],
-                //     );
-                //   },
-                // ),
-              ],
-            ),
+                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                  mainAxisSpacing: 22,
+                  mainAxisExtent: 274,
+                  crossAxisSpacing: 15,
+                  maxCrossAxisExtent: 200,
+                ),
+              ),
+              SliverToBoxAdapter(
+                child:
+                    buildJumpingLoadingIndicator(isLoading: isProductLoading),
+              ),
+            ],
+          ),
+          // GridView.builder(
+          //   shrinkWrap: true,
+          //   physics: const NeverScrollableScrollPhysics(),
+          //   gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+          //     mainAxisSpacing: 22,
+          //     mainAxisExtent: 274,
+          //     crossAxisSpacing: 15,
+          //     maxCrossAxisExtent: 200,
+          //   ),
+          //   itemCount: productList.length,
+          //   itemBuilder: (context, index) {
+          //     return SuperStoreSingleCard(
+          //       product: productList[index],
+          //     );
+          //   },
+          // ),
+        ],
+      ),
     );
   }
 

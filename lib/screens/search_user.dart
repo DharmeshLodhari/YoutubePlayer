@@ -8,7 +8,6 @@ import '../locale/app_localization.dart';
 import '../routes/route_constants.dart';
 import '../utils/slydo_app_icon_icons.dart';
 import '../utils/util.dart';
-import '../widget/loading_indicator.dart';
 import '../widget/no_item_in_list.dart';
 import 'more_apps/user_profile/models/user.dart';
 import 'more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
@@ -259,37 +258,23 @@ class _SearchUserState extends State<SearchUser> {
             ? NoItemInList(
                 msg: AppLocalization.of(context)!.noResultFound,
               )
-            : Container(
-                child: ListView.builder(
-                  //+1 for progressbar
-                  itemCount: results.length + 1,
-                  itemBuilder: (BuildContext context, int index) {
-                    if (index == results.length) {
-                      return _buildIndicator();
-                    } else {
-                      try {
-                        return results[index];
-                      } catch (error) {
-                        debugPrint(error.toString());
-                      }
-                    }
-                    return _buildIndicator();
-                  },
-                  controller: _scrollController,
-                ),
-              );
-  }
-
-  Widget _buildIndicator() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Center(
-        child: Opacity(
-          opacity: isLoading ? 1.0 : 00,
-          child: CircularLoadingIndicator(),
-        ),
-      ),
-    );
+            : isLoading && results.isEmpty
+                ? buildLoadingIndicator(isLoading: isLoading)
+                : Container(
+                    child: ListView.builder(
+                      //+1 for progressbar
+                      itemCount: results.length + 1,
+                      itemBuilder: (BuildContext context, int index) {
+                        if (index == results.length) {
+                          return buildJumpingLoadingIndicator(
+                              isLoading: isLoading);
+                        } else {
+                          return results[index];
+                        }
+                      },
+                      controller: _scrollController,
+                    ),
+                  );
   }
 
   Widget searchBox() {

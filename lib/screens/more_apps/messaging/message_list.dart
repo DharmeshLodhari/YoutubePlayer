@@ -8,7 +8,6 @@ import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/customized_popup_menu.dart';
 import 'package:Slydo/widget/dialog.dart';
-import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:Slydo/widget/slide_action_button.dart';
@@ -273,31 +272,22 @@ class _MessageListState extends State<MessageList> {
         ? NoItemInList(
             msg: AppLocalization.of(context)!.noMessages,
           )
-        : ListView.builder(
-            padding: EdgeInsets.symmetric(vertical: 4),
-            //+1 for progressbar
-            itemCount: messageList.length + 1,
-            itemBuilder: (BuildContext context, int index) {
-              if (index == messageList.length) {
-                return _buildIndicator();
-              } else {
-                return _getSlidableWithLists(
-                    context, messageList[index], index);
-              }
-            },
-            controller: _scrollController,
-          );
-  }
-
-  Widget _buildIndicator() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: new Center(
-        child: new Opacity(
-            opacity: isLoading ? 1.0 : 00,
-            child: isLoading ? CircularLoadingIndicator() : Container()),
-      ),
-    );
+        : isLoading && messageList.isEmpty
+            ? buildLoadingIndicator(isLoading: isLoading)
+            : ListView.builder(
+                padding: EdgeInsets.symmetric(vertical: 4),
+                //+1 for progressbar
+                itemCount: messageList.length + 1,
+                itemBuilder: (BuildContext context, int index) {
+                  if (index == messageList.length) {
+                    return buildJumpingLoadingIndicator(isLoading: isLoading);
+                  } else {
+                    return _getSlidableWithLists(
+                        context, messageList[index], index);
+                  }
+                },
+                controller: _scrollController,
+              );
   }
 
   void getList() async {
@@ -348,7 +338,8 @@ class _MessageListState extends State<MessageList> {
   void handleSlideIsOpenChanged(bool? isOpen) {}
 
   void _showSnackBar(BuildContext context, String text) {
-    _scaffoldMessengerMessageKey.currentState?.showSnackBar(SnackBar(content: Text(text)));
+    _scaffoldMessengerMessageKey.currentState
+        ?.showSnackBar(SnackBar(content: Text(text)));
   }
 
   List<Widget> listActionSlideActions(

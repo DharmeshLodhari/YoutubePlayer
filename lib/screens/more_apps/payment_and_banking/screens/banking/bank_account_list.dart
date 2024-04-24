@@ -174,24 +174,26 @@ class _BankAccountListState extends State<BankAccountList> {
         ? NoItemInList(
             msg: AppLocalization.of(context)!.youDontHaveAnyAccountPleaseAddOne,
           )
-        : ListView.builder(
-            padding: EdgeInsets.symmetric(vertical: 16),
-            //+1 for progressbar
-            itemCount: bankAccountList.length + 1,
-            itemBuilder: (BuildContext context, int index) {
-              if (index == bankAccountList.length) {
-                return buildLoadingIndicator(isLoading: isLoading);
-              } else {
-                return _getSlidableWithLists(
-                    context,
-                    bankAccountTile(
-                      account: bankAccountList[index],
-                    ),
-                    bankAccountList[index]);
-              }
-            },
-            controller: _scrollController,
-          );
+        : isLoading && bankAccountList.isEmpty
+            ? buildLoadingIndicator(isLoading: isLoading)
+            : ListView.builder(
+                padding: EdgeInsets.symmetric(vertical: 16),
+                //+1 for progressbar
+                itemCount: bankAccountList.length + 1,
+                itemBuilder: (BuildContext context, int index) {
+                  if (index == bankAccountList.length) {
+                    return buildJumpingLoadingIndicator(isLoading: isLoading);
+                  } else {
+                    return _getSlidableWithLists(
+                        context,
+                        bankAccountTile(
+                          account: bankAccountList[index],
+                        ),
+                        bankAccountList[index]);
+                  }
+                },
+                controller: _scrollController,
+              );
   }
 
   void getList() async {

@@ -525,24 +525,26 @@ class _UpdateAddOnState extends State<UpdateAddOn> {
   }
 
   Widget _buildAddOnOptionList() {
-    return Container(
-      height: 80 * productAddOnOptionList.length.toDouble(),
-      child: ListView.builder(
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        //+1 for progressbar
-        itemCount: productAddOnOptionList.length + 1,
-        controller: scrollControllerAddOnOption,
-        itemBuilder: (BuildContext context, int index) {
-          if (index == productAddOnOptionList.length) {
-            return buildLoadingIndicator(isLoading: isLoading);
-          } else {
-            return AddOnOptionTile(
-              addOnOption: productAddOnOptionList[index],
-            );
-          }
-        },
-      ),
-    );
+    return isLoading && productAddOnOptionList.isEmpty
+        ? buildLoadingIndicator(isLoading: isLoading)
+        : Container(
+            height: 80 * productAddOnOptionList.length.toDouble(),
+            child: ListView.builder(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              //+1 for progressbar
+              itemCount: productAddOnOptionList.length + 1,
+              controller: scrollControllerAddOnOption,
+              itemBuilder: (BuildContext context, int index) {
+                if (index == productAddOnOptionList.length) {
+                  return buildJumpingLoadingIndicator(isLoading: isLoading);
+                } else {
+                  return AddOnOptionTile(
+                    addOnOption: productAddOnOptionList[index],
+                  );
+                }
+              },
+            ),
+          );
   }
 
   @override

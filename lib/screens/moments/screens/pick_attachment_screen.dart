@@ -195,28 +195,20 @@ class _PickAttachmentScreenState extends State<PickAttachmentScreen> {
         ? NoItemInList(
             msg: AppLocalization.of(context)!.emptyList,
           )
-        : ListView.builder(
-            controller: scrollController,
-            itemCount: displayCardModelList.length + 1,
-            itemBuilder: (context, index) {
-              if (index == displayCardModelList.length) {
-                return buildIndicator();
-              }
-              return displayCard(displayCardModel: displayCardModelList[index]);
-            },
-          );
-  }
-
-  Widget buildIndicator() {
-    return new Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: new Center(
-        child: new Opacity(
-          opacity: attachmentLoading ? 1.0 : 00,
-          child: CircularLoadingIndicator(),
-        ),
-      ),
-    );
+        : attachmentLoading && displayCardModelList.isEmpty
+            ? buildLoadingIndicator(isLoading: attachmentLoading)
+            : ListView.builder(
+                controller: scrollController,
+                itemCount: displayCardModelList.length + 1,
+                itemBuilder: (context, index) {
+                  if (index == displayCardModelList.length) {
+                    return buildJumpingLoadingIndicator(
+                        isLoading: attachmentLoading);
+                  }
+                  return displayCard(
+                      displayCardModel: displayCardModelList[index]);
+                },
+              );
   }
 
   Widget displayCard({required DisplayCardModel displayCardModel}) {

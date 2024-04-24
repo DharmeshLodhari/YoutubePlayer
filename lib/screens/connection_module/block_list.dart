@@ -5,7 +5,6 @@ import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/dialog.dart';
-import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:Slydo/widget/slide_action_button.dart';
@@ -112,30 +111,22 @@ class _BlockedListState extends State<BlockedList> {
         ? NoItemInList(
             msg: noBlockedListMsg,
           )
-        : ListView.builder(
-            padding: EdgeInsets.only(bottom: 80.0),
-            //+1 for progressbar
-            itemCount: blockList.length + 1,
-            itemBuilder: (BuildContext context, int index) {
-              if (index == blockList.length) {
-                return _buildIndicator();
-              } else {
-                return _getSlidableWithLists(context, blockList[index], index);
-              }
-            },
-            controller: _scrollController,
-          );
-  }
-
-  Widget _buildIndicator() {
-    return new Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: new Center(
-        child: new Opacity(
-            opacity: isLoading ? 1.0 : 00,
-            child: isLoading ? CircularLoadingIndicator() : Container()),
-      ),
-    );
+        : isLoading && blockList.isEmpty
+            ? buildLoadingIndicator(isLoading: isLoading)
+            : ListView.builder(
+                padding: EdgeInsets.only(bottom: 80.0),
+                //+1 for progressbar
+                itemCount: blockList.length + 1,
+                itemBuilder: (BuildContext context, int index) {
+                  if (index == blockList.length) {
+                    return buildJumpingLoadingIndicator(isLoading: isLoading);
+                  } else {
+                    return _getSlidableWithLists(
+                        context, blockList[index], index);
+                  }
+                },
+                controller: _scrollController,
+              );
   }
 
   void getList() async {

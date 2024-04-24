@@ -8,7 +8,6 @@ import '../../../locale/app_localization.dart';
 import '../../../routes/route_constants.dart';
 import '../../../utils/slydo_app_icon_icons.dart';
 import '../../../utils/util.dart';
-import '../../../widget/loading_indicator.dart';
 import '../../../widget/no_item_in_list.dart';
 import '../user_post/models/user_post.dart';
 import '../user_post/tile/user_post_tile.dart';
@@ -255,55 +254,47 @@ class _SuperBlogState extends State<SuperBlog> {
                       ? NoItemInList(
                           msg: AppLocalization.of(context)!.noPosts,
                         )
-                      : SmartRefresher(
-                          enablePullDown: true,
-                          header: WaterDropHeader(
-                            complete: Container(),
-                            waterDropColor: navyBlue,
-                          ),
-                          controller: _postRefreshController,
-                          onRefresh: _onPostRefresh,
-                          child: ListView.builder(
-                            physics: ClampingScrollPhysics(),
-                            padding: EdgeInsets.symmetric(horizontal: 16),
-                            controller: _postScrollController,
-                            itemCount: postList.length + 1,
-                            itemBuilder: (BuildContext context, int index) {
-                              if (index == postList.length) {
-                                return _buildReviewIndicator();
-                              } else {
-                                return Padding(
-                                  padding: const EdgeInsets.only(bottom: 16),
-                                  child: PostTile(
-                                    post: postList[index],
-                                    showAuthorDetails: true,
-                                    onDeleteBlog: () {
-                                      _onPostRefresh();
-                                    },
-                                  ),
-                                );
-                              }
-                            },
-                          ),
-                        ),
+                      : isPostLoading && postList.isEmpty
+                          ? buildLoadingIndicator(isLoading: isPostLoading)
+                          : SmartRefresher(
+                              enablePullDown: true,
+                              header: WaterDropHeader(
+                                complete: Container(),
+                                waterDropColor: navyBlue,
+                              ),
+                              controller: _postRefreshController,
+                              onRefresh: _onPostRefresh,
+                              child: ListView.builder(
+                                physics: ClampingScrollPhysics(),
+                                padding: EdgeInsets.symmetric(horizontal: 16),
+                                controller: _postScrollController,
+                                itemCount: postList.length + 1,
+                                itemBuilder: (BuildContext context, int index) {
+                                  if (index == postList.length) {
+                                    return buildJumpingLoadingIndicator(
+                                        isLoading: isPostLoading);
+                                  } else {
+                                    return Padding(
+                                      padding:
+                                          const EdgeInsets.only(bottom: 16),
+                                      child: PostTile(
+                                        post: postList[index],
+                                        showAuthorDetails: true,
+                                        onDeleteBlog: () {
+                                          _onPostRefresh();
+                                        },
+                                      ),
+                                    );
+                                  }
+                                },
+                              ),
+                            ),
                   SlydoBlogsList(slydoBlogsMenu: SlydoBlogsMenu.Latest),
                   SlydoBlogsList(slydoBlogsMenu: SlydoBlogsMenu.Trending),
                 ],
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildReviewIndicator() {
-    return new Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: new Center(
-        child: new Opacity(
-          opacity: isPostLoading ? 1.0 : 00,
-          child: isPostLoading ? CircularLoadingIndicator() : Container(),
         ),
       ),
     );
@@ -600,40 +591,31 @@ class _SlydoBlogsListState extends State<SlydoBlogsList> {
         ? NoItemInList(
             msg: AppLocalization.of(context)!.noPosts,
           )
-        : ListView.builder(
-            physics: ClampingScrollPhysics(),
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 32),
-            controller: _postScrollController,
-            itemCount: postList.length + 1,
-            itemBuilder: (BuildContext context, int index) {
-              if (index == postList.length) {
-                return _buildReviewIndicator();
-              } else {
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 16),
-                  child: PostTile(
-                    post: postList[index],
-                    showAuthorDetails: true,
-                    onDeleteBlog: () {
-                      _onPostRefresh();
-                    },
-                  ),
-                );
-              }
-            },
-          );
-  }
-
-  Widget _buildReviewIndicator() {
-    return new Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: new Center(
-        child: new Opacity(
-          opacity: isPostLoading ? 1.0 : 00,
-          child: isPostLoading ? CircularLoadingIndicator() : Container(),
-        ),
-      ),
-    );
+        : isPostLoading && postList.isEmpty
+            ? buildLoadingIndicator(isLoading: isPostLoading)
+            : ListView.builder(
+                physics: ClampingScrollPhysics(),
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 32),
+                controller: _postScrollController,
+                itemCount: postList.length + 1,
+                itemBuilder: (BuildContext context, int index) {
+                  if (index == postList.length) {
+                    return buildJumpingLoadingIndicator(
+                        isLoading: isPostLoading);
+                  } else {
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 16),
+                      child: PostTile(
+                        post: postList[index],
+                        showAuthorDetails: true,
+                        onDeleteBlog: () {
+                          _onPostRefresh();
+                        },
+                      ),
+                    );
+                  }
+                },
+              );
   }
 }
 

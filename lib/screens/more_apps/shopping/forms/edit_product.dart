@@ -2840,23 +2840,25 @@ class _EditProductState extends State<EditProduct> {
   }
 
   Widget _buildProductVariantList() {
-    return ListView.builder(
-      padding: EdgeInsets.zero,
-      controller: scrollControllerVariant,
-      physics: NeverScrollableScrollPhysics(),
-      shrinkWrap: true,
-      itemCount: productVariantList.length,
-      itemBuilder: (BuildContext context, int index) {
-        if (index == productVariantList.length) {
-          return buildLoadingIndicator(isLoading: isLoading);
-        } else {
-          return FormVariantsTile(
-              productVariantList: productVariantList,
-              index: index,
-              type: 'edit');
-        }
-      },
-    );
+    return isLoading && productVariantList.isEmpty
+        ? buildLoadingIndicator(isLoading: isLoading)
+        : ListView.builder(
+            padding: EdgeInsets.zero,
+            controller: scrollControllerVariant,
+            physics: NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            itemCount: productVariantList.length,
+            itemBuilder: (BuildContext context, int index) {
+              if (index == productVariantList.length) {
+                return buildJumpingLoadingIndicator(isLoading: isLoading);
+              } else {
+                return FormVariantsTile(
+                    productVariantList: productVariantList,
+                    index: index,
+                    type: 'edit');
+              }
+            },
+          );
   }
 
   Widget productVariation() {
@@ -2989,27 +2991,29 @@ class _EditProductState extends State<EditProduct> {
   }
 
   Widget _buildAddOnList() {
-    return Container(
-      // height: 200,
-      height: 80 * productAddOnsList.length.toDouble(),
-      child: ListView.builder(
-        physics: NeverScrollableScrollPhysics(),
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        //+1 for progressbar
-        itemCount: productAddOnsList.length + 1,
-        controller: scrollControllerVariant,
-        itemBuilder: (BuildContext context, int index) {
-          if (index == productAddOnsList.length) {
-            return buildLoadingIndicator(isLoading: isLoading);
-          } else {
-            return FormAddOnTile(
-              productAddOnsList: productAddOnsList,
-              index: index,
-            );
-          }
-        },
-      ),
-    );
+    return isLoading && productAddOnsList.isEmpty
+        ? buildLoadingIndicator(isLoading: isLoading)
+        : Container(
+            // height: 200,
+            height: 80 * productAddOnsList.length.toDouble(),
+            child: ListView.builder(
+              physics: NeverScrollableScrollPhysics(),
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              //+1 for progressbar
+              itemCount: productAddOnsList.length + 1,
+              controller: scrollControllerVariant,
+              itemBuilder: (BuildContext context, int index) {
+                if (index == productAddOnsList.length) {
+                  return buildJumpingLoadingIndicator(isLoading: isLoading);
+                } else {
+                  return FormAddOnTile(
+                    productAddOnsList: productAddOnsList,
+                    index: index,
+                  );
+                }
+              },
+            ),
+          );
   }
 
   // Widget addOnTile({required AddOns addOns}) {

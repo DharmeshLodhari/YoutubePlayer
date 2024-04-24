@@ -326,40 +326,31 @@ class _OrdersListState extends State<OrdersList> {
         ? NoItemInList(
             msg: AppLocalization.of(context)!.noOrdersPresent,
           )
-        : SmartRefresher(
-            enablePullDown: true,
-            header: WaterDropHeader(
-              complete: Container(),
-              waterDropColor: navyBlue,
-            ),
-            controller: _refreshController,
-            onRefresh: _onRefresh,
-            child: ListView.builder(
-              padding: EdgeInsets.symmetric(vertical: 4),
-              //+1 for progressbar
-              itemCount: orderList.length + 1,
-              itemBuilder: (BuildContext context, int index) {
-                if (index == orderList.length) {
-                  return _buildIndicator(isLoading: isLoading);
-                } else {
-                  return _getSlidableWithLists(
-                      context, orderList[index], index);
-                }
-              },
-              controller: _scrollController,
-            ),
-          );
-  }
-
-  Widget _buildIndicator({required bool isLoading}) {
-    return new Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: new Center(
-        child: new Opacity(
-            opacity: isLoading ? 1.0 : 00,
-            child: isLoading ? CircularLoadingIndicator() : Container()),
-      ),
-    );
+        : isLoading && orderList.isEmpty
+            ? buildLoadingIndicator(isLoading: isLoading)
+            : SmartRefresher(
+                enablePullDown: true,
+                header: WaterDropHeader(
+                  complete: Container(),
+                  waterDropColor: navyBlue,
+                ),
+                controller: _refreshController,
+                onRefresh: _onRefresh,
+                child: ListView.builder(
+                  padding: EdgeInsets.symmetric(vertical: 4),
+                  //+1 for progressbar
+                  itemCount: orderList.length + 1,
+                  itemBuilder: (BuildContext context, int index) {
+                    if (index == orderList.length) {
+                      return buildJumpingLoadingIndicator(isLoading: isLoading);
+                    } else {
+                      return _getSlidableWithLists(
+                          context, orderList[index], index);
+                    }
+                  },
+                  controller: _scrollController,
+                ),
+              );
   }
 
   void getList() async {

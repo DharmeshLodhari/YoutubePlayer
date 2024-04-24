@@ -244,43 +244,47 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
                 title: AppLocalization.of(context)!.noAddOnYet,
                 msg: AppLocalization.of(context)!.noAddOnYetSub,
               )
-            : ListView.builder(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                //+1 for progressbar
-                itemCount: addOnOptionList.length + 1,
-                itemBuilder: (BuildContext context, int index) {
-                  if (index == addOnOptionList.length) {
-                    return buildLoadingIndicator(isLoading: isLoading);
-                  } else {
-                    return _getSlidableWithLists(
-                        context,
-                        GestureDetector(
-                          onTap: () async {
-                            // toggleAddOnCheckedState(index);
-                            final data = await Navigator.of(context).pushNamed(
-                                Routes.PRODUCT_ADD_ON_OPTION_UPDATE,
-                                arguments: {
-                                  'addOnOption': addOnOptionList[index],
-                                  'productId': productId,
-                                });
+            : isLoading && addOnOptionList.isEmpty
+                ? buildLoadingIndicator(isLoading: isLoading)
+                : ListView.builder(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    //+1 for progressbar
+                    itemCount: addOnOptionList.length + 1,
+                    itemBuilder: (BuildContext context, int index) {
+                      if (index == addOnOptionList.length) {
+                        return buildJumpingLoadingIndicator(
+                            isLoading: isLoading);
+                      } else {
+                        return _getSlidableWithLists(
+                            context,
+                            GestureDetector(
+                              onTap: () async {
+                                // toggleAddOnCheckedState(index);
+                                final data = await Navigator.of(context)
+                                    .pushNamed(
+                                        Routes.PRODUCT_ADD_ON_OPTION_UPDATE,
+                                        arguments: {
+                                      'addOnOption': addOnOptionList[index],
+                                      'productId': productId,
+                                    });
 
-                            // Handle the result (map) received from PRODUCT_ADD_ON_OPTION_UPDATE
-                            if (data != null && data is AddOnOption) {
-                              //save the add-on option details for later use
-                              // _onRefresh();
-                              updateItemById(data.id!, data);
-                              if (mounted) setState(() {});
-                            }
-                          },
-                          child: addOnOptionTile(
-                              addOnOption: addOnOptionList[index],
-                              index: index),
-                        ),
-                        addOnOptionList[index]);
-                  }
-                },
-                controller: _scrollController,
-              ),
+                                // Handle the result (map) received from PRODUCT_ADD_ON_OPTION_UPDATE
+                                if (data != null && data is AddOnOption) {
+                                  //save the add-on option details for later use
+                                  // _onRefresh();
+                                  updateItemById(data.id!, data);
+                                  if (mounted) setState(() {});
+                                }
+                              },
+                              child: addOnOptionTile(
+                                  addOnOption: addOnOptionList[index],
+                                  index: index),
+                            ),
+                            addOnOptionList[index]);
+                      }
+                    },
+                    controller: _scrollController,
+                  ),
         Positioned(
           bottom: 25, // Adjust the distance from the bottom as needed
           right: 25,

@@ -13,7 +13,6 @@ import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/dialog.dart';
-import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:Slydo/widget/search_text_field.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -352,32 +351,24 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
             ? NoItemInList(
                 msg: AppLocalization.of(context)!.noResultFound,
               )
-            : ListView.builder(
-                padding: EdgeInsets.symmetric(
-                  vertical: 4,
-                ),
-                //+1 for progressbar
-                itemCount: connectionList.length + 1,
-                itemBuilder: (BuildContext context, int index) {
-                  if (index == connectionList.length) {
-                    return _buildIndicator();
-                  } else {
-                    return getUserTile(user: connectionList[index]);
-                  }
-                },
-                controller: _scrollController,
-              );
-  }
-
-  Widget _buildIndicator() {
-    return new Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: new Center(
-        child: new Opacity(
-            opacity: isLoading ? 1.0 : 00,
-            child: isLoading ? CircularLoadingIndicator() : Container()),
-      ),
-    );
+            : isLoading && connectionList.isEmpty
+                ? buildLoadingIndicator(isLoading: isLoading)
+                : ListView.builder(
+                    padding: EdgeInsets.symmetric(
+                      vertical: 4,
+                    ),
+                    //+1 for progressbar
+                    itemCount: connectionList.length + 1,
+                    itemBuilder: (BuildContext context, int index) {
+                      if (index == connectionList.length) {
+                        return buildJumpingLoadingIndicator(
+                            isLoading: isLoading);
+                      } else {
+                        return getUserTile(user: connectionList[index]);
+                      }
+                    },
+                    controller: _scrollController,
+                  );
   }
 
   Future<void> getList() async {
@@ -434,7 +425,8 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
         noItemInList = true;
         if (mounted) setState(() {});
       } else if (next == null && connectionList.length > 6) {
-        _scaffoldMessengerSelectUserForGroupKey.currentState?.showSnackBar(SnackBar(
+        _scaffoldMessengerSelectUserForGroupKey.currentState
+            ?.showSnackBar(SnackBar(
           content: Text(
               AppLocalization.of(context)?.youHaveReachedBottomOfTheList ?? ""),
           duration: Duration(milliseconds: 500),

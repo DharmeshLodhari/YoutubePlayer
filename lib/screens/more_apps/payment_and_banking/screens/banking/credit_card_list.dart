@@ -228,24 +228,26 @@ class _CreditCardListState extends State<CreditCardList> {
             msg: AppLocalization.of(context)!
                 .youDontHaveAnyCreditCardPleaseAddOne,
           )
-        : ListView.builder(
-            padding: EdgeInsets.symmetric(vertical: 16),
-            //+1 for progressbar
-            itemCount: creditCardList.length + 1,
-            itemBuilder: (BuildContext context, int index) {
-              if (index == creditCardList.length) {
-                return buildLoadingIndicator(isLoading: isLoading);
-              } else {
-                return _getSlidableWithLists(
-                  context,
-                  creditCardTile(
-                    creditCard: creditCardList[index],
-                  ),
-                  creditCardList[index],
-                );
-              }
-            },
-          );
+        : isLoading && creditCardList.isEmpty
+            ? buildLoadingIndicator(isLoading: isLoading)
+            : ListView.builder(
+                padding: EdgeInsets.symmetric(vertical: 16),
+                //+1 for progressbar
+                itemCount: creditCardList.length + 1,
+                itemBuilder: (BuildContext context, int index) {
+                  if (index == creditCardList.length) {
+                    return buildJumpingLoadingIndicator(isLoading: isLoading);
+                  } else {
+                    return _getSlidableWithLists(
+                      context,
+                      creditCardTile(
+                        creditCard: creditCardList[index],
+                      ),
+                      creditCardList[index],
+                    );
+                  }
+                },
+              );
   }
 
   Widget creditCardTile({required CreditCard creditCard}) {

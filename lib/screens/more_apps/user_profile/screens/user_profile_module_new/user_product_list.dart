@@ -327,35 +327,38 @@ class _UserProductListState extends State<UserProductList> {
   }
 
   Widget _buildGridView() {
-    return CustomScrollView(
-      physics: ScrollPhysics(),
-      controller: _productScrollController,
-      shrinkWrap: true,
-      slivers: <Widget>[
-        SliverGrid(
-          delegate: SliverChildBuilderDelegate(
-            (c, i) => SizedBox(
-              child: DisplayProduct(
-                product: productList[i],
-                onProductRefresh: () {
-                  _onProductRefresh();
-                },
+    return isProductLoading && productList.isEmpty
+        ? buildLoadingIndicator(isLoading: isProductLoading)
+        : CustomScrollView(
+            physics: ScrollPhysics(),
+            controller: _productScrollController,
+            shrinkWrap: true,
+            slivers: <Widget>[
+              SliverGrid(
+                delegate: SliverChildBuilderDelegate(
+                  (c, i) => SizedBox(
+                    child: DisplayProduct(
+                      product: productList[i],
+                      onProductRefresh: () {
+                        _onProductRefresh();
+                      },
+                    ),
+                  ),
+                  childCount: productList.length,
+                ),
+                gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                  mainAxisSpacing: 8,
+                  mainAxisExtent: 274,
+                  crossAxisSpacing: 15,
+                  maxCrossAxisExtent: 200,
+                ),
               ),
-            ),
-            childCount: productList.length,
-          ),
-          gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-            mainAxisSpacing: 8,
-            mainAxisExtent: 274,
-            crossAxisSpacing: 15,
-            maxCrossAxisExtent: 200,
-          ),
-        ),
-        SliverToBoxAdapter(
-          child: buildLoadingIndicator(isLoading: isProductLoading),
-        ),
-      ],
-    );
+              SliverToBoxAdapter(
+                child:
+                    buildJumpingLoadingIndicator(isLoading: isProductLoading),
+              ),
+            ],
+          );
     // return GridView.builder(
     //   shrinkWrap: true,
     //   padding: EdgeInsets.symmetric(horizontal: 4),

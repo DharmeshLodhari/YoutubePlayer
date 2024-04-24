@@ -801,32 +801,31 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
             itemCount: todaysDealList.length + 1,
             itemBuilder: (BuildContext context, int index) {
               if (index == todaysDealList.length) {
-                return buildLoadingIndicator(isLoading: isTodayDealLoading);
-                // return isLoading
-                //     ? Shimmer.fromColors(
-                //         baseColor: Colors.white,
-                //         highlightColor: greyBorderColor,
-                //         child: SizedBox(
-                //           height: 100,
-                //           child: ListView.builder(
-                //             shrinkWrap: true,
-                //             scrollDirection: Axis.horizontal,
-                //             physics: const NeverScrollableScrollPhysics(),
-                //             itemCount: 3,
-                //             itemBuilder: (context, index) {
-                //               return SizedBox(
-                //                 width: 160,
-                //                 child: Card(
-                //                   shape: RoundedRectangleBorder(
-                //                     borderRadius: BorderRadius.circular(12),
-                //                   ),
-                //                 ),
-                //               );
-                //             },
-                //           ),
-                //         ),
-                //       )
-                //     : const SizedBox.shrink();
+                return isLoading
+                    ? Shimmer.fromColors(
+                        baseColor: Colors.white,
+                        highlightColor: greyBorderColor,
+                        child: SizedBox(
+                          height: 100,
+                          child: ListView.builder(
+                            shrinkWrap: true,
+                            scrollDirection: Axis.horizontal,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: 3,
+                            itemBuilder: (context, index) {
+                              return SizedBox(
+                                width: 160,
+                                child: Card(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      )
+                    : const SizedBox.shrink();
               } else {
                 ShoppingProduct shoppingProduct = todaysDealList[index];
                 return DisplayProduct(

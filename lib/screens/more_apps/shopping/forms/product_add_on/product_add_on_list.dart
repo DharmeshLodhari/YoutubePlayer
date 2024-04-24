@@ -265,42 +265,45 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
                 title: AppLocalization.of(context)!.noAddOnYet,
                 msg: AppLocalization.of(context)!.noAddOnYetSub,
               )
-            : ListView.builder(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                //+1 for progressbar
-                itemCount: productAddOnList.length + 1,
-                itemBuilder: (BuildContext context, int index) {
-                  if (index == productAddOnList.length) {
-                    return buildLoadingIndicator(isLoading: isLoading);
-                  } else {
-                    return _getSlidableWithLists(
-                      context,
-                      GestureDetector(
-                        onTap: () async {
-                          // if (isForCheckboxSelection == true)
-                          //   toggleAddOnCheckedState(index);
-                          final data = await Navigator.of(context)
-                              .pushNamed(Routes.UPDATE_ADD_ON, arguments: {
-                            'addOns': productAddOnList[index],
-                            'productId': productId,
-                          });
+            : isLoading && productAddOnList.isEmpty
+                ? buildLoadingIndicator(isLoading: isLoading)
+                : ListView.builder(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    //+1 for progressbar
+                    itemCount: productAddOnList.length + 1,
+                    itemBuilder: (BuildContext context, int index) {
+                      if (index == productAddOnList.length) {
+                        return buildJumpingLoadingIndicator(
+                            isLoading: isLoading);
+                      } else {
+                        return _getSlidableWithLists(
+                          context,
+                          GestureDetector(
+                            onTap: () async {
+                              // if (isForCheckboxSelection == true)
+                              //   toggleAddOnCheckedState(index);
+                              final data = await Navigator.of(context)
+                                  .pushNamed(Routes.UPDATE_ADD_ON, arguments: {
+                                'addOns': productAddOnList[index],
+                                'productId': productId,
+                              });
 
-                          // Handle the result (map) received from PRODUCT_VARIANT_UPDATE
-                          if (data != null && data is AddOns) {
-                            //save the variant details for later use
-                            _onRefresh();
-                            if (mounted) setState(() {});
-                          }
-                        },
-                        child: productAddOnTile(
-                            addOns: productAddOnList[index], index: index),
-                      ),
-                      productAddOnList[index],
-                    );
-                  }
-                },
-                controller: _scrollController,
-              ),
+                              // Handle the result (map) received from PRODUCT_VARIANT_UPDATE
+                              if (data != null && data is AddOns) {
+                                //save the variant details for later use
+                                _onRefresh();
+                                if (mounted) setState(() {});
+                              }
+                            },
+                            child: productAddOnTile(
+                                addOns: productAddOnList[index], index: index),
+                          ),
+                          productAddOnList[index],
+                        );
+                      }
+                    },
+                    controller: _scrollController,
+                  ),
         Positioned(
           bottom: 25, // Adjust the distance from the bottom as needed
           right: 25,

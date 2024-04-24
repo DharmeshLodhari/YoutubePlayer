@@ -1,7 +1,6 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -41,34 +40,25 @@ class _GetUserConnectionListState extends State<GetUserConnectionList> {
         ? NoItemInList(
             msg: "You Have No Connections",
           )
-        : ListView.builder(
-            padding: EdgeInsets.symmetric(
-              vertical: 4,
-            ),
-            //+1 for progressbar
-            itemCount: connectionsList.length + 1,
-            itemBuilder: (BuildContext context, int index) {
-              if (index == connectionsList.length) {
-                return _buildIndicator();
-              } else {
-                return ShareToUserTile(
-                  user: connectionsList[index],
-                );
-              }
-            },
-            controller: _scrollController,
-          );
-  }
-
-  Widget _buildIndicator() {
-    return new Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: new Center(
-        child: new Opacity(
-            opacity: isLoading ? 1.0 : 00,
-            child: isLoading ? CircularLoadingIndicator() : Container()),
-      ),
-    );
+        : isLoading && connectionsList.isEmpty
+            ? buildLoadingIndicator(isLoading: isLoading)
+            : ListView.builder(
+                padding: EdgeInsets.symmetric(
+                  vertical: 4,
+                ),
+                //+1 for progressbar
+                itemCount: connectionsList.length + 1,
+                itemBuilder: (BuildContext context, int index) {
+                  if (index == connectionsList.length) {
+                    return buildJumpingLoadingIndicator(isLoading: isLoading);
+                  } else {
+                    return ShareToUserTile(
+                      user: connectionsList[index],
+                    );
+                  }
+                },
+                controller: _scrollController,
+              );
   }
 
   void getList() async {

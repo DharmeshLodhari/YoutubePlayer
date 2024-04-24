@@ -171,24 +171,26 @@ class _ShippingOptionsListState extends State<ShippingOptionsList> {
             msg: AppLocalization.of(context)!
                 .youDontHaveAnyShippingOptionPleaseAddOne,
           )
-        : ListView.builder(
-            padding: EdgeInsets.symmetric(vertical: 16),
-            //+1 for progressbar
-            itemCount: shippingOptionsList.length + 1,
-            itemBuilder: (BuildContext context, int index) {
-              if (index == shippingOptionsList.length) {
-                return buildLoadingIndicator(isLoading: isLoading);
-              } else {
-                return _getSlidableWithLists(
-                    context,
-                    bankAccountTile(
-                      shippingModel: shippingOptionsList[index],
-                    ),
-                    shippingOptionsList[index]);
-              }
-            },
-            controller: _scrollController,
-          );
+        : isLoading && shippingOptionsList.isEmpty
+            ? buildLoadingIndicator(isLoading: isLoading)
+            : ListView.builder(
+                padding: EdgeInsets.symmetric(vertical: 16),
+                //+1 for progressbar
+                itemCount: shippingOptionsList.length + 1,
+                itemBuilder: (BuildContext context, int index) {
+                  if (index == shippingOptionsList.length) {
+                    return buildJumpingLoadingIndicator(isLoading: isLoading);
+                  } else {
+                    return _getSlidableWithLists(
+                        context,
+                        bankAccountTile(
+                          shippingModel: shippingOptionsList[index],
+                        ),
+                        shippingOptionsList[index]);
+                  }
+                },
+                controller: _scrollController,
+              );
   }
 
   void getList() async {

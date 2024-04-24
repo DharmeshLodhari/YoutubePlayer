@@ -469,19 +469,22 @@ class _SearchModuleState extends State<SearchModule> {
         onRefresh: _onRefresh,
         child: noItemInSuggestionList
             ? NoItemInList(msg: AppLocalization.of(context)!.noSuggestions)
-            : ListView.builder(
-                physics: ClampingScrollPhysics(),
-                controller: _scrollCtrl,
-                itemCount: suggestionsList.length + 1,
-                itemBuilder: (BuildContext context, int index) {
-                  if (index == suggestionsList.length) {
-                    return buildLoadingIndicator(
-                        isLoading: isSuggestionLoading);
-                  } else {
-                    return CustomSlydoUserCard(user: suggestionsList[index]);
-                  }
-                },
-              ),
+            : isSuggestionLoading && suggestionsList.isEmpty
+                ? buildLoadingIndicator(isLoading: isSuggestionLoading)
+                : ListView.builder(
+                    physics: ClampingScrollPhysics(),
+                    controller: _scrollCtrl,
+                    itemCount: suggestionsList.length + 1,
+                    itemBuilder: (BuildContext context, int index) {
+                      if (index == suggestionsList.length) {
+                        return buildJumpingLoadingIndicator(
+                            isLoading: isSuggestionLoading);
+                      } else {
+                        return CustomSlydoUserCard(
+                            user: suggestionsList[index]);
+                      }
+                    },
+                  ),
       );
     } else {
       return isSearchIsEmpty
@@ -493,40 +496,22 @@ class _SearchModuleState extends State<SearchModule> {
               ? NoItemInList(
                   msg: AppLocalization.of(context)!.noResultFound,
                 )
-              : Container(
-                  child: ListView.builder(
-                    //+1 for progressbar
-                    itemCount: results.length + 1,
-                    itemBuilder: (BuildContext context, int index) {
-                      if (index == results.length) {
-                        return _buildIndicator();
-                      } else {
-                        try {
-                          debugPrint(' SHOW RESULT ->');
-
+              : isLoading && results.isEmpty
+                  ? buildLoadingIndicator(isLoading: isLoading)
+                  : ListView.builder(
+                      //+1 for progressbar
+                      itemCount: results.length + 1,
+                      itemBuilder: (BuildContext context, int index) {
+                        if (index == results.length) {
+                          return buildJumpingLoadingIndicator(
+                              isLoading: isLoading);
+                        } else {
                           return results[index];
-                        } catch (error) {
-                          debugPrint('ERROR RESULT -> ${error.toString()}');
                         }
-                      }
-                      return _buildIndicator();
-                    },
-                    controller: _scrollController,
-                  ),
-                );
+                      },
+                      controller: _scrollController,
+                    );
     }
-  }
-
-  Widget _buildIndicator() {
-    return new Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: new Center(
-        child: new Opacity(
-          opacity: isLoading ? 1.0 : 00,
-          child: CircularLoadingIndicator(),
-        ),
-      ),
-    );
   }
 
   void getListOfSuggestions() {

@@ -1,4 +1,3 @@
-import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_shimmer.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -155,7 +154,7 @@ class MyFeedViewState extends State<MyFeedView> {
         itemCount: yarnTopicList.length + 1,
         itemBuilder: (BuildContext context, int index) {
           if (index == yarnTopicList.length) {
-            return _buildLoadingIndicator();
+            return buildShimmerLoadingIndicator(isLoading: isLoading);
           }
 
           return InkWell(
@@ -207,13 +206,6 @@ class MyFeedViewState extends State<MyFeedView> {
     }
     return NoItemInList(
       msg: AppLocalization.of(context)!.noResultFound,
-    );
-  }
-
-  Widget _buildLoadingIndicator() {
-    return Opacity(
-      opacity: isLoading ? 1.0 : 00,
-      child: isLoading ? YarnShimmer() : Container(),
     );
   }
 

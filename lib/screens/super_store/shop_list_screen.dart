@@ -443,7 +443,8 @@ class ShopListScreenState extends State<ShopListScreen> {
                     ),
                   ),
                   SliverToBoxAdapter(
-                    child: buildLoadingIndicator(isLoading: isProductLoading),
+                    child: buildJumpingLoadingIndicator(
+                        isLoading: isProductLoading),
                   ),
                 ],
               ),
@@ -522,32 +523,31 @@ class ShopListScreenState extends State<ShopListScreen> {
             itemCount: todaysDealList.length + 1,
             itemBuilder: (BuildContext context, int index) {
               if (index == todaysDealList.length) {
-                return buildLoadingIndicator(isLoading: isTodayDealLoading);
-                // return isTodayDealLoading
-                //     ? Shimmer.fromColors(
-                //         baseColor: Colors.white,
-                //         highlightColor: greyBorderColor,
-                //         child: SizedBox(
-                //           height: 100,
-                //           child: ListView.builder(
-                //             shrinkWrap: true,
-                //             scrollDirection: Axis.horizontal,
-                //             physics: const NeverScrollableScrollPhysics(),
-                //             itemCount: 3,
-                //             itemBuilder: (context, index) {
-                //               return SizedBox(
-                //                 width: 160,
-                //                 child: Card(
-                //                   shape: RoundedRectangleBorder(
-                //                     borderRadius: BorderRadius.circular(12),
-                //                   ),
-                //                 ),
-                //               );
-                //             },
-                //           ),
-                //         ),
-                //       )
-                //     : const SizedBox.shrink();
+                return isTodayDealLoading
+                    ? Shimmer.fromColors(
+                        baseColor: Colors.white,
+                        highlightColor: greyBorderColor,
+                        child: SizedBox(
+                          height: 100,
+                          child: ListView.builder(
+                            shrinkWrap: true,
+                            scrollDirection: Axis.horizontal,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: 3,
+                            itemBuilder: (context, index) {
+                              return SizedBox(
+                                width: 160,
+                                child: Card(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      )
+                    : const SizedBox.shrink();
               } else {
                 ShoppingProduct shoppingProduct = todaysDealList[index];
                 return DisplayProduct(

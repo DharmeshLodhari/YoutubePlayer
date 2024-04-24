@@ -2878,26 +2878,28 @@ class _AddProductState extends State<AddProduct> {
   }
 
   Widget _buildAddOnList() {
-    return Container(
-      // height: 200,
-      height: 80 * productAddOnsList.length.toDouble(),
-      child: ListView.builder(
-        physics: NeverScrollableScrollPhysics(),
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        //+1 for progressbar
-        itemCount: productAddOnsList.length + 1,
-        itemBuilder: (BuildContext context, int index) {
-          if (index == productAddOnsList.length) {
-            return buildLoadingIndicator(isLoading: isLoading);
-          } else {
-            return FormAddOnTile(
-              productAddOnsList: productAddOnsList,
-              index: index,
-            );
-          }
-        },
-      ),
-    );
+    return isLoading && productAddOnsList.isEmpty
+        ? buildLoadingIndicator(isLoading: isLoading)
+        : Container(
+            // height: 200,
+            height: 80 * productAddOnsList.length.toDouble(),
+            child: ListView.builder(
+              physics: NeverScrollableScrollPhysics(),
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              //+1 for progressbar
+              itemCount: productAddOnsList.length + 1,
+              itemBuilder: (BuildContext context, int index) {
+                if (index == productAddOnsList.length) {
+                  return buildJumpingLoadingIndicator(isLoading: isLoading);
+                } else {
+                  return FormAddOnTile(
+                    productAddOnsList: productAddOnsList,
+                    index: index,
+                  );
+                }
+              },
+            ),
+          );
   }
 
   Widget dispatchAddress() {

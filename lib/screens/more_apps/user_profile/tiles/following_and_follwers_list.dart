@@ -250,26 +250,29 @@ class _FollowAndFollowersListState extends State<FollowAndFollowersList> {
                 ? AppLocalization.of(context)!.noFollowingUsers
                 : AppLocalization.of(context)!.noFollowers,
           )
-        : SmartRefresher(
-            enablePullDown: true,
-            header: WaterDropHeader(
-              complete: Container(),
-              waterDropColor: navyBlue,
-            ),
-            controller: _refreshCtrl,
-            onRefresh: _onRefresh,
-            child: ListView.builder(
-              physics: ClampingScrollPhysics(),
-              controller: _scrollCtrl,
-              itemCount: usersList.length + 1,
-              itemBuilder: (BuildContext context, int index) {
-                if (index == usersList.length) {
-                  return buildLoadingIndicator(isLoading: _isLoading);
-                } else {
-                  return CustomSlydoUserCard(user: usersList[index]);
-                }
-              },
-            ),
-          );
+        : _isLoading && usersList.isEmpty
+            ? buildLoadingIndicator(isLoading: _isLoading)
+            : SmartRefresher(
+                enablePullDown: true,
+                header: WaterDropHeader(
+                  complete: Container(),
+                  waterDropColor: navyBlue,
+                ),
+                controller: _refreshCtrl,
+                onRefresh: _onRefresh,
+                child: ListView.builder(
+                  physics: ClampingScrollPhysics(),
+                  controller: _scrollCtrl,
+                  itemCount: usersList.length + 1,
+                  itemBuilder: (BuildContext context, int index) {
+                    if (index == usersList.length) {
+                      return buildJumpingLoadingIndicator(
+                          isLoading: _isLoading);
+                    } else {
+                      return CustomSlydoUserCard(user: usersList[index]);
+                    }
+                  },
+                ),
+              );
   }
 }

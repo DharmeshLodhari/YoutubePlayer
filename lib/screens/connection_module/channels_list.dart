@@ -119,33 +119,36 @@ class _ChannelsListState extends State<ChannelsList> {
                       child: NoItemInList(
                           msg: AppLocalization.of(context)!.noChannels))
                   : Expanded(
-                      child: ListView.builder(
-                        physics: ClampingScrollPhysics(),
-                        controller: _scrollCtrl,
-                        itemCount: channelModelList.length + 1,
-                        itemBuilder: (BuildContext context, int index) {
-                          if (index == channelModelList.length) {
-                            return buildLoadingIndicator(isLoading: _isLoading);
-                          } else {
-                            return GestureDetector(
-                              onTap: () {
-                                Navigator.pushNamed(
-                                    context, Routes.USER_PROFILE,
-                                    arguments: {
-                                      "searchedUserName":
-                                          channelModelList[index].id,
-                                      "channel":
-                                          channelModelList[index].groupName,
-                                    });
+                      child: _isLoading && channelModelList.isEmpty
+                          ? buildLoadingIndicator(isLoading: _isLoading)
+                          : ListView.builder(
+                              physics: ClampingScrollPhysics(),
+                              controller: _scrollCtrl,
+                              itemCount: channelModelList.length + 1,
+                              itemBuilder: (BuildContext context, int index) {
+                                if (index == channelModelList.length) {
+                                  return buildJumpingLoadingIndicator(
+                                      isLoading: _isLoading);
+                                } else {
+                                  return GestureDetector(
+                                    onTap: () {
+                                      Navigator.pushNamed(
+                                          context, Routes.USER_PROFILE,
+                                          arguments: {
+                                            "searchedUserName":
+                                                channelModelList[index].id,
+                                            "channel": channelModelList[index]
+                                                .groupName,
+                                          });
+                                    },
+                                    child: CustomSlydoChannelCard(
+                                      channelModel: channelModelList[index],
+                                      tileRenderPlace: TileRenderPlace.Thiny,
+                                    ),
+                                  );
+                                }
                               },
-                              child: CustomSlydoChannelCard(
-                                channelModel: channelModelList[index],
-                                tileRenderPlace: TileRenderPlace.Thiny,
-                              ),
-                            );
-                          }
-                        },
-                      ),
+                            ),
                     ),
             ],
           ),

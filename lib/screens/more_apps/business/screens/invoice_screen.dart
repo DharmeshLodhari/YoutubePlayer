@@ -319,64 +319,68 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
   }
 
   Widget invoiceListWidget(InvoiceBloc invoiceBloc) {
-    return ListView.builder(
-      padding: EdgeInsets.symmetric(vertical: 4),
-      itemCount: invoiceBloc.invoiceList.length + 1,
-      itemBuilder: (BuildContext context, int index) {
-        if (index == invoiceBloc.invoiceList.length) {
-          return buildLoadingIndicator(isLoading: invoiceBloc.isLoading);
-        } else {
-          InvoiceModel invoice = invoiceBloc.invoiceList[index];
+    return invoiceBloc.isLoading && invoiceBloc.invoiceList.isEmpty
+        ? buildLoadingIndicator(isLoading: invoiceBloc.isLoading)
+        : ListView.builder(
+            padding: EdgeInsets.symmetric(vertical: 4),
+            itemCount: invoiceBloc.invoiceList.length + 1,
+            itemBuilder: (BuildContext context, int index) {
+              if (index == invoiceBloc.invoiceList.length) {
+                return buildJumpingLoadingIndicator(
+                    isLoading: invoiceBloc.isLoading);
+              } else {
+                InvoiceModel invoice = invoiceBloc.invoiceList[index];
 
-          bool canDeleteInvoice =
-              invoice.fromCustomer == userBloc.user.userName &&
-                  invoice.status == "Draft";
+                bool canDeleteInvoice =
+                    invoice.fromCustomer == userBloc.user.userName &&
+                        invoice.status == "Draft";
 
-          bool canPay = invoice.fromCustomer != userBloc.user.userName &&
-              invoice.status == "Unpaid";
+                bool canPay = invoice.fromCustomer != userBloc.user.userName &&
+                    invoice.status == "Unpaid";
 
-          return Slidable(
-            controller: _slideController,
-            direction: Axis.horizontal,
-            actionPane: SlidableBehindActionPane(),
-            actionExtentRatio: 0.25,
-            child: InvoiceTile(
-              invoice: invoice,
-              onTap: () {
-                Navigator.of(context).pushNamed(
-                  Routes.INVOICE_DETAIL,
-                  arguments: {"id": invoice.id},
+                return Slidable(
+                  controller: _slideController,
+                  direction: Axis.horizontal,
+                  actionPane: SlidableBehindActionPane(),
+                  actionExtentRatio: 0.25,
+                  child: InvoiceTile(
+                    invoice: invoice,
+                    onTap: () {
+                      Navigator.of(context).pushNamed(
+                        Routes.INVOICE_DETAIL,
+                        arguments: {"id": invoice.id},
+                      );
+                    },
+                  ),
+                  actions: canDeleteInvoice
+                      ? [
+                          SlideActionButton(
+                              backgroundColor: mateRed,
+                              icon: Icons.delete,
+                              onTap: () => deleteInvoice(invoice),
+                              title: 'Delete',
+                              slideController: _slideController),
+                        ]
+                      : null,
+                  secondaryActions: invoice.status != "Paid" &&
+                          invoice.amount! > 0
+                      ? [
+                          SlideActionButton(
+                              backgroundColor: getBgColor(invoice),
+                              icon: getIcon(invoice),
+                              onTap: () => canPay
+                                  ? _payInvoice(invoice)
+                                  : updateInvoiceStatus(
+                                      invoice, getUpdateAction(invoice)),
+                              title: canPay ? 'Pay' : getSlidableTitle(invoice),
+                              slideController: _slideController)
+                        ]
+                      : null,
                 );
-              },
-            ),
-            actions: canDeleteInvoice
-                ? [
-                    SlideActionButton(
-                        backgroundColor: mateRed,
-                        icon: Icons.delete,
-                        onTap: () => deleteInvoice(invoice),
-                        title: 'Delete',
-                        slideController: _slideController),
-                  ]
-                : null,
-            secondaryActions: invoice.status != "Paid" && invoice.amount! > 0
-                ? [
-                    SlideActionButton(
-                        backgroundColor: getBgColor(invoice),
-                        icon: getIcon(invoice),
-                        onTap: () => canPay
-                            ? _payInvoice(invoice)
-                            : updateInvoiceStatus(
-                                invoice, getUpdateAction(invoice)),
-                        title: canPay ? 'Pay' : getSlidableTitle(invoice),
-                        slideController: _slideController)
-                  ]
-                : null,
+              }
+            },
+            controller: _scrollController,
           );
-        }
-      },
-      controller: _scrollController,
-    );
   }
 
   String getSlidableTitle(InvoiceModel invoice) {

@@ -4,7 +4,6 @@ import 'package:Slydo/screens/more_apps/review/review_auth.dart';
 import 'package:Slydo/screens/more_apps/review/tiles/review_tile.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
@@ -158,23 +157,26 @@ class _UserReviewListState extends State<UserReviewList> {
         ? NoItemInList(
             msg: AppLocalization.of(context)!.noReviews,
           )
-        : ListView.builder(
-            physics: ClampingScrollPhysics(),
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 32),
-            controller: _reviewScrollController,
-            itemCount: reviewList.length + 1,
-            itemBuilder: (BuildContext context, int index) {
-              if (index == reviewList.length) {
-                return _buildReviewIndicator();
-              } else {
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 16),
-                  child: ReviewTile(
-                      review: reviewList[index], reviewedUser: widget.user),
-                );
-              }
-            },
-          );
+        : isReviewLoading && reviewList.isEmpty
+            ? buildLoadingIndicator(isLoading: isReviewLoading)
+            : ListView.builder(
+                physics: ClampingScrollPhysics(),
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 32),
+                controller: _reviewScrollController,
+                itemCount: reviewList.length + 1,
+                itemBuilder: (BuildContext context, int index) {
+                  if (index == reviewList.length) {
+                    return buildJumpingLoadingIndicator(
+                        isLoading: isReviewLoading);
+                  } else {
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 16),
+                      child: ReviewTile(
+                          review: reviewList[index], reviewedUser: widget.user),
+                    );
+                  }
+                },
+              );
     StaggeredGridView.countBuilder(
       physics: ClampingScrollPhysics(),
       controller: _reviewScrollController,
@@ -185,7 +187,7 @@ class _UserReviewListState extends State<UserReviewList> {
       itemCount: reviewList.length + 1,
       itemBuilder: (BuildContext context, int index) {
         if (index == reviewList.length) {
-          return _buildReviewIndicator();
+          return buildLoadingIndicator(isLoading: isReviewLoading);
         } else {
           return ReviewTile(
             review: reviewList[index],
@@ -217,16 +219,5 @@ class _UserReviewListState extends State<UserReviewList> {
               }
             },
           );*/
-  }
-
-  Widget _buildReviewIndicator() {
-    return new Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: new Center(
-        child: new Opacity(
-            opacity: isReviewLoading ? 1.0 : 00,
-            child: isReviewLoading ? CircularLoadingIndicator() : Container()),
-      ),
-    );
   }
 }

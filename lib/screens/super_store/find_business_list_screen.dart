@@ -12,7 +12,6 @@ import '../../widget/no_item_in_list.dart';
 import '../more_apps/shopping/shopping_auth.dart';
 import '../more_apps/user_profile/models/user.dart';
 import '../more_apps/yarn/utils/yarn_enum.dart';
-import '../more_apps/yarn/widgets/yarn_shimmer.dart';
 
 class FindBusinessListScreen extends StatefulWidget {
   Function(bool)? onPageRefresh;
@@ -289,16 +288,9 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
     );
   }
 
-  Widget _buildLoadingIndicator() {
-    return Opacity(
-      opacity: isFindBusinessLoading ? 1.0 : 00,
-      child: isFindBusinessLoading ? const YarnShimmer() : Container(),
-    );
-  }
-
   Widget bodyList() {
     if (isFindBusinessLoading && isNearbyLoading) {
-      return _buildLoadingIndicator();
+      return buildShimmerLoadingIndicator(isLoading: isFindBusinessLoading);
     } else {
       return SingleChildScrollView(
         physics: ScrollPhysics(),
@@ -345,7 +337,7 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
   }
 
   Widget suggestionBuildView() {
-    return ListView.separated(
+    return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
@@ -353,7 +345,7 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
       itemCount: customerProfileList.length + 1,
       itemBuilder: (BuildContext context, int index) {
         if (index == customerProfileList.length) {
-          return _buildLoadingIndicator();
+          return buildShimmerLoadingIndicator(isLoading: isFindBusinessLoading);
         }
 
         return GestureDetector(
@@ -362,45 +354,48 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
               "searchedUserName": customerProfileList[index].userName
             });
           },
-          child: FindBusiness(
-            customerProfile: customerProfileList[index],
-            tileRenderPlace: TileRenderPlace.YarnProductService,
-            callback: (username, value) {
-              //create a list to edit
-              List<CustomerProfile> customerProfileListEdit =
-                  customerProfileList;
+          child: Container(
+            margin: const EdgeInsets.only(bottom: 10.0),
+            child: FindBusiness(
+              customerProfile: customerProfileList[index],
+              tileRenderPlace: TileRenderPlace.YarnProductService,
+              callback: (username, value) {
+                //create a list to edit
+                List<CustomerProfile> customerProfileListEdit =
+                    customerProfileList;
 
-              // modify customerProfileList for the username and refresh the list
-              // set the isFollowing for that particular user
-              for (var customer in customerProfileListEdit) {
-                if (customer.userName == username) {
-                  customer.isFollowing =
-                      value; // Modify the isFollowing property
+                // modify customerProfileList for the username and refresh the list
+                // set the isFollowing for that particular user
+                for (var customer in customerProfileListEdit) {
+                  if (customer.userName == username) {
+                    customer.isFollowing =
+                        value; // Modify the isFollowing property
+                  }
                 }
-              }
 
-              customerProfileList = [];
-              customerProfileList = customerProfileListEdit;
+                customerProfileList = [];
+                customerProfileList = customerProfileListEdit;
 
-              if (mounted) setState(() {});
-            },
+                if (mounted) setState(() {});
+              },
+            ),
           ),
         );
       },
-      separatorBuilder: (context, int) {
-        return Column(
-          children: [
-            const SizedBox(
-              height: 20,
-            ),
-            Divider(
-              height: 0,
-              thickness: 0.5,
-              color: greySecondaryYarn,
-            ),
-          ],
-        );
-      },
+      // separatorBuilder: (context, int) {
+      //   return Column(
+      //     children: [
+      //       const SizedBox(
+      //         height: 20,
+      //       ),
+      //       Divider(
+      //         height: 0,
+      //         thickness: 0.5,
+      //         color: greySecondaryYarn,
+      //       ),
+      //     ],
+      //   );
+      // },
     );
   }
 }

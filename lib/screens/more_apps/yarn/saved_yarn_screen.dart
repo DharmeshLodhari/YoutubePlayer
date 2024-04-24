@@ -10,7 +10,6 @@ import '../../../utils/util.dart';
 import '../../../widget/no_item_in_list.dart';
 import 'models/Topics/yarn_model.dart';
 import 'tiles/yarn_list_tile.dart';
-import 'widgets/yarn_shimmer.dart';
 import 'yarn_auth.dart';
 import 'yarn_detail_screen.dart';
 
@@ -217,7 +216,7 @@ class SavedYarnState extends State<SavedYarn> {
         itemCount: yarnTopicList.length + 1,
         itemBuilder: (BuildContext context, int index) {
           if (index == yarnTopicList.length) {
-            return _buildLoadingIndicator();
+            return buildShimmerLoadingIndicator(isLoading: isLoading);
           }
 
           return InkWell(
@@ -282,13 +281,6 @@ class SavedYarnState extends State<SavedYarn> {
     }
     return NoItemInList(
       msg: AppLocalization.of(context)!.noResultFound,
-    );
-  }
-
-  Widget _buildLoadingIndicator() {
-    return Opacity(
-      opacity: isLoading ? 1.0 : 00,
-      child: isLoading ? YarnShimmer() : Container(),
     );
   }
 

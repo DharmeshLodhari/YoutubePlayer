@@ -691,38 +691,24 @@ class _SearchUsersProductAndServiceState
             ? NoItemInList(
                 msg: AppLocalization.of(context)!.noResultFound,
               )
-            : Container(
-                child: ListView.builder(
-                  //+1 for progressbar
-                  itemCount: results.length + 1,
-                  // ignore: missing_return
-                  itemBuilder: (BuildContext context, int index) {
-                    if (index == results.length) {
-                      return _buildIndicator();
-                    } else {
-                      try {
-                        return results[index];
-                      } catch (error) {
-                        debugPrint(error.toString());
-                      }
-                    }
-                    return _buildIndicator();
-                  },
-                  controller: _scrollController,
-                ),
-              );
-  }
-
-  Widget _buildIndicator() {
-    return new Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: new Center(
-        child: new Opacity(
-          opacity: isLoading ? 1.0 : 00,
-          child: CircularLoadingIndicator(),
-        ),
-      ),
-    );
+            : isLoading && results.isEmpty
+                ? buildLoadingIndicator(isLoading: isLoading)
+                : Container(
+                    child: ListView.builder(
+                      //+1 for progressbar
+                      itemCount: results.length + 1,
+                      // ignore: missing_return
+                      itemBuilder: (BuildContext context, int index) {
+                        if (index == results.length) {
+                          return buildJumpingLoadingIndicator(
+                              isLoading: isLoading);
+                        } else {
+                          return results[index];
+                        }
+                      },
+                      controller: _scrollController,
+                    ),
+                  );
   }
 
   Future<Map<String, dynamic>?> getSearchApi() async {

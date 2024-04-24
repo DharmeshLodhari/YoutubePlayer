@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/tiles/transaction.dart';
 import 'package:Slydo/utils/colors.dart';
-import 'package:Slydo/widget/loading_indicator.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:flutter/material.dart';
 
@@ -158,32 +158,22 @@ class _ContractTransactionHistoryState
         ? NoItemInList(
             msg: AppLocalization.of(context)!.transactionHistoryEmpty,
           )
-        : ListView.builder(
-            padding: EdgeInsets.symmetric(vertical: 4),
-            //+1 for progressbar
-            itemCount: transactionList.length + 1,
-            itemBuilder: (BuildContext context, int index) {
-              if (index == transactionList.length) {
-                return _buildIndicator();
-              } else {
-                return ContractTransactionTile(
-                  transaction: transactionList[index],
-                );
-              }
-            },
-            controller: _scrollController,
-          );
-  }
-
-  Widget _buildIndicator() {
-    return new Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: new Center(
-        child: new Opacity(
-          opacity: isLoading ? 1.0 : 00,
-          child: CircularLoadingIndicator(),
-        ),
-      ),
-    );
+        : isLoading && transactionList.isEmpty
+            ? buildLoadingIndicator(isLoading: isLoading)
+            : ListView.builder(
+                padding: EdgeInsets.symmetric(vertical: 4),
+                //+1 for progressbar
+                itemCount: transactionList.length + 1,
+                itemBuilder: (BuildContext context, int index) {
+                  if (index == transactionList.length) {
+                    return buildJumpingLoadingIndicator(isLoading: isLoading);
+                  } else {
+                    return ContractTransactionTile(
+                      transaction: transactionList[index],
+                    );
+                  }
+                },
+                controller: _scrollController,
+              );
   }
 }

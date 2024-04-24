@@ -80,26 +80,29 @@ class _GlobalListViewWidgetState extends State<GlobalListViewWidget> {
   Widget build(BuildContext context) {
     return noItemInList
         ? NoItemInList(msg: AppLocalization.of(context)!.noFollowingUsers)
-        : SmartRefresher(
-            enablePullDown: true,
-            header: WaterDropHeader(
-              complete: Container(),
-              waterDropColor: navyBlue,
-            ),
-            controller: _refreshCtrl,
-            onRefresh: _onRefresh,
-            child: ListView.builder(
-              physics: ClampingScrollPhysics(),
-              controller: _scrollCtrl,
-              itemCount: list.length + 1,
-              itemBuilder: (BuildContext context, int index) {
-                if (index == list.length) {
-                  return buildLoadingIndicator(isLoading: _isLoading);
-                } else {
-                  return widget.customWidget(list[index]);
-                }
-              },
-            ),
-          );
+        : _isLoading && list.isEmpty
+            ? buildLoadingIndicator(isLoading: _isLoading)
+            : SmartRefresher(
+                enablePullDown: true,
+                header: WaterDropHeader(
+                  complete: Container(),
+                  waterDropColor: navyBlue,
+                ),
+                controller: _refreshCtrl,
+                onRefresh: _onRefresh,
+                child: ListView.builder(
+                  physics: ClampingScrollPhysics(),
+                  controller: _scrollCtrl,
+                  itemCount: list.length + 1,
+                  itemBuilder: (BuildContext context, int index) {
+                    if (index == list.length) {
+                      return buildJumpingLoadingIndicator(
+                          isLoading: _isLoading);
+                    } else {
+                      return widget.customWidget(list[index]);
+                    }
+                  },
+                ),
+              );
   }
 }

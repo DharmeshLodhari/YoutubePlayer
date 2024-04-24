@@ -172,12 +172,8 @@ class _UserServiceListState extends State<UserServiceList> {
                 ),
               ),
               SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Center(
-                    child: buildLoadingIndicator(isLoading: isServiceLoading),
-                  ),
-                ),
+                child:
+                    buildJumpingLoadingIndicator(isLoading: isServiceLoading),
               ),
             ],
           );
