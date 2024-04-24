@@ -173,7 +173,7 @@ class _VerifyRegistrationOTPScreenState
                           ),
                         ),
                       ),
-                      flexibleSpace(flex: 4),
+                      flexibleSpace(flex: 3),
                     ],
                   ),
           ),

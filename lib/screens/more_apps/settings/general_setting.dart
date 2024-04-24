@@ -104,6 +104,7 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                getReferralCodeTile(),
                 getIncomingSoundTile(),
                 getOutGoingSoundTile(),
                 getCurrencyTile(),
@@ -401,6 +402,45 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
             style: TextStyle(
               color: darkGrey,
               fontWeight: FontWeight.w400,
+              fontSize: 14,
+              fontFamily: "Inter",
+            ),
+            overflow: TextOverflow.fade,
+            softWrap: false,
+          ),
+          onTap: () {},
+        ),
+      ),
+    );
+  }
+
+  Widget getReferralCodeTile() {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      shadowColor: boxShadowTwo,
+      elevation: 0,
+      child: Container(
+        decoration: decorateBox(),
+        child: ListTile(
+          title: Text(
+            "My Referral Code",
+            maxLines: 1,
+            style: TextStyle(
+              color: blackFont,
+              fontWeight: FontWeight.w600,
+              fontSize: 14,
+              fontFamily: "Inter",
+            ),
+            overflow: TextOverflow.fade,
+            softWrap: false,
+          ),
+          trailing: Text(
+            userBloc.user.userName ?? "",
+            maxLines: 1,
+            style: TextStyle(
+              color: navyBlue,
+              fontWeight: FontWeight.w500,
               fontSize: 14,
               fontFamily: "Inter",
             ),

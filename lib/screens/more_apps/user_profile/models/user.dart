@@ -35,6 +35,7 @@ class User {
   RiderModel? rider;
   Staff? staff;
   Permissions? permissions;
+  ShippingAddress? defaultAddress;
 
   // Pass in as named parameter in constructor
   User({
@@ -60,6 +61,7 @@ class User {
     this.rider,
     this.staff,
     this.permissions,
+    this.defaultAddress,
   });
 
   factory User.fromJson(Map<String, dynamic> json,
@@ -89,6 +91,9 @@ class User {
       staff: staff != null ? Staff.fromJson(staff) : null,
       permissions:
           permissions != null ? Permissions.fromJson(permissions) : null,
+      defaultAddress: json["default_address"] == null
+          ? null
+          : ShippingAddress.fromJson(json["default_address"]),
     );
     // userAbout.bio = user.bio == null ? '' : user.bio!;
     // user.userAbout = userAbout;
@@ -114,6 +119,7 @@ class User {
     data['rider'] = rider;
     data['staff'] = staff;
     data['permissions'] = permissions;
+    data['default_address'] = defaultAddress;
     return data;
   }
 

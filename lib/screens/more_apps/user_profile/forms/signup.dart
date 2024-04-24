@@ -61,6 +61,7 @@ class _SignUpState extends State<SignUp> {
   late TextEditingController _passwordController;
   late TextEditingController _confirmPasswordController;
   late TextEditingController _accountTypeController;
+  late TextEditingController _referralCodeController;
   final _auth = AuthService();
 
   bool loading = false;
@@ -78,6 +79,9 @@ class _SignUpState extends State<SignUp> {
 
   bool verifyingUsername = false;
   bool? inputVerified;
+
+  bool verifyingReferralUsername = false;
+  bool? referralInputVerified;
 
   RegExp dotReg = RegExp(r'\.$');
   RegExp spaceReg = RegExp(r' $');
@@ -107,6 +111,7 @@ class _SignUpState extends State<SignUp> {
     _passwordController = TextEditingController();
     _confirmPasswordController = TextEditingController();
     _accountTypeController = TextEditingController();
+    _referralCodeController = TextEditingController();
 
     _accountTypeController.text = accountType ?? "";
     accountTypeChosen = true;
@@ -148,6 +153,22 @@ class _SignUpState extends State<SignUp> {
         });
       }
     });
+
+    _referralCodeController.addListener(() {
+      if (_referralCodeController.text.toLowerCase().isNotEmpty) {
+        debugPrint('USER NAME CTRL');
+        Future.delayed(Duration(seconds: 2), () {
+          if (_referralCodeController.text.length >= 4) {
+            _verifyReferralUserName();
+          }
+        });
+      } else {
+        setState(() {
+          referralInputVerified = false;
+          verifyingReferralUsername = false;
+        });
+      }
+    });
     super.initState();
   }
 
@@ -186,107 +207,114 @@ class _SignUpState extends State<SignUp> {
       },
       child: Scaffold(
         backgroundColor: Colors.white,
-        appBar: AppBar(
-          backgroundColor: Colors.white,
-          elevation: 0,
-          leading: IconButton(
-            icon: Icon(
-              Icons.keyboard_arrow_left,
-              color: navyBlue,
-            ),
-            onPressed: () {
-              if (basicAccountInfo == false) {
-                Navigator.pop(context);
-              } else {
-                basicAccountInfo = false;
-                if (mounted) setState(() {});
-              }
-            },
-          ),
-        ),
-        body: loading
-            ? Center(
-                child: CircularProgressIndicator(
-                  strokeWidth: 2.5,
-                  valueColor: AlwaysStoppedAnimation(navyBlue),
-                  backgroundColor: Colors.transparent,
-                ),
-              )
-            : SingleChildScrollView(
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 20),
-                  child: Container(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        appIcon(),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        registerTitle(),
-                        SizedBox(height: 40),
-                        !basicAccountInfo
-                            ? Form(
-                                key: _personalDetailFormKey,
-                                child: Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.stretch,
-                                  children: [
-                                    accountTypeField(),
-                                    Visibility(
-                                      visible: accountTypeChosen,
-                                      child: accountType == 'Personal'
-                                          ? personalAccountFields()
-                                          : businessAccountFields(),
-                                    ),
-                                  ],
-                                ),
-                              )
-                            : Form(
-                                key: _bankDetailsFormKey,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    nameInstructionNote(),
-                                    SizedBox(height: 20),
-                                    firstNameField(),
-                                    SizedBox(height: 20),
-                                    lastNameField(),
-                                    SizedBox(height: 20),
-                                    getDOBField(),
-                                    if (isValidAge != null && !isValidAge!)
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          SizedBox(height: 8),
-                                          Text(
-                                            "You are not eligible to use Slydo",
-                                            style: TextStyle(
-                                                color: mateRed, fontSize: 13),
-                                          ),
-                                        ],
-                                      )
-                                    else
-                                      Container(),
-                                    SizedBox(height: 20),
-                                    getGenderField(),
-                                    SizedBox(height: 20),
-                                    registrationTermsAndCondition(),
-                                    // bvnField(),
-                                    SizedBox(height: 40),
-                                    registerBtn(),
-                                    SizedBox(height: 40),
-                                  ],
-                                ),
-                              ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
+        appBar: _buildAppbar(),
+        body: _buildBody(),
       ),
     );
+  }
+
+  PreferredSizeWidget _buildAppbar() {
+    return AppBar(
+      backgroundColor: Colors.white,
+      elevation: 0,
+      leading: IconButton(
+        icon: Icon(
+          Icons.keyboard_arrow_left,
+          color: navyBlue,
+        ),
+        onPressed: () {
+          if (basicAccountInfo == false) {
+            Navigator.pop(context);
+          } else {
+            basicAccountInfo = false;
+            if (mounted) setState(() {});
+          }
+        },
+      ),
+    );
+  }
+
+  Widget _buildBody() {
+    return loading
+        ? Center(
+            child: CircularProgressIndicator(
+              strokeWidth: 2.5,
+              valueColor: AlwaysStoppedAnimation(navyBlue),
+              backgroundColor: Colors.transparent,
+            ),
+          )
+        : SingleChildScrollView(
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: Container(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    appIcon(),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    registerTitle(),
+                    SizedBox(height: 40),
+                    !basicAccountInfo
+                        ? Form(
+                            key: _personalDetailFormKey,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                accountTypeField(),
+                                Visibility(
+                                  visible: accountTypeChosen,
+                                  child: accountType == 'Personal'
+                                      ? personalAccountFields()
+                                      : businessAccountFields(),
+                                ),
+                              ],
+                            ),
+                          )
+                        : Form(
+                            key: _bankDetailsFormKey,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                nameInstructionNote(),
+                                SizedBox(height: 20),
+                                firstNameField(),
+                                SizedBox(height: 20),
+                                lastNameField(),
+                                SizedBox(height: 20),
+                                getDOBField(),
+                                if (isValidAge != null && !isValidAge!)
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      SizedBox(height: 8),
+                                      Text(
+                                        "You are not eligible to use Slydo",
+                                        style: TextStyle(
+                                            color: mateRed, fontSize: 13),
+                                      ),
+                                    ],
+                                  )
+                                else
+                                  Container(),
+                                SizedBox(height: 20),
+                                getGenderField(),
+                                SizedBox(height: 20),
+                                registrationTermsAndCondition(),
+                                // bvnField(),
+                                SizedBox(height: 40),
+                                registerBtn(),
+                                SizedBox(height: 40),
+                              ],
+                            ),
+                          ),
+                  ],
+                ),
+              ),
+            ),
+          );
   }
 
   Widget personalAccountFields() {
@@ -315,6 +343,8 @@ class _SignUpState extends State<SignUp> {
         //     fontSize: 12,
         //   ),
         // ),
+        SizedBox(height: 20),
+        referralCodeField(),
         SizedBox(height: 20),
         passwordField(),
         SizedBox(height: 10),
@@ -351,6 +381,8 @@ class _SignUpState extends State<SignUp> {
         userNameField(),
         SizedBox(height: 10),
         Text('Username should not exceed 15 characters'),
+        SizedBox(height: 20),
+        referralCodeField(),
         SizedBox(height: 20),
         passwordField(),
         SizedBox(height: 10),
@@ -611,6 +643,34 @@ class _SignUpState extends State<SignUp> {
     }
   }
 
+  Future _verifyReferralUserName() async {
+    bool verifiedInput = false;
+    setState(() {
+      verifyingReferralUsername = true;
+    });
+    try {
+      await UserAuth().fetchCustomerProfile(
+          _referralCodeController.text.trim().toLowerCase());
+      verifiedInput = true;
+    } catch (e) {
+      verifiedInput = false;
+    }
+    if (verifiedInput) {
+      //If verifiedInput is true it means the profile(username) exists so inputVerified will be false, because we can't use that profile again.
+
+      setState(() {
+        referralInputVerified = true;
+        verifyingReferralUsername = false;
+      });
+      showToast(message: 'Username is available');
+    } else {
+      setState(() {
+        verifyingReferralUsername = false;
+        referralInputVerified = false;
+      });
+    }
+  }
+
   String? userNameValidator(String username) {
     RegExp validCharacters = RegExp(r'^[a-zA-Z 0-9\.\+\-\_]*$');
 
@@ -650,6 +710,44 @@ class _SignUpState extends State<SignUp> {
               }
             },
     );
+  }
+
+  Widget referralCodeField() {
+    return CustomizedTextFormField(
+      controller: _referralCodeController,
+      labelColor: darkGrey,
+      labelText: 'Referral Code (Optional)',
+      validator: (String val) {
+        if (val.isNotEmpty && !referralInputVerified!) {
+          return "Invalid referral";
+        }
+      },
+      suffixIcon: getReferralUsernameSuffixIcon(),
+    );
+  }
+
+  Widget getReferralUsernameSuffixIcon() {
+    if (verifyingReferralUsername) {
+      return Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: CircularLoadingIndicator(),
+      );
+    } else if (referralInputVerified != null) {
+      if (referralInputVerified! == true) {
+        return Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: CircleAvatar(
+            radius: 14,
+            backgroundColor: navyBlue,
+            child: Icon(Icons.check, size: 20, color: Colors.white),
+          ),
+        );
+      } else {
+        return Icon(Icons.cancel, color: Colors.red);
+      }
+    } else {
+      return SizedBox.shrink();
+    }
   }
 
   String? nickNameValidator(String nickName) {
@@ -1049,6 +1147,7 @@ class _SignUpState extends State<SignUp> {
 
       String firstName = _firstNameController.text.toTitleCase().trim();
       String lastName = _lastNameController.text.toTitleCase().trim();
+      String referralCode = _referralCodeController.text.toLowerCase().trim();
       String userName = _userNameController.text
           .toLowerCase()
           // .replaceAll(' ', '.')
@@ -1063,6 +1162,7 @@ class _SignUpState extends State<SignUp> {
         "firstname": firstName,
         "lastname": lastName,
         "full_name": "$firstName $lastName",
+        "referral_code": referralCode,
         "dob": dateFormat.format(dob),
         "gender": selectedGender,
         "username": userName,
@@ -1117,6 +1217,7 @@ class _SignUpState extends State<SignUp> {
     _userNameController.clear();
     _passwordController.clear();
     _confirmPasswordController.clear();
+    _referralCodeController.clear();
 
     industryType = null;
   }

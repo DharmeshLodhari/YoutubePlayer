@@ -1240,6 +1240,9 @@ class _HomeState extends State<Home> {
           showNoAddressFoundDialog(context);
         }
         defaultAddress = tempList.firstWhere((element) => element.is_default!);
+        if (defaultAddress != null) {
+          userBloc.user.defaultAddress = defaultAddress;
+        }
       });
     }
   }

@@ -5,6 +5,7 @@ import 'dart:io';
 
 import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/environment.dart';
+import 'package:Slydo/data/state_notifiers/user_bloc.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/SecureUser.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/company_name.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/jwt.dart';
@@ -13,10 +14,14 @@ import 'package:Slydo/screens/super_store/models/product_industry_model.dart';
 import 'package:Slydo/services/secure_storage.dart';
 import 'package:Slydo/utils/country_picker/country.dart';
 import 'package:Slydo/utils/country_picker/utils.dart';
+import 'package:Slydo/utils/global_key.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
+import 'package:location/location.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
@@ -406,9 +411,43 @@ class AuthService {
       "TransactionId": transactionId,
       "DeviceType": Platform.isAndroid ? "Android" : "IOS",
       "User-Agent": "Slydo-Mobile",
-      "App-Version": appVersion
+      "App-Version": appVersion,
     };
+    Map<String, String> locationHeader = await getUserLocationHeader();
+    if (locationHeader.isNotEmpty) {
+      headers.addAll(locationHeader);
+    }
     return headers;
+  }
+
+  Future<Map<String, String>> getUserLocationHeader() async {
+    Map<String, String> data = {};
+    Location location = Location();
+
+    try {
+      var status = await Permission.location.status;
+      if (status.isGranted) {
+        LocationData locationData = await location.getLocation();
+
+        data.addAll({
+          "X-User-Current-Location":
+              "${locationData.longitude}, ${locationData.latitude}"
+        });
+      } else {
+        UserBloc userBloc = Provider.of<UserBloc>(
+            myGlobals.navigationKey.currentContext!,
+            listen: false);
+
+        data.addAll({
+          "X-User-Current-Location":
+              "${userBloc.user.defaultAddress?.longitude}, ${userBloc.user.defaultAddress?.latitude}"
+        });
+      }
+    } catch (error) {
+      debugPrint("Error $error");
+    }
+
+    return data;
   }
 
   // Delete JWT from db
