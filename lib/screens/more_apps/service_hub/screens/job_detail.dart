@@ -194,7 +194,7 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
                       Expanded(
                         flex: 2,
                         child: Text(
-                          "${args.job!.state}",
+                          messageDecoderWithEmoji(args.job?.state) ?? "",
                           style: TextStyle(
                             color: Color(0xff75818f),
                             fontSize: 14,

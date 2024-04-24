@@ -566,7 +566,8 @@ class _JobsSearchFilterState extends State<JobsSearchFilter> {
                           });
                         },
                         title: Text(
-                          locationsList[index]!.name!,
+                          messageDecoderWithEmoji(locationsList[index]?.name) ??
+                              "",
                           softWrap: false,
                           overflow: TextOverflow.fade,
                           style: TextStyle(

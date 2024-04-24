@@ -90,7 +90,7 @@ class PaymentRequestTile extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.only(bottom: 2),
       child: Text(
-        getCustomerName(),
+        messageDecoderWithEmoji(getCustomerName()) ?? "",
         maxLines: 1,
         style: TextStyle(
           color: blackFont,
@@ -105,7 +105,7 @@ class PaymentRequestTile extends StatelessWidget {
 
   String getCustomerName() {
     if (paymentRequest!.displayCustomer.length > 24) {
-      return "${paymentRequest!.displayCustomer.substring(0, 25)}...";
+      return "${paymentRequest?.displayCustomer.substring(0, 25)}...";
     } else {
       return paymentRequest!.displayCustomer;
     }
@@ -115,9 +115,9 @@ class PaymentRequestTile extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        paymentRequest!.description != "" && paymentRequest!.description != null
+        paymentRequest?.description != "" && paymentRequest?.description != null
             ? Text(
-                "${paymentRequest!.description}",
+                messageDecoderWithEmoji(paymentRequest?.description) ?? "",
                 style: TextStyle(color: darkGrey, fontSize: 12),
                 maxLines: 1,
               )
@@ -133,7 +133,7 @@ class PaymentRequestTile extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         Text(
-          worldCurrencies[paymentRequest!.currency!]!,
+          worldCurrencies[paymentRequest?.currency] ?? "NGN",
           style: TextStyle(
               fontFamily: "Inter",
               color: paymentRequest!.isCredit! ? blackFont : navyBlue,
@@ -141,7 +141,7 @@ class PaymentRequestTile extends StatelessWidget {
               fontSize: 14),
         ),
         Text(
-          moneyDisplayNormalizer(paymentRequest!.amount),
+          moneyDisplayNormalizer(paymentRequest?.amount),
           style: TextStyle(
               color: paymentRequest!.isCredit! ? blackFont : navyBlue,
               fontWeight: FontWeight.bold,
@@ -340,7 +340,7 @@ class TransactionTile extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.only(bottom: 2),
       child: Text(
-        "${transaction!.displayCustomer}",
+        messageDecoderWithEmoji(transaction?.displayCustomer) ?? "",
         maxLines: 1,
         style: TextStyle(
             color: blackFont, fontWeight: FontWeight.w600, fontSize: 15),
@@ -393,7 +393,7 @@ class TransactionTile extends StatelessWidget {
       children: <Widget>[
         transaction!.description != "" && transaction!.description != null
             ? Text(
-                "${transaction!.description}",
+                messageDecoderWithEmoji(transaction?.description) ?? "",
                 style: TextStyle(color: darkGrey, fontSize: 12),
                 maxLines: 1,
               )
@@ -530,7 +530,7 @@ class _ContractTransactionTileState extends State<ContractTransactionTile> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Text(
-          "${widget.transaction!.description}",
+          messageDecoderWithEmoji(widget.transaction?.description) ?? "",
           style: TextStyle(color: darkGrey, fontSize: 12),
           maxLines: 1,
         ),

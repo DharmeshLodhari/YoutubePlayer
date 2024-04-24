@@ -216,7 +216,8 @@ class JobDescriptionCard extends StatelessWidget {
                   width: 6,
                 ),
                 Text(
-                  "${job?.state}, ${job?.city}".toCapitalized(),
+                  "${messageDecoderWithEmoji(job?.state)}, ${messageDecoderWithEmoji(job?.city)}"
+                      .toCapitalized(),
                   style: TextStyle(
                     color: darkGrey,
                     fontSize: 10,

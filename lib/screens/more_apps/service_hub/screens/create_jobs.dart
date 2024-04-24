@@ -845,7 +845,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
         ),
       ),
       items: stateList.map((StatesModel item) {
-        return item.name ?? "";
+        return messageDecoderWithEmoji(item.name) ?? "";
       }).toList(),
       dropdownDecoratorProps: DropDownDecoratorProps(
         dropdownSearchDecoration: InputDecoration(
@@ -943,7 +943,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
             ),
           )),
       items: cityList.map((Cities item) {
-        return item.name ?? "";
+        return messageDecoderWithEmoji(item.name) ?? "";
       }).toList(),
       dropdownDecoratorProps: DropDownDecoratorProps(
         dropdownSearchDecoration: InputDecoration(
@@ -1090,7 +1090,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
 
                         return ListTile(
                           title: Text(
-                            "${location.name}",
+                            messageDecoderWithEmoji(location.name) ?? "",
                             softWrap: false,
                             overflow: TextOverflow.fade,
                             style: TextStyle(
@@ -1514,14 +1514,14 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
             job.dueDate = DateFormat('yyyy-MM-dd').format(jobEndDate!);
             job.category = Category(
                 name: selectedCategory,
-                slug: selectedCategory!.toLowerCase(),
+                slug: selectedCategory?.toLowerCase(),
                 image: '');
             job.description = jobDescription;
             job.pay = moneyInputNormalizer(budget);
             // job.location = locationSelected;
             job.state = selectedState;
             job.city = selectedCity;
-            job.tags = [selectedCategory!.toLowerCase()];
+            job.tags = [selectedCategory?.toLowerCase() ?? ""];
 
             await ServiceHubAuthService().createJobRequest({
               'title': jobTitle,
@@ -1532,7 +1532,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
               'description': jobDescription,
               'category': selectedCategory,
               'is_negotiable': getIsNegotiable(),
-              'tags': [selectedCategory!.toLowerCase()],
+              'tags': [selectedCategory?.toLowerCase()],
               'due_date': DateFormat('yyyy-MM-dd').format(jobEndDate!),
               'caption': selectedCategory,
               'picture_count': jobImages.length,
