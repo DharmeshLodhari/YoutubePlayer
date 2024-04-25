@@ -649,7 +649,7 @@ Widget buildLoadingIndicator({required bool isLoading}) {
 
 Widget buildJumpingLoadingIndicator({required bool isLoading}) {
   return Padding(
-    padding: const EdgeInsets.all(15.0),
+    padding: const EdgeInsets.only(top: 15.0, bottom: 30.0),
     child: Center(
       child: Opacity(
         opacity: isLoading ? 1.0 : 00,

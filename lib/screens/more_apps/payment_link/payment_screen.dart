@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/payment_link/payment_link.dart';
 import 'package:Slydo/screens/more_apps/payment_loading_screen.dart';
 import 'package:Slydo/utils/extensions.dart';
@@ -410,7 +411,8 @@ class _PaymentLinkScreenState extends State<PaymentLinkScreen> {
                 if (response.statusCode == 201) {
                   showDataAlert(res['link']);
                   Navigator.pop(context);
-                  NavigationUtil.push(context, screen: PaymentLink());
+                  Navigator.pop(context);
+                  Navigator.popAndPushNamed(context, Routes.PAYMENT_LINK);
                 } else if (response.statusCode == 400) {
                   showDataAlert(res['link']);
                   Navigator.pop(context);

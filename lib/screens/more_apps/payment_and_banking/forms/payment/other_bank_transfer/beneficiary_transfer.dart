@@ -61,6 +61,7 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
   VirtualAccount? virtualAccount;
   bool isAccountFound = false;
   bool isLoading = false;
+  bool isBankingLoading = false;
   StateSetter? bottomSheetStateSetterGlobal;
   bool bottomSheetMounted = false;
   int bottomSheetSearchIndex = 0;
@@ -121,7 +122,7 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
   }
 
   void getBankAccountDetail() async {
-    isLoading = true;
+    isBankingLoading = true;
     setState(() {});
     await getAccountBalance();
     getList("");
@@ -132,7 +133,7 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
     if (virtualAccount != null) {
       isAccountFound = true;
     }
-    isLoading = false;
+    isBankingLoading = false;
     setState(() {});
   }
 
@@ -724,10 +725,13 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
   }
 
   void getList(String searchText) async {
+    isLoading = true;
+    if (mounted) setState(() {});
     Map<String, dynamic>? result =
         await _auth.getBankAccountsPagination(next, previous, searchText);
     if (result == null) {
       isLoading = false;
+      if (mounted) setState(() {});
       return;
     }
     count = result['count'];
@@ -735,30 +739,30 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
     previous = result['previous'];
     var tempList = result['results'];
 
-    if (mounted) {
-      setState(() {
-        bankAccountList = [];
-        bankAccountListStore = [];
-        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
-          bottomSheetStateSetterGlobal!(() {});
-        if (mounted) setState(() {});
-        bankAccountList.addAll(tempList);
-        bankAccountListStore.addAll(tempList);
+    if (tempList != null) {
+      bankAccountList = [];
+      bankAccountListStore = [];
+      noItemInList = false;
+      if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+        bottomSheetStateSetterGlobal!(() {});
+      bankAccountList.addAll(tempList);
+      bankAccountListStore.addAll(tempList);
 
-        for (BankAccount item in bankAccountList) {
-          if (item.isDefault == true) {
-            bankAccountBloc.bankAccount = item;
-          }
+      for (BankAccount item in bankAccountList) {
+        if (item.isDefault == true) {
+          bankAccountBloc.bankAccount = item;
         }
+      }
 
-        //if there is no default set as true the pick first account
-        if (bankAccountBloc.bankAccount!.accountName == null &&
-            bankAccountList.isNotEmpty) {
-          bankAccountBloc.bankAccount =
-              bankAccountList[0]; // Pick the first item in the list
+      //if there is no default set as true the pick first account
+      if (bankAccountBloc.bankAccount!.accountName == null &&
+          bankAccountList.isNotEmpty) {
+        bankAccountBloc.bankAccount =
+            bankAccountList[0]; // Pick the first item in the list
 
-        }
-      });
+      }
+      isLoading = false;
+      if (mounted) setState(() {});
     }
 
     if (bankAccountList.isEmpty) {
