@@ -360,7 +360,6 @@ class AuthService {
         return await fetchNewToken();
       }
     });
-
     return jwt!;
   }
 

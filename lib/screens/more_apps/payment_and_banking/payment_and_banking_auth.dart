@@ -919,7 +919,6 @@ class PaymentAndBankingAuth extends AuthService {
   //Cancel payment link
   Future<bool> cancelPaymentLinks(String? paymentLinkId) async {
     String url;
-    dynamic result;
     url =
         "${AppConfig.baseUrl}/api/v1/transactions/payment-link/$paymentLinkId/cancel";
 
@@ -931,7 +930,7 @@ class PaymentAndBankingAuth extends AuthService {
     );
     log("message${response.statusCode} and ${response.body}");
     if (response.statusCode == 201 || response.statusCode == 200) {
-      result = jsonDecode(response.body);
+      var result = jsonDecode(response.body);
       return true;
     } else {
       return false;

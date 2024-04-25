@@ -513,78 +513,82 @@ class _PaymentLinkScreenState extends State<PaymentLinkScreen> {
         key: _sendPaymentScaffold,
         backgroundColor: Colors.white,
         appBar: appBar() as PreferredSizeWidget?,
-        body: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 40),
-            child: Column(
-              children: [
-                Card(
-                  elevation: 0.4,
-                  margin: EdgeInsets.zero,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  shadowColor: iconBtnGrey,
-                  child: Container(
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: iconBtnGrey, width: 1)),
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        children: <Widget>[
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 20),
-                            child: Column(
-                              children: [
-                                const SizedBox(
-                                  height: 20,
-                                ),
-                                displayAmountField(),
-                                const SizedBox(
-                                  height: 20,
-                                ),
-                                getCategoryDropDown(),
-                                const SizedBox(
-                                  height: 20,
-                                ),
-                                getReferenceField(),
-                                const SizedBox(
-                                  height: 20.0,
-                                ),
-                                noteForUser(),
-                                const SizedBox(
-                                  height: 40,
-                                ),
-                                errorMessage == ""
-                                    ? Container()
-                                    : Text(
-                                        errorMessage,
-                                        style: TextStyle(
-                                            color: mateRed,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 16),
-                                      ),
-                                errorMessage == ""
-                                    ? Container()
-                                    : const SizedBox(
-                                        height: 20,
-                                      ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(
-                  height: 180,
-                ),
-                getSubmitButton()
-              ],
-            )),
+        body: _buildBody(),
       ),
     );
+  }
+
+  Widget _buildBody() {
+    return SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 40),
+        child: Column(
+          children: [
+            Card(
+              elevation: 0.4,
+              margin: EdgeInsets.zero,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              shadowColor: iconBtnGrey,
+              child: Container(
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: iconBtnGrey, width: 1)),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    children: <Widget>[
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Column(
+                          children: [
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            displayAmountField(),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            getCategoryDropDown(),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            getReferenceField(),
+                            const SizedBox(
+                              height: 20.0,
+                            ),
+                            noteForUser(),
+                            const SizedBox(
+                              height: 40,
+                            ),
+                            errorMessage == ""
+                                ? Container()
+                                : Text(
+                                    errorMessage,
+                                    style: TextStyle(
+                                        color: mateRed,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16),
+                                  ),
+                            errorMessage == ""
+                                ? Container()
+                                : const SizedBox(
+                                    height: 20,
+                                  ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(
+              height: 30,
+            ),
+            getSubmitButton()
+          ],
+        ));
   }
 
   bool canDoSlydoTransfer(double amount, double balance) {
