@@ -18,7 +18,7 @@ import '../../models/store.dart';
 import '../../shopping_auth.dart';
 
 class ProductAddOnList extends StatefulWidget {
-  final dynamic arguments;
+  var arguments;
 
   ProductAddOnList({this.arguments, Key? key}) : super(key: key);
 
@@ -79,7 +79,7 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
           isLoading = true;
         });
       }
-      final Map<String, dynamic>? result =
+      Map<String, dynamic>? result =
           await _auth.getAddOnsList(productId!, next, previous);
       if (result == null) {
         isLoading = false;
@@ -89,7 +89,7 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
       count = result['count'];
       next = result['next'];
       previous = result['previous'];
-      final tempList = result['results'];
+      var tempList = result['results'];
 
       productAddOnList.addAll(tempList);
 
@@ -110,7 +110,7 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
         _scaffoldMessengerKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: const Duration(milliseconds: 500),
+          duration: Duration(milliseconds: 500),
         ));
       }
     }
@@ -120,7 +120,7 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
   void _onRefresh() async {
     //check network connectivity and if true then refresh the list
     Connectivity().checkConnectivity().then((value) {
-      final connectionResult = value;
+      var connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         count = 0;
@@ -202,7 +202,7 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
       ),
       actions: <Widget>[
         addOptionBtn(),
-        const SizedBox(
+        SizedBox(
           width: 16,
         ),
       ],
@@ -260,48 +260,50 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
   Widget _buildProductAddOnList() {
     return Stack(
       children: [
-        if (noItemInList)
-          NoItemInList(
-            title: AppLocalization.of(context)!.noAddOnYet,
-            msg: AppLocalization.of(context)!.noAddOnYetSub,
-          )
-        else
-          ListView.builder(
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            //+1 for progressbar
-            itemCount: productAddOnList.length + 1,
-            itemBuilder: (BuildContext context, int index) {
-              if (index == productAddOnList.length) {
-                return buildLoadingIndicator(isLoading: isLoading);
-              } else {
-                return _getSlidableWithLists(
-                  context,
-                  GestureDetector(
-                    onTap: () async {
-                      // if (isForCheckboxSelection == true)
-                      //   toggleAddOnCheckedState(index);
-                      final data = await Navigator.of(context)
-                          .pushNamed(Routes.UPDATE_ADD_ON, arguments: {
-                        'addOns': productAddOnList[index],
-                        'productId': productId,
-                      });
+        noItemInList
+            ? NoItemInList(
+                title: AppLocalization.of(context)!.noAddOnYet,
+                msg: AppLocalization.of(context)!.noAddOnYetSub,
+              )
+            : isLoading && productAddOnList.isEmpty
+                ? buildLoadingIndicator(isLoading: isLoading)
+                : ListView.builder(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    //+1 for progressbar
+                    itemCount: productAddOnList.length + 1,
+                    itemBuilder: (BuildContext context, int index) {
+                      if (index == productAddOnList.length) {
+                        return buildJumpingLoadingIndicator(
+                            isLoading: isLoading);
+                      } else {
+                        return _getSlidableWithLists(
+                          context,
+                          GestureDetector(
+                            onTap: () async {
+                              // if (isForCheckboxSelection == true)
+                              //   toggleAddOnCheckedState(index);
+                              final data = await Navigator.of(context)
+                                  .pushNamed(Routes.UPDATE_ADD_ON, arguments: {
+                                'addOns': productAddOnList[index],
+                                'productId': productId,
+                              });
 
-                      // Handle the result (map) received from PRODUCT_VARIANT_UPDATE
-                      if (data != null && data is AddOns) {
-                        //save the variant details for later use
-                        _onRefresh();
-                        if (mounted) setState(() {});
+                              // Handle the result (map) received from PRODUCT_VARIANT_UPDATE
+                              if (data != null && data is AddOns) {
+                                //save the variant details for later use
+                                _onRefresh();
+                                if (mounted) setState(() {});
+                              }
+                            },
+                            child: productAddOnTile(
+                                addOns: productAddOnList[index], index: index),
+                          ),
+                          productAddOnList[index],
+                        );
                       }
                     },
-                    child: productAddOnTile(
-                        addOns: productAddOnList[index], index: index),
+                    controller: _scrollController,
                   ),
-                  productAddOnList[index],
-                );
-              }
-            },
-            controller: _scrollController,
-          ),
         Positioned(
           bottom: 25, // Adjust the distance from the bottom as needed
           right: 25,
@@ -336,7 +338,7 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
   }
 
   Widget loadAllCheckedAddOn() {
-    final List<AddOns> addOnList =
+    List<AddOns> addOnList =
         productAddOnList.where((addOn) => addOn.isChecked == true).toList();
 
     Navigator.pop(context, addOnList);
@@ -346,7 +348,7 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
   Widget productAddOnTile({required AddOns addOns, int? index}) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       shadowColor: boxShadowTwo,
       elevation: 0,
       child: Container(
@@ -365,7 +367,7 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
                     fontSize: 14,
                     fontFamily: "Inter"),
               ),
-              const SizedBox(height: 5.0),
+              SizedBox(height: 5.0),
               Text(
                 '${addOns.options!.length} items',
                 maxLines: 1,
@@ -404,10 +406,10 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
     return Slidable(
       controller: _slideController,
       direction: Axis.horizontal,
-      actionPane: const SlidableBehindActionPane(),
+      actionPane: SlidableBehindActionPane(),
       actionExtentRatio: 0.25,
-      actions: listActionSlideActions(addOns: addOns),
       child: VerticalListItem(bankAccountTile),
+      actions: listActionSlideActions(addOns: addOns),
       // secondaryActions: listSecondaryActions(addOns: addOns),
     );
   }

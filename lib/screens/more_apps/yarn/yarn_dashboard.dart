@@ -1,3 +1,6 @@
+import 'package:Slydo/data/state_notifiers/user_bloc.dart';
+import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/yarn/models/Topics/yarn_model.dart';
 import 'package:Slydo/screens/more_apps/yarn/models/share_as_yarn_model.dart';
 import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
@@ -13,6 +16,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:neat_periodic_task/neat_periodic_task.dart';
 import 'package:provider/provider.dart';
 
+import '../../../constant.dart';
 import '../../../utils/navigation_util.dart';
 import '../../../utils/slydo_app_icon_new_icons.dart';
 import '../../../utils/util.dart';
@@ -39,6 +43,7 @@ class _YarnDashboardState extends State<YarnDashboard> {
   int currentAskTapOnHome = 0;
   String? selectedCategoryId;
   late YarnDashboardBloc yarnDashboardBloc;
+  late UserBloc userBloc;
   bool isQuestionMode = false;
   int count = 0;
   Yarn? yarnTopic;
@@ -97,8 +102,8 @@ class _YarnDashboardState extends State<YarnDashboard> {
 
   @override
   Widget build(BuildContext context) {
+    userBloc = Provider.of<UserBloc>(context, listen: false);
     yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context, listen: false);
-
     return Scaffold(
       backgroundColor: Colors.white,
       floatingActionButton: _buildFloatingActionButton(),
@@ -354,27 +359,34 @@ class _YarnDashboardState extends State<YarnDashboard> {
       activeBackgroundColor: HexColor("#FFFFFF"),
       child: InkWell(
         onTap: () async {
-          await NavigationUtil.push(context,
-              screen: AddOrEditYarn(
-                askCategories: yarnDashboardBloc.yarnCategories,
-                shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
-                isYarn: true,
-                passedCategory: '',
-                onUpdateYarn: (Yarn yarn) {
-                  yarnTopic = yarn;
+          PermissionType? hasPermission =
+              userBloc.user.hasWritePermission(ProtectionPermission.moment);
+          if (hasPermission == PermissionType.WRITE) {
+            await NavigationUtil.push(context,
+                screen: AddOrEditYarn(
+                  askCategories: yarnDashboardBloc.yarnCategories,
+                  shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
+                  isYarn: true,
+                  passedCategory: '',
+                  onUpdateYarn: (Yarn yarn) {
+                    yarnTopic = yarn;
 
-                  if (mounted) setState(() {});
-                },
-              )).then((value) {
-            if (value != null) {
-              if (value == Types.Yarn) {
-                updateCurrentAskTapOnHome(index: 0);
-                _pageViewController.jumpToPage(0);
-                topicViewStateKey.currentState?.onCreateYarn(yarnTopic);
-                topicViewStateKey.currentState?.onRefresh();
+                    if (mounted) setState(() {});
+                  },
+                )).then((value) {
+              if (value != null) {
+                if (value == Types.Yarn) {
+                  updateCurrentAskTapOnHome(index: 0);
+                  _pageViewController.jumpToPage(0);
+                  topicViewStateKey.currentState?.onCreateYarn(yarnTopic);
+                  topicViewStateKey.currentState?.onRefresh();
+                }
               }
-            }
-          });
+            });
+          } else {
+            showSnackbar(context,
+                message: AppLocalization.of(context)?.doNotPermission ?? "");
+          }
         },
         child: const Icon(
           SlydoAppIconNew.dashboard_yarn,

@@ -18,7 +18,7 @@ import 'package:Slydo/services/awesome_notification_service.dart';
 import 'package:Slydo/services/fcm_push_notification.dart';
 import 'package:Slydo/services/list_refresher.dart';
 import 'package:Slydo/services/share_manager.dart';
-import 'package:Slydo/utils/deep_link_service.dart';
+import 'package:Slydo/services/uni_links_service.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/util.dart';
@@ -27,7 +27,6 @@ import 'package:Slydo/widget/keep_alive_page.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'package:badges/badges.dart' as badges;
-import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -49,23 +48,23 @@ import 'more_apps/yarn/yarn_dashboard_bloc.dart';
 
 // ignore: must_be_immutable
 class Dashboard extends StatefulWidget {
-  final dynamic arguments;
+  var arguments;
 
-  Dashboard({required this.arguments});
+  Dashboard({this.arguments});
 
   @override
   _DashboardState createState() => _DashboardState(arguments: arguments);
 }
 
 class _DashboardState extends State<Dashboard> {
-  _DashboardState({required this.arguments});
+  _DashboardState({this.arguments});
 
   //newUI Variables
   late DashboardBloc _dashboardBloc;
-  final DatabaseHelper _db = DatabaseHelper();
+  DatabaseHelper _db = DatabaseHelper();
 
   int _currentIndex = 0;
-  Map<String, dynamic> arguments;
+  var arguments;
   List<Widget>? screens;
   late UserBloc userBloc;
   late BasketBloc basketBloc;
@@ -77,7 +76,6 @@ class _DashboardState extends State<Dashboard> {
   bool? isNFCPermissionAccepted;
   late AppLocalization appLocalization;
   var _bottomNavIndex = 0; //default index of a first screen
-  PendingDynamicLinkData? initialLink;
 
   final iconList = [
     'home/home',
@@ -86,39 +84,34 @@ class _DashboardState extends State<Dashboard> {
     'home/settings',
   ];
 
-  List<String> list = ['Home', 'Store', 'Chat', 'Settings'];
+  var list = ['Home', 'Store', 'Chat', 'Settings'];
   List<Widget> _pages = [Container(), Container(), Container(), Container()];
 
   @override
   void initState() {
+    UniLinksService.init();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-      initialLink = await FirebaseDynamicLinks.instance.getInitialLink();
-      debugPrint("=========dash board initialLink : ${initialLink?.asMap()}");
-
-      ShareManager().initializeShareManager();
+      // ShareManager().initializeShareManager();
 
       _pages = [
         KeepAlivePage(wantKeepAlive: false, child: Home()),
-        const SuperStoreHome(),
+        SuperStoreHome(),
         KeepAlivePage(wantKeepAlive: true, child: ConnectionDashboard()),
         GeneralSettingScreen(),
       ];
-
-      if (initialLink != null) {
-        DeepLinkService.instance?.handleDynamicLinks(context);
-        debugPrint("widget.initialLink :==================== $initialLink");
-      }
     });
 
     if (mounted) MainSocketMessageHandler().dispose();
     if (mounted) {
       setState(() {
-        final int? indexFromRoute = arguments['dashboardIndex'];
+        if (arguments != null) {
+          int? indexFromRoute = arguments['dashboardIndex'];
 
-        if (indexFromRoute != null) {
-          setState(() {
-            _currentIndex = indexFromRoute;
-          });
+          if (indexFromRoute != null) {
+            setState(() {
+              _currentIndex = indexFromRoute;
+            });
+          }
         }
       });
     }
@@ -141,8 +134,7 @@ class _DashboardState extends State<Dashboard> {
 
   /// Handles fetching of all categories
   void getAllCategories() async {
-    final Map<String, dynamic>? result =
-        await YarnAuth().getAllCategories("", "");
+    Map<String, dynamic>? result = await YarnAuth().getAllCategories("", "");
 
     if (result != null && mounted) {
       yarnDashboardBloc.addCategories(result['results']);
@@ -150,7 +142,7 @@ class _DashboardState extends State<Dashboard> {
   }
 
   void getProductCategories() async {
-    final Map<String, dynamic>? result =
+    Map<String, dynamic>? result =
         await YarnAuth().getProductCategories("", "");
     if (result != null && mounted) {
       yarnDashboardBloc.addProductCategories(result['results']);
@@ -158,23 +150,23 @@ class _DashboardState extends State<Dashboard> {
   }
 
   void fetchConnections() async {
-    final ConnectionListBloc connectionListBloc =
-        Provider.of<ConnectionListBloc>(myGlobals.navigationKey.currentContext!,
-            listen: false);
+    ConnectionListBloc connectionListBloc = Provider.of<ConnectionListBloc>(
+        myGlobals.navigationKey.currentContext!,
+        listen: false);
 
-    final BackgroundFetchStopBloc backgroundFetchStopBloc =
+    BackgroundFetchStopBloc backgroundFetchStopBloc =
         Provider.of<BackgroundFetchStopBloc>(
             myGlobals.navigationKey.currentContext!);
 
     /// to show updating Messaging in connection list
     ChatMessageSynchronizer().updateFetchStream(isFetching: true);
 
-    final int result = await connectionListBloc.getConnectionsCount();
+    int result = await connectionListBloc.getConnectionsCount();
     debugPrint("CONNECTION LIST LENGTH:- $result");
     if (result == 0) {
       await ConnectionSynchronizer().fetch(isRefresh: true);
 
-      final int result = await connectionListBloc.getConnectionsCount();
+      int result = await connectionListBloc.getConnectionsCount();
       debugPrint("CONNECTION LIST LENGTH:- $result");
 
       for (int i = 0; i < connectionListBloc.connectionUsers.length; i++) {
@@ -208,10 +200,10 @@ class _DashboardState extends State<Dashboard> {
       debugPrint("action:-  ${receivedNotification.buttonKeyPressed}");
       debugPrint("data:-  ${receivedNotification.payload}");
 
-      final Map<String, dynamic>? payload = receivedNotification.payload;
+      Map<String, dynamic>? payload = receivedNotification.payload;
 
       if (receivedNotification.buttonKeyPressed == "reject_nudge") {
-        final Map<String, dynamic> data = {
+        Map<String, dynamic> data = {
           "check_id": const Uuid().v4(),
           "conversation_id": payload!['conversation_id'],
           "author": payload['recipient'],
@@ -282,7 +274,7 @@ class _DashboardState extends State<Dashboard> {
     ///
     debugPrint('NOTIFICAITON TYPE --> $data');
 
-    final Map<String, dynamic> notification = data['payload'] is String
+    Map<String, dynamic> notification = data['payload'] is String
         ? jsonDecode(data['payload'])
         : data['payload'];
 
@@ -290,16 +282,16 @@ class _DashboardState extends State<Dashboard> {
 
     if (notification['type'] == "chatroom_message" ||
         notification['type'] == "nudge_user") {
-      final String? recipientUsername =
+      String? recipientUsername =
           notification['actions'].replaceAll("/chat-screen/", "");
-      debugPrint("Recipient user name = $recipientUsername");
+      print("Recipient user name = $recipientUsername");
 
       if (recipientUsername != null) {
         showDialog(
             context: MyGlobals().navigationKey.currentContext!,
             builder: (context) => Center(child: CircularLoadingIndicator()));
 
-        final ChatConversation chatConversation =
+        ChatConversation chatConversation =
             await UserAuth().fetchContactProfile(recipientUsername);
 
         Navigator.of(MyGlobals().navigationKey.currentContext!)
@@ -335,7 +327,7 @@ class _DashboardState extends State<Dashboard> {
           .pushNamed(Routes.FRIENDS_DASHBOARD, arguments: {"index": 0});
     } else if (notification['type'] == "detail_message") {
       //this variable will fetch the id of message from the response
-      final String? idOfMessage =
+      String? idOfMessage =
           notification['actions'].replaceAll("/detail_message/", "");
       Navigator.of(MyGlobals().navigationKey.currentContext!)
           .popUntil(ModalRoute.withName(Routes.DASHBOARD));
@@ -347,7 +339,7 @@ class _DashboardState extends State<Dashboard> {
       Navigator.of(context).popUntil(ModalRoute.withName(Routes.DASHBOARD));
       Navigator.of(context).pushNamed(Routes.ORDERS_LIST);
     } else if (notification['type'].toString().contains("order-detail-page")) {
-      final Order order = Order.fromJson(notification["data"] is String
+      Order order = Order.fromJson(notification["data"] is String
           ? jsonDecode(notification["data"])
           : notification["data"]);
 
@@ -472,7 +464,7 @@ class _DashboardState extends State<Dashboard> {
     return WillPopScope(
       onWillPop: () async {
         if (_dashboardBloc.index == 0) {
-          final bool? result = await showDialogBox(
+          bool? result = await showDialogBox(
             context: context,
             actionOneBgColor: mateRed,
             actionOneTextColor: Colors.white,
@@ -587,15 +579,14 @@ class _DashboardState extends State<Dashboard> {
             children: [
               Stack(
                 children: [
-                  if (iconList[index] == 'home/super_store')
-                    Icon(Icons.shopping_basket, color: color)
-                  else
-                    SvgPicture.asset(
-                      iconList[index].toSVG(),
-                      color: color,
-                      width: 28,
-                      height: 28,
-                    ),
+                  iconList[index] == 'home/super_store'
+                      ? Icon(Icons.shopping_basket, color: color)
+                      : SvgPicture.asset(
+                          iconList[index].toSVG(),
+                          color: color,
+                          width: 28,
+                          height: 28,
+                        ),
                   if (list[index] == 'Chat') // Only show badge for Chat icon
                     Positioned(
                       top: 0, // Adjust the top value as needed
@@ -672,7 +663,7 @@ class _DashboardState extends State<Dashboard> {
         onTap: (index) {
           setState(() {
             // Unfocus the keyboard
-            FocusScope.of(context).requestFocus(FocusNode());
+            FocusScope.of(context).requestFocus(new FocusNode());
             if (userBloc.user.staff != null && index == 2) {
               showToast(message: AppLocalization.of(context)?.doNotPermission);
               return;
@@ -681,7 +672,7 @@ class _DashboardState extends State<Dashboard> {
             }
           });
         },
-        shadow: const BoxShadow(
+        shadow: BoxShadow(
           offset: Offset(0, 0),
           blurRadius: 0,
           spreadRadius: 0.5,

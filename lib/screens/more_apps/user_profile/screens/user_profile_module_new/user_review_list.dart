@@ -4,14 +4,14 @@ import 'package:Slydo/screens/more_apps/review/review_auth.dart';
 import 'package:Slydo/screens/more_apps/review/tiles/review_tile.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class UserReviewList extends StatefulWidget {
-  final CustomerProfile? user;
+  CustomerProfile? user;
   UserReviewList({@required this.user, Key? key}) : super(key: key);
 
   @override
@@ -24,14 +24,13 @@ class _UserReviewListState extends State<UserReviewList> {
   String? reviewNext = "";
   String? reviewPrevious = "";
   List<Review> reviewList = [];
-  final ScrollController _reviewScrollController = ScrollController();
+  ScrollController _reviewScrollController = new ScrollController();
 
   bool noReviewInList = false;
-  final GlobalKey<ScaffoldState> _reviewScaffoldKey =
-      GlobalKey<ScaffoldState>();
-  final GlobalKey<ScaffoldMessengerState> _reviewMessengerScaffoldKey =
+  GlobalKey<ScaffoldState> _reviewScaffoldKey = GlobalKey<ScaffoldState>();
+  GlobalKey<ScaffoldMessengerState> _reviewMessengerScaffoldKey =
       GlobalKey<ScaffoldMessengerState>();
-  final RefreshController _reviewRefreshController =
+  RefreshController _reviewRefreshController =
       RefreshController(initialRefresh: false);
 
   @override
@@ -50,7 +49,7 @@ class _UserReviewListState extends State<UserReviewList> {
 
   void _onReviewRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      final connectionResult = value;
+      var connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         reviewCount = 0;
@@ -98,7 +97,7 @@ class _UserReviewListState extends State<UserReviewList> {
         isReviewLoading = true;
         if (mounted) setState(() {});
 
-        final Map<String, dynamic>? result = await ReviewAuth()
+        Map<String, dynamic>? result = await ReviewAuth()
             .fetchUserReviews(userName: widget.user!.userName);
 
         if (result == null) {
@@ -109,7 +108,7 @@ class _UserReviewListState extends State<UserReviewList> {
           return;
         }
 
-        final String? error = result['error'];
+        String? error = result['error'];
         if (error != null && error.toLowerCase().contains('review not found')) {
           noReviewInList = true;
           isReviewLoading = false;
@@ -122,9 +121,9 @@ class _UserReviewListState extends State<UserReviewList> {
         reviewCount = result['count'];
         reviewNext = result['next'];
         reviewPrevious = result['previous'];
-        final List tempList = result['results'] as List;
+        List tempList = result['results'] as List;
 
-        final List<Review> reviews = [];
+        List<Review> reviews = [];
         tempList.forEach((element) {
           reviews.add(Review.fromJson(element));
         });
@@ -148,7 +147,7 @@ class _UserReviewListState extends State<UserReviewList> {
       _reviewMessengerScaffoldKey.currentState?.showSnackBar(SnackBar(
         content:
             Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-        duration: const Duration(milliseconds: 500),
+        duration: Duration(milliseconds: 500),
       ));
     }
   }
@@ -158,42 +157,45 @@ class _UserReviewListState extends State<UserReviewList> {
         ? NoItemInList(
             msg: AppLocalization.of(context)!.noReviews,
           )
-        : ListView.builder(
-            physics: const ClampingScrollPhysics(),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
-            controller: _reviewScrollController,
-            itemCount: reviewList.length + 1,
-            itemBuilder: (BuildContext context, int index) {
-              if (index == reviewList.length) {
-                return _buildReviewIndicator();
-              } else {
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 16),
-                  child: ReviewTile(
-                      review: reviewList[index], reviewedUser: widget.user),
-                );
-              }
-            },
+        : isReviewLoading && reviewList.isEmpty
+            ? buildLoadingIndicator(isLoading: isReviewLoading)
+            : ListView.builder(
+                physics: ClampingScrollPhysics(),
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 32),
+                controller: _reviewScrollController,
+                itemCount: reviewList.length + 1,
+                itemBuilder: (BuildContext context, int index) {
+                  if (index == reviewList.length) {
+                    return buildJumpingLoadingIndicator(
+                        isLoading: isReviewLoading);
+                  } else {
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 16),
+                      child: ReviewTile(
+                          review: reviewList[index], reviewedUser: widget.user),
+                    );
+                  }
+                },
+              );
+    StaggeredGridView.countBuilder(
+      physics: ClampingScrollPhysics(),
+      controller: _reviewScrollController,
+      crossAxisCount: 2,
+      shrinkWrap: true,
+      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      mainAxisSpacing: 20,
+      itemCount: reviewList.length + 1,
+      itemBuilder: (BuildContext context, int index) {
+        if (index == reviewList.length) {
+          return buildLoadingIndicator(isLoading: isReviewLoading);
+        } else {
+          return ReviewTile(
+            review: reviewList[index],
           );
-    // StaggeredGridView.countBuilder(
-    //   physics: const ClampingScrollPhysics(),
-    //   controller: _reviewScrollController,
-    //   crossAxisCount: 2,
-    //   shrinkWrap: true,
-    //   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-    //   mainAxisSpacing: 20,
-    //   itemCount: reviewList.length + 1,
-    //   itemBuilder: (BuildContext context, int index) {
-    //     if (index == reviewList.length) {
-    //       return _buildReviewIndicator();
-    //     } else {
-    //       return ReviewTile(
-    //         review: reviewList[index],
-    //       );
-    //     }
-    //   },
-    //   staggeredTileBuilder: (int index) => const StaggeredTile.count(2, 0.85),
-    // );
+        }
+      },
+      staggeredTileBuilder: (int index) => new StaggeredTile.count(2, 0.85),
+    );
 
     /*ListView.builder(
             physics: ClampingScrollPhysics(),
@@ -217,16 +219,5 @@ class _UserReviewListState extends State<UserReviewList> {
               }
             },
           );*/
-  }
-
-  Widget _buildReviewIndicator() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Center(
-        child: Opacity(
-            opacity: isReviewLoading ? 1.0 : 00,
-            child: isReviewLoading ? CircularLoadingIndicator() : Container()),
-      ),
-    );
   }
 }

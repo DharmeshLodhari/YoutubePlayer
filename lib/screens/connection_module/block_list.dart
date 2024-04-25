@@ -5,7 +5,6 @@ import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/dialog.dart';
-import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:Slydo/widget/slide_action_button.dart';
@@ -23,17 +22,17 @@ class BlockedList extends StatefulWidget {
 
 class _BlockedListState extends State<BlockedList> {
   final GlobalKey<ScaffoldState> _scaffoldBlockListKey =
-      GlobalKey<ScaffoldState>();
+      new GlobalKey<ScaffoldState>();
   final GlobalKey<ScaffoldMessengerState> _scaffoldBlockMessengerListKey =
-      GlobalKey<ScaffoldMessengerState>();
+      new GlobalKey<ScaffoldMessengerState>();
 
   SlidableController? _slideController;
   int? count = 0;
   String? next = "";
   String? previous = "";
   List blockList = [];
-  final ScrollController _scrollController = ScrollController();
-  final RefreshController _refreshController =
+  ScrollController _scrollController = new ScrollController();
+  RefreshController _refreshController =
       RefreshController(initialRefresh: false);
   bool isLoading = false;
   bool noItemInList = false;
@@ -59,7 +58,7 @@ class _BlockedListState extends State<BlockedList> {
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      final connectionResult = value;
+      var connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         count = 0;
@@ -99,7 +98,7 @@ class _BlockedListState extends State<BlockedList> {
             child: Column(
               children: [
                 Expanded(child: _buildFriendsList()),
-                const SizedBox(height: 80),
+                SizedBox(height: 80),
               ],
             )),
       ),
@@ -112,30 +111,22 @@ class _BlockedListState extends State<BlockedList> {
         ? NoItemInList(
             msg: noBlockedListMsg,
           )
-        : ListView.builder(
-            padding: const EdgeInsets.only(bottom: 80.0),
-            //+1 for progressbar
-            itemCount: blockList.length + 1,
-            itemBuilder: (BuildContext context, int index) {
-              if (index == blockList.length) {
-                return _buildIndicator();
-              } else {
-                return _getSlidableWithLists(context, blockList[index], index);
-              }
-            },
-            controller: _scrollController,
-          );
-  }
-
-  Widget _buildIndicator() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Center(
-        child: Opacity(
-            opacity: isLoading ? 1.0 : 00,
-            child: isLoading ? CircularLoadingIndicator() : Container()),
-      ),
-    );
+        : isLoading && blockList.isEmpty
+            ? buildLoadingIndicator(isLoading: isLoading)
+            : ListView.builder(
+                padding: EdgeInsets.only(bottom: 80.0),
+                //+1 for progressbar
+                itemCount: blockList.length + 1,
+                itemBuilder: (BuildContext context, int index) {
+                  if (index == blockList.length) {
+                    return buildJumpingLoadingIndicator(isLoading: isLoading);
+                  } else {
+                    return _getSlidableWithLists(
+                        context, blockList[index], index);
+                  }
+                },
+                controller: _scrollController,
+              );
   }
 
   void getList() async {
@@ -146,7 +137,7 @@ class _BlockedListState extends State<BlockedList> {
             isLoading = true;
           });
         }
-        final Map<String, dynamic>? result =
+        Map<String, dynamic>? result =
             await UserAuth().listBlockUsers(next, previous).catchError((error) {
           debugPrint("ERROR:- $error");
           //  return;
@@ -156,9 +147,9 @@ class _BlockedListState extends State<BlockedList> {
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
-        final List tempList = result['results'];
+        List tempList = result['results'];
 
-        final List<CustomerProfile> users = [];
+        List<CustomerProfile> users = [];
 
         tempList
             .forEach((element) => users.add(CustomerProfile.fromJson(element)));
@@ -176,7 +167,7 @@ class _BlockedListState extends State<BlockedList> {
         _scaffoldBlockMessengerListKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: const Duration(milliseconds: 500),
+          duration: Duration(milliseconds: 500),
         ));
       }
     }
@@ -210,7 +201,7 @@ class _BlockedListState extends State<BlockedList> {
   }
 
   void unBlockUserAlert(CustomerProfile user, int index) async {
-    final bool? result = await showDialogBox(
+    bool? result = await showDialogBox(
       context: context,
       roundedBackgroundIcon: RoundedBackgroundIcon(
         backgroundColor: naturalGreen.withOpacity(0.08),
@@ -259,11 +250,11 @@ class _BlockedListState extends State<BlockedList> {
       key: Key(user.userName!),
       controller: _slideController,
       direction: Axis.horizontal,
-      actionPane: const SlidableBehindActionPane(),
+      actionPane: SlidableBehindActionPane(),
       actionExtentRatio: 0.25,
+      child: VerticalListItem(user),
       actions: listActionSlideActions(user, index),
       secondaryActions: listSecondaryActions(user, index),
-      child: VerticalListItem(user),
     );
   }
 
@@ -291,7 +282,7 @@ class VerticalListItem extends StatelessWidget {
             arguments: {"searchedUserName": user.userName});
       },
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 2),
+        padding: EdgeInsets.symmetric(vertical: 2),
         child: UserTile(user: user),
       ),
     );

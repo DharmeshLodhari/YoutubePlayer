@@ -25,11 +25,10 @@ class ProtectionPermission {
   static const String servicesHub = "Services Hub";
   static const String send = "Send";
   static const String request = "Request";
+  static const String profile = "Profile";
 }
 
-
-
-class ProtectionPermissionType{
+class ProtectionPermissionType {
   static const String write = "Write";
   static const String read = "Read";
 }

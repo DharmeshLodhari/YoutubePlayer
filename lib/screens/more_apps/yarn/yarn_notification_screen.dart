@@ -1,5 +1,4 @@
 import 'package:Slydo/screens/more_apps/yarn/widgets/notification_view.dart';
-import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_shimmer.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:connectivity/connectivity.dart';
@@ -11,7 +10,7 @@ import '../../../widget/no_item_in_list.dart';
 import 'models/Topics/Notifications.dart';
 
 class YarnNotification extends StatefulWidget {
-  final Function(bool)? onDeleteNotification;
+  Function(bool)? onDeleteNotification;
 
   YarnNotification({Key? key, this.onDeleteNotification}) : super(key: key);
 
@@ -27,7 +26,7 @@ class _YarnNotificationState extends State<YarnNotification> {
   bool noList = false;
   RefreshController refreshController =
       RefreshController(initialRefresh: false);
-  final ScrollController _scrollController = ScrollController();
+  ScrollController _scrollController = new ScrollController();
 
   void getAllNotification() async {
     if (!isLoading) {
@@ -35,8 +34,7 @@ class _YarnNotificationState extends State<YarnNotification> {
         isLoading = true;
         if (mounted) setState(() {});
 
-        final Map<String, dynamic>? result =
-            await YarnAuth().getAllNotification(
+        Map<String, dynamic>? result = await YarnAuth().getAllNotification(
           next,
           previous ?? "",
         );
@@ -54,7 +52,7 @@ class _YarnNotificationState extends State<YarnNotification> {
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
-        final tempList = result['results'];
+        var tempList = result['results'];
 
         // print('tempList:::: ${tempList.runtimeType}');
         if (mounted) {
@@ -137,16 +135,16 @@ class _YarnNotificationState extends State<YarnNotification> {
   Widget _buildListView() {
     if (!noList) {
       return ListView.separated(
-        padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
+        padding: EdgeInsets.only(left: 16, right: 16, bottom: 16),
         itemCount: notificationList.length + 1,
         itemBuilder: (context, index) {
           if (index == notificationList.length) {
-            return _buildLoadingIndicator();
+            return buildShimmerLoadingIndicator(isLoading: isLoading);
           }
           return AskNotificationView(
             notification: notificationList[index],
             onDeleteNotification: (Notifications notifications) {
-              final int index = notificationList
+              int index = notificationList
                   .indexWhere((element) => element.id == notifications.id);
               if (index != -1) {
                 notificationList.removeAt(index);
@@ -159,7 +157,7 @@ class _YarnNotificationState extends State<YarnNotification> {
           );
         },
         separatorBuilder: (context, index) {
-          return const Divider();
+          return Divider();
         },
       );
     }
@@ -168,16 +166,9 @@ class _YarnNotificationState extends State<YarnNotification> {
     );
   }
 
-  Widget _buildLoadingIndicator() {
-    return Opacity(
-      opacity: isLoading ? 1.0 : 00,
-      child: isLoading ? const YarnShimmer() : Container(),
-    );
-  }
-
   void onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      final connectionResult = value;
+      var connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         count = 0;

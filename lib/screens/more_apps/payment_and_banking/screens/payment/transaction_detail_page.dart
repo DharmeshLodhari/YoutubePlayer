@@ -134,7 +134,7 @@ class _TransactionDetailState extends State<TransactionDetail> {
 
   Widget getDescriptionWidget() {
     return Text(
-      "${transaction!.description}",
+      messageDecoderWithEmoji(transaction?.description) ?? "",
       maxLines: 1,
     );
   }
@@ -171,7 +171,7 @@ class _TransactionDetailState extends State<TransactionDetail> {
 
   Widget getSender() {
     return Text(
-      transaction!.displayCustomer,
+      messageDecoderWithEmoji(transaction?.displayCustomer) ?? "",
       style: TextStyle(
         color: blackFont,
         fontWeight: FontWeight.bold,

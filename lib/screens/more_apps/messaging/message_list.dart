@@ -8,7 +8,6 @@ import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/customized_popup_menu.dart';
 import 'package:Slydo/widget/dialog.dart';
-import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:Slydo/widget/slide_action_button.dart';
@@ -27,17 +26,17 @@ class MessageList extends StatefulWidget {
 
 class _MessageListState extends State<MessageList> {
   final GlobalKey<ScaffoldState> _scaffoldMessageKey =
-      GlobalKey<ScaffoldState>();
+      new GlobalKey<ScaffoldState>();
   final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerMessageKey =
-      GlobalKey<ScaffoldMessengerState>();
+      new GlobalKey<ScaffoldMessengerState>();
   final _messageAuth = MessageAuth();
   SlidableController? slidableController;
   int? count = 0;
   String? next = "";
   String? previous = "";
   List messageList = [];
-  final ScrollController _scrollController = ScrollController();
-  final RefreshController _refreshController =
+  ScrollController _scrollController = new ScrollController();
+  RefreshController _refreshController =
       RefreshController(initialRefresh: false);
   bool isLoading = false;
   bool noItemInList = false;
@@ -45,7 +44,7 @@ class _MessageListState extends State<MessageList> {
   late UserBloc userBloc;
   RefreshBlocForMessages? _refreshBloc;
 
-  final GlobalKey _key = LabeledGlobalKey("messageListPopUpMenu");
+  GlobalKey _key = LabeledGlobalKey("messageListPopUpMenu");
   late CustomizedPopUpMenu menu;
   int selectedMenuItemIndex = 0;
   bool isPopMenuOpen = false;
@@ -85,7 +84,7 @@ class _MessageListState extends State<MessageList> {
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      final connectionResult = value;
+      var connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         count = 0;
@@ -160,7 +159,7 @@ class _MessageListState extends State<MessageList> {
           heroTag: "compose_message",
           backgroundColor: navyBlue,
           isExtended: false,
-          child: const Icon(
+          child: Icon(
             SlydoAppIcon.text_message,
             size: 20,
           ),
@@ -218,12 +217,12 @@ class _MessageListState extends State<MessageList> {
         // ),
         // SizedBox(width: 16),
         popUpMenuButton(),
-        const SizedBox(width: 16),
+        SizedBox(width: 16),
       ],
     );
   }
 
-  String getAppBarFilterTitle() {
+  getAppBarFilterTitle() {
     switch (filterValue) {
       case 'all':
         return 'Inbox';
@@ -246,7 +245,7 @@ class _MessageListState extends State<MessageList> {
       child: Card(
         color: isPopMenuOpen ? navyBlue : iconBtnGrey,
         elevation: 0,
-        margin: const EdgeInsets.symmetric(vertical: 10),
+        margin: EdgeInsets.symmetric(vertical: 10),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
         ),
@@ -273,31 +272,22 @@ class _MessageListState extends State<MessageList> {
         ? NoItemInList(
             msg: AppLocalization.of(context)!.noMessages,
           )
-        : ListView.builder(
-            padding: const EdgeInsets.symmetric(vertical: 4),
-            //+1 for progressbar
-            itemCount: messageList.length + 1,
-            itemBuilder: (BuildContext context, int index) {
-              if (index == messageList.length) {
-                return _buildIndicator();
-              } else {
-                return _getSlidableWithLists(
-                    context, messageList[index], index);
-              }
-            },
-            controller: _scrollController,
-          );
-  }
-
-  Widget _buildIndicator() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Center(
-        child: Opacity(
-            opacity: isLoading ? 1.0 : 00,
-            child: isLoading ? CircularLoadingIndicator() : Container()),
-      ),
-    );
+        : isLoading && messageList.isEmpty
+            ? buildLoadingIndicator(isLoading: isLoading)
+            : ListView.builder(
+                padding: EdgeInsets.symmetric(vertical: 4),
+                //+1 for progressbar
+                itemCount: messageList.length + 1,
+                itemBuilder: (BuildContext context, int index) {
+                  if (index == messageList.length) {
+                    return buildJumpingLoadingIndicator(isLoading: isLoading);
+                  } else {
+                    return _getSlidableWithLists(
+                        context, messageList[index], index);
+                  }
+                },
+                controller: _scrollController,
+              );
   }
 
   void getList() async {
@@ -308,7 +298,7 @@ class _MessageListState extends State<MessageList> {
             isLoading = true;
           });
         }
-        final Map<String, dynamic>? result = await _messageAuth
+        Map<String, dynamic>? result = await _messageAuth
             .listMessages(next, previous, filter: filterValue);
 
         if (result == null) {
@@ -318,7 +308,7 @@ class _MessageListState extends State<MessageList> {
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
-        final tempList = result['results'];
+        var tempList = result['results'];
         if (mounted) {
           setState(() {
             noItemInList = false;
@@ -337,7 +327,7 @@ class _MessageListState extends State<MessageList> {
         _scaffoldMessengerMessageKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: const Duration(milliseconds: 500),
+          duration: Duration(milliseconds: 500),
         ));
       }
     }
@@ -363,9 +353,9 @@ class _MessageListState extends State<MessageList> {
     // or isSender is seeing message we got that user and check if it is recipient then
     // we are showing and modifying archive icon by message's isArchivedByRecipient property and if it sender then
     // we are showing and modifying archive icon by message's isArchivedBySender property
-    final bool isRecipient = userBloc.user.userName == partialMessage.recipient;
+    bool isRecipient = userBloc.user.userName == partialMessage.recipient;
 
-    final IconData actionIcon = isRecipient
+    IconData actionIcon = isRecipient
         ? partialMessage.isArchivedByRecipient!
             ? SlydoAppIcon.unarchive
             : SlydoAppIcon.archive
@@ -373,7 +363,7 @@ class _MessageListState extends State<MessageList> {
             ? SlydoAppIcon.unarchive
             : SlydoAppIcon.archive;
 
-    final String actionText = isRecipient
+    String actionText = isRecipient
         ? partialMessage.isArchivedByRecipient!
             ? "Unarchive"
             : "Archive"
@@ -385,7 +375,7 @@ class _MessageListState extends State<MessageList> {
         backgroundColor: naturalGreen,
         icon: actionIcon,
         onTap: () async {
-          final action = isRecipient
+          var action = isRecipient
               ? partialMessage.isArchivedByRecipient!
                   ? "unarchive"
                   : "archive"
@@ -430,7 +420,7 @@ class _MessageListState extends State<MessageList> {
   }
 
   void deleteMessage(PartialMessage partialMessage, int index) async {
-    final bool? result = await showDialogBox(
+    bool? result = await showDialogBox(
       context: context,
       roundedBackgroundIcon: RoundedBackgroundIcon(
         backgroundColor: mateRed.withOpacity(0.08),
@@ -456,7 +446,7 @@ class _MessageListState extends State<MessageList> {
     if (result == null) return;
     if (result) {
       // call delete message _auth method
-      final bool done =
+      bool done =
           await _messageAuth.deleteMessage(messageList[index].conversationID);
       if (done) {
         _showSnackBar(
@@ -479,11 +469,11 @@ class _MessageListState extends State<MessageList> {
       key: Key(partialMessage.id!),
       controller: slidableController,
       direction: Axis.horizontal,
-      actionPane: const SlidableBehindActionPane(),
+      actionPane: SlidableBehindActionPane(),
       actionExtentRatio: 0.25,
+      child: VerticalListItem(partialMessage),
       actions: listActionSlideActions(partialMessage, index),
       secondaryActions: listSecondaryActions(partialMessage, index),
-      child: VerticalListItem(partialMessage),
     );
   }
 
@@ -528,7 +518,7 @@ class _VerticalListItemState extends State<VerticalListItem> {
         });
       },
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 2),
+        padding: EdgeInsets.symmetric(vertical: 2),
         child: MessageTile(
             partialMessage: widget.partialMessage,
             expandedWidget: expandedWidget()),
@@ -538,7 +528,7 @@ class _VerticalListItemState extends State<VerticalListItem> {
 
   Widget expandedWidget() {
     return AnimatedContainer(
-      duration: const Duration(milliseconds: 300),
+      duration: Duration(milliseconds: 300),
       height: isExpanded ? 48 : 0,
       curve: Curves.fastOutSlowIn,
       child: isExpanded
@@ -589,12 +579,12 @@ class _VerticalListItemState extends State<VerticalListItem> {
               width: 32,
               height: 32,
             ),
-            const SizedBox(
+            SizedBox(
               width: 10,
             ),
             Text(
               AppLocalization.of(context)!.message,
-              style: const TextStyle(
+              style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                   color: Colors.black),
@@ -654,12 +644,12 @@ class _VerticalListItemState extends State<VerticalListItem> {
               width: 32,
               height: 32,
             ),
-            const SizedBox(
+            SizedBox(
               width: 10,
             ),
             Text(
               AppLocalization.of(context)!.blockUser,
-              style: const TextStyle(
+              style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                   color: Colors.black),

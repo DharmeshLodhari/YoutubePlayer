@@ -61,10 +61,10 @@ class _FollowingAndFollowersListState extends State<FollowingAndFollowersList> {
 
   Widget tabBar() {
     return PreferredSize(
-      preferredSize: const Size.fromHeight(50.0),
+      preferredSize: Size.fromHeight(50.0),
       child: TabBar(
         labelPadding: EdgeInsets.zero,
-        indicator: const BoxDecoration(),
+        indicator: BoxDecoration(),
         onTap: (int index) {
           currentIndex = index;
           setState(() {});
@@ -72,7 +72,7 @@ class _FollowingAndFollowersListState extends State<FollowingAndFollowersList> {
         tabs: [
           Tab(
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
                 shape: BoxShape.rectangle,
@@ -93,7 +93,7 @@ class _FollowingAndFollowersListState extends State<FollowingAndFollowersList> {
           ),
           Tab(
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
                 shape: BoxShape.rectangle,
@@ -179,9 +179,8 @@ class _FollowAndFollowersListState extends State<FollowAndFollowersList> {
   bool isFirstTime = true;
   bool noItemInList = false;
   List<CustomerProfile> usersList = [];
-  final ScrollController _scrollCtrl = ScrollController();
-  final RefreshController _refreshCtrl =
-      RefreshController(initialRefresh: false);
+  ScrollController _scrollCtrl = ScrollController();
+  RefreshController _refreshCtrl = RefreshController(initialRefresh: false);
   BasePaginationModel<List<CustomerProfile>>? basePaginationModel;
 
   @override
@@ -235,7 +234,7 @@ class _FollowAndFollowersListState extends State<FollowAndFollowersList> {
     });
   }
 
-  void _onRefresh() {
+  _onRefresh() {
     isFirstTime = true;
     usersList.clear();
     nextPageUrl = null;
@@ -251,26 +250,29 @@ class _FollowAndFollowersListState extends State<FollowAndFollowersList> {
                 ? AppLocalization.of(context)!.noFollowingUsers
                 : AppLocalization.of(context)!.noFollowers,
           )
-        : SmartRefresher(
-            enablePullDown: true,
-            header: WaterDropHeader(
-              complete: Container(),
-              waterDropColor: navyBlue,
-            ),
-            controller: _refreshCtrl,
-            onRefresh: _onRefresh,
-            child: ListView.builder(
-              physics: const ClampingScrollPhysics(),
-              controller: _scrollCtrl,
-              itemCount: usersList.length + 1,
-              itemBuilder: (BuildContext context, int index) {
-                if (index == usersList.length) {
-                  return buildLoadingIndicator(isLoading: _isLoading);
-                } else {
-                  return CustomSlydoUserCard(user: usersList[index]);
-                }
-              },
-            ),
-          );
+        : _isLoading && usersList.isEmpty
+            ? buildLoadingIndicator(isLoading: _isLoading)
+            : SmartRefresher(
+                enablePullDown: true,
+                header: WaterDropHeader(
+                  complete: Container(),
+                  waterDropColor: navyBlue,
+                ),
+                controller: _refreshCtrl,
+                onRefresh: _onRefresh,
+                child: ListView.builder(
+                  physics: ClampingScrollPhysics(),
+                  controller: _scrollCtrl,
+                  itemCount: usersList.length + 1,
+                  itemBuilder: (BuildContext context, int index) {
+                    if (index == usersList.length) {
+                      return buildJumpingLoadingIndicator(
+                          isLoading: _isLoading);
+                    } else {
+                      return CustomSlydoUserCard(user: usersList[index]);
+                    }
+                  },
+                ),
+              );
   }
 }

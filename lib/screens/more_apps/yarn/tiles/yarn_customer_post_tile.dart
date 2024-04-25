@@ -26,9 +26,9 @@ import '../../../../widget/dialog.dart';
 import '../../../../widget/rounded_background_icon.dart';
 
 class YarnCustomerPostTile extends StatefulWidget {
-  final CustomerProfile? customerProfile;
-  final bool? isNavigable;
-  final Function onDeleteBlog;
+  CustomerProfile? customerProfile;
+  bool? isNavigable;
+  Function onDeleteBlog;
   final bool showAuthorDetails;
   final TileRenderPlace tileRenderPlace;
 
@@ -100,7 +100,7 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile>
                 clipBehavior: Clip.none,
                 children: [
                   ClipRRect(
-                    borderRadius: const BorderRadius.only(
+                    borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(10),
                       topRight: Radius.circular(10),
                     ),
@@ -143,9 +143,9 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile>
                   )
                 ],
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 22),
+                padding: EdgeInsets.symmetric(horizontal: 22),
                 child: GestureDetector(
                   onTap: () {
                     Navigator.pushNamed(context, Routes.USER_PROFILE,
@@ -180,7 +180,7 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile>
                                   softWrap: true,
                                   overflow: TextOverflow.clip,
                                 ),
-                                const SizedBox(height: 2),
+                                SizedBox(height: 2),
                                 userNameWithVerifiedIcon(
                                     name:
                                         '@${searchedUser!.displayName() ?? ""}',
@@ -204,7 +204,7 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile>
                           ),
                         ],
                       ),
-                      const SizedBox(height: 8),
+                      SizedBox(height: 8),
                       YarnSmartText(
                         text: messageDecoderWithEmoji(searchedUser!.bio)!,
                         style: TextStyle(
@@ -230,7 +230,7 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile>
                               });
                         },
                       ),
-                      const SizedBox(height: 10),
+                      SizedBox(height: 10),
                     ],
                   ),
                 ),
@@ -274,7 +274,7 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile>
             height: 20,
             child: CircularLoadingIndicator(),
           ),
-          const SizedBox(width: 24),
+          SizedBox(width: 24),
         ],
       );
     }
@@ -284,20 +284,20 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile>
         return Row(
           children: [
             chatIcon(),
-            const SizedBox(width: 8),
+            SizedBox(width: 8),
           ],
         );
       } else {
         return Row(
           children: [
             getAddConnectionBtn(),
-            const SizedBox(width: 8),
+            SizedBox(width: 8),
           ],
         );
       }
     }
 
-    return const SizedBox.shrink();
+    return SizedBox.shrink();
   }
 
   Widget chatIcon() {
@@ -332,7 +332,7 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile>
     return Row(
       children: [
         getAddConnectionIcon(),
-        const SizedBox(width: 8),
+        SizedBox(width: 8),
       ],
     );
   }
@@ -399,7 +399,7 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile>
   }
 
   void checkCurrentUserIsInRequestList() async {
-    final UserBloc _userBloc = Provider.of<UserBloc>(context, listen: false);
+    UserBloc _userBloc = Provider.of<UserBloc>(context, listen: false);
     debugPrint("is In Request List -");
 
     if (_userBloc.user.userName != widget.customerProfile?.userName) {
@@ -422,7 +422,7 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile>
   Widget getFollowUnFollowBtn() {
     if (isLoadingFollowingAction) {
       return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 14),
+        padding: EdgeInsets.symmetric(vertical: 14),
         child: SizedBox(
           width: 20,
           height: 20,
@@ -432,7 +432,7 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile>
     }
 
     if (searchedUser!.userName! == userBloc!.user.userName) {
-      return const SizedBox.shrink();
+      return SizedBox.shrink();
     }
     if (searchedUser!.isFollowing != null &&
         searchedUser!.isFollowing == true) {
@@ -458,13 +458,13 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile>
         child: Container(
           height: 30,
           width: 80,
-          margin: const EdgeInsets.symmetric(vertical: 8),
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          margin: EdgeInsets.symmetric(vertical: 8),
+          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           decoration: BoxDecoration(
               color: blackFont,
               borderRadius: BorderRadius.circular(50),
               border: Border.all(color: HexColor("#292929"), width: 1)),
-          child: const Center(
+          child: Center(
             child: Text(
               'Following',
               style: TextStyle(
@@ -499,12 +499,12 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile>
       child: Container(
         height: 30,
         width: 80,
-        margin: const EdgeInsets.symmetric(vertical: 8),
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        margin: EdgeInsets.symmetric(vertical: 8),
+        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(50),
             border: Border.all(color: HexColor("#292929"), width: 1)),
-        child: const Center(
+        child: Center(
           child: Text(
             'Follow',
             style: TextStyle(
@@ -524,7 +524,7 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile>
         context: context,
         builder: (BuildContext context) {
           return Card(
-              shape: const RoundedRectangleBorder(
+              shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(20),
                     topRight: Radius.circular(20)),
@@ -532,8 +532,7 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile>
               color: Colors.white,
               margin: EdgeInsets.zero,
               child: Container(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                padding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: generateBottomSheetItem(),
@@ -543,7 +542,7 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile>
   }
 
   List<Widget> generateBottomSheetItem() {
-    final List<Widget> list = [];
+    List<Widget> list = [];
 
     list.add(
       bottomSheetItem(
@@ -551,8 +550,8 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile>
         iconData: SlydoAppIcon.share,
         onTap: () {
           Navigator.pop(context);
-          final shareBody =
-              "https://slydo.co/${widget.customerProfile?.userName}/blog/${widget.customerProfile?.uuid}";
+          var shareBody =
+              "https://slydo.co/store/${widget.customerProfile?.userName}/blogs/${widget.customerProfile?.uuid}";
           Share.share(shareBody,
               subject: "${widget.customerProfile?.userName}");
         },

@@ -3,6 +3,7 @@ import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/super_store/shop_list_screen.dart';
 import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/custom_pagination.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:flutter/material.dart';
@@ -24,72 +25,109 @@ class ListCategoryProduct extends StatefulWidget {
 
 class _ListCategoryProductState extends State<ListCategoryProduct> {
   String? nextUrl = "";
+  String? productPrevious = "";
+  bool productEmpty = false;
   int? productCount = 0;
   dynamic categoryId = null;
   List<Product> productList = [];
   bool isProductLoading = false;
+  final ScrollController _productScrollController = ScrollController();
 
   @override
   void initState() {
-    nextUrl = widget.nextUrl;
-    fetchFirstList();
+    loadUrl();
+    getProducts();
+    _productScrollController.addListener(() {
+      if (_productScrollController.position.pixels ==
+              _productScrollController.position.maxScrollExtent &&
+          _productScrollController.position.pixels != 0) {
+        getProducts();
+      }
+    });
     super.initState();
   }
 
-  Future<void> fetchFirstList() async {
-    isProductLoading = true;
-    setState(() {});
-    await getProducts();
-    isProductLoading = false;
-    setState(() {});
+  loadUrl() {
+    if (widget.nextUrl != null && widget.nextUrl != "")
+      nextUrl = widget.nextUrl;
   }
 
-  Future<List<Product>> getProducts() async {
-    if (nextUrl != null) {
-      final Map<String, dynamic>? result = await ShoppingAuthService()
-          .listOfProduct(nextUrl, "", "", false, otherDeals: false);
+  void getProducts() async {
+    // if (nextUrl != null) {
+    //   Map<String, dynamic>? result = await ShoppingAuthService()
+    //       .listOfProduct(nextUrl, "", "", false, otherDeals: false);
+    //
+    //   var tempList = result!['results'];
+    //
+    //   nextUrl = result['next'];
+    //   productCount = result['count'];
+    //
+    //   productList.addAll(tempList);
+    // }
+    // return productList;
+    if (!isProductLoading) {
+      if (nextUrl != null && !isProductLoading) {
+        isProductLoading = true;
+        if (mounted) setState(() {});
 
-      final tempList = result!['results'];
+        Map<String, dynamic>? result = await ShoppingAuthService()
+            .listOfProduct(nextUrl, productPrevious, "", false,
+                otherDeals: false);
 
-      nextUrl = result['next'];
-      productCount = result['count'];
+        if (result == null) {
+          productEmpty = true;
+          isProductLoading = false;
+          if (mounted) {
+            setState(() {});
+          }
+          return;
+        }
 
-      productList.addAll(tempList);
+        nextUrl = result['next'];
+        productCount = result['count'];
+        productPrevious = result['previous'];
+        var tempList = result['results'];
+
+        productEmpty = false;
+        isProductLoading = false;
+        productList.addAll(tempList);
+
+        if (mounted) setState(() {});
+      }
+      if (productList.isEmpty) {
+        if (mounted) {
+          setState(() {
+            productEmpty = true;
+          });
+        }
+      }
     }
-    return productList;
   }
 
   @override
   Widget build(BuildContext context) {
-    if (isProductLoading) {
+    if (isProductLoading && productList.isEmpty) {
       return buildShimmer();
     }
 
     if (productList.isEmpty) {
       return _buildNoItem();
+    } else {
+      return CustomPagination(
+          onScrollEnd: () async {
+            getProducts();
+            setState(() {});
+          },
+          child: ListView(children: [superStoreProducts()]));
     }
-
-    return CustomPagination(
-        onScrollEnd: () async {
-          await getProducts();
-          setState(() {});
-        },
-        child: ListView(children: [superStoreProducts()]));
   }
 
   Widget superStoreProducts() {
-    if (productList.isEmpty) {
-      return const SizedBox.shrink();
-    }
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (productList.isEmpty)
-            const SizedBox.shrink()
-          else
-            const SizedBox(height: 16),
           if (productList.isNotEmpty)
             Container(
               margin: const EdgeInsets.only(bottom: 15.0),
@@ -106,22 +144,49 @@ class _ListCategoryProductState extends State<ListCategoryProduct> {
                 ),
               ),
             ),
-          GridView.builder(
+          CustomScrollView(
+            physics: ScrollPhysics(),
+            controller: _productScrollController,
             shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-              mainAxisSpacing: 22,
-              mainAxisExtent: 274,
-              crossAxisSpacing: 15,
-              maxCrossAxisExtent: 200,
-            ),
-            itemCount: productList.length,
-            itemBuilder: (context, index) {
-              return SuperStoreSingleCard(
-                product: productList[index],
-              );
-            },
+            slivers: <Widget>[
+              SliverGrid(
+                delegate: SliverChildBuilderDelegate(
+                  (c, i) => SizedBox(
+                    child: SuperStoreSingleCard(
+                      product: productList[i],
+                    ),
+                  ),
+                  childCount: productList.length,
+                ),
+                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                  mainAxisSpacing: 22,
+                  mainAxisExtent: 274,
+                  crossAxisSpacing: 15,
+                  maxCrossAxisExtent: 200,
+                ),
+              ),
+              SliverToBoxAdapter(
+                child:
+                    buildJumpingLoadingIndicator(isLoading: isProductLoading),
+              ),
+            ],
           ),
+          // GridView.builder(
+          //   shrinkWrap: true,
+          //   physics: const NeverScrollableScrollPhysics(),
+          //   gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+          //     mainAxisSpacing: 22,
+          //     mainAxisExtent: 274,
+          //     crossAxisSpacing: 15,
+          //     maxCrossAxisExtent: 200,
+          //   ),
+          //   itemCount: productList.length,
+          //   itemBuilder: (context, index) {
+          //     return SuperStoreSingleCard(
+          //       product: productList[index],
+          //     );
+          //   },
+          // ),
         ],
       ),
     );

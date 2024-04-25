@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:Slydo/screens/more_apps/payment_link/payment_link.dart';
+import 'package:Slydo/screens/more_apps/payment_loading_screen.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:custom_qr_generator/custom_qr_generator.dart';
 import 'package:flutter/material.dart';
@@ -35,9 +36,8 @@ class PaymentLinkScreen extends StatefulWidget {
 }
 
 class _PaymentLinkScreenState extends State<PaymentLinkScreen> {
-  final TextEditingController _amountController = TextEditingController();
-  late final TextEditingController _referenceController =
-      TextEditingController();
+  TextEditingController _amountController = TextEditingController();
+  late TextEditingController _referenceController = TextEditingController();
 
   final _sendPaymentScaffold = GlobalKey<ScaffoldState>();
   final _sendPaymentScaffoldMessenger = GlobalKey<ScaffoldMessengerState>();
@@ -82,7 +82,7 @@ class _PaymentLinkScreenState extends State<PaymentLinkScreen> {
     _auth.getPaymentCategory().then((result) {
       if (mounted) {
         setState(() {
-          final List categoriesList = result["results"]["data"];
+          List categoriesList = result["results"]["data"];
           categoriesList.forEach((data) {
             paymentCategories.add(data["name"]);
           });
@@ -216,7 +216,7 @@ class _PaymentLinkScreenState extends State<PaymentLinkScreen> {
     }
   }
 
-  void showDataAlert(String link) {
+  showDataAlert(link) {
     showDialog(
         context: context,
         builder: (context) {
@@ -358,8 +358,8 @@ class _PaymentLinkScreenState extends State<PaymentLinkScreen> {
   }
 
   Future<void> makePaymentLinkDialog() async {
-    final String vString = amount!.toInt().toString();
-    final int amt = int.parse(vString) + 35;
+    String vString = amount!.toInt().toString();
+    int amt = int.parse(vString) + 35;
     await showDialogBox(
       context: context,
       leftButtonOnPressed: () => Navigator.pop(context),
@@ -371,9 +371,21 @@ class _PaymentLinkScreenState extends State<PaymentLinkScreen> {
                   context: context,
                   builder: (context) => const Center(child: SizedBox()));
 
+              //show loading screen
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => PaymentLoadingScreen(
+                          text: 'Payment Link Processing......',
+                          imagePath: 'assets/images/app_logo.png',
+                        )),
+              );
+
               await Future.delayed(const Duration(seconds: 3));
 
-              final data = {
+              String description = 'General Payment';
+              var data = {
                 "currency": userBloc.user.currency,
                 "amount": moneyInputNormalizer(amount.toString()),
                 "category": selectedCategory!.trim(),
@@ -383,9 +395,11 @@ class _PaymentLinkScreenState extends State<PaymentLinkScreen> {
               await _auth.makePaymentLink(data).then((value) async {
                 debugPrint(
                     "status code:- ${value.statusCode}  body:- ${value.body}");
-                final dynamic res = jsonDecode(value.body);
+                dynamic res = jsonDecode(value.body);
 
                 response = value;
+
+                Navigator.pop(context);
 
                 try {
                   handleServerErrors(response);
@@ -459,7 +473,7 @@ class _PaymentLinkScreenState extends State<PaymentLinkScreen> {
     );
   }
 
-  Widget _displayBarcodeInfo(String link) {
+  Widget _displayBarcodeInfo(link) {
     return Card(
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
@@ -499,80 +513,82 @@ class _PaymentLinkScreenState extends State<PaymentLinkScreen> {
         key: _sendPaymentScaffold,
         backgroundColor: Colors.white,
         appBar: appBar() as PreferredSizeWidget?,
-        body: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 40),
-            child: Column(
-              children: [
-                Card(
-                  elevation: 0.4,
-                  margin: EdgeInsets.zero,
-                  shape: RoundedRectangleBorder(
+        body: _buildBody(),
+      ),
+    );
+  }
+
+  Widget _buildBody() {
+    return SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 40),
+        child: Column(
+          children: [
+            Card(
+              elevation: 0.4,
+              margin: EdgeInsets.zero,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              shadowColor: iconBtnGrey,
+              child: Container(
+                decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12),
-                  ),
-                  shadowColor: iconBtnGrey,
-                  child: Container(
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: iconBtnGrey, width: 1)),
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        children: <Widget>[
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 20),
-                            child: Column(
-                              children: [
-                                const SizedBox(
-                                  height: 20,
-                                ),
-                                displayAmountField(),
-                                const SizedBox(
-                                  height: 20,
-                                ),
-                                getCategoryDropDown(),
-                                const SizedBox(
-                                  height: 20,
-                                ),
-                                getReferenceField(),
-                                const SizedBox(
-                                  height: 20.0,
-                                ),
-                                noteForUser(),
-                                const SizedBox(
-                                  height: 40,
-                                ),
-                                if (errorMessage == "")
-                                  Container()
-                                else
-                                  Text(
+                    border: Border.all(color: iconBtnGrey, width: 1)),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    children: <Widget>[
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Column(
+                          children: [
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            displayAmountField(),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            getCategoryDropDown(),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            getReferenceField(),
+                            const SizedBox(
+                              height: 20.0,
+                            ),
+                            noteForUser(),
+                            const SizedBox(
+                              height: 40,
+                            ),
+                            errorMessage == ""
+                                ? Container()
+                                : Text(
                                     errorMessage,
                                     style: TextStyle(
                                         color: mateRed,
                                         fontWeight: FontWeight.bold,
                                         fontSize: 16),
                                   ),
-                                if (errorMessage == "")
-                                  Container()
-                                else
-                                  const SizedBox(
+                            errorMessage == ""
+                                ? Container()
+                                : const SizedBox(
                                     height: 20,
                                   ),
-                              ],
-                            ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
+                    ],
                   ),
                 ),
-                const SizedBox(
-                  height: 180,
-                ),
-                getSubmitButton()
-              ],
-            )),
-      ),
-    );
+              ),
+            ),
+            const SizedBox(
+              height: 30,
+            ),
+            getSubmitButton()
+          ],
+        ));
   }
 
   bool canDoSlydoTransfer(double amount, double balance) {
@@ -671,7 +687,7 @@ class _PaymentLinkScreenState extends State<PaymentLinkScreen> {
       controller: _amountController,
       onChanged: (val) {
         if (mounted) {
-          debugPrint(val);
+          print(val);
           setState(() {
             amount = double.parse(val.replaceAll(',', ''));
           });
@@ -680,7 +696,7 @@ class _PaymentLinkScreenState extends State<PaymentLinkScreen> {
       validator: (val) {
         if (val.isNotEmpty) {
           try {
-            final double amount = double.parse(val.replaceAll(',', ''));
+            double amount = double.parse(val.replaceAll(',', ''));
             if (amount <= 200000.0) {
               return null;
             }

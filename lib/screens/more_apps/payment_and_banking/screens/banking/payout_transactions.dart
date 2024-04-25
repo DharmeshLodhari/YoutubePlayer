@@ -2,7 +2,6 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/payout.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/tiles/payout_tile.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
@@ -16,17 +15,17 @@ class PayoutTransactions extends StatefulWidget {
 }
 
 class _PayoutTransactionsState extends State<PayoutTransactions> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey =
-      GlobalKey<ScaffoldMessengerState>();
+      new GlobalKey<ScaffoldMessengerState>();
 
   // Get list of users transactions
   int? count = 0;
   String? next = "";
   String? previous = "";
   List<Payout> payoutList = [];
-  final ScrollController _scrollController = ScrollController();
-  final RefreshController _refreshController =
+  ScrollController _scrollController = new ScrollController();
+  RefreshController _refreshController =
       RefreshController(initialRefresh: false);
   bool isLoading = false;
   bool noItemInList = false;
@@ -49,7 +48,7 @@ class _PayoutTransactionsState extends State<PayoutTransactions> {
   void _onRefresh() async {
     //check network connectivity and if true then refresh the list
     Connectivity().checkConnectivity().then((value) {
-      final connectionResult = value;
+      var connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         count = 0;
@@ -125,41 +124,31 @@ class _PayoutTransactionsState extends State<PayoutTransactions> {
         ? NoItemInList(
             msg: AppLocalization.of(context)!.payoutHistoryEmpty,
           )
-        : ListView.builder(
-            //+1 for progressbar
-            itemCount: payoutList.length + 1,
-            itemBuilder: (BuildContext context, int index) {
-              if (index == payoutList.length) {
-                return _buildIndicator();
-              } else {
-                return Container(
-                  padding: const EdgeInsets.symmetric(vertical: 2),
-                  child: Column(
-                    children: [
-                      PayoutTile(
-                        payout: payoutList[index],
-                        key: Key(
-                            "Payout:${payoutList[index].uuid! + payoutList[index].timeStamp!}"),
+        : isLoading && payoutList.isEmpty
+            ? buildLoadingIndicator(isLoading: isLoading)
+            : ListView.builder(
+                //+1 for progressbar
+                itemCount: payoutList.length + 1,
+                itemBuilder: (BuildContext context, int index) {
+                  if (index == payoutList.length) {
+                    return buildJumpingLoadingIndicator(isLoading: isLoading);
+                  } else {
+                    return Container(
+                      padding: EdgeInsets.symmetric(vertical: 2),
+                      child: Column(
+                        children: [
+                          PayoutTile(
+                            payout: payoutList[index],
+                            key: Key(
+                                "Payout:${payoutList[index].uuid! + payoutList[index].timeStamp!}"),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                );
-              }
-            },
-            controller: _scrollController,
-          );
-  }
-
-  Widget _buildIndicator() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Center(
-        child: Opacity(
-          opacity: isLoading ? 1.0 : 00,
-          child: CircularLoadingIndicator(),
-        ),
-      ),
-    );
+                    );
+                  }
+                },
+                controller: _scrollController,
+              );
   }
 
   void getList() async {
@@ -170,7 +159,7 @@ class _PayoutTransactionsState extends State<PayoutTransactions> {
             isLoading = true;
           });
         }
-        final Map<String, dynamic>? result =
+        Map<String, dynamic>? result =
             await PaymentAndBankingAuth().getPayoutList(next, previous);
 
         if (result == null) {
@@ -180,7 +169,7 @@ class _PayoutTransactionsState extends State<PayoutTransactions> {
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
-        final tempList = result['results'];
+        var tempList = result['results'];
         if (mounted) {
           setState(() {
             isLoading = false;
@@ -198,7 +187,7 @@ class _PayoutTransactionsState extends State<PayoutTransactions> {
         _scaffoldMessengerKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: const Duration(milliseconds: 500),
+          duration: Duration(milliseconds: 500),
         ));
       }
     }

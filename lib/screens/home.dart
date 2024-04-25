@@ -51,7 +51,6 @@ import '../widget/user_dashboard_item_tile.dart';
 import 'moments/screens/moments_screen.dart';
 import 'more_apps/messaging/button/message_nav_btn.dart';
 import 'more_apps/payment_and_banking/payment_and_banking_auth.dart';
-import 'more_apps/super_blog/super_blog.dart';
 import 'more_apps/user_profile/models/SecureUser.dart';
 import 'more_apps/user_profile/models/user.dart';
 import 'more_apps/user_profile/user_auth.dart';
@@ -569,14 +568,17 @@ class _HomeState extends State<Home> {
       {
         'imagePath': 'home/transaction',
         'title': ProtectionPermission.transaction,
+        'ForReadPermission': '2', // 1 : Read, 2 : Write
       },
       {
         'imagePath': 'home/send',
         'title': ProtectionPermission.send,
+        'ForReadPermission': '1',
       },
       {
         'imagePath': 'home/request',
         'title': ProtectionPermission.request,
+        'ForReadPermission': '2',
       },
       // {
       //   'imagePath': 'home/request',
@@ -585,18 +587,22 @@ class _HomeState extends State<Home> {
       {
         'imagePath': 'home/yarn',
         'title': ProtectionPermission.yarn,
+        'ForReadPermission': '2',
       },
       {
         'imagePath': 'home/moment',
         'title': ProtectionPermission.moment,
+        'ForReadPermission': '2',
       },
       {
         'imagePath': 'home/service',
         'title': ProtectionPermission.services,
+        'ForReadPermission': '2',
       },
       {
         'imagePath': 'home/blog',
         'title': ProtectionPermission.blog,
+        'ForReadPermission': '2',
       },
     ];
 
@@ -614,15 +620,16 @@ class _HomeState extends State<Home> {
                   onTap: () {
                     onClickShortcut(shortcut['title'] ?? "");
                   },
-                  child:
-                      shortcutView(shortcut['imagePath']!, shortcut['title']!)),
+                  child: shortcutView(shortcut['imagePath']!,
+                      shortcut['title']!, shortcut['ForReadPermission']!)),
             ),
         ],
       ),
     );
   }
 
-  Widget shortcutView(String imagePath, String title) {
+  Widget shortcutView(
+      String imagePath, String title, String ForReadPermission) {
     // return !userBloc.user.hasWritePermission(title)
     //     ? Stack(
     //         children: [
@@ -638,15 +645,16 @@ class _HomeState extends State<Home> {
     //         ],
     //       )
     //     : _buildIconAndText(imagePath, title);
-    return _buildIconAndText(imagePath, title);
+    return _buildIconAndText(imagePath, title, ForReadPermission);
   }
 
-  Widget _buildIconAndText(String imagePath, String title) {
+  Widget _buildIconAndText(
+      String imagePath, String title, String ForReadPermission) {
     return PermissionProtectionWidget(
       permissionName: title,
       isShowLock: true,
       position: 0,
-      isLockForRead: false,
+      isLockForRead: ForReadPermission,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -707,9 +715,9 @@ class _HomeState extends State<Home> {
       case ProtectionPermission.blog:
         hideBalance();
         if (appConfigurationModel?.enableSuperBlog == true) {
-          NavigationUtil.push(
+          NavigationUtil.pushNamed(
             context,
-            screen: const SuperBlog(),
+            routeName: Routes.SUPER_BLOG,
           );
         } else {
           showToast(message: 'Feature not available at the moment');
@@ -1232,6 +1240,9 @@ class _HomeState extends State<Home> {
           showNoAddressFoundDialog(context);
         }
         defaultAddress = tempList.firstWhere((element) => element.is_default!);
+        if (defaultAddress != null) {
+          userBloc.user.defaultAddress = defaultAddress;
+        }
       });
     }
   }
@@ -1512,35 +1523,56 @@ class _HomeState extends State<Home> {
   void copyAccountDetails() {
     Clipboard.setData(ClipboardData(
       text:
-          "Bank name: ${virtualAccount!.financialInstitution!.name}\nAccount name: ${virtualAccount!.accountName}\nAccount number: ${virtualAccount!.accountNumber}",
+          "Bank name: ${virtualAccount?.financialInstitution!.name}\nAccount name: ${virtualAccount?.accountName}\nAccount number: ${virtualAccount?.accountNumber}",
     ));
     showToast(message: "Account details copied !!");
   }
 
   void copyAccountNumber() {
     Clipboard.setData(ClipboardData(
-      text: "Account number: ${virtualAccount!.accountNumber}",
+      text: virtualAccount?.accountNumber,
     ));
     showToast(message: "Account number copied !!");
   }
 
   Widget qrCodeIcon() {
-    return RoundedBackgroundIcon(
-      key: tutorialScanQrCodeKey,
-      height: 30,
-      width: 30,
-      icon: const Icon(
-        SlydoAppIcon.qr_code,
-        size: 15,
-        color: Colors.white,
-      ),
-      onTap: () async {
+    return GestureDetector(
+      onTap: () {
         NavigationUtil.push(context,
             screen: QRCodeView(arguments: {'isRequest': false}));
         // NavigationUtil.push(context, screen: QrCodePage(arguments: {'isProfile': 'false', 'virtualAccount': virtualAccount}));
       },
-      backgroundColor: lightGrey.withOpacity(0.1),
-      enableMargin: false,
+      child: Container(
+        padding: const EdgeInsets.all(5.0),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(5.0)),
+          color: lightGrey.withOpacity(0.1),
+          border: Border.all(
+            color: Colors.white,
+            width: 1.0,
+          ),
+        ), //
+        child: Row(
+          children: [
+            const Icon(
+              SlydoAppIcon.qr_code,
+              size: 15,
+              color: Colors.white,
+            ),
+            SizedBox(width: 7),
+            Text(
+              'QR',
+              style: TextStyle(
+                fontSize: 15,
+                fontFamily: 'Inter',
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+              ),
+              textAlign: TextAlign.left,
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -1609,9 +1641,9 @@ class _HomeState extends State<Home> {
                   onTap: () {
                     if (appConfigurationModel?.enableSuperBlog == true) {
                       hideBalance();
-                      NavigationUtil.push(
+                      NavigationUtil.pushNamed(
                         context,
-                        screen: const SuperBlog(),
+                        routeName: Routes.SUPER_BLOG,
                       );
                     } else {
                       showToast(message: 'Feature not available at the moment');
@@ -1728,9 +1760,9 @@ class _HomeState extends State<Home> {
                   onTap: () {
                     if (appConfigurationModel?.enableSuperBlog == true) {
                       hideBalance();
-                      NavigationUtil.push(
+                      NavigationUtil.pushNamed(
                         context,
-                        screen: const SuperBlog(),
+                        routeName: Routes.SUPER_BLOG,
                       );
                     } else {
                       showToast(message: 'Feature not available at the moment');

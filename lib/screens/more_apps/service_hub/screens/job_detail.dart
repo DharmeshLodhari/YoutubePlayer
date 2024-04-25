@@ -72,7 +72,7 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
             padding: const EdgeInsets.symmetric(horizontal: 20.0),
             child: detailsRow(widget.activeListingData),
           ),
-          const SizedBox(
+          SizedBox(
             height: 20,
           ),
           acceptBtn()
@@ -90,7 +90,7 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(
+              SizedBox(
                 height: 30,
               ),
               Column(
@@ -98,14 +98,14 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
                 children: [
                   Row(
                     children: [
-                      const Expanded(
+                      Expanded(
                         flex: 3,
                         child: CustomText(title: 'Category'),
                       ),
-                      const SizedBox(
+                      SizedBox(
                         height: 10,
                       ),
-                      const Expanded(flex: 2, child: CustomText(title: 'Date')),
+                      Expanded(flex: 2, child: CustomText(title: 'Date')),
                     ],
                   ),
                   Row(
@@ -114,14 +114,14 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
                         flex: 3,
                         child: Text(
                           "${args.job!.category!.name}",
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: Color(0xff75818f),
                             fontSize: 14,
                             fontFamily: "Inter",
                           ),
                         ),
                       ),
-                      const SizedBox(
+                      SizedBox(
                         height: 5,
                       ),
                       Expanded(
@@ -129,23 +129,23 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
                         child: Container(
                           // width: 122,
                           height: 34,
-                          padding: const EdgeInsets.symmetric(horizontal: 5),
+                          padding: EdgeInsets.symmetric(horizontal: 5),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10),
-                            color: const Color(0xfffafbff),
+                            color: Color(0xfffafbff),
                           ),
                           child: Row(
                             children: [
-                              const Icon(
+                              Icon(
                                 Icons.calendar_today,
                                 size: 18,
                               ),
-                              const SizedBox(
+                              SizedBox(
                                 width: 5,
                               ),
                               Text(
                                 getFormatedDate(args),
-                                style: const TextStyle(
+                                style: TextStyle(
                                   color: Color(0xff030e36),
                                   fontSize: 14,
                                   fontFamily: "Inter",
@@ -159,7 +159,7 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
                   ),
                 ],
               ),
-              const SizedBox(
+              SizedBox(
                 height: 25,
               ),
               Column(
@@ -167,15 +167,14 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
                 children: [
                   Row(
                     children: [
-                      const Expanded(flex: 3, child: CustomText(title: 'Fee')),
-                      const SizedBox(
+                      Expanded(flex: 3, child: CustomText(title: 'Fee')),
+                      SizedBox(
                         height: 10,
                       ),
-                      const Expanded(
-                          flex: 2, child: CustomText(title: 'Location')),
+                      Expanded(flex: 2, child: CustomText(title: 'Location')),
                     ],
                   ),
-                  const SizedBox(
+                  SizedBox(
                     height: 6,
                   ),
                   Row(
@@ -184,7 +183,7 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
                         flex: 3,
                         child: Text(
                           "#${args.job!.pay}",
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: Color(0xff3e61da),
                             fontSize: 14,
                             fontFamily: "Inter",
@@ -195,8 +194,8 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
                       Expanded(
                         flex: 2,
                         child: Text(
-                          "${args.job!.state}",
-                          style: const TextStyle(
+                          messageDecoderWithEmoji(args.job?.state) ?? "",
+                          style: TextStyle(
                             color: Color(0xff75818f),
                             fontSize: 14,
                             fontFamily: "Inter",
@@ -208,7 +207,7 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
                   ),
                 ],
               ),
-              const SizedBox(
+              SizedBox(
                 height: 25,
               ),
               Column(
@@ -216,16 +215,14 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
                 children: [
                   Row(
                     children: [
-                      const Expanded(
-                          flex: 3, child: CustomText(title: 'posted by')),
-                      const SizedBox(
+                      Expanded(flex: 3, child: CustomText(title: 'posted by')),
+                      SizedBox(
                         height: 10,
                       ),
-                      const Expanded(
-                          flex: 2, child: CustomText(title: 'Status')),
+                      Expanded(flex: 2, child: CustomText(title: 'Status')),
                     ],
                   ),
-                  const SizedBox(
+                  SizedBox(
                     height: 6,
                   ),
                   Row(
@@ -234,7 +231,7 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
                         flex: 8,
                         child: Text(
                           "${args.job!.ownerName}",
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: Color(0xff75818f),
                             fontSize: 14,
                             fontFamily: "Inter",
@@ -259,7 +256,7 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
                           ),
                         ),
                       ),
-                      const Expanded(
+                      Expanded(
                         flex: 3,
                         child: SizedBox(),
                       ),
@@ -267,17 +264,17 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
                   ),
                 ],
               ),
-              const SizedBox(
+              SizedBox(
                 height: 25,
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const CustomText(title: 'Applied by'),
-                  const SizedBox(
+                  CustomText(title: 'Applied by'),
+                  SizedBox(
                     height: 6,
                   ),
-                  const Text(
+                  Text(
                     "200+",
                     style: TextStyle(
                       color: Color(0xff75818f),
@@ -288,19 +285,19 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
                   ),
                 ],
               ),
-              const SizedBox(
+              SizedBox(
                 height: 25,
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const CustomText(title: 'Description'),
-                  const SizedBox(
+                  CustomText(title: 'Description'),
+                  SizedBox(
                     height: 6,
                   ),
                   Text(
                     "${args.job!.description}",
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: Color(0xff8d92a3),
                       fontSize: 14,
                       fontFamily: "Inter",
@@ -316,7 +313,7 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
           height: 44,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
-            color: const Color(0x143e61da),
+            color: Color(0x143e61da),
           ),
           child: SvgPicture.asset(
             'assets/images/message.svg',
@@ -341,9 +338,9 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
               child: CachedNetworkImage(
                 imageUrl: "${args.job!.pictures![index].image}",
                 placeholder: (context, url) =>
-                    const Center(child: CircularProgressIndicator()),
+                    Center(child: new CircularProgressIndicator()),
                 errorWidget: (context, url, error) =>
-                    const Center(child: Icon(Icons.error)),
+                    Center(child: new Icon(Icons.error)),
               ),
             ),
             Positioned(
@@ -355,13 +352,13 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
                     (index) => Container(
                           width: 8.0,
                           height: 8.0,
-                          margin: const EdgeInsets.symmetric(
+                          margin: EdgeInsets.symmetric(
                               vertical: 10.0, horizontal: 2.0),
                           decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               color: currentIndex == index
                                   ? navyBlue
-                                  : const Color(0xffBEC2F4)),
+                                  : Color(0xffBEC2F4)),
                         )),
               ),
             )
@@ -376,8 +373,8 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
           enableInfiniteScroll: false,
           reverse: false,
           // autoPlay: true,
-          autoPlayInterval: const Duration(seconds: 3),
-          autoPlayAnimationDuration: const Duration(milliseconds: 800),
+          autoPlayInterval: Duration(seconds: 3),
+          autoPlayAnimationDuration: Duration(milliseconds: 800),
           autoPlayCurve: Curves.fastOutSlowIn,
           enlargeCenterPage: true,
           scrollDirection: Axis.horizontal,
@@ -392,9 +389,9 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
       alignment: Alignment.center,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
-        color: const Color(0xff3e61da),
+        color: Color(0xff3e61da),
       ),
-      child: const Text(
+      child: Text(
         "Accept",
         style: TextStyle(
           color: Colors.white,
@@ -406,7 +403,7 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
     );
   }
 
-  void onPageFunction(index, reason) {
+  onPageFunction(index, reason) {
     currentIndex = index;
     setState(() {});
   }
@@ -443,11 +440,11 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
           height: 20,
           width: 20,
         ),
-        const SizedBox(
+        SizedBox(
           width: 10,
         ),
         _moreOptionBtn(),
-        const SizedBox(width: 12),
+        SizedBox(width: 12),
       ],
     );
   }
@@ -473,7 +470,7 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
                           height: 32,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(12),
-                            color: const Color(0xfffafbff),
+                            color: Color(0xfffafbff),
                           ),
                           child: SvgPicture.asset(
                             'assets/images/copy_links.svg',
@@ -481,7 +478,7 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
                             width: 20,
                             fit: BoxFit.none,
                           )),
-                      title: const Text(
+                      title: Text(
                         "Copy link",
                         style: TextStyle(
                           color: Color(0xff030e36),
@@ -497,15 +494,15 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
                         height: 32,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(12),
-                          color: const Color(0xfffafbff),
+                          color: Color(0xfffafbff),
                         ),
-                        child: const Icon(
+                        child: Icon(
                           Icons.share,
                           color: Colors.black,
                           size: 20,
                         ),
                       ),
-                      title: const Text(
+                      title: Text(
                         "Send Via",
                         style: TextStyle(
                           color: Color(0xff030e36),
@@ -521,15 +518,15 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
                         height: 32,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(12),
-                          color: const Color(0xfffafbff),
+                          color: Color(0xfffafbff),
                         ),
-                        child: const Icon(
+                        child: Icon(
                           Icons.send,
                           color: Colors.black,
                           size: 20,
                         ),
                       ),
-                      title: const Text(
+                      title: Text(
                         "Share in chat",
                         style: TextStyle(
                           color: Color(0xff030e36),
@@ -560,7 +557,7 @@ class CustomText extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       title,
-      style: const TextStyle(
+      style: TextStyle(
         color: Color(0xff030e36),
         fontSize: 12,
         fontFamily: "Inter",

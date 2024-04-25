@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:Slydo/constant.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
@@ -33,7 +34,7 @@ import '../../../payment_and_banking_auth.dart';
 
 // ignore: must_be_immutable
 class NewBeneficiaryTransfer extends StatefulWidget {
-  final dynamic arguments;
+  var arguments;
   final Function(bool)? callback;
 
   NewBeneficiaryTransfer({this.arguments, this.callback});
@@ -74,11 +75,11 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
   final amountTextController = TextEditingController();
   final accountNumberController = TextEditingController();
   GlobalKey searchItemTextFormField = GlobalKey();
-  final RefreshController _refreshController =
+  RefreshController _refreshController =
       RefreshController(initialRefresh: false);
   int bottomSheetSearchIndex = 0;
   bool noSearchedItem = false;
-  final ScrollController _scrollController = ScrollController();
+  ScrollController _scrollController = new ScrollController();
   int? amount = 0;
   late http.Response response;
   VirtualAccount? virtualAccount;
@@ -121,7 +122,7 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
       return _buildLoadingIndicator();
     }
 
-    final bool isScreenIsSmall = MediaQuery.of(context).size.height < 600;
+    bool isScreenIsSmall = MediaQuery.of(context).size.height < 600;
 
     return SingleChildScrollView(
       scrollDirection: Axis.vertical,
@@ -225,41 +226,40 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
                   const SizedBox(
                     height: 40,
                   ),
-                  if (canCashOut(amount!, accountBalance!))
-                    getSubmitButton()
-                  else
-                    Container(
-                      child: Center(
-                          child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(vertical: 16.0),
-                              child: Text.rich(TextSpan(
-                                  text: AppLocalization.of(context)!
-                                      .minimumTransfer,
-                                  style: TextStyle(
-                                      fontSize: 12,
-                                      color: blackFont,
-                                      fontWeight: FontWeight.w600),
-                                  children: <InlineSpan>[
-                                    TextSpan(
-                                      text: double.parse(moneyDisplayNormalizer(
-                                                  displayPossibleCashOutAmount(
-                                                      accountBalance!))) >=
-                                              35.00
-                                          ? worldCurrencies[
-                                                  userBloc.user.currency!]! +
-                                              moneyDisplayNormalizer(
-                                                  displayPossibleCashOutAmount(
-                                                      accountBalance!))
-                                          : '${worldCurrencies[userBloc.user.currency!]!}0.00',
+                  canCashOut(amount!, accountBalance!)
+                      ? getSubmitButton()
+                      : Container(
+                          child: Center(
+                              child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 16.0),
+                                  child: Text.rich(TextSpan(
+                                      text: AppLocalization.of(context)!
+                                          .minimumTransfer,
                                       style: TextStyle(
                                           fontSize: 12,
                                           color: blackFont,
-                                          fontFamily: "Inter",
                                           fontWeight: FontWeight.w600),
-                                    )
-                                  ])))),
-                    ),
+                                      children: <InlineSpan>[
+                                        TextSpan(
+                                          text: double.parse(moneyDisplayNormalizer(
+                                                      displayPossibleCashOutAmount(
+                                                          accountBalance!))) >=
+                                                  35.00
+                                              ? worldCurrencies[userBloc
+                                                      .user.currency!]! +
+                                                  moneyDisplayNormalizer(
+                                                      displayPossibleCashOutAmount(
+                                                          accountBalance!))
+                                              : '${worldCurrencies[userBloc.user.currency!]!}0.00',
+                                          style: TextStyle(
+                                              fontSize: 12,
+                                              color: blackFont,
+                                              fontFamily: "Inter",
+                                              fontWeight: FontWeight.w600),
+                                        )
+                                      ])))),
+                        ),
                   const SizedBox(
                     height: 20,
                   ),
@@ -408,7 +408,7 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
       validator: (val) {
         if (val.isNotEmpty) {
           try {
-            final double amount = double.parse(val.replaceAll(',', ''));
+            double amount = double.parse(val.replaceAll(',', ''));
             if (amount > 0.0) {
               return null;
             } else {
@@ -429,7 +429,7 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
   Widget getSubmitButton() {
     return PermissionProtectionWidget(
       permissionName: ProtectionPermission.transaction,
-      isLockForRead: true,
+      isLockForRead: '1',
       child: CurvedButton(
         onPressed: onSubmit,
         backgroundColor: navyBlue,
@@ -440,91 +440,98 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
   }
 
   void onSubmit() async {
-    if (FocusScope.of(context).hasFocus) {
-      FocusScope.of(context).unfocus();
-    }
+    PermissionType? hasPermission =
+        userBloc.user.hasWritePermission(ProtectionPermission.transaction);
+    if (hasPermission == PermissionType.WRITE) {
+      if (FocusScope.of(context).hasFocus) {
+        FocusScope.of(context).unfocus();
+      }
 
-    if (bankId == "") {
-      showToast(message: "Bank Account not added yet");
-      return;
-    }
+      if (bankId == "") {
+        showToast(message: "Bank Account not added yet");
+        return;
+      }
 
-    await Future.delayed(const Duration(milliseconds: 500));
+      await Future.delayed(const Duration(milliseconds: 500));
 
-    isLoading = true;
-    if (mounted) setState(() {});
+      isLoading = true;
+      if (mounted) setState(() {});
 
-    if (canSendMoney(amount,
-        virtualAccount?.accountTier?.dailyCumulativeTransactionLimit!)) {
-      try {
-        final data = {
-          "amount": moneyInputNormalizer(amount.toString()),
-          "currency": userBloc.user.currency,
-          "customer_bank_account": int.tryParse(bankId),
-          "description": description,
-        };
-        BottomSheetPassCode(
-            context: context,
-            isValidCallback: () {
-              showDialog(
-                  context: context,
-                  builder: (context) =>
-                      // Center(child: CircularLoadingIndicator()));
-                      const Center(child: SizedBox()));
-              //show loading screen
-              Navigator.pop(context);
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => PaymentLoadingScreen(
-                          text: 'Bank Transfer Processing...',
-                          imagePath: 'assets/images/app_logo.png',
-                        )),
-              );
-
-              _auth.accountPayout(data).then((value) {
-                response = value;
-
+      if (canSendMoney(amount,
+          virtualAccount?.accountTier?.dailyCumulativeTransactionLimit!)) {
+        try {
+          var data = {
+            "amount": moneyInputNormalizer(amount.toString()),
+            "currency": userBloc.user.currency,
+            "customer_bank_account": int.tryParse(bankId),
+            "description": description,
+          };
+          BottomSheetPassCode(
+              context: context,
+              isValidCallback: () {
+                showDialog(
+                    context: context,
+                    builder: (context) =>
+                        // Center(child: CircularLoadingIndicator()));
+                        const Center(child: SizedBox()));
+                //show loading screen
                 Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => PaymentLoadingScreen(
+                            text: 'Bank Transfer Processing...',
+                            imagePath: 'assets/images/app_logo.png',
+                          )),
+                );
 
-                if (response.statusCode == 201) {
+                _auth.accountPayout(data).then((value) {
+                  response = value;
+
                   Navigator.pop(context);
-                  Navigator.of(context)
-                      .pushNamed(Routes.TRANSACTIONS, arguments: {'page': 1});
-                } else if (response.statusCode == 500) {
-                  Navigator.pop(context);
-                  if (mounted) {
-                    setState(() {
-                      errorMessage = AppLocalization.of(context)!.serverError;
-                      showToast(message: errorMessage);
-                    });
+
+                  if (response.statusCode == 201) {
+                    Navigator.pop(context);
+                    Navigator.of(context)
+                        .pushNamed(Routes.TRANSACTIONS, arguments: {'page': 1});
+                  } else if (response.statusCode == 500) {
+                    Navigator.pop(context);
+                    if (mounted) {
+                      setState(() {
+                        errorMessage = AppLocalization.of(context)!.serverError;
+                        showToast(message: errorMessage);
+                      });
+                    }
+                  } else {
+                    Navigator.pop(context);
+                    if (mounted) {
+                      setState(() {
+                        errorMessage =
+                            AppLocalization.of(context)!.somethingWentWrong;
+                        showToast(message: errorMessage);
+                      });
+                    }
                   }
-                } else {
-                  Navigator.pop(context);
-                  if (mounted) {
-                    setState(() {
-                      errorMessage =
-                          AppLocalization.of(context)!.somethingWentWrong;
-                      showToast(message: errorMessage);
-                    });
-                  }
-                }
+                });
+              },
+              cancelCallBack: () {
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: Text(AppLocalization.of(context)!.invalidPassword),
+                ));
               });
-            },
-            cancelCallBack: () {
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content: Text(AppLocalization.of(context)!.invalidPassword),
-              ));
-            });
-      } catch (e) {
-        debugPrint(e.toString());
-        showToast(message: e.toString());
+        } catch (e) {
+          debugPrint(e.toString());
+          showToast(message: e.toString());
+        }
+      } else {
+        showToast(
+            message:
+                "Please Upgrade your account tier to make bigger transactions.");
       }
     } else {
-      showToast(
-          message:
-              "Please Upgrade your account tier to make bigger transactions.");
+      showSnackbar(context,
+          message: AppLocalization.of(context)?.doNotPermission ?? "");
     }
   }
 
@@ -532,7 +539,7 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
     isLoading = true;
     if (mounted) setState(() {});
 
-    final Map data = {
+    Map data = {
       "customer_username": userName,
       "bank": selectedBank!.slug,
       "account_name": tempList['account_name'],
@@ -540,7 +547,7 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
       "is_default": false,
     };
 
-    final Map<String, dynamic>? result = await _auth.addBankAccount(data);
+    Map<String, dynamic>? result = await _auth.addBankAccount(data);
 
     isLoading = false;
     if (mounted) setState(() {});
@@ -552,10 +559,10 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
 
     if (result['status'] == 201) {
       //get the id
-      final tempList = result['results'];
+      var tempList = result['results'];
       bankId = tempList['id'].toString();
     } else {
-      final dynamic jsonObject = jsonDecode(result['results']);
+      dynamic jsonObject = jsonDecode(result['results']);
 
       if (jsonObject.containsKey("non_field_errors")) {
         showToast(message: jsonObject['non_field_errors'][0].toString());
@@ -576,13 +583,13 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
     isLoading = true;
     if (mounted) setState(() {});
 
-    final Map data = {
+    Map data = {
       "bank_code": selectedBank!.providerCode,
       "account_number": accountNumber,
     };
 
     try {
-      final Map<String, dynamic>? result = await _auth.verifyBankAccount(data);
+      Map<String, dynamic>? result = await _auth.verifyBankAccount(data);
 
       isLoading = false;
       if (mounted) setState(() {});
@@ -592,7 +599,7 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
         return;
       }
 
-      final tempList = result['results'];
+      var tempList = result['results'];
       // debugPrint('Fola verify::: ${tempList}');
 
       showDialogBox(
@@ -643,7 +650,7 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
   }
 
   void showSearchBankBottomSheet() async {
-    final result = await showModalBottomSheet<String>(
+    var result = await showModalBottomSheet<String>(
         backgroundColor: Colors.transparent,
         context: context,
         useRootNavigator: true,
@@ -842,7 +849,7 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      final connectionResult = value;
+      var connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         count = 0;
@@ -981,7 +988,7 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
   }
 
   void getBankListSearched() async {
-    final String url =
+    String url =
         "${AppConfig.baseUrl}/api/v1/transactions/get-bank-info/?search=${searchItemTextController.text}";
 
     if (!isItemLoading) {
@@ -992,7 +999,7 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
           bottomSheetStateSetterGlobal!(() {});
         if (mounted) setState(() {});
 
-        final Map<String, dynamic>? result =
+        Map<String, dynamic>? result =
             await _auth.searchBankList(url, next, previous);
         if (result == null) {
           isItemLoading = false;
@@ -1001,7 +1008,7 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
-        final List tempList = result['results'];
+        List tempList = result['results'];
 
         isItemLoading = false;
         if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
@@ -1070,7 +1077,7 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
   }
 
   Widget getBankLogoLeading(BankModel bankModel) {
-    final String? bankUrl = bankModel.logoUrl == ""
+    String? bankUrl = bankModel.logoUrl == ""
         ? getInitials(bankModel.name!).toUpperCase()
         : bankModel.logoUrl;
 
@@ -1083,7 +1090,7 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
     );
   }
 
-  Widget checkBankUrl(BankModel bankModel) {
+  checkBankUrl(BankModel bankModel) {
     if (bankModel.logoUrl == "") {
       return CircleAvatar(
         backgroundColor: navyBlue,
@@ -1145,8 +1152,8 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
 
   Future<void> getAccountBalance() async {
     await _auth.getAccountBalance().then((value) {
-      final data = value!;
-      final spendableBalance = data["spendable_balance"];
+      var data = value!;
+      var spendableBalance = data["spendable_balance"];
       if (mounted) {
         setState(() {
           accountBalance = spendableBalance;

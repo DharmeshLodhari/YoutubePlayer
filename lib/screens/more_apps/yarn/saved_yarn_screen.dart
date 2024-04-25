@@ -10,7 +10,6 @@ import '../../../utils/util.dart';
 import '../../../widget/no_item_in_list.dart';
 import 'models/Topics/yarn_model.dart';
 import 'tiles/yarn_list_tile.dart';
-import 'widgets/yarn_shimmer.dart';
 import 'yarn_auth.dart';
 import 'yarn_detail_screen.dart';
 
@@ -37,7 +36,7 @@ class SavedYarnState extends State<SavedYarn> {
   RefreshController refreshController =
       RefreshController(initialRefresh: false);
   String? selectedId;
-  final ScrollController _scrollController = ScrollController();
+  ScrollController _scrollController = new ScrollController();
   late UserBloc userBloc;
 
   @override
@@ -65,7 +64,7 @@ class SavedYarnState extends State<SavedYarn> {
         isLoading = true;
         if (mounted) setState(() {});
 
-        final Map<String, dynamic>? result = await YarnAuth().getAllSavedYarn(
+        Map<String, dynamic>? result = await YarnAuth().getAllSavedYarn(
             next, previous ?? '',
             type: type, isType: isType, categoryId: categoryId);
 
@@ -82,7 +81,7 @@ class SavedYarnState extends State<SavedYarn> {
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
-        final tempList = result['results'];
+        var tempList = result['results'];
 
         // if (mounted && tempList.isNotEmpty) {
         //   setState(() {
@@ -155,7 +154,7 @@ class SavedYarnState extends State<SavedYarn> {
 
   PreferredSizeWidget _buildAppBar() {
     return PreferredSize(
-      preferredSize: const Size.fromHeight(50.0),
+      preferredSize: Size.fromHeight(50.0),
       child: AppBar(
         backgroundColor: Colors.white,
         titleSpacing: 0,
@@ -189,7 +188,7 @@ class SavedYarnState extends State<SavedYarn> {
                   size: 26,
                 ),
               ),
-              const SizedBox(width: 17),
+              SizedBox(width: 17),
             ],
           ),
         ],
@@ -211,13 +210,13 @@ class SavedYarnState extends State<SavedYarn> {
   Widget _buildListView() {
     if (!noList) {
       return ListView.separated(
-        physics: const ClampingScrollPhysics(),
-        padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
+        physics: ClampingScrollPhysics(),
+        padding: EdgeInsets.only(left: 16, right: 16, bottom: 16),
         controller: _scrollController,
         itemCount: yarnTopicList.length + 1,
         itemBuilder: (BuildContext context, int index) {
           if (index == yarnTopicList.length) {
-            return _buildLoadingIndicator();
+            return buildShimmerLoadingIndicator(isLoading: isLoading);
           }
 
           return InkWell(
@@ -249,7 +248,7 @@ class SavedYarnState extends State<SavedYarn> {
                 if (mounted) setState(() {});
               },
               onUpdateYarn: (Yarn yarn) {
-                final int index = yarnTopicList
+                int index = yarnTopicList
                     .indexWhere((element) => element.id == yarn.id);
                 yarnTopicList[index] = yarn;
                 if (mounted) setState(() {});
@@ -267,7 +266,7 @@ class SavedYarnState extends State<SavedYarn> {
         separatorBuilder: (context, int) {
           return Column(
             children: [
-              const SizedBox(
+              SizedBox(
                 height: 10,
               ),
               Divider(
@@ -285,16 +284,9 @@ class SavedYarnState extends State<SavedYarn> {
     );
   }
 
-  Widget _buildLoadingIndicator() {
-    return Opacity(
-      opacity: isLoading ? 1.0 : 00,
-      child: isLoading ? const YarnShimmer() : Container(),
-    );
-  }
-
   void onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      final connectionResult = value;
+      var connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         count = 0;

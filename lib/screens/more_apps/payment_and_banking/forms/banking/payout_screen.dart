@@ -5,6 +5,7 @@ import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/VirtualAccount.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_passcode_sheet/bottomsheet_passcode.dart';
@@ -47,7 +48,7 @@ class _PayoutScreenState extends State<PayoutScreen> {
   StateSetter? bottomSheetStateSetterGlobal;
   bool bottomSheetMounted = false;
   int bottomSheetSearchIndex = 0;
-  final ScrollController _scrollController = ScrollController();
+  ScrollController _scrollController = new ScrollController();
   String? next = "", previous = "";
   int count = 0;
   bool noList = false;
@@ -140,76 +141,79 @@ class _PayoutScreenState extends State<PayoutScreen> {
           )
         : SingleChildScrollView(
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
               child: Column(
                 children: [
-                  if (isAccountFound)
-                    Form(
-                      key: _formKey,
-                      child: Column(
-                        children: <Widget>[
-                          getUserBankAccount(),
-                          const SizedBox(
-                            height: 20,
+                  isAccountFound
+                      ? Form(
+                          key: _formKey,
+                          child: Column(
+                            children: <Widget>[
+                              getUserBankAccount(),
+                              SizedBox(
+                                height: 20,
+                              ),
+                              displayAmountField(),
+                              SizedBox(
+                                height: 20,
+                              ),
+                              noteForUser(),
+                              SizedBox(
+                                height: 40,
+                              ),
+                              canCashOut(amount!, accountBalance!)
+                                  ? getSubmitButton()
+                                  : Container(
+                                      child: Center(
+                                          child: Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 16.0),
+                                              child: Text.rich(TextSpan(
+                                                  text: AppLocalization.of(
+                                                          context)!
+                                                      .minimumTransfer,
+                                                  style: TextStyle(
+                                                      fontSize: 12,
+                                                      color: blackFont,
+                                                      fontWeight:
+                                                          FontWeight.w600),
+                                                  children: <InlineSpan>[
+                                                    TextSpan(
+                                                      text: worldCurrencies[
+                                                              userBloc.user
+                                                                  .currency!]! +
+                                                          moneyDisplayNormalizer(
+                                                              displayPossibleCashOutAmount(
+                                                                  accountBalance!)),
+                                                      style: TextStyle(
+                                                          fontSize: 12,
+                                                          color: blackFont,
+                                                          fontFamily: "Inter",
+                                                          fontWeight:
+                                                              FontWeight.w600),
+                                                    )
+                                                  ])))),
+                                    ),
+                              SizedBox(
+                                height: 20,
+                              ),
+                            ],
                           ),
-                          displayAmountField(),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          noteForUser(),
-                          const SizedBox(
-                            height: 40,
-                          ),
-                          if (canCashOut(amount!, accountBalance!))
-                            getSubmitButton()
-                          else
-                            Container(
-                              child: Center(
-                                  child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 16.0),
-                                      child: Text.rich(TextSpan(
-                                          text: AppLocalization.of(context)!
-                                              .minimumTransfer,
-                                          style: TextStyle(
-                                              fontSize: 12,
-                                              color: blackFont,
-                                              fontWeight: FontWeight.w600),
-                                          children: <InlineSpan>[
-                                            TextSpan(
-                                              text: worldCurrencies[userBloc
-                                                      .user.currency!]! +
-                                                  moneyDisplayNormalizer(
-                                                      displayPossibleCashOutAmount(
-                                                          accountBalance!)),
-                                              style: TextStyle(
-                                                  fontSize: 12,
-                                                  color: blackFont,
-                                                  fontFamily: "Inter",
-                                                  fontWeight: FontWeight.w600),
-                                            )
-                                          ])))),
+                        )
+                      : Container(
+                          child: Center(
+                              child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 16.0),
+                            child: Text(
+                              "Please add Bank Account for cashout.",
+                              style: TextStyle(
+                                  fontSize: 14,
+                                  color: blackFont,
+                                  fontWeight: FontWeight.w600),
                             ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                        ],
-                      ),
-                    )
-                  else
-                    Container(
-                      child: Center(
-                          child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 16.0),
-                        child: Text(
-                          "Please add Bank Account for cashout.",
-                          style: TextStyle(
-                              fontSize: 14,
-                              color: blackFont,
-                              fontWeight: FontWeight.w600),
+                          )),
                         ),
-                      )),
-                    ),
                 ],
               ),
             ),
@@ -218,7 +222,7 @@ class _PayoutScreenState extends State<PayoutScreen> {
 
   Widget showBackArrow() {
     return IconButton(
-      icon: const Icon(Icons.arrow_back_ios),
+      icon: Icon(Icons.arrow_back_ios),
       onPressed: () {
         Navigator.pop(context);
       },
@@ -267,7 +271,7 @@ class _PayoutScreenState extends State<PayoutScreen> {
       labelText: "Amount",
       isAmountField: true,
       keyboardType: Platform.isIOS
-          ? const TextInputType.numberWithOptions(decimal: true)
+          ? TextInputType.numberWithOptions(decimal: true)
           : TextInputType.number,
       onChanged: (val) {
         if (mounted) {
@@ -291,7 +295,7 @@ class _PayoutScreenState extends State<PayoutScreen> {
   Widget getSubmitButton() {
     return PermissionProtectionWidget(
       permissionName: ProtectionPermission.transaction,
-      isLockForRead: true,
+      isLockForRead: '1',
       child: CurvedButton(
         onPressed: onSubmit,
         backgroundColor: navyBlue,
@@ -302,94 +306,102 @@ class _PayoutScreenState extends State<PayoutScreen> {
   }
 
   void onSubmit() async {
-    //for closing the keypad if it is open
-    FocusScope.of(context).unfocus();
+    PermissionType? hasPermission =
+        userBloc.user.hasWritePermission(ProtectionPermission.transaction);
+    if (hasPermission == PermissionType.WRITE) {
+      //for closing the keypad if it is open
+      FocusScope.of(context).unfocus();
 
-    // duration for close keyboard and open passcode bottomsheet
-    await Future.delayed(const Duration(milliseconds: 500));
+      // duration for close keyboard and open passcode bottomsheet
+      await Future.delayed(Duration(milliseconds: 500));
 
-    if (_formKey.currentState!.validate()) {
-      debugPrint(
-          "virtualAccount?.accountTier?.dailyCumulativeTransactionLimit! ${virtualAccount?.accountTier?.dailyCumulativeTransactionLimit!}");
+      if (_formKey.currentState!.validate()) {
+        debugPrint(
+            "virtualAccount?.accountTier?.dailyCumulativeTransactionLimit! ${virtualAccount?.accountTier?.dailyCumulativeTransactionLimit!}");
 
-      if (amount! <=
-          int.parse(
-              virtualAccount?.accountTier?.dailyCumulativeTransactionLimit! ??
-                  "0")) {
-        try {
-          final data = {
-            "amount": moneyInputNormalizer(amount.toString()),
-            "currency": userBloc.user.currency,
-            "customer_bank_account":
-                int.tryParse(bankAccountBloc.bankAccount!.uuid!),
-          };
-          BottomSheetPassCode(
-              context: context,
-              isValidCallback: () {
-                showDialog(
-                    context: context,
-                    builder: (context) =>
-                        // Center(child: CircularLoadingIndicator()));
-                        const Center(child: SizedBox()));
-                //show loading screen
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => PaymentLoadingScreen(
-                            text: 'Payout Processing...',
-                            imagePath: 'assets/images/app_logo.png',
-                          )),
-                );
-
-                _auth.accountPayout(data).then((value) {
-                  response = value;
-
+        if (amount! <=
+            int.parse(
+                virtualAccount?.accountTier?.dailyCumulativeTransactionLimit! ??
+                    "0")) {
+          try {
+            var data = {
+              "amount": moneyInputNormalizer(amount.toString()),
+              "currency": userBloc.user.currency,
+              "customer_bank_account":
+                  int.tryParse(bankAccountBloc.bankAccount!.uuid!),
+            };
+            BottomSheetPassCode(
+                context: context,
+                isValidCallback: () {
+                  showDialog(
+                      context: context,
+                      builder: (context) =>
+                          // Center(child: CircularLoadingIndicator()));
+                          Center(child: SizedBox()));
+                  //show loading screen
                   Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => PaymentLoadingScreen(
+                              text: 'Payout Processing...',
+                              imagePath: 'assets/images/app_logo.png',
+                            )),
+                  );
 
-                  if (response.statusCode == 201) {
+                  _auth.accountPayout(data).then((value) {
+                    response = value;
+
                     Navigator.pop(context);
-                    Navigator.of(context).popAndPushNamed('/payout-list');
-                  } else if (response.statusCode == 500) {
-                    Navigator.pop(context);
-                    if (mounted) {
-                      setState(() {
-                        errorMessage = AppLocalization.of(context)!.serverError;
-                        showToast(message: errorMessage);
-                      });
+
+                    if (response.statusCode == 201) {
+                      Navigator.pop(context);
+                      Navigator.of(context).popAndPushNamed('/payout-list');
+                    } else if (response.statusCode == 500) {
+                      Navigator.pop(context);
+                      if (mounted) {
+                        setState(() {
+                          errorMessage =
+                              AppLocalization.of(context)!.serverError;
+                          showToast(message: errorMessage);
+                        });
+                      }
                     }
-                  }
-                  // else if (response.statusCode == 800) {
-                  //   Navigator.pop(context);
-                  //   Navigator.pushNamed(context, "/add-document");
-                  // }
-                  else {
-                    Navigator.pop(context);
-                    if (mounted) {
-                      setState(() {
-                        errorMessage =
-                            AppLocalization.of(context)!.somethingWentWrong;
-                        showToast(message: errorMessage);
-                      });
+                    // else if (response.statusCode == 800) {
+                    //   Navigator.pop(context);
+                    //   Navigator.pushNamed(context, "/add-document");
+                    // }
+                    else {
+                      Navigator.pop(context);
+                      if (mounted) {
+                        setState(() {
+                          errorMessage =
+                              AppLocalization.of(context)!.somethingWentWrong;
+                          showToast(message: errorMessage);
+                        });
+                      }
                     }
-                  }
+                  });
+                },
+                cancelCallBack: () {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text(AppLocalization.of(context)!.invalidPassword),
+                  ));
                 });
-              },
-              cancelCallBack: () {
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: Text(AppLocalization.of(context)!.invalidPassword),
-                ));
-              });
-        } catch (e) {
-          debugPrint(e.toString());
-          showToast(message: e.toString());
+          } catch (e) {
+            debugPrint(e.toString());
+            showToast(message: e.toString());
+          }
+        } else {
+          showToast(
+              message:
+                  "Please Upgrade your account tier to make bigger transactions.");
         }
-      } else {
-        showToast(
-            message:
-                "Please Upgrade your account tier to make bigger transactions.");
       }
+    } else {
+      showSnackbar(context,
+          message: AppLocalization.of(context)?.doNotPermission ?? "");
     }
   }
 
@@ -415,8 +427,8 @@ class _PayoutScreenState extends State<PayoutScreen> {
 
   Future<void> getAccountBalance() async {
     await _auth.getAccountBalance().then((value) {
-      final data = value!;
-      final spendableBalance = data["spendable_balance"];
+      var data = value!;
+      var spendableBalance = data["spendable_balance"];
       if (mounted) {
         setState(() {
           accountBalance = spendableBalance;
@@ -426,7 +438,7 @@ class _PayoutScreenState extends State<PayoutScreen> {
   }
 
   Future<void> showAllBankAccount(BuildContext context) async {
-    final result = await showModalBottomSheet<String>(
+    var result = await showModalBottomSheet<String>(
         backgroundColor: Colors.transparent,
         context: context,
         useRootNavigator: true,
@@ -439,7 +451,7 @@ class _PayoutScreenState extends State<PayoutScreen> {
             bottomSheetMounted = true;
 
             return Card(
-                shape: const RoundedRectangleBorder(
+                shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(20),
                       topRight: Radius.circular(20)),
@@ -448,12 +460,12 @@ class _PayoutScreenState extends State<PayoutScreen> {
                 margin: EdgeInsets.zero,
                 child: Container(
                   height: MediaQuery.of(context).size.height * 0.88,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  padding: EdgeInsets.symmetric(vertical: 16),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        padding: EdgeInsets.symmetric(horizontal: 20),
                         child: Text(
                           'Change Bank Account',
                           style: TextStyle(
@@ -462,7 +474,7 @@ class _PayoutScreenState extends State<PayoutScreen> {
                               fontSize: 15),
                         ),
                       ),
-                      const SizedBox(height: 8),
+                      SizedBox(height: 8),
                       Expanded(child: bottomSheetTabBar())
                     ],
                   ),
@@ -480,7 +492,7 @@ class _PayoutScreenState extends State<PayoutScreen> {
   Widget bottomSheetTabBar() {
     return Column(
       children: [
-        const SizedBox(
+        SizedBox(
           height: 8,
         ),
         Expanded(child: bottomSheetTabViews())
@@ -490,7 +502,7 @@ class _PayoutScreenState extends State<PayoutScreen> {
 
   Widget bottomSheetTabBars() {
     return PreferredSize(
-        preferredSize: const Size.fromHeight(50.0),
+        preferredSize: Size.fromHeight(50.0),
         child: Row(
           children: [
             GestureDetector(
@@ -503,8 +515,7 @@ class _PayoutScreenState extends State<PayoutScreen> {
                 getList();
               },
               child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 40, vertical: 8),
+                padding: EdgeInsets.symmetric(horizontal: 40, vertical: 8),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
                   shape: BoxShape.rectangle,
@@ -533,8 +544,7 @@ class _PayoutScreenState extends State<PayoutScreen> {
                 getList();
               },
               child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 40, vertical: 8),
+                padding: EdgeInsets.symmetric(horizontal: 40, vertical: 8),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
                   shape: BoxShape.rectangle,
@@ -564,7 +574,7 @@ class _PayoutScreenState extends State<PayoutScreen> {
   }
 
   void getList() async {
-    final Map<String, dynamic>? result =
+    Map<String, dynamic>? result =
         await _auth.getBankAccountsPagination(next, previous, "");
     if (result == null) {
       isLoading = false;
@@ -573,7 +583,7 @@ class _PayoutScreenState extends State<PayoutScreen> {
     count = result['count'];
     next = result['next'];
     previous = result['previous'];
-    final tempList = result['results'];
+    var tempList = result['results'];
 
     if (mounted) {
       setState(() {
@@ -603,7 +613,7 @@ class _PayoutScreenState extends State<PayoutScreen> {
             isResult: true,
           )
         : ListView.builder(
-            padding: const EdgeInsets.symmetric(vertical: 4),
+            padding: EdgeInsets.symmetric(vertical: 4),
             //+1 for progressbar
             shrinkWrap: true,
             itemCount: bankAccountList.length + 1,
@@ -648,14 +658,14 @@ class _PayoutScreenState extends State<PayoutScreen> {
     if (account.bankAvatar == "") {
       imageUrl = getInitials(account.bankName.toString()).toUpperCase();
     } else {
-      final String? url = account.bankAvatar;
+      String? url = account.bankAvatar;
 
       imageUrl = url!.replaceAll('https//', 'https://');
     }
 
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       shadowColor: boxShadowTwo,
       elevation: 0,
       child: Container(
@@ -707,7 +717,7 @@ class _PayoutScreenState extends State<PayoutScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        const SizedBox(
+        SizedBox(
           height: 8,
         ),
         Text(
@@ -725,7 +735,7 @@ class _PayoutScreenState extends State<PayoutScreen> {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          const SizedBox(
+          SizedBox(
             height: 4,
           ),
           Row(
@@ -751,7 +761,7 @@ class _PayoutScreenState extends State<PayoutScreen> {
     }
     return Column(
       children: [
-        const SizedBox(
+        SizedBox(
           height: 8,
         ),
         Text(
@@ -764,9 +774,9 @@ class _PayoutScreenState extends State<PayoutScreen> {
   }
 
   Widget checkBankImage(BankAccount account) {
-    final String? url = account.bankAvatar;
+    String? url = account.bankAvatar;
 
-    final String imageUrl = url!.replaceAll('https//', 'https://');
+    String imageUrl = url!.replaceAll('https//', 'https://');
     if (account.bankAvatar == "") {
       return CircleAvatar(
         backgroundColor: navyBlue,

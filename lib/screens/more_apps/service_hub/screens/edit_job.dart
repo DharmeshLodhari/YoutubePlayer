@@ -1495,7 +1495,7 @@ class _EditJobState extends State<EditJob> {
         ),
       ),
       items: stateList.map((StatesModel item) {
-        return item.name ?? "";
+        return messageDecoderWithEmoji(item.name) ?? "";
       }).toList(),
       dropdownDecoratorProps: DropDownDecoratorProps(
         dropdownSearchDecoration: InputDecoration(
@@ -1593,7 +1593,7 @@ class _EditJobState extends State<EditJob> {
             ),
           )),
       items: cityList.map((Cities item) {
-        return item.name ?? "";
+        return messageDecoderWithEmoji(item.name) ?? "";
       }).toList(),
       dropdownDecoratorProps: DropDownDecoratorProps(
         dropdownSearchDecoration: InputDecoration(
@@ -2272,7 +2272,7 @@ class _EditJobState extends State<EditJob> {
 
                         return ListTile(
                           title: Text(
-                            "${location.name}",
+                            messageDecoderWithEmoji(location.name) ?? "",
                             softWrap: false,
                             overflow: TextOverflow.fade,
                             style: TextStyle(

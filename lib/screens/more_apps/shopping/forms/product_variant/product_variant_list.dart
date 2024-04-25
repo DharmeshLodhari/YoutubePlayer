@@ -240,24 +240,26 @@ class _ProductVariantListState extends State<ProductVariantList> {
             title: AppLocalization.of(context)!.noVariantYet,
             msg: AppLocalization.of(context)!.noVariantDetail,
           )
-        : ListView.builder(
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            //+1 for progressbar
-            itemCount: productVariantList.length + 1,
-            itemBuilder: (BuildContext context, int index) {
-              if (index == productVariantList.length) {
-                return buildLoadingIndicator(isLoading: isLoading);
-              } else {
-                return _getSlidableWithLists(
-                    context,
-                    productVariantTile(
-                      variant: productVariantList[index],
-                    ),
-                    productVariantList[index]);
-              }
-            },
-            controller: _scrollController,
-          );
+        : isLoading && productVariantList.isEmpty
+            ? buildLoadingIndicator(isLoading: isLoading)
+            : ListView.builder(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                //+1 for progressbar
+                itemCount: productVariantList.length + 1,
+                itemBuilder: (BuildContext context, int index) {
+                  if (index == productVariantList.length) {
+                    return buildJumpingLoadingIndicator(isLoading: isLoading);
+                  } else {
+                    return _getSlidableWithLists(
+                        context,
+                        productVariantTile(
+                          variant: productVariantList[index],
+                        ),
+                        productVariantList[index]);
+                  }
+                },
+                controller: _scrollController,
+              );
   }
 
   Widget productVariantTile({required Variant variant}) {

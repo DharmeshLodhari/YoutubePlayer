@@ -19,20 +19,19 @@ import 'models/transactions.dart';
 
 class PaymentAndBankingAuth extends AuthService {
   Future<List<BankAccount>> getBankAccounts() async {
-    final String url =
-        "${AppConfig.baseUrl}/api/v1/transactions/bank-accounts-list/";
-    final headers = await getAuthHeaders();
-    final response = await httpGet(url, headers: headers);
+    String url = "${AppConfig.baseUrl}/api/v1/transactions/bank-accounts-list/";
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
 
     if (response.statusCode == 200) {
-      final jsonData = json.decode(response.body);
-      final List<BankAccount> accounts = [];
+      var jsonData = json.decode(response.body);
+      List<BankAccount> accounts = [];
       for (var item in jsonData['results']) {
         if (item['is_default'] == true) {
-          final bank = item["bank"];
-          final logoUrl = item["bank"]['logo_url'];
+          var bank = item["bank"];
+          var logoUrl = item["bank"]['logo_url'];
           item["bank"]['logo_url'] = logoUrl;
-          final BankAccount account = BankAccount(
+          BankAccount account = BankAccount(
               bankAvatar: item["bank"]['logo_url'],
               uuid: item['id'].toString(),
               bankName: bank['short_name'],
@@ -51,12 +50,12 @@ class PaymentAndBankingAuth extends AuthService {
   }
 
   Future<Map<String, dynamic>?> getAccountBalance() async {
-    final String url =
+    String url =
         "${AppConfig.baseUrl}/api/v1/transactions/check-account-balance/";
-    final headers = await getAuthHeaders();
-    final response = await httpGet(url, headers: headers);
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
     if (response.statusCode == 200) {
-      final jsonData = json.decode(response.body);
+      var jsonData = json.decode(response.body);
       return jsonData;
     } else {
       return {"balance": 0, "spendable_balance": 0, "over_draft": 0};
@@ -64,15 +63,15 @@ class PaymentAndBankingAuth extends AuthService {
   }
 
   Future<bool> verifyCardNumber({required String cardNumber}) async {
-    final String url =
+    String url =
         "${AppConfig.baseUrl}/api/v1/transactions/credit-card/verify-card/";
 
-    final data = {'card_number': cardNumber};
-    final headers = await getAuthHeaders();
-    final response =
+    var data = {'card_number': cardNumber};
+    var headers = await getAuthHeaders();
+    var response =
         await httpPost(url, headers: headers, body: jsonEncode(data));
 
-    debugPrint('VERIFY CARD RESPONSE ::: $response');
+    print('VERIFY CARD RESPONSE ::: $response');
     debugPrint(
         "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
     if (response.statusCode == 200) {
@@ -87,17 +86,17 @@ class PaymentAndBankingAuth extends AuthService {
   }
 
   Future<String?> verifyOtp(String otp) async {
-    final String url = "${AppConfig.baseUrl}/api/v1/sms/verify/";
-    final headers = getNonAuthHeader();
-    final data = {
+    String url = "${AppConfig.baseUrl}/api/v1/sms/verify/";
+    var headers = getNonAuthHeader();
+    var data = {
       "code": otp,
     };
-    final _data = jsonEncode(data);
-    final response = await httpPost(url,
+    var _data = jsonEncode(data);
+    var response = await httpPost(url,
         body: _data, headers: headers as Map<String, dynamic>?);
-    final jsonData = json.decode(response.body);
+    var jsonData = json.decode(response.body);
     if (response.statusCode == 200) {
-      final resetToken = jsonData['reset-token'];
+      var resetToken = jsonData['reset-token'];
       return resetToken;
     } else {
       if (AppConfig.enableLogs.value) debugPrint("DATA SENT:- $data");
@@ -109,14 +108,14 @@ class PaymentAndBankingAuth extends AuthService {
 
   Future<String> verifyCreditCardOtp(String otp) async {
     String responseString = 'Something went wrong';
-    final String url =
+    String url =
         "${AppConfig.baseUrl}/api/v1/transactions/credit-card/verify-card-otp/";
-    final headers = await getAuthHeaders();
-    final data = {"otp": otp};
-    final _data = jsonEncode(data);
+    var headers = await getAuthHeaders();
+    var data = {"otp": otp};
+    var _data = jsonEncode(data);
 
-    final response = await httpPost(url, body: _data, headers: headers);
-    debugPrint('OTP RESPONSE ----> ${response.body}');
+    var response = await httpPost(url, body: _data, headers: headers);
+    print('OTP RESPONSE ----> ${response.body}');
 
     try {
       handleServerErrors(response);
@@ -125,6 +124,8 @@ class PaymentAndBankingAuth extends AuthService {
     }
 
     if (response.statusCode == 200) {
+      var jsonData = jsonDecode(response.body);
+
       responseString = 'successful';
     } else if (response.statusCode == 400) {
       if (jsonDecode(response.body)['errMsg']
@@ -148,16 +149,16 @@ class PaymentAndBankingAuth extends AuthService {
           "URL:- $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
       return Future.error(response.body);
     }
-    debugPrint('RESPONSE STRING ::: $responseString');
+    print('RESPONSE STRING ::: $responseString');
     return responseString;
   }
 
   // delete single bank account
   Future<bool> deleteBankAccount(String id) async {
-    final String url =
+    String url =
         "${AppConfig.baseUrl}/api/v1/transactions/delete-bank-account/$id/";
-    final headers = await getAuthHeaders();
-    final response = await httpDelete(url, headers: headers);
+    var headers = await getAuthHeaders();
+    var response = await httpDelete(url, headers: headers);
 
     debugPrint(
         "status code delete :- ${response.statusCode} response ${response.body}");
@@ -169,21 +170,20 @@ class PaymentAndBankingAuth extends AuthService {
   }
 
   Future<Map<String, dynamic>?> addBankAccount(Map data) async {
-    final String url =
-        "${AppConfig.baseUrl}/api/v1/transactions/add-bank-account/";
-    final headers = await getAuthHeaders();
-    final _data = jsonEncode(data);
-    final response = await httpPost(url, headers: headers, body: _data);
+    String url = "${AppConfig.baseUrl}/api/v1/transactions/add-bank-account/";
+    var headers = await getAuthHeaders();
+    var _data = jsonEncode(data);
+    var response = await httpPost(url, headers: headers, body: _data);
 
     if (response.statusCode == 201) {
-      final jsonData = json.decode(response.body);
-      final Map<String, dynamic> result = {
+      var jsonData = json.decode(response.body);
+      Map<String, dynamic> result = {
         "status": 201,
         "results": jsonData,
       };
       return result;
     } else {
-      final Map<String, dynamic> result = {
+      Map<String, dynamic> result = {
         "status": response.statusCode,
         "results": response.body,
       };
@@ -192,22 +192,22 @@ class PaymentAndBankingAuth extends AuthService {
   }
 
   Future<Map<String, dynamic>?> verifyBankAccount(Map data) async {
-    final String? accountNumber = data['account_number'];
-    final String? bankCode = data['bank_code'];
+    String? accountNumber = data['account_number'];
+    String? bankCode = data['bank_code'];
 
-    final String url =
+    String url =
         "${AppConfig.baseUrl}/api/v1/bankly/transfers/lookup/$accountNumber/$bankCode/";
 
-    final headers = await getAuthHeaders();
-    final response = await httpGet(url, headers: headers);
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
 
     debugPrint(
         "status code :- ${response.statusCode} VerifyBankAccount ---> response ${response.body}");
 
     if (response.statusCode == 200) {
-      final jsonData = json.decode(response.body);
+      var jsonData = json.decode(response.body);
 
-      final Map<String, dynamic> result = {
+      Map<String, dynamic> result = {
         "results": jsonData,
       };
       return result;
@@ -227,17 +227,17 @@ class PaymentAndBankingAuth extends AuthService {
     if (next != "") {
       url = getSecureUrl(url: next);
     }
-    final headers = await getAuthHeaders();
+    var headers = await getAuthHeaders();
 
-    final response = await httpGet(url, headers: headers);
+    var response = await httpGet(url, headers: headers);
 
     if (response.statusCode == 200) {
-      final jsonData = json.decode(response.body);
+      var jsonData = json.decode(response.body);
 
       debugPrint(
           "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${jsonData}");
 
-      final Map<String, dynamic> result = {
+      Map<String, dynamic> result = {
         "count": jsonData["count"],
         "next": jsonData["next"],
         "previous": jsonData["previous"],
@@ -253,18 +253,18 @@ class PaymentAndBankingAuth extends AuthService {
 
   // update bank account information
   Future<bool> updateBankAccount(Map data) async {
-    final String url =
+    String url =
         "${AppConfig.baseUrl + "/api/v1/transactions/set-default-bank-account/" + data['uuid']}/";
-    final headers = await getAuthHeaders();
+    var headers = await getAuthHeaders();
     late var response;
-    final _data = jsonEncode(data);
+    var _data = jsonEncode(data);
     try {
       response = await httpPatch(url, headers: headers, body: _data);
     } catch (e) {
       debugPrint("update bank account : $e");
     }
     if (response.statusCode != 200) {
-      final jsonData = response.body;
+      var jsonData = response.body;
       debugPrint(jsonData);
     }
     return response.statusCode == 200;
@@ -288,22 +288,22 @@ class PaymentAndBankingAuth extends AuthService {
       url = getSecureUrl(url: next);
     }
 
-    debugPrint('Bank List url :::: $url');
+    print('Bank List url :::: $url');
 
-    final headers = await getAuthHeaders();
-    final response = await httpGet(url, headers: headers);
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
 
-    debugPrint('Bank List DATA :::: ${json.decode(response.body)}');
+    print('Bank List DATA :::: ${json.decode(response.body)}');
 
     if (response.statusCode == 200) {
-      final jsonData = json.decode(response.body);
-      final List<BankAccount> accounts = [];
+      var jsonData = json.decode(response.body);
+      List<BankAccount> accounts = [];
       for (var item in jsonData['results']) {
-        final bank = item["bank"];
-        final logoUrl = item["bank"]['logo_url'];
+        var bank = item["bank"];
+        var logoUrl = item["bank"]['logo_url'];
         item["bank"]['logo_url'] = logoUrl;
 
-        final BankAccount account = BankAccount(
+        BankAccount account = BankAccount(
           bankAvatar: item["bank"]['logo_url'],
           uuid: item['id'].toString(),
           bankName: bank['name'],
@@ -313,7 +313,7 @@ class PaymentAndBankingAuth extends AuthService {
         );
         accounts.add(account);
       }
-      final Map<String, dynamic> result = {
+      Map<String, dynamic> result = {
         "count": jsonData["count"],
         "next": jsonData["next"],
         "previous": jsonData["previous"],
@@ -337,17 +337,17 @@ class PaymentAndBankingAuth extends AuthService {
     } else {
       url = getSecureUrl(url: next);
     }
-    final headers = await getAuthHeaders();
-    final response = await httpGet(url, headers: headers);
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
 
-    debugPrint('SHIPPING OPTIONS List DATA :::: ${json.decode(response.body)}');
+    print('SHIPPING OPTIONS List DATA :::: ${json.decode(response.body)}');
 
     if (response.statusCode == 200) {
-      final jsonData = json.decode(response.body);
-      final List<ShippingOptionsListModel> shippingModelList = [];
+      var jsonData = json.decode(response.body);
+      List<ShippingOptionsListModel> shippingModelList = [];
 
       for (var item in jsonData['results']) {
-        final ShippingOptionsListModel shippingModel = ShippingOptionsListModel(
+        ShippingOptionsListModel shippingModel = ShippingOptionsListModel(
           id: item["id"],
           currency: item['currency'],
           name: item['name'],
@@ -357,7 +357,7 @@ class PaymentAndBankingAuth extends AuthService {
         shippingModelList.add(shippingModel);
       }
 
-      final Map<String, dynamic> result = {
+      Map<String, dynamic> result = {
         "count": jsonData["count"],
         "next": jsonData["next"],
         "previous": jsonData["previous"],
@@ -371,24 +371,26 @@ class PaymentAndBankingAuth extends AuthService {
 
   //Add Shipping Option
   Future<http.Response> addShippingOption(Map data) async {
-    final String url = "${AppConfig.baseUrl}/api/v1/shipping-options/";
-    final headers = await getAuthHeaders();
-    final _data = jsonEncode(data);
-    final response = await httpPost(url, headers: headers, body: _data);
+    String url = "${AppConfig.baseUrl}/api/v1/shipping-options/";
+    var headers = await getAuthHeaders();
+    var _data = jsonEncode(data);
+    var response = await httpPost(url, headers: headers, body: _data);
 
-    debugPrint('ADD SHIPPING OPTIONS List :::: ${json.decode(response.body)}');
+    print('ADD SHIPPING OPTIONS List :::: ${json.decode(response.body)}');
 
     return response;
   }
 
   //Delete Shipping Option
   Future<bool?> deleteShippingOption(int shippingId) async {
-    final String url =
-        "${AppConfig.baseUrl}/api/v1/shipping-options/$shippingId/";
+    String url = "";
+    if (shippingId != null) {
+      url = "${AppConfig.baseUrl}/api/v1/shipping-options/$shippingId/";
+    }
     debugPrint(url);
 
-    final headers = await getAuthHeaders();
-    final response = await httpDelete(url, headers: headers);
+    var headers = await getAuthHeaders();
+    var response = await httpDelete(url, headers: headers);
 
     if (response.statusCode == 204) {
       return true;
@@ -401,29 +403,28 @@ class PaymentAndBankingAuth extends AuthService {
 
   //Edit Shipping Option
   Future<http.Response> editShippingOption(Map data, int shippingId) async {
-    final String url =
-        "${AppConfig.baseUrl}/api/v1/shipping-options/$shippingId/";
-    final headers = await getAuthHeaders();
-    final _data = jsonEncode(data);
-    final response = await httpPatch(url, headers: headers, body: _data);
+    String url = "${AppConfig.baseUrl}/api/v1/shipping-options/$shippingId/";
+    var headers = await getAuthHeaders();
+    var _data = jsonEncode(data);
+    var response = await httpPatch(url, headers: headers, body: _data);
 
-    debugPrint('EDIT SHIPPING OPTIONS List :::: ${json.decode(response.body)}');
+    print('EDIT SHIPPING OPTIONS List :::: ${json.decode(response.body)}');
 
     return response;
   }
 
   Future<String> addCreditCard(CreditCardData creditCardData) async {
     late String responseString;
-    final String url = "${AppConfig.baseUrl}/api/v1/transactions/credit-card/";
-    final headers = await getAuthHeaders();
+    String url = "${AppConfig.baseUrl}/api/v1/transactions/credit-card/";
+    var headers = await getAuthHeaders();
 
-    final Map<String, dynamic> data = creditCardData.toJson();
+    Map<String, dynamic> data = creditCardData.toJson();
     data.removeWhere((key, value) => value == null);
 
-    final _data = jsonEncode(data);
-    final response = await httpPost(url, headers: headers, body: _data);
+    var _data = jsonEncode(data);
+    var response = await httpPost(url, headers: headers, body: _data);
 
-    debugPrint('ADD CREDIT CARD RESPONSE ----> ${response.body}');
+    print('ADD CREDIT CARD RESPONSE ----> ${response.body}');
 
     try {
       handleServerErrors(response);
@@ -446,17 +447,17 @@ class PaymentAndBankingAuth extends AuthService {
   Future<String> fundWallet(CreditCardData creditCardData) async {
     late String responseString;
 
-    final String url =
+    String url =
         "${AppConfig.baseUrl}/api/v1/transactions/credit-card/credit-wallet-account/";
-    final headers = await getAuthHeaders();
+    var headers = await getAuthHeaders();
 
-    final Map<String, dynamic> data = creditCardData.toJson();
+    Map<String, dynamic> data = creditCardData.toJson();
     data.removeWhere((key, value) => value == null);
-    debugPrint('CREDIT CARD DATA :::: $data');
+    print('CREDIT CARD DATA :::: $data');
 
-    final _data = jsonEncode(data);
-    final response = await httpPost(url, headers: headers, body: _data);
-    debugPrint('FUND WALLET ----> ${response.body}');
+    var _data = jsonEncode(data);
+    var response = await httpPost(url, headers: headers, body: _data);
+    print('FUND WALLET ----> ${response.body}');
 
     try {
       handleServerErrors(response);
@@ -489,20 +490,20 @@ class PaymentAndBankingAuth extends AuthService {
     }
 
     debugPrint('URL ->>> $url');
-    final headers = await getAuthHeaders();
-    final response = await httpGet(url, headers: headers);
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
 
     debugPrint('CREDIT CARD LIST STATUS CODE ::: ${response.statusCode}');
-    debugPrint('CREDIT CARD LIST ----> ${response.body}');
+    print('CREDIT CARD LIST ----> ${response.body}');
 
     if (response.statusCode == 200) {
-      final jsonData = json.decode(response.body);
+      var jsonData = json.decode(response.body);
 
-      final List resultData = jsonData['results'];
-      final List<CreditCard> creditCardList =
+      List resultData = jsonData['results'];
+      List<CreditCard> creditCardList =
           resultData.map((json) => CreditCard.fromJson(json)).toList();
 
-      final Map<String, dynamic> result = {
+      Map<String, dynamic> result = {
         "count": jsonData["count"],
         "next": jsonData["next"],
         "previous": jsonData["previous"],
@@ -517,12 +518,12 @@ class PaymentAndBankingAuth extends AuthService {
 
   // delete credit card
   Future<bool> deleteCreditCard(int cardId) async {
-    final String url = AppConfig.baseUrl +
+    String url = AppConfig.baseUrl +
         "/api/v1/transactions/credit-card/" +
         '$cardId' +
         "/";
-    final headers = await getAuthHeaders();
-    final response = await httpDelete(url, headers: headers);
+    var headers = await getAuthHeaders();
+    var response = await httpDelete(url, headers: headers);
 
     debugPrint(
         "status code :- ${response.statusCode} DELETE ---> response ${response.body}");
@@ -535,19 +536,19 @@ class PaymentAndBankingAuth extends AuthService {
 
   // update credit card information
   Future<bool> updateCreditCard(int id) async {
-    final String url =
+    String url =
         AppConfig.baseUrl + "/api/v1/transactions/credit-card/" + '$id' + '/';
-    final headers = await getAuthHeaders();
+    var headers = await getAuthHeaders();
     late var response;
-    final _data = jsonEncode({"is_default_cc": true});
+    var _data = jsonEncode({"is_default_cc": true});
     try {
       response = await httpPatch(url, headers: headers, body: _data);
-      debugPrint('RESPONSE -----> ${response.body}');
+      print('RESPONSE -----> ${response.body}');
     } catch (e) {
       debugPrint("update credit card : $e");
     }
     if (response.statusCode != 200) {
-      final jsonData = response.body;
+      var jsonData = response.body;
       debugPrint(jsonData);
     }
     return response.statusCode == 200;
@@ -556,33 +557,32 @@ class PaymentAndBankingAuth extends AuthService {
   // Transactions graph and Category
   Future<Map<String, dynamic>?> getTransactionWeeklyReport(
       String weekNumber) async {
-    final String url =
+    String url =
         "${AppConfig.baseUrl}/api/v1/transactions/transaction-filter/?week=$weekNumber";
-    final headers = await getAuthHeaders();
-    final response = await httpGet(url, headers: headers);
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
     if (response.statusCode == 200) {
-      final jsonData = json.decode(response.body);
+      var jsonData = json.decode(response.body);
       return jsonData;
     } else {
-      final jsonData = json.decode(response.body);
+      var jsonData = json.decode(response.body);
       throw jsonData;
     }
   }
 
   Future<Map<String, dynamic>> getPaymentCategory() async {
-    final String url =
-        "${AppConfig.baseUrl}/api/v1/transactions/payment-category/";
-    final headers = await getAuthHeaders();
-    final response = await httpGet(url, headers: headers);
+    String url = "${AppConfig.baseUrl}/api/v1/transactions/payment-category/";
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
     if (response.statusCode == 200) {
-      final jsonData = json.decode(response.body);
+      var jsonData = json.decode(response.body);
 
-      final Map<String, dynamic> result = {
+      Map<String, dynamic> result = {
         "results": jsonData["results"],
       };
       return result;
     } else {
-      final jsonData = json.decode(response.body);
+      var jsonData = json.decode(response.body);
       throw jsonData;
     }
   }
@@ -597,10 +597,10 @@ class PaymentAndBankingAuth extends AuthService {
       url += "?message-id=$messageId";
     }
     debugPrint("URL:- $url");
-    final data = {"id": paymentRequest.id};
-    final headers = await getAuthHeaders();
-    final _data = jsonEncode(data);
-    final response = await httpPatch(url, headers: headers, body: _data);
+    var data = {"id": paymentRequest.id};
+    var headers = await getAuthHeaders();
+    var _data = jsonEncode(data);
+    var response = await httpPatch(url, headers: headers, body: _data);
     debugPrint("RESPONSE STATUS CODE:- ${response.statusCode}");
     debugPrint("RESPONSE BODY:- ${response.body}");
     return response;
@@ -616,10 +616,10 @@ class PaymentAndBankingAuth extends AuthService {
       url += "?message-id=$messageId";
     }
     debugPrint("URL:- $url");
-    final headers = await getAuthHeaders();
-    final data = {};
-    final _data = jsonEncode(data);
-    final response = await httpPatch(url, headers: headers, body: _data);
+    var headers = await getAuthHeaders();
+    var data = {};
+    var _data = jsonEncode(data);
+    var response = await httpPatch(url, headers: headers, body: _data);
 
     debugPrint("RESPONSE STATUS CODE:- ${response.statusCode}");
     debugPrint("RESPONSE BODY:- ${response.body}");
@@ -634,11 +634,11 @@ class PaymentAndBankingAuth extends AuthService {
   // Create Payment request with data from user input  post method  return true / false
   Future<http.Response> createPaymentRequests(Map data) async {
     if (AppConfig.enableLogs.value) debugPrint("Data sent:- $data");
-    final String url =
+    String url =
         "${AppConfig.baseUrl}/api/v1/transactions/request-payment/create/";
-    final headers = await getAuthHeaders();
-    final _data = jsonEncode(data);
-    final response = await httpPost(url, headers: headers, body: _data);
+    var headers = await getAuthHeaders();
+    var _data = jsonEncode(data);
+    var response = await httpPost(url, headers: headers, body: _data);
     debugPrint(
         "RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
     return response;
@@ -672,9 +672,9 @@ class PaymentAndBankingAuth extends AuthService {
       }
 
       if (dateTimeRange != null) {
-        final DateFormat dateFormat = DateFormat('yyyy-MM-dd');
-        final String toDate = dateFormat.format(dateTimeRange.end);
-        final String fromDate = dateFormat.format(dateTimeRange.start);
+        DateFormat dateFormat = DateFormat('yyyy-MM-dd');
+        String toDate = dateFormat.format(dateTimeRange.end);
+        String fromDate = dateFormat.format(dateTimeRange.start);
 
         if (url.contains('?')) {
           url = "$url&start_date=$fromDate&end_date=$toDate";
@@ -688,30 +688,30 @@ class PaymentAndBankingAuth extends AuthService {
 
     debugPrint('PAYMENT REQUEST URL ::: $url');
 
-    final headers = await getAuthHeaders();
-    final response = await httpGet(url, headers: headers);
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
     if (response.statusCode == 200) {
-      final List<PaymentRequest> paymentRequests = [];
+      List<PaymentRequest> paymentRequests = [];
       // This variable will hold list of transactions we got from server
       await getUser();
-      final jsonData = json.decode(response.body);
+      var jsonData = json.decode(response.body);
       for (var item in jsonData["results"]) {
-        final PaymentRequest paymentRequest = PaymentRequest.fromJson(item);
+        PaymentRequest paymentRequest = PaymentRequest.fromJson(item);
 
         paymentRequests.add(paymentRequest);
       }
 
-      final Map<String, dynamic> result = {
+      Map<String, dynamic> result = {
         "count": jsonData["count"],
         "next": jsonData["next"],
         "previous": jsonData["previous"],
         "results": paymentRequests
       };
-      final List lsts = jsonData['results'];
+      List lsts = jsonData['results'];
       lsts.forEach((element) {
-        debugPrint(element['created_at']);
+        print(element['created_at']);
 
-        debugPrint("Fola Key : $element");
+        print("Fola Key : $element");
       });
 
       return result;
@@ -754,9 +754,9 @@ class PaymentAndBankingAuth extends AuthService {
       }
 
       if (dateTimeRange != null) {
-        final DateFormat dateFormat = DateFormat('yyyy-MM-dd');
-        final String toDate = dateFormat.format(dateTimeRange.end);
-        final String fromDate = dateFormat.format(dateTimeRange.start);
+        DateFormat dateFormat = DateFormat('yyyy-MM-dd');
+        String toDate = dateFormat.format(dateTimeRange.end);
+        String fromDate = dateFormat.format(dateTimeRange.start);
 
         if (url.contains('?')) {
           url = "$url&start_date=$fromDate&end_date=$toDate";
@@ -768,10 +768,10 @@ class PaymentAndBankingAuth extends AuthService {
       url = getSecureUrl(url: next);
     }
 
-    final headers = await getAuthHeaders();
+    var headers = await getAuthHeaders();
     debugPrint("URL :::: $url");
 
-    final Response response = await httpGet(url, headers: headers);
+    Response response = await httpGet(url, headers: headers);
     debugPrint("URL resonspose :::: ${response.body}");
 
     try {
@@ -781,20 +781,20 @@ class PaymentAndBankingAuth extends AuthService {
     }
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      final List<Transaction> transactions = [];
+      List<Transaction> transactions = [];
       // This variable will hold list of transactions we got from server
       // var user = await getUser();
 
-      final jsonData = json.decode(response.body);
+      var jsonData = json.decode(response.body);
 
       for (var item in jsonData["results"]) {
         // if sender is not current user then
 
-        final Transaction transaction = Transaction.fromJson(item);
+        Transaction transaction = Transaction.fromJson(item);
 
         transactions.add(transaction);
       }
-      final Map<String, dynamic> result = {
+      Map<String, dynamic> result = {
         "count": jsonData["count"],
         "next": jsonData["next"],
         "previous": jsonData["previous"],
@@ -809,11 +809,11 @@ class PaymentAndBankingAuth extends AuthService {
   // update moment support list
   Future<bool> updateMomentSupporter(
       String momentId, String transactionId) async {
-    final String url =
+    String url =
         "${AppConfig.baseUrl}/api/v1/social/moments/add-user-to-moment-supporters-list/$momentId/";
-    final headers = await getAuthHeaders();
+    var headers = await getAuthHeaders();
     late var response;
-    final _data = jsonEncode(transactionId);
+    var _data = jsonEncode(transactionId);
     try {
       response = await httpPatch(url, headers: headers, body: _data);
     } catch (e) {
@@ -829,11 +829,11 @@ class PaymentAndBankingAuth extends AuthService {
 
   // update yarn supporter list
   Future<bool> updateYarnSupporter(String yarnId, String transactionId) async {
-    final String url =
+    String url =
         "${AppConfig.baseUrl}/api/v1/social/ask/add-user-to-yarn-supporters-list/$yarnId/";
-    final headers = await getAuthHeaders();
+    var headers = await getAuthHeaders();
     late var response;
-    final _data = jsonEncode(transactionId);
+    var _data = jsonEncode(transactionId);
     try {
       response = await httpPatch(url, headers: headers, body: _data);
     } catch (e) {
@@ -849,45 +849,45 @@ class PaymentAndBankingAuth extends AuthService {
 
   //Send payment to backend
   Future<http.Response> makePayment(Map data) async {
-    final String url = "${AppConfig.baseUrl}/api/v1/transactions/make-payment/";
-    final headers = await getAuthHeaders();
-    final _data = jsonEncode(data);
-    debugPrint('message data::::$_data');
-    final response = await httpPost(url, headers: headers, body: _data);
-    debugPrint('message::::$response');
+    String url = "${AppConfig.baseUrl}/api/v1/transactions/make-payment/";
+    var headers = await getAuthHeaders();
+    var _data = jsonEncode(data);
+    print('message data::::$_data');
+    var response = await httpPost(url, headers: headers, body: _data);
+    print('message::::$response');
     return response;
   }
 
   //Send payment to backend to update status
   Future<http.Response> updateStatusPayment(
       {String? jobId, String? transactionId}) async {
-    final String url =
+    String url =
         "${AppConfig.baseUrl}/api/v1/job-service/job/$jobId/pay-for-job/";
-    final headers = await getAuthHeaders();
-    final _data = jsonEncode({"transaction_id": transactionId});
-    debugPrint('message data::::$_data');
-    final response = await httpPatch(url, headers: headers, body: _data);
-    debugPrint('message::::$response');
+    var headers = await getAuthHeaders();
+    var _data = jsonEncode({"transaction_id": transactionId});
+    print('message data::::$_data');
+    var response = await httpPatch(url, headers: headers, body: _data);
+    print('message::::$response');
     return response;
   }
 
   //Create payment_link to backend
   Future<http.Response> makePaymentLink(Map data) async {
-    final String url = "${AppConfig.baseUrl}/api/v1/transactions/payment-link/";
-    final headers = await getAuthHeaders();
-    final _data = jsonEncode(data);
-    final response = await httpPost(url, headers: headers, body: _data);
+    String url = "${AppConfig.baseUrl}/api/v1/transactions/payment-link/";
+    var headers = await getAuthHeaders();
+    var _data = jsonEncode(data);
+    var response = await httpPost(url, headers: headers, body: _data);
 
     return response;
   }
 
   //Cash out payment_link to backend
   Future<http.Response> cashoutPaymentLink(Map data, String id) async {
-    final String url =
+    String url =
         "${AppConfig.baseUrl}/api/v1/transactions/payment-link/$id/payout/";
-    final headers = await getAuthHeaders();
-    final _data = jsonEncode(data);
-    final response = await httpPost(url, headers: headers, body: _data);
+    var headers = await getAuthHeaders();
+    var _data = jsonEncode(data);
+    var response = await httpPost(url, headers: headers, body: _data);
     log(response.toString());
     return response;
   }
@@ -902,9 +902,9 @@ class PaymentAndBankingAuth extends AuthService {
     } else {
       url = "${AppConfig.baseUrl}/api/v1/transactions/payment-link/";
     }
-    final headers = await getAuthHeaders();
+    var headers = await getAuthHeaders();
     // var _data = jsonEncode(data);
-    final response = await httpGet(
+    var response = await httpGet(
       url,
       headers: headers,
     );
@@ -922,14 +922,15 @@ class PaymentAndBankingAuth extends AuthService {
     url =
         "${AppConfig.baseUrl}/api/v1/transactions/payment-link/$paymentLinkId/cancel";
 
-    final headers = await getAuthHeaders();
+    var headers = await getAuthHeaders();
     // var _data = jsonEncode(data);
-    final response = await httpGet(
+    var response = await httpGet(
       url,
       headers: headers,
     );
     log("message${response.statusCode} and ${response.body}");
     if (response.statusCode == 201 || response.statusCode == 200) {
+      var result = jsonDecode(response.body);
       return true;
     } else {
       return false;
@@ -944,9 +945,9 @@ class PaymentAndBankingAuth extends AuthService {
     url =
         "${AppConfig.baseUrl}/api/v1/transactions/payment-link/$paymentLinkId/";
 
-    final headers = await getAuthHeaders();
+    var headers = await getAuthHeaders();
     // var _data = jsonEncode(data);
-    final response = await httpGet(
+    var response = await httpGet(
       url,
       headers: headers,
     );
@@ -963,9 +964,9 @@ class PaymentAndBankingAuth extends AuthService {
     String url;
     dynamic result;
     url = "${AppConfig.baseUrl}/api/v1/transactions/payment-link/action/";
-    final headers = await getAuthHeaders();
-    final _data = jsonEncode(data);
-    final response = await httpPatch(
+    var headers = await getAuthHeaders();
+    var _data = jsonEncode(data);
+    var response = await httpPatch(
       url,
       body: _data,
       headers: headers,
@@ -991,9 +992,9 @@ class PaymentAndBankingAuth extends AuthService {
       url =
           "${AppConfig.baseUrl}/api/v1/transactions/payment-link/?status=$filter";
     }
-    final headers = await getAuthHeaders();
+    var headers = await getAuthHeaders();
     // var _data = jsonEncode(data);
-    final response = await httpGet(
+    var response = await httpGet(
       url,
       headers: headers,
     );
@@ -1007,11 +1008,10 @@ class PaymentAndBankingAuth extends AuthService {
 
   //Delete payment_link to backend
   Future<http.Response> deletePaymentLinks(String id) async {
-    final String url =
-        "${AppConfig.baseUrl}/api/v1/transactions/payment-link/$id";
-    final headers = await getAuthHeaders();
+    String url = "${AppConfig.baseUrl}/api/v1/transactions/payment-link/$id";
+    var headers = await getAuthHeaders();
     // var _data = jsonEncode(data);
-    final response = await httpDelete(
+    var response = await httpDelete(
       url,
       headers: headers,
     );
@@ -1021,21 +1021,21 @@ class PaymentAndBankingAuth extends AuthService {
 
   //send payment of the order to particular sellers
   Future<http.Response> makePaymentForCartOrder(var data) async {
-    final String url =
+    String url =
         "${AppConfig.baseUrl}/api/v1/transactions/make-payment-for-orders/";
-    final headers = await getAuthHeaders();
-    final _data = jsonEncode(data);
-    final response = await httpPost(url, headers: headers, body: _data);
+    var headers = await getAuthHeaders();
+    var _data = jsonEncode(data);
+    var response = await httpPost(url, headers: headers, body: _data);
     debugPrint('MAKE PAYMENT ::: ${response.body}');
     return response;
   }
 
   //Send payout to backend
   Future<http.Response> accountPayout(Map data) async {
-    final String url = "${AppConfig.baseUrl}/api/v1/transactions/payout/";
-    final headers = await getAuthHeaders();
-    final _data = jsonEncode(data);
-    final response = await httpPost(url, headers: headers, body: _data);
+    String url = "${AppConfig.baseUrl}/api/v1/transactions/payout/";
+    var headers = await getAuthHeaders();
+    var _data = jsonEncode(data);
+    var response = await httpPost(url, headers: headers, body: _data);
 
     debugPrint('MAKE PAYMENT ::: ${response.body}');
     return response;
@@ -1053,21 +1053,21 @@ class PaymentAndBankingAuth extends AuthService {
     } else {
       url = getSecureUrl(url: next);
     }
-    final headers = await getAuthHeaders();
-    final response = await httpGet(url, headers: headers);
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
 
     if (response.statusCode == 200) {
-      final List<Payout> payouts = [];
-      final jsonData = json.decode(response.body);
+      List<Payout> payouts = [];
+      var jsonData = json.decode(response.body);
 
       for (var item in jsonData["results"]) {
         debugPrint("Fola payout list::: ${item}");
 
-        final timeStamp = item["credited_at"] == null
+        var timeStamp = item["credited_at"] == null
             ? item["created_at"]
             : item["credited_at"];
 
-        final Payout payout = Payout(
+        Payout payout = Payout(
           uuid: item['id'],
           status: item['status'],
           amount: item['amount'],
@@ -1085,7 +1085,7 @@ class PaymentAndBankingAuth extends AuthService {
         }
         payouts.add(payout);
       }
-      final Map<String, dynamic> result = {
+      Map<String, dynamic> result = {
         "count": jsonData["count"],
         "next": jsonData["next"],
         "previous": jsonData["previous"],
@@ -1101,10 +1101,10 @@ class PaymentAndBankingAuth extends AuthService {
 
   // top up slydo account
   Future<bool> topUpAccountByCC(Map data) async {
-    final String url = "${AppConfig.baseUrl}/api/v1/transactions/top-up/";
-    final headers = await getAuthHeaders();
-    final _data = jsonEncode(data);
-    final response = await httpPost(url, headers: headers, body: _data);
+    String url = "${AppConfig.baseUrl}/api/v1/transactions/top-up/";
+    var headers = await getAuthHeaders();
+    var _data = jsonEncode(data);
+    var response = await httpPost(url, headers: headers, body: _data);
     if (response.statusCode != 200) {
       return true;
     }
@@ -1114,11 +1114,11 @@ class PaymentAndBankingAuth extends AuthService {
 
   Future<Map<String, dynamic>?> topUpAccountByBank(
       Map<String, dynamic> data) async {
-    final String url =
+    String url =
         "${AppConfig.baseUrl}/api/v1/transactions/get-payment-reference/";
-    final headers = await getAuthHeaders();
-    final _data = jsonEncode(data);
-    final response = await httpPost(url, headers: headers, body: _data);
+    var headers = await getAuthHeaders();
+    var _data = jsonEncode(data);
+    var response = await httpPost(url, headers: headers, body: _data);
     if (response.statusCode == 200 || response.statusCode == 201) {
       return jsonDecode(response.body);
     } else {
@@ -1127,16 +1127,16 @@ class PaymentAndBankingAuth extends AuthService {
   }
 
   Future<VirtualAccount?> getVirtualAccountDetail() async {
-    final String url =
+    String url =
         "${AppConfig.baseUrl}/api/v1/transactions/get-virtual-account-info/";
-    final headers = await getAuthHeaders();
-    final response = await httpGet(url, headers: headers);
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
     debugPrint(
         "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
 
     debugPrint('GET VIRTUAL ACCOUNT ::: ${response.body}');
     if (response.statusCode == 200 || response.statusCode == 201) {
-      final VirtualAccount virtualAccount =
+      VirtualAccount virtualAccount =
           VirtualAccount.fromJson(jsonDecode(response.body));
       return virtualAccount;
     } else {
@@ -1146,11 +1146,11 @@ class PaymentAndBankingAuth extends AuthService {
 
   Future<Map<String, dynamic>?> verifyReferenceNumber(
       Map<String, dynamic> data) async {
-    final String url =
+    String url =
         "${AppConfig.baseUrl}/api/v1/transactions/get-payment-reference/";
-    final headers = await getAuthHeaders();
-    final _data = jsonEncode(data);
-    final response = await httpPost(url, headers: headers, body: _data);
+    var headers = await getAuthHeaders();
+    var _data = jsonEncode(data);
+    var response = await httpPost(url, headers: headers, body: _data);
     if (response.statusCode == 200 || response.statusCode == 201) {
       return jsonDecode(response.body);
     } else {
@@ -1160,11 +1160,10 @@ class PaymentAndBankingAuth extends AuthService {
 
   Future<bool> confirmTopUpWithReferenceNumber(
       Map<String, dynamic> data) async {
-    final String url =
-        "${AppConfig.baseUrl}/api/v1/transactions/topup-by-reference/";
-    final headers = await getAuthHeaders();
-    final _data = jsonEncode(data);
-    final response = await httpPost(url, headers: headers, body: _data);
+    String url = "${AppConfig.baseUrl}/api/v1/transactions/topup-by-reference/";
+    var headers = await getAuthHeaders();
+    var _data = jsonEncode(data);
+    var response = await httpPost(url, headers: headers, body: _data);
     debugPrint("Response ${response.statusCode}");
 
     try {
@@ -1181,12 +1180,12 @@ class PaymentAndBankingAuth extends AuthService {
   }
 
   Future<KycModel?> checkIfKycIsVerified({required String userName}) async {
-    final String url = "${AppConfig.baseUrl}/api/v1/user/kyc/$userName";
-    final headers = await getAuthHeaders();
+    String url = "${AppConfig.baseUrl}/api/v1/user/kyc/$userName";
+    var headers = await getAuthHeaders();
 
-    final response = await httpGet(url, headers: headers);
-    debugPrint('URL RESPONSE ----> ${response.statusCode}');
-    debugPrint('URL RESPONSE ----> ${response.body}');
+    var response = await httpGet(url, headers: headers);
+    print('URL RESPONSE ----> ${response.statusCode}');
+    print('URL RESPONSE ----> ${response.body}');
 
     try {
       handleServerErrors(response);
@@ -1202,23 +1201,23 @@ class PaymentAndBankingAuth extends AuthService {
   }
 
   Future<bool> addBvnNumberAndIdProof(Map<String, dynamic> data) async {
-    final headers = await getAuthHeaders();
-    final String url = "${AppConfig.baseUrl}/api/v1/user/kyc/";
+    var headers = await getAuthHeaders();
+    String url = "${AppConfig.baseUrl}/api/v1/user/kyc/";
 
     //create multipart request for POST or PATCH method
-    final request = http.MultipartRequest("POST", Uri.parse(url));
+    var request = http.MultipartRequest("POST", Uri.parse(url));
 
-    final Map<dynamic, dynamic> _data = data;
+    Map<dynamic, dynamic> _data = data;
 
     _data.forEach((k, v) {
       request.fields[k] = v.toString();
     });
-    final List<MultipartFile> newList = [];
+    List<MultipartFile> newList = [];
 
     if (data["business_registration_license"] != null ||
         data["business_registration_license"] != "") {
       // Create multipart using filepath, string or bytes
-      final multipartFile = await http.MultipartFile.fromPath(
+      var multipartFile = await http.MultipartFile.fromPath(
           "business_registration_license",
           data["business_registration_license"]);
 
@@ -1227,7 +1226,7 @@ class PaymentAndBankingAuth extends AuthService {
     }
     if (data["government_id"] != null || data["government_id"] != "") {
       // Create multipart using filepath, string or bytes
-      final multipartFile = await http.MultipartFile.fromPath(
+      var multipartFile = await http.MultipartFile.fromPath(
           "government_id", data["government_id"]);
 
       // Add multipart to newList
@@ -1237,12 +1236,12 @@ class PaymentAndBankingAuth extends AuthService {
     // Add multipart to request
     request.files.addAll(newList);
     headers.forEach((k, v) => request.headers[k] = v);
-    final response = await request.send();
+    var response = await request.send();
     if (response.statusCode == 413) {
       return Future.error(
           "Please upload smaller images, One or all of your images are too large.");
     }
-    final responseBody = await response.stream.bytesToString();
+    var responseBody = await response.stream.bytesToString();
     if (response.statusCode == 201) {
       return true;
     }
@@ -1266,9 +1265,9 @@ class PaymentAndBankingAuth extends AuthService {
   }
 
   Future<FeeStructure> getFeeStructure() async {
-    final String url = "${AppConfig.baseUrl}/api/v1/transactions/fees/";
-    final headers = await getAuthHeaders();
-    final response = await httpGet(url, headers: headers);
+    String url = "${AppConfig.baseUrl}/api/v1/transactions/fees/";
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
     debugPrint("Fee Structure Response status code ${response.statusCode}");
     debugPrint("Fee Structure Response body ${response.body}");
     if (response.statusCode == 200 || response.statusCode == 201) {

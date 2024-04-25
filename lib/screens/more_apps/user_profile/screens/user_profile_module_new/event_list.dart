@@ -3,14 +3,13 @@ import 'package:Slydo/screens/more_apps/review/models/review.dart';
 import 'package:Slydo/screens/more_apps/review/tiles/review_tile.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class EventList extends StatefulWidget {
-  final CustomerProfile? user;
+  CustomerProfile? user;
   EventList({@required this.user, Key? key}) : super(key: key);
 
   @override
@@ -23,13 +22,13 @@ class _EventListState extends State<EventList> {
   String? eventNext = "";
   String? eventPrevious = "";
   List<Review> eventList = [];
-  final ScrollController _eventScrollController = ScrollController();
+  ScrollController _eventScrollController = new ScrollController();
 
   bool noEventInList = false;
-  final GlobalKey<ScaffoldState> _eventScaffoldKey = GlobalKey<ScaffoldState>();
-  final GlobalKey<ScaffoldMessengerState> _eventMessengerScaffoldKey =
+  GlobalKey<ScaffoldState> _eventScaffoldKey = GlobalKey<ScaffoldState>();
+  GlobalKey<ScaffoldMessengerState> _eventMessengerScaffoldKey =
       GlobalKey<ScaffoldMessengerState>();
-  final RefreshController _eventRefreshController =
+  RefreshController _eventRefreshController =
       RefreshController(initialRefresh: false);
 
   @override
@@ -48,7 +47,7 @@ class _EventListState extends State<EventList> {
 
   void _onReviewRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      final connectionResult = value;
+      var connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         eventCount = 0;
@@ -157,33 +156,25 @@ class _EventListState extends State<EventList> {
         ? NoItemInList(
             msg: AppLocalization.of(context)!.noResultFound,
           )
-        : ListView.builder(
-            physics: const ClampingScrollPhysics(),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
-            controller: _eventScrollController,
-            itemCount: eventList.length + 1,
-            itemBuilder: (BuildContext context, int index) {
-              if (index == eventList.length) {
-                return _buildReviewIndicator();
-              } else {
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 16),
-                  child: ReviewTile(
-                      review: eventList[index], reviewedUser: widget.user),
-                );
-              }
-            },
-          );
-  }
-
-  Widget _buildReviewIndicator() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Center(
-        child: Opacity(
-            opacity: isEventLoading ? 1.0 : 00,
-            child: isEventLoading ? CircularLoadingIndicator() : Container()),
-      ),
-    );
+        : isEventLoading && eventList.isEmpty
+            ? buildLoadingIndicator(isLoading: isEventLoading)
+            : ListView.builder(
+                physics: ClampingScrollPhysics(),
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 32),
+                controller: _eventScrollController,
+                itemCount: eventList.length + 1,
+                itemBuilder: (BuildContext context, int index) {
+                  if (index == eventList.length) {
+                    return buildJumpingLoadingIndicator(
+                        isLoading: isEventLoading);
+                  } else {
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 16),
+                      child: ReviewTile(
+                          review: eventList[index], reviewedUser: widget.user),
+                    );
+                  }
+                },
+              );
   }
 }

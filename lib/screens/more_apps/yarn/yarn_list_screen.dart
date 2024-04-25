@@ -11,13 +11,12 @@ import '../../../utils/util.dart';
 import '../../../widget/no_item_in_list.dart';
 import 'models/Topics/yarn_model.dart';
 import 'tiles/yarn_list_tile.dart';
-import 'widgets/yarn_shimmer.dart';
 import 'yarn_auth.dart';
 import 'yarn_detail_screen.dart';
 
 class YarnListScreen extends StatefulWidget {
   final String? selectedCategory;
-  final Function(bool)? onPageRefresh;
+  Function(bool)? onPageRefresh;
 
   YarnListScreen({
     Key? key,
@@ -42,7 +41,7 @@ class YarnListScreenState extends State<YarnListScreen> {
   RefreshController refreshController =
       RefreshController(initialRefresh: false);
   String? selectedId;
-  final ScrollController _scrollController = ScrollController();
+  ScrollController _scrollController = new ScrollController();
   late YarnDashboardBloc yarnDashboardBloc;
   late DashboardBloc _dashboardBloc;
 
@@ -71,9 +70,9 @@ class YarnListScreenState extends State<YarnListScreen> {
         isLoading = true;
         if (mounted) setState(() {});
 
-        final String latestTrending = 'latest';
+        String latestTrending = 'latest';
 
-        final Map<String, dynamic>? result = await YarnAuth().getAllYarn(
+        Map<String, dynamic>? result = await YarnAuth().getAllYarn(
             next, previous ?? '',
             type: type,
             isType: isType,
@@ -93,21 +92,21 @@ class YarnListScreenState extends State<YarnListScreen> {
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
-        final tempList = result['results'];
+        var tempList = result['results'];
 
         if (tempList.isNotEmpty) {
           noList = false;
           isLoading = false;
 
-          final List<Yarn> createYarnTopicList =
+          List<Yarn> createYarnTopicList =
               List.from(yarnDashboardBloc.createYarnTopicList);
-          final List<Yarn> deleteYarnTopicList =
+          List<Yarn> deleteYarnTopicList =
               List.from(yarnDashboardBloc.deleteYarnTopicList);
-          final List<Yarn> reYarnTopicList =
+          List<Yarn> reYarnTopicList =
               List.from(yarnDashboardBloc.reYarnTopicList);
 
           /// Get the common CreateYarnTopicList objects in both lists
-          final List<Yarn> commonCreateYarnTopicList = tempList
+          List<Yarn> commonCreateYarnTopicList = tempList
               .where((o1) => createYarnTopicList.any((o2) => o2.id == o1.id))
               .toList();
 
@@ -116,7 +115,7 @@ class YarnListScreenState extends State<YarnListScreen> {
               (o1) => commonCreateYarnTopicList.any((o2) => o2.id == o1.id));
 
           /// Get the common reYarnTopicList objects in both lists
-          final List<Yarn> commonReYarnTopicList = tempList
+          List<Yarn> commonReYarnTopicList = tempList
               .where((o1) => reYarnTopicList.any((o2) => o2.id == o1.id))
               .toList();
 
@@ -128,11 +127,10 @@ class YarnListScreenState extends State<YarnListScreen> {
             ///add createYarnTopicList to tempList if any
             if (widget.selectedCategory != null) {
               // Filter the list of createYarnTopicList by id
-              final List<Yarn> filteredListCreateYarnTopicList =
-                  yarnDashboardBloc.createYarnTopicList
-                      .where((item) =>
-                          item.category!.id == widget.selectedCategory)
-                      .toList();
+              List<Yarn>? filteredListCreateYarnTopicList = yarnDashboardBloc
+                  .createYarnTopicList
+                  .where((item) => item.category!.id == widget.selectedCategory)
+                  .toList();
 
               // Check if any matching createYarnTopicList
               if (filteredListCreateYarnTopicList.isNotEmpty) {
@@ -152,7 +150,7 @@ class YarnListScreenState extends State<YarnListScreen> {
 
             if (widget.selectedCategory != null) {
               // Filter the list of reYarnTopicList by id
-              final List<Yarn> filteredListReYarnTopicList = yarnDashboardBloc
+              List<Yarn>? filteredListReYarnTopicList = yarnDashboardBloc
                   .reYarnTopicList
                   .where((item) =>
                       item.reYarn!.category!.id == widget.selectedCategory)
@@ -235,7 +233,7 @@ class YarnListScreenState extends State<YarnListScreen> {
         final position = _scrollController.position.minScrollExtent;
         _scrollController.animateTo(
           position,
-          duration: const Duration(milliseconds: 1),
+          duration: Duration(milliseconds: 1),
           curve: Curves.easeOut,
         );
       }
@@ -266,13 +264,13 @@ class YarnListScreenState extends State<YarnListScreen> {
   Widget _buildListView() {
     if (!noList) {
       return ListView.separated(
-        physics: const ClampingScrollPhysics(),
-        padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
+        physics: ClampingScrollPhysics(),
+        padding: EdgeInsets.only(left: 16, right: 16, bottom: 16),
         controller: _scrollController,
         itemCount: yarnTopicList.length + 1,
         itemBuilder: (BuildContext context, int index) {
           if (index == yarnTopicList.length) {
-            return _buildLoadingIndicator();
+            return buildShimmerLoadingIndicator(isLoading: isLoading);
           }
 
           return InkWell(
@@ -283,7 +281,7 @@ class YarnListScreenState extends State<YarnListScreen> {
                   screen: YarnDetailScreen(
                     yarn: yarnTopicList[index],
                     onDeleteYarn: (Yarn yarn) {
-                      final List<Yarn> tempList = [];
+                      List<Yarn> tempList = [];
                       tempList.add(yarn);
                       yarnDashboardBloc.addDeleteYarnTopicList(tempList);
                       yarnTopicList.removeWhere((item) => item.id == yarn.id);
@@ -297,14 +295,14 @@ class YarnListScreenState extends State<YarnListScreen> {
             child: YarnTile(
               yarn: yarnTopicList[index],
               onDeleteYarn: (Yarn yarn) {
-                final List<Yarn> tempList = [];
+                List<Yarn> tempList = [];
                 tempList.add(yarn);
                 yarnDashboardBloc.addDeleteYarnTopicList(tempList);
                 yarnTopicList.removeWhere((item) => item.id == yarn.id);
                 if (mounted) setState(() {});
               },
               onReYarn: (Yarn yarn) {
-                final List<Yarn> tempList = [];
+                List<Yarn> tempList = [];
                 tempList.add(yarn);
                 yarnDashboardBloc.addReYarnTopicList(tempList);
                 // yarnTopicList.insert(0, yarn);
@@ -312,7 +310,7 @@ class YarnListScreenState extends State<YarnListScreen> {
                 if (mounted) setState(() {});
               },
               onUpdateYarn: (Yarn yarn) {
-                final int index = yarnTopicList
+                int index = yarnTopicList
                     .indexWhere((element) => element.id == yarn.id);
                 yarnTopicList[index] = yarn;
                 if (mounted) setState(() {});
@@ -336,7 +334,7 @@ class YarnListScreenState extends State<YarnListScreen> {
         separatorBuilder: (context, int) {
           return Column(
             children: [
-              const SizedBox(
+              SizedBox(
                 height: 10,
               ),
               Divider(
@@ -354,16 +352,9 @@ class YarnListScreenState extends State<YarnListScreen> {
     );
   }
 
-  Widget _buildLoadingIndicator() {
-    return Opacity(
-      opacity: isLoading ? 1.0 : 00,
-      child: isLoading ? const YarnShimmer() : Container(),
-    );
-  }
-
   void onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      final connectionResult = value;
+      var connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         count = 0;
@@ -389,7 +380,7 @@ class YarnListScreenState extends State<YarnListScreen> {
   }
 
   void onCreateYarn(Yarn? yarnTopic) {
-    final List<Yarn> tempList = [];
+    List<Yarn> tempList = [];
     tempList.add(yarnTopic!);
     yarnDashboardBloc.addCreateYarnTopicList(tempList);
 

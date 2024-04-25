@@ -24,9 +24,9 @@ class ShippingOptionsList extends StatefulWidget {
 }
 
 class _ShippingOptionsListState extends State<ShippingOptionsList> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey =
-      GlobalKey<ScaffoldMessengerState>();
+      new GlobalKey<ScaffoldMessengerState>();
 
   final _auth = PaymentAndBankingAuth();
   late UserBloc userBloc;
@@ -34,8 +34,8 @@ class _ShippingOptionsListState extends State<ShippingOptionsList> {
   String? next = "";
   String? previous = "";
   List shippingOptionsList = [];
-  final ScrollController _scrollController = ScrollController();
-  final RefreshController _refreshController =
+  ScrollController _scrollController = new ScrollController();
+  RefreshController _refreshController =
       RefreshController(initialRefresh: false);
   bool isLoading = false;
   bool noItemInList = false;
@@ -67,7 +67,7 @@ class _ShippingOptionsListState extends State<ShippingOptionsList> {
   void _onRefresh() async {
     //check network connectivity and if true then refresh the list
     Connectivity().checkConnectivity().then((value) {
-      final connectionResult = value;
+      var connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         count = 0;
@@ -136,7 +136,7 @@ class _ShippingOptionsListState extends State<ShippingOptionsList> {
       ),
       actions: <Widget>[
         addShippingOptionBtn(),
-        const SizedBox(
+        SizedBox(
           width: 16,
         ),
       ],
@@ -171,24 +171,26 @@ class _ShippingOptionsListState extends State<ShippingOptionsList> {
             msg: AppLocalization.of(context)!
                 .youDontHaveAnyShippingOptionPleaseAddOne,
           )
-        : ListView.builder(
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            //+1 for progressbar
-            itemCount: shippingOptionsList.length + 1,
-            itemBuilder: (BuildContext context, int index) {
-              if (index == shippingOptionsList.length) {
-                return buildLoadingIndicator(isLoading: isLoading);
-              } else {
-                return _getSlidableWithLists(
-                    context,
-                    bankAccountTile(
-                      shippingModel: shippingOptionsList[index],
-                    ),
-                    shippingOptionsList[index]);
-              }
-            },
-            controller: _scrollController,
-          );
+        : isLoading && shippingOptionsList.isEmpty
+            ? buildLoadingIndicator(isLoading: isLoading)
+            : ListView.builder(
+                padding: EdgeInsets.symmetric(vertical: 16),
+                //+1 for progressbar
+                itemCount: shippingOptionsList.length + 1,
+                itemBuilder: (BuildContext context, int index) {
+                  if (index == shippingOptionsList.length) {
+                    return buildJumpingLoadingIndicator(isLoading: isLoading);
+                  } else {
+                    return _getSlidableWithLists(
+                        context,
+                        bankAccountTile(
+                          shippingModel: shippingOptionsList[index],
+                        ),
+                        shippingOptionsList[index]);
+                  }
+                },
+                controller: _scrollController,
+              );
   }
 
   void getList() async {
@@ -199,7 +201,7 @@ class _ShippingOptionsListState extends State<ShippingOptionsList> {
             isLoading = true;
           });
         }
-        final Map<String, dynamic>? result =
+        Map<String, dynamic>? result =
             await _auth.getShippingOptions(next, previous);
         if (result == null) {
           isLoading = false;
@@ -208,7 +210,7 @@ class _ShippingOptionsListState extends State<ShippingOptionsList> {
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
-        final tempList = result['results'];
+        var tempList = result['results'];
         if (mounted) {
           setState(() {
             isLoading = false;
@@ -226,7 +228,7 @@ class _ShippingOptionsListState extends State<ShippingOptionsList> {
         _scaffoldMessengerKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: const Duration(milliseconds: 500),
+          duration: Duration(milliseconds: 500),
         ));
       }
     }
@@ -235,15 +237,15 @@ class _ShippingOptionsListState extends State<ShippingOptionsList> {
   Widget bankAccountTile({required ShippingOptionsListModel shippingModel}) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       shadowColor: boxShadowTwo,
       elevation: 0,
       child: Container(
         decoration: decorateBox(),
         child: ListTile(
           dense: true,
-          contentPadding: const EdgeInsets.only(
-              top: 15.0, bottom: 15.0, left: 10.0, right: 10.0),
+          contentPadding:
+              EdgeInsets.only(top: 15.0, bottom: 15.0, left: 10.0, right: 10.0),
           trailing: getAmount(shippingModel: shippingModel),
           leading: getShippingOptionName(shippingModel: shippingModel),
         ),
@@ -287,11 +289,11 @@ class _ShippingOptionsListState extends State<ShippingOptionsList> {
     return Slidable(
       controller: _slideController,
       direction: Axis.horizontal,
-      actionPane: const SlidableBehindActionPane(),
+      actionPane: SlidableBehindActionPane(),
       actionExtentRatio: 0.25,
+      child: VerticalListItem(bankAccountTile),
       actions: listActionSlideActions(shippingModel: shippingModel),
       secondaryActions: listSecondaryActions(shippingModel: shippingModel),
-      child: VerticalListItem(bankAccountTile),
     );
   }
 
@@ -344,7 +346,7 @@ class _ShippingOptionsListState extends State<ShippingOptionsList> {
     if (mounted) setState(() {});
   }
 
-  void showDeleteShippingOptionDialog(ShippingOptionsListModel? shippingModel) {
+  showDeleteShippingOptionDialog(ShippingOptionsListModel? shippingModel) {
     showDialogBox(
         context: context,
         actionOneTextColor: white,
@@ -374,9 +376,8 @@ class _ShippingOptionsListState extends State<ShippingOptionsList> {
     super.dispose();
   }
 
-  Future<void> deleteShippingOption(
-      ShippingOptionsListModel? shippingModel) async {
-    final bool? data = await _auth.deleteShippingOption(shippingModel?.id ?? 0);
+  deleteShippingOption(ShippingOptionsListModel? shippingModel) async {
+    bool? data = await _auth.deleteShippingOption(shippingModel!.id!);
     if (data != null && data) {
       showToast(message: "Shipping Option Deleted Successfully");
       //refresh list

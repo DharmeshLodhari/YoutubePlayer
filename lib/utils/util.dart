@@ -4,6 +4,7 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
+import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_shimmer.dart';
 import 'package:Slydo/utils/date_time_and_money_converter.dart';
 import 'package:Slydo/utils/enums.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
@@ -19,6 +20,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:jumping_dot/jumping_dot.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path_provider/path_provider.dart' as pathProvider;
 import 'package:permission_handler/permission_handler.dart';
@@ -629,13 +631,38 @@ Widget getChatSettingTitle() {
   );
 }
 
+Widget buildShimmerLoadingIndicator({required bool isLoading}) {
+  return Opacity(
+    opacity: isLoading ? 1.0 : 00,
+    child: isLoading ? YarnShimmer() : Container(),
+  );
+}
+
 Widget buildLoadingIndicator({required bool isLoading}) {
   return Padding(
     padding: const EdgeInsets.all(8.0),
     child: Center(
       child: Opacity(
         opacity: isLoading ? 1.0 : 00,
-        child: CircularLoadingIndicator(),
+        child: isLoading ? CircularLoadingIndicator() : Container(),
+      ),
+    ),
+  );
+}
+
+Widget buildJumpingLoadingIndicator({required bool isLoading}) {
+  return Padding(
+    padding: const EdgeInsets.all(15.0),
+    child: Center(
+      child: Opacity(
+        opacity: isLoading ? 1.0 : 00,
+        child: isLoading
+            ? JumpingDots(
+                color: navyBlue,
+                radius: 15,
+                numberOfDots: 3,
+              )
+            : Container(),
       ),
     ),
   );

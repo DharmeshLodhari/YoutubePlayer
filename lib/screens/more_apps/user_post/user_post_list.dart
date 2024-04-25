@@ -4,7 +4,6 @@ import 'package:Slydo/screens/more_apps/user_post/tile/user_post_tile.dart';
 import 'package:Slydo/screens/more_apps/user_post/user_post_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
@@ -166,41 +165,32 @@ class _UserPostListState extends State<UserPostList> {
         ? NoItemInList(
             msg: AppLocalization.of(context)!.noPosts,
           )
-        : ListView.builder(
-            physics: const ClampingScrollPhysics(),
-            padding:
-                const EdgeInsets.only(right: 16, left: 16, top: 8, bottom: 0),
-            controller: _postScrollController,
-            itemCount: postList.length + 1,
-            itemBuilder: (BuildContext context, int index) {
-              if (index == postList.length) {
-                return _buildReviewIndicator();
-              } else {
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 16),
-                  child: PostTile(
-                    post: postList[index],
-                    showAuthorDetails: false,
-                    onDeleteBlog: () {
-                      debugPrint('DELETED FROM DETAILS PAGE');
-                      _onPostRefresh();
-                    },
-                  ),
-                );
-              }
-            },
-          );
-  }
-
-  Widget _buildReviewIndicator() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Center(
-        child: Opacity(
-          opacity: isPostLoading ? 1.0 : 00,
-          child: isPostLoading ? CircularLoadingIndicator() : Container(),
-        ),
-      ),
-    );
+        : isPostLoading && postList.isEmpty
+            ? buildLoadingIndicator(isLoading: isPostLoading)
+            : ListView.builder(
+                physics: const ClampingScrollPhysics(),
+                padding: const EdgeInsets.only(
+                    right: 16, left: 16, top: 8, bottom: 0),
+                controller: _postScrollController,
+                itemCount: postList.length + 1,
+                itemBuilder: (BuildContext context, int index) {
+                  if (index == postList.length) {
+                    return buildJumpingLoadingIndicator(
+                        isLoading: isPostLoading);
+                  } else {
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 16),
+                      child: PostTile(
+                        post: postList[index],
+                        showAuthorDetails: false,
+                        onDeleteBlog: () {
+                          debugPrint('DELETED FROM DETAILS PAGE');
+                          _onPostRefresh();
+                        },
+                      ),
+                    );
+                  }
+                },
+              );
   }
 }

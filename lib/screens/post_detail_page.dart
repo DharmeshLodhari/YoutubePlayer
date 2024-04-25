@@ -83,13 +83,12 @@ class _PostDetailPageState extends State<PostDetailPage> {
     super.initState();
     debugPrint('POST ID ---> ${widget.postId}');
     getPostFuture = UserPostAuth().getSinglePost(postID: widget.postId!);
-    Future.delayed(const Duration(seconds: 3), () {
+    Future.delayed(Duration(seconds: 3), () {
       UserPostAuth().updateBlogView(postId: widget.postId!);
     });
   }
 
-  void getBlogDetailsAndInitializeVideoController(
-      {required UserPost userPost}) {
+  getBlogDetailsAndInitializeVideoController({required UserPost userPost}) {
     if (userPost.video != null && userPost.video!.isNotEmpty) {
       _mainVideoController = VideoPlayerController.network(userPost.video!);
 
@@ -138,10 +137,10 @@ class _PostDetailPageState extends State<PostDetailPage> {
 
       _quillController = flutterQuill.QuillController(
         document: flutterQuill.Document.fromJson(blogBodyTextJson),
-        selection: const TextSelection.collapsed(offset: -1),
+        selection: TextSelection.collapsed(offset: -1),
       );
     } catch (e) {
-      debugPrint('CANNOT DECODE BLOG TEXT: ${e.toString()}');
+      print('CANNOT DECODE BLOG TEXT: ${e.toString()}');
     }
   }
 
@@ -202,7 +201,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
     super.dispose();
   }
 
-  void reloadPage() {
+  reloadPage() {
     setState(() {
       getPostFuture = UserPostAuth().getSinglePost(postID: widget.postId!);
     });
@@ -361,10 +360,10 @@ class _PostDetailPageState extends State<PostDetailPage> {
               style: TextStyle(
                   color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
             )
-          : const SizedBox.shrink(),
+          : SizedBox.shrink(),
       actions: <Widget>[
-        if (widget.postType == PostType.blog) menuIcon() else shareBtn(),
-        const SizedBox(
+        widget.postType == PostType.blog ? menuIcon() : shareBtn(),
+        SizedBox(
           width: 16,
         ),
       ],
@@ -394,7 +393,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
         context: context,
         builder: (BuildContext context) {
           return Card(
-              shape: const RoundedRectangleBorder(
+              shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(20),
                     topRight: Radius.circular(20)),
@@ -402,8 +401,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
               color: Colors.white,
               margin: EdgeInsets.zero,
               child: Container(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                padding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: generateBottomSheetItem(),
@@ -413,7 +411,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
   }
 
   List<Widget> generateBottomSheetItem() {
-    final List<Widget> list = [];
+    List<Widget> list = [];
 
     if (userPost != null) {
       list.add(
@@ -422,8 +420,8 @@ class _PostDetailPageState extends State<PostDetailPage> {
           iconData: SlydoAppIcon.share,
           onTap: () {
             Navigator.pop(context);
-            final shareBody =
-                "https://slydo.co/${userPost!.authorUsername}/blog/${userPost!.id}";
+            var shareBody =
+                "https://slydo.co/store/${userPost!.authorUsername}/blogs/${userPost!.id}";
             Share.share(shareBody, subject: "${userPost!.authorName}");
           },
         ),
@@ -527,7 +525,6 @@ class _PostDetailPageState extends State<PostDetailPage> {
                 ..attachment = {
                   "blog": userPost?.toJson().cast<String, dynamic>() ?? {}
                 };
-              // ignore: prefer_final_locals
               bool data = await YarnAuth().addYarnAndQuestion(yarn, '', '');
               if (data) {
                 showToast(message: "Shared in Yarn successfully");
@@ -535,8 +532,8 @@ class _PostDetailPageState extends State<PostDetailPage> {
             }));
   }
 
-  Future<void> sendPostToUserInChat() async {
-    final List<ChatConversation?> listOfRecipient =
+  sendPostToUserInChat() async {
+    List<ChatConversation?> listOfRecipient =
         await ShareInChat().selectShareCustomer(context);
     debugPrint("Selected users = ${listOfRecipient.length}");
 
@@ -545,11 +542,11 @@ class _PostDetailPageState extends State<PostDetailPage> {
     });
   }
 
-  void addUserPostToChat({
+  addUserPostToChat({
     required ChatConversation recipientUser,
     String? url,
   }) async {
-    final Map<String, dynamic> data = {
+    Map<String, dynamic> data = {
       "meta_data": jsonEncode({
         "id": userPost!.id,
         "title": userPost!.title,
@@ -558,7 +555,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
         "author_avatar": userPost!.authorAvatar,
         "author_username": userPost!.authorUsername,
       }),
-      "check_id": const Uuid().v4(),
+      "check_id": Uuid().v4(),
       "conversation_id": recipientUser.conversationId,
       "author": userBloc.user.userName,
       "message": 'blog_post',
@@ -642,7 +639,7 @@ class _PostDetailPageScaffoldBodyState
     user = Provider.of<UserBloc>(context).user;
 
     if (widget.tags is List<String>) {
-      debugPrint('myVariable is of type List<String>');
+      print('myVariable is of type List<String>');
       for (String item in widget.tags) {
         if (hasAlphabeticCharacters(item)) {
           showTag = true;
@@ -650,8 +647,8 @@ class _PostDetailPageScaffoldBodyState
         }
       }
     } else if (widget.tags is List<List<String>>) {
-      final List<List<String>> myList = widget.tags.cast<List<String>>();
-      debugPrint('myVariable is of type List<List<String>>');
+      List<List<String>> myList = widget.tags.cast<List<String>>();
+      print('myVariable is of type List<List<String>>');
       for (List<String> innerList in myList) {
         for (String item in innerList) {
           if (hasAlphabeticCharacters(item)) {
@@ -661,7 +658,7 @@ class _PostDetailPageScaffoldBodyState
         }
       }
     } else {
-      debugPrint('myVariable is not of the expected types');
+      print('myVariable is not of the expected types');
     }
 
     return widget.isLoading
@@ -672,31 +669,29 @@ class _PostDetailPageScaffoldBodyState
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const SizedBox(height: 6),
-                if (widget.chewieMainController != null)
-                  videoPlayer()
-                else
-                  postImage(),
-                const SizedBox(
+                SizedBox(height: 6),
+                widget.chewieMainController != null
+                    ? videoPlayer()
+                    : postImage(),
+                SizedBox(
                   height: 20,
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  padding: EdgeInsets.symmetric(horizontal: 16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       newsTitle(),
-                      const SizedBox(
+                      SizedBox(
                         height: 20,
                       ),
                       bloggerDetail(),
-                      if (widget.postType == PostType.blog)
-                        const SizedBox.shrink()
-                      else
-                        newsShortDescription(),
-                      const SizedBox(height: 20),
+                      widget.postType == PostType.blog
+                          ? SizedBox.shrink()
+                          : newsShortDescription(),
+                      SizedBox(height: 20),
                       newsFullDescription(),
-                      const SizedBox(height: 20),
+                      SizedBox(height: 20),
                       Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -705,7 +700,7 @@ class _PostDetailPageScaffoldBodyState
                             size: 16,
                             color: blackFont.withOpacity(0.8),
                           ),
-                          const SizedBox(width: 4),
+                          SizedBox(width: 4),
                           Text(
                             getFormattedViewCount(
                               noOfViews:
@@ -719,26 +714,26 @@ class _PostDetailPageScaffoldBodyState
                             ),
                           ),
                           _buildLikeUnLikeReportTile(),
-                          const SizedBox(width: 16),
+                          SizedBox(width: 16),
                           _commentWidget(),
                         ],
                       ),
-                      const SizedBox(height: 20),
+                      SizedBox(height: 20),
                       Divider(
                         thickness: 1,
                         color: dividerColor,
                       ),
                       if (showTag == true) ...[
-                        const SizedBox(
+                        SizedBox(
                           height: 20,
                         ),
                         blogChips(),
                       ],
-                      const SizedBox(
+                      SizedBox(
                         height: 20,
                       ),
                       relatedPost(),
-                      const SizedBox(
+                      SizedBox(
                         height: 20,
                       ),
                     ],
@@ -750,13 +745,13 @@ class _PostDetailPageScaffoldBodyState
   }
 
   bool hasAlphabeticCharacters(String item) {
-    final RegExp regex = RegExp(r'[a-zA-Z]');
+    RegExp regex = RegExp(r'[a-zA-Z]');
     return regex.hasMatch(item);
   }
 
-  Widget _commentWidget() {
+  _commentWidget() {
     if (!widget.userPost.enableCommenting!) {
-      return const SizedBox.shrink();
+      return SizedBox.shrink();
     }
     return Row(
       children: [
@@ -765,7 +760,7 @@ class _PostDetailPageScaffoldBodyState
           size: 16,
           color: blackFont.withOpacity(0.8),
         ),
-        const SizedBox(width: 4),
+        SizedBox(width: 4),
         Text(
           getFormattedViewCount(
             noOfViews: widget.views != null ? widget.views! : 1,
@@ -783,17 +778,17 @@ class _PostDetailPageScaffoldBodyState
 
   Widget _buildLikeUnLikeReportTile() {
     if (!widget.userPost.enableLike!) {
-      return const SizedBox.shrink();
+      return SizedBox.shrink();
     }
 
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        const SizedBox(width: 16),
+        SizedBox(width: 16),
         Row(
           children: [
             _buildReviewLike(),
-            const SizedBox(width: 16),
+            SizedBox(width: 16),
             _buildPostUnLike(),
           ],
         ),
@@ -820,7 +815,7 @@ class _PostDetailPageScaffoldBodyState
               size: 16,
               color: widget.userPost.userLiked == true ? navyBlue : blackFont,
             ),
-            const SizedBox(width: 4),
+            SizedBox(width: 4),
             Text(
               widget.userPost.likes != null
                   ? widget.userPost.likes!.toString()
@@ -853,7 +848,7 @@ class _PostDetailPageScaffoldBodyState
               color:
                   widget.userPost.userDisLiked! == true ? mateRed : blackFont,
             ),
-            const SizedBox(width: 4),
+            SizedBox(width: 4),
             Text(
               widget.userPost.dislikes != null
                   ? widget.userPost.dislikes!.toString()
@@ -930,7 +925,7 @@ class _PostDetailPageScaffoldBodyState
         controller: widget.chewieMainController!,
       );
     } else {
-      return const SizedBox.shrink();
+      return SizedBox.shrink();
     }
   }
 
@@ -1003,16 +998,15 @@ class _PostDetailPageScaffoldBodyState
               ),
             ],
           ),
-          if (widget.readTime == 0)
-            CustomChip(
-              text: '1 min read',
-              padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 8),
-            )
-          else
-            CustomChip(
-              text: '${widget.readTime} min read',
-              padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 8),
-            )
+          widget.readTime == 0
+              ? CustomChip(
+                  text: '1 min read',
+                  padding: EdgeInsets.symmetric(vertical: 5, horizontal: 8),
+                )
+              : CustomChip(
+                  text: '${widget.readTime} min read',
+                  padding: EdgeInsets.symmetric(vertical: 5, horizontal: 8),
+                )
         ],
       ),
     );
@@ -1021,7 +1015,7 @@ class _PostDetailPageScaffoldBodyState
   Widget newsShortDescription() {
     return Column(
       children: [
-        const SizedBox(
+        SizedBox(
           height: 20,
         ),
         Text(
@@ -1071,7 +1065,7 @@ class _PostDetailPageScaffoldBodyState
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               relatedPostTitle(),
-              const SizedBox(height: 10),
+              SizedBox(height: 10),
               Column(
                   children: widget.newsListRelatedPostItems!
                       .map((news) => Container(
@@ -1080,7 +1074,7 @@ class _PostDetailPageScaffoldBodyState
                                 NewsTile(
                                   newsListItem: news,
                                 ),
-                                const SizedBox(
+                                SizedBox(
                                   height: 16,
                                 )
                               ],
@@ -1106,7 +1100,7 @@ class _PostDetailPageScaffoldBodyState
 }
 
 String formatDate(DateTime dateTime) {
-  final DateFormat dateFormat = DateFormat("MMM dd");
+  DateFormat dateFormat = DateFormat("MMM dd");
   return dateFormat.format(dateTime);
 }
 
@@ -1140,7 +1134,7 @@ class _SimilarPostsForBlogState extends State<SimilarPostsForBlog> {
       builder: (context, AsyncSnapshot<List<UserPost>> snapShot) {
         if (snapShot.connectionState == ConnectionState.done) {
           if (snapShot.hasError) {
-            return const Text('Something went wrong');
+            return Text('Something went wrong');
           }
           if (snapShot.hasData && snapShot.data!.isNotEmpty) {
             return Column(
@@ -1157,8 +1151,8 @@ class _SimilarPostsForBlogState extends State<SimilarPostsForBlog> {
                 ),
                 ListView.builder(
                   shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  padding: const EdgeInsets.symmetric(vertical: 32),
+                  physics: NeverScrollableScrollPhysics(),
+                  padding: EdgeInsets.symmetric(vertical: 32),
                   itemCount: snapShot.data!.length,
                   itemBuilder: (BuildContext context, int index) {
                     return Padding(
@@ -1173,10 +1167,10 @@ class _SimilarPostsForBlogState extends State<SimilarPostsForBlog> {
               ],
             );
           } else {
-            return const SizedBox.shrink();
+            return SizedBox.shrink();
           }
         } else {
-          return const CircularProgressIndicator();
+          return CircularProgressIndicator();
         }
       },
     );

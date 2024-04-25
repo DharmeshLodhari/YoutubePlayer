@@ -36,7 +36,7 @@ import '../../../user_profile/screens/user_profile_module_new/profile_template/u
 import '../../payment_and_banking_auth.dart';
 
 class SlydoSlydoTransfer extends StatefulWidget {
-  final dynamic arguments;
+  var arguments;
   final Function(bool)? callback;
 
   SlydoSlydoTransfer({this.arguments, this.callback});
@@ -47,10 +47,10 @@ class SlydoSlydoTransfer extends StatefulWidget {
 }
 
 class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
-  final TextEditingController _recipientController = TextEditingController();
-  final TextEditingController _amountController = TextEditingController();
+  TextEditingController _recipientController = TextEditingController();
+  TextEditingController _amountController = TextEditingController();
   late TextEditingController _referenceController;
-  final FocusNode _recipientFocus = FocusNode();
+  FocusNode _recipientFocus = FocusNode();
   late http.Response response;
 
   final _auth = PaymentAndBankingAuth();
@@ -99,7 +99,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
 
   @override
   void initState() {
-    final String? defaultReferenceText =
+    String? defaultReferenceText =
         widget.arguments['defaultReferenceText'] != null
             ? widget.arguments['defaultReferenceText']
             : null;
@@ -156,7 +156,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
     super.initState();
   }
 
-  Future<void> getRecipientProfileAndGetCategory() async {
+  getRecipientProfileAndGetCategory() async {
     if (widget.arguments['recipient'] != null) {
       Provider.of<CustomerProfileBloc>(context, listen: false).customer =
           await UserAuth().fetchCustomerProfile(widget.arguments['recipient']);
@@ -166,7 +166,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
     }
   }
 
-  Future<void> getBankAccountDetail() async {
+  void getBankAccountDetail() async {
     virtualAccount = await DatabaseHelper().getVirtualAccount();
     // await getAccountBalance();
     currentBalance = await getAccountBalance();
@@ -227,7 +227,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
     _auth.getPaymentCategory().then((result) {
       if (mounted) {
         setState(() {
-          final List categoriesList = result["results"]["data"];
+          List categoriesList = result["results"]["data"];
           categoriesList.forEach((data) {
             paymentCategories.add(data["name"]);
           });
@@ -278,7 +278,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
   }
 
   Widget scaffoldBody() {
-    final bool isScreenIsSmall = MediaQuery.of(context).size.height < 600;
+    bool isScreenIsSmall = MediaQuery.of(context).size.height < 600;
 
     return isLoading
         ? Center(
@@ -327,28 +327,25 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
                                         isFromMoment == true) ...[
                                       const SizedBox()
                                     ] else ...[
-                                      if (showMoreOption)
-                                        getMoreOption()
-                                      else
-                                        Container(),
+                                      showMoreOption
+                                          ? getMoreOption()
+                                          : Container(),
                                       getMoreOptionTrigger(),
                                     ],
-                                    if (errorMessage == "")
-                                      Container()
-                                    else
-                                      Text(
-                                        errorMessage,
-                                        style: TextStyle(
-                                            color: mateRed,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 16),
-                                      ),
-                                    if (errorMessage == "")
-                                      Container()
-                                    else
-                                      const SizedBox(
-                                        height: 20,
-                                      ),
+                                    errorMessage == ""
+                                        ? Container()
+                                        : Text(
+                                            errorMessage,
+                                            style: TextStyle(
+                                                color: mateRed,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 16),
+                                          ),
+                                    errorMessage == ""
+                                        ? Container()
+                                        : const SizedBox(
+                                            height: 20,
+                                          ),
                                   ],
                                 ),
                               ),
@@ -367,35 +364,35 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
                         if (amount == 0.0) ...[
                           getSubmitButton()
                         ] else ...[
-                          if (canDoSlydoTransfer(amount!, currentBalance!))
-                            getSubmitButton()
-                          else
-                            Container(
-                              child: Center(
-                                  child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 16.0),
-                                      child: Text.rich(TextSpan(
-                                          text: AppLocalization.of(context)!
-                                              .minimumTransfer,
-                                          style: TextStyle(
-                                              fontSize: 12,
-                                              color: blackFont,
-                                              fontWeight: FontWeight.w600),
-                                          children: <InlineSpan>[
-                                            TextSpan(
-                                              text: worldCurrencies[userBloc
-                                                      .user.currency!]! +
-                                                  moneyDisplayNormalizer(
-                                                      availableTransfer()),
+                          canDoSlydoTransfer(amount!, currentBalance!)
+                              ? getSubmitButton()
+                              : Container(
+                                  child: Center(
+                                      child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 16.0),
+                                          child: Text.rich(TextSpan(
+                                              text: AppLocalization.of(context)!
+                                                  .minimumTransfer,
                                               style: TextStyle(
                                                   fontSize: 12,
                                                   color: blackFont,
-                                                  fontFamily: "Inter",
                                                   fontWeight: FontWeight.w600),
-                                            )
-                                          ])))),
-                            ),
+                                              children: <InlineSpan>[
+                                                TextSpan(
+                                                  text: worldCurrencies[userBloc
+                                                          .user.currency!]! +
+                                                      moneyDisplayNormalizer(
+                                                          availableTransfer()),
+                                                  style: TextStyle(
+                                                      fontSize: 12,
+                                                      color: blackFont,
+                                                      fontFamily: "Inter",
+                                                      fontWeight:
+                                                          FontWeight.w600),
+                                                )
+                                              ])))),
+                                ),
                         ],
 
                         // getSubmitButton(),
@@ -422,7 +419,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
         const SizedBox(
           height: 20,
         ),
-        if (isFromChat) Container() else sendMoneyAnonymouslySwitch(),
+        isFromChat ? Container() : sendMoneyAnonymouslySwitch(),
       ],
     );
   }
@@ -487,37 +484,37 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
   Widget getDisplayCard() {
     initializeDisplayCard();
 
-    // var avatarImage;
+    var avatarImage;
     var qrCodeImage;
     if (_payee != null) {
-      // final Color borderColor = getUserTypeColor(user: _payee!);
+      Color borderColor = getUserTypeColor(user: _payee!);
 
-      // avatarImage = Container(
-      //   height: 48,
-      //   width: 48,
-      //   decoration: BoxDecoration(
-      //       borderRadius: BorderRadius.circular(
-      //         25,
-      //       ),
-      //       border: Border.all(color: borderColor, width: 2)),
-      //   child: GestureDetector(
-      //     onTap: () {
-      //       Navigator.of(context)
-      //           .pushNamed("/photo-viewer", arguments: _payee!.avatar);
-      //     },
-      //     child: ClipOval(
-      //       child: _payee!.avatar != null
-      //           ? CachedNetworkImage(
-      //               imageUrl: _payee!.avatar!,
-      //               colorBlendMode: BlendMode.darken,
-      //               fit: BoxFit.fill,
-      //               filterQuality: FilterQuality.high,
-      //               errorWidget: imageErrorWidget,
-      //             )
-      //           : const SizedBox.shrink(),
-      //     ),
-      //   ),
-      // );
+      avatarImage = Container(
+        height: 48,
+        width: 48,
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(
+              25,
+            ),
+            border: Border.all(color: borderColor, width: 2)),
+        child: GestureDetector(
+          onTap: () {
+            Navigator.of(context)
+                .pushNamed("/photo-viewer", arguments: _payee!.avatar);
+          },
+          child: ClipOval(
+            child: _payee!.avatar != null
+                ? CachedNetworkImage(
+                    imageUrl: _payee!.avatar!,
+                    colorBlendMode: BlendMode.darken,
+                    fit: BoxFit.fill,
+                    filterQuality: FilterQuality.high,
+                    errorWidget: imageErrorWidget,
+                  )
+                : const SizedBox.shrink(),
+          ),
+        ),
+      );
       setState(() {
         isValidPayee = true;
       });
@@ -606,7 +603,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
         }
       },
       onTap: () async {
-        final CustomerProfile? userFound =
+        CustomerProfile? userFound =
             await NavigationUtil.push(context, screen: const SearchUser());
 
         if (userFound != null) {
@@ -629,7 +626,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
       // inputFormatters: [FilteringTextInputFormatter.digitsOnly],
       controller: _amountController,
       onChanged: (val) {
-        final double? value = double.tryParse(val.replaceAll(',', ''));
+        double? value = double.tryParse(val.replaceAll(',', ''));
 
         if (value != null) {
           amount = value;
@@ -639,7 +636,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
       validator: (val) {
         if (val.isNotEmpty) {
           try {
-            final double amount = double.parse(val.replaceAll(',', ''));
+            double amount = double.parse(val.replaceAll(',', ''));
             if (amount >= 1.0) {
               return null;
             } else {
@@ -660,7 +657,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
           _recipientController.text = recipient!;
           if (mounted) setState(() {});
 
-          final customerProfile =
+          var customerProfile =
               await UserAuth().fetchCustomerProfileWithAuth(recipient);
 
           _payee = customerProfile;
@@ -799,11 +796,11 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
   }
 
   Widget checkImage() {
-    final Color borderColor = getUserTypeColor(user: _payee!);
+    Color borderColor = getUserTypeColor(user: _payee!);
     String url = "";
     url = _payee!.avatar.toString();
 
-    final String imageUrl = url.replaceAll('https//', 'https://');
+    String imageUrl = url.replaceAll('https//', 'https://');
     if (_payee!.avatar == "" ||
         _payee!.avatar ==
             "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png") {
@@ -887,11 +884,11 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
   }
 
   void sendMoneyAnonymousAlert() async {
-    final FeeStructure? feeStructure = await DatabaseHelper().getFeeStructure();
+    FeeStructure? feeStructure = await DatabaseHelper().getFeeStructure();
 
     if (feeStructure == null) return;
 
-    final String anonymousFee =
+    String anonymousFee =
         feeStructure.getFeeWithTax(type: FeesType.ANONYMOUS_TRANSACTION_FEE);
 
     showDialog<String>(
@@ -1015,7 +1012,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
   Widget getSubmitButton() {
     return PermissionProtectionWidget(
       permissionName: ProtectionPermission.transaction,
-      isLockForRead: true,
+      isLockForRead: '1',
       child: CurvedButton(
         onPressed: onSubmit,
         backgroundColor: navyBlue,
@@ -1026,20 +1023,15 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
   }
 
   void onSubmit() async {
-    if (FocusScope.of(context).hasFocus) {
-      FocusScope.of(context).unfocus();
-    }
+    PermissionType? hasPermission =
+        userBloc.user.hasWritePermission(ProtectionPermission.transaction);
+    if (hasPermission == PermissionType.WRITE) {
+      if (FocusScope.of(context).hasFocus) {
+        FocusScope.of(context).unfocus();
+      }
 
-    await Future.delayed(const Duration(milliseconds: 500));
+      await Future.delayed(const Duration(milliseconds: 500));
 
-    if (!isValidPayee) {
-      setState(() {
-        errorMessage = AppLocalization.of(context)!.invalidRecipient;
-        return;
-      });
-    }
-
-    if (_recipientController.text == _payee!.userName) {
       if (!isValidPayee) {
         setState(() {
           errorMessage = AppLocalization.of(context)!.invalidRecipient;
@@ -1047,198 +1039,213 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
         });
       }
 
-      if (isValidPayee &&
-          _formKey.currentState!.validate() &&
-          validateDropdown()) {
-        if (userBloc.user.userName != recipient) {
-          var userLocation;
-          Map deviceData;
-          try {
-            BottomSheetPassCode(
-                context: context,
-                isValidCallback: () async {
-                  showDialog(
-                      context: context,
-                      builder: (context) => const Center(child: SizedBox()));
-                  // Center(child: CircularLoadingIndicator()));
-
-                  try {
-                    if (Platform.isIOS) {
-                      try {
-                        userLocation =
-                            await locationService.getLocationEndless();
-                      } catch (e) {
-                        Navigator.pop(context);
-                        debugPrint(e.toString());
-                        showToast(message: e.toString());
-                        return;
-                      }
-                    }
-
-                    // double currentBalance = await getAccountBalance();
-                    // double transactionalAmount = double.parse(amount.toString());
-
-                    //show loading screen
-                    Navigator.pop(context);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => PaymentLoadingScreen(
-                                text: 'Sending Payment...',
-                                imagePath: 'assets/images/app_logo.png',
-                              )),
-                    );
-
-                    await Future.delayed(const Duration(seconds: 3));
-
-                    deviceData = await getDeviceInfo();
-
-                    final String description = 'General Payment';
-                    final data = {
-                      "from_customer": userBloc.user.userName,
-                      "to_customer": _recipientController.text.trim(),
-                      "currency": userBloc.user.currency,
-                      "amount": moneyInputNormalizer(amount.toString()),
-                      "category": selectedCategory?.trim(),
-                      "notes":
-                          reference.isEmpty ? description : reference.trim(),
-                      "description":
-                          reference.isEmpty ? description : reference.trim(),
-                      "latitude": Platform.isIOS ? userLocation.latitude : "",
-                      "longitude": Platform.isIOS ? userLocation.longitude : "",
-                      "deviceData": deviceData,
-                      "is_anonymous": sendMoneyAnonymous,
-                      "made_from_chat": isFromChat,
-                    };
-                    bool updateYarnSupporter = false;
-                    bool updateMomentSupporter = false;
-
-                    if (isFromYarn == true) {
-                      data['category'] = "Gift";
-                      data['description'] = "Merchandise Payment in Yarn";
-                    }
-
-                    if (isFromMoment == true) {
-                      data['category'] = "Gift";
-                      data['description'] = "Merchandise Payment in Moment";
-                    }
-
-                    if (conversationId != null) {
-                      data["conversation_id"] = conversationId;
-                    }
-
-                    await _auth.makePayment(data).then((value) async {
-                      debugPrint(
-                          "status code:- ${value.statusCode}  body:- ${value.body}");
-
-                      response = value;
-
-                      try {
-                        handleServerErrors(response);
-                      } catch (e) {
-                        return Future.error(response.body);
-                      }
-
-                      if (response.statusCode == 200) {
-                        try {
-                          popFromShoppingCart(product);
-                          //Pop Circular Progress Indicator
-
-                          ///check if page is from yarn
-                          if (isFromYarn == true) {
-                            final jsonData = json.decode(response.body);
-
-                            updateYarnSupporter =
-                                await _auth.updateYarnSupporter(
-                                    widget.arguments['yarnId'],
-                                    jsonData['transaction_id']);
-
-                            if (updateYarnSupporter == false) {
-                              showToast(
-                                  message: 'Unable to update yarn payment');
-                            } else {
-                              widget.callback?.call(true);
-                              // Navigator.pop(context);
-                              //Pop send payment page
-                              Navigator.pop(context);
-                              return;
-                            }
-                          }
-
-                          ///check if page is from moment
-                          if (isFromMoment == true) {
-                            final jsonData = json.decode(response.body);
-
-                            updateMomentSupporter =
-                                await _auth.updateMomentSupporter(
-                                    widget.arguments['momentId'],
-                                    jsonData['transaction_id']);
-
-                            if (updateMomentSupporter == false) {
-                              showToast(
-                                  message: 'Unable to update moment payment');
-                            } else {
-                              widget.callback?.call(true);
-                              Navigator.pop(context);
-                              //Pop send payment page
-                              Navigator.pop(context);
-                              return;
-                            }
-                          }
-
-                          Navigator.pop(context);
-                          //Pop send payment page
-                          Navigator.pop(context);
-
-                          debugPrint(" isFromChat:- $isFromChat");
-
-                          if (!isFromChat) {
-                            Navigator.of(context).pushNamed(Routes.TRANSACTIONS,
-                                arguments: {'page': 0});
-                          }
-                        } catch (e) {
-                          debugPrint("Error : $e");
-                          Navigator.pop(context);
-                        }
-                      } else {
-                        Navigator.pop(context);
-                        if (response.statusCode == 406) {
-                          errorMessage = jsonDecode(value.body)[0];
-                          showToast(message: "$errorMessage");
-                          setState(() {});
-                        } else {
-                          debugPrint("ERROR:- ${response.body}");
-                          setState(() {
-                            errorMessage =
-                                AppLocalization.of(context)!.somethingWentWrong;
-                            showToast(message: "$errorMessage");
-                          });
-                        }
-                      }
-                    });
-                  } catch (e) {
-                    debugPrint(e.toString());
-                    showToast(message: e.toString());
-                  }
-                },
-                cancelCallBack: () {
-                  Navigator.pop(context);
-                  _sendPaymentScaffoldMessenger.currentState
-                      ?.showSnackBar(SnackBar(
-                    content: Text(AppLocalization.of(context)!.invalidPassword),
-                  ));
-                });
-          } catch (e) {
-            debugPrint(e.toString());
-            showToast(message: e.toString());
-          }
-        } else {
-          showToast(message: AppLocalization.of(context)!.invalidRecipient);
+      if (_recipientController.text == _payee!.userName) {
+        if (!isValidPayee) {
+          setState(() {
+            errorMessage = AppLocalization.of(context)!.invalidRecipient;
+            return;
+          });
         }
+
+        if (isValidPayee &&
+            _formKey.currentState!.validate() &&
+            validateDropdown()) {
+          if (userBloc.user.userName != recipient) {
+            var userLocation;
+            Map deviceData;
+            try {
+              BottomSheetPassCode(
+                  context: context,
+                  isValidCallback: () async {
+                    showDialog(
+                        context: context,
+                        builder: (context) => const Center(child: SizedBox()));
+                    // Center(child: CircularLoadingIndicator()));
+
+                    try {
+                      if (Platform.isIOS) {
+                        try {
+                          userLocation =
+                              await locationService.getLocationEndless();
+                        } catch (e) {
+                          Navigator.pop(context);
+                          debugPrint(e.toString());
+                          showToast(message: e.toString());
+                          return;
+                        }
+                      }
+
+                      // double currentBalance = await getAccountBalance();
+                      // double transactionalAmount = double.parse(amount.toString());
+
+                      //show loading screen
+                      Navigator.pop(context);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => PaymentLoadingScreen(
+                                  text: 'Sending Payment...',
+                                  imagePath: 'assets/images/app_logo.png',
+                                )),
+                      );
+
+                      await Future.delayed(const Duration(seconds: 3));
+
+                      deviceData = await getDeviceInfo();
+
+                      String description = 'General Payment';
+                      var data = {
+                        "from_customer": userBloc.user.userName,
+                        "to_customer": _recipientController.text.trim(),
+                        "currency": userBloc.user.currency,
+                        "amount": moneyInputNormalizer(amount.toString()),
+                        "category": selectedCategory?.trim(),
+                        "notes":
+                            reference.isEmpty ? description : reference.trim(),
+                        "description":
+                            reference.isEmpty ? description : reference.trim(),
+                        "latitude": Platform.isIOS ? userLocation.latitude : "",
+                        "longitude":
+                            Platform.isIOS ? userLocation.longitude : "",
+                        "deviceData": deviceData,
+                        "is_anonymous": sendMoneyAnonymous,
+                        "made_from_chat": isFromChat,
+                      };
+                      bool updateYarnSupporter = false;
+                      bool updateMomentSupporter = false;
+
+                      if (isFromYarn == true) {
+                        data['category'] = "Gift";
+                        data['description'] = "Merchandise Payment in Yarn";
+                      }
+
+                      if (isFromMoment == true) {
+                        data['category'] = "Gift";
+                        data['description'] = "Merchandise Payment in Moment";
+                      }
+
+                      if (conversationId != null) {
+                        data["conversation_id"] = conversationId;
+                      }
+
+                      await _auth.makePayment(data).then((value) async {
+                        debugPrint(
+                            "status code:- ${value.statusCode}  body:- ${value.body}");
+
+                        response = value;
+
+                        try {
+                          handleServerErrors(response);
+                        } catch (e) {
+                          return Future.error(response.body);
+                        }
+
+                        if (response.statusCode == 200) {
+                          try {
+                            popFromShoppingCart(product);
+                            //Pop Circular Progress Indicator
+
+                            ///check if page is from yarn
+                            if (isFromYarn == true) {
+                              var jsonData = json.decode(response.body);
+
+                              updateYarnSupporter =
+                                  await _auth.updateYarnSupporter(
+                                      widget.arguments['yarnId'],
+                                      jsonData['transaction_id']);
+
+                              if (updateYarnSupporter == false) {
+                                showToast(
+                                    message: 'Unable to update yarn payment');
+                              } else {
+                                widget.callback?.call(true);
+                                // Navigator.pop(context);
+                                //Pop send payment page
+                                Navigator.pop(context);
+                                return;
+                              }
+                            }
+
+                            ///check if page is from moment
+                            if (isFromMoment == true) {
+                              var jsonData = json.decode(response.body);
+
+                              updateMomentSupporter =
+                                  await _auth.updateMomentSupporter(
+                                      widget.arguments['momentId'],
+                                      jsonData['transaction_id']);
+
+                              if (updateMomentSupporter == false) {
+                                showToast(
+                                    message: 'Unable to update moment payment');
+                              } else {
+                                widget.callback?.call(true);
+                                Navigator.pop(context);
+                                //Pop send payment page
+                                Navigator.pop(context);
+                                return;
+                              }
+                            }
+
+                            Navigator.pop(context);
+                            //Pop send payment page
+                            Navigator.pop(context);
+
+                            debugPrint(" isFromChat:- $isFromChat");
+
+                            if (!isFromChat) {
+                              Navigator.of(context).pushNamed(
+                                  Routes.TRANSACTIONS,
+                                  arguments: {'page': 0});
+                            }
+                          } catch (e) {
+                            debugPrint("Error : $e");
+                            Navigator.pop(context);
+                          }
+                        } else {
+                          Navigator.pop(context);
+                          if (response.statusCode == 406) {
+                            errorMessage = jsonDecode(value.body)[0];
+                            showToast(message: "$errorMessage");
+                            setState(() {});
+                          } else {
+                            debugPrint("ERROR:- ${response.body}");
+                            setState(() {
+                              errorMessage = AppLocalization.of(context)!
+                                  .somethingWentWrong;
+                              showToast(message: "$errorMessage");
+                            });
+                          }
+                        }
+                      });
+                    } catch (e) {
+                      debugPrint(e.toString());
+                      showToast(message: e.toString());
+                    }
+                  },
+                  cancelCallBack: () {
+                    Navigator.pop(context);
+                    _sendPaymentScaffoldMessenger.currentState
+                        ?.showSnackBar(SnackBar(
+                      content:
+                          Text(AppLocalization.of(context)!.invalidPassword),
+                    ));
+                  });
+            } catch (e) {
+              debugPrint(e.toString());
+              showToast(message: e.toString());
+            }
+          } else {
+            showToast(message: AppLocalization.of(context)!.invalidRecipient);
+          }
+        }
+      } else {
+        var msg = AppLocalization.of(context)!.invalidRecipient;
+        showToast(message: msg);
       }
     } else {
-      final msg = AppLocalization.of(context)!.invalidRecipient;
-      showToast(message: msg);
+      showSnackbar(context,
+          message: AppLocalization.of(context)?.doNotPermission ?? "");
     }
   }
 

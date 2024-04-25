@@ -67,9 +67,11 @@ class _ReviewListScreenState extends State<ReviewListScreen> {
         Map<String, dynamic>? result;
 
         if (product != null) {
-          result = await ReviewAuth().fetchProductReviews(product: product);
+          result =
+              await ReviewAuth().fetchProductReviews(productId: product?.id);
         } else if (service != null) {
-          result = await ReviewAuth().fetchServiceReviews(service: service);
+          result =
+              await ReviewAuth().fetchServiceReviews(serviceId: service?.id);
         } else {
           result = await ReviewAuth()
               .fetchUserReviews(userName: reviewedUser?.userName);

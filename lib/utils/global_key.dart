@@ -28,4 +28,10 @@ class MyGlobals {
   GlobalKey<NavigatorState> get navigationKey => _navKey;
 
   static StreamSubscription? get notificationStream => _notificationStream;
+
+  bool get hasNavigator => navigationKey.currentState != null;
+  NavigatorState? get navigator => navigationKey.currentState;
+
+  bool get hasContext => navigator?.overlay?.context != null;
+  BuildContext? get context => navigator?.overlay?.context;
 }

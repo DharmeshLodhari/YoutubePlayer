@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:Slydo/constant.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/locator.dart';
@@ -1411,8 +1412,15 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
           title: AppLocalization.of(context)!.createAPost,
           iconData: Icons.add_circle_outlined,
           onTap: () {
-            Navigator.pop(context);
-            Navigator.of(context).pushNamed(Routes.CREATE_BLOG);
+            PermissionType? hasPermission =
+                userBloc.user.hasWritePermission(ProtectionPermission.blog);
+            if (hasPermission == PermissionType.WRITE) {
+              Navigator.pop(context);
+              Navigator.of(context).pushNamed(Routes.CREATE_BLOG);
+            } else {
+              showToast(
+                  message: AppLocalization.of(context)?.doNotPermission ?? "");
+            }
           },
         ),
       );
@@ -1422,11 +1430,18 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
           title: "Edit Profile",
           iconData: SlydoAppIcon.edit,
           onTap: () async {
-            Navigator.pop(context);
-            await Navigator.of(context).pushNamed('/add-edit-user-bio',
-                arguments: {"searchedUser": searchedUser});
+            PermissionType? hasPermission =
+                userBloc.user.hasWritePermission(ProtectionPermission.profile);
+            if (hasPermission == PermissionType.WRITE) {
+              Navigator.pop(context);
+              await Navigator.of(context).pushNamed('/add-edit-user-bio',
+                  arguments: {"searchedUser": searchedUser});
 
-            getSearchedUser(load: false);
+              getSearchedUser(load: false);
+            } else {
+              showToast(
+                  message: AppLocalization.of(context)?.doNotPermission ?? "");
+            }
           },
         ),
       );
@@ -1435,30 +1450,37 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
           title: "Customize Profile",
           iconData: Icons.dashboard_customize_sharp,
           onTap: () async {
-            var business = '';
-            if (searchedUser!.type!.toLowerCase() == "user") {
-              business = 'no';
-            } else if (widget.userType == 'channel') {
-              business = 'no';
-            } else {
-              business = 'yes';
-            }
-            Navigator.pop(context);
-            final data = await Navigator.of(context)
-                .pushNamed(Routes.CUSTOMIZE_PROFILE, arguments: {
-              "business": business,
-              "callbackProductService": (Map<String, dynamic> updatedData) {
-                // This callback will be invoked when the profile menu for product/service label is saved in CustomizeProfileScreen
-                if (widget.callbackProductService != null) {
-                  widget.callbackProductService!(updatedData);
-                  if (mounted) setState(() {});
-                }
-              },
-            });
+            PermissionType? hasPermission =
+                userBloc.user.hasWritePermission(ProtectionPermission.profile);
+            if (hasPermission == PermissionType.WRITE) {
+              var business = '';
+              if (searchedUser!.type!.toLowerCase() == "user") {
+                business = 'no';
+              } else if (widget.userType == 'channel') {
+                business = 'no';
+              } else {
+                business = 'yes';
+              }
+              Navigator.pop(context);
+              final data = await Navigator.of(context)
+                  .pushNamed(Routes.CUSTOMIZE_PROFILE, arguments: {
+                "business": business,
+                "callbackProductService": (Map<String, dynamic> updatedData) {
+                  // This callback will be invoked when the profile menu for product/service label is saved in CustomizeProfileScreen
+                  if (widget.callbackProductService != null) {
+                    widget.callbackProductService!(updatedData);
+                    if (mounted) setState(() {});
+                  }
+                },
+              });
 
-            if (data != null && data is Map<String, bool>) {
-              widget.callback!(data);
-              if (mounted) setState(() {});
+              if (data != null && data is Map<String, bool>) {
+                widget.callback!(data);
+                if (mounted) setState(() {});
+              }
+            } else {
+              showToast(
+                  message: AppLocalization.of(context)?.doNotPermission ?? "");
             }
           },
         ),
@@ -1469,8 +1491,16 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
             title: "Manage Business",
             iconData: Icons.dashboard_customize_sharp,
             onTap: () async {
-              Navigator.pop(context);
-              userProfileManageBusinessActionsSheet(context);
+              PermissionType? hasPermission = userBloc.user
+                  .hasWritePermission(ProtectionPermission.profile);
+              if (hasPermission == PermissionType.WRITE) {
+                Navigator.pop(context);
+                userProfileManageBusinessActionsSheet(context);
+              } else {
+                showToast(
+                    message:
+                        AppLocalization.of(context)?.doNotPermission ?? "");
+              }
             },
           ),
         );

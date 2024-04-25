@@ -5,6 +5,7 @@ import 'dart:io';
 
 import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/environment.dart';
+import 'package:Slydo/data/state_notifiers/user_bloc.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/SecureUser.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/company_name.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/jwt.dart';
@@ -13,10 +14,14 @@ import 'package:Slydo/screens/super_store/models/product_industry_model.dart';
 import 'package:Slydo/services/secure_storage.dart';
 import 'package:Slydo/utils/country_picker/country.dart';
 import 'package:Slydo/utils/country_picker/utils.dart';
+import 'package:Slydo/utils/global_key.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
+import 'package:location/location.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
@@ -27,10 +32,10 @@ class AuthService {
   // static int authCallCount = 0;
   // static int authCallLimit = 5;
 
-  final Duration timeOutDuration = const Duration(seconds: 12);
+  final Duration timeOutDuration = Duration(seconds: 12);
   final String timeOutErrorMessage = "Server is not responding";
 
-  final DatabaseHelper _db = DatabaseHelper();
+  DatabaseHelper _db = DatabaseHelper();
 
   static const int API_CALL_RETRY_COUNT = 5;
 
@@ -41,7 +46,7 @@ class AuthService {
     await _db.deleteUsers();
 
     // Create user instance
-    final User _user =
+    User _user =
         User.fromJson(userData, staff: staff, permissions: permissions);
 
     await _db.saveUser(_user);
@@ -49,7 +54,7 @@ class AuthService {
   }
 
   int getEpochTime(DateTime time) {
-    final ms = time.millisecondsSinceEpoch;
+    var ms = time.millisecondsSinceEpoch;
     return (ms / 1000).round();
   }
 
@@ -133,16 +138,14 @@ class AuthService {
   // }
 
   Future<List<CompanyName>?> listOfCompanyName(String query) async {
-    final String url =
-        AppConfig.baseUrl + "/api/v1/user/merchant-search/?q=$query";
+    String url = AppConfig.baseUrl + "/api/v1/user/merchant-search/?q=$query";
 
     debugPrint(url);
-    final headers = await getAuthHeaders();
-    final response = await httpGet(url, headers: headers);
+    var response = await httpGet(url);
 
     if (response.statusCode == 200) {
-      final jsonData = json.decode(response.body) as List<dynamic>;
-      final List<CompanyName> result =
+      var jsonData = json.decode(response.body) as List<dynamic>;
+      List<CompanyName> result =
           jsonData.map((e) => CompanyName.fromJson(e)).toList();
       return result;
     } else if (response.statusCode == 500) {
@@ -166,9 +169,9 @@ class AuthService {
       uri = AppConfig.baseUrl + "/api/v1/user/auth/get-staff-token/";
     }
 
-    final uuid = const Uuid();
-    final transactionId = uuid.v4();
-    final headers = {
+    var uuid = Uuid();
+    var transactionId = uuid.v4();
+    var headers = {
       "TransactionId": transactionId,
       "DeviceType": Platform.isAndroid ? "Android" : "IOS",
       "User-Agent": "Slydo-Mobile",
@@ -180,9 +183,9 @@ class AuthService {
     // where  created and the use that to compute the expiration time of the
     // token. So that we will only use the token if its still valid.
     // We play safe and use 4 minutes
-    final DateTime now = DateTime.now();
-    final int expirationTime =
-        getEpochTime(now.add(const Duration(seconds: 220))); // 3.66667 Minute
+    DateTime now = DateTime.now();
+    int expirationTime =
+        getEpochTime(now.add(Duration(seconds: 220))); // 3.66667 Minute
 
     Map _body;
     if (isStaffLogin) {
@@ -195,34 +198,34 @@ class AuthService {
       _body = {"password": password, "phone_number": phoneNumber};
     }
 
-    final data = await getDeviceInfo();
+    var data = await getDeviceInfo();
     // data['device_id'] = "CB52C6A6-4C0E-4FE0-A753-C9A936AEA8BB";
     _body.addAll(data);
 
     debugPrint("=> $_body");
-    final Uri url = Uri.parse(uri);
+    Uri url = Uri.parse(uri);
 
     debugPrint("URL => $url BODY => $_body");
 
-    final response = await http.post(url, body: _body, headers: headers);
+    var response = await http.post(url, body: _body, headers: headers);
 
     if (response.statusCode == 200) {
       debugPrint(
           "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
 
-      final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+      Map<String, dynamic> jsonResponse = jsonDecode(response.body);
       jsonResponse["expiration"] = expirationTime;
 
-      final Jwt jwt = Jwt.fromJson(jsonResponse);
+      Jwt jwt = Jwt.fromJson(jsonResponse);
       await _db.saveJwt(jwt);
 
       // Save user to database
-      final jsonData = jsonResponse["user"];
+      var jsonData = jsonResponse["user"];
       log("User=> $jsonData");
       jsonData["password"] = password;
       jsonData["url"] =
           AppConfig.baseUrl + "/api/v1/user/customer/" + jsonData["username"];
-      final User user = await createUser(jsonData,
+      User user = await createUser(jsonData,
           staff: jsonResponse["staff"],
           permissions: jsonResponse["permissions"]);
 
@@ -233,7 +236,7 @@ class AuthService {
         "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
 
     try {
-      final jsonData = jsonDecode(response.body);
+      var jsonData = jsonDecode(response.body);
 
       if (jsonData["detail"] != null) {
         return Future.error("${jsonData["detail"]}");
@@ -247,11 +250,11 @@ class AuthService {
 
   // Log user out
   Future<void> logOut() async {
-    final uri = AppConfig.baseUrl + "/api/v1/user/auth/logout/";
-    final headers = await getAuthHeaders();
+    var uri = AppConfig.baseUrl + "/api/v1/user/auth/logout/";
+    var headers = await getAuthHeaders();
     debugPrint("URL:- $uri Called !!");
-    final Uri url = Uri.parse(uri);
-    final response = await http.get(url, headers: headers);
+    Uri url = Uri.parse(uri);
+    var response = await http.get(url, headers: headers);
     debugPrint(
         "URL:- $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
     unRegisterDevice();
@@ -280,10 +283,10 @@ class AuthService {
     // Will return false if token is still valid and true if token is no longer useful
 
     if (expirationTimeString == "") return true;
-    final int expirationTime = int.parse(expirationTimeString);
-    final int now = getEpochTime(DateTime.now());
+    int expirationTime = int.parse(expirationTimeString);
+    int now = getEpochTime(DateTime.now());
 
-    final bool hasTokenExpired = now >= expirationTime;
+    bool hasTokenExpired = now >= expirationTime;
 
     if (hasTokenExpired) {
       debugPrint(
@@ -299,17 +302,14 @@ class AuthService {
   }
 
   Future<Map<String, String>> getUserAuthDetails() async {
-    final User? _user = await _db.getUser();
+    User? _user = await _db.getUser();
 
-    final SharedPreferences sharedPreferences =
-        await SharedPreferences.getInstance();
-    final String countryFromPref =
-        sharedPreferences.getString('country') ?? "NG";
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    String countryFromPref = sharedPreferences.getString('country') ?? "NG";
 
-    final Country country =
-        CountryPickerUtils.getCountryByIsoCode(countryFromPref);
+    Country country = CountryPickerUtils.getCountryByIsoCode(countryFromPref);
 
-    final SecureUser secureUser = await SecureStorage().getUser();
+    SecureUser secureUser = await SecureStorage().getUser();
     String phoneNumber = secureUser.phoneNumber ?? "";
     String password = secureUser.password ?? "";
 
@@ -332,12 +332,11 @@ class AuthService {
     Jwt? jwt;
 
     await Connectivity().checkConnectivity().then((value) async {
-      final connectionResult = value;
+      var connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         try {
-          final Map<String, String> userAuthDetailsMap =
-              await getUserAuthDetails();
+          Map<String, String> userAuthDetailsMap = await getUserAuthDetails();
 
           await authenticate(
             userAuthDetailsMap['phoneNumber'],
@@ -345,7 +344,7 @@ class AuthService {
           );
         } catch (error) {
           debugPrint("ERROR:- while fetching new Token $error");
-          await Future.delayed(const Duration(milliseconds: 500));
+          await Future.delayed(Duration(milliseconds: 500));
           return await fetchNewToken();
         }
 
@@ -353,15 +352,14 @@ class AuthService {
 
         if (jwt == null) {
           debugPrint("ERROR:- while fetching new Token JWT IS FOUND NULL");
-          await Future.delayed(const Duration(milliseconds: 500));
+          await Future.delayed(Duration(milliseconds: 500));
           return await fetchNewToken();
         }
       } else {
-        await Future.delayed(const Duration(milliseconds: 500));
+        await Future.delayed(Duration(milliseconds: 500));
         return await fetchNewToken();
       }
     });
-
     return jwt!;
   }
 
@@ -373,7 +371,7 @@ class AuthService {
 
     Jwt? jwt = await _db.getJwt();
 
-    final String? expirationTime = jwt?.expiration ?? null;
+    String? expirationTime = jwt?.expiration ?? null;
 
     if ((jwt?.access ?? null) != null && (jwt?.access ?? "") != "") {
       isNewTokenNeeded = true;
@@ -398,23 +396,57 @@ class AuthService {
       jwt = await fetchNewToken();
     }
 
-    final String bearer = "Bearer " + jwt!.access!;
+    String bearer = "Bearer " + jwt!.access!;
     // log("$bearer");
-    final uuid = const Uuid();
-    final transactionId = uuid.v4();
+    var uuid = Uuid();
+    var transactionId = uuid.v4();
 
     // debugPrint('BEARER :: $bearer');
     // debugPrint('TRANSACTION ID  :: $transactionId');
 
-    final headers = {
+    var headers = {
       "Authorization": bearer,
       "Content-type": "application/json; charset=utf-8",
       "TransactionId": transactionId,
       "DeviceType": Platform.isAndroid ? "Android" : "IOS",
       "User-Agent": "Slydo-Mobile",
-      "App-Version": appVersion
+      "App-Version": appVersion,
     };
+    Map<String, String> locationHeader = await getUserLocationHeader();
+    if (locationHeader.isNotEmpty) {
+      headers.addAll(locationHeader);
+    }
     return headers;
+  }
+
+  Future<Map<String, String>> getUserLocationHeader() async {
+    Map<String, String> data = {};
+    Location location = Location();
+
+    try {
+      var status = await Permission.location.status;
+      if (status.isGranted) {
+        LocationData locationData = await location.getLocation();
+
+        data.addAll({
+          "X-User-Current-Location":
+              "${locationData.longitude}, ${locationData.latitude}"
+        });
+      } else {
+        UserBloc userBloc = Provider.of<UserBloc>(
+            myGlobals.navigationKey.currentContext!,
+            listen: false);
+
+        data.addAll({
+          "X-User-Current-Location":
+              "${userBloc.user.defaultAddress?.longitude}, ${userBloc.user.defaultAddress?.latitude}"
+        });
+      }
+    } catch (error) {
+      debugPrint("Error $error");
+    }
+
+    return data;
   }
 
   // Delete JWT from db
@@ -423,28 +455,27 @@ class AuthService {
   }
 
   Future<Map<String, dynamic>?> listOfIndustries() async {
-    final String url =
+    String url =
         AppConfig.baseUrl + "/api/v1/user/profile-industries/?page_size=200";
 
     debugPrint(url);
-    final headers = await getAuthHeaders();
-    final response = await httpGet(url, headers: headers);
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
 
     if (response.statusCode == 200) {
       if (!response.body.contains('results')) {
-        final Map<String, dynamic> result = {"product": []};
+        Map<String, dynamic> result = {"product": []};
 
         debugPrint('CALLING OTHER check 2 ---> ${result}');
 
         return result;
       }
-      final jsonData = json.decode(response.body);
-      final List<ProductIndustryResults>? results =
-          (jsonData["results"] as List)
-              .map((e) => ProductIndustryResults.fromJson(e))
-              .toList();
+      var jsonData = json.decode(response.body);
+      List<ProductIndustryResults>? results = (jsonData["results"] as List)
+          .map((e) => ProductIndustryResults.fromJson(e))
+          .toList();
 
-      final Map<String, dynamic> result = {"product": results};
+      Map<String, dynamic> result = {"product": results};
 
       return result;
     } else if (response.statusCode == 500) {
@@ -455,7 +486,7 @@ class AuthService {
   }
 
   User createUserInstance(Map<String, dynamic> item) {
-    final User _user = User(
+    User _user = User(
       uuid: item["uuid"],
       url: item["url"],
       phoneNumber: item["phone_number"],
@@ -472,12 +503,11 @@ class AuthService {
 
   //register device
   Future<bool> registerDevice(Map data) async {
-    final String url =
-        AppConfig.baseUrl + "/api/v1/notification/register-device/";
-    final headers = await getAuthHeaders();
-    final _data = jsonEncode(data);
+    String url = AppConfig.baseUrl + "/api/v1/notification/register-device/";
+    var headers = await getAuthHeaders();
+    var _data = jsonEncode(data);
 
-    final response = await httpPost(url, headers: headers, body: _data);
+    var response = await httpPost(url, headers: headers, body: _data);
     if (response.statusCode == 200) {
       return true;
     }
@@ -488,11 +518,11 @@ class AuthService {
 
   // it will unregister the device from server
   Future<bool> unRegisterDevice() async {
-    final uri = AppConfig.baseUrl + "/api/v1/notification/unregister-device/";
-    final headers = await getAuthHeaders();
-    final _data = jsonEncode({});
+    var uri = AppConfig.baseUrl + "/api/v1/notification/unregister-device/";
+    var headers = await getAuthHeaders();
+    var _data = jsonEncode({});
     debugPrint("URL:- $uri Called !!");
-    final Uri url = Uri.parse(uri);
+    Uri url = Uri.parse(uri);
     late var response;
     try {
       response = await http.patch(url, headers: headers, body: _data);
@@ -508,10 +538,9 @@ class AuthService {
 
   // it will tell the server our app is in which state
   Future<bool> updateAppState(Map data) async {
-    final String url =
-        AppConfig.baseUrl + "/api/v1/notification/update-app-state/";
-    final headers = await getAuthHeaders();
-    final _data = jsonEncode(data);
+    String url = AppConfig.baseUrl + "/api/v1/notification/update-app-state/";
+    var headers = await getAuthHeaders();
+    var _data = jsonEncode(data);
     var response;
     try {
       response = await httpPatch(url, headers: headers, body: _data);
@@ -522,7 +551,7 @@ class AuthService {
     }
     if (response != null) {
       if (response.statusCode != 200) {
-        final jsonData = response.body;
+        var jsonData = response.body;
         debugPrint(jsonData);
       }
       return response.statusCode == 200;
@@ -531,9 +560,9 @@ class AuthService {
   }
 
   Map getNonAuthHeader() {
-    final uuid = const Uuid();
-    final transactionId = uuid.v4();
-    final headers = {
+    var uuid = Uuid();
+    var transactionId = uuid.v4();
+    var headers = {
       "Content-type": "application/json",
       "TransactionId": transactionId,
       "DeviceType": Platform.isAndroid ? "Android" : "IOS",
@@ -555,15 +584,15 @@ class AuthService {
     if (next != "") {
       url = next;
     }
-    final headers = await getAuthHeaders();
-    final response = await httpGet(url, headers: headers)
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers)
         .timeout(timeOutDuration, onTimeout: () => timeOutFunction());
 
-    debugPrint('SEARCH USER ::: ${response.body}');
+    print('SEARCH USER ::: ${response.body}');
     if (response.statusCode == 200) {
-      final jsonData = json.decode(response.body);
+      var jsonData = json.decode(response.body);
 
-      final Map<String, dynamic> result = {
+      Map<String, dynamic> result = {
         "count": jsonData["count"],
         "next": jsonData["next"],
         "previous": jsonData["previous"],
@@ -571,7 +600,7 @@ class AuthService {
       };
       return result;
     } else {
-      final jsonData = json.decode(response.body);
+      var jsonData = json.decode(response.body);
       throw jsonData;
     }
   }
@@ -584,12 +613,12 @@ class AuthService {
     return Future.error("$timeOutErrorMessage");
   }
 
-  Future<void> wasTokenBlackListed(Response response) async {
+  Future<void> wasTokenBlackListed(var response) async {
     if (response.statusCode == 401 ||
         response.statusCode == 403 ||
         response.statusCode == 423) {
       try {
-        final jsonData = jsonDecode(response.body);
+        var jsonData = jsonDecode(response.body);
         // {detail: Given token not valid for any token type, code: token_not_valid, messages: [{status_code: 423}]}
 
         debugPrint(
@@ -611,12 +640,12 @@ class AuthService {
   }
 
   /// TO CHECK IF WE GET TOKEN EXPIRED RESPONSE FROM API
-  Future<bool> isTokenExpire(Response response) async {
+  Future<bool> isTokenExpire(var response) async {
     if (response.statusCode == 401 ||
         response.statusCode == 403 ||
         response.statusCode == 423) {
       try {
-        final jsonData = jsonDecode(response.body);
+        var jsonData = jsonDecode(response.body);
         // {detail: Given token not valid for any token type, code: token_not_valid, messages: [{status_code: 423}]}
 
         debugPrint(
@@ -639,11 +668,11 @@ class AuthService {
 
   Future<Map<String, dynamic>> generateNewHeaders(
       Map<String, dynamic>? oldHeaders) async {
-    final Map<String, dynamic> headers = {};
+    Map<String, dynamic> headers = {};
     if (oldHeaders != null && oldHeaders.isNotEmpty) {
       headers.addAll(oldHeaders);
-      final Jwt jwt = await fetchNewToken();
-      final String bearer = "Bearer ${jwt.access ?? ""}";
+      Jwt jwt = await fetchNewToken();
+      String bearer = "Bearer ${jwt.access ?? ""}";
       headers["Authorization"] = bearer;
       log("NEW TOKEN GENERATED :- ${headers["Authorization"]}");
     }
@@ -657,21 +686,20 @@ class AuthService {
     Duration? newTimeOutDuration,
     int count = API_CALL_RETRY_COUNT,
   }) async {
-    final Uri uri = Uri.parse(url);
+    Uri uri = Uri.parse(url);
     debugPrint("URL [GET]:- $uri");
 
-    final response = await http
+    var response = await http
         .get(uri, headers: headers as Map<String, String>?)
         .timeout(newTimeOutDuration ?? timeOutDuration,
             onTimeout: () => timeOutFunction());
 
     /// WE WILL CALL THIS API API_CALL_RETRY_COUNT number of time to ensure token expire issue is not face by user
-    final bool result = await isTokenExpire(response);
+    bool result = await isTokenExpire(response);
     if (result) {
       count = count - 1;
       if (count != 0) {
-        final Map<String, dynamic> newHeaders =
-            await generateNewHeaders(headers);
+        Map<String, dynamic> newHeaders = await generateNewHeaders(headers);
         return await httpGet(url, headers: newHeaders, count: count);
       }
     }
@@ -688,17 +716,17 @@ class AuthService {
     Duration? newTimeOutDuration,
     int count = API_CALL_RETRY_COUNT,
   }) async {
-    final Uri uri = Uri.parse(url);
+    Uri uri = Uri.parse(url);
     debugPrint("URL [POST]:- $uri");
-    final response = await http
+    var response = await http
         .post(uri, headers: headers as Map<String, String>?, body: body)
         .timeout(newTimeOutDuration ?? timeOutDuration,
             onTimeout: () => timeOutFunction());
 
     /// WE WILL CALL THIS API API_CALL_RETRY_COUNT number of time to ensure token expire issue is not face by user
-    final bool result = await isTokenExpire(response);
+    bool result = await isTokenExpire(response);
     if (result) {
-      final Map<String, dynamic> newHeaders = await generateNewHeaders(headers);
+      Map<String, dynamic> newHeaders = await generateNewHeaders(headers);
 
       count = count - 1;
       if (count != 0) {
@@ -718,17 +746,17 @@ class AuthService {
     Duration? newTimeOutDuration,
     int count = API_CALL_RETRY_COUNT,
   }) async {
-    final Uri uri = Uri.parse(url);
+    Uri uri = Uri.parse(url);
     debugPrint("URL [PATCH]:- $uri");
-    final response = await http
+    var response = await http
         .patch(uri, headers: headers as Map<String, String>?, body: body)
         .timeout(newTimeOutDuration ?? timeOutDuration,
             onTimeout: () => timeOutFunction());
 
     /// WE WILL CALL THIS API API_CALL_RETRY_COUNT number of time to ensure token expire issue is not face by user
-    final bool result = await isTokenExpire(response);
+    bool result = await isTokenExpire(response);
     if (result) {
-      final Map<String, dynamic> newHeaders = await generateNewHeaders(headers);
+      Map<String, dynamic> newHeaders = await generateNewHeaders(headers);
       count = count - 1;
       if (count != 0) {
         return await httpPatch(url,
@@ -752,15 +780,15 @@ class AuthService {
       {Map<String, dynamic>? headers,
       Duration? newTimeOutDuration,
       int count = API_CALL_RETRY_COUNT}) async {
-    final Uri uri = Uri.parse(url);
+    Uri uri = Uri.parse(url);
     debugPrint("URL [DELETE]:- $uri");
-    final response =
+    var response =
         await http.delete(uri, headers: headers as Map<String, String>?);
 
     /// WE WILL CALL THIS API API_CALL_RETRY_COUNT number of time to ensure token expire issue is not face by user
-    final bool result = await isTokenExpire(response);
+    bool result = await isTokenExpire(response);
     if (result) {
-      final Map<String, dynamic> newHeaders = await generateNewHeaders(headers);
+      Map<String, dynamic> newHeaders = await generateNewHeaders(headers);
 
       count = count - 1;
       if (count != 0) {

@@ -363,7 +363,8 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
                             ),
                             const SizedBox(width: 10),
                             Text(
-                              "${job?.state}, ${job?.city}".toCapitalized(),
+                              "${messageDecoderWithEmoji(job?.state)}, ${messageDecoderWithEmoji(job?.city)}"
+                                  .toCapitalized(),
                               style: TextStyle(
                                 color: blackFont.withOpacity(.6),
                                 fontSize: 14,
@@ -389,7 +390,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
                           fontweight: FontWeight.w700,
                         ),
                         Text(
-                          "${job!.category?.name}",
+                          "${job?.category?.name}",
                           style: TextStyle(
                             color: blackFont.withOpacity(.8),
                             fontSize: 14,

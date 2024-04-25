@@ -1,5 +1,6 @@
 import 'package:Slydo/data/state_notifiers/user_bloc.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
@@ -14,16 +15,16 @@ class PermissionProtectionWidget extends StatelessWidget {
       required this.permissionName,
       this.position = 0,
       this.isShowLock = false,
-      this.isLockForRead = false,
+      this.isLockForRead, // 1 : Read, 2 : Write
       super.key});
 
   final Widget child;
   final String permissionName;
-  final double position;
-  late final UserBloc userBloc;
+  double position;
+  late UserBloc userBloc;
   PermissionType? hasPermission;
   bool isShowLock = false;
-  bool isLockForRead = false;
+  String? isLockForRead;
 
   @override
   Widget build(BuildContext context) {
@@ -32,22 +33,23 @@ class PermissionProtectionWidget extends StatelessWidget {
         permissionName); // if user have permission for given variable
 
     return hasPermission == null ||
-            (hasPermission == PermissionType.READ && isLockForRead)
+            (hasPermission == PermissionType.READ && isLockForRead == "1")
         ? GestureDetector(
             onTap: () {
-              debugPrint("Context: $context"); // Debug print statement
               showSnackbar(context,
                   message: AppLocalization.of(context)?.doNotPermission ?? "");
             },
             child: Stack(
               children: [
-                IgnorePointer(
-                    ignoring:
-                        hasPermission == PermissionType.READ && isLockForRead
-                            ? true
-                            : false,
-                    child: child),
-                if (hasPermission == null && isShowLock)
+                child,
+                // IgnorePointer(
+                //     ignoring:
+                //         hasPermission == PermissionType.READ && isLockForRead
+                //             ? true
+                //             : false,
+                //     child: child),
+                if ((hasPermission == null && isShowLock) ||
+                    (hasPermission == PermissionType.READ && isShowLock))
                   Positioned(
                     top: position, // Adjust the top value as needed
                     right: -3, // Adjust the right value as needed

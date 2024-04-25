@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:Slydo/constant.dart';
 import 'package:Slydo/screens/moments/models/moments_model.dart';
 import 'package:Slydo/screens/moments/screens/create_moment_screen.dart';
 import 'package:Slydo/screens/moments/screens/moment_detail/custom_story_view.dart';
@@ -59,10 +60,10 @@ class _MomentsScreenState extends State<MomentsScreen> {
   bool isExploreMomentsLoading = false;
   List<ExploreMomentsModel> exploreMomentsList = [];
   List<MomentsModel> contactMomentsList = [];
-  final ScrollController _myConnectionsScrollController = ScrollController();
-  final ScrollController _exploreScrollController = ScrollController();
+  ScrollController _myConnectionsScrollController = ScrollController();
+  ScrollController _exploreScrollController = ScrollController();
 
-  final RefreshController _refreshController =
+  RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
   bool showExploreMomentsPaginationLoading = false;
@@ -103,7 +104,7 @@ class _MomentsScreenState extends State<MomentsScreen> {
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      final connectionResult = value;
+      var connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         _refreshPage();
@@ -117,7 +118,7 @@ class _MomentsScreenState extends State<MomentsScreen> {
     });
   }
 
-  void _refreshPage() {
+  _refreshPage() {
     nextContactMoments = "";
     nextExploreMoments = "";
     countContactMoments = 0;
@@ -135,7 +136,7 @@ class _MomentsScreenState extends State<MomentsScreen> {
     getExploreMoments();
   }
 
-  Future<void> getConnectionMoments() async {
+  getConnectionMoments() async {
     if (!isContactMomentsLoading) {
       if (nextContactMoments != null && !isContactMomentsLoading) {
         if (mounted) {
@@ -143,8 +144,7 @@ class _MomentsScreenState extends State<MomentsScreen> {
             isContactMomentsLoading = true;
           });
         }
-        final Map<String, dynamic>? result =
-            await MomentsService().getContactMoments(
+        Map<String, dynamic>? result = await MomentsService().getContactMoments(
           next: nextContactMoments,
           previous: previousContactMoments,
         );
@@ -155,7 +155,7 @@ class _MomentsScreenState extends State<MomentsScreen> {
         nextContactMoments = result['next'];
         countContactMoments = result['count'];
         previousContactMoments = result['previous'];
-        final tempList = result['results'];
+        var tempList = result['results'];
 
         isContactMomentsLoading = false;
         contactMomentsList.addAll(tempList);
@@ -172,7 +172,7 @@ class _MomentsScreenState extends State<MomentsScreen> {
     }
   }
 
-  Future<void> getExploreMoments() async {
+  getExploreMoments() async {
     if (!isExploreMomentsLoading) {
       if (nextExploreMoments != null && !isExploreMomentsLoading) {
         if (mounted) {
@@ -180,8 +180,7 @@ class _MomentsScreenState extends State<MomentsScreen> {
             isExploreMomentsLoading = true;
           });
         }
-        final Map<String, dynamic>? result =
-            await MomentsService().getExploreMoments(
+        Map<String, dynamic>? result = await MomentsService().getExploreMoments(
           nextExploreMoments,
           previousExploreMoments,
         );
@@ -192,7 +191,7 @@ class _MomentsScreenState extends State<MomentsScreen> {
         nextExploreMoments = result['next'];
         countExploreMoments = result['count'];
         previousExploreMoments = result['previous'];
-        final tempList = result['results'];
+        var tempList = result['results'];
 
         isExploreMomentsLoading = false;
 
@@ -295,21 +294,28 @@ class _MomentsScreenState extends State<MomentsScreen> {
             size: 14,
           ),
           onPressed: () {
-            NavigationUtil.push(context, screen: const MomentSearchScreen());
+            NavigationUtil.push(context, screen: MomentSearchScreen());
           },
         ),
         addMomentsBtn(),
-        const SizedBox(width: 10),
+        SizedBox(width: 10),
         myMomentsBtn(),
-        const SizedBox(width: 14),
+        SizedBox(width: 14),
       ],
     );
   }
 
   Widget addMomentsBtn() {
+    PermissionType? hasPermission =
+        userBloc.user.hasWritePermission(ProtectionPermission.moment);
     return InkWell(
       onTap: () async {
-        NavigationUtil.push(context, screen: CreateMediaMomentScreen());
+        if (hasPermission == PermissionType.WRITE) {
+          NavigationUtil.push(context, screen: CreateMediaMomentScreen());
+        } else {
+          showSnackbar(context,
+              message: AppLocalization.of(context)?.doNotPermission ?? "");
+        }
       },
       child: Icon(
         Icons.camera_alt_rounded,
@@ -338,7 +344,7 @@ class _MomentsScreenState extends State<MomentsScreen> {
 
   Widget scaffoldBody() {
     if (storageIsNull) {
-      return const Center(
+      return Center(
         child:
             Text('We experienced a fault. Please restart app to view moments.'),
       );
@@ -361,34 +367,33 @@ class _MomentsScreenState extends State<MomentsScreen> {
           controller: _exploreScrollController,
           children: [
             contactMomentsListWidget(),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             adverts(),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             exploreMomentsListWidget(),
-            if (isExploreMomentsLoading)
-              Shimmer.fromColors(
-                baseColor: Colors.white,
-                highlightColor: greyBorderColor,
-                child: GridView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                    maxCrossAxisExtent: 200,
-                    mainAxisExtent: 300,
-                  ),
-                  itemCount: 2,
-                  itemBuilder: (context, index) {
-                    return Card(
-                      color: Colors.grey,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(6),
+            isExploreMomentsLoading
+                ? Shimmer.fromColors(
+                    baseColor: Colors.white,
+                    highlightColor: greyBorderColor,
+                    child: GridView.builder(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                        maxCrossAxisExtent: 200,
+                        mainAxisExtent: 300,
                       ),
-                    );
-                  },
-                ),
-              )
-            else
-              const SizedBox.shrink(),
+                      itemCount: 2,
+                      itemBuilder: (context, index) {
+                        return Card(
+                          color: Colors.grey,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                        );
+                      },
+                    ),
+                  )
+                : SizedBox.shrink(),
             Visibility(
               visible: !isContactMomentsLoading &&
                   !isExploreMomentsLoading &&
@@ -398,10 +403,9 @@ class _MomentsScreenState extends State<MomentsScreen> {
                 child: Column(
                   children: [
                     Lottie.asset('assets/lottie/no_moment_lottie.json'),
-                    const SizedBox(height: 20),
-                    const Text(
-                        'Create a moment with the camera icon at the top.'),
-                    const Text('Pull down to refresh to see latest moments.'),
+                    SizedBox(height: 20),
+                    Text('Create a moment with the camera icon at the top.'),
+                    Text('Pull down to refresh to see latest moments.'),
                   ],
                 ),
               ),
@@ -414,7 +418,7 @@ class _MomentsScreenState extends State<MomentsScreen> {
 
   Widget adverts() {
     if (!hasAdverts) {
-      return const SizedBox.shrink();
+      return SizedBox.shrink();
     }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -428,7 +432,7 @@ class _MomentsScreenState extends State<MomentsScreen> {
             fontFamily: "Inter",
           ),
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: 12),
         SizedBox(
           height: 140,
           width: MediaQuery.of(context).size.width,
@@ -453,7 +457,7 @@ class _MomentsScreenState extends State<MomentsScreen> {
           child: ListView.builder(
             shrinkWrap: true,
             scrollDirection: Axis.horizontal,
-            physics: const NeverScrollableScrollPhysics(),
+            physics: NeverScrollableScrollPhysics(),
             itemCount: 4,
             itemBuilder: (context, index) {
               return SizedBox(
@@ -471,7 +475,7 @@ class _MomentsScreenState extends State<MomentsScreen> {
     }
 
     if (contactMomentsList.isEmpty) {
-      return const SizedBox.shrink();
+      return SizedBox.shrink();
     }
 
     return Column(
@@ -482,13 +486,13 @@ class _MomentsScreenState extends State<MomentsScreen> {
             CircleAvatar(
               radius: 10,
               backgroundColor: navyBlue,
-              child: const Icon(
+              child: Icon(
                 Icons.group,
                 color: Colors.white,
                 size: 14,
               ),
             ),
-            const SizedBox(width: 6),
+            SizedBox(width: 6),
             Text(
               "My Friends",
               style: TextStyle(
@@ -498,21 +502,22 @@ class _MomentsScreenState extends State<MomentsScreen> {
                 fontFamily: "Inter",
               ),
             ),
-            const SizedBox(width: 10),
+            SizedBox(width: 10),
           ],
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: 12),
         SizedBox(
           height: 180,
           child: ListView.builder(
             shrinkWrap: true,
             controller: _myConnectionsScrollController,
             scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(vertical: 4),
+            padding: EdgeInsets.symmetric(vertical: 4),
             itemCount: contactMomentsList.length + 1,
             itemBuilder: (BuildContext context, int index) {
               if (index == contactMomentsList.length) {
-                return buildIndicator(isLoading: isContactMomentsLoading);
+                return buildLoadingIndicator(
+                    isLoading: isContactMomentsLoading);
               } else {
                 return ContactMomentsCard(
                   index: index,
@@ -531,7 +536,7 @@ class _MomentsScreenState extends State<MomentsScreen> {
 
   Widget exploreMomentsListWidget() {
     if (exploreMomentsList.isEmpty) {
-      return const SizedBox.shrink();
+      return SizedBox.shrink();
     }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -543,7 +548,7 @@ class _MomentsScreenState extends State<MomentsScreen> {
               color: navyBlue,
               size: 24,
             ),
-            const SizedBox(width: 6),
+            SizedBox(width: 6),
             Text(
               "Explore",
               style: TextStyle(
@@ -555,39 +560,26 @@ class _MomentsScreenState extends State<MomentsScreen> {
             ),
           ],
         ),
-        const SizedBox(height: 12),
-        if (nextExploreMoments == "" && isExploreMomentsLoading)
-          const SizedBox.shrink()
-        else
-          GridView.builder(
-            shrinkWrap: true,
-            padding: EdgeInsets.zero,
-            physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-              mainAxisExtent: 300,
-              maxCrossAxisExtent: 200,
-            ),
-            itemCount: exploreMomentsList.length,
-            itemBuilder: (context, index) {
-              return ExploreMomentsCard(
-                index: index,
-                exploreMomentsModelList: exploreMomentsList,
-              );
-            },
-          ),
+        SizedBox(height: 12),
+        nextExploreMoments == "" && isExploreMomentsLoading
+            ? SizedBox.shrink()
+            : GridView.builder(
+                shrinkWrap: true,
+                padding: EdgeInsets.zero,
+                physics: NeverScrollableScrollPhysics(),
+                gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                  mainAxisExtent: 300,
+                  maxCrossAxisExtent: 200,
+                ),
+                itemCount: exploreMomentsList.length,
+                itemBuilder: (context, index) {
+                  return ExploreMomentsCard(
+                    index: index,
+                    exploreMomentsModelList: exploreMomentsList,
+                  );
+                },
+              ),
       ],
-    );
-  }
-
-  Widget buildIndicator({required bool isLoading}) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Center(
-        child: Opacity(
-          opacity: isLoading ? 1.0 : 00,
-          child: CircularLoadingIndicator(),
-        ),
-      ),
     );
   }
 
@@ -644,13 +636,13 @@ class _ContactMomentsCardState extends State<ContactMomentsCard> {
   final List<List<MomentsModel>> listOfMomentsModelList = [];
 
   Future getListOfMomentsModelList(String owner) async {
-    final List<MomentsModel> momentsModelList = await MomentsService()
+    List<MomentsModel> momentsModelList = await MomentsService()
         .getMomentsWithOwnerName(ownerName: owner, channelUsername: '');
     listOfMomentsModelList.add(momentsModelList);
   }
 
   Future getLengthOfOwnerMoments(String owner) async {
-    final List<MomentsModel> momentsModelList = await MomentsService()
+    List<MomentsModel> momentsModelList = await MomentsService()
         .getMomentsWithOwnerName(ownerName: owner, channelUsername: '');
     lengthOfOwnerMoments = momentsModelList.length;
   }
@@ -716,12 +708,12 @@ class _ContactMomentsCardState extends State<ContactMomentsCard> {
                             Shadow(
                               blurRadius: 4.0,
                               color: blackFont,
-                              offset: const Offset(0.0, 0),
+                              offset: Offset(0.0, 0),
                             ),
                           ],
                         ),
                       ),
-                      const SizedBox(height: 3),
+                      SizedBox(height: 3),
                       Text(
                         getFormattedViewCount(
                             noOfViews: widget.userMomentModel.views),
@@ -732,7 +724,7 @@ class _ContactMomentsCardState extends State<ContactMomentsCard> {
                             Shadow(
                               blurRadius: 4.0,
                               color: blackFont,
-                              offset: const Offset(0.0, 0),
+                              offset: Offset(0.0, 0),
                             ),
                           ],
                           color: Colors.white,
@@ -748,23 +740,22 @@ class _ContactMomentsCardState extends State<ContactMomentsCard> {
                 child: isConnectionsMomentLoading
                     ? CircleAvatar(
                         backgroundColor: greyBorderColor,
-                        child: const Padding(
-                          padding: EdgeInsets.all(8.0),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
                           child: CircularProgressIndicator(),
                         ),
                       )
-                    : const SizedBox.shrink(),
+                    : SizedBox.shrink(),
               ),
-              if (widget.userMomentModel.mediaType == 'video')
-                Align(
-                  alignment: Alignment.topRight,
-                  child: Padding(
-                    padding: const EdgeInsets.only(right: 4.0),
-                    child: SvgPicture.asset("yarn/cam_vec".toSVG()),
-                  ),
-                )
-              else
-                const SizedBox.shrink(),
+              widget.userMomentModel.mediaType == 'video'
+                  ? Align(
+                      alignment: Alignment.topRight,
+                      child: Padding(
+                        padding: const EdgeInsets.only(right: 4.0),
+                        child: SvgPicture.asset("yarn/cam_vec".toSVG()),
+                      ),
+                    )
+                  : SizedBox.shrink(),
             ],
           ),
         ),
@@ -809,7 +800,7 @@ class _ExploreMomentsCardState extends State<ExploreMomentsCard> {
         storyItems.add(Shiddo.pageImage(
             url: e.media!,
             controller: storyController,
-            duration: const Duration(seconds: 10),
+            duration: Duration(seconds: 10),
             momentsModel: e));
       }
       if (e.mediaType == 'video') {
@@ -863,18 +854,18 @@ class _ExploreMomentsCardState extends State<ExploreMomentsCard> {
                   widget.exploreMomentsModelList[widget.index].moments!.first,
               context: context,
             ),
-            if (widget.showProfileAvatar)
-              Align(
-                alignment: Alignment.topLeft,
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 8.0, top: 10),
-                  child: MomentsUtils().getUserProfilePic(
-                      widget.exploreMomentsModelList[widget.index].avatar!,
-                      widget.exploreMomentsModelList[widget.index].ownerName!),
-                ),
-              )
-            else
-              const SizedBox.shrink(),
+            widget.showProfileAvatar
+                ? Align(
+                    alignment: Alignment.topLeft,
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 8.0, top: 10),
+                      child: MomentsUtils().getUserProfilePic(
+                          widget.exploreMomentsModelList[widget.index].avatar!,
+                          widget.exploreMomentsModelList[widget.index]
+                              .ownerName!),
+                    ),
+                  )
+                : SizedBox.shrink(),
             Align(
               alignment: Alignment.bottomLeft,
               child: Padding(
@@ -895,7 +886,7 @@ class _ExploreMomentsCardState extends State<ExploreMomentsCard> {
                           Shadow(
                             blurRadius: 4.0,
                             color: blackFont,
-                            offset: const Offset(0.0, 0),
+                            offset: Offset(0.0, 0),
                           ),
                         ],
                         color: Colors.white,
@@ -915,30 +906,29 @@ class _ExploreMomentsCardState extends State<ExploreMomentsCard> {
                           Shadow(
                             blurRadius: 4.0,
                             color: blackFont,
-                            offset: const Offset(0.0, 0),
+                            offset: Offset(0.0, 0),
                           ),
                         ],
                         color: Colors.white,
                         fontWeight: FontWeight.w400,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8),
                   ],
                 ),
               ),
             ),
-            if (widget.exploreMomentsModelList[widget.index].moments!.first
-                    .mediaType ==
-                'video')
-              Align(
-                alignment: Alignment.topRight,
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 8.0, top: 12.0),
-                  child: SvgPicture.asset("yarn/cam_vec".toSVG()),
-                ),
-              )
-            else
-              const SizedBox.shrink(),
+            widget.exploreMomentsModelList[widget.index].moments!.first
+                        .mediaType ==
+                    'video'
+                ? Align(
+                    alignment: Alignment.topRight,
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 8.0, top: 12.0),
+                      child: SvgPicture.asset("yarn/cam_vec".toSVG()),
+                    ),
+                  )
+                : SizedBox.shrink(),
           ],
         ),
       ),
@@ -948,7 +938,7 @@ class _ExploreMomentsCardState extends State<ExploreMomentsCard> {
 
 Widget momentListLengthWidget(int? length, {double? fontSize}) {
   return length == null
-      ? const SizedBox.shrink()
+      ? SizedBox.shrink()
       : Padding(
           padding: const EdgeInsets.all(4.0),
           child: Container(
@@ -999,7 +989,7 @@ Widget _getMediaRenderer(
     if (momentModel.mediaPoster == null) {
       return Container(
         decoration: BoxDecoration(
-          color: const Color(0XFFdcdcdc).withOpacity(0.5),
+          color: Color(0XFFdcdcdc).withOpacity(0.5),
           borderRadius: BorderRadius.circular(10),
         ),
       );

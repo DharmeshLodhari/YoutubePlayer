@@ -29,15 +29,15 @@ class TransactionPaymentLink extends StatefulWidget {
       this.link,
       this.passcode})
       : super(key: key);
-  final String? date;
-  final String? id;
-  final String? amount;
-  final String? currency;
-  final String? status;
-  final String? name;
-  final String? passcode;
-  final String? category;
-  final String? link;
+  String? date;
+  String? id;
+  String? amount;
+  String? currency;
+  String? status;
+  String? name;
+  String? passcode;
+  String? category;
+  String? link;
 
   @override
   State<TransactionPaymentLink> createState() => _TransactionPaymentLinkState();
@@ -45,6 +45,7 @@ class TransactionPaymentLink extends StatefulWidget {
 
 class _TransactionPaymentLinkState extends State<TransactionPaymentLink> {
   final now = DateTime.now();
+  var yesterday;
   var datetime;
   bool isLoading = false;
 
@@ -78,7 +79,7 @@ class _TransactionPaymentLinkState extends State<TransactionPaymentLink> {
     );
   }
 
-  Future<void> enableActionLink(Map map) async {
+  enableActionLink(Map map) async {
     try {
       isLoading = true;
       await _auth.paymentLinksAction(map).then((value) {
@@ -136,7 +137,7 @@ class _TransactionPaymentLinkState extends State<TransactionPaymentLink> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   getAmount(int.parse(widget.amount!),
-                                      widget.currency ?? "",
+                                      widget.currency!,
                                       fontSize: 20),
                                   const SizedBox(
                                     height: 8,
@@ -275,7 +276,7 @@ class _TransactionPaymentLinkState extends State<TransactionPaymentLink> {
         ));
   }
 
-  void showDataAlert(link) {
+  showDataAlert(link) {
     showDialog(
         context: context,
         builder: (context) {
@@ -543,43 +544,42 @@ class _TransactionPaymentLinkState extends State<TransactionPaymentLink> {
               ],
             ),
           ),
-          if (!isHidden)
-            const SizedBox.shrink()
-          else
-            isBalanceHidden
-                ? IconButton(
-                    padding: const EdgeInsets.only(top: 4, right: 22),
-                    alignment: Alignment.center,
-                    icon: Icon(
-                      SlydoAppIcon.eye,
-                      color: black,
-                      size: 12,
-                    ),
-                    onPressed: () {
-                      BottomSheetPassCode(
-                        context: context,
-                        isValidCallback: () {
-                          isBalanceHidden = false;
-                          setState(() {});
-                        },
-                        cancelCallBack: () {
-                          Navigator.pop(context);
-                        },
-                      );
-                    },
-                  )
-                : IconButton(
-                    alignment: Alignment.center,
-                    icon: Icon(
-                      SlydoAppIcon.eye_close,
-                      color: black,
-                      size: 12,
-                    ),
-                    onPressed: () {
-                      isBalanceHidden = true;
-                      setState(() {});
-                    },
-                  )
+          !isHidden
+              ? const SizedBox.shrink()
+              : isBalanceHidden
+                  ? IconButton(
+                      padding: const EdgeInsets.only(top: 4, right: 22),
+                      alignment: Alignment.center,
+                      icon: Icon(
+                        SlydoAppIcon.eye,
+                        color: black,
+                        size: 12,
+                      ),
+                      onPressed: () {
+                        BottomSheetPassCode(
+                          context: context,
+                          isValidCallback: () {
+                            isBalanceHidden = false;
+                            setState(() {});
+                          },
+                          cancelCallBack: () {
+                            Navigator.pop(context);
+                          },
+                        );
+                      },
+                    )
+                  : IconButton(
+                      alignment: Alignment.center,
+                      icon: Icon(
+                        SlydoAppIcon.eye_close,
+                        color: black,
+                        size: 12,
+                      ),
+                      onPressed: () {
+                        isBalanceHidden = true;
+                        setState(() {});
+                      },
+                    )
         ],
       ),
     );

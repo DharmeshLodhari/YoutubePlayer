@@ -35,6 +35,7 @@ class User {
   RiderModel? rider;
   Staff? staff;
   Permissions? permissions;
+  ShippingAddress? defaultAddress;
 
   // Pass in as named parameter in constructor
   User({
@@ -60,6 +61,7 @@ class User {
     this.rider,
     this.staff,
     this.permissions,
+    this.defaultAddress,
   });
 
   factory User.fromJson(Map<String, dynamic> json,
@@ -89,6 +91,9 @@ class User {
       staff: staff != null ? Staff.fromJson(staff) : null,
       permissions:
           permissions != null ? Permissions.fromJson(permissions) : null,
+      defaultAddress: json["default_address"] == null
+          ? null
+          : ShippingAddress.fromJson(json["default_address"]),
     );
     // userAbout.bio = user.bio == null ? '' : user.bio!;
     // user.userAbout = userAbout;
@@ -114,6 +119,7 @@ class User {
     data['rider'] = rider;
     data['staff'] = staff;
     data['permissions'] = permissions;
+    data['default_address'] = defaultAddress;
     return data;
   }
 
@@ -342,6 +348,7 @@ class Permissions {
   String? paymentRequest;
   String? invoice;
   String? contract;
+  String? profile;
 
   Permissions({
     this.payment,
@@ -356,6 +363,7 @@ class Permissions {
     this.paymentRequest,
     this.invoice,
     this.contract,
+    this.profile,
   });
 
   factory Permissions.fromJson(Map<String, dynamic> json) => Permissions(
@@ -371,6 +379,7 @@ class Permissions {
         paymentRequest: json["payment-request"],
         invoice: json["invoice"],
         contract: json["contract"],
+        profile: json["profile"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -386,6 +395,7 @@ class Permissions {
         "payment-request": paymentRequest,
         "invoice": invoice,
         "contract": contract,
+        "profile": profile,
       };
 
   PermissionType? getPermissionLevel(String? permission) {
@@ -448,6 +458,8 @@ class Permissions {
         return getPermissionLevel(payment);
       case ProtectionPermission.request:
         return getPermissionLevel(paymentRequest);
+      case ProtectionPermission.profile:
+        return getPermissionLevel(profile);
     }
     return null;
   }

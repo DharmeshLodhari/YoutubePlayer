@@ -60,7 +60,7 @@ class _PaymentLinkCashOutState extends State<PaymentLinkCashOut> {
       RefreshController(initialRefresh: false);
   GlobalKey searchItemTextFormField = GlobalKey();
   BankModel? selectedBank;
-  final ScrollController _scrollController = ScrollController();
+  ScrollController _scrollController = ScrollController();
   bool isLoading = false;
   final FocusNode _pinPutFocusNode = FocusNode();
 
@@ -70,7 +70,7 @@ class _PaymentLinkCashOutState extends State<PaymentLinkCashOut> {
     super.initState();
   }
 
-  Widget getMessage(int amount, String currency, {double fontSize = 18}) {
+  Widget getMessage(amount, currency, {double fontSize = 18}) {
     return SizedBox(
       width: 200,
       child: Row(
@@ -158,150 +158,150 @@ class _PaymentLinkCashOutState extends State<PaymentLinkCashOut> {
               const SizedBox(
                 height: 10,
               ),
-              if (loading && _paymentLinkModel == null)
-                const SizedBox.shrink()
-              else
-                RichText(
-                  textAlign: TextAlign.center,
-                  text: TextSpan(
-                    text: 'A sum of ',
-                    style: TextStyle(
-                        color: blackFont,
-                        fontWeight: FontWeight.w500,
-                        fontSize: 18),
-                    children: <TextSpan>[
-                      TextSpan(
-                          text:
-                              '${worldCurrencies[_paymentLinkModel?.currency]}${moneyDisplayNormalizer(_paymentLinkModel?.amount)}',
-                          style: TextStyle(
-                              fontWeight: FontWeight.w700,
-                              color: navyBlue,
-                              fontSize: 18)),
-                      TextSpan(
-                          text: ' was sent to you, enter details to cashout.',
-                          style: TextStyle(
-                              color: blackFont,
-                              fontWeight: FontWeight.w500,
-                              fontSize: 18)),
-                    ],
-                  ),
-                ),
+              loading && _paymentLinkModel == null
+                  ? const SizedBox.shrink()
+                  : RichText(
+                      textAlign: TextAlign.center,
+                      text: TextSpan(
+                        text: 'A sum of ',
+                        style: TextStyle(
+                            color: blackFont,
+                            fontWeight: FontWeight.w500,
+                            fontSize: 18),
+                        children: <TextSpan>[
+                          TextSpan(
+                              text:
+                                  '${worldCurrencies[_paymentLinkModel?.currency]}${moneyDisplayNormalizer(_paymentLinkModel?.amount)}',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                  color: navyBlue,
+                                  fontSize: 18)),
+                          TextSpan(
+                              text:
+                                  ' was sent to you, enter details to cashout.',
+                              style: TextStyle(
+                                  color: blackFont,
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 18)),
+                        ],
+                      ),
+                    ),
               const SizedBox(
                 height: 24,
               ),
-              if (loading)
-                Padding(
-                  padding: const EdgeInsets.only(top: 20),
-                  child: Center(
-                      child: CircularProgressIndicator(
-                    color: navyBlue,
-                  )),
-                )
-              else
-                Card(
-                  elevation: 2,
-                  margin: EdgeInsets.zero,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  shadowColor: iconBtnGrey,
-                  child: Container(
-                    decoration: BoxDecoration(
+              loading
+                  ? Padding(
+                      padding: const EdgeInsets.only(top: 20),
+                      child: Center(
+                          child: CircularProgressIndicator(
+                        color: navyBlue,
+                      )),
+                    )
+                  : Card(
+                      elevation: 2,
+                      margin: EdgeInsets.zero,
+                      shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: iconBtnGrey, width: 1)),
-                    child: Form(
-                      key: _formKey,
+                      ),
+                      shadowColor: iconBtnGrey,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Column(
-                          children: <Widget>[
-                            const SizedBox(
-                              height: 30,
-                            ),
-                            const SizedBox(
-                              height: 30,
-                            ),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Account Bank',
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      color: blackFont,
-                                      fontWeight: FontWeight.w600),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: iconBtnGrey, width: 1)),
+                        child: Form(
+                          key: _formKey,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: Column(
+                              children: <Widget>[
+                                const SizedBox(
+                                  height: 30,
                                 ),
-                                const SizedBox(height: 5),
-                                InkWell(
-                                  onTap: () {
-                                    FocusScope.of(context).unfocus();
-                                    clearSearchedListItems();
-                                    showSearchBankBottomSheet();
-                                  },
-                                  child: TextFormField(
-                                    controller: bankController,
-                                    enabled: false,
-                                    style: TextStyle(
-                                        fontSize: 18,
-                                        color: blackFont,
-                                        fontWeight: FontWeight.w600),
-                                    decoration: InputDecoration(
-                                      filled: true,
-                                      fillColor: transparent,
-                                      contentPadding: const EdgeInsets.only(
-                                          left: 8,
-                                          bottom: 0,
-                                          top: 0,
-                                          right: 15),
-                                      suffixIcon: Icon(
-                                        Icons.arrow_drop_down_outlined,
-                                        color: blackFont,
-                                      ),
-                                      border: OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                          width: 0.7,
-                                          color: greyBorderColor,
-                                          style: BorderStyle.none,
-                                        ),
-                                        borderRadius: const BorderRadius.all(
-                                          Radius.circular(8.0),
+                                const SizedBox(
+                                  height: 30,
+                                ),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Recipient\'s Bank Name',
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          color: blackFont,
+                                          fontWeight: FontWeight.w600),
+                                    ),
+                                    const SizedBox(height: 5),
+                                    InkWell(
+                                      onTap: () {
+                                        FocusScope.of(context).unfocus();
+                                        clearSearchedListItems();
+                                        showSearchBankBottomSheet();
+                                      },
+                                      child: TextFormField(
+                                        controller: bankController,
+                                        enabled: false,
+                                        style: TextStyle(
+                                            fontSize: 18,
+                                            color: blackFont,
+                                            fontWeight: FontWeight.w600),
+                                        decoration: InputDecoration(
+                                          filled: true,
+                                          fillColor: transparent,
+                                          contentPadding: const EdgeInsets.only(
+                                              left: 8,
+                                              bottom: 0,
+                                              top: 0,
+                                              right: 15),
+                                          suffixIcon: Icon(
+                                            Icons.arrow_drop_down_outlined,
+                                            color: blackFont,
+                                          ),
+                                          border: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                              width: 0.7,
+                                              color: greyBorderColor,
+                                              style: BorderStyle.none,
+                                            ),
+                                            borderRadius:
+                                                const BorderRadius.all(
+                                              Radius.circular(8.0),
+                                            ),
+                                          ),
                                         ),
                                       ),
                                     ),
-                                  ),
+                                  ],
+                                ),
+                                const SizedBox(
+                                  height: 20,
+                                ),
+                                getAccountNumber(),
+                                const SizedBox(
+                                  height: 20,
+                                ),
+                                getAccountName(),
+                                const SizedBox(
+                                  height: 20,
+                                ),
+                                passwordPinFiled(),
+                                const SizedBox(
+                                  height: 60,
+                                ),
+                                CurvedButton(
+                                  onPressed: () => cashOut(),
+                                  backgroundColor: navyBlue,
+                                  textColor: Colors.white,
+                                  text: "Cash Out",
+                                ),
+                                const SizedBox(
+                                  height: 60,
                                 ),
                               ],
                             ),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            getAccountNumber(),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            getAccountName(),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            passwordPinFiled(),
-                            const SizedBox(
-                              height: 60,
-                            ),
-                            CurvedButton(
-                              onPressed: () => cashOut(),
-                              backgroundColor: navyBlue,
-                              textColor: Colors.white,
-                              text: "Cash Out",
-                            ),
-                            const SizedBox(
-                              height: 60,
-                            ),
-                          ],
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ),
             ],
           ));
     } else if (isStatusState.toLowerCase() == 'paid') {
@@ -330,7 +330,7 @@ class _PaymentLinkCashOutState extends State<PaymentLinkCashOut> {
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: EdgeInsets.all(8.0),
                         child: Text(
                           "Link ${_paymentLinkModel!.status.toString()}",
                           style: TextStyle(
@@ -378,13 +378,13 @@ class _PaymentLinkCashOutState extends State<PaymentLinkCashOut> {
     loading = true;
     if (mounted) setState(() {});
 
-    final Map data = {
+    Map data = {
       "bank_code": selectedBank!.providerCode,
       "account_number": accountNumber,
     };
 
     try {
-      final Map<String, dynamic>? result = await _auth.verifyBankAccount(data);
+      Map<String, dynamic>? result = await _auth.verifyBankAccount(data);
 
       loading = false;
       if (mounted) setState(() {});
@@ -394,7 +394,7 @@ class _PaymentLinkCashOutState extends State<PaymentLinkCashOut> {
         return;
       }
 
-      final tempList = result['results'];
+      var tempList = result['results'];
       // debugPrint('Fola verify::: ${tempList}');
 
       showDialogBox(
@@ -431,7 +431,7 @@ class _PaymentLinkCashOutState extends State<PaymentLinkCashOut> {
 
   Widget getAccountNumber() {
     return CustomizedTextFormField(
-      labelText: AppLocalization.of(context)!.accountNumberHint,
+      labelText: 'Recipient\'s Account Number',
       fontWeight: FontWeight.w600,
       labelColor: blackFont,
       keyboardType: TextInputType.number,
@@ -458,7 +458,7 @@ class _PaymentLinkCashOutState extends State<PaymentLinkCashOut> {
 
   Widget getAccountName() {
     return CustomizedTextFormField(
-      labelText: AppLocalization.of(context)!.accountNameHint,
+      labelText: 'Recipient\'s Account Name',
       keyboardType: TextInputType.text,
       controller: accountNameController,
       fontWeight: FontWeight.w600,
@@ -479,7 +479,7 @@ class _PaymentLinkCashOutState extends State<PaymentLinkCashOut> {
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      final connectionResult = value;
+      var connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         count = 0;
@@ -500,7 +500,7 @@ class _PaymentLinkCashOutState extends State<PaymentLinkCashOut> {
   }
 
   void getBankListSearched() async {
-    final String url =
+    String url =
         "${AppConfig.baseUrl}/api/v1/transactions/get-bank-info/?search=${searchItemTextController.text}";
 
     if (!isItemLoading) {
@@ -512,7 +512,7 @@ class _PaymentLinkCashOutState extends State<PaymentLinkCashOut> {
         }
         if (mounted) setState(() {});
 
-        final Map<String, dynamic>? result =
+        Map<String, dynamic>? result =
             await _auth.searchBankList(url, next, previous);
         if (result == null) {
           isItemLoading = false;
@@ -521,7 +521,7 @@ class _PaymentLinkCashOutState extends State<PaymentLinkCashOut> {
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
-        final List tempList = result['results'];
+        List tempList = result['results'];
 
         isItemLoading = false;
         if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted) {
@@ -550,7 +550,7 @@ class _PaymentLinkCashOutState extends State<PaymentLinkCashOut> {
   }
 
   void showSearchBankBottomSheet() async {
-    final result = await showModalBottomSheet<String>(
+    var result = await showModalBottomSheet<String>(
         backgroundColor: Colors.transparent,
         context: context,
         useRootNavigator: true,
@@ -816,7 +816,7 @@ class _PaymentLinkCashOutState extends State<PaymentLinkCashOut> {
   }
 
   Widget getBankLogoLeading(BankModel bankModel) {
-    final String? bankUrl = bankModel.logoUrl == ""
+    String? bankUrl = bankModel.logoUrl == ""
         ? getInitials(bankModel.name!).toUpperCase()
         : bankModel.logoUrl;
 
@@ -829,7 +829,7 @@ class _PaymentLinkCashOutState extends State<PaymentLinkCashOut> {
     );
   }
 
-  Widget checkBankUrl(BankModel bankModel) {
+  checkBankUrl(BankModel bankModel) {
     if (bankModel.logoUrl == "") {
       return CircleAvatar(
         backgroundColor: navyBlue,
@@ -871,7 +871,7 @@ class _PaymentLinkCashOutState extends State<PaymentLinkCashOut> {
 
   bool obscureChange = true;
 
-  Widget obscureTextWidget() {
+  obscureTextWidget() {
     if (obscureChange) {
       return IconButton(
           onPressed: () => setState(() => obscureChange = !obscureChange),
@@ -890,10 +890,10 @@ class _PaymentLinkCashOutState extends State<PaymentLinkCashOut> {
   }
 
   Widget passwordPinFiled() {
-    final BoxDecoration pinPutDecoration = BoxDecoration(
+    BoxDecoration pinPutDecoration = BoxDecoration(
         borderRadius: BorderRadius.circular(10),
         border: Border.all(color: greyBorderColor));
-    final BoxDecoration selectedDecoration = BoxDecoration(
+    BoxDecoration selectedDecoration = BoxDecoration(
         borderRadius: BorderRadius.circular(10),
         border: Border.all(color: navyBlue));
     return Container(
@@ -934,7 +934,7 @@ class _PaymentLinkCashOutState extends State<PaymentLinkCashOut> {
   void getPaymentLinkData() async {
     try {
       loading = true;
-      final res = await _auth.getSinglePaymentLinkDetails(widget.id);
+      var res = await _auth.getSinglePaymentLinkDetails(widget.id);
       _paymentLinkModel = PaymentLinkModel.fromJson(res);
       loading = false;
       setState(() {});
@@ -944,9 +944,9 @@ class _PaymentLinkCashOutState extends State<PaymentLinkCashOut> {
     }
   }
 
-  void cashOut() {
+  cashOut() {
     if (_formKey.currentState!.validate()) {
-      final dynamic data = {
+      dynamic data = {
         "bank": bankPaymentLinkSlug,
         "pin": pinController.text,
         "recipient_account_name": accountNameController.text,
@@ -969,7 +969,7 @@ class _PaymentLinkCashOutState extends State<PaymentLinkCashOut> {
     setState(() {});
   }
 
-  void successfulPopUp() {
+  successfulPopUp() {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await showDialog(
           context: context,

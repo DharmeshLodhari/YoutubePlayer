@@ -24,9 +24,9 @@ class BankAccountList extends StatefulWidget {
 }
 
 class _BankAccountListState extends State<BankAccountList> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey =
-      GlobalKey<ScaffoldMessengerState>();
+      new GlobalKey<ScaffoldMessengerState>();
 
   // Get list of users bank account
   final _auth = PaymentAndBankingAuth();
@@ -35,8 +35,8 @@ class _BankAccountListState extends State<BankAccountList> {
   String? next = "";
   String? previous = "";
   List bankAccountList = [];
-  final ScrollController _scrollController = ScrollController();
-  final RefreshController _refreshController =
+  ScrollController _scrollController = new ScrollController();
+  RefreshController _refreshController =
       RefreshController(initialRefresh: false);
   bool isLoading = false;
   bool noItemInList = false;
@@ -69,7 +69,7 @@ class _BankAccountListState extends State<BankAccountList> {
   void _onRefresh() async {
     //check network connectivity and if true then refresh the list
     Connectivity().checkConnectivity().then((value) {
-      final connectionResult = value;
+      var connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         count = 0;
@@ -138,7 +138,7 @@ class _BankAccountListState extends State<BankAccountList> {
       ),
       actions: <Widget>[
         openGraphBtn(),
-        const SizedBox(
+        SizedBox(
           width: 16,
         ),
       ],
@@ -174,24 +174,26 @@ class _BankAccountListState extends State<BankAccountList> {
         ? NoItemInList(
             msg: AppLocalization.of(context)!.youDontHaveAnyAccountPleaseAddOne,
           )
-        : ListView.builder(
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            //+1 for progressbar
-            itemCount: bankAccountList.length + 1,
-            itemBuilder: (BuildContext context, int index) {
-              if (index == bankAccountList.length) {
-                return buildLoadingIndicator(isLoading: isLoading);
-              } else {
-                return _getSlidableWithLists(
-                    context,
-                    bankAccountTile(
-                      account: bankAccountList[index],
-                    ),
-                    bankAccountList[index]);
-              }
-            },
-            controller: _scrollController,
-          );
+        : isLoading && bankAccountList.isEmpty
+            ? buildLoadingIndicator(isLoading: isLoading)
+            : ListView.builder(
+                padding: EdgeInsets.symmetric(vertical: 16),
+                //+1 for progressbar
+                itemCount: bankAccountList.length + 1,
+                itemBuilder: (BuildContext context, int index) {
+                  if (index == bankAccountList.length) {
+                    return buildJumpingLoadingIndicator(isLoading: isLoading);
+                  } else {
+                    return _getSlidableWithLists(
+                        context,
+                        bankAccountTile(
+                          account: bankAccountList[index],
+                        ),
+                        bankAccountList[index]);
+                  }
+                },
+                controller: _scrollController,
+              );
   }
 
   void getList() async {
@@ -202,7 +204,7 @@ class _BankAccountListState extends State<BankAccountList> {
             isLoading = true;
           });
         }
-        final Map<String, dynamic>? result =
+        Map<String, dynamic>? result =
             await _auth.getBankAccountsPagination(next, previous, "");
         if (result == null) {
           isLoading = false;
@@ -211,7 +213,7 @@ class _BankAccountListState extends State<BankAccountList> {
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
-        final tempList = result['results'];
+        var tempList = result['results'];
         if (mounted) {
           setState(() {
             isLoading = false;
@@ -229,7 +231,7 @@ class _BankAccountListState extends State<BankAccountList> {
         _scaffoldMessengerKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: const Duration(milliseconds: 500),
+          duration: Duration(milliseconds: 500),
         ));
       }
     }
@@ -240,14 +242,14 @@ class _BankAccountListState extends State<BankAccountList> {
     if (account.bankAvatar == "") {
       imageUrl = getInitials(account.bankName.toString()).toUpperCase();
     } else {
-      final String? url = account.bankAvatar;
+      String? url = account.bankAvatar;
 
       imageUrl = url!.replaceAll('https//', 'https://');
     }
 
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       shadowColor: boxShadowTwo,
       elevation: 0,
       child: Container(
@@ -299,7 +301,7 @@ class _BankAccountListState extends State<BankAccountList> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        const SizedBox(
+        SizedBox(
           height: 8,
         ),
         Text(
@@ -317,7 +319,7 @@ class _BankAccountListState extends State<BankAccountList> {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          const SizedBox(
+          SizedBox(
             height: 4,
           ),
           Row(
@@ -343,7 +345,7 @@ class _BankAccountListState extends State<BankAccountList> {
     }
     return Column(
       children: [
-        const SizedBox(
+        SizedBox(
           height: 8,
         ),
         Text(
@@ -360,11 +362,11 @@ class _BankAccountListState extends State<BankAccountList> {
     return Slidable(
       controller: _slideController,
       direction: Axis.horizontal,
-      actionPane: const SlidableBehindActionPane(),
+      actionPane: SlidableBehindActionPane(),
       actionExtentRatio: 0.25,
+      child: VerticalListItem(bankAccountTile),
       actions: listActionSlideActions(account: account),
       secondaryActions: listSecondaryActions(account: account),
-      child: VerticalListItem(bankAccountTile),
     );
   }
 
@@ -427,7 +429,7 @@ class _BankAccountListState extends State<BankAccountList> {
   }
 
   void updateBankAccount(BankAccount account) {
-    final Map data = {
+    Map data = {
       "uuid": account.uuid,
       "customer_username": userBloc.user.userName,
       "bank": account.bankName,
@@ -440,7 +442,7 @@ class _BankAccountListState extends State<BankAccountList> {
         showToast(
             message: AppLocalization.of(context)!.accountUpdatedSuccessfully);
         _auth.getBankAccounts().then((accounts) {
-          final BankAccountBloc bankAccountBloc =
+          BankAccountBloc bankAccountBloc =
               Provider.of<BankAccountBloc>(context, listen: false);
           bankAccountBloc.bankAccount = accounts[0];
         });
@@ -467,9 +469,9 @@ class _BankAccountListState extends State<BankAccountList> {
   }
 
   Widget checkBankImage(BankAccount account) {
-    final String? url = account.bankAvatar;
+    String? url = account.bankAvatar;
 
-    final String imageUrl = url!.replaceAll('https//', 'https://');
+    String imageUrl = url!.replaceAll('https//', 'https://');
     if (account.bankAvatar == "") {
       return CircleAvatar(
         backgroundColor: navyBlue,

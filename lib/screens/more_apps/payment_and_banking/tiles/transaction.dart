@@ -26,7 +26,7 @@ class PaymentRequestTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       shadowColor: boxShadowTwo,
       elevation: 0,
       child: Container(
@@ -35,7 +35,7 @@ class PaymentRequestTile extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8),
+              padding: EdgeInsets.symmetric(vertical: 8),
               child: ListTile(
                   dense: true,
                   leading: getLeading(),
@@ -78,7 +78,7 @@ class PaymentRequestTile extends StatelessWidget {
             fit: BoxFit.cover,
             filterQuality: FilterQuality.high,
             placeholder: (context, url) => paymentRequest!.avatar == ""
-                ? const Icon(Icons.person)
+                ? Icon(Icons.person)
                 : CircularLoadingIndicator(),
           ),
         ),
@@ -88,9 +88,9 @@ class PaymentRequestTile extends StatelessWidget {
 
   Widget getTitle() {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 2),
+      padding: EdgeInsets.only(bottom: 2),
       child: Text(
-        getCustomerName(),
+        messageDecoderWithEmoji(getCustomerName()) ?? "",
         maxLines: 1,
         style: TextStyle(
           color: blackFont,
@@ -105,7 +105,7 @@ class PaymentRequestTile extends StatelessWidget {
 
   String getCustomerName() {
     if (paymentRequest!.displayCustomer.length > 24) {
-      return "${paymentRequest!.displayCustomer.substring(0, 25)}...";
+      return "${paymentRequest?.displayCustomer.substring(0, 25)}...";
     } else {
       return paymentRequest!.displayCustomer;
     }
@@ -115,23 +115,15 @@ class PaymentRequestTile extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        if (paymentRequest!.description != "" &&
-            paymentRequest!.description != null)
-          Text(
-            "${paymentRequest!.description}",
-            style: TextStyle(color: darkGrey, fontSize: 12),
-            maxLines: 1,
-          )
-        else
-          Container(),
-        if (paymentRequest!.amount! >= amountLimit)
-          getTrailing()
-        else
-          Container(),
-        if (paymentRequest!.createdAt == null)
-          const SizedBox()
-        else
-          getDateTime(context)
+        paymentRequest?.description != "" && paymentRequest?.description != null
+            ? Text(
+                messageDecoderWithEmoji(paymentRequest?.description) ?? "",
+                style: TextStyle(color: darkGrey, fontSize: 12),
+                maxLines: 1,
+              )
+            : Container(),
+        paymentRequest!.amount! >= amountLimit ? getTrailing() : Container(),
+        paymentRequest!.createdAt == null ? SizedBox() : getDateTime(context)
       ],
     );
   }
@@ -141,7 +133,7 @@ class PaymentRequestTile extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         Text(
-          worldCurrencies[paymentRequest!.currency!]!,
+          worldCurrencies[paymentRequest?.currency] ?? "NGN",
           style: TextStyle(
               fontFamily: "Inter",
               color: paymentRequest!.isCredit! ? blackFont : navyBlue,
@@ -149,7 +141,7 @@ class PaymentRequestTile extends StatelessWidget {
               fontSize: 14),
         ),
         Text(
-          moneyDisplayNormalizer(paymentRequest!.amount),
+          moneyDisplayNormalizer(paymentRequest?.amount),
           style: TextStyle(
               color: paymentRequest!.isCredit! ? blackFont : navyBlue,
               fontWeight: FontWeight.bold,
@@ -160,10 +152,9 @@ class PaymentRequestTile extends StatelessWidget {
   }
 
   Widget getDateTime(BuildContext context) {
-    final DateTime requestTime =
-        DateTime.parse(paymentRequest!.createdAt!).toLocal();
-    final String date = DateFormat("dd/MM/yyyy").format(requestTime);
-    final String time = DateFormat("hh:mm a").format(requestTime);
+    DateTime requestTime = DateTime.parse(paymentRequest!.createdAt!).toLocal();
+    String date = DateFormat("dd/MM/yyyy").format(requestTime);
+    String time = DateFormat("hh:mm a").format(requestTime);
     return Text(
       "$date • $time",
       softWrap: false,
@@ -199,7 +190,7 @@ class CardTransactionTile extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8),
+              padding: EdgeInsets.symmetric(vertical: 8),
               child: ListTile(
                 dense: true,
                 title: getTitle(),
@@ -223,7 +214,7 @@ class CardTransactionTile extends StatelessWidget {
 
   Widget getTitle() {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 2),
+      padding: EdgeInsets.only(bottom: 2),
       child: Text(
         "${transaction!.merchantName}",
         maxLines: 1,
@@ -272,24 +263,23 @@ class CardTransactionTile extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        if (transaction!.description != "" && transaction!.description != null)
-          Text(
-            "${transaction!.description}",
-            style: TextStyle(color: darkGrey, fontSize: 12),
-            maxLines: 1,
-          )
-        else
-          Container(),
+        transaction!.description != "" && transaction!.description != null
+            ? Text(
+                "${transaction!.description}",
+                style: TextStyle(color: darkGrey, fontSize: 12),
+                maxLines: 1,
+              )
+            : Container(),
         getDateTime(context),
       ],
     );
   }
 
   Widget getDateTime(BuildContext context) {
-    final DateTime transactionTime =
+    DateTime transactionTime =
         DateTime.parse(transaction!.providerCreatedAt!).toLocal();
-    final String date = DateFormat("dd/MM/yyyy").format(transactionTime);
-    final String time = DateFormat("hh:mm a").format(transactionTime);
+    String date = DateFormat("dd/MM/yyyy").format(transactionTime);
+    String time = DateFormat("hh:mm a").format(transactionTime);
     return Text(
       "$date • $time",
       softWrap: false,
@@ -300,22 +290,22 @@ class CardTransactionTile extends StatelessWidget {
 }
 
 class TransactionTile extends StatelessWidget {
-  late final UserBloc? userBloc;
+  UserBloc? userBloc;
 
   final Transaction? transaction;
-  final Widget? expandedWidget;
+  Widget? expandedWidget = Container();
 
   TransactionTile({this.transaction, this.expandedWidget, this.key})
       : super(key: key);
 
-  final Key? key;
+  Key? key;
 
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       shadowColor: boxShadowTwo,
       elevation: 0,
       child: Container(
@@ -324,7 +314,7 @@ class TransactionTile extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8),
+              padding: EdgeInsets.symmetric(vertical: 8),
               child: ListTile(
                 dense: true,
                 title: getTitle(),
@@ -339,7 +329,7 @@ class TransactionTile extends StatelessWidget {
                 },
               ),
             ),
-            if (transaction!.isAnonymous!) Container() else expandedWidget!,
+            transaction!.isAnonymous! ? Container() : expandedWidget!,
           ],
         ),
       ),
@@ -348,9 +338,9 @@ class TransactionTile extends StatelessWidget {
 
   Widget getTitle() {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 2),
+      padding: EdgeInsets.only(bottom: 2),
       child: Text(
-        "${transaction!.displayCustomer}",
+        messageDecoderWithEmoji(transaction?.displayCustomer) ?? "",
         maxLines: 1,
         style: TextStyle(
             color: blackFont, fontWeight: FontWeight.w600, fontSize: 15),
@@ -361,7 +351,7 @@ class TransactionTile extends StatelessWidget {
   Widget getLeading() {
     return transaction!.isAnonymous!
         ? Container(
-            padding: const EdgeInsets.only(top: 4.0, bottom: 4.0),
+            padding: EdgeInsets.only(top: 4.0, bottom: 4.0),
             child: Image.asset(
               "assets/images/anonymous.png",
               height: 48,
@@ -401,28 +391,26 @@ class TransactionTile extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        if (transaction!.description != "" && transaction!.description != null)
-          Text(
-            "${transaction!.description}",
-            style: TextStyle(color: darkGrey, fontSize: 12),
-            maxLines: 1,
-          )
-        else
-          Container(),
-        if (transaction!.amount.toString().length >= amountLimit)
-          getAmount()
-        else
-          Container(),
+        transaction!.description != "" && transaction!.description != null
+            ? Text(
+                messageDecoderWithEmoji(transaction?.description) ?? "",
+                style: TextStyle(color: darkGrey, fontSize: 12),
+                maxLines: 1,
+              )
+            : Container(),
+        transaction!.amount.toString().length >= amountLimit
+            ? getAmount()
+            : Container(),
         getDateTime(context),
       ],
     );
   }
 
   Widget getDateTime(BuildContext context) {
-    final DateTime transactionTime =
+    DateTime transactionTime =
         DateTime.parse(transaction!.createdAt!).toLocal();
-    final String date = DateFormat("dd/MM/yyyy").format(transactionTime);
-    final String time = DateFormat("hh:mm a").format(transactionTime);
+    String date = DateFormat("dd/MM/yyyy").format(transactionTime);
+    String time = DateFormat("hh:mm a").format(transactionTime);
     return Text(
       "$date • $time",
       softWrap: false,
@@ -449,13 +437,13 @@ class _ContractTransactionTileState extends State<ContractTransactionTile> {
     userBloc = Provider.of<UserBloc>(context);
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       shadowColor: boxShadowTwo,
       elevation: 0,
       child: Container(
         decoration: decorateBox(),
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
+          padding: EdgeInsets.symmetric(vertical: 8),
           child: ListTile(
             dense: true,
             title: getTitle(),
@@ -476,7 +464,7 @@ class _ContractTransactionTileState extends State<ContractTransactionTile> {
 
   Widget getTitle() {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 2),
+      padding: EdgeInsets.only(bottom: 2),
       child: Text(
         "${widget.transaction!.payee}",
         maxLines: 1,
@@ -490,7 +478,7 @@ class _ContractTransactionTileState extends State<ContractTransactionTile> {
     return ClipOval(
       child: widget.transaction!.isAnonymous!
           ? Container(
-              padding: const EdgeInsets.only(top: 4.0, bottom: 4.0),
+              padding: EdgeInsets.only(top: 4.0, bottom: 4.0),
               child: Image.asset(
                 "assets/images/anonymous.png",
                 height: 48,
@@ -508,7 +496,7 @@ class _ContractTransactionTileState extends State<ContractTransactionTile> {
               fit: BoxFit.cover,
               filterQuality: FilterQuality.high,
               placeholder: (context, url) => widget.transaction!.avatar == ""
-                  ? const Icon(Icons.person)
+                  ? Icon(Icons.person)
                   : CircularLoadingIndicator(),
             ),
     );
@@ -542,24 +530,22 @@ class _ContractTransactionTileState extends State<ContractTransactionTile> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Text(
-          "${widget.transaction!.description}",
+          messageDecoderWithEmoji(widget.transaction?.description) ?? "",
           style: TextStyle(color: darkGrey, fontSize: 12),
           maxLines: 1,
         ),
-        if (widget.transaction!.amount.toString().length > 6)
-          getAmount()
-        else
-          Container(),
+        widget.transaction!.amount.toString().length > 6
+            ? getAmount()
+            : Container(),
         getDateTime(context),
       ],
     );
   }
 
   Widget getDateTime(BuildContext context) {
-    final DateTime transactionTime =
-        DateTime.parse(widget.transaction!.createdAt!);
-    final String date = DateFormat("dd/MM/yyyy").format(transactionTime);
-    final String time = DateFormat("hh:mm a").format(transactionTime);
+    DateTime transactionTime = DateTime.parse(widget.transaction!.createdAt!);
+    String date = DateFormat("dd/MM/yyyy").format(transactionTime);
+    String time = DateFormat("hh:mm a").format(transactionTime);
     return Text(
       "$date • $time",
       softWrap: false,

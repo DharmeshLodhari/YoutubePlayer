@@ -534,7 +534,7 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
             ),
           )),
       items: itemList.map((StatesModel item) {
-        return item.name ?? "";
+        return messageDecoderWithEmoji(item.name) ?? "";
       }).toList(),
       dropdownDecoratorProps: DropDownDecoratorProps(
         dropdownSearchDecoration: InputDecoration(
@@ -742,7 +742,7 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
             ),
           )),
       items: cityList.map((Cities item) {
-        return item.name ?? "";
+        return messageDecoderWithEmoji(item.name) ?? "";
       }).toList(),
       dropdownDecoratorProps: DropDownDecoratorProps(
         dropdownSearchDecoration: InputDecoration(

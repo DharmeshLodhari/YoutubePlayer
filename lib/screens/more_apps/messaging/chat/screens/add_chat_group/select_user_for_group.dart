@@ -13,7 +13,6 @@ import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/dialog.dart';
-import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:Slydo/widget/search_text_field.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -24,7 +23,7 @@ import '../../../../user_profile/screens/user_profile_module_new/profile_templat
 
 // ignore: must_be_immutable
 class SelectUserForGroup extends StatefulWidget {
-  final dynamic arguments;
+  var arguments;
 
   SelectUserForGroup({this.arguments});
 
@@ -35,17 +34,17 @@ class SelectUserForGroup extends StatefulWidget {
 class _SelectUserForGroupState extends State<SelectUserForGroup> {
   late SharedCartBloc sharedCartBloc;
   final GlobalKey<ScaffoldState> _scaffoldSelectUserForGroupKey =
-      GlobalKey<ScaffoldState>();
+      new GlobalKey<ScaffoldState>();
   final GlobalKey<ScaffoldMessengerState>
       _scaffoldMessengerSelectUserForGroupKey =
-      GlobalKey<ScaffoldMessengerState>();
+      new GlobalKey<ScaffoldMessengerState>();
 
   int? count = 0;
   String? next = "";
   String? previous = "";
   List<CustomerProfile> connectionList = [];
   List<CustomerProfile> selectedConnectionList = [];
-  final ScrollController _scrollController = ScrollController();
+  ScrollController _scrollController = new ScrollController();
 
   TextEditingController? searchUserController;
 
@@ -132,7 +131,7 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
         : FloatingActionButton(
             backgroundColor: navyBlue,
             onPressed: btnPressed,
-            child: const Icon(
+            child: Icon(
               Icons.arrow_forward_rounded,
               size: 28,
             ),
@@ -143,7 +142,7 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
     if (isForAddingUserInGroup) {
       Navigator.of(context).pop(selectedConnectionList);
     } else if (widget.arguments["create"] == "basket") {
-      final result = await showDialogBoxWithInput(
+      var result = await showDialogBoxWithInput(
           context: context,
           actionOneTextColor: blackFont,
           actionOneBgColor: greyBorderColor,
@@ -177,8 +176,7 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
                 // ),
                 // ),
                 Container(
-                  margin:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+                  margin: EdgeInsets.symmetric(horizontal: 10, vertical: 20),
                   child: CustomizedTextFormField(
                     labelText: "Name",
                     validator: (val) {
@@ -221,7 +219,7 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
 
   Widget getAppBar() {
     return Container(
-        padding: const EdgeInsets.only(top: 8),
+        padding: EdgeInsets.only(top: 8),
         child: Row(
           children: [
             IconButton(
@@ -243,8 +241,8 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
 
   Widget getSearchTextField() {
     return Container(
-      padding: const EdgeInsets.only(right: 16),
-      margin: const EdgeInsets.only(top: 10),
+      padding: EdgeInsets.only(right: 16),
+      margin: EdgeInsets.only(top: 10),
       child: SearchTextField(
         hintText: "Search...",
         onSubmit: () {
@@ -272,10 +270,10 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
   Widget getSelectedUserList() {
     return selectedConnectionList.isNotEmpty
         ? Container(
-            padding: const EdgeInsets.only(top: 10),
+            padding: EdgeInsets.only(top: 10),
             child: Container(
               height: 80,
-              padding: const EdgeInsets.only(top: 10, right: 10, left: 16),
+              padding: EdgeInsets.only(top: 10, right: 10, left: 16),
               child: ListView.builder(
                 itemBuilder: (context, index) =>
                     getSelectedUserUI(index: index),
@@ -289,7 +287,7 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
 
   Widget getSelectedUserUI({required int index}) {
     return Container(
-      padding: const EdgeInsets.only(right: 8),
+      padding: EdgeInsets.only(right: 8),
       child: Stack(
         clipBehavior: Clip.none,
         children: [
@@ -315,7 +313,7 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
     );
   }
 
-  Widget showSelectedUser(String? imageUrl, String fullName) {
+  Widget showSelectedUser(String imageUrl, String fullName) {
     if (imageUrl == null ||
         imageUrl == "" ||
         imageUrl ==
@@ -353,32 +351,24 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
             ? NoItemInList(
                 msg: AppLocalization.of(context)!.noResultFound,
               )
-            : ListView.builder(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 4,
-                ),
-                //+1 for progressbar
-                itemCount: connectionList.length + 1,
-                itemBuilder: (BuildContext context, int index) {
-                  if (index == connectionList.length) {
-                    return _buildIndicator();
-                  } else {
-                    return getUserTile(user: connectionList[index]);
-                  }
-                },
-                controller: _scrollController,
-              );
-  }
-
-  Widget _buildIndicator() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Center(
-        child: Opacity(
-            opacity: isLoading ? 1.0 : 00,
-            child: isLoading ? CircularLoadingIndicator() : Container()),
-      ),
-    );
+            : isLoading && connectionList.isEmpty
+                ? buildLoadingIndicator(isLoading: isLoading)
+                : ListView.builder(
+                    padding: EdgeInsets.symmetric(
+                      vertical: 4,
+                    ),
+                    //+1 for progressbar
+                    itemCount: connectionList.length + 1,
+                    itemBuilder: (BuildContext context, int index) {
+                      if (index == connectionList.length) {
+                        return buildJumpingLoadingIndicator(
+                            isLoading: isLoading);
+                      } else {
+                        return getUserTile(user: connectionList[index]);
+                      }
+                    },
+                    controller: _scrollController,
+                  );
   }
 
   Future<void> getList() async {
@@ -389,9 +379,9 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
             isLoading = true;
           });
         }
-        final Map<String, dynamic>? result = await UserAuth()
-            .searchUserInContact(next, previous,
-                query: searchUserController?.text.trim() ?? "");
+        Map<String, dynamic>? result = await UserAuth().searchUserInContact(
+            next, previous,
+            query: searchUserController?.text.trim() ?? "");
         if (result == null) {
           isLoading = false;
           return;
@@ -400,13 +390,12 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
         next = result['next'];
         previous = result['previous'];
 
-        final List tempList = result['results'];
+        List tempList = result['results'];
 
-        final List<CustomerProfile> users = [];
+        List<CustomerProfile> users = [];
 
         tempList.forEach((element) {
-          final CustomerProfile customerProfile =
-              CustomerProfile.fromJson(element);
+          CustomerProfile customerProfile = CustomerProfile.fromJson(element);
 
           if (customerProfile.fullName != "Slydo Inc" &&
               customerProfile.userName != "slydo") {
@@ -417,7 +406,7 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
         if (widget.arguments["create"] == "addMember" &&
             sharedCartBloc.getSharedCartModel() != null) {
           for (int i = 0; i < users.length; i++) {
-            final List<SharedCartMemberModel> memberList =
+            List<SharedCartMemberModel>? memberList =
                 sharedCartBloc.getSharedCartModel().members ?? [];
             for (int j = 0; j < memberList.length; j++) {
               if (users[i].userName == memberList[j].userName) {
@@ -440,7 +429,7 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
             ?.showSnackBar(SnackBar(
           content: Text(
               AppLocalization.of(context)?.youHaveReachedBottomOfTheList ?? ""),
-          duration: const Duration(milliseconds: 500),
+          duration: Duration(milliseconds: 500),
         ));
       }
     }
@@ -448,12 +437,12 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
 
   /// If user is already present in the group then we will remove that user From List
   void filterUsersIfTheyAlreadyInGroup({required List<CustomerProfile> users}) {
-    final List<CustomerProfile> existingList = [];
+    List<CustomerProfile> existingList = [];
 
     for (int i = 0; i < users.length; i++) {
       existingList.add(users[i]);
     }
-    final List<String?> toBeRemoveUsername = [];
+    List<String?> toBeRemoveUsername = [];
 
     if (groupDetailModel != null) {
       for (int i = 0; i < groupDetailModel!.participants.length; i++) {
@@ -500,14 +489,14 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
         }
       },
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 2),
+        padding: EdgeInsets.symmetric(vertical: 2),
         child: UserTile(user: user),
       ),
     );
   }
 
   Future<void> createCartGroup() async {
-    final Map<String, dynamic> groupData = {
+    Map<String, dynamic> groupData = {
       "name": cartName,
       "members": selectedConnectionList.map((e) => e.userName).toList()
     };
@@ -530,9 +519,9 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
   }
 
   Future<void> addCartGroup() async {
-    final List<String> result = [];
+    List<String> result = [];
     for (int i = 0; i < selectedConnectionList.length; i++) {
-      final List<SharedCartMemberModel> memberList =
+      List<SharedCartMemberModel>? memberList =
           sharedCartBloc.getSharedCartModel().members ?? [];
       bool isExist = false;
       for (int j = 0; j < memberList.length; j++) {
@@ -546,7 +535,7 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
       }
     }
 
-    final Map<String, dynamic> groupData = {
+    Map<String, dynamic> groupData = {
       // "members": selectedConnectionList.map((e) => e.userName).toList()
       "members": result
     };

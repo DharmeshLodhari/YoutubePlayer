@@ -12,7 +12,6 @@ import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:Slydo/widget/search_text_field.dart';
 import 'package:Slydo/widget/slide_action_button.dart';
@@ -24,7 +23,7 @@ import '../../message_auth.dart';
 
 // ignore: must_be_immutable
 class SearchGroupMember extends StatefulWidget {
-  final dynamic arguments;
+  var arguments;
 
   SearchGroupMember({this.arguments});
 
@@ -34,16 +33,16 @@ class SearchGroupMember extends StatefulWidget {
 
 class _SearchGroupMemberState extends State<SearchGroupMember> {
   final GlobalKey<ScaffoldState> _scaffoldSearchGroupMemberKey =
-      GlobalKey<ScaffoldState>();
+      new GlobalKey<ScaffoldState>();
   final GlobalKey<ScaffoldMessengerState>
       _scaffoldMessengerSearchGroupMemberKey =
-      GlobalKey<ScaffoldMessengerState>();
+      new GlobalKey<ScaffoldMessengerState>();
 
   int? count = 0;
   String? next = "";
   String? previous = "";
   List<Participant> groupMember = [];
-  final ScrollController _scrollController = ScrollController();
+  ScrollController _scrollController = new ScrollController();
 
   TextEditingController? searchUserController;
 
@@ -118,16 +117,16 @@ class _SearchGroupMemberState extends State<SearchGroupMember> {
   }
 
   void determineMessageType(String message) async {
-    final Map<String, dynamic> messageData = jsonDecode(message);
+    Map<String, dynamic> messageData = jsonDecode(message);
 
     switch (messageData['type']) {
       case "group_conversation_admin_actions":
-        final UserBloc user = Provider.of<UserBloc>(
+        UserBloc user = Provider.of<UserBloc>(
             MyGlobals().navigationKey.currentContext!,
             listen: false);
 
         if (messageData['meta_data']['author'] != user.user.userName) {
-          final result =
+          var result =
               ChatGroupActionManagerForLiveConversation(message: messageData)
                   .handleMessageAction(groupDetailModel: groupDetail);
 
@@ -188,7 +187,7 @@ class _SearchGroupMemberState extends State<SearchGroupMember> {
 
   Widget getSearchTextField() {
     return Container(
-      padding: const EdgeInsets.only(right: 16),
+      padding: EdgeInsets.only(right: 16),
       child: SearchTextField(
         hintText: "Search...",
         onSubmit: () {
@@ -219,32 +218,25 @@ class _SearchGroupMemberState extends State<SearchGroupMember> {
             ? NoItemInList(
                 msg: AppLocalization.of(context)!.noResultFound,
               )
-            : ListView.builder(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 4,
-                ),
-                //+1 for progressbar
-                itemCount: groupMember.length + 1,
-                itemBuilder: (BuildContext context, int index) {
-                  if (index == groupMember.length) {
-                    return _buildIndicator();
-                  } else {
-                    return getUserTile(index: index, user: groupMember[index]);
-                  }
-                },
-                controller: _scrollController,
-              );
-  }
-
-  Widget _buildIndicator() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Center(
-        child: Opacity(
-            opacity: isLoading ? 1.0 : 00,
-            child: isLoading ? CircularLoadingIndicator() : Container()),
-      ),
-    );
+            : isLoading && groupMember.isEmpty
+                ? buildLoadingIndicator(isLoading: isLoading)
+                : ListView.builder(
+                    padding: EdgeInsets.symmetric(
+                      vertical: 4,
+                    ),
+                    //+1 for progressbar
+                    itemCount: groupMember.length + 1,
+                    itemBuilder: (BuildContext context, int index) {
+                      if (index == groupMember.length) {
+                        return buildJumpingLoadingIndicator(
+                            isLoading: isLoading);
+                      } else {
+                        return getUserTile(
+                            index: index, user: groupMember[index]);
+                      }
+                    },
+                    controller: _scrollController,
+                  );
   }
 
   Future<void> getList() async {
@@ -255,7 +247,7 @@ class _SearchGroupMemberState extends State<SearchGroupMember> {
             isLoading = true;
           });
         }
-        final Map<String, dynamic>? result = await MessageAuth()
+        Map<String, dynamic>? result = await MessageAuth()
             .searchParticipantInGroup(next, previous,
                 query: searchUserController!.text.trim(),
                 conversationId: groupDetail!.conversationId);
@@ -268,9 +260,9 @@ class _SearchGroupMemberState extends State<SearchGroupMember> {
         next = result['next'];
         previous = result['previous'];
 
-        final List tempList = result['results'];
+        List tempList = result['results'];
 
-        final List<Participant> users = [];
+        List<Participant> users = [];
 
         tempList.forEach((element) => users.add(Participant.fromJson(element)));
 
@@ -288,7 +280,7 @@ class _SearchGroupMemberState extends State<SearchGroupMember> {
             ?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: const Duration(milliseconds: 500),
+          duration: Duration(milliseconds: 500),
         ));
       }
     }
@@ -302,7 +294,7 @@ class _SearchGroupMemberState extends State<SearchGroupMember> {
   }
 
   Widget getUserTile({required Participant user, int? index}) {
-    final CustomerProfile customerProfile = CustomerProfile(
+    CustomerProfile customerProfile = CustomerProfile(
         fullName: user.fullName,
         avatar: user.avatar,
         userName: user.userName,
@@ -321,13 +313,13 @@ class _SearchGroupMemberState extends State<SearchGroupMember> {
       key: UniqueKey(),
       controller: _slideController,
       direction: Axis.horizontal,
-      actionPane: const SlidableBehindActionPane(),
+      actionPane: SlidableBehindActionPane(),
       actionExtentRatio: 0.20,
       fastThreshold: 1,
       showAllActionsThreshold: 0.6,
+      child: VerticalListItem(user, groupDetail),
       actions: listActionSlideActions(user, index),
       secondaryActions: listSecondaryActions(user, index),
-      child: VerticalListItem(user, groupDetail),
     );
   }
 
@@ -358,7 +350,7 @@ class _SearchGroupMemberState extends State<SearchGroupMember> {
       isCurrentUserIsAdmin = true;
     }
 
-    final List<Widget> leftSwipeActions = [];
+    List<Widget> leftSwipeActions = [];
 
     if (isOwner || isCurrentUser) return leftSwipeActions;
 
@@ -447,7 +439,7 @@ class _SearchGroupMemberState extends State<SearchGroupMember> {
       isCurrentUserIsAdmin = true;
     }
 
-    final List<Widget> rightSwipeAction = [];
+    List<Widget> rightSwipeAction = [];
 
     if (isOwner || isCurrentUser) return rightSwipeAction;
 
@@ -498,7 +490,7 @@ class _SearchGroupMemberState extends State<SearchGroupMember> {
   void handleSlideIsOpenChanged(bool? isOpen) {}
 
   void removeParticipantFromAdmin(int index) {
-    final Participant participant = groupDetail!.participants[index];
+    Participant participant = groupDetail!.participants[index];
     MessageAuth()
         .removeParticipantFromAdmin(
             conversationId: groupDetail!.conversationId!,
@@ -515,7 +507,7 @@ class _SearchGroupMemberState extends State<SearchGroupMember> {
   }
 
   void makeParticipantAdmin(int index) {
-    final Participant participant = groupDetail!.participants[index];
+    Participant participant = groupDetail!.participants[index];
     MessageAuth()
         .makeParticipantAdmin(
             conversationId: groupDetail!.conversationId!,
@@ -532,7 +524,7 @@ class _SearchGroupMemberState extends State<SearchGroupMember> {
   }
 
   void muteParticipantFromGroup(int index) {
-    final Participant participant = groupDetail!.participants[index];
+    Participant participant = groupDetail!.participants[index];
     MessageAuth()
         .muteParticipantFromGroup(
             conversationId: groupDetail!.conversationId!,
@@ -549,7 +541,7 @@ class _SearchGroupMemberState extends State<SearchGroupMember> {
   }
 
   void unMuteParticipantFromGroup(int index) {
-    final Participant participant = groupDetail!.participants[index];
+    Participant participant = groupDetail!.participants[index];
     MessageAuth()
         .unMuteParticipantFromGroup(
             conversationId: groupDetail!.conversationId!,
@@ -566,7 +558,7 @@ class _SearchGroupMemberState extends State<SearchGroupMember> {
   }
 
   void blockParticipantFromGroup(int index) {
-    final Participant participant = groupDetail!.participants[index];
+    Participant participant = groupDetail!.participants[index];
     MessageAuth()
         .blockParticipantFromGroup(
             conversationId: groupDetail!.conversationId!,
@@ -583,7 +575,7 @@ class _SearchGroupMemberState extends State<SearchGroupMember> {
   }
 
   void unBlockParticipantFromGroup(int index) {
-    final Participant participant = groupDetail!.participants[index];
+    Participant participant = groupDetail!.participants[index];
     MessageAuth()
         .unBlockParticipantFromGroup(
             conversationId: groupDetail!.conversationId!,
@@ -600,7 +592,7 @@ class _SearchGroupMemberState extends State<SearchGroupMember> {
   }
 
   void removeParticipantFromGroup(int index) {
-    final Participant participant = groupDetail!.participants[index];
+    Participant participant = groupDetail!.participants[index];
     MessageAuth()
         .removeParticipantFromGroup(
             conversationId: groupDetail!.conversationId!,
@@ -617,7 +609,7 @@ class _SearchGroupMemberState extends State<SearchGroupMember> {
   }
 
   void addParticipantToGroup() async {
-    final selectedUsers = await Navigator.of(context).pushNamed(
+    var selectedUsers = await Navigator.of(context).pushNamed(
         "/select-user-for-group",
         arguments: {"isForAddingUserInGroup": true});
 
@@ -628,19 +620,21 @@ class _SearchGroupMemberState extends State<SearchGroupMember> {
               users: selectedUsers as List<CustomerProfile>)
           .then((value) {
         if (value) {
-          final List<Participant> usersAdded = [];
+          if (selectedUsers is List<CustomerProfile>) {
+            List<Participant> usersAdded = [];
 
-          selectedUsers.forEach((element) {
-            usersAdded.add(Participant(
-                avatar: element.avatar,
-                fullName: element.displayName(),
-                type: element.type,
-                userName: element.userName));
-          });
+            selectedUsers.forEach((element) {
+              usersAdded.add(Participant(
+                  avatar: element.avatar,
+                  fullName: element.displayName(),
+                  type: element.type,
+                  userName: element.userName));
+            });
 
-          groupDetail!.participants.addAll(usersAdded);
-          showToast(message: "Users are added in group !!");
-          if (mounted) setState(() {});
+            groupDetail!.participants.addAll(usersAdded);
+            showToast(message: "Users are added in group !!");
+            if (mounted) setState(() {});
+          }
         }
       }).catchError((error) {
         debugPrint("ERROR:- $error");
@@ -682,7 +676,7 @@ class _VerticalListItemState extends State<VerticalListItem> {
             : Slidable.of(context)?.close();
       },
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 2),
+        padding: EdgeInsets.symmetric(vertical: 2),
         child: UserTileForGroupDetail(
           user: widget.user,
           groupDetail: widget.groupDetail,

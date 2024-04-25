@@ -403,7 +403,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
                             ),
                             const SizedBox(width: 10),
                             Text(
-                              "${job!.state}",
+                              messageDecoderWithEmoji(job?.state) ?? "",
                               style: TextStyle(
                                 color: blackFont.withOpacity(.6),
                                 fontSize: 14,

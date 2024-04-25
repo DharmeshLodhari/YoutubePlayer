@@ -29,7 +29,7 @@ import '../../../../routes/route_constants.dart';
 import '../shopping_auth.dart';
 
 class AddProduct extends StatefulWidget {
-  final dynamic arguments;
+  var arguments;
 
   AddProduct({Key? key, this.arguments}) : super(key: key);
 
@@ -50,10 +50,10 @@ class _AddProductState extends State<AddProduct> {
   ProductCondition? selectedProductCondition;
   ProductCondition? selectedDeliveryTimeCondition;
   int imageCount = 5;
-  final ScrollController _scrollController = ScrollController();
+  ScrollController _scrollController = ScrollController();
 
   // TextEditingController _myController = TextEditingController();
-  final TextfieldTagsController _myController = TextfieldTagsController();
+  TextfieldTagsController _myController = TextfieldTagsController();
   List<PickedFile> productImages = [];
   String productName = "";
   String productDescription = "";
@@ -88,9 +88,9 @@ class _AddProductState extends State<AddProduct> {
   int inventoryCount = 1;
   List<Variant> productVariantList = [];
   List<AddOns> productAddOnsList = [];
-  List<String> weightSi = ['Grams', 'Kilograms'];
-  List<String> widthSi = ['Centimetres', 'Metres'];
-  List<String> heightSi = ['Centimetres', 'Metres'];
+  var weightSi = ['Grams', 'Kilograms'];
+  var widthSi = ['Centimetres', 'Metres'];
+  var heightSi = ['Centimetres', 'Metres'];
   List<String> measurementList = ['Weight', 'Height', 'Width'];
   Map<String, bool> measurementCheckMark = {};
   List<String> pickedMeasurementList = [];
@@ -118,7 +118,7 @@ class _AddProductState extends State<AddProduct> {
   DiscountModel? selectedDiscount;
   String discountName = "";
   final GlobalKey<ScaffoldMessengerState> _messengerScaffoldKey =
-      GlobalKey<ScaffoldMessengerState>();
+      new GlobalKey<ScaffoldMessengerState>();
 
   @override
   void deactivate() {
@@ -130,7 +130,7 @@ class _AddProductState extends State<AddProduct> {
   void initState() {
     isLoading = true;
     if (mounted) setState(() {});
-    Future.delayed(const Duration(seconds: 2), () {
+    Future.delayed(Duration(seconds: 2), () {
       getDiscountList();
       getCategories();
       obtainCustomCategory();
@@ -145,7 +145,7 @@ class _AddProductState extends State<AddProduct> {
         isDiscountLoading = true;
         if (mounted) setState(() {});
 
-        final Map<String, dynamic>? result = await ShoppingAuthService()
+        Map<String, dynamic>? result = await ShoppingAuthService()
             .listOfDiscounts(discountNext, discountPrevious);
 
         if (result == null) {
@@ -160,7 +160,7 @@ class _AddProductState extends State<AddProduct> {
         discountItemCount = result['count'];
         discountNext = result['next'];
         discountPrevious = result['previous'];
-        final tempList = result['results'];
+        var tempList = result['results'];
         if (mounted) {
           setState(() {
             noItemInList = false;
@@ -181,7 +181,7 @@ class _AddProductState extends State<AddProduct> {
         _messengerScaffoldKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: const Duration(milliseconds: 500),
+          duration: Duration(milliseconds: 500),
         ));
       }
     }
@@ -190,7 +190,7 @@ class _AddProductState extends State<AddProduct> {
   void getAddressList() async {
     if (mounted) setState(() {});
 
-    final Map<String, dynamic>? result =
+    Map<String, dynamic>? result =
         await ShoppingAuthService().listOfDispatchAddress("", null);
 
     if (result == null) {
@@ -200,7 +200,7 @@ class _AddProductState extends State<AddProduct> {
       return;
     }
 
-    final List<ShippingAddress> tempList = result['results'];
+    List<ShippingAddress> tempList = result['results'];
 
     if (mounted) {
       setState(() {
@@ -247,7 +247,7 @@ class _AddProductState extends State<AddProduct> {
     if (mounted) setState(() {});
   }
 
-  void getSubCategories(dynamic id) async {
+  void getSubCategories(id) async {
     if (mounted) setState(() {});
 
     try {
@@ -369,7 +369,7 @@ class _AddProductState extends State<AddProduct> {
                                 flex: 1,
                                 child: getWeightField(),
                               ),
-                              const SizedBox(width: 5.0),
+                              SizedBox(width: 5.0),
                               Flexible(
                                 flex: 1,
                                 child: getWeightSiUnitField(),
@@ -387,7 +387,7 @@ class _AddProductState extends State<AddProduct> {
                                 flex: 1,
                                 child: getHeightField(),
                               ),
-                              const SizedBox(width: 5.0),
+                              SizedBox(width: 5.0),
                               Flexible(
                                 flex: 1,
                                 child: getHeightSiUnitField(),
@@ -405,7 +405,7 @@ class _AddProductState extends State<AddProduct> {
                                 flex: 1,
                                 child: getWidthField(),
                               ),
-                              const SizedBox(width: 5.0),
+                              SizedBox(width: 5.0),
                               Flexible(
                                 flex: 1,
                                 child: getWidthSiUnitField(),
@@ -559,7 +559,7 @@ class _AddProductState extends State<AddProduct> {
       ImagePicker().pickImage(source: imageSource).then((value) async {
         if (value != null) {
           /// for cropping the image
-          final String? croppedImage = await ImageCrop().cropImage(value.path);
+          String? croppedImage = await ImageCrop().cropImage(value.path);
           if (croppedImage == null) {
             return;
           }
@@ -702,7 +702,7 @@ class _AddProductState extends State<AddProduct> {
   // /api/v1/products/categories/?industry=userBloc!.userAbout!.industry!.id!&search=drink
 
   String getCustomCategoryLabel() {
-    final String industryName = userBloc!.userAbout!.industry!.name!;
+    String industryName = userBloc!.userAbout!.industry!.name!;
     switch (industryName) {
       case 'Electronics Store':
         return "Aisle";
@@ -824,8 +824,7 @@ class _AddProductState extends State<AddProduct> {
                           shrinkWrap: true,
                           itemCount: customCategories?.length,
                           itemBuilder: (context, index) {
-                            final ProductCategory category =
-                                customCategories![index];
+                            ProductCategory category = customCategories![index];
                             if (selectedCustomCategory == category) {
                               return Container(
                                 color: selectedListItemBackgroundBlue,
@@ -887,7 +886,7 @@ class _AddProductState extends State<AddProduct> {
                             );
                           },
                         )
-                      : const Center(
+                      : Center(
                           child: Text(
                             "No Data",
                           ),
@@ -935,7 +934,7 @@ class _AddProductState extends State<AddProduct> {
                           shrinkWrap: true,
                           itemCount: productCategories?.length,
                           itemBuilder: (context, index) {
-                            final ProductCategory category =
+                            ProductCategory category =
                                 productCategories![index];
                             if (selectedProductCategory == category) {
                               return Container(
@@ -998,7 +997,7 @@ class _AddProductState extends State<AddProduct> {
                             );
                           },
                         )
-                      : const Center(
+                      : Center(
                           child: Text(
                             "No Data",
                           ),
@@ -1040,81 +1039,81 @@ class _AddProductState extends State<AddProduct> {
                   },
                 ),
                 const SizedBox(height: 20),
-                if (subCategories == null)
-                  const SizedBox()
-                else
-                  Expanded(
-                    child: subCategories?.isNotEmpty ?? false
-                        ? ListView.builder(
-                            shrinkWrap: true,
-                            itemCount: subCategories?.length,
-                            itemBuilder: (context, index) {
-                              final ProductCategory category =
-                                  subCategories![index];
-                              if (selectedSubCategory == category) {
-                                return Container(
-                                  color: selectedListItemBackgroundBlue,
-                                  child: ListTile(
-                                    dense: true,
+                subCategories == null
+                    ? SizedBox()
+                    : Expanded(
+                        child: subCategories?.isNotEmpty ?? false
+                            ? ListView.builder(
+                                shrinkWrap: true,
+                                itemCount: subCategories?.length,
+                                itemBuilder: (context, index) {
+                                  ProductCategory category =
+                                      subCategories![index];
+                                  if (selectedSubCategory == category) {
+                                    return Container(
+                                      color: selectedListItemBackgroundBlue,
+                                      child: ListTile(
+                                        dense: true,
+                                        title: Text(
+                                          category.name,
+                                          overflow: TextOverflow.fade,
+                                          softWrap: false,
+                                          style: TextStyle(
+                                              color: navyBlue,
+                                              fontSize: 16,
+                                              fontFamily: "Inter",
+                                              fontWeight: FontWeight.w600),
+                                        ),
+                                        trailing: Icon(
+                                          SlydoAppIcon.checked,
+                                          color: navyBlue,
+                                          size: 12,
+                                        ),
+                                        onTap: () {
+                                          pressedSubCategory = category;
+                                          Navigator.pop(context);
+                                          if (pressedSubCategory != null) {
+                                            selectedSubCategory =
+                                                pressedSubCategory;
+                                            productSubCategory =
+                                                selectedSubCategory!.name;
+                                            setState(() {});
+                                          }
+                                        },
+                                      ),
+                                    );
+                                  }
+                                  return ListTile(
                                     title: Text(
                                       category.name,
-                                      overflow: TextOverflow.fade,
                                       softWrap: false,
+                                      overflow: TextOverflow.fade,
                                       style: TextStyle(
-                                          color: navyBlue,
+                                          color: blackFont,
                                           fontSize: 16,
                                           fontFamily: "Inter",
-                                          fontWeight: FontWeight.w600),
+                                          fontWeight: FontWeight.w400),
                                     ),
-                                    trailing: Icon(
-                                      SlydoAppIcon.checked,
-                                      color: navyBlue,
-                                      size: 12,
-                                    ),
+                                    dense: true,
                                     onTap: () {
-                                      pressedSubCategory = category;
+                                      pressedCategory = category;
                                       Navigator.pop(context);
-                                      if (pressedSubCategory != null) {
-                                        selectedSubCategory =
-                                            pressedSubCategory;
-                                        productSubCategory =
+                                      if (pressedCategory != null) {
+                                        selectedSubCategory = pressedCategory;
+                                        productCategory =
                                             selectedSubCategory!.name;
                                         setState(() {});
                                       }
                                     },
-                                  ),
-                                );
-                              }
-                              return ListTile(
-                                title: Text(
-                                  category.name,
-                                  softWrap: false,
-                                  overflow: TextOverflow.fade,
-                                  style: TextStyle(
-                                      color: blackFont,
-                                      fontSize: 16,
-                                      fontFamily: "Inter",
-                                      fontWeight: FontWeight.w400),
-                                ),
-                                dense: true,
-                                onTap: () {
-                                  pressedCategory = category;
-                                  Navigator.pop(context);
-                                  if (pressedCategory != null) {
-                                    selectedSubCategory = pressedCategory;
-                                    productCategory = selectedSubCategory!.name;
-                                    setState(() {});
-                                  }
+                                  );
                                 },
-                              );
-                            },
-                          )
-                        : const Center(
-                            child: Text(
-                              "No Data",
-                            ),
-                          ),
-                  ),
+                              )
+                            : Center(
+                                child: Text(
+                                  "No Data",
+                                ),
+                              ),
+                      ),
               ],
             ),
           );
@@ -1203,8 +1202,8 @@ class _AddProductState extends State<AddProduct> {
     }
   }
 
-  bool showDeliveryTime() {
-    final List industry = ['Grocery Store', 'Liquor Store', 'Restaurant/Cafe'];
+  showDeliveryTime() {
+    List industry = ['Grocery Store', 'Liquor Store', 'Restaurant/Cafe'];
     if (industry.contains(userBloc!.userAbout!.industry!.name)) {
       return true;
     }
@@ -1212,7 +1211,7 @@ class _AddProductState extends State<AddProduct> {
   }
 
   Widget getProductConditionField() {
-    debugPrint("my controller :- ${_myController}");
+    print("my controller :- ${_myController}");
     return CustomizedDropDownField(
       title: "Product condition",
       child: ListTile(
@@ -1269,7 +1268,7 @@ class _AddProductState extends State<AddProduct> {
             ),
             GestureDetector(
               onTap: () async {
-                final result = await Navigator.of(context).pushNamed(
+                var result = await Navigator.of(context).pushNamed(
                     Routes.ADD_TAGS,
                     arguments: {"tagList": userTags});
                 if (result != null && result is List<Tags>) {
@@ -1282,7 +1281,7 @@ class _AddProductState extends State<AddProduct> {
                       //         ?.replaceAll(" ", "-")
                       //         .toLowerCase() ??
                       _myController.addTag = tags.name ?? "";
-                      final Tags tagData = Tags(id: tags.id, name: tags.name);
+                      Tags tagData = Tags(id: tags.id, name: tags.name);
                       userTags.add(tagData);
                     }
                   }
@@ -1300,7 +1299,7 @@ class _AddProductState extends State<AddProduct> {
             )
           ],
         ),
-        const SizedBox(
+        SizedBox(
           height: 6,
         ),
         CustomTextFieldTag(
@@ -1628,7 +1627,7 @@ class _AddProductState extends State<AddProduct> {
 
   Widget getWeightField() {
     return Container(
-      padding: const EdgeInsets.only(top: 4.0),
+      padding: EdgeInsets.only(top: 4.0),
       child: CustomizedTextFormField(
         labelText: AppLocalization.of(context)!.weight,
         keyboardType: Platform.isIOS
@@ -1686,7 +1685,7 @@ class _AddProductState extends State<AddProduct> {
 
   Widget getHeightField() {
     return Container(
-      padding: const EdgeInsets.only(top: 4.0),
+      padding: EdgeInsets.only(top: 4.0),
       child: CustomizedTextFormField(
         labelText: AppLocalization.of(context)!.height,
         keyboardType: Platform.isIOS
@@ -1744,7 +1743,7 @@ class _AddProductState extends State<AddProduct> {
 
   Widget getWidthField() {
     return Container(
-      padding: const EdgeInsets.only(top: 4.0),
+      padding: EdgeInsets.only(top: 4.0),
       child: CustomizedTextFormField(
         labelText: AppLocalization.of(context)!.width,
         keyboardType: Platform.isIOS
@@ -1797,7 +1796,7 @@ class _AddProductState extends State<AddProduct> {
                     shrinkWrap: true,
                     itemCount: weightSi.length,
                     itemBuilder: (context, index) {
-                      final category = weightSi[index];
+                      var category = weightSi[index];
                       if (selectedWeight == category) {
                         return Container(
                           color: selectedListItemBackgroundBlue,
@@ -1878,7 +1877,7 @@ class _AddProductState extends State<AddProduct> {
                     shrinkWrap: true,
                     itemCount: heightSi.length,
                     itemBuilder: (context, index) {
-                      final height = heightSi[index];
+                      var height = heightSi[index];
                       if (selectedHeight == height) {
                         return Container(
                           color: selectedListItemBackgroundBlue,
@@ -1959,7 +1958,7 @@ class _AddProductState extends State<AddProduct> {
                     shrinkWrap: true,
                     itemCount: widthSi.length,
                     itemBuilder: (context, index) {
-                      final category = widthSi[index];
+                      var category = widthSi[index];
                       if (selectedWidth == category) {
                         return Container(
                           color: selectedListItemBackgroundBlue,
@@ -2055,7 +2054,7 @@ class _AddProductState extends State<AddProduct> {
         }
 
         if (validateDropdown()) {
-          final Product product = Product();
+          Product product = Product();
           product.localImages =
               productImages.map((file) => File(file.path)).toList();
           product.name = productName;
@@ -2110,7 +2109,7 @@ class _AddProductState extends State<AddProduct> {
           await _auth
               .addProduct(product, widget.arguments['channelUsername'] ?? "")
               .then((value) async {
-            final productId = value[1];
+            var productId = value[1];
 
             if (productVariantList.isEmpty) {
               Navigator.pop(context);
@@ -2152,7 +2151,7 @@ class _AddProductState extends State<AddProduct> {
     }
 
     // This will be executed after all API calls are completed
-    debugPrint("All API calls are done!");
+    print("All API calls are done!");
     Navigator.pop(context);
     showToast(message: AppLocalization.of(context)!.productAddedSuccessfully);
 
@@ -2424,11 +2423,11 @@ class _AddProductState extends State<AddProduct> {
             ),
           ],
         ),
-        const SizedBox(height: 5),
+        SizedBox(height: 5),
         ListView.builder(
           padding: EdgeInsets.zero,
           // Use `physics` property to prevent nested scrolling
-          physics: const NeverScrollableScrollPhysics(),
+          physics: NeverScrollableScrollPhysics(),
           shrinkWrap: true,
           itemCount: productVariantList.length,
           itemBuilder: (BuildContext context, int index) {
@@ -2539,7 +2538,7 @@ class _AddProductState extends State<AddProduct> {
                           shrinkWrap: true,
                           itemCount: discountList.length,
                           itemBuilder: (context, index) {
-                            final DiscountModel discount = discountList[index];
+                            DiscountModel discount = discountList[index];
                             if (selectedDiscount == discount) {
                               return Container(
                                 color: selectedListItemBackgroundBlue,
@@ -2606,7 +2605,7 @@ class _AddProductState extends State<AddProduct> {
                             );
                           },
                         )
-                      : const Text("No Found Discount Data"),
+                      : Text("No Found Discount Data"),
                 ),
               ],
             ),
@@ -2633,7 +2632,7 @@ class _AddProductState extends State<AddProduct> {
                     shrinkWrap: true,
                     itemCount: measurementList.length,
                     itemBuilder: (context, index) {
-                      final String measurement = measurementList[index];
+                      String measurement = measurementList[index];
                       return CheckboxListTile(
                         value: measurementCheckMark[measurement] ?? false,
                         activeColor: navyBlue,
@@ -2737,7 +2736,7 @@ class _AddProductState extends State<AddProduct> {
                   fontFamily: "Inter",
                   fontSize: 14),
             ),
-            const SizedBox(height: 6),
+            SizedBox(height: 6),
           ],
           GestureDetector(
             behavior: HitTestBehavior.opaque,
@@ -2777,7 +2776,7 @@ class _AddProductState extends State<AddProduct> {
                         fontSize: 14),
                   ),
                 ),
-                const SizedBox(width: 20),
+                SizedBox(width: 20),
                 Icon(
                   Icons.arrow_forward_ios,
                   size: 16,
@@ -2872,33 +2871,35 @@ class _AddProductState extends State<AddProduct> {
             ),
           ],
         ),
-        const SizedBox(height: 5.0),
+        SizedBox(height: 5.0),
         _buildAddOnList(),
       ],
     );
   }
 
   Widget _buildAddOnList() {
-    return Container(
-      // height: 200,
-      height: 80 * productAddOnsList.length.toDouble(),
-      child: ListView.builder(
-        physics: const NeverScrollableScrollPhysics(),
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        //+1 for progressbar
-        itemCount: productAddOnsList.length + 1,
-        itemBuilder: (BuildContext context, int index) {
-          if (index == productAddOnsList.length) {
-            return buildLoadingIndicator(isLoading: isLoading);
-          } else {
-            return FormAddOnTile(
-              productAddOnsList: productAddOnsList,
-              index: index,
-            );
-          }
-        },
-      ),
-    );
+    return isLoading && productAddOnsList.isEmpty
+        ? buildLoadingIndicator(isLoading: isLoading)
+        : Container(
+            // height: 200,
+            height: 80 * productAddOnsList.length.toDouble(),
+            child: ListView.builder(
+              physics: NeverScrollableScrollPhysics(),
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              //+1 for progressbar
+              itemCount: productAddOnsList.length + 1,
+              itemBuilder: (BuildContext context, int index) {
+                if (index == productAddOnsList.length) {
+                  return buildJumpingLoadingIndicator(isLoading: isLoading);
+                } else {
+                  return FormAddOnTile(
+                    productAddOnsList: productAddOnsList,
+                    index: index,
+                  );
+                }
+              },
+            ),
+          );
   }
 
   Widget dispatchAddress() {

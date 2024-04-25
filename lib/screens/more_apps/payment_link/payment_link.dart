@@ -3,9 +3,11 @@ import 'dart:developer';
 import 'package:Slydo/screens/more_apps/payment_link/payment_screen.dart';
 import 'package:Slydo/screens/more_apps/payment_link/search_payment_link.dart';
 import 'package:Slydo/utils/extensions.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../../data/currency.dart';
 import '../../../locale/app_localization.dart';
@@ -41,6 +43,9 @@ class _PaymentLinkState extends State<PaymentLink> {
   bool noItemInList = false;
 
   final ScrollController _scrollController = ScrollController();
+
+  RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
 
   SlidableController? _slideController;
 
@@ -85,8 +90,11 @@ class _PaymentLinkState extends State<PaymentLink> {
     final dynamic result = await _auth.cancelPaymentLinks(cancelPaymentLink);
 
     if (result == true) {
-      getPaymentLinks();
-      isLoading = false;
+      if (mounted)
+        setState(() {
+          isLoading = false;
+        });
+      _onRefresh();
     } else {
       isLoading = false;
       showToast(
@@ -555,6 +563,7 @@ class _PaymentLinkState extends State<PaymentLink> {
   @override
   void dispose() {
     _scrollController.dispose();
+    _refreshController.dispose();
     super.dispose();
   }
 
@@ -648,26 +657,67 @@ class _PaymentLinkState extends State<PaymentLink> {
             padding: EdgeInsets.only(top: 48.0),
             child: Center(child: CircularProgressIndicator()),
           )
-        : ListView.builder(
-            padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 18),
-            itemCount: paymentLinkList.length,
-            itemBuilder: (BuildContext context, int index) {
-              return _getSlidableWithLists(
-                  context, paymentLinkList[index], index);
-            },
-            controller: _scrollController,
-          );
+        : isLoading && paymentLinkList.isEmpty
+            ? buildLoadingIndicator(isLoading: isLoading)
+            : ListView.builder(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 4, horizontal: 18),
+                itemCount: paymentLinkList.length + 1,
+                itemBuilder: (context, index) {
+                  if (index == paymentLinkList.length) {
+                    return buildJumpingLoadingIndicator(isLoading: isLoading);
+                  } else {
+                    return _getSlidableWithLists(
+                        context, paymentLinkList[index], index);
+                  }
+                },
+                controller: _scrollController,
+              );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.white,
-        appBar: appBar() as PreferredSizeWidget?,
-        body: noItemInList
-            ? NoItemInList(
-                msg: AppLocalization.of(context)!.noPaymentLink,
-              )
-            : _buildFriendsList());
+      backgroundColor: Colors.white,
+      appBar: appBar() as PreferredSizeWidget?,
+      body: SmartRefresher(
+          enablePullDown: true,
+          header: WaterDropHeader(
+            complete: Container(),
+            waterDropColor: navyBlue,
+          ),
+          controller: _refreshController,
+          onRefresh: _onRefresh,
+          child: noItemInList
+              ? NoItemInList(
+                  msg: AppLocalization.of(context)!.noPaymentLink,
+                )
+              : _buildFriendsList()),
+    );
+  }
+
+  void _onRefresh() async {
+    Connectivity().checkConnectivity().then((value) {
+      var connectionResult = value;
+      if (connectionResult == ConnectivityResult.wifi ||
+          connectionResult == ConnectivityResult.mobile) {
+        next = "";
+        previous = "";
+        count = 0;
+        isLoading = false;
+        paymentLinkList = [];
+        getPaymentLinks();
+        _slideController = SlidableController(
+          onSlideAnimationChanged: handleSlideAnimationChanged,
+          onSlideIsOpenChanged: handleSlideIsOpenChanged,
+        );
+        _refreshController.refreshCompleted();
+      } else {
+        showToast(
+            message:
+                AppLocalization.of(context)!.internetConnectionNotAvailable);
+        _refreshController.refreshCompleted();
+      }
+    });
   }
 }

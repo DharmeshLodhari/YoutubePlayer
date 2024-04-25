@@ -181,18 +181,21 @@ class _CommentListWidgetState extends State<CommentListWidget> {
               ),
             ),
           Expanded(
-            child: ListView.builder(
-              shrinkWrap: true,
-              controller: scrollController,
-              itemCount: yarnComments.length + 1,
-              itemBuilder: (context, index) {
-                if (index == yarnComments.length) {
-                  return buildLoadingIndicator(isLoading: isCommentsLoading);
-                } else {
-                  return singleCommentWidget(yarnComments[index], index);
-                }
-              },
-            ),
+            child: isCommentsLoading && yarnComments.isEmpty
+                ? buildLoadingIndicator(isLoading: isCommentsLoading)
+                : ListView.builder(
+                    shrinkWrap: true,
+                    controller: scrollController,
+                    itemCount: yarnComments.length + 1,
+                    itemBuilder: (context, index) {
+                      if (index == yarnComments.length) {
+                        return buildJumpingLoadingIndicator(
+                            isLoading: isCommentsLoading);
+                      } else {
+                        return singleCommentWidget(yarnComments[index], index);
+                      }
+                    },
+                  ),
           ),
         ],
       ),

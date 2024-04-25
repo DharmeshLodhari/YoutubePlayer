@@ -36,12 +36,12 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
   late CustomizedPopUpMenu menu;
   int selectedMenuItemIndex = 0;
 
-  final RefreshController _refreshController =
+  RefreshController _refreshController =
       RefreshController(initialRefresh: false);
-  final GlobalKey _key = LabeledGlobalKey("myInvoiceList");
+  GlobalKey _key = LabeledGlobalKey("myInvoiceList");
 
   SlidableController? _slideController;
-  final ScrollController _scrollController = ScrollController();
+  ScrollController _scrollController = ScrollController();
   AppConfigurationModel? appConfigurationModel;
 
   @override
@@ -99,21 +99,20 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
       ),
       actions: [
         appBarSwitch(),
-        const SizedBox(width: 10.0),
+        SizedBox(width: 10.0),
         popUpMenuButton(),
-        const SizedBox(width: 10.0),
+        SizedBox(width: 10.0),
         addContractButton(),
-        const SizedBox(width: 16)
+        SizedBox(width: 16)
       ],
     );
   }
 
   Widget appBarSwitch() {
     return Switch(
-      activeThumbImage:
-          const AssetImage('assets/images/invoice_outgoing_arrow.png'),
+      activeThumbImage: AssetImage('assets/images/invoice_outgoing_arrow.png'),
       inactiveThumbImage:
-          const AssetImage('assets/images/invoice_incoming_arrow.png'),
+          AssetImage('assets/images/invoice_incoming_arrow.png'),
       activeColor: Colors.grey.withOpacity(0.9),
       value: isSender,
       onChanged: (value) {
@@ -144,7 +143,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
       child: Card(
         color: isPopMenuOpen ? navyBlue : iconBtnGrey,
         elevation: 0,
-        margin: const EdgeInsets.symmetric(vertical: 10),
+        margin: EdgeInsets.symmetric(vertical: 10),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
         ),
@@ -188,9 +187,9 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
         color: blackFont,
       ),
       onTap: () async {
-        final invoiceAdded =
+        var invoiceAdded =
             await Navigator.of(context).pushNamed(Routes.ADD_INVOICE);
-        debugPrint('INVOICE ADDED ::: $invoiceAdded');
+        print('INVOICE ADDED ::: $invoiceAdded');
 
         if (invoiceAdded == true) {
           invoiceBloc.isRefreshing = true;
@@ -234,7 +233,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
     );
   }
 
-  void filterStatementForInvoicePage(String value) {
+  filterStatementForInvoicePage(String value) {
     invoiceBloc.noItemInList = false;
     invoiceBloc.isRefreshing = true;
 
@@ -273,7 +272,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      final connectionResult = value;
+      var connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         invoiceBloc.isRefreshing = true;
@@ -309,7 +308,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                 content: Text(
                     AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-                duration: const Duration(milliseconds: 500),
+                duration: Duration(milliseconds: 500),
               ));
             },
           );
@@ -320,64 +319,68 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
   }
 
   Widget invoiceListWidget(InvoiceBloc invoiceBloc) {
-    return ListView.builder(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      itemCount: invoiceBloc.invoiceList.length + 1,
-      itemBuilder: (BuildContext context, int index) {
-        if (index == invoiceBloc.invoiceList.length) {
-          return buildLoadingIndicator(isLoading: invoiceBloc.isLoading);
-        } else {
-          final InvoiceModel invoice = invoiceBloc.invoiceList[index];
+    return invoiceBloc.isLoading && invoiceBloc.invoiceList.isEmpty
+        ? buildLoadingIndicator(isLoading: invoiceBloc.isLoading)
+        : ListView.builder(
+            padding: EdgeInsets.symmetric(vertical: 4),
+            itemCount: invoiceBloc.invoiceList.length + 1,
+            itemBuilder: (BuildContext context, int index) {
+              if (index == invoiceBloc.invoiceList.length) {
+                return buildJumpingLoadingIndicator(
+                    isLoading: invoiceBloc.isLoading);
+              } else {
+                InvoiceModel invoice = invoiceBloc.invoiceList[index];
 
-          final bool canDeleteInvoice =
-              invoice.fromCustomer == userBloc.user.userName &&
-                  invoice.status == "Draft";
+                bool canDeleteInvoice =
+                    invoice.fromCustomer == userBloc.user.userName &&
+                        invoice.status == "Draft";
 
-          final bool canPay = invoice.fromCustomer != userBloc.user.userName &&
-              invoice.status == "Unpaid";
+                bool canPay = invoice.fromCustomer != userBloc.user.userName &&
+                    invoice.status == "Unpaid";
 
-          return Slidable(
-            controller: _slideController,
-            direction: Axis.horizontal,
-            actionPane: const SlidableBehindActionPane(),
-            actionExtentRatio: 0.25,
-            actions: canDeleteInvoice
-                ? [
-                    SlideActionButton(
-                        backgroundColor: mateRed,
-                        icon: Icons.delete,
-                        onTap: () => deleteInvoice(invoice),
-                        title: 'Delete',
-                        slideController: _slideController),
-                  ]
-                : null,
-            secondaryActions: invoice.status != "Paid" && invoice.amount! > 0
-                ? [
-                    SlideActionButton(
-                        backgroundColor: getBgColor(invoice),
-                        icon: getIcon(invoice),
-                        onTap: () => canPay
-                            ? _payInvoice(invoice)
-                            : updateInvoiceStatus(
-                                invoice, getUpdateAction(invoice)),
-                        title: canPay ? 'Pay' : getSlidableTitle(invoice),
-                        slideController: _slideController)
-                  ]
-                : null,
-            child: InvoiceTile(
-              invoice: invoice,
-              onTap: () {
-                Navigator.of(context).pushNamed(
-                  Routes.INVOICE_DETAIL,
-                  arguments: {"id": invoice.id},
+                return Slidable(
+                  controller: _slideController,
+                  direction: Axis.horizontal,
+                  actionPane: SlidableBehindActionPane(),
+                  actionExtentRatio: 0.25,
+                  child: InvoiceTile(
+                    invoice: invoice,
+                    onTap: () {
+                      Navigator.of(context).pushNamed(
+                        Routes.INVOICE_DETAIL,
+                        arguments: {"id": invoice.id},
+                      );
+                    },
+                  ),
+                  actions: canDeleteInvoice
+                      ? [
+                          SlideActionButton(
+                              backgroundColor: mateRed,
+                              icon: Icons.delete,
+                              onTap: () => deleteInvoice(invoice),
+                              title: 'Delete',
+                              slideController: _slideController),
+                        ]
+                      : null,
+                  secondaryActions: invoice.status != "Paid" &&
+                          invoice.amount! > 0
+                      ? [
+                          SlideActionButton(
+                              backgroundColor: getBgColor(invoice),
+                              icon: getIcon(invoice),
+                              onTap: () => canPay
+                                  ? _payInvoice(invoice)
+                                  : updateInvoiceStatus(
+                                      invoice, getUpdateAction(invoice)),
+                              title: canPay ? 'Pay' : getSlidableTitle(invoice),
+                              slideController: _slideController)
+                        ]
+                      : null,
                 );
-              },
-            ),
+              }
+            },
+            controller: _scrollController,
           );
-        }
-      },
-      controller: _scrollController,
-    );
   }
 
   String getSlidableTitle(InvoiceModel invoice) {
@@ -416,7 +419,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
         showToast(message: "Status not updated");
       });
     } else {
-      final Map<String, String> data = {"status": action};
+      Map<String, String> data = {"status": action};
 
       BusinessAuth()
           .updateInvoice(invoiceId: invoice.id.toString(), data: data)

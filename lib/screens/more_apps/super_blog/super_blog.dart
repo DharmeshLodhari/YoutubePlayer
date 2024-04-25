@@ -8,7 +8,6 @@ import '../../../locale/app_localization.dart';
 import '../../../routes/route_constants.dart';
 import '../../../utils/slydo_app_icon_icons.dart';
 import '../../../utils/util.dart';
-import '../../../widget/loading_indicator.dart';
 import '../../../widget/no_item_in_list.dart';
 import '../user_post/models/user_post.dart';
 import '../user_post/tile/user_post_tile.dart';
@@ -35,13 +34,13 @@ class _SuperBlogState extends State<SuperBlog> {
   bool isFirstTime = true;
   bool isPostLoading = false;
   List<UserPost> postList = [];
-  final ScrollController _postScrollController = ScrollController();
+  ScrollController _postScrollController = new ScrollController();
 
-  // final GlobalKey<ScaffoldState> _postScaffoldKey = GlobalKey<ScaffoldState>();
-  final RefreshController _postRefreshController =
+  GlobalKey<ScaffoldState> _postScaffoldKey = GlobalKey<ScaffoldState>();
+  RefreshController _postRefreshController =
       RefreshController(initialRefresh: false);
 
-  void resetAndGetListOfBlogs(String value) {
+  resetAndGetListOfBlogs(String value) {
     titleToSearch = value;
     postCount = 0;
     postNext = '';
@@ -83,9 +82,9 @@ class _SuperBlogState extends State<SuperBlog> {
         postCount = result['count'];
         postNext = result['next'];
         postPrevious = result['previous'];
-        final List tempList = result['results'] as List;
+        List tempList = result['results'] as List;
 
-        final List<UserPost> posts = [];
+        List<UserPost> posts = [];
 
         tempList.forEach((element) {
           posts.add(UserPost.fromJson(element));
@@ -113,7 +112,7 @@ class _SuperBlogState extends State<SuperBlog> {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content:
             Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-        duration: const Duration(milliseconds: 500),
+        duration: Duration(milliseconds: 500),
       ));
     }
   }
@@ -136,7 +135,7 @@ class _SuperBlogState extends State<SuperBlog> {
 
   void _onPostRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      final connectionResult = value;
+      var connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         postCount = 0;
@@ -200,7 +199,7 @@ class _SuperBlogState extends State<SuperBlog> {
           Navigator.of(context).pushNamed(Routes.CREATE_BLOG);
         },
         backgroundColor: navyBlue,
-        child: const Icon(
+        child: Icon(
           Icons.add,
           size: 30,
         ),
@@ -210,7 +209,7 @@ class _SuperBlogState extends State<SuperBlog> {
         child: Column(
           children: [
             searchBox(),
-            const SizedBox(height: 14),
+            SizedBox(height: 14),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 18.0),
               child: Row(
@@ -231,7 +230,7 @@ class _SuperBlogState extends State<SuperBlog> {
                 ],
               ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             Expanded(
               child: PageView(
                 onPageChanged: (currentPage) {
@@ -251,60 +250,51 @@ class _SuperBlogState extends State<SuperBlog> {
                 },
                 controller: _pageViewCtrl,
                 children: [
-                  if (noPostInList)
-                    NoItemInList(
-                      msg: AppLocalization.of(context)!.noPosts,
-                    )
-                  else
-                    SmartRefresher(
-                      enablePullDown: true,
-                      header: WaterDropHeader(
-                        complete: Container(),
-                        waterDropColor: navyBlue,
-                      ),
-                      controller: _postRefreshController,
-                      onRefresh: _onPostRefresh,
-                      child: ListView.builder(
-                        physics: const ClampingScrollPhysics(),
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        controller: _postScrollController,
-                        itemCount: postList.length + 1,
-                        itemBuilder: (BuildContext context, int index) {
-                          if (index == postList.length) {
-                            return _buildReviewIndicator();
-                          } else {
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 16),
-                              child: PostTile(
-                                post: postList[index],
-                                showAuthorDetails: true,
-                                onDeleteBlog: () {
-                                  _onPostRefresh();
+                  noPostInList
+                      ? NoItemInList(
+                          msg: AppLocalization.of(context)!.noPosts,
+                        )
+                      : isPostLoading && postList.isEmpty
+                          ? buildLoadingIndicator(isLoading: isPostLoading)
+                          : SmartRefresher(
+                              enablePullDown: true,
+                              header: WaterDropHeader(
+                                complete: Container(),
+                                waterDropColor: navyBlue,
+                              ),
+                              controller: _postRefreshController,
+                              onRefresh: _onPostRefresh,
+                              child: ListView.builder(
+                                physics: ClampingScrollPhysics(),
+                                padding: EdgeInsets.symmetric(horizontal: 16),
+                                controller: _postScrollController,
+                                itemCount: postList.length + 1,
+                                itemBuilder: (BuildContext context, int index) {
+                                  if (index == postList.length) {
+                                    return buildJumpingLoadingIndicator(
+                                        isLoading: isPostLoading);
+                                  } else {
+                                    return Padding(
+                                      padding:
+                                          const EdgeInsets.only(bottom: 16),
+                                      child: PostTile(
+                                        post: postList[index],
+                                        showAuthorDetails: true,
+                                        onDeleteBlog: () {
+                                          _onPostRefresh();
+                                        },
+                                      ),
+                                    );
+                                  }
                                 },
                               ),
-                            );
-                          }
-                        },
-                      ),
-                    ),
-                  const SlydoBlogsList(slydoBlogsMenu: SlydoBlogsMenu.Latest),
-                  const SlydoBlogsList(slydoBlogsMenu: SlydoBlogsMenu.Trending),
+                            ),
+                  SlydoBlogsList(slydoBlogsMenu: SlydoBlogsMenu.Latest),
+                  SlydoBlogsList(slydoBlogsMenu: SlydoBlogsMenu.Trending),
                 ],
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildReviewIndicator() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Center(
-        child: Opacity(
-          opacity: isPostLoading ? 1.0 : 00,
-          child: isPostLoading ? CircularLoadingIndicator() : Container(),
         ),
       ),
     );
@@ -319,7 +309,7 @@ class _SuperBlogState extends State<SuperBlog> {
         _pageViewCtrl.jumpToPage(pageNum);
       },
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 8),
+        padding: EdgeInsets.symmetric(horizontal: 30, vertical: 8),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
           shape: BoxShape.rectangle,
@@ -341,7 +331,7 @@ class _SuperBlogState extends State<SuperBlog> {
 
   Widget searchBox() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: EdgeInsets.symmetric(horizontal: 16),
       child: Theme(
         data: Theme.of(context).copyWith(
           textSelectionTheme: TextSelectionThemeData(
@@ -374,8 +364,8 @@ class _SuperBlogState extends State<SuperBlog> {
             hintText: "Search",
             fillColor: Colors.white,
             filled: true,
-            contentPadding: const EdgeInsets.symmetric(vertical: 10),
-            prefix: const Padding(
+            contentPadding: EdgeInsets.symmetric(vertical: 10),
+            prefix: Padding(
               padding: EdgeInsets.only(left: 16),
             ),
             enabledBorder: OutlineInputBorder(
@@ -412,7 +402,7 @@ class _SuperBlogState extends State<SuperBlog> {
     );
   }
 
-  void _onChanged(String value) {
+  _onChanged(String value) {
     if (_pageViewCtrl.page != 0) {
       _pageViewCtrl.jumpToPage(0);
     }
@@ -422,7 +412,7 @@ class _SuperBlogState extends State<SuperBlog> {
       if (typingTimer != null) {
         setState(() => typingTimer!.cancel()); // clear timer
       }
-      typingTimer = Timer(
+      typingTimer = new Timer(
         duration,
         () {
           resetAndGetListOfBlogs(value);
@@ -455,13 +445,13 @@ class _SlydoBlogsListState extends State<SlydoBlogsList> {
   bool isFirstTime = true;
   bool isPostLoading = false;
   List<UserPost> postList = [];
-  final ScrollController _postScrollController = ScrollController();
+  ScrollController _postScrollController = new ScrollController();
 
-  // final GlobalKey<ScaffoldState> _postScaffoldKey = GlobalKey<ScaffoldState>();
-  final RefreshController _postRefreshController =
+  GlobalKey<ScaffoldState> _postScaffoldKey = GlobalKey<ScaffoldState>();
+  RefreshController _postRefreshController =
       RefreshController(initialRefresh: false);
 
-  void resetAndGetListOfBlogs(String value) {
+  resetAndGetListOfBlogs(String value) {
     titleToSearch = value;
     postCount = 0;
     postNext = '';
@@ -503,9 +493,9 @@ class _SlydoBlogsListState extends State<SlydoBlogsList> {
         postCount = result['count'];
         postNext = result['next'];
         postPrevious = result['previous'];
-        final List tempList = result['results'] as List;
+        List tempList = result['results'] as List;
 
-        final List<UserPost> posts = [];
+        List<UserPost> posts = [];
 
         tempList.forEach((element) {
           posts.add(UserPost.fromJson(element));
@@ -533,7 +523,7 @@ class _SlydoBlogsListState extends State<SlydoBlogsList> {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content:
             Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-        duration: const Duration(milliseconds: 500),
+        duration: Duration(milliseconds: 500),
       ));
     }
   }
@@ -554,7 +544,7 @@ class _SlydoBlogsListState extends State<SlydoBlogsList> {
 
   void _onPostRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      final connectionResult = value;
+      var connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         postCount = 0;
@@ -579,7 +569,7 @@ class _SlydoBlogsListState extends State<SlydoBlogsList> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const SizedBox(height: 6),
+        SizedBox(height: 6),
         Expanded(
           child: SmartRefresher(
             enablePullDown: true,
@@ -601,40 +591,31 @@ class _SlydoBlogsListState extends State<SlydoBlogsList> {
         ? NoItemInList(
             msg: AppLocalization.of(context)!.noPosts,
           )
-        : ListView.builder(
-            physics: const ClampingScrollPhysics(),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
-            controller: _postScrollController,
-            itemCount: postList.length + 1,
-            itemBuilder: (BuildContext context, int index) {
-              if (index == postList.length) {
-                return _buildReviewIndicator();
-              } else {
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 16),
-                  child: PostTile(
-                    post: postList[index],
-                    showAuthorDetails: true,
-                    onDeleteBlog: () {
-                      _onPostRefresh();
-                    },
-                  ),
-                );
-              }
-            },
-          );
-  }
-
-  Widget _buildReviewIndicator() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Center(
-        child: Opacity(
-          opacity: isPostLoading ? 1.0 : 00,
-          child: isPostLoading ? CircularLoadingIndicator() : Container(),
-        ),
-      ),
-    );
+        : isPostLoading && postList.isEmpty
+            ? buildLoadingIndicator(isLoading: isPostLoading)
+            : ListView.builder(
+                physics: ClampingScrollPhysics(),
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 32),
+                controller: _postScrollController,
+                itemCount: postList.length + 1,
+                itemBuilder: (BuildContext context, int index) {
+                  if (index == postList.length) {
+                    return buildJumpingLoadingIndicator(
+                        isLoading: isPostLoading);
+                  } else {
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 16),
+                      child: PostTile(
+                        post: postList[index],
+                        showAuthorDetails: true,
+                        onDeleteBlog: () {
+                          _onPostRefresh();
+                        },
+                      ),
+                    );
+                  }
+                },
+              );
   }
 }
 

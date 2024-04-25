@@ -100,6 +100,7 @@ class _SplashScreenState extends State<SplashScreen>
       playerController!.setVolume(0.0);
       playerController!.removeListener(listener);
       if (isUserFound == true) {
+        if (timer != null) timer?.cancel();
         Navigator.of(MyGlobals().navigationKey.currentContext!)
             .pushNamedAndRemoveUntil(
           "/dashboard",
