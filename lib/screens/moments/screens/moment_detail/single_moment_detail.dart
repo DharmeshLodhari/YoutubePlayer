@@ -104,15 +104,14 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
   Future<bool> addDisLikeToMoment() async {
     try {
       final MomentsModel data =
-      await MomentsService().dislikeMoment(widget.currentMoment.id!);
+          await MomentsService().dislikeMoment(widget.currentMoment.id!);
 
       setState(() {
         widget.currentMoment.dislikes = data.dislikes;
         widget.currentMoment.likes = data.likes;
       });
       return true;
-    }catch(error)
-    {
+    } catch (error) {
       return false;
     }
   }

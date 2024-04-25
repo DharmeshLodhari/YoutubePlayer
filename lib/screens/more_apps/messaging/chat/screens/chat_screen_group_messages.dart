@@ -19,12 +19,12 @@ import 'package:Slydo/screens/more_apps/messaging/chat/helpers/db_socket_message
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/message_sound_player.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_conversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_message_action.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/group_detail_model.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/participant_model.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/gif_model/gif_model.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/group_detail_model.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatMessage.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatMessagePagination.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/SocketQueueChatMessage.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/participant_model.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/EditOrReplyMessageUI.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/audio_tile_for_chat.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/comment_tile_for_chat.dart';

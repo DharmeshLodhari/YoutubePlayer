@@ -145,7 +145,7 @@ class _AudioTileForChatState extends State<AudioTileForChat> {
                       ),
                       _audioPlayer!.builderRealtimePlayingInfos(
                           builder: (context, info) {
-                            if (info.current == null) {
+                        if (info.current == null) {
                           return Expanded(
                             child: Column(
                               children: [

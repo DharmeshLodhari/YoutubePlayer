@@ -298,7 +298,10 @@ class SlydoAppIcon {
       IconData(0xe884, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData services =
       IconData(0xe800, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData delivery_dining = IconData(0xe1bd, fontFamily: _mFontFam, fontPackage: _kFontPkg);
-  static const IconData add_group = IconData(0xe2ec, fontFamily: _mFontFam, fontPackage: _kFontPkg);
-  static const IconData add_channel = IconData(0xebc9, fontFamily: _mFontFam, fontPackage: _kFontPkg);
+  static const IconData delivery_dining =
+      IconData(0xe1bd, fontFamily: _mFontFam, fontPackage: _kFontPkg);
+  static const IconData add_group =
+      IconData(0xe2ec, fontFamily: _mFontFam, fontPackage: _kFontPkg);
+  static const IconData add_channel =
+      IconData(0xebc9, fontFamily: _mFontFam, fontPackage: _kFontPkg);
 }

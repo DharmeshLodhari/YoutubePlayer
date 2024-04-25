@@ -1,3 +1,7 @@
+import 'FixedWidth.dart';
+import 'FixedWidthDownsampled.dart';
+import 'FixedWidthSmall.dart';
+import 'FixedWidthSmallStill.dart';
 import 'downsized.dart';
 import 'downsized_large.dart';
 import 'downsized_medium.dart';
@@ -8,10 +12,6 @@ import 'fixed_height_downsampled.dart';
 import 'fixed_height_small.dart';
 import 'fixed_height_small_still.dart';
 import 'fixed_height_still.dart';
-import 'FixedWidth.dart';
-import 'FixedWidthDownsampled.dart';
-import 'FixedWidthSmall.dart';
-import 'FixedWidthSmallStill.dart';
 import 'fixed_width_still.dart';
 import 'looping.dart';
 import 'original.dart';
