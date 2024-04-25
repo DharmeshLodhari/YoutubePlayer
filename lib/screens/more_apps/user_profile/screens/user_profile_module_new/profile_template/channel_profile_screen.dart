@@ -72,7 +72,7 @@ class _ChannelProfileScreenState extends State<ChannelProfileScreen>
     final orderedKeys = <String>[];
 
     // Iterate through the 'ordering' array and add keys that exist in boolMap to orderedKeys
-    if (result != null) {
+    if (result.isNotEmpty) {
       orderingList = channelDetail!['owner']['profile_menu']['ordering'];
       // Iterate through the JSON object and filter boolean values
       result.forEach((key, value) {

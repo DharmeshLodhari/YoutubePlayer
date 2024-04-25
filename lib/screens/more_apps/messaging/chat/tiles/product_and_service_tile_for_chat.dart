@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_conversation.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
@@ -344,7 +344,7 @@ class _ProductTileForChatMessageState extends State<ProductTileForChatMessage> {
     );
   }
 
-  Widget addToCartWidget({dynamic item}) {
+  Widget addToCartWidget({PurchasableItem? item}) {
     return RoundedBackgroundIcon(
       borderRadius: 16,
       height: 38,
@@ -359,13 +359,15 @@ class _ProductTileForChatMessageState extends State<ProductTileForChatMessage> {
         final String type = item is Product ? "product" : "service";
         debugPrint("item $item type:- $type");
         basketBloc.addItemToCart(
-          item: item,
+          item: (item?.isProduct ?? false)
+              ? (item as Product)
+              : (item as Service),
           type: type,
           currentUser: userBloc.user.convertToUser(),
         );
         late var mapData;
         basketBloc.items.forEach((element) {
-          if (element["item"].id == item.id) {
+          if (element["item"].id == item?.id) {
             mapData = element;
             return;
           }
@@ -704,7 +706,7 @@ class _ServiceTileChatMessageState extends State<ServiceTileChatMessage> {
     );
   }
 
-  Widget addToCartWidget({var item}) {
+  Widget addToCartWidget({PurchasableItem? item}) {
     return RoundedBackgroundIcon(
       borderRadius: 16,
       height: 38,
@@ -719,25 +721,25 @@ class _ServiceTileChatMessageState extends State<ServiceTileChatMessage> {
         final String type = item is Product ? "product" : "service";
         debugPrint("item $item type:- $type");
         basketBloc.addItemToCart(
-          item: item,
+          item: (item?.isProduct ?? false) ? item as Product : item as Service,
           type: type,
           currentUser: userBloc.user.convertToUser(),
         );
-        late var mapData;
-        basketBloc.items.forEach((element) {
-          if (element["item"].checkID == item.checkID) {
-            mapData = element;
-            return;
-          }
-        });
-        final Map<String, dynamic> data = {
-          "type": type,
-          "id": mapData["item"].checkID,
-          "qty": mapData["qty"],
-        };
-        debugPrint("Data From Product Page : $data");
-        showToast(message: "Item added to the cart !!");
-        await ShoppingAuthService().addOrUpdateItemToShoppingCart(data);
+        // late var mapData;
+        // basketBloc.items.forEach((element) {
+        //   if (element["item"].checkID == item.checkID) {
+        //     mapData = element;
+        //     return;
+        //   }
+        // });
+        // final Map<String, dynamic> data = {
+        //   "type": type,
+        //   "id": mapData["item"].checkID,
+        //   "qty": mapData["qty"],
+        // };
+        // debugPrint("Data From Product Page : $data");
+        // showToast(message: "Item added to the cart !!");
+        // await ShoppingAuthService().addOrUpdateItemToShoppingCart(data);
       },
     );
   }

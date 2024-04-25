@@ -160,9 +160,10 @@ class BasketBloc extends ChangeNotifier {
     debugPrint('MERCHANT NAME COPY ::: $merchantNameMapCopy');
   }
 
-  void removeMerchantName(var item) {
-    final merchantFullName =
-        item is Product ? item.sellerFullName : item.providerFullName;
+  void removeMerchantName(PurchasableItem item) {
+    final merchantFullName = item is Product
+        ? item.sellerFullName
+        : (item as Service).providerFullName;
 
     merchantNameMap.remove(merchantFullName);
     merchantNameMapCopy.remove(merchantFullName);
@@ -612,7 +613,7 @@ class BasketBloc extends ChangeNotifier {
   }
 
   void addItemInBasketWithQtyService(
-      var item, String type, SharedCartMemberModel? currentUser,
+      PurchasableItem item, String type, SharedCartMemberModel? currentUser,
       {bool withApiCall = true, bool replaceUpdatedBy = false}) {
     /// if we create or update existing basket item we will store that item to this variable
     /// for sending to server
@@ -625,9 +626,9 @@ class BasketBloc extends ChangeNotifier {
         flag = true;
 
         if (replaceUpdatedBy == true) {
-          (element.item as Product).itemAddedBy = item.itemAddedBy;
-          element.itemAddedBy = item.itemAddedBy;
-          element.qty = (item as Product).quantity;
+          (element.item as Product).itemAddedBy = (item as Product).itemAddedBy;
+          element.itemAddedBy = (item).itemAddedBy;
+          element.qty = (item).quantity;
         }
 
         if (withApiCall == true) {
@@ -788,13 +789,13 @@ class BasketBloc extends ChangeNotifier {
   }
 
   // this will remove the product or service from the cart;
-  void removeItemFromCart(item) {
+  void removeItemFromCart(PurchasableItem item) {
     removeItemInBasketWithQty(item);
 
     notifyListeners();
   }
 
-  void removeItemInBasketWithQty(var item) {
+  void removeItemInBasketWithQty(PurchasableItem item) {
     var foundItem;
     try {
       for (int i = 0; i < _items.length; i++) {
@@ -807,14 +808,17 @@ class BasketBloc extends ChangeNotifier {
       if (foundItem != null) {
         if (foundItem["qty"] > 1) {
           foundItem["qty"] = foundItem["qty"] - 1;
-          _total = _total - int.parse(item.getProductRealPrice());
+          _total = _total -
+              int.parse((item as Product).getProductRealPrice().toString());
         } else if (foundItem["qty"] == 1) {
           _items.remove(foundItem);
-          _total = _total - int.parse(item.getProductRealPrice());
+          _total = _total -
+              int.parse((item as Product).getProductRealPrice().toString());
           removeMerchantName(item);
         } else if (foundItem["qty"] == 0) {
           _items.remove(foundItem);
-          _total = _total - int.parse(item.getProductRealPrice());
+          _total = _total -
+              int.parse((item as Product).getProductRealPrice().toString());
           removeMerchantName(item);
         } else {
           debugPrint("ERROR while removing element");

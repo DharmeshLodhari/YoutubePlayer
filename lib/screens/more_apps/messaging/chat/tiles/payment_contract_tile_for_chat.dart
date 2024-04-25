@@ -10,7 +10,7 @@ import '../../../../../data/state_notifier.dart';
 import '../../../../../routes/route_constants.dart';
 import '../../../../../utils/util.dart';
 import '../../../business/models/Contract.dart';
-import '../models/ChatConversation.dart';
+import '../models/chat_conversation.dart';
 import '../utils.dart';
 
 class PostTileForPaymentContract extends StatefulWidget {

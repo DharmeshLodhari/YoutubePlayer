@@ -634,7 +634,7 @@ Widget getChatSettingTitle() {
 Widget buildShimmerLoadingIndicator({required bool isLoading}) {
   return Opacity(
     opacity: isLoading ? 1.0 : 00,
-    child: isLoading ? YarnShimmer() : Container(),
+    child: isLoading ? const YarnShimmer() : Container(),
   );
 }
 

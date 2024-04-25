@@ -14,7 +14,7 @@ import '../../../../locator.dart';
 import '../../../../routes/route_constants.dart';
 import '../../../../services/app_config_bloc.dart';
 import '../../../../utils/util.dart';
-import '../../messaging/chat/models/ChatConversation.dart';
+import '../../messaging/chat/models/chat_conversation.dart';
 import '../../messaging/chat/share_in_chat/ShareInChat.dart';
 import '../yarn_auth.dart';
 

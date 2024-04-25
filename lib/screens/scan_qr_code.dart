@@ -54,7 +54,7 @@ class _QRCodeViewState extends State<QRCodeView> {
     appConfigurationModel = getIt<AppConfigurationBloc>().appConfigurationModel;
 
     canShowDialogBox = true;
-    isRequest = arguments != null
+    isRequest = arguments.isNotEmpty
         ? arguments['isRequest'] != null
             ? arguments['isRequest']
             : false
@@ -146,22 +146,20 @@ class _QRCodeViewState extends State<QRCodeView> {
 
     controller.scannedDataStream.listen((scanData) async {
       // if we get a text that belongs to us then we process it
-      if (scanData != null) {
-        if (scanData.code!.startsWith(AppConfig.baseUrl) ||
-            scanData.code!.startsWith(AppConfig.baseUrl) ||
-            scanData.code!.startsWith(AppConfig.merchantUrl) ||
-            scanData.code!.startsWith("https://slydo.co") ||
-            scanData.code!.startsWith(AppConfig.localHost)) {
-          final scanDataList = scanData.code!.split('/');
+      if (scanData.code!.startsWith(AppConfig.baseUrl) ||
+          scanData.code!.startsWith(AppConfig.baseUrl) ||
+          scanData.code!.startsWith(AppConfig.merchantUrl) ||
+          scanData.code!.startsWith("https://slydo.co") ||
+          scanData.code!.startsWith(AppConfig.localHost)) {
+        final scanDataList = scanData.code!.split('/');
 
-          scanDataList.removeWhere((value) => value == "");
-          if (canShowDialogBox) {
-            controller.pauseCamera();
-            getNavigationRoot(scanDataList, scanDataCode: scanData.code);
-            controller.resumeCamera();
-          }
-          canShowDialogBox = false;
+        scanDataList.removeWhere((value) => value == "");
+        if (canShowDialogBox) {
+          controller.pauseCamera();
+          getNavigationRoot(scanDataList, scanDataCode: scanData.code);
+          controller.resumeCamera();
         }
+        canShowDialogBox = false;
       }
     });
   }

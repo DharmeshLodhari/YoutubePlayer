@@ -133,8 +133,7 @@ class _CreateAddOnState extends State<CreateAddOn> {
                             fontSize: 12),
                       ),
                       const SizedBox(height: 30),
-                      if (productAddOnOptionList == null ||
-                          productAddOnOptionList.isEmpty) ...[
+                      if (productAddOnOptionList.isEmpty) ...[
                         getAddOns(),
                       ] else ...[
                         displaySelectedAddOnOption(),
@@ -195,7 +194,7 @@ class _CreateAddOnState extends State<CreateAddOn> {
   }
 
   bool validateDropdown() {
-    if (selectedType != null && selectedType != '') {
+    if (selectedType.isNotEmpty && selectedType != '') {
       return true;
     } else {
       showToast(message: AppLocalization.of(context)!.pleaseSelectCategory);
@@ -220,7 +219,7 @@ class _CreateAddOnState extends State<CreateAddOn> {
       child: ListTile(
         dense: true,
         title: Text(
-          selectedType != null ? selectedType : "",
+          selectedType.isNotEmpty ? selectedType : "",
           style: TextStyle(
               color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
         ),

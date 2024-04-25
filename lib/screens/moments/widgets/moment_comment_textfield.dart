@@ -36,12 +36,10 @@ import '../../../../utils/navigation_util.dart';
 import '../../../../utils/util.dart';
 import '../../../../widget/custom_box_shadow.dart';
 import '../../../../widget/customized_textform_field.dart';
-import '../../more_apps/messaging/chat/models/gif_model/GIFModel.dart';
+import '../../more_apps/messaging/chat/models/gif_model/gif_model.dart';
 import '../../more_apps/messaging/chat/utils.dart';
 import '../../more_apps/yarn/models/Topics/yarn_model.dart';
 import '../../more_apps/yarn/models/share_as_yarn_model.dart';
-import '../../more_apps/yarn/widgets/ask_enable_adult_viewers_advice.dart';
-import '../../more_apps/yarn/widgets/ask_enable_comment_payment.dart';
 import '../screens/trimmer_view.dart';
 
 class MomentCommentTextField extends StatefulWidget {
@@ -61,13 +59,13 @@ class MomentCommentTextField extends StatefulWidget {
   final String? userName;
   final VoidCallback? onPressed;
   final bool? isLoading;
-  bool? enableComment;
-  bool? enablePayment;
-  ScrollController? scrollController;
-  bool? enableAdult;
-  bool? viewerAdvice;
-  String ageRating;
-  List<ShareAsYarnModel>? shareAsYarnModel;
+  final bool? enableComment;
+  final bool? enablePayment;
+  final ScrollController? scrollController;
+  final bool? enableAdult;
+  final bool? viewerAdvice;
+  final String ageRating;
+  late final List<ShareAsYarnModel>? shareAsYarnModel;
   final Function(bool?) onTapEnableComment;
   final Function(int?) onTapAgeRestriction;
   final Function(bool?) onTapEnablePayment;
@@ -76,7 +74,7 @@ class MomentCommentTextField extends StatefulWidget {
   final Function(List<YarnMedia>)? addedSelectedMedia;
   final Function(GIFModel)? addedSelectedGif;
   final Function(bool)? resetScrollingValue;
-  bool isScrolling;
+  final bool isScrolling;
 
   MomentCommentTextField({
     Key? key,
@@ -172,7 +170,7 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
   GlobalKey searchItemTextFormField = GlobalKey();
   int bottomSheetSearchIndex = 0;
   bool noSearchedItem = false;
-  String productServicePreview;
+  String? productServicePreview;
   Product? productMode;
   Service? serviceMode;
   CustomerProfile? customerProfileMode;
@@ -1248,88 +1246,88 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
     );
   }
 
-  Widget _buildRatingCategory() {
-    return InkWell(
-      onTap: () => ratingCategory(),
-      child: Container(
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-            color: HexColor("#F8F8F8"),
-            border: Border.all(color: HexColor("#E9E9E9")),
-            borderRadius: BorderRadius.circular(15)),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              _shareAsYarnModel?.name ?? '',
-              style: TextStyle(fontSize: 10, color: HexColor("#7A7A7A")),
-            ),
-            const SizedBox(
-              width: 4,
-            ),
-            Icon(Icons.expand_more_outlined,
-                color: HexColor("#7A7A7A"), size: 12),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildEnableViewerAdvice() {
-    return AskEnableAdultAndViewerAdvice(
-      onTap: widget.onTapViewerAdvice,
-      title: "Viewer Advice",
-      baseBGColor: HexColor("#F8F8F8"),
-      baseBorderColor: HexColor("#E9E9E9"),
-      baseTextColor: HexColor("#ACAEB4"),
-      highLightBGColor: HexColor("#F8BBD9"),
-      highLightBorderColor: HexColor("#E96CAA"),
-      highLightTextColor: HexColor("#E96CAA"),
-    );
-  }
-
-  Widget _buildEnableAdultsOnly() {
-    return AskEnableAdultAndViewerAdvice(
-      onTap: widget.onTapEnableAdult,
-      title: "Adults Only",
-      baseBGColor: HexColor("#F8F8F8"),
-      baseBorderColor: HexColor("#E9E9E9"),
-      baseTextColor: HexColor("#ACAEB4"),
-      highLightBGColor: HexColor("#D9B6FF"),
-      highLightBorderColor: HexColor("#9F6BD8"),
-      highLightTextColor: HexColor("#9F6BD8"),
-    );
-  }
-
-  Widget _buildEnableComment() {
-    return AskEnableCommentAndPayment(
-      onTap: widget.onTapEnableComment,
-      title:
-          (widget.enableComment ?? true) ? "comment enabled" : "enable comment",
-      image: "yarn/yarn_comment",
-      baseBGColor: HexColor("#F8F8F8"),
-      baseBorderColor: HexColor("#E9E9E9"),
-      baseTextColor: HexColor("#ACAEB4"),
-      highLightBGColor: HexColor("#000000"),
-      highLightBorderColor: HexColor("#000000"),
-      highLightTextColor: HexColor("#FFFFFF"),
-    );
-  }
-
-  Widget _buildEnablePayme() {
-    return AskEnableCommentAndPayment(
-      onTap: widget.onTapEnablePayment,
-      title:
-          (widget.enablePayment ?? true) ? "payment enabled" : "enable payment",
-      image: "yarn/send_money",
-      baseBGColor: HexColor("#F8F8F8"),
-      baseBorderColor: HexColor("#E9E9E9"),
-      baseTextColor: HexColor("#ACAEB4"),
-      highLightBGColor: HexColor("#D9E1FA"),
-      highLightBorderColor: HexColor("#BBCBFF"),
-      highLightTextColor: HexColor("#3F61DB"),
-    );
-  }
+  // Widget _buildRatingCategory() {
+  //   return InkWell(
+  //     onTap: () => ratingCategory(),
+  //     child: Container(
+  //       padding: const EdgeInsets.all(8),
+  //       decoration: BoxDecoration(
+  //           color: HexColor("#F8F8F8"),
+  //           border: Border.all(color: HexColor("#E9E9E9")),
+  //           borderRadius: BorderRadius.circular(15)),
+  //       child: Row(
+  //         crossAxisAlignment: CrossAxisAlignment.start,
+  //         children: [
+  //           Text(
+  //             _shareAsYarnModel?.name ?? '',
+  //             style: TextStyle(fontSize: 10, color: HexColor("#7A7A7A")),
+  //           ),
+  //           const SizedBox(
+  //             width: 4,
+  //           ),
+  //           Icon(Icons.expand_more_outlined,
+  //               color: HexColor("#7A7A7A"), size: 12),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
+  //
+  // Widget _buildEnableViewerAdvice() {
+  //   return AskEnableAdultAndViewerAdvice(
+  //     onTap: widget.onTapViewerAdvice,
+  //     title: "Viewer Advice",
+  //     baseBGColor: HexColor("#F8F8F8"),
+  //     baseBorderColor: HexColor("#E9E9E9"),
+  //     baseTextColor: HexColor("#ACAEB4"),
+  //     highLightBGColor: HexColor("#F8BBD9"),
+  //     highLightBorderColor: HexColor("#E96CAA"),
+  //     highLightTextColor: HexColor("#E96CAA"),
+  //   );
+  // }
+  //
+  // Widget _buildEnableAdultsOnly() {
+  //   return AskEnableAdultAndViewerAdvice(
+  //     onTap: widget.onTapEnableAdult,
+  //     title: "Adults Only",
+  //     baseBGColor: HexColor("#F8F8F8"),
+  //     baseBorderColor: HexColor("#E9E9E9"),
+  //     baseTextColor: HexColor("#ACAEB4"),
+  //     highLightBGColor: HexColor("#D9B6FF"),
+  //     highLightBorderColor: HexColor("#9F6BD8"),
+  //     highLightTextColor: HexColor("#9F6BD8"),
+  //   );
+  // }
+  //
+  // Widget _buildEnableComment() {
+  //   return AskEnableCommentAndPayment(
+  //     onTap: widget.onTapEnableComment,
+  //     title:
+  //         (widget.enableComment ?? true) ? "comment enabled" : "enable comment",
+  //     image: "yarn/yarn_comment",
+  //     baseBGColor: HexColor("#F8F8F8"),
+  //     baseBorderColor: HexColor("#E9E9E9"),
+  //     baseTextColor: HexColor("#ACAEB4"),
+  //     highLightBGColor: HexColor("#000000"),
+  //     highLightBorderColor: HexColor("#000000"),
+  //     highLightTextColor: HexColor("#FFFFFF"),
+  //   );
+  // }
+  //
+  // Widget _buildEnablePayme() {
+  //   return AskEnableCommentAndPayment(
+  //     onTap: widget.onTapEnablePayment,
+  //     title:
+  //         (widget.enablePayment ?? true) ? "payment enabled" : "enable payment",
+  //     image: "yarn/send_money",
+  //     baseBGColor: HexColor("#F8F8F8"),
+  //     baseBorderColor: HexColor("#E9E9E9"),
+  //     baseTextColor: HexColor("#ACAEB4"),
+  //     highLightBGColor: HexColor("#D9E1FA"),
+  //     highLightBorderColor: HexColor("#BBCBFF"),
+  //     highLightTextColor: HexColor("#3F61DB"),
+  //   );
+  // }
 
   Widget sendMessageBtn() {
     return widget.isLoading!
@@ -1534,7 +1532,7 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
     setState(() {});
   }
 
-  Widget getResultTile(var result) {
+  Widget getResultTile(dynamic result) {
     if (isProductSearch) {
       if (result is Product) {
         return SearchProductTile(

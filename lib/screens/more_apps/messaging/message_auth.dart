@@ -3,10 +3,10 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:Slydo/data/environment.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/AddGroupModel.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/GroupDetailModel.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/gif_model/GIFModel.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/add_group_model.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_conversation.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/group_detail_model.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/gif_model/gif_model.dart';
 import 'package:Slydo/screens/more_apps/messaging/models/message.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/Envelope.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
@@ -1031,7 +1031,7 @@ class MessageAuth extends AuthService {
     }
   }
 
-  Future<bool> cancelEnvelope(
+  Future<bool?> cancelEnvelope(
       {required Envelope envelope, required Map<String, dynamic> data}) async {
     final type = envelope.type!.replaceAll("-envelop", "");
 

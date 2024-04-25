@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:Slydo/data/database_helper.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatUserModel.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_conversation.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_user_model.dart';
 
 /// For Performing all the db operation related to user connection's message count
 class ChatUserManager {

@@ -8,15 +8,17 @@ class LocationService {
   Location location = Location();
 
   Future<UserLocation?> getLocation() async {
-    LocationData userLocation;
+    LocationData? userLocation;
     try {
       userLocation = await fetchLocation();
-      _currentLocation = UserLocation(
-        latitude: userLocation.latitude,
-        longitude: userLocation.longitude,
-      );
+      if (userLocation != null) {
+        _currentLocation = UserLocation(
+          latitude: userLocation.latitude,
+          longitude: userLocation.longitude,
+        );
 
-      return _currentLocation;
+        return _currentLocation;
+      }
     } on PlatformException catch (e) {
       var error = "";
       if (e.code == 'PERMISSION_DENIED') {
@@ -30,19 +32,21 @@ class LocationService {
         throw error;
       }
     }
+    return null;
   }
 
   Future<UserLocation?> getLocationEndless() async {
-    LocationData userLocation;
+    LocationData? userLocation;
     try {
       userLocation = await fetchLocation();
+      if (userLocation != null) {
+        _currentLocation = UserLocation(
+          latitude: userLocation.latitude,
+          longitude: userLocation.longitude,
+        );
 
-      _currentLocation = UserLocation(
-        latitude: userLocation.latitude,
-        longitude: userLocation.longitude,
-      );
-
-      return _currentLocation;
+        return _currentLocation;
+      }
     } on PlatformException catch (e) {
       var error = "";
       if (e.code == 'PERMISSION_DENIED') {
@@ -56,9 +60,10 @@ class LocationService {
         throw error;
       }
     }
+    return null;
   }
 
-  fetchLocation() async {
+  Future<LocationData?> fetchLocation() async {
     bool _serviceEnabled;
     PermissionStatus _permissionGranted;
     LocationData _currentPosition;
@@ -67,7 +72,7 @@ class LocationService {
     if (!_serviceEnabled) {
       _serviceEnabled = await location.requestService();
       if (!_serviceEnabled) {
-        return;
+        return null;
       }
     }
 
@@ -75,7 +80,7 @@ class LocationService {
     if (_permissionGranted == PermissionStatus.denied) {
       _permissionGranted = await location.requestPermission();
       if (_permissionGranted != PermissionStatus.granted) {
-        return;
+        return null;
       }
     }
 

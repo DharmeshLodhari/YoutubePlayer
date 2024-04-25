@@ -29,7 +29,7 @@ import '../../../../routes/route_constants.dart';
 import '../shopping_auth.dart';
 
 class AddProduct extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
   AddProduct({Key? key, this.arguments}) : super(key: key);
 
@@ -50,10 +50,10 @@ class _AddProductState extends State<AddProduct> {
   ProductCondition? selectedProductCondition;
   ProductCondition? selectedDeliveryTimeCondition;
   int imageCount = 5;
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
 
   // TextEditingController _myController = TextEditingController();
-  TextfieldTagsController _myController = TextfieldTagsController();
+  final TextfieldTagsController _myController = TextfieldTagsController();
   List<PickedFile> productImages = [];
   String productName = "";
   String productDescription = "";
@@ -88,9 +88,9 @@ class _AddProductState extends State<AddProduct> {
   int inventoryCount = 1;
   List<Variant> productVariantList = [];
   List<AddOns> productAddOnsList = [];
-  var weightSi = ['Grams', 'Kilograms'];
-  var widthSi = ['Centimetres', 'Metres'];
-  var heightSi = ['Centimetres', 'Metres'];
+  List<String> weightSi = ['Grams', 'Kilograms'];
+  List<String> widthSi = ['Centimetres', 'Metres'];
+  List<String> heightSi = ['Centimetres', 'Metres'];
   List<String> measurementList = ['Weight', 'Height', 'Width'];
   Map<String, bool> measurementCheckMark = {};
   List<String> pickedMeasurementList = [];
@@ -118,7 +118,7 @@ class _AddProductState extends State<AddProduct> {
   DiscountModel? selectedDiscount;
   String discountName = "";
   final GlobalKey<ScaffoldMessengerState> _messengerScaffoldKey =
-      new GlobalKey<ScaffoldMessengerState>();
+      GlobalKey<ScaffoldMessengerState>();
 
   @override
   void deactivate() {
@@ -130,7 +130,7 @@ class _AddProductState extends State<AddProduct> {
   void initState() {
     isLoading = true;
     if (mounted) setState(() {});
-    Future.delayed(Duration(seconds: 2), () {
+    Future.delayed(const Duration(seconds: 2), () {
       getDiscountList();
       getCategories();
       obtainCustomCategory();
@@ -145,7 +145,7 @@ class _AddProductState extends State<AddProduct> {
         isDiscountLoading = true;
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result = await ShoppingAuthService()
+        final Map<String, dynamic>? result = await ShoppingAuthService()
             .listOfDiscounts(discountNext, discountPrevious);
 
         if (result == null) {
@@ -160,7 +160,7 @@ class _AddProductState extends State<AddProduct> {
         discountItemCount = result['count'];
         discountNext = result['next'];
         discountPrevious = result['previous'];
-        var tempList = result['results'];
+        final tempList = result['results'];
         if (mounted) {
           setState(() {
             noItemInList = false;
@@ -181,7 +181,7 @@ class _AddProductState extends State<AddProduct> {
         _messengerScaffoldKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 500),
         ));
       }
     }
@@ -190,7 +190,7 @@ class _AddProductState extends State<AddProduct> {
   void getAddressList() async {
     if (mounted) setState(() {});
 
-    Map<String, dynamic>? result =
+    final Map<String, dynamic>? result =
         await ShoppingAuthService().listOfDispatchAddress("", null);
 
     if (result == null) {
@@ -200,7 +200,7 @@ class _AddProductState extends State<AddProduct> {
       return;
     }
 
-    List<ShippingAddress> tempList = result['results'];
+    final List<ShippingAddress> tempList = result['results'];
 
     if (mounted) {
       setState(() {
@@ -247,7 +247,7 @@ class _AddProductState extends State<AddProduct> {
     if (mounted) setState(() {});
   }
 
-  void getSubCategories(id) async {
+  void getSubCategories(dynamic id) async {
     if (mounted) setState(() {});
 
     try {
@@ -369,7 +369,7 @@ class _AddProductState extends State<AddProduct> {
                                 flex: 1,
                                 child: getWeightField(),
                               ),
-                              SizedBox(width: 5.0),
+                              const SizedBox(width: 5.0),
                               Flexible(
                                 flex: 1,
                                 child: getWeightSiUnitField(),
@@ -387,7 +387,7 @@ class _AddProductState extends State<AddProduct> {
                                 flex: 1,
                                 child: getHeightField(),
                               ),
-                              SizedBox(width: 5.0),
+                              const SizedBox(width: 5.0),
                               Flexible(
                                 flex: 1,
                                 child: getHeightSiUnitField(),
@@ -405,7 +405,7 @@ class _AddProductState extends State<AddProduct> {
                                 flex: 1,
                                 child: getWidthField(),
                               ),
-                              SizedBox(width: 5.0),
+                              const SizedBox(width: 5.0),
                               Flexible(
                                 flex: 1,
                                 child: getWidthSiUnitField(),
@@ -432,16 +432,14 @@ class _AddProductState extends State<AddProduct> {
                       const SizedBox(height: 16),
                       getEnableInSuperStoreField(),
                       const SizedBox(height: 16),
-                      if (productVariantList == null ||
-                          productVariantList.isEmpty) ...[
+                      if (productVariantList.isEmpty) ...[
                         // getAddVariationFormField(),
                         productVariation(),
                       ] else ...[
                         displaySelectedVariant(),
                       ],
                       const SizedBox(height: 16),
-                      if (productAddOnsList == null ||
-                          productAddOnsList.isEmpty) ...[
+                      if (productAddOnsList.isEmpty) ...[
                         productAddOns(),
                       ] else ...[
                         displaySelectedAddOn(),
@@ -559,7 +557,7 @@ class _AddProductState extends State<AddProduct> {
       ImagePicker().pickImage(source: imageSource).then((value) async {
         if (value != null) {
           /// for cropping the image
-          String? croppedImage = await ImageCrop().cropImage(value.path);
+          final String? croppedImage = await ImageCrop().cropImage(value.path);
           if (croppedImage == null) {
             return;
           }
@@ -702,7 +700,7 @@ class _AddProductState extends State<AddProduct> {
   // /api/v1/products/categories/?industry=userBloc!.userAbout!.industry!.id!&search=drink
 
   String getCustomCategoryLabel() {
-    String industryName = userBloc!.userAbout!.industry!.name!;
+    final String industryName = userBloc!.userAbout!.industry!.name!;
     switch (industryName) {
       case 'Electronics Store':
         return "Aisle";
@@ -824,7 +822,8 @@ class _AddProductState extends State<AddProduct> {
                           shrinkWrap: true,
                           itemCount: customCategories?.length,
                           itemBuilder: (context, index) {
-                            ProductCategory category = customCategories![index];
+                            final ProductCategory category =
+                                customCategories![index];
                             if (selectedCustomCategory == category) {
                               return Container(
                                 color: selectedListItemBackgroundBlue,
@@ -886,7 +885,7 @@ class _AddProductState extends State<AddProduct> {
                             );
                           },
                         )
-                      : Center(
+                      : const Center(
                           child: Text(
                             "No Data",
                           ),
@@ -934,7 +933,7 @@ class _AddProductState extends State<AddProduct> {
                           shrinkWrap: true,
                           itemCount: productCategories?.length,
                           itemBuilder: (context, index) {
-                            ProductCategory category =
+                            final ProductCategory category =
                                 productCategories![index];
                             if (selectedProductCategory == category) {
                               return Container(
@@ -997,7 +996,7 @@ class _AddProductState extends State<AddProduct> {
                             );
                           },
                         )
-                      : Center(
+                      : const Center(
                           child: Text(
                             "No Data",
                           ),
@@ -1039,81 +1038,81 @@ class _AddProductState extends State<AddProduct> {
                   },
                 ),
                 const SizedBox(height: 20),
-                subCategories == null
-                    ? SizedBox()
-                    : Expanded(
-                        child: subCategories?.isNotEmpty ?? false
-                            ? ListView.builder(
-                                shrinkWrap: true,
-                                itemCount: subCategories?.length,
-                                itemBuilder: (context, index) {
-                                  ProductCategory category =
-                                      subCategories![index];
-                                  if (selectedSubCategory == category) {
-                                    return Container(
-                                      color: selectedListItemBackgroundBlue,
-                                      child: ListTile(
-                                        dense: true,
-                                        title: Text(
-                                          category.name,
-                                          overflow: TextOverflow.fade,
-                                          softWrap: false,
-                                          style: TextStyle(
-                                              color: navyBlue,
-                                              fontSize: 16,
-                                              fontFamily: "Inter",
-                                              fontWeight: FontWeight.w600),
-                                        ),
-                                        trailing: Icon(
-                                          SlydoAppIcon.checked,
-                                          color: navyBlue,
-                                          size: 12,
-                                        ),
-                                        onTap: () {
-                                          pressedSubCategory = category;
-                                          Navigator.pop(context);
-                                          if (pressedSubCategory != null) {
-                                            selectedSubCategory =
-                                                pressedSubCategory;
-                                            productSubCategory =
-                                                selectedSubCategory!.name;
-                                            setState(() {});
-                                          }
-                                        },
-                                      ),
-                                    );
-                                  }
-                                  return ListTile(
+                if (subCategories == null)
+                  const SizedBox()
+                else
+                  Expanded(
+                    child: subCategories?.isNotEmpty ?? false
+                        ? ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: subCategories?.length,
+                            itemBuilder: (context, index) {
+                              final ProductCategory category =
+                                  subCategories![index];
+                              if (selectedSubCategory == category) {
+                                return Container(
+                                  color: selectedListItemBackgroundBlue,
+                                  child: ListTile(
+                                    dense: true,
                                     title: Text(
                                       category.name,
-                                      softWrap: false,
                                       overflow: TextOverflow.fade,
+                                      softWrap: false,
                                       style: TextStyle(
-                                          color: blackFont,
+                                          color: navyBlue,
                                           fontSize: 16,
                                           fontFamily: "Inter",
-                                          fontWeight: FontWeight.w400),
+                                          fontWeight: FontWeight.w600),
                                     ),
-                                    dense: true,
+                                    trailing: Icon(
+                                      SlydoAppIcon.checked,
+                                      color: navyBlue,
+                                      size: 12,
+                                    ),
                                     onTap: () {
-                                      pressedCategory = category;
+                                      pressedSubCategory = category;
                                       Navigator.pop(context);
-                                      if (pressedCategory != null) {
-                                        selectedSubCategory = pressedCategory;
-                                        productCategory =
+                                      if (pressedSubCategory != null) {
+                                        selectedSubCategory =
+                                            pressedSubCategory;
+                                        productSubCategory =
                                             selectedSubCategory!.name;
                                         setState(() {});
                                       }
                                     },
-                                  );
-                                },
-                              )
-                            : Center(
-                                child: Text(
-                                  "No Data",
+                                  ),
+                                );
+                              }
+                              return ListTile(
+                                title: Text(
+                                  category.name,
+                                  softWrap: false,
+                                  overflow: TextOverflow.fade,
+                                  style: TextStyle(
+                                      color: blackFont,
+                                      fontSize: 16,
+                                      fontFamily: "Inter",
+                                      fontWeight: FontWeight.w400),
                                 ),
-                              ),
-                      ),
+                                dense: true,
+                                onTap: () {
+                                  pressedCategory = category;
+                                  Navigator.pop(context);
+                                  if (pressedCategory != null) {
+                                    selectedSubCategory = pressedCategory;
+                                    productCategory = selectedSubCategory!.name;
+                                    setState(() {});
+                                  }
+                                },
+                              );
+                            },
+                          )
+                        : const Center(
+                            child: Text(
+                              "No Data",
+                            ),
+                          ),
+                  ),
               ],
             ),
           );
@@ -1202,8 +1201,8 @@ class _AddProductState extends State<AddProduct> {
     }
   }
 
-  showDeliveryTime() {
-    List industry = ['Grocery Store', 'Liquor Store', 'Restaurant/Cafe'];
+  bool showDeliveryTime() {
+    final List industry = ['Grocery Store', 'Liquor Store', 'Restaurant/Cafe'];
     if (industry.contains(userBloc!.userAbout!.industry!.name)) {
       return true;
     }
@@ -1211,7 +1210,7 @@ class _AddProductState extends State<AddProduct> {
   }
 
   Widget getProductConditionField() {
-    print("my controller :- ${_myController}");
+    debugPrint("my controller :- ${_myController}");
     return CustomizedDropDownField(
       title: "Product condition",
       child: ListTile(
@@ -1268,7 +1267,7 @@ class _AddProductState extends State<AddProduct> {
             ),
             GestureDetector(
               onTap: () async {
-                var result = await Navigator.of(context).pushNamed(
+                final result = await Navigator.of(context).pushNamed(
                     Routes.ADD_TAGS,
                     arguments: {"tagList": userTags});
                 if (result != null && result is List<Tags>) {
@@ -1281,7 +1280,7 @@ class _AddProductState extends State<AddProduct> {
                       //         ?.replaceAll(" ", "-")
                       //         .toLowerCase() ??
                       _myController.addTag = tags.name ?? "";
-                      Tags tagData = Tags(id: tags.id, name: tags.name);
+                      final Tags tagData = Tags(id: tags.id, name: tags.name);
                       userTags.add(tagData);
                     }
                   }
@@ -1299,7 +1298,7 @@ class _AddProductState extends State<AddProduct> {
             )
           ],
         ),
-        SizedBox(
+        const SizedBox(
           height: 6,
         ),
         CustomTextFieldTag(
@@ -1627,7 +1626,7 @@ class _AddProductState extends State<AddProduct> {
 
   Widget getWeightField() {
     return Container(
-      padding: EdgeInsets.only(top: 4.0),
+      padding: const EdgeInsets.only(top: 4.0),
       child: CustomizedTextFormField(
         labelText: AppLocalization.of(context)!.weight,
         keyboardType: Platform.isIOS
@@ -1685,7 +1684,7 @@ class _AddProductState extends State<AddProduct> {
 
   Widget getHeightField() {
     return Container(
-      padding: EdgeInsets.only(top: 4.0),
+      padding: const EdgeInsets.only(top: 4.0),
       child: CustomizedTextFormField(
         labelText: AppLocalization.of(context)!.height,
         keyboardType: Platform.isIOS
@@ -1743,7 +1742,7 @@ class _AddProductState extends State<AddProduct> {
 
   Widget getWidthField() {
     return Container(
-      padding: EdgeInsets.only(top: 4.0),
+      padding: const EdgeInsets.only(top: 4.0),
       child: CustomizedTextFormField(
         labelText: AppLocalization.of(context)!.width,
         keyboardType: Platform.isIOS
@@ -1796,7 +1795,7 @@ class _AddProductState extends State<AddProduct> {
                     shrinkWrap: true,
                     itemCount: weightSi.length,
                     itemBuilder: (context, index) {
-                      var category = weightSi[index];
+                      final category = weightSi[index];
                       if (selectedWeight == category) {
                         return Container(
                           color: selectedListItemBackgroundBlue,
@@ -1877,7 +1876,7 @@ class _AddProductState extends State<AddProduct> {
                     shrinkWrap: true,
                     itemCount: heightSi.length,
                     itemBuilder: (context, index) {
-                      var height = heightSi[index];
+                      final height = heightSi[index];
                       if (selectedHeight == height) {
                         return Container(
                           color: selectedListItemBackgroundBlue,
@@ -1958,7 +1957,7 @@ class _AddProductState extends State<AddProduct> {
                     shrinkWrap: true,
                     itemCount: widthSi.length,
                     itemBuilder: (context, index) {
-                      var category = widthSi[index];
+                      final category = widthSi[index];
                       if (selectedWidth == category) {
                         return Container(
                           color: selectedListItemBackgroundBlue,
@@ -2054,7 +2053,7 @@ class _AddProductState extends State<AddProduct> {
         }
 
         if (validateDropdown()) {
-          Product product = Product();
+          final Product product = Product();
           product.localImages =
               productImages.map((file) => File(file.path)).toList();
           product.name = productName;
@@ -2109,7 +2108,7 @@ class _AddProductState extends State<AddProduct> {
           await _auth
               .addProduct(product, widget.arguments['channelUsername'] ?? "")
               .then((value) async {
-            var productId = value[1];
+            final productId = value[1];
 
             if (productVariantList.isEmpty) {
               Navigator.pop(context);
@@ -2151,7 +2150,7 @@ class _AddProductState extends State<AddProduct> {
     }
 
     // This will be executed after all API calls are completed
-    print("All API calls are done!");
+    debugPrint("All API calls are done!");
     Navigator.pop(context);
     showToast(message: AppLocalization.of(context)!.productAddedSuccessfully);
 
@@ -2423,11 +2422,11 @@ class _AddProductState extends State<AddProduct> {
             ),
           ],
         ),
-        SizedBox(height: 5),
+        const SizedBox(height: 5),
         ListView.builder(
           padding: EdgeInsets.zero,
           // Use `physics` property to prevent nested scrolling
-          physics: NeverScrollableScrollPhysics(),
+          physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,
           itemCount: productVariantList.length,
           itemBuilder: (BuildContext context, int index) {
@@ -2538,7 +2537,7 @@ class _AddProductState extends State<AddProduct> {
                           shrinkWrap: true,
                           itemCount: discountList.length,
                           itemBuilder: (context, index) {
-                            DiscountModel discount = discountList[index];
+                            final DiscountModel discount = discountList[index];
                             if (selectedDiscount == discount) {
                               return Container(
                                 color: selectedListItemBackgroundBlue,
@@ -2605,7 +2604,7 @@ class _AddProductState extends State<AddProduct> {
                             );
                           },
                         )
-                      : Text("No Found Discount Data"),
+                      : const Text("No Found Discount Data"),
                 ),
               ],
             ),
@@ -2632,7 +2631,7 @@ class _AddProductState extends State<AddProduct> {
                     shrinkWrap: true,
                     itemCount: measurementList.length,
                     itemBuilder: (context, index) {
-                      String measurement = measurementList[index];
+                      final String measurement = measurementList[index];
                       return CheckboxListTile(
                         value: measurementCheckMark[measurement] ?? false,
                         activeColor: navyBlue,
@@ -2736,7 +2735,7 @@ class _AddProductState extends State<AddProduct> {
                   fontFamily: "Inter",
                   fontSize: 14),
             ),
-            SizedBox(height: 6),
+            const SizedBox(height: 6),
           ],
           GestureDetector(
             behavior: HitTestBehavior.opaque,
@@ -2776,7 +2775,7 @@ class _AddProductState extends State<AddProduct> {
                         fontSize: 14),
                   ),
                 ),
-                SizedBox(width: 20),
+                const SizedBox(width: 20),
                 Icon(
                   Icons.arrow_forward_ios,
                   size: 16,
@@ -2871,7 +2870,7 @@ class _AddProductState extends State<AddProduct> {
             ),
           ],
         ),
-        SizedBox(height: 5.0),
+        const SizedBox(height: 5.0),
         _buildAddOnList(),
       ],
     );
@@ -2884,7 +2883,7 @@ class _AddProductState extends State<AddProduct> {
             // height: 200,
             height: 80 * productAddOnsList.length.toDouble(),
             child: ListView.builder(
-              physics: NeverScrollableScrollPhysics(),
+              physics: const NeverScrollableScrollPhysics(),
               padding: const EdgeInsets.symmetric(vertical: 10),
               //+1 for progressbar
               itemCount: productAddOnsList.length + 1,

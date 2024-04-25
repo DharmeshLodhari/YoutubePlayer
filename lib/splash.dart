@@ -353,7 +353,7 @@ class _SplashScreenState extends State<SplashScreen>
             return;
           }
 
-          if (accounts != null) {
+          if (accounts.isNotEmpty) {
             errorText += "accounts:- ${accounts.length}\n";
             accounts.forEach((element) {
               errorText +=

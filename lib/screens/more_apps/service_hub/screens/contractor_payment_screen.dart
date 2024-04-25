@@ -345,7 +345,7 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
   }
 
   void onSubmit() async {
-    PermissionType? hasPermission =
+    final PermissionType? hasPermission =
         userBloc.user.hasWritePermission(ProtectionPermission.transaction);
     if (hasPermission == PermissionType.WRITE) {
       if (FocusScope.of(context).hasFocus) {

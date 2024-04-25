@@ -216,7 +216,7 @@ class _UpdateAddOnState extends State<UpdateAddOn> {
   }
 
   bool validateDropdown() {
-    if (selectedType != null && selectedType != '') {
+    if (selectedType.isNotEmpty && selectedType != '') {
       return true;
     } else {
       showToast(message: AppLocalization.of(context)!.pleaseSelectCategory);
@@ -241,7 +241,7 @@ class _UpdateAddOnState extends State<UpdateAddOn> {
       child: ListTile(
         dense: true,
         title: Text(
-          selectedType != null ? selectedType : "",
+          selectedType.isNotEmpty ? selectedType : "",
           style: TextStyle(
               color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
         ),

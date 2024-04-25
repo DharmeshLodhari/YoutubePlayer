@@ -19,7 +19,7 @@ import 'package:provider/provider.dart';
 
 import '../../../../../data/state_notifier.dart';
 import '../../../../../utils/enums.dart';
-import '../models/ChatConversation.dart';
+import '../models/chat_conversation.dart';
 
 class DocumentFileTileForChat extends StatefulWidget {
   final Map<String, dynamic> message;

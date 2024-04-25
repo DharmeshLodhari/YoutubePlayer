@@ -36,15 +36,15 @@ import '../yarn_search_screen.dart';
 import '../yarn_setting_screen.dart';
 
 class YarnTile extends StatefulWidget {
-  Yarn yarn;
-  Function(Yarn)? onDeleteYarn;
-  Function(Yarn)? onReYarn;
-  Function(Yarn)? onUpdateYarn;
-  Function()? navigateToReyarn;
+  final Yarn yarn;
+  final Function(Yarn)? onDeleteYarn;
+  final Function(Yarn)? onReYarn;
+  final Function(Yarn)? onUpdateYarn;
+  final Function()? navigateToReyarn;
   final Color? backGroundColor;
-  bool? minusComment;
-  List<Yarn>? checkIfReyarned;
-  Function(bool)? reloadView;
+  final bool? minusComment;
+  final List<Yarn>? checkIfReyarned;
+  final Function(bool)? reloadView;
 
   YarnTile(
       {required this.yarn,

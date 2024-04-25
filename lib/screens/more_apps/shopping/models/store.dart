@@ -1302,7 +1302,7 @@ class AddOnOption {
     );
   }
 
-  static DateTime getProductDateTime(var date) {
+  static DateTime getProductDateTime(String? date) {
     if (date != null) {
       final DateTime dateTime = DateTime.parse(date);
       return dateTime;
@@ -1467,7 +1467,7 @@ class AddOns {
     return selectedAddOnsList;
   }
 
-  static DateTime getProductDateTime(var date) {
+  static DateTime getProductDateTime(String? date) {
     if (date != null) {
       final DateTime dateTime = DateTime.parse(date);
       return dateTime;
@@ -1759,7 +1759,7 @@ class Service extends PurchasableItem {
     return images;
   }
 
-  DateTime getServiceDateTime(String date) {
+  DateTime getServiceDateTime(String? date) {
     if (date != null) {
       final DateTime dateTime = DateTime.parse(date);
       return dateTime;

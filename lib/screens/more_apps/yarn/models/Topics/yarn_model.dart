@@ -5,7 +5,42 @@ import 'package:equatable/equatable.dart';
 
 import '../ask_categories_model.dart';
 
+// ignore: must_be_immutable
 class Yarn extends Equatable {
+  String? id;
+  String? saveId;
+  List<String>? tags;
+  YarnCategories? category;
+  String? authorName;
+  String? authorAvatar;
+  String? createdAt;
+  dynamic updatedAt;
+  String? title;
+  String? body;
+  String? author;
+  String? status;
+  int? numberOfAnswers;
+  List<ViewersAvatars>? viewersAvatars;
+  bool isQuestion = false;
+  int? numberOfComments;
+  bool? enablePayMe;
+  int? voteCount;
+  int? downVoteCount;
+  bool? authorIsVerified;
+  Yarn? reYarn;
+  int? numberOfReYarn;
+  List<YarnMedia> media = <YarnMedia>[];
+  Map<String, dynamic>? attachment = {};
+  String? attachmentType;
+  bool userUpvoted = false;
+  bool userReyarned = false;
+  bool userSupported = false;
+  bool userDownVoted = false;
+  bool? enableCommenting;
+  bool? isSensitiveContent;
+  bool? isAdultContent;
+  dynamic ageRestriction;
+  bool? factChecked;
   Yarn({
     this.id,
     this.saveId,
@@ -173,41 +208,6 @@ class Yarn extends Equatable {
     }
   }
 
-  String? id;
-  String? saveId;
-  List<String>? tags;
-  YarnCategories? category;
-  String? authorName;
-  String? authorAvatar;
-  String? createdAt;
-  dynamic updatedAt;
-  String? title;
-  String? body;
-  String? author;
-  String? status;
-  int? numberOfAnswers;
-  List<ViewersAvatars>? viewersAvatars;
-  bool isQuestion = false;
-  int? numberOfComments;
-  bool? enablePayMe;
-  int? voteCount;
-  int? downVoteCount;
-  bool? authorIsVerified;
-  Yarn? reYarn;
-  int? numberOfReYarn;
-  List<YarnMedia> media = <YarnMedia>[];
-  Map<String, dynamic>? attachment = {};
-  String? attachmentType;
-  bool userUpvoted = false;
-  bool userReyarned = false;
-  bool userSupported = false;
-  bool userDownVoted = false;
-  bool? enableCommenting;
-  bool? isSensitiveContent;
-  bool? isAdultContent;
-  dynamic ageRestriction;
-  bool? factChecked;
-
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
     map['id'] = id;
@@ -263,7 +263,7 @@ class Yarn extends Equatable {
       if (body != null) "body": body,
       if (category != null) "category": category,
       if (author != null) "author": author,
-      if (isQuestion != null) "is_question": isQuestion,
+      "is_question": isQuestion,
       if (enablePayMe != null) "enable_payme": enablePayMe,
       if (enableCommenting != null) "enable_commenting": enableCommenting,
       if (attachment != null) "attachment": attachment,

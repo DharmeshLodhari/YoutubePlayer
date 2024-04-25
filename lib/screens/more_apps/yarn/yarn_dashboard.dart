@@ -359,7 +359,7 @@ class _YarnDashboardState extends State<YarnDashboard> {
       activeBackgroundColor: HexColor("#FFFFFF"),
       child: InkWell(
         onTap: () async {
-          PermissionType? hasPermission =
+          final PermissionType? hasPermission =
               userBloc.user.hasWritePermission(ProtectionPermission.moment);
           if (hasPermission == PermissionType.WRITE) {
             await NavigationUtil.push(context,

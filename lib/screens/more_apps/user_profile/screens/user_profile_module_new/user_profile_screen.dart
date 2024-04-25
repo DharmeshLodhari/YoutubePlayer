@@ -87,7 +87,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
           Navigator.pop(context);
           showToast(message: 'Something went wrong');
           return;
-        } else if (data != null && data.isNotEmpty) {
+        } else if (data.isNotEmpty) {
           channelDetail.addAll(data['results']);
         } else {
           showToast(message: 'Something went wrong');

@@ -3,13 +3,12 @@ import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/super_store/super_store_industry.dart';
 import 'package:Slydo/screens/super_store/widget/single_store_card.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 
 class SectionProducts extends StatefulWidget {
-  final dynamic headers;
+  final Map<String, dynamic>? headers;
 
   const SectionProducts({Key? key, this.headers, this.isLast = false})
       : super(key: key);
@@ -23,10 +22,10 @@ class _SectionProductsState extends State<SectionProducts> {
   List<Product> result = [];
   bool isLoading = false;
 
-  void getRowTitle(headers) async {
+  void getRowTitle(Map<String, dynamic>? headers) async {
     isLoading = true;
     if (mounted) setState(() {});
-    for (var item in headers['results']) {
+    for (var item in headers?['results']) {
       final Product product = await ShoppingAuthService().createProduct(item);
       result.add(product);
     }
@@ -43,7 +42,7 @@ class _SectionProductsState extends State<SectionProducts> {
 
   @override
   Widget build(BuildContext context) {
-    if (result != null && result.isNotEmpty) {
+    if (result.isNotEmpty) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -55,7 +54,7 @@ class _SectionProductsState extends State<SectionProducts> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(widget.headers["name"],
+                    Text(widget.headers?["name"],
                         style: TextStyle(
                           color: black,
                           fontSize: 14,
@@ -159,12 +158,12 @@ class _SectionProductsState extends State<SectionProducts> {
   Widget _buildViewMore(BuildContext context) {
     return InkWell(
       onTap: () {
-        final String url = AppConfig.baseUrl + widget.headers["next_url"];
+        final String url = AppConfig.baseUrl + widget.headers?["next_url"];
         NavigationUtil.push(context,
             screen: SuperStoreIndustry(
                 next: url,
-                appTitle: widget.headers["name"],
-                searchQuery: {"tags": widget.headers["id"]}));
+                appTitle: widget.headers?["name"],
+                searchQuery: {"tags": widget.headers?["id"]}));
       },
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,

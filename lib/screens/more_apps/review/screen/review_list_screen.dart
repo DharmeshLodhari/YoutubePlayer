@@ -87,7 +87,7 @@ class _ReviewListScreenState extends State<ReviewListScreen> {
         //   }
         // }
 
-        if (result == null) {
+        if (result.isEmpty) {
           isLoading = false;
           if (mounted) {
             setState(() {});

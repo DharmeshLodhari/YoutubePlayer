@@ -197,13 +197,13 @@ class SingleChoiceDialogState extends State<CountryPickerDialog> {
         : _buildTitle();
   }
 
-  _buildTitle() {
+  Widget _buildTitle() {
     return widget.titlePadding != null
         ? Padding(
             padding: widget.titlePadding!,
             child: widget.title,
           )
-        : widget.title;
+        : widget.title ?? Container();
   }
 
   Widget _buildSearchField() {

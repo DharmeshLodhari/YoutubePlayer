@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../data/state_notifier.dart';
-import '../../../more_apps/messaging/chat/models/gif_model/GIFModel.dart';
+import '../../../more_apps/messaging/chat/models/gif_model/gif_model.dart';
 import '../../../more_apps/shopping/models/store.dart';
 import '../../../more_apps/yarn/models/Topics/CommentDetails.dart';
 import '../../../more_apps/yarn/models/Topics/yarn_model.dart';
@@ -60,7 +60,7 @@ class _CommentListWidgetState extends State<CommentListWidget> {
       GlobalKey<MomentCommentTextFieldState>();
   bool? enableComment = false, enablePayment = false;
   bool? enableAdult = false, viewerAdvice = false;
-  var ageRating;
+  int? ageRating;
 
   ScrollController scrollController = ScrollController();
   List<YarnMedia> selectedMedia = [];

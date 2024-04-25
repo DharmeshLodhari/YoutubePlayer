@@ -26,7 +26,7 @@ class PaymentRequestTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       shadowColor: boxShadowTwo,
       elevation: 0,
       child: Container(
@@ -35,7 +35,7 @@ class PaymentRequestTile extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             Padding(
-              padding: EdgeInsets.symmetric(vertical: 8),
+              padding: const EdgeInsets.symmetric(vertical: 8),
               child: ListTile(
                   dense: true,
                   leading: getLeading(),
@@ -78,7 +78,7 @@ class PaymentRequestTile extends StatelessWidget {
             fit: BoxFit.cover,
             filterQuality: FilterQuality.high,
             placeholder: (context, url) => paymentRequest!.avatar == ""
-                ? Icon(Icons.person)
+                ? const Icon(Icons.person)
                 : CircularLoadingIndicator(),
           ),
         ),
@@ -88,7 +88,7 @@ class PaymentRequestTile extends StatelessWidget {
 
   Widget getTitle() {
     return Padding(
-      padding: EdgeInsets.only(bottom: 2),
+      padding: const EdgeInsets.only(bottom: 2),
       child: Text(
         messageDecoderWithEmoji(getCustomerName()) ?? "",
         maxLines: 1,
@@ -115,15 +115,23 @@ class PaymentRequestTile extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        paymentRequest?.description != "" && paymentRequest?.description != null
-            ? Text(
-                messageDecoderWithEmoji(paymentRequest?.description) ?? "",
-                style: TextStyle(color: darkGrey, fontSize: 12),
-                maxLines: 1,
-              )
-            : Container(),
-        paymentRequest!.amount! >= amountLimit ? getTrailing() : Container(),
-        paymentRequest!.createdAt == null ? SizedBox() : getDateTime(context)
+        if (paymentRequest?.description != "" &&
+            paymentRequest?.description != null)
+          Text(
+            messageDecoderWithEmoji(paymentRequest?.description) ?? "",
+            style: TextStyle(color: darkGrey, fontSize: 12),
+            maxLines: 1,
+          )
+        else
+          Container(),
+        if (paymentRequest!.amount! >= amountLimit)
+          getTrailing()
+        else
+          Container(),
+        if (paymentRequest!.createdAt == null)
+          const SizedBox()
+        else
+          getDateTime(context)
       ],
     );
   }
@@ -152,9 +160,10 @@ class PaymentRequestTile extends StatelessWidget {
   }
 
   Widget getDateTime(BuildContext context) {
-    DateTime requestTime = DateTime.parse(paymentRequest!.createdAt!).toLocal();
-    String date = DateFormat("dd/MM/yyyy").format(requestTime);
-    String time = DateFormat("hh:mm a").format(requestTime);
+    final DateTime requestTime =
+        DateTime.parse(paymentRequest!.createdAt!).toLocal();
+    final String date = DateFormat("dd/MM/yyyy").format(requestTime);
+    final String time = DateFormat("hh:mm a").format(requestTime);
     return Text(
       "$date • $time",
       softWrap: false,
@@ -190,7 +199,7 @@ class CardTransactionTile extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             Padding(
-              padding: EdgeInsets.symmetric(vertical: 8),
+              padding: const EdgeInsets.symmetric(vertical: 8),
               child: ListTile(
                 dense: true,
                 title: getTitle(),
@@ -214,7 +223,7 @@ class CardTransactionTile extends StatelessWidget {
 
   Widget getTitle() {
     return Padding(
-      padding: EdgeInsets.only(bottom: 2),
+      padding: const EdgeInsets.only(bottom: 2),
       child: Text(
         "${transaction!.merchantName}",
         maxLines: 1,
@@ -263,23 +272,24 @@ class CardTransactionTile extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        transaction!.description != "" && transaction!.description != null
-            ? Text(
-                "${transaction!.description}",
-                style: TextStyle(color: darkGrey, fontSize: 12),
-                maxLines: 1,
-              )
-            : Container(),
+        if (transaction!.description != "" && transaction!.description != null)
+          Text(
+            "${transaction!.description}",
+            style: TextStyle(color: darkGrey, fontSize: 12),
+            maxLines: 1,
+          )
+        else
+          Container(),
         getDateTime(context),
       ],
     );
   }
 
   Widget getDateTime(BuildContext context) {
-    DateTime transactionTime =
+    final DateTime transactionTime =
         DateTime.parse(transaction!.providerCreatedAt!).toLocal();
-    String date = DateFormat("dd/MM/yyyy").format(transactionTime);
-    String time = DateFormat("hh:mm a").format(transactionTime);
+    final String date = DateFormat("dd/MM/yyyy").format(transactionTime);
+    final String time = DateFormat("hh:mm a").format(transactionTime);
     return Text(
       "$date • $time",
       softWrap: false,
@@ -289,8 +299,9 @@ class CardTransactionTile extends StatelessWidget {
   }
 }
 
+// ignore: must_be_immutable
 class TransactionTile extends StatelessWidget {
-  UserBloc? userBloc;
+  late final UserBloc? userBloc;
 
   final Transaction? transaction;
   Widget? expandedWidget = Container();
@@ -305,7 +316,7 @@ class TransactionTile extends StatelessWidget {
     userBloc = Provider.of<UserBloc>(context);
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       shadowColor: boxShadowTwo,
       elevation: 0,
       child: Container(
@@ -314,7 +325,7 @@ class TransactionTile extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             Padding(
-              padding: EdgeInsets.symmetric(vertical: 8),
+              padding: const EdgeInsets.symmetric(vertical: 8),
               child: ListTile(
                 dense: true,
                 title: getTitle(),
@@ -329,7 +340,7 @@ class TransactionTile extends StatelessWidget {
                 },
               ),
             ),
-            transaction!.isAnonymous! ? Container() : expandedWidget!,
+            if (transaction!.isAnonymous!) Container() else expandedWidget!,
           ],
         ),
       ),
@@ -338,7 +349,7 @@ class TransactionTile extends StatelessWidget {
 
   Widget getTitle() {
     return Padding(
-      padding: EdgeInsets.only(bottom: 2),
+      padding: const EdgeInsets.only(bottom: 2),
       child: Text(
         messageDecoderWithEmoji(transaction?.displayCustomer) ?? "",
         maxLines: 1,
@@ -351,7 +362,7 @@ class TransactionTile extends StatelessWidget {
   Widget getLeading() {
     return transaction!.isAnonymous!
         ? Container(
-            padding: EdgeInsets.only(top: 4.0, bottom: 4.0),
+            padding: const EdgeInsets.only(top: 4.0, bottom: 4.0),
             child: Image.asset(
               "assets/images/anonymous.png",
               height: 48,
@@ -391,26 +402,28 @@ class TransactionTile extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        transaction!.description != "" && transaction!.description != null
-            ? Text(
-                messageDecoderWithEmoji(transaction?.description) ?? "",
-                style: TextStyle(color: darkGrey, fontSize: 12),
-                maxLines: 1,
-              )
-            : Container(),
-        transaction!.amount.toString().length >= amountLimit
-            ? getAmount()
-            : Container(),
+        if (transaction!.description != "" && transaction!.description != null)
+          Text(
+            messageDecoderWithEmoji(transaction?.description) ?? "",
+            style: TextStyle(color: darkGrey, fontSize: 12),
+            maxLines: 1,
+          )
+        else
+          Container(),
+        if (transaction!.amount.toString().length >= amountLimit)
+          getAmount()
+        else
+          Container(),
         getDateTime(context),
       ],
     );
   }
 
   Widget getDateTime(BuildContext context) {
-    DateTime transactionTime =
+    final DateTime transactionTime =
         DateTime.parse(transaction!.createdAt!).toLocal();
-    String date = DateFormat("dd/MM/yyyy").format(transactionTime);
-    String time = DateFormat("hh:mm a").format(transactionTime);
+    final String date = DateFormat("dd/MM/yyyy").format(transactionTime);
+    final String time = DateFormat("hh:mm a").format(transactionTime);
     return Text(
       "$date • $time",
       softWrap: false,
@@ -437,13 +450,13 @@ class _ContractTransactionTileState extends State<ContractTransactionTile> {
     userBloc = Provider.of<UserBloc>(context);
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       shadowColor: boxShadowTwo,
       elevation: 0,
       child: Container(
         decoration: decorateBox(),
         child: Padding(
-          padding: EdgeInsets.symmetric(vertical: 8),
+          padding: const EdgeInsets.symmetric(vertical: 8),
           child: ListTile(
             dense: true,
             title: getTitle(),
@@ -464,7 +477,7 @@ class _ContractTransactionTileState extends State<ContractTransactionTile> {
 
   Widget getTitle() {
     return Padding(
-      padding: EdgeInsets.only(bottom: 2),
+      padding: const EdgeInsets.only(bottom: 2),
       child: Text(
         "${widget.transaction!.payee}",
         maxLines: 1,
@@ -478,7 +491,7 @@ class _ContractTransactionTileState extends State<ContractTransactionTile> {
     return ClipOval(
       child: widget.transaction!.isAnonymous!
           ? Container(
-              padding: EdgeInsets.only(top: 4.0, bottom: 4.0),
+              padding: const EdgeInsets.only(top: 4.0, bottom: 4.0),
               child: Image.asset(
                 "assets/images/anonymous.png",
                 height: 48,
@@ -496,7 +509,7 @@ class _ContractTransactionTileState extends State<ContractTransactionTile> {
               fit: BoxFit.cover,
               filterQuality: FilterQuality.high,
               placeholder: (context, url) => widget.transaction!.avatar == ""
-                  ? Icon(Icons.person)
+                  ? const Icon(Icons.person)
                   : CircularLoadingIndicator(),
             ),
     );
@@ -534,18 +547,20 @@ class _ContractTransactionTileState extends State<ContractTransactionTile> {
           style: TextStyle(color: darkGrey, fontSize: 12),
           maxLines: 1,
         ),
-        widget.transaction!.amount.toString().length > 6
-            ? getAmount()
-            : Container(),
+        if (widget.transaction!.amount.toString().length > 6)
+          getAmount()
+        else
+          Container(),
         getDateTime(context),
       ],
     );
   }
 
   Widget getDateTime(BuildContext context) {
-    DateTime transactionTime = DateTime.parse(widget.transaction!.createdAt!);
-    String date = DateFormat("dd/MM/yyyy").format(transactionTime);
-    String time = DateFormat("hh:mm a").format(transactionTime);
+    final DateTime transactionTime =
+        DateTime.parse(widget.transaction!.createdAt!);
+    final String date = DateFormat("dd/MM/yyyy").format(transactionTime);
+    final String time = DateFormat("hh:mm a").format(transactionTime);
     return Text(
       "$date • $time",
       softWrap: false,

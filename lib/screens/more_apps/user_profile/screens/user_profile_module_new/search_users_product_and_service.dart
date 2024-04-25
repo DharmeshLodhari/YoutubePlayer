@@ -27,7 +27,7 @@ import 'package:provider/provider.dart';
 import '../../../../../routes/route_constants.dart';
 
 class SearchUsersProductAndService extends StatefulWidget {
-  final arguments;
+  final dynamic arguments;
   SearchUsersProductAndService({required this.arguments});
 
   @override
@@ -44,7 +44,7 @@ class _SearchUsersProductAndServiceState
   List<dynamic>? searchedResult;
 
   late UserBloc userBloc;
-  static var filterValue = "Products";
+  static String filterValue = "Products";
 
   SlidableController? slidableController1;
   SlidableController? slidableController2;
@@ -54,27 +54,28 @@ class _SearchUsersProductAndServiceState
   GlobalKey textFormField = GlobalKey();
   TextEditingController searchItemTextController = TextEditingController();
 
-  GlobalKey<ScaffoldState> _scaffoldSearchKey = GlobalKey<ScaffoldState>();
-  GlobalKey<ScaffoldMessengerState> _scaffoldMessengerSearchKey =
+  final GlobalKey<ScaffoldState> _scaffoldSearchKey =
+      GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerSearchKey =
       GlobalKey<ScaffoldMessengerState>();
-  GlobalKey<FormState> _formFieldKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formFieldKey = GlobalKey<FormState>();
 
   //pagination variables
   int? count = 0;
   String? next = "";
   String? previous = "";
-  ScrollController _scrollController = new ScrollController();
+  final ScrollController _scrollController = ScrollController();
   bool isLoading = false;
   bool noItemInList = false;
 
-  GlobalKey _key = LabeledGlobalKey("searchTypeSelectionKey");
+  final GlobalKey _key = LabeledGlobalKey("searchTypeSelectionKey");
   late CustomizedPopUpMenu searchTypeSelectionMenu;
   int selectedMenuItemIndex = 0;
   bool isPopMenuOpen = false;
 
   List<String> categoryList = [];
 
-  var hint = "Search here";
+  String hint = "Search here";
 
   CustomerProfile? searchedUser;
 
@@ -217,10 +218,10 @@ class _SearchUsersProductAndServiceState
           key: _formFieldKey,
           child: Column(
             children: [
-              SizedBox(height: 6),
+              const SizedBox(height: 6),
               searchBox(),
-              showFilterOptions ? getFilterOptions() : Container(),
-              SizedBox(
+              if (showFilterOptions) getFilterOptions() else Container(),
+              const SizedBox(
                 height: 16,
               ),
               Expanded(
@@ -235,14 +236,14 @@ class _SearchUsersProductAndServiceState
 
   Widget getFilterOptions() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         children: [
-          SizedBox(
+          const SizedBox(
             height: 16,
           ),
           getCategoryField(),
-          SizedBox(
+          const SizedBox(
             height: 8,
           ),
           getPriceRange()
@@ -258,7 +259,7 @@ class _SearchUsersProductAndServiceState
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
           side: BorderSide(color: greyBorderColor)),
-      margin: EdgeInsets.all(0),
+      margin: const EdgeInsets.all(0),
       borderOnForeground: true,
       child: DropdownButtonHideUnderline(
         child: ButtonTheme(
@@ -289,7 +290,8 @@ class _SearchUsersProductAndServiceState
         barrierDismissible: false,
         context: context,
         builder: (context) => AlertDialog(
-              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              insetPadding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
@@ -365,7 +367,7 @@ class _SearchUsersProductAndServiceState
       child: Row(
         children: <Widget>[
           Expanded(child: displayMinAmount()),
-          SizedBox(
+          const SizedBox(
             width: 16,
           ),
           Expanded(child: displayMaxAmount()),
@@ -380,7 +382,7 @@ class _SearchUsersProductAndServiceState
       isAmountField: true,
       controller: minAmountTextController,
       keyboardType: Platform.isIOS
-          ? TextInputType.numberWithOptions(decimal: true)
+          ? const TextInputType.numberWithOptions(decimal: true)
           : TextInputType.number,
       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
       onChanged: (val) {
@@ -389,7 +391,7 @@ class _SearchUsersProductAndServiceState
           return;
         }
         try {
-          int minAmount =
+          final int minAmount =
               int.parse(val.replaceAll(',', '').replaceAll('.', ''));
           filterModel.minAmount = minAmount;
         } catch (e) {}
@@ -399,7 +401,8 @@ class _SearchUsersProductAndServiceState
           return null;
         }
         try {
-          int amount = int.parse(val.replaceAll(',', '').replaceAll('.', ''));
+          final int amount =
+              int.parse(val.replaceAll(',', '').replaceAll('.', ''));
           if (amount > 0) {
             return null;
           } else {
@@ -418,7 +421,7 @@ class _SearchUsersProductAndServiceState
       controller: maxAmountTextController,
       isAmountField: true,
       keyboardType: Platform.isIOS
-          ? TextInputType.numberWithOptions(decimal: true)
+          ? const TextInputType.numberWithOptions(decimal: true)
           : TextInputType.number,
       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
       onChanged: (val) {
@@ -427,7 +430,7 @@ class _SearchUsersProductAndServiceState
           return;
         }
         try {
-          int maxAmount =
+          final int maxAmount =
               int.parse(val.replaceAll(',', '').replaceAll('.', ''));
           filterModel.maxAmount = maxAmount;
         } catch (e) {}
@@ -437,7 +440,8 @@ class _SearchUsersProductAndServiceState
           return null;
         }
         try {
-          int amount = int.parse(val.replaceAll(',', '').replaceAll('.', ''));
+          final int amount =
+              int.parse(val.replaceAll(',', '').replaceAll('.', ''));
           if (amount > 0) {
             return null;
           } else {
@@ -453,7 +457,7 @@ class _SearchUsersProductAndServiceState
   Widget searchBox() {
     try {
       return Container(
-        padding: EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Stack(
           alignment: Alignment.centerRight,
           children: [
@@ -479,14 +483,14 @@ class _SearchUsersProductAndServiceState
                       : "Search service",
                   fillColor: Colors.white,
                   filled: true,
-                  contentPadding: EdgeInsets.symmetric(vertical: 10),
+                  contentPadding: const EdgeInsets.symmetric(vertical: 10),
                   prefixIcon: widget.arguments["hidePreIcon"] == true
                       ? null
                       : searchTypeSelection(),
-                  prefix: Padding(
+                  prefix: const Padding(
                     padding: EdgeInsets.only(left: 12),
                   ),
-                  suffix: Padding(
+                  suffix: const Padding(
                     padding: EdgeInsets.only(right: 36),
                   ),
                   enabledBorder: OutlineInputBorder(
@@ -524,8 +528,8 @@ class _SearchUsersProductAndServiceState
               ),
             ),
             Positioned(
-              child: searchIcon(),
               right: 0,
+              child: searchIcon(),
             )
           ],
         ),
@@ -538,7 +542,7 @@ class _SearchUsersProductAndServiceState
   Widget searchTypeSelection() {
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.only(
+        borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(10), bottomLeft: Radius.circular(10)),
         color: navyBlue,
       ),
@@ -612,14 +616,14 @@ class _SearchUsersProductAndServiceState
           style: TextStyle(
               color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
         ),
-        actions: [filterItemBtn(), SizedBox(width: 8)]);
+        actions: [filterItemBtn(), const SizedBox(width: 8)]);
   }
 
   Widget filterItemBtn() {
     return Stack(
       children: [
         Container(
-          padding: EdgeInsets.only(right: 8),
+          padding: const EdgeInsets.only(right: 8),
           child: Column(
             children: [
               Expanded(
@@ -643,19 +647,20 @@ class _SearchUsersProductAndServiceState
             ],
           ),
         ),
-        isFilterApplied
-            ? Positioned(
-                top: 10,
-                right: 6,
-                child: ClipOval(
-                  child: Container(
-                    height: 8,
-                    width: 8,
-                    color: naturalGreen,
-                  ),
-                ),
-              )
-            : Container()
+        if (isFilterApplied)
+          Positioned(
+            top: 10,
+            right: 6,
+            child: ClipOval(
+              child: Container(
+                height: 8,
+                width: 8,
+                color: naturalGreen,
+              ),
+            ),
+          )
+        else
+          Container()
       ],
     );
   }
@@ -745,7 +750,7 @@ class _SearchUsersProductAndServiceState
           isLoading = true;
           setState(() {});
         }
-        Map<String, dynamic>? result = await getSearchApi();
+        final Map<String, dynamic>? result = await getSearchApi();
         if (result == null) {
           isLoading = false;
           return;
@@ -753,7 +758,7 @@ class _SearchUsersProductAndServiceState
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
-        List? tempList = result['results'];
+        final List? tempList = result['results'];
         if (mounted) {
           isLoading = false;
           try {
@@ -778,21 +783,21 @@ class _SearchUsersProductAndServiceState
         _scaffoldMessengerSearchKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 500),
         ));
       }
     }
   }
 
   // ignore: missing_return
-  Widget getResultTile(var result) {
+  Widget getResultTile(PurchasableItem result) {
     switch (filterValue) {
       case "Products":
-        return getProductTile(result);
+        return getProductTile(result as Product);
       case "Services":
-        return getServiceTile(result);
+        return getServiceTile(result as Service);
     }
-    return getProductTile(result);
+    return getProductTile(result as Product);
   }
 
   String getSearchUrl(String searchedText) {
@@ -818,7 +823,7 @@ class _SearchUsersProductAndServiceState
 
   Widget productCard(Product product) {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 4, horizontal: 16),
+      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         margin: EdgeInsets.zero,
@@ -829,7 +834,7 @@ class _SearchUsersProductAndServiceState
           child: Column(
             children: <Widget>[
               Padding(
-                padding: EdgeInsets.symmetric(vertical: 8),
+                padding: const EdgeInsets.symmetric(vertical: 8),
                 child: ListTile(
                   dense: true,
                   leading: getLeading(product),
@@ -870,8 +875,9 @@ class _SearchUsersProductAndServiceState
         colorBlendMode: BlendMode.darken,
         fit: BoxFit.fill,
         filterQuality: FilterQuality.high,
-        placeholder: (context, url) =>
-            imageUrl == "" ? Icon(Icons.person) : CircularLoadingIndicator(),
+        placeholder: (context, url) => imageUrl == ""
+            ? const Icon(Icons.person)
+            : CircularLoadingIndicator(),
       ),
     );
   }
@@ -910,7 +916,7 @@ class _SearchUsersProductAndServiceState
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        SizedBox(
+        const SizedBox(
           height: 2,
         ),
         Text(
@@ -918,12 +924,13 @@ class _SearchUsersProductAndServiceState
           maxLines: 1,
           style: TextStyle(color: darkGrey, fontSize: 12),
         ),
-        SizedBox(
+        const SizedBox(
           height: 2,
         ),
-        product.price.toString().length > 6
-            ? getTrailingProduct(product)
-            : Container(),
+        if (product.price.toString().length > 6)
+          getTrailingProduct(product)
+        else
+          Container(),
         getSellerNameProduct(product)
       ],
     );
@@ -947,7 +954,7 @@ class _SearchUsersProductAndServiceState
 
   Widget getServiceCard(Service service) {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 4, horizontal: 16),
+      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         margin: EdgeInsets.zero,
@@ -958,7 +965,7 @@ class _SearchUsersProductAndServiceState
           child: Column(
             children: <Widget>[
               Padding(
-                padding: EdgeInsets.symmetric(vertical: 8),
+                padding: const EdgeInsets.symmetric(vertical: 8),
                 child: ListTile(
                   dense: true,
                   leading: getLeadingService(service),
@@ -1006,8 +1013,9 @@ class _SearchUsersProductAndServiceState
           colorBlendMode: BlendMode.darken,
           fit: BoxFit.fill,
           filterQuality: FilterQuality.high,
-          placeholder: (context, url) =>
-              imageUrl == "" ? Icon(Icons.person) : CircularLoadingIndicator()),
+          placeholder: (context, url) => imageUrl == ""
+              ? const Icon(Icons.person)
+              : CircularLoadingIndicator()),
     );
   }
 
@@ -1015,7 +1023,7 @@ class _SearchUsersProductAndServiceState
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        SizedBox(
+        const SizedBox(
           height: 2,
         ),
         Text(
@@ -1023,12 +1031,13 @@ class _SearchUsersProductAndServiceState
           maxLines: 1,
           style: TextStyle(color: darkGrey, fontSize: 12),
         ),
-        SizedBox(
+        const SizedBox(
           height: 2,
         ),
-        service.price.toString().length > 6
-            ? getTrailingService(service)
-            : Container(),
+        if (service.price.toString().length > 6)
+          getTrailingService(service)
+        else
+          Container(),
         getProviderNameService(service)
       ],
     );
@@ -1074,11 +1083,11 @@ class _SearchUsersProductAndServiceState
           key: textFormField,
           controller: searchItemTextController,
           decoration: InputDecoration(
-            contentPadding: EdgeInsets.all(10),
+            contentPadding: const EdgeInsets.all(10),
             hintText: hint,
             isDense: true,
             enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(
+              borderSide: const BorderSide(
                 color: Colors.white,
                 width: 1,
               ),
@@ -1094,7 +1103,7 @@ class _SearchUsersProductAndServiceState
             fillColor: Colors.white,
             filled: true,
           ),
-          style: TextStyle(color: Colors.black, fontSize: 16),
+          style: const TextStyle(color: Colors.black, fontSize: 16),
           onFieldSubmitted: (val) {
             if (mounted) {
               setState(() {
@@ -1117,11 +1126,11 @@ class _SearchUsersProductAndServiceState
     return Slidable(
       controller: slidableController1,
       direction: Axis.horizontal,
-      actionPane: SlidableBehindActionPane(),
+      actionPane: const SlidableBehindActionPane(),
       actionExtentRatio: 0.25,
-      child: VerticalListItem1(searchCard, product),
       actions: listActionSlideActions1(product),
       secondaryActions: listSecondaryActions1(product),
+      child: VerticalListItem1(searchCard, product),
     );
   }
 
@@ -1133,7 +1142,7 @@ class _SearchUsersProductAndServiceState
       SlideActionButton(
         icon: SlydoAppIcon.cart,
         onTap: () async {
-          CustomerProfileBloc customerProfileBloc =
+          final CustomerProfileBloc customerProfileBloc =
               Provider.of<CustomerProfileBloc>(context, listen: false);
 
           customerProfileBloc.customer =
@@ -1174,11 +1183,11 @@ class _SearchUsersProductAndServiceState
     return Slidable(
       controller: slidableController2,
       direction: Axis.horizontal,
-      actionPane: SlidableBehindActionPane(),
+      actionPane: const SlidableBehindActionPane(),
       actionExtentRatio: 0.25,
-      child: VerticalListItem2(searchCard, service),
       actions: listActionSlideActions2(service),
       secondaryActions: listSecondaryActions2(service),
+      child: VerticalListItem2(searchCard, service),
     );
   }
 
@@ -1193,7 +1202,7 @@ class _SearchUsersProductAndServiceState
           slideController: slidableController2,
           icon: SlydoAppIcon.cart,
           onTap: () async {
-            CustomerProfileBloc customerProfileBloc =
+            final CustomerProfileBloc customerProfileBloc =
                 Provider.of<CustomerProfileBloc>(context, listen: false);
             customerProfileBloc.customer =
                 await UserAuth().fetchCustomerProfile(service.provider);
@@ -1259,7 +1268,7 @@ class VerticalListItem extends StatelessWidget {
             arguments: {"searchedUserName": user.userName});
       },
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 2),
+        padding: const EdgeInsets.symmetric(vertical: 2),
         child: child,
       ),
     );
@@ -1282,7 +1291,7 @@ class VerticalListItem1 extends StatelessWidget {
             arguments: {"product": product});
       },
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 2),
+        padding: const EdgeInsets.symmetric(vertical: 2),
         child: child,
       ),
     );
@@ -1305,7 +1314,7 @@ class VerticalListItem2 extends StatelessWidget {
             arguments: {"service": service});
       },
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 2),
+        padding: const EdgeInsets.symmetric(vertical: 2),
         child: child,
       ),
     );

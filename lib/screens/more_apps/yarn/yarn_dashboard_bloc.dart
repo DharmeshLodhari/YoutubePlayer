@@ -22,7 +22,7 @@ class YarnDashboardBloc extends ChangeNotifier {
   bool get sensitiveContent => yarnSettings.allowSensitiveContent;
   bool get pushNotification => yarnSettings.allowNotification;
 
-  var productService;
+  Map<String, dynamic>? productService;
   List<Yarn> get createYarnTopicList => _createYarnTopicList;
   List<Yarn> get deleteYarnTopicList => _deleteYarnTopicList;
   List<Yarn> get reYarnTopicList => _reYarnTopicList;

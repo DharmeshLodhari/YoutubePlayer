@@ -17,7 +17,7 @@ import '../../../../widget/dialog.dart';
 import '../../../../widget/rounded_background_icon.dart';
 import '../../../moments/models/moments_model.dart';
 import '../../../moments/screens/moment_detail/moment_comment.screen.dart';
-import '../../messaging/chat/models/ChatConversation.dart';
+import '../../messaging/chat/models/chat_conversation.dart';
 import '../../messaging/chat/share_in_chat/ShareInChat.dart';
 import '../add_or_edit_yarn_screen.dart';
 import '../models/Topics/CommentDetails.dart';

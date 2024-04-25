@@ -44,7 +44,7 @@ class DiscountModel {
     isActive = json['is_active'] != null ? json['is_active'] as bool : true;
     value = json['value'];
     if (json['start_date'] != null) {
-      final List<int> parse = json['start_date']
+      final List<int>? parse = json['start_date']
           .toString()
           .split("-")
           .toList()
@@ -68,7 +68,7 @@ class DiscountModel {
     }
 
     if (json['only_from'] != null) {
-      final List<int> parse = json['only_from']
+      final List<int>? parse = json['only_from']
           .toString()
           .split(":")
           .toList()
@@ -80,7 +80,7 @@ class DiscountModel {
       }
     }
     if (json['only_to'] != null) {
-      final List<int> parse = json['only_to']
+      final List<int>? parse = json['only_to']
           .toString()
           .split(":")
           .toList()

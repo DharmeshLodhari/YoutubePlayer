@@ -219,8 +219,6 @@ extension BasketItemListPayloadGenerator on List<BasketItem> {
         }
 
         final List<Map<String, dynamic>> itemAddedByData = itemAddedBy
-            .where((element) => element != null)
-            .toList()
             .map((e) => <String, dynamic>{
                   "user": e.user?.userName,
                   "quantity": e.quantity
@@ -275,8 +273,6 @@ extension BasketItemListPayloadGenerator on List<BasketItem> {
         }
 
         final List<Map<String, dynamic>> itemAddedByData = itemAddedBy
-            .where((element) => element != null)
-            .toList()
             .map((e) => <String, dynamic>{
                   "user": e.user?.userName,
                   "quantity": e.quantity

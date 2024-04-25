@@ -1,7 +1,7 @@
 import 'dart:ffi';
 
 import 'package:Slydo/data/database_helper.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_conversation.dart';
 
 /// For performing all the db operation related to user's connections
 class ConnectionListManager {

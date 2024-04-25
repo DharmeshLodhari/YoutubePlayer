@@ -1183,7 +1183,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
         openingHour.day = element["day"];
         openingHour.time =
             "${element["starting_hour"]} - ${element["closing_hour"]}";
-        if (userBioDetail!.openingHours == null) {
+        if (userBioDetail!.openingHours.isNotEmpty) {
           userBioDetail!.openingHours = [openingHour];
         } else {
           userBioDetail!.openingHours.add(openingHour);

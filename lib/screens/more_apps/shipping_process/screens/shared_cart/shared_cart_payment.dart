@@ -126,8 +126,9 @@ class _SharedCartPaymentState extends State<SharedCartPayment> {
     );
   }
 
-  _buildFloatingButton() {
+  Widget _buildFloatingButton() {
     if (sharedCartBloc.isUserCartOwner(context)) return _buildPaymentButton();
+    return Container();
   }
 
   Widget _buildAppBar() {

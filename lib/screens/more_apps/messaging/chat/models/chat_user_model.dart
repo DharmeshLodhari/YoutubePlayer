@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_conversation.dart';
 import 'package:crypto/crypto.dart';
 
 class ChatUserModel {

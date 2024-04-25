@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class EventList extends StatefulWidget {
-  CustomerProfile? user;
+  final CustomerProfile? user;
   EventList({@required this.user, Key? key}) : super(key: key);
 
   @override
@@ -22,13 +22,13 @@ class _EventListState extends State<EventList> {
   String? eventNext = "";
   String? eventPrevious = "";
   List<Review> eventList = [];
-  ScrollController _eventScrollController = new ScrollController();
+  final ScrollController _eventScrollController = ScrollController();
 
   bool noEventInList = false;
-  GlobalKey<ScaffoldState> _eventScaffoldKey = GlobalKey<ScaffoldState>();
-  GlobalKey<ScaffoldMessengerState> _eventMessengerScaffoldKey =
+  final GlobalKey<ScaffoldState> _eventScaffoldKey = GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldMessengerState> _eventMessengerScaffoldKey =
       GlobalKey<ScaffoldMessengerState>();
-  RefreshController _eventRefreshController =
+  final RefreshController _eventRefreshController =
       RefreshController(initialRefresh: false);
 
   @override
@@ -47,7 +47,7 @@ class _EventListState extends State<EventList> {
 
   void _onReviewRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         eventCount = 0;
@@ -159,8 +159,9 @@ class _EventListState extends State<EventList> {
         : isEventLoading && eventList.isEmpty
             ? buildLoadingIndicator(isLoading: isEventLoading)
             : ListView.builder(
-                physics: ClampingScrollPhysics(),
-                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 32),
+                physics: const ClampingScrollPhysics(),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
                 controller: _eventScrollController,
                 itemCount: eventList.length + 1,
                 itemBuilder: (BuildContext context, int index) {

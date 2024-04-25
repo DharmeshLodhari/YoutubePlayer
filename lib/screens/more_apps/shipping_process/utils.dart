@@ -22,7 +22,7 @@ Future<List<ShippingAddress>> getAddressListing(
     "addresses": addressIdList,
   };
 
-  if (listNext != null) {
+  if (listNext.isNotEmpty) {
     final Map<String, dynamic>? result = await ShippingProcessAuthService()
         .getAddressListing(listNext, listPrevious, data);
 
@@ -40,7 +40,7 @@ Future<List<SharedCartModel>> getCartList() async {
   String? listNext = "";
   String? listPrevious = "";
   final List<SharedCartModel> cartNameListing = [];
-  if (listNext != null) {
+  if (listNext.isNotEmpty) {
     final Map<String, dynamic>? result =
         await SharedCartAuthService().getSharedCartList(listNext, listPrevious);
 

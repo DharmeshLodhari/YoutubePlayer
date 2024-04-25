@@ -1,5 +1,5 @@
 import 'package:Slydo/data/state_notifier.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_conversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
 import 'package:Slydo/screens/more_apps/music/music_detail_page.dart';
 import 'package:Slydo/utils/util.dart';
@@ -112,9 +112,9 @@ class _AudioTileForChatState extends State<AudioTileForChat> {
                     children: [
                       Container(
                         padding: const EdgeInsets.only(top: 6, left: 4),
-                        child: _audioPlayer!.builderRealtimePlayingInfos(
-                            builder: (context, info) {
-                          if (info == null) {
+                        child: _audioPlayer?.builderRealtimePlayingInfos(
+                            builder: (context, RealtimePlayingInfos info) {
+                          if (info.current == null) {
                             return GestureDetector(
                               child: Icon(
                                 Icons.play_arrow_rounded,
@@ -145,7 +145,7 @@ class _AudioTileForChatState extends State<AudioTileForChat> {
                       ),
                       _audioPlayer!.builderRealtimePlayingInfos(
                           builder: (context, info) {
-                        if (info == null) {
+                            if (info.current == null) {
                           return Expanded(
                             child: Column(
                               children: [

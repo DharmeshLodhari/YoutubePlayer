@@ -202,10 +202,8 @@ class _VerifyResetDeviceOTPScreenState
         UserAuth()
             .verifyOTPForResetDevice(phoneNumber, enteredOTP)
             .then((value) {
-          if (value != null) {
-            Navigator.pop(context);
-            Navigator.pop(context, {"reset-token": value});
-          }
+          Navigator.pop(context);
+          Navigator.pop(context, {"reset-token": value});
         }).catchError((error) {
           Navigator.pop(context);
           debugPrint("ERROR:- $error");

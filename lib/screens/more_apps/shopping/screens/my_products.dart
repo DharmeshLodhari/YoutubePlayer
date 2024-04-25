@@ -101,7 +101,7 @@ class _MyProductsState extends State<MyProducts> {
           width: 12,
         ),
       ),
-      SizedBox(width: 10),
+      const SizedBox(width: 10),
       RoundedBackgroundIcon(
           backgroundColor: Colors.transparent,
           onTap: () {
@@ -110,11 +110,11 @@ class _MyProductsState extends State<MyProducts> {
           icon: SvgPicture.asset(
             "link_icon".toSVG(),
           )),
-      SizedBox(width: 10),
+      const SizedBox(width: 10),
       RoundedBackgroundIcon(
         backgroundColor: Colors.transparent,
         onTap: () {
-          PermissionType? hasPermission =
+          final PermissionType? hasPermission =
               userBloc.user.hasWritePermission(ProtectionPermission.product);
           if (hasPermission == PermissionType.WRITE) {
             Navigator.pushNamed(context, Routes.ADD_PRODUCT,
@@ -132,7 +132,7 @@ class _MyProductsState extends State<MyProducts> {
           width: 12,
         ),
       ),
-      SizedBox(width: 20),
+      const SizedBox(width: 20),
     ];
   }
 

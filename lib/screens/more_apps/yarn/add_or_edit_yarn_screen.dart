@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/routes/route_constants.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/gif_model/GIFModel.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/gif_model/gif_model.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/product_and_service_tile_for_search.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
@@ -55,26 +55,27 @@ import 'models/ask_categories_model.dart';
 import 'models/share_as_yarn_model.dart';
 import 'yarn_dashboard_bloc.dart';
 
+// ignore: must_be_immutable
 class AddOrEditYarn extends StatefulWidget {
-  List<YarnCategories>? askCategories;
   final YarnCategories? askCategory;
-  bool? isYarn = false;
-  Yarn? yarn;
   final String? passedCategory;
   final Function(Yarn)? onUpdateYarn;
   final String? channel;
 
-  List<ShareAsYarnModel>? shareAsYarnModel;
-
   AddOrEditYarn(
       {this.askCategories,
-      this.isYarn,
+      this.isYarn = false,
       this.askCategory,
       this.yarn,
       this.shareAsYarnModel,
       this.onUpdateYarn,
       this.channel,
       this.passedCategory});
+
+  final bool? isYarn;
+  Yarn? yarn;
+  List<YarnCategories>? askCategories;
+  List<ShareAsYarnModel>? shareAsYarnModel;
 
   @override
   State<AddOrEditYarn> createState() => _AddOrEditYarnState();
@@ -2287,7 +2288,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     );
   }
 
-  Widget getResultTile(var result) {
+  Widget getResultTile(dynamic result) {
     if (isProductSearch) {
       if (result is Product) {
         return SearchProductTile(
@@ -2498,8 +2499,8 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     return "";
   }
 
-  buildCreateMediaScreen() {
-    return NavigationUtil.push(context,
+  void buildCreateMediaScreen() {
+    NavigationUtil.push(context,
         screen: CreateMediaScreen(
           imageCount: existingMediaList.length + newMediaList.length,
           addedSelectedMedia: (value) async {

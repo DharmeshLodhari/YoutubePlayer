@@ -41,7 +41,7 @@ class UserAbout {
       data['wallpaper'] = this.wallpaper;
     }
 
-    data['opening_hours'] = this.openingHours?.map((v) => v.toJson()).toList();
+    data['opening_hours'] = this.openingHours.map((v) => v.toJson()).toList();
     data['industry'] = this.industry!.toJson();
     return data;
   }

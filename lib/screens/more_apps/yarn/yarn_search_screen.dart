@@ -62,7 +62,7 @@ class _SearchScreenState extends State<SearchScreen> {
       categoryId = widget.askCategory!.id;
     }
     if (!isLoading) {
-      if (next != null && !isLoading) {
+      if (next.isNotEmpty && !isLoading) {
         isLoading = true;
         if (mounted) setState(() {});
 
@@ -245,14 +245,14 @@ class _SearchScreenState extends State<SearchScreen> {
     );
   }
 
-  Widget _buildSearchBox() {
-    return Row(
-      children: [
-        _buildSearchField(),
-        _buildFilterIconButton(),
-      ],
-    );
-  }
+  // Widget _buildSearchBox() {
+  //   return Row(
+  //     children: [
+  //       _buildSearchField(),
+  //       _buildFilterIconButton(),
+  //     ],
+  //   );
+  // }
 
   Widget _buildSearchField() {
     return TextFormField(
@@ -339,32 +339,32 @@ class _SearchScreenState extends State<SearchScreen> {
     );
   }
 
-  Widget _buildFilterIconButton() {
-    return SizedBox(
-      key: _key,
-      //height: 34,
-      width: 34,
-      child: Card(
-        // color: isPopMenuOpen ? navyBlue : iconBtnGrey,
-        elevation: 0,
-        margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
-        child: IconButton(
-          icon: const Icon(
-            SlydoAppIconNew.filter,
-            color: Colors.black,
-            size: 20,
-          ),
-          onPressed: () {
-            if (menu.isMenuOpen) {
-              menu.closeMenu();
-            } else {
-              menu.openMenu();
-            }
-          },
-        ),
-      ),
-    );
-  }
+  // Widget _buildFilterIconButton() {
+  //   return SizedBox(
+  //     key: _key,
+  //     //height: 34,
+  //     width: 34,
+  //     child: Card(
+  //       // color: isPopMenuOpen ? navyBlue : iconBtnGrey,
+  //       elevation: 0,
+  //       margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
+  //       child: IconButton(
+  //         icon: const Icon(
+  //           SlydoAppIconNew.filter,
+  //           color: Colors.black,
+  //           size: 20,
+  //         ),
+  //         onPressed: () {
+  //           if (menu.isMenuOpen) {
+  //             menu.closeMenu();
+  //           } else {
+  //             menu.openMenu();
+  //           }
+  //         },
+  //       ),
+  //     ),
+  //   );
+  // }
 
   Widget _buildPostList() {
     return Expanded(

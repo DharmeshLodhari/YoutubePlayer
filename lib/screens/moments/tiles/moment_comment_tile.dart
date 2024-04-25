@@ -31,6 +31,7 @@ import '../../more_apps/yarn/widgets/yarn_options.dart';
 import '../../more_apps/yarn/yarn_auth.dart';
 import '../screens/moment_detail/moment_comment.screen.dart';
 
+// ignore: must_be_immutable
 class MomentCommentTile extends StatefulWidget {
   final YarnComment yarnComment;
   final YarnComment? yarnCommentReply;

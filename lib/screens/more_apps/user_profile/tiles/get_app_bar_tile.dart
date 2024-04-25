@@ -5,7 +5,7 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/locator.dart';
 import 'package:Slydo/routes/route_constants.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_conversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/share_in_chat/ShareInChat.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
@@ -42,6 +42,7 @@ import '../../yarn/utils/slydo_yarn_links.dart';
 import '../../yarn/yarn_search_screen.dart';
 import '../screens/user_profile_module_new/utils.dart';
 
+// ignore: must_be_immutable
 class GetAppbarTile extends StatefulWidget {
   final CustomerProfile? searchedUser;
   bool isLoading = true;
@@ -1412,7 +1413,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
           title: AppLocalization.of(context)!.createAPost,
           iconData: Icons.add_circle_outlined,
           onTap: () {
-            PermissionType? hasPermission =
+            final PermissionType? hasPermission =
                 userBloc.user.hasWritePermission(ProtectionPermission.blog);
             if (hasPermission == PermissionType.WRITE) {
               Navigator.pop(context);
@@ -1430,7 +1431,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
           title: "Edit Profile",
           iconData: SlydoAppIcon.edit,
           onTap: () async {
-            PermissionType? hasPermission =
+            final PermissionType? hasPermission =
                 userBloc.user.hasWritePermission(ProtectionPermission.profile);
             if (hasPermission == PermissionType.WRITE) {
               Navigator.pop(context);
@@ -1450,7 +1451,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
           title: "Customize Profile",
           iconData: Icons.dashboard_customize_sharp,
           onTap: () async {
-            PermissionType? hasPermission =
+            final PermissionType? hasPermission =
                 userBloc.user.hasWritePermission(ProtectionPermission.profile);
             if (hasPermission == PermissionType.WRITE) {
               var business = '';
@@ -1491,7 +1492,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
             title: "Manage Business",
             iconData: Icons.dashboard_customize_sharp,
             onTap: () async {
-              PermissionType? hasPermission = userBloc.user
+              final PermissionType? hasPermission = userBloc.user
                   .hasWritePermission(ProtectionPermission.profile);
               if (hasPermission == PermissionType.WRITE) {
                 Navigator.pop(context);

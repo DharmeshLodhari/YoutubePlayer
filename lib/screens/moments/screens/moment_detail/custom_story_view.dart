@@ -510,7 +510,7 @@ class StoryViewShiddoState extends State<StoryViewShiddo>
   }
 
   @override
-  void setState(fn) {
+  void setState(Function() fn) {
     if (mounted) {
       super.setState(fn);
     }
@@ -878,7 +878,7 @@ class ContrastHelper {
     return a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722;
   }
 
-  static double contrast(rgb1, rgb2) {
+  static double contrast(List<int> rgb1, List<int> rgb2) {
     return luminance(rgb2[0], rgb2[1], rgb2[2]) /
         luminance(rgb1[0], rgb1[1], rgb1[2]);
   }

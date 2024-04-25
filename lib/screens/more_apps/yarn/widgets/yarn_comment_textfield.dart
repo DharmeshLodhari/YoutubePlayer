@@ -66,7 +66,7 @@ class YarnCommentTextField extends StatefulWidget {
   final bool? enableAdult;
   final bool? viewerAdvice;
   final String? ageRating;
-  List<ShareAsYarnModel>? shareAsYarnModel;
+  late final List<ShareAsYarnModel>? shareAsYarnModel;
   final Function(bool?) onTapEnableComment;
   final Function(int?) onTapAgeRestriction;
   final Function(bool?) onTapEnablePayment;
@@ -164,7 +164,7 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
   GlobalKey searchItemTextFormField = GlobalKey();
   int bottomSheetSearchIndex = 0;
   bool noSearchedItem = false;
-  var productServicePreview;
+  String? productServicePreview;
   Product? productMode;
   Service? serviceMode;
   CustomerProfile? customerProfileMode;

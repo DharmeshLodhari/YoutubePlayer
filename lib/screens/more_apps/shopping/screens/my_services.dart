@@ -8,7 +8,6 @@ import 'package:provider/provider.dart';
 import '../../../../data/state_notifier.dart';
 import '../../../../locale/app_localization.dart';
 import '../../../../routes/route_constants.dart';
-import '../../../../utils/colors.dart';
 import '../../../../widget/rounded_background_icon.dart';
 import '../../user_profile/models/user.dart';
 import '../../user_profile/screens/user_profile_module_new/user_service_list.dart';
@@ -104,7 +103,7 @@ class _MyServicesState extends State<MyServices> {
       RoundedBackgroundIcon(
         backgroundColor: Colors.transparent,
         onTap: () {
-          PermissionType? hasPermission =
+          final PermissionType? hasPermission =
               userBloc.user.hasWritePermission(ProtectionPermission.services);
           if (hasPermission == PermissionType.WRITE) {
             Navigator.pushNamed(context, Routes.ADD_SERVICE);

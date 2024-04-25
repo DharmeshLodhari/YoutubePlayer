@@ -524,9 +524,6 @@ class _CreateMediaScreenState extends State<CreateMediaScreen> {
           description.lensDirection == CameraLensDirection.front);
     }
 
-    if (newDescription != null) {
-      debugPrint('NEW DESC :: $newDescription');
-    }
     _initCameraController(newCameraDescription: newDescription);
   }
 

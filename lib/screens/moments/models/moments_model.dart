@@ -230,6 +230,7 @@ class MomentsModel {
   }
 }
 
+// ignore: must_be_immutable
 class SearchMomentModel extends Equatable {
   String? id;
   String? text;

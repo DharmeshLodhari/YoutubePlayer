@@ -8,13 +8,14 @@ import 'package:flutter/material.dart';
 class ReviewAuth extends AuthService {
   // Fetch User Review Details
   Future<Map<String, dynamic>> fetchUserReviews({String? userName}) async {
-    String url = AppConfig.baseUrl + "/api/v1/social/review/users/$userName/";
-    var headers = await getAuthHeaders();
-    var response = await httpGet(url, headers: headers);
+    final String url =
+        AppConfig.baseUrl + "/api/v1/social/review/users/$userName/";
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers);
     debugPrint(
         "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
     if (response.statusCode == 200) {
-      Map<String, dynamic> jsonData = jsonDecode(response.body);
+      final Map<String, dynamic> jsonData = jsonDecode(response.body);
       return jsonData;
     } else if (response.statusCode == 404) {
       return jsonDecode(response.body);
@@ -24,11 +25,12 @@ class ReviewAuth extends AuthService {
 
   // Write User Reviews
   Future<bool> addUserReview(String userName, Map<String, dynamic> data) async {
-    String url = AppConfig.baseUrl + "/api/v1/social/review/users/$userName/";
-    Map<String, String> headers = await getAuthHeaders();
-    var _data = jsonEncode(data);
+    final String url =
+        AppConfig.baseUrl + "/api/v1/social/review/users/$userName/";
+    final Map<String, String> headers = await getAuthHeaders();
+    final _data = jsonEncode(data);
     debugPrint("Data:- $_data");
-    var response = await httpPost(url, body: _data, headers: headers);
+    final response = await httpPost(url, body: _data, headers: headers);
     debugPrint(
         "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
 
@@ -36,7 +38,7 @@ class ReviewAuth extends AuthService {
       return true;
     } else {
       if (response.statusCode != 500) {
-        var jsonData = jsonDecode(response.body);
+        final jsonData = jsonDecode(response.body);
         debugPrint(
             "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
         return Future.error(jsonData is Map
@@ -52,20 +54,21 @@ class ReviewAuth extends AuthService {
   // Write User Reviews
   Future<Review> updateUserReview(
       Review review, Map<String, dynamic> data) async {
-    String url = AppConfig.baseUrl + "/api/v1/social/reviews/${review.id}/";
-    Map<String, String> headers = await getAuthHeaders();
-    var _data = jsonEncode(data);
-    var response = await httpPatch(url, body: _data, headers: headers);
+    final String url =
+        AppConfig.baseUrl + "/api/v1/social/reviews/${review.id}/";
+    final Map<String, String> headers = await getAuthHeaders();
+    final _data = jsonEncode(data);
+    final response = await httpPatch(url, body: _data, headers: headers);
     debugPrint(
         "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      Review review = Review.fromJson(jsonDecode(response.body));
+      final Review review = Review.fromJson(jsonDecode(response.body));
 
       return review;
     } else {
       if (response.statusCode != 500) {
-        var jsonData = jsonDecode(response.body);
+        final jsonData = jsonDecode(response.body);
         debugPrint(
             "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
         return Future.error(jsonData is Map
@@ -80,20 +83,21 @@ class ReviewAuth extends AuthService {
 
   Future<Review> updateProductReview(
       Review review, Map<String, dynamic> data) async {
-    String url = AppConfig.baseUrl + "/api/v1/social/reviews/${review.id}/";
-    Map<String, String> headers = await getAuthHeaders();
-    var _data = jsonEncode(data);
-    var response = await httpPatch(url, body: _data, headers: headers);
+    final String url =
+        AppConfig.baseUrl + "/api/v1/social/reviews/${review.id}/";
+    final Map<String, String> headers = await getAuthHeaders();
+    final _data = jsonEncode(data);
+    final response = await httpPatch(url, body: _data, headers: headers);
     debugPrint(
         "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      Review review = Review.fromJson(jsonDecode(response.body));
+      final Review review = Review.fromJson(jsonDecode(response.body));
 
       return review;
     } else {
       if (response.statusCode != 500) {
-        var jsonData = jsonDecode(response.body);
+        final jsonData = jsonDecode(response.body);
         debugPrint(
             "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
         return Future.error(jsonData is Map
@@ -108,20 +112,21 @@ class ReviewAuth extends AuthService {
 
   Future<Review> updateServiceReview(
       Review review, Map<String, dynamic> data) async {
-    String url = AppConfig.baseUrl + "/api/v1/social/reviews/${review.id}/";
-    Map<String, String> headers = await getAuthHeaders();
-    var _data = jsonEncode(data);
-    var response = await httpPatch(url, body: _data, headers: headers);
+    final String url =
+        AppConfig.baseUrl + "/api/v1/social/reviews/${review.id}/";
+    final Map<String, String> headers = await getAuthHeaders();
+    final _data = jsonEncode(data);
+    final response = await httpPatch(url, body: _data, headers: headers);
     debugPrint(
         "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      Review review = Review.fromJson(jsonDecode(response.body));
+      final Review review = Review.fromJson(jsonDecode(response.body));
 
       return review;
     } else {
       if (response.statusCode != 500) {
-        var jsonData = jsonDecode(response.body);
+        final jsonData = jsonDecode(response.body);
         debugPrint(
             "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
         return Future.error(jsonData is Map
@@ -135,20 +140,20 @@ class ReviewAuth extends AuthService {
   }
 
   Future<Review> likeReview(Review review) async {
-    String url =
+    final String url =
         AppConfig.baseUrl + "/api/v1/social/reviews/like/${review.id}/";
-    Map<String, String> headers = await getAuthHeaders();
-    var response = await httpPost(url, headers: headers);
+    final Map<String, String> headers = await getAuthHeaders();
+    final response = await httpPost(url, headers: headers);
 
     debugPrint(
         "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
     if (response.statusCode == 200 || response.statusCode == 201) {
-      Review review = Review.fromJson(jsonDecode(response.body));
+      final Review review = Review.fromJson(jsonDecode(response.body));
 
       return review;
     } else {
       if (response.statusCode != 500) {
-        var jsonData = jsonDecode(response.body);
+        final jsonData = jsonDecode(response.body);
         debugPrint(
             "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
         return Future.error(jsonData is Map
@@ -162,20 +167,20 @@ class ReviewAuth extends AuthService {
   }
 
   Future<Review> dislikeReview(Review review) async {
-    String url =
+    final String url =
         AppConfig.baseUrl + "/api/v1/social/reviews/dislike/${review.id}/";
-    Map<String, String> headers = await getAuthHeaders();
-    var response = await httpPost(url, headers: headers);
+    final Map<String, String> headers = await getAuthHeaders();
+    final response = await httpPost(url, headers: headers);
 
     debugPrint(
         "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
     if (response.statusCode == 200 || response.statusCode == 201) {
-      Review review = Review.fromJson(jsonDecode(response.body));
+      final Review review = Review.fromJson(jsonDecode(response.body));
 
       return review;
     } else {
       if (response.statusCode != 500) {
-        var jsonData = jsonDecode(response.body);
+        final jsonData = jsonDecode(response.body);
         debugPrint(
             "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
         return Future.error(jsonData is Map
@@ -190,11 +195,12 @@ class ReviewAuth extends AuthService {
 
   // Write Product Reviews
   Future<bool> addProductReview(String id, Map<String, dynamic> data) async {
-    String url = AppConfig.baseUrl + "/api/v1/social/review/products/$id/";
-    Map<String, String> headers = await getAuthHeaders();
-    var _data = jsonEncode(data);
+    final String url =
+        AppConfig.baseUrl + "/api/v1/social/review/products/$id/";
+    final Map<String, String> headers = await getAuthHeaders();
+    final _data = jsonEncode(data);
     debugPrint("Data:- $_data");
-    var response = await httpPost(url, body: _data, headers: headers);
+    final response = await httpPost(url, body: _data, headers: headers);
     debugPrint(
         "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
 
@@ -202,7 +208,7 @@ class ReviewAuth extends AuthService {
       return true;
     } else {
       if (response.statusCode != 500) {
-        var jsonData = jsonDecode(response.body);
+        final jsonData = jsonDecode(response.body);
         debugPrint(
             "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
         return Future.error(jsonData is Map
@@ -217,11 +223,12 @@ class ReviewAuth extends AuthService {
 
   // Write Service Reviews
   Future<bool> addServiceReview(String id, Map<String, dynamic> data) async {
-    String url = AppConfig.baseUrl + "/api/v1/social/review/services/$id/";
-    Map<String, String> headers = await getAuthHeaders();
-    var _data = jsonEncode(data);
+    final String url =
+        AppConfig.baseUrl + "/api/v1/social/review/services/$id/";
+    final Map<String, String> headers = await getAuthHeaders();
+    final _data = jsonEncode(data);
     debugPrint("Data:- $_data");
-    var response = await httpPost(url, body: _data, headers: headers);
+    final response = await httpPost(url, body: _data, headers: headers);
     debugPrint(
         "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
 
@@ -229,7 +236,7 @@ class ReviewAuth extends AuthService {
       return true;
     } else {
       if (response.statusCode != 500) {
-        var jsonData = jsonDecode(response.body);
+        final jsonData = jsonDecode(response.body);
         debugPrint(
             "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
         return Future.error(jsonData is Map
@@ -244,14 +251,14 @@ class ReviewAuth extends AuthService {
 
   // Fetch Product Reviews
   Future<Map<String, dynamic>> fetchProductReviews({String? productId}) async {
-    String url =
+    final String url =
         AppConfig.baseUrl + "/api/v1/social/review/products/$productId/";
-    var headers = await getAuthHeaders();
-    var response = await httpGet(url, headers: headers);
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers);
     debugPrint(
         "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
     if (response.statusCode == 200 || response.statusCode == 404) {
-      Map<String, dynamic> jsonData = jsonDecode(response.body);
+      final Map<String, dynamic> jsonData = jsonDecode(response.body);
 
       return jsonData;
     }
@@ -262,15 +269,15 @@ class ReviewAuth extends AuthService {
 
   Future<bool> checkIfCanReviewProductOrService(
       Map<String, dynamic> data) async {
-    String url = AppConfig.baseUrl +
+    final String url = AppConfig.baseUrl +
         "/api/v1/social/reviews/check-if-user-can-review-product-or-service/";
 
-    var headers = await getAuthHeaders();
-    var _data = jsonEncode(data);
+    final headers = await getAuthHeaders();
+    final _data = jsonEncode(data);
     debugPrint('CAN REVIEW URL :: ${_data}');
 
-    var response = await httpPost(url, headers: headers, body: _data);
-    var jsonData = jsonDecode(response.body);
+    final response = await httpPost(url, headers: headers, body: _data);
+    final jsonData = jsonDecode(response.body);
     debugPrint('CAN REVIEW :: ${response.statusCode}');
     debugPrint('CAN REVIEW :: ${response.body}');
     if (response.statusCode == 200 && jsonData['can_review'] == true) {
@@ -281,14 +288,14 @@ class ReviewAuth extends AuthService {
 
   // Fetch Service Reviews
   Future<Map<String, dynamic>> fetchServiceReviews({String? serviceId}) async {
-    String url =
+    final String url =
         AppConfig.baseUrl + "/api/v1/social/review/services/serviceId/";
-    var headers = await getAuthHeaders();
-    var response = await httpGet(url, headers: headers);
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers);
     debugPrint(
         "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
     if (response.statusCode == 200) {
-      Map<String, dynamic> jsonData = jsonDecode(response.body);
+      final Map<String, dynamic> jsonData = jsonDecode(response.body);
       return jsonData;
     }
     debugPrint(

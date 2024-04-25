@@ -21,7 +21,7 @@ import '../../models/store.dart';
 import '../../shopping_auth.dart';
 
 class AddOnOptionList extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
   AddOnOptionList({this.arguments, Key? key}) : super(key: key);
 
@@ -80,7 +80,7 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
           isLoading = true;
         });
       }
-      Map<String, dynamic>? result =
+      final Map<String, dynamic>? result =
           await _auth.getAddOnOptionsList(productId!, next, previous);
       if (result == null) {
         isLoading = false;
@@ -90,7 +90,7 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
       count = result['count'];
       next = result['next'];
       previous = result['previous'];
-      var tempList = result['results'];
+      final tempList = result['results'];
 
       addOnOptionList.addAll(tempList);
 
@@ -111,7 +111,7 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
         _scaffoldMessengerKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 500),
         ));
       }
     }
@@ -121,7 +121,7 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
   void _onRefresh() async {
     //check network connectivity and if true then refresh the list
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         count = 0;
@@ -186,7 +186,7 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
           size: 24,
         ),
         onPressed: () {
-          List<AddOnOption> addOnOption = addOnOptionList
+          final List<AddOnOption> addOnOption = addOnOptionList
               .where((addOnOption) => addOnOption.isSelected == true)
               .toList();
           Navigator.pop(context, addOnOption);
@@ -200,7 +200,7 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
       ),
       actions: <Widget>[
         addOptionBtn(),
-        SizedBox(
+        const SizedBox(
           width: 16,
         ),
       ],
@@ -239,52 +239,52 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
   Widget _buildAddOnOptionList() {
     return Stack(
       children: [
-        noItemInList
-            ? NoItemInList(
-                title: AppLocalization.of(context)!.noAddOnYet,
-                msg: AppLocalization.of(context)!.noAddOnYetSub,
-              )
-            : isLoading && addOnOptionList.isEmpty
-                ? buildLoadingIndicator(isLoading: isLoading)
-                : ListView.builder(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    //+1 for progressbar
-                    itemCount: addOnOptionList.length + 1,
-                    itemBuilder: (BuildContext context, int index) {
-                      if (index == addOnOptionList.length) {
-                        return buildJumpingLoadingIndicator(
-                            isLoading: isLoading);
-                      } else {
-                        return _getSlidableWithLists(
-                            context,
-                            GestureDetector(
-                              onTap: () async {
-                                // toggleAddOnCheckedState(index);
-                                final data = await Navigator.of(context)
-                                    .pushNamed(
-                                        Routes.PRODUCT_ADD_ON_OPTION_UPDATE,
-                                        arguments: {
-                                      'addOnOption': addOnOptionList[index],
-                                      'productId': productId,
-                                    });
+        if (noItemInList)
+          NoItemInList(
+            title: AppLocalization.of(context)!.noAddOnYet,
+            msg: AppLocalization.of(context)!.noAddOnYetSub,
+          )
+        else
+          isLoading && addOnOptionList.isEmpty
+              ? buildLoadingIndicator(isLoading: isLoading)
+              : ListView.builder(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  //+1 for progressbar
+                  itemCount: addOnOptionList.length + 1,
+                  itemBuilder: (BuildContext context, int index) {
+                    if (index == addOnOptionList.length) {
+                      return buildJumpingLoadingIndicator(isLoading: isLoading);
+                    } else {
+                      return _getSlidableWithLists(
+                          context,
+                          GestureDetector(
+                            onTap: () async {
+                              // toggleAddOnCheckedState(index);
+                              final data = await Navigator.of(context)
+                                  .pushNamed(
+                                      Routes.PRODUCT_ADD_ON_OPTION_UPDATE,
+                                      arguments: {
+                                    'addOnOption': addOnOptionList[index],
+                                    'productId': productId,
+                                  });
 
-                                // Handle the result (map) received from PRODUCT_ADD_ON_OPTION_UPDATE
-                                if (data != null && data is AddOnOption) {
-                                  //save the add-on option details for later use
-                                  // _onRefresh();
-                                  updateItemById(data.id!, data);
-                                  if (mounted) setState(() {});
-                                }
-                              },
-                              child: addOnOptionTile(
-                                  addOnOption: addOnOptionList[index],
-                                  index: index),
-                            ),
-                            addOnOptionList[index]);
-                      }
-                    },
-                    controller: _scrollController,
-                  ),
+                              // Handle the result (map) received from PRODUCT_ADD_ON_OPTION_UPDATE
+                              if (data != null && data is AddOnOption) {
+                                //save the add-on option details for later use
+                                // _onRefresh();
+                                updateItemById(data.id!, data);
+                                if (mounted) setState(() {});
+                              }
+                            },
+                            child: addOnOptionTile(
+                                addOnOption: addOnOptionList[index],
+                                index: index),
+                          ),
+                          addOnOptionList[index]);
+                    }
+                  },
+                  controller: _scrollController,
+                ),
         Positioned(
           bottom: 25, // Adjust the distance from the bottom as needed
           right: 25,
@@ -299,11 +299,11 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
   Widget addOnOptionTile({required AddOnOption addOnOption, int? index}) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
       shadowColor: boxShadowTwo,
       elevation: 0,
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 10),
+        padding: const EdgeInsets.symmetric(vertical: 10),
         decoration: decorateBox(),
         child: ListTile(
           // dense: variant.isDefault! ? true : false,
@@ -321,7 +321,7 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
                   fontFamily: "Inter",
                 ),
               ),
-              SizedBox(height: 10.0),
+              const SizedBox(height: 10.0),
               Text(
                 'Created: ${addOnOption.createdAt} ',
                 maxLines: 1,
@@ -408,7 +408,7 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
   }
 
   Widget loadAllCheckedAddOn() {
-    List<AddOnOption> addOnOption = addOnOptionList
+    final List<AddOnOption> addOnOption = addOnOptionList
         .where((addOnOption) => addOnOption.isSelected == true)
         .toList();
 
@@ -422,7 +422,7 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
 
     url = addOnOption.picture;
 
-    String imageUrl = url!.replaceAll('https//', 'https://');
+    final String imageUrl = url!.replaceAll('https//', 'https://');
     if (url == "") {
       return CircleAvatar(
         backgroundColor: navyBlue,
@@ -455,10 +455,10 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
     return Slidable(
       controller: _slideController,
       direction: Axis.horizontal,
-      actionPane: SlidableBehindActionPane(),
+      actionPane: const SlidableBehindActionPane(),
       actionExtentRatio: 0.25,
-      child: VerticalListItem(bankAccountTile),
       actions: listActionSlideActions(addOnOption: addOnOption),
+      child: VerticalListItem(bankAccountTile),
       // secondaryActions: listSecondaryActions(addOnOption: addOnOption),
     );
   }

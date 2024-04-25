@@ -9,7 +9,7 @@ import '../../../../../data/state_notifier.dart';
 import '../../../../../routes/route_constants.dart';
 import '../../../../../utils/util.dart';
 import '../../../business/models/Invoice.dart';
-import '../models/ChatConversation.dart';
+import '../models/chat_conversation.dart';
 import '../utils.dart';
 
 class PostTileForInvoice extends StatefulWidget {

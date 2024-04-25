@@ -248,9 +248,9 @@ class SlydoAppIcon {
       IconData(0xe86b, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData toilet =
       IconData(0xe86c, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData send_message =
+  static const IconData sendMessage =
       IconData(0xe86d, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData send_message_2 =
+  static const IconData sendMessage2 =
       IconData(0xe86e, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData mic =
       IconData(0xe86f, fontFamily: _kFontFam, fontPackage: _kFontPkg);

@@ -29,9 +29,9 @@ import '../../yarn/yarn_auth.dart';
 import '../../yarn/yarn_dashboard_bloc.dart';
 
 class PostTile extends StatefulWidget {
-  UserPost? post;
-  bool? isNavigable;
-  Function onDeleteBlog;
+  late final UserPost? post;
+  final bool? isNavigable;
+  final Function onDeleteBlog;
   final bool showAuthorDetails;
   final bool disableClick;
 
@@ -115,7 +115,7 @@ class _PostTileState extends State<PostTile> {
                 Stack(
                   children: [
                     ClipRRect(
-                      borderRadius: BorderRadius.only(
+                      borderRadius: const BorderRadius.only(
                         topLeft: Radius.circular(10),
                         topRight: Radius.circular(10),
                       ),
@@ -136,68 +136,69 @@ class _PostTileState extends State<PostTile> {
                               imageUrl: widget.post?.image ?? "",
                             ),
                     ),
-                    widget.showAuthorDetails
-                        ? Positioned(
-                            left: 10,
-                            bottom: 10,
-                            child: InkWell(
-                              onTap: () {
-                                Navigator.pushNamed(
-                                    context, Routes.USER_PROFILE, arguments: {
-                                  "searchedUserName":
-                                      widget.post!.authorUsername
-                                });
-                              },
-                              child: Row(
-                                children: [
-                                  SizedBox(
-                                    width: 25,
-                                    height: 25,
-                                    child: userImageUserInitialsPic(
-                                        widget.post!.authorAvatar!,
-                                        widget.post!.authorName!,
-                                        15,
-                                        25),
-                                  ),
-                                  SizedBox(width: 8),
-                                  userNameWithVerifiedIcon(
-                                    name: widget.post!.authorName!,
-                                    isVerified: false,
-                                    textStyle: TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 16,
-                                      color: Colors.white,
-                                      shadows: [
-                                        Shadow(
-                                          blurRadius: 2.0,
-                                          color: blackFont,
-                                          offset: Offset(0.0, 0),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
+                    if (widget.showAuthorDetails)
+                      Positioned(
+                        left: 10,
+                        bottom: 10,
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.pushNamed(
+                                context, Routes.USER_PROFILE, arguments: {
+                              "searchedUserName": widget.post!.authorUsername
+                            });
+                          },
+                          child: Row(
+                            children: [
+                              SizedBox(
+                                width: 25,
+                                height: 25,
+                                child: userImageUserInitialsPic(
+                                    widget.post!.authorAvatar!,
+                                    widget.post!.authorName!,
+                                    15,
+                                    25),
                               ),
-                            ),
-                          )
-                        : SizedBox.shrink(),
-                    widget.post!.isPublished!
-                        ? SizedBox.shrink()
-                        : Positioned(
-                            left: 10,
-                            top: 10,
-                            child: CustomChip(
-                              textColor: blackFont,
-                              color: starYellow,
-                              text: 'Unpublished',
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 4, vertical: 4),
-                            ),
+                              const SizedBox(width: 8),
+                              userNameWithVerifiedIcon(
+                                name: widget.post!.authorName!,
+                                isVerified: false,
+                                textStyle: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 16,
+                                  color: Colors.white,
+                                  shadows: [
+                                    Shadow(
+                                      blurRadius: 2.0,
+                                      color: blackFont,
+                                      offset: const Offset(0.0, 0),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
                           ),
+                        ),
+                      )
+                    else
+                      const SizedBox.shrink(),
+                    if (widget.post!.isPublished!)
+                      const SizedBox.shrink()
+                    else
+                      Positioned(
+                        left: 10,
+                        top: 10,
+                        child: CustomChip(
+                          textColor: blackFont,
+                          color: starYellow,
+                          text: 'Unpublished',
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 4, vertical: 4),
+                        ),
+                      ),
                   ],
                 ),
                 Container(
-                  padding: EdgeInsets.only(left: 15, top: 16, bottom: 16),
+                  padding: const EdgeInsets.only(left: 15, top: 16, bottom: 16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
@@ -219,14 +220,14 @@ class _PostTileState extends State<PostTile> {
                           ),
                           InkWell(
                             onTap: () => showUserProfileActionsSheet(),
-                            child: Padding(
-                              padding: const EdgeInsets.all(6.0),
+                            child: const Padding(
+                              padding: EdgeInsets.all(6.0),
                               child: Icon(SlydoAppIcon.menu, size: 16),
                             ),
                           ),
                         ],
                       ),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       Text(
                         messageDecoderWithEmoji(widget.post?.tagLine) ?? "",
                         style: TextStyle(
@@ -238,7 +239,7 @@ class _PostTileState extends State<PostTile> {
                         softWrap: false,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       Row(
                         children: [
                           Row(
@@ -249,7 +250,7 @@ class _PostTileState extends State<PostTile> {
                                 size: 16,
                                 color: blackFont,
                               ),
-                              SizedBox(width: 6),
+                              const SizedBox(width: 6),
                               Text(
                                 getFormattedViewCount(
                                   noOfViews: widget.post?.views != null
@@ -265,18 +266,18 @@ class _PostTileState extends State<PostTile> {
                               ),
                             ],
                           ),
-                          SizedBox(width: 16),
+                          const SizedBox(width: 16),
                           _buildLikeUnLikeReportTile(),
-                          Spacer(),
+                          const Spacer(),
                           CustomChip(
                             color: greyBorderColor,
                             textColor: blackFont,
                             text: widget.post!.readTime == 0
                                 ? '1 min read'
                                 : '${widget.post!.readTime} min read',
-                            padding: EdgeInsets.all(4),
+                            padding: const EdgeInsets.all(4),
                           ),
-                          SizedBox(width: 8),
+                          const SizedBox(width: 8),
                         ],
                       )
                     ],
@@ -319,7 +320,7 @@ class _PostTileState extends State<PostTile> {
                   Stack(
                     children: [
                       ClipRRect(
-                        borderRadius: BorderRadius.only(
+                        borderRadius: const BorderRadius.only(
                           topLeft: Radius.circular(10),
                           topRight: Radius.circular(10),
                         ),
@@ -340,68 +341,70 @@ class _PostTileState extends State<PostTile> {
                                 imageUrl: widget.post?.image ?? "",
                               ),
                       ),
-                      widget.showAuthorDetails
-                          ? Positioned(
-                              left: 10,
-                              bottom: 10,
-                              child: InkWell(
-                                onTap: () {
-                                  Navigator.pushNamed(
-                                      context, Routes.USER_PROFILE, arguments: {
-                                    "searchedUserName":
-                                        widget.post!.authorUsername
-                                  });
-                                },
-                                child: Row(
-                                  children: [
-                                    SizedBox(
-                                      width: 25,
-                                      height: 25,
-                                      child: userImageUserInitialsPic(
-                                          widget.post!.authorAvatar!,
-                                          widget.post!.authorName!,
-                                          15,
-                                          25),
-                                    ),
-                                    SizedBox(width: 8),
-                                    userNameWithVerifiedIcon(
-                                      name: widget.post!.authorName!,
-                                      isVerified: false,
-                                      textStyle: TextStyle(
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: 16,
-                                        color: Colors.white,
-                                        shadows: [
-                                          Shadow(
-                                            blurRadius: 2.0,
-                                            color: blackFont,
-                                            offset: Offset(0.0, 0),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
+                      if (widget.showAuthorDetails)
+                        Positioned(
+                          left: 10,
+                          bottom: 10,
+                          child: InkWell(
+                            onTap: () {
+                              Navigator.pushNamed(
+                                  context, Routes.USER_PROFILE, arguments: {
+                                "searchedUserName": widget.post!.authorUsername
+                              });
+                            },
+                            child: Row(
+                              children: [
+                                SizedBox(
+                                  width: 25,
+                                  height: 25,
+                                  child: userImageUserInitialsPic(
+                                      widget.post!.authorAvatar!,
+                                      widget.post!.authorName!,
+                                      15,
+                                      25),
                                 ),
-                              ),
-                            )
-                          : SizedBox.shrink(),
-                      widget.post!.isPublished!
-                          ? SizedBox.shrink()
-                          : Positioned(
-                              left: 10,
-                              top: 10,
-                              child: CustomChip(
-                                textColor: blackFont,
-                                color: starYellow,
-                                text: 'Unpublished',
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 4, vertical: 4),
-                              ),
+                                const SizedBox(width: 8),
+                                userNameWithVerifiedIcon(
+                                  name: widget.post!.authorName!,
+                                  isVerified: false,
+                                  textStyle: TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 16,
+                                    color: Colors.white,
+                                    shadows: [
+                                      Shadow(
+                                        blurRadius: 2.0,
+                                        color: blackFont,
+                                        offset: const Offset(0.0, 0),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
                             ),
+                          ),
+                        )
+                      else
+                        const SizedBox.shrink(),
+                      if (widget.post!.isPublished!)
+                        const SizedBox.shrink()
+                      else
+                        Positioned(
+                          left: 10,
+                          top: 10,
+                          child: CustomChip(
+                            textColor: blackFont,
+                            color: starYellow,
+                            text: 'Unpublished',
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 4, vertical: 4),
+                          ),
+                        ),
                     ],
                   ),
                   Container(
-                    padding: EdgeInsets.only(left: 15, top: 16, bottom: 16),
+                    padding:
+                        const EdgeInsets.only(left: 15, top: 16, bottom: 16),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
@@ -424,14 +427,14 @@ class _PostTileState extends State<PostTile> {
                             ),
                             InkWell(
                               onTap: () => showUserProfileActionsSheet(),
-                              child: Padding(
-                                padding: const EdgeInsets.all(6.0),
+                              child: const Padding(
+                                padding: EdgeInsets.all(6.0),
                                 child: Icon(SlydoAppIcon.menu, size: 16),
                               ),
                             ),
                           ],
                         ),
-                        SizedBox(height: 8),
+                        const SizedBox(height: 8),
                         Text(
                           messageDecoderWithEmoji(widget.post?.tagLine) ?? "",
                           style: TextStyle(
@@ -443,7 +446,7 @@ class _PostTileState extends State<PostTile> {
                           softWrap: false,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        SizedBox(height: 10),
+                        const SizedBox(height: 10),
                         Row(
                           children: [
                             Row(
@@ -454,7 +457,7 @@ class _PostTileState extends State<PostTile> {
                                   size: 16,
                                   color: blackFont,
                                 ),
-                                SizedBox(width: 6),
+                                const SizedBox(width: 6),
                                 Text(
                                   getFormattedViewCount(
                                     noOfViews: widget.post?.views != null
@@ -470,18 +473,18 @@ class _PostTileState extends State<PostTile> {
                                 ),
                               ],
                             ),
-                            SizedBox(width: 16),
+                            const SizedBox(width: 16),
                             _buildLikeUnLikeReportTile(),
-                            Spacer(),
+                            const Spacer(),
                             CustomChip(
                               color: greyBorderColor,
                               textColor: blackFont,
                               text: widget.post!.readTime == 0
                                   ? '1 min read'
                                   : '${widget.post!.readTime} min read',
-                              padding: EdgeInsets.all(4),
+                              padding: const EdgeInsets.all(4),
                             ),
-                            SizedBox(width: 8),
+                            const SizedBox(width: 8),
                           ],
                         )
                       ],
@@ -502,7 +505,7 @@ class _PostTileState extends State<PostTile> {
         context: context,
         builder: (BuildContext context) {
           return Card(
-              shape: RoundedRectangleBorder(
+              shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(20),
                     topRight: Radius.circular(20)),
@@ -510,7 +513,8 @@ class _PostTileState extends State<PostTile> {
               color: Colors.white,
               margin: EdgeInsets.zero,
               child: Container(
-                padding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: generateBottomSheetItem(),
@@ -520,7 +524,7 @@ class _PostTileState extends State<PostTile> {
   }
 
   List<Widget> generateBottomSheetItem() {
-    List<Widget> list = [];
+    final List<Widget> list = [];
 
     list.add(
       bottomSheetItem(
@@ -528,7 +532,7 @@ class _PostTileState extends State<PostTile> {
         iconData: SlydoAppIcon.share,
         onTap: () {
           Navigator.pop(context);
-          var shareBody =
+          final shareBody =
               "https://slydo.co/store/${widget.post!.authorUsername}/blogs/${widget.post!.id}";
           Share.share(shareBody, subject: "${widget.post!.authorName}");
         },
@@ -625,7 +629,8 @@ class _PostTileState extends State<PostTile> {
                 ..attachment = {
                   "blog": widget.post?.toJson().cast<String, dynamic>() ?? {}
                 };
-              bool data = await YarnAuth().addYarnAndQuestion(params, '', '');
+              final bool data =
+                  await YarnAuth().addYarnAndQuestion(params, '', '');
               if (data) {
                 showToast(message: "Shared in Yarn successfully");
               }
@@ -634,7 +639,7 @@ class _PostTileState extends State<PostTile> {
 
   Widget _buildLikeUnLikeReportTile() {
     if (!widget.post!.enableLike!) {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     }
 
     return Row(
@@ -643,7 +648,7 @@ class _PostTileState extends State<PostTile> {
         Row(
           children: [
             _buildReviewLike(),
-            SizedBox(width: 16),
+            const SizedBox(width: 16),
             _buildPostUnLike(),
           ],
         ),
@@ -670,7 +675,7 @@ class _PostTileState extends State<PostTile> {
               size: 16,
               color: widget.post?.userLiked == true ? navyBlue : blackFont,
             ),
-            SizedBox(width: 4),
+            const SizedBox(width: 4),
             Text(
               widget.post?.likes != null ? widget.post!.likes!.toString() : '0',
               style: TextStyle(
@@ -723,7 +728,7 @@ class _PostTileState extends State<PostTile> {
     // debugPrint('fola user check one::: ${widget.post?.userDisLiked}');
 
     if (widget.post?.userDisLiked == null) {
-      return SizedBox();
+      return const SizedBox();
     }
     return GestureDetector(
       onTap: isAuthor
@@ -739,7 +744,7 @@ class _PostTileState extends State<PostTile> {
               size: 16,
               color: widget.post?.userDisLiked! == true ? mateRed : blackFont,
             ),
-            SizedBox(width: 4),
+            const SizedBox(width: 4),
             Text(
               widget.post?.dislikes != null
                   ? widget.post!.dislikes!.toString()

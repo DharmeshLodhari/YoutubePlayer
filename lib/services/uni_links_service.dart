@@ -17,7 +17,7 @@ class UniLinksService {
 
   static void reset() => _promoId = '';
 
-  static init() async {
+  static void init() async {
     // This is used for cases when: APP is not running and the user clicks on a link.
     try {
       final Uri? uri = await getInitialUri();
@@ -45,15 +45,15 @@ class UniLinksService {
     // String receivedPromoId = params['searchedUserName'] ?? '';
     // debugPrint("receivedPromoId : $receivedPromoId");
     if (uri == null) return;
-    Map<String, String> params = uri.queryParameters;
+    // final Map<String, String> params = uri.queryParameters;
 
     // Split the URL by '/'
-    List<String> parts = uri.toString().split('/');
+    final List<String> parts = uri.toString().split('/');
 
     if (parts[2] == "slydo.co") {
-      SharedPreferences _sharedPreferences =
+      final SharedPreferences _sharedPreferences =
           await SharedPreferences.getInstance();
-      var result = _sharedPreferences.getBool('isLoggedOut');
+      final result = _sharedPreferences.getBool('isLoggedOut');
 
       if (result != null && result == true) return;
 

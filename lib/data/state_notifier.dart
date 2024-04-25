@@ -1,7 +1,7 @@
 import 'package:Slydo/screens/more_apps/business/models/Item.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_user_manager.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/connection_list_manager.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_conversation.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
 import 'package:Slydo/screens/more_apps/taxi/model/DirectionsModal.dart';
 import 'package:Slydo/screens/more_apps/taxi/model/PlaceModal.dart';

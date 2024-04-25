@@ -1128,7 +1128,7 @@ class _DisplayServiceState extends State<DisplayService> {
 }
 
 class FindBusiness extends StatefulWidget {
-  CustomerProfile customerProfile;
+  late final CustomerProfile customerProfile;
   final Function()? onProductRefresh;
   final TileRenderPlace tileRenderPlace;
   final Function(String, bool) callback;

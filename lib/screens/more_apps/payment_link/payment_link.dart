@@ -44,7 +44,7 @@ class _PaymentLinkState extends State<PaymentLink> {
 
   final ScrollController _scrollController = ScrollController();
 
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
   SlidableController? _slideController;
@@ -698,7 +698,7 @@ class _PaymentLinkState extends State<PaymentLink> {
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         next = "";

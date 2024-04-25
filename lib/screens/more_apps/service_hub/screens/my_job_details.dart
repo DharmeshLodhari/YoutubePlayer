@@ -8,7 +8,7 @@ import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_conversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/share_in_chat/ShareInChat.dart';
 import 'package:Slydo/screens/more_apps/service_hub/auth/service_hub_auth.dart';
 import 'package:Slydo/screens/more_apps/service_hub/models/jobs.dart';
@@ -2103,7 +2103,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
     );
   }
 
-  void onPageFunction(index, reason) {
+  void onPageFunction(int index, CarouselPageChangedReason reason) {
     currentIndex = index;
     setState(() {});
   }

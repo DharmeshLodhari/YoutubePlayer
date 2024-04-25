@@ -32,7 +32,6 @@ class _VirtualAccountDetailState extends State<VirtualAccountDetail> {
   bool isLoading = false;
   bool isAccountExist = false;
   bool isKYCInProcess = false;
-  String? _selectedTier;
   String? _currentTier;
 
   VirtualAccount? virtualAccount;
@@ -69,11 +68,11 @@ class _VirtualAccountDetailState extends State<VirtualAccountDetail> {
     _currentTier = virtualAccount?.accountTier?.tierType;
 
     debugPrint("CURRENT TIER => $_currentTier");
-    if (_currentTier == "1") {
-      _selectedTier = "Tier 2";
-    } else if (_currentTier == "2") {
-      _selectedTier = "Tier 3";
-    }
+    // if (_currentTier == "1") {
+    //   _selectedTier = "Tier 2";
+    // } else if (_currentTier == "2") {
+    //   _selectedTier = "Tier 3";
+    // }
 
     /// TODO: REMOVE THIS COMMENT AND LINES WHEN IMPLEMENTATION DONE FOR KYC
     // isKYCInProcess = true;

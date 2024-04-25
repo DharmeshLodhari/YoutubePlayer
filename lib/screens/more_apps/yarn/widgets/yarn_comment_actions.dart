@@ -17,7 +17,7 @@ import "package:uuid/uuid.dart";
 import '../../../../data/state_notifier.dart';
 import '../../../../routes/route_constants.dart';
 import '../../../../utils/util.dart';
-import '../../messaging/chat/models/ChatConversation.dart';
+import '../../messaging/chat/models/chat_conversation.dart';
 import '../../messaging/chat/share_in_chat/ShareInChat.dart';
 import '../models/Topics/CommentDetails.dart';
 import '../yarn_auth.dart';
@@ -331,9 +331,7 @@ class _YarnCommentActionsState extends State<YarnCommentActions> {
     if (commentType != null) {
       metaData['comment_type'] = commentType; //options(comment,yarn)
     }
-    if (widget.yarn != null) {
-      metaData['related_object_id'] = widget.yarn.id;
-    }
+    metaData['related_object_id'] = widget.yarn.id;
 
     final Map<String, dynamic> data = {
       "meta_data": messageDecoderWithEmoji(jsonEncode(metaData)),

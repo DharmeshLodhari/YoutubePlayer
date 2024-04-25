@@ -2,7 +2,6 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/super_store/shop_list_screen.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/custom_pagination.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
@@ -10,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 
 class ListCategoryProduct extends StatefulWidget {
-  final String nextUrl;
+  final String? nextUrl;
   final String categoryName;
 
   const ListCategoryProduct({
@@ -47,7 +46,7 @@ class _ListCategoryProductState extends State<ListCategoryProduct> {
     super.initState();
   }
 
-  loadUrl() {
+  void loadUrl() {
     if (widget.nextUrl != null && widget.nextUrl != "")
       nextUrl = widget.nextUrl;
   }
@@ -70,7 +69,7 @@ class _ListCategoryProductState extends State<ListCategoryProduct> {
         isProductLoading = true;
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result = await ShoppingAuthService()
+        final Map<String, dynamic>? result = await ShoppingAuthService()
             .listOfProduct(nextUrl, productPrevious, "", false,
                 otherDeals: false);
 
@@ -86,7 +85,7 @@ class _ListCategoryProductState extends State<ListCategoryProduct> {
         nextUrl = result['next'];
         productCount = result['count'];
         productPrevious = result['previous'];
-        var tempList = result['results'];
+        final tempList = result['results'];
 
         productEmpty = false;
         isProductLoading = false;
@@ -124,7 +123,7 @@ class _ListCategoryProductState extends State<ListCategoryProduct> {
 
   Widget superStoreProducts() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -145,7 +144,7 @@ class _ListCategoryProductState extends State<ListCategoryProduct> {
               ),
             ),
           CustomScrollView(
-            physics: ScrollPhysics(),
+            physics: const ScrollPhysics(),
             controller: _productScrollController,
             shrinkWrap: true,
             slivers: <Widget>[

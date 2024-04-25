@@ -235,6 +235,7 @@ class WebAnalyzer {
     }
     client.close();
     if (res == null) return res;
+    return null;
   }
 
   static Future<InfoBase?> _getWebInfo(
@@ -293,7 +294,7 @@ class WebAnalyzer {
     html = html.replaceFirst(_bodyReg, "<body></body>");
     final matchs = _metaReg.allMatches(html);
     final StringBuffer head = StringBuffer("<html><head>");
-    if (matchs != null) {
+    if (matchs.isNotEmpty) {
       matchs.forEach((element) {
         final String str = element.group(0)!;
         if (str.contains(_titleReg)) head.writeln(str);
@@ -338,7 +339,7 @@ class WebAnalyzer {
     final list = document.head!.getElementsByTagName("title");
     if (list.isNotEmpty) {
       final tagTitle = list.first.text;
-      if (tagTitle != null) return tagTitle.trim();
+      if (tagTitle.isNotEmpty) return tagTitle.trim();
     }
     return "";
   }

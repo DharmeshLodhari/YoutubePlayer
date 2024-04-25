@@ -279,7 +279,7 @@ class _CreateMediaMomentScreenState extends State<CreateMediaMomentScreen> {
                               : Colors.white.withOpacity(0.5),
                         ),
                       ),
-                      primary: Colors.white,
+                      backgroundColor: Colors.white,
                       fixedSize: const Size(208, 43),
                     ),
                   ),
@@ -549,9 +549,6 @@ class _CreateMediaMomentScreenState extends State<CreateMediaMomentScreen> {
           description.lensDirection == CameraLensDirection.front);
     }
 
-    if (newDescription != null) {
-      debugPrint('NEW DESC :: $newDescription');
-    }
     _initCameraController(newCameraDescription: newDescription);
   }
 }

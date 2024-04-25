@@ -476,13 +476,11 @@ class _ResetDeviceState extends State<ResetDevice> {
 
         UserAuth().resetDevice(data: data).then((result) {
           Navigator.pop(context);
-          if (result != null) {
-            if (result) {
-              showAlertDialogForInformation();
+          if (result) {
+            showAlertDialogForInformation();
 
-              // Navigator.pop(context);
+            // Navigator.pop(context);
 
-            }
           }
         }).catchError((error) {
           Navigator.pop(context);

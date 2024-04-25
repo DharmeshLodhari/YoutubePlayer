@@ -433,7 +433,7 @@ class RouteGenerator {
 
       case Routes.SUPER_BLOG:
         return PageTransition(
-          child: SuperBlog(),
+          child: const SuperBlog(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,

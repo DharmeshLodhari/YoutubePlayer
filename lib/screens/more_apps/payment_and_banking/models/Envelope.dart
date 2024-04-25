@@ -56,7 +56,7 @@ class Envelope {
         magicEnvelope: getMagicEnvelope(json['magic_envelope']));
   }
 
-  static String? getMagicEnvelope(var magicEnvelope) {
+  static String? getMagicEnvelope(dynamic magicEnvelope) {
     if (magicEnvelope == null) {
       return null;
     }

@@ -235,7 +235,7 @@ class _ChangePasswordState extends State<ChangePassword> {
                 ));
 
         await UserAuth().changePassword(data).then((value) async {
-          if (value != null) {
+          if (value.isNotEmpty) {
             userBloc.user.password = value["new_password"];
 
             await storePasswordInSecureStorage(

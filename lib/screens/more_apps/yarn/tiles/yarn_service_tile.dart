@@ -275,7 +275,7 @@ class _YarnServiceTileState extends State<YarnServiceTile> {
     );
   }
 
-  Widget addToCartWidget({var item}) {
+  Widget addToCartWidget({PurchasableItem? item}) {
     return RoundedBackgroundIcon(
       borderRadius: 16,
       height: 38,
@@ -290,7 +290,9 @@ class _YarnServiceTileState extends State<YarnServiceTile> {
         final String type = item is Service ? "service" : "product";
         debugPrint("item $item type:- $type");
         basketBloc.addItemToCart(
-            item: item, type: type, currentUser: userBloc.user.convertToUser());
+            item: item as Service,
+            type: type,
+            currentUser: userBloc.user.convertToUser());
         late var mapData;
         basketBloc.items.forEach((element) {
           if (element["item"].id == item.id) {

@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/tiles/transaction.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:flutter/material.dart';
@@ -17,15 +16,15 @@ class ContractTransactionHistory extends StatefulWidget {
 
 class _ContractTransactionHistoryState
     extends State<ContractTransactionHistory> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey =
-      new GlobalKey<ScaffoldMessengerState>();
+      GlobalKey<ScaffoldMessengerState>();
 
   int? count = 0;
   String? next = "";
   String? previous = "";
   List transactionList = [];
-  ScrollController _scrollController = new ScrollController();
+  final ScrollController _scrollController = ScrollController();
   // RefreshController _refreshController =
   //     RefreshController(initialRefresh: false);
   bool isLoading = false;
@@ -52,7 +51,7 @@ class _ContractTransactionHistoryState
             isLoading = true;
           });
         }
-        Map<String, dynamic>? result = await BusinessAuth()
+        final Map<String, dynamic>? result = await BusinessAuth()
             .getContractTransactions(next, previous, false, false);
         if (result == null) {
           isLoading = false;
@@ -61,7 +60,7 @@ class _ContractTransactionHistoryState
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
-        var tempList = result['results'];
+        final tempList = result['results'];
         if (mounted) {
           setState(() {
             isLoading = false;
@@ -79,7 +78,7 @@ class _ContractTransactionHistoryState
         _scaffoldMessengerKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 500),
         ));
       }
     }
@@ -161,7 +160,7 @@ class _ContractTransactionHistoryState
         : isLoading && transactionList.isEmpty
             ? buildLoadingIndicator(isLoading: isLoading)
             : ListView.builder(
-                padding: EdgeInsets.symmetric(vertical: 4),
+                padding: const EdgeInsets.symmetric(vertical: 4),
                 //+1 for progressbar
                 itemCount: transactionList.length + 1,
                 itemBuilder: (BuildContext context, int index) {

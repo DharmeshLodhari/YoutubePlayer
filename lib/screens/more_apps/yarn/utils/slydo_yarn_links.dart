@@ -93,7 +93,7 @@ List<CustomSmartTextElement> _smartify(
 }
 
 /// Callback with URL to open
-typedef StringCallback(String url);
+typedef void StringCallback(String url);
 
 /// Turns URLs into links
 class YarnSmartText extends StatelessWidget {

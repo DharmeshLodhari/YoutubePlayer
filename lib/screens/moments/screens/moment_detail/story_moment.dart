@@ -24,7 +24,7 @@ import '../../../../widget/dialog.dart';
 import '../../../../widget/loading_indicator.dart';
 import '../../../../widget/read_more_widget.dart';
 import '../../../../widget/rounded_background_icon.dart';
-import '../../../more_apps/messaging/chat/models/ChatConversation.dart';
+import '../../../more_apps/messaging/chat/models/chat_conversation.dart';
 import '../../../more_apps/messaging/chat/share_in_chat/ShareInChat.dart';
 import '../../../more_apps/user_profile/models/user.dart';
 import '../../../more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
@@ -73,7 +73,7 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
   }
 
   Future<bool> addLikeToMoment() async {
-    final MomentsModel data =
+    final MomentsModel? data =
         await MomentsService().likeMoment(currentMoment?.id ?? "");
     if (data != null) {
       setState(() {
@@ -86,17 +86,18 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
   }
 
   Future<bool> addDisLikeToMoment() async {
-    final MomentsModel data =
-        await MomentsService().dislikeMoment(currentMoment?.id ?? "");
+    try {
+      final MomentsModel data =
+          await MomentsService().dislikeMoment(currentMoment?.id ?? "");
 
-    if (data != null) {
       setState(() {
         currentMoment!.dislikes = data.dislikes;
         currentMoment!.likes = data.likes;
       });
       return true;
+    } catch (error) {
+      return false;
     }
-    return false;
   }
 
   int getLikeCount() {
@@ -1060,8 +1061,7 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
   }
 
   bool commentingEnabled() {
-    return currentMoment!.enableCommenting != null &&
-        currentMoment!.enableCommenting;
+    return currentMoment!.enableCommenting;
   }
 
   Widget getPayMeBtn() {

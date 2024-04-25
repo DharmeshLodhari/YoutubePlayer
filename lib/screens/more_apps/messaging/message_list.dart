@@ -26,17 +26,17 @@ class MessageList extends StatefulWidget {
 
 class _MessageListState extends State<MessageList> {
   final GlobalKey<ScaffoldState> _scaffoldMessageKey =
-      new GlobalKey<ScaffoldState>();
+      GlobalKey<ScaffoldState>();
   final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerMessageKey =
-      new GlobalKey<ScaffoldMessengerState>();
+      GlobalKey<ScaffoldMessengerState>();
   final _messageAuth = MessageAuth();
   SlidableController? slidableController;
   int? count = 0;
   String? next = "";
   String? previous = "";
   List messageList = [];
-  ScrollController _scrollController = new ScrollController();
-  RefreshController _refreshController =
+  final ScrollController _scrollController = ScrollController();
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
   bool isLoading = false;
   bool noItemInList = false;
@@ -44,7 +44,7 @@ class _MessageListState extends State<MessageList> {
   late UserBloc userBloc;
   RefreshBlocForMessages? _refreshBloc;
 
-  GlobalKey _key = LabeledGlobalKey("messageListPopUpMenu");
+  final GlobalKey _key = LabeledGlobalKey("messageListPopUpMenu");
   late CustomizedPopUpMenu menu;
   int selectedMenuItemIndex = 0;
   bool isPopMenuOpen = false;
@@ -84,7 +84,7 @@ class _MessageListState extends State<MessageList> {
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         count = 0;
@@ -159,7 +159,7 @@ class _MessageListState extends State<MessageList> {
           heroTag: "compose_message",
           backgroundColor: navyBlue,
           isExtended: false,
-          child: Icon(
+          child: const Icon(
             SlydoAppIcon.text_message,
             size: 20,
           ),
@@ -217,12 +217,12 @@ class _MessageListState extends State<MessageList> {
         // ),
         // SizedBox(width: 16),
         popUpMenuButton(),
-        SizedBox(width: 16),
+        const SizedBox(width: 16),
       ],
     );
   }
 
-  getAppBarFilterTitle() {
+  String getAppBarFilterTitle() {
     switch (filterValue) {
       case 'all':
         return 'Inbox';
@@ -245,7 +245,7 @@ class _MessageListState extends State<MessageList> {
       child: Card(
         color: isPopMenuOpen ? navyBlue : iconBtnGrey,
         elevation: 0,
-        margin: EdgeInsets.symmetric(vertical: 10),
+        margin: const EdgeInsets.symmetric(vertical: 10),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
         ),
@@ -275,7 +275,7 @@ class _MessageListState extends State<MessageList> {
         : isLoading && messageList.isEmpty
             ? buildLoadingIndicator(isLoading: isLoading)
             : ListView.builder(
-                padding: EdgeInsets.symmetric(vertical: 4),
+                padding: const EdgeInsets.symmetric(vertical: 4),
                 //+1 for progressbar
                 itemCount: messageList.length + 1,
                 itemBuilder: (BuildContext context, int index) {
@@ -298,7 +298,7 @@ class _MessageListState extends State<MessageList> {
             isLoading = true;
           });
         }
-        Map<String, dynamic>? result = await _messageAuth
+        final Map<String, dynamic>? result = await _messageAuth
             .listMessages(next, previous, filter: filterValue);
 
         if (result == null) {
@@ -308,7 +308,7 @@ class _MessageListState extends State<MessageList> {
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
-        var tempList = result['results'];
+        final tempList = result['results'];
         if (mounted) {
           setState(() {
             noItemInList = false;
@@ -327,7 +327,7 @@ class _MessageListState extends State<MessageList> {
         _scaffoldMessengerMessageKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 500),
         ));
       }
     }
@@ -353,9 +353,9 @@ class _MessageListState extends State<MessageList> {
     // or isSender is seeing message we got that user and check if it is recipient then
     // we are showing and modifying archive icon by message's isArchivedByRecipient property and if it sender then
     // we are showing and modifying archive icon by message's isArchivedBySender property
-    bool isRecipient = userBloc.user.userName == partialMessage.recipient;
+    final bool isRecipient = userBloc.user.userName == partialMessage.recipient;
 
-    IconData actionIcon = isRecipient
+    final IconData actionIcon = isRecipient
         ? partialMessage.isArchivedByRecipient!
             ? SlydoAppIcon.unarchive
             : SlydoAppIcon.archive
@@ -363,7 +363,7 @@ class _MessageListState extends State<MessageList> {
             ? SlydoAppIcon.unarchive
             : SlydoAppIcon.archive;
 
-    String actionText = isRecipient
+    final String actionText = isRecipient
         ? partialMessage.isArchivedByRecipient!
             ? "Unarchive"
             : "Archive"
@@ -375,7 +375,7 @@ class _MessageListState extends State<MessageList> {
         backgroundColor: naturalGreen,
         icon: actionIcon,
         onTap: () async {
-          var action = isRecipient
+          final action = isRecipient
               ? partialMessage.isArchivedByRecipient!
                   ? "unarchive"
                   : "archive"
@@ -420,7 +420,7 @@ class _MessageListState extends State<MessageList> {
   }
 
   void deleteMessage(PartialMessage partialMessage, int index) async {
-    bool? result = await showDialogBox(
+    final bool? result = await showDialogBox(
       context: context,
       roundedBackgroundIcon: RoundedBackgroundIcon(
         backgroundColor: mateRed.withOpacity(0.08),
@@ -446,7 +446,7 @@ class _MessageListState extends State<MessageList> {
     if (result == null) return;
     if (result) {
       // call delete message _auth method
-      bool done =
+      final bool done =
           await _messageAuth.deleteMessage(messageList[index].conversationID);
       if (done) {
         _showSnackBar(
@@ -469,11 +469,11 @@ class _MessageListState extends State<MessageList> {
       key: Key(partialMessage.id!),
       controller: slidableController,
       direction: Axis.horizontal,
-      actionPane: SlidableBehindActionPane(),
+      actionPane: const SlidableBehindActionPane(),
       actionExtentRatio: 0.25,
-      child: VerticalListItem(partialMessage),
       actions: listActionSlideActions(partialMessage, index),
       secondaryActions: listSecondaryActions(partialMessage, index),
+      child: VerticalListItem(partialMessage),
     );
   }
 
@@ -518,7 +518,7 @@ class _VerticalListItemState extends State<VerticalListItem> {
         });
       },
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 2),
+        padding: const EdgeInsets.symmetric(vertical: 2),
         child: MessageTile(
             partialMessage: widget.partialMessage,
             expandedWidget: expandedWidget()),
@@ -528,7 +528,7 @@ class _VerticalListItemState extends State<VerticalListItem> {
 
   Widget expandedWidget() {
     return AnimatedContainer(
-      duration: Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 300),
       height: isExpanded ? 48 : 0,
       curve: Curves.fastOutSlowIn,
       child: isExpanded
@@ -579,12 +579,12 @@ class _VerticalListItemState extends State<VerticalListItem> {
               width: 32,
               height: 32,
             ),
-            SizedBox(
+            const SizedBox(
               width: 10,
             ),
             Text(
               AppLocalization.of(context)!.message,
-              style: TextStyle(
+              style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                   color: Colors.black),
@@ -644,12 +644,12 @@ class _VerticalListItemState extends State<VerticalListItem> {
               width: 32,
               height: 32,
             ),
-            SizedBox(
+            const SizedBox(
               width: 10,
             ),
             Text(
               AppLocalization.of(context)!.blockUser,
-              style: TextStyle(
+              style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                   color: Colors.black),

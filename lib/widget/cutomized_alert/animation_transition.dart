@@ -61,8 +61,8 @@ class AnimationTransition {
   }
 
   /// Scale animation, from in to out (ScaleTransition)
-  static grow(Animation<double> animation, Animation<double> secondaryAnimation,
-      Widget child) {
+  static ScaleTransition grow(Animation<double> animation,
+      Animation<double> secondaryAnimation, Widget child) {
     return ScaleTransition(
       scale: Tween<double>(
         begin: 0.0,

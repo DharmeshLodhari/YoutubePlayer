@@ -1209,7 +1209,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
 
   List<Widget> listSecondaryActions(int index) {
     final item = items[index];
-    final conditionForUser =
+    final String conditionForUser =
         item["type"] == "product" ? item["item"].seller : item["item"].provider;
 
     bool isValid = true;
@@ -1251,7 +1251,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     return [];
   }
 
-  void navigateToComposeMessage(var conditionForUser, int index) async {
+  void navigateToComposeMessage(String conditionForUser, int index) async {
     Navigator.of(context).pushNamed('/compose_message', arguments: {
       'recipient': conditionForUser.toString(),
       'subject': items[index]["item"].name.toString(),
@@ -1811,10 +1811,10 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
 // ignore: must_be_immutable
 class VerticalListItem extends StatelessWidget {
   Widget? child;
-  var item;
+  PurchasableItem? item;
   String? type;
 
-  VerticalListItem(Widget child, var item) {
+  VerticalListItem(Widget child, Map<String, dynamic> item) {
     this.child = child;
     this.type = item["type"];
     this.item = item["item"];
@@ -1825,12 +1825,12 @@ class VerticalListItem extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         if (type == "product") {
-          final Product? product = item;
+          final Product? product = item as Product;
           Navigator.pushNamed(context, "/product",
               arguments: {"product": product});
         }
         if (type == "service") {
-          final Service? service = item;
+          final Service? service = item as Service;
           Navigator.pushNamed(context, "/service-detail",
               arguments: {"service": service});
         }

@@ -17,15 +17,15 @@ import '../../moments_bloc.dart';
 import '../moments_service.dart';
 
 class MomentsDetailsScreen extends StatefulWidget {
-  String? nextPageUrl;
+  late final String? nextPageUrl;
 
   /* 'indexOfMoment'
   * This is the index of the moment that was clicked from 'moments_screen'.
   * When the user comes to this page, the moment that will be shown at first is the
   * moment the user clicked (through this index).*/
-  int indexOfMoment;
+  late final int indexOfMoment;
   final List<String> listOfConnectionNames;
-  List<List<MomentsModel>> momentsModelList;
+  late final List<List<MomentsModel>> momentsModelList;
 
   MomentsDetailsScreen({
     Key? key,
@@ -71,7 +71,7 @@ class _MomentsDetailsScreenState extends State<MomentsDetailsScreen> {
   // To get the initial page that the pageview will show when the user gets this screen and
   // the previous and next two moments(if there is) have been loaded.
   int getInitialPageIndex() {
-    if (widget.momentsModelList != null && widget.momentsModelList.isNotEmpty) {
+    if (widget.momentsModelList.isNotEmpty) {
       return widget.indexOfMoment;
     } else {
       if (widget.indexOfMoment > 2) {

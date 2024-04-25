@@ -75,7 +75,7 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
   final Map<int, FocusNode> _focusNodes = {};
   Timer? _debounce;
 
-  @protected
+  @override
   void initState() {
     getList();
     _scrollController.addListener(() {

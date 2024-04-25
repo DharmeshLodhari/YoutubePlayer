@@ -410,7 +410,7 @@ class _AddAccountState extends State<AddAccount> {
     }
 
     if (result['status'] == 201) {
-      BankAccount _bankAccount;
+      BankAccount? _bankAccount;
       await _auth.getBankAccounts().then((accounts) {
         try {
           _bankAccount = accounts[0];

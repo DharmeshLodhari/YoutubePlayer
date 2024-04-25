@@ -320,19 +320,20 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
         );
       },
       options: CarouselOptions(
-          height: 260,
-          aspectRatio: 2,
-          viewportFraction: 1,
-          initialPage: 0,
-          enableInfiniteScroll: false,
-          reverse: false,
-          autoPlay: true,
-          autoPlayInterval: const Duration(seconds: 3),
-          autoPlayAnimationDuration: const Duration(milliseconds: 800),
-          autoPlayCurve: Curves.fastOutSlowIn,
-          enlargeCenterPage: true,
-          scrollDirection: Axis.horizontal,
-          onPageChanged: onPageFunction),
+        height: 260,
+        aspectRatio: 2,
+        viewportFraction: 1,
+        initialPage: 0,
+        enableInfiniteScroll: false,
+        reverse: false,
+        autoPlay: true,
+        autoPlayInterval: const Duration(seconds: 3),
+        autoPlayAnimationDuration: const Duration(milliseconds: 800),
+        autoPlayCurve: Curves.fastOutSlowIn,
+        enlargeCenterPage: true,
+        scrollDirection: Axis.horizontal,
+        onPageChanged: onPageFunction,
+      ),
     );
   }
 
@@ -357,7 +358,7 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
     );
   }
 
-  void onPageFunction(index, reason) {
+  void onPageFunction(int index, CarouselPageChangedReason reason) {
     currentIndex = index;
     setState(() {});
   }

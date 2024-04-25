@@ -1545,7 +1545,7 @@ class _HomeState extends State<Home> {
       child: Container(
         padding: const EdgeInsets.all(5.0),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(5.0)),
+          borderRadius: const BorderRadius.all(Radius.circular(5.0)),
           color: lightGrey.withOpacity(0.1),
           border: Border.all(
             color: Colors.white,
@@ -1559,8 +1559,8 @@ class _HomeState extends State<Home> {
               size: 15,
               color: Colors.white,
             ),
-            SizedBox(width: 7),
-            Text(
+            const SizedBox(width: 7),
+            const Text(
               'QR',
               style: TextStyle(
                 fontSize: 15,

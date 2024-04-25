@@ -26,6 +26,7 @@ class BasePaginationModel<T> {
   }
 }
 
+// ignore: must_be_immutable
 class CommentModel extends Equatable {
   String? id;
   String? authorAvatar;

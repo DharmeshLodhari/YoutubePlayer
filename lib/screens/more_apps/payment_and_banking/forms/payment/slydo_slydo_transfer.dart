@@ -36,7 +36,7 @@ import '../../../user_profile/screens/user_profile_module_new/profile_template/u
 import '../../payment_and_banking_auth.dart';
 
 class SlydoSlydoTransfer extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
   final Function(bool)? callback;
 
   SlydoSlydoTransfer({this.arguments, this.callback});
@@ -47,10 +47,10 @@ class SlydoSlydoTransfer extends StatefulWidget {
 }
 
 class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
-  TextEditingController _recipientController = TextEditingController();
-  TextEditingController _amountController = TextEditingController();
+  final TextEditingController _recipientController = TextEditingController();
+  final TextEditingController _amountController = TextEditingController();
   late TextEditingController _referenceController;
-  FocusNode _recipientFocus = FocusNode();
+  final FocusNode _recipientFocus = FocusNode();
   late http.Response response;
 
   final _auth = PaymentAndBankingAuth();
@@ -99,7 +99,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
 
   @override
   void initState() {
-    String? defaultReferenceText =
+    final String? defaultReferenceText =
         widget.arguments['defaultReferenceText'] != null
             ? widget.arguments['defaultReferenceText']
             : null;
@@ -156,7 +156,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
     super.initState();
   }
 
-  getRecipientProfileAndGetCategory() async {
+  Future<void> getRecipientProfileAndGetCategory() async {
     if (widget.arguments['recipient'] != null) {
       Provider.of<CustomerProfileBloc>(context, listen: false).customer =
           await UserAuth().fetchCustomerProfile(widget.arguments['recipient']);
@@ -208,13 +208,11 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
               _recipientController.text = '';
             }
             UserAuth().fetchCustomerProfile(recipient).then((customerProfile) {
-              if (customerProfile != null) {
-                if (mounted) {
-                  setState(() {
-                    _payee = customerProfile;
-                    isValidPayee = _payee!.userName != userBloc.user.userName;
-                  });
-                }
+              if (mounted) {
+                setState(() {
+                  _payee = customerProfile;
+                  isValidPayee = _payee!.userName != userBloc.user.userName;
+                });
               }
             });
           });
@@ -227,7 +225,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
     _auth.getPaymentCategory().then((result) {
       if (mounted) {
         setState(() {
-          List categoriesList = result["results"]["data"];
+          final List categoriesList = result["results"]["data"];
           categoriesList.forEach((data) {
             paymentCategories.add(data["name"]);
           });
@@ -278,7 +276,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
   }
 
   Widget scaffoldBody() {
-    bool isScreenIsSmall = MediaQuery.of(context).size.height < 600;
+    final bool isScreenIsSmall = MediaQuery.of(context).size.height < 600;
 
     return isLoading
         ? Center(
@@ -327,25 +325,28 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
                                         isFromMoment == true) ...[
                                       const SizedBox()
                                     ] else ...[
-                                      showMoreOption
-                                          ? getMoreOption()
-                                          : Container(),
+                                      if (showMoreOption)
+                                        getMoreOption()
+                                      else
+                                        Container(),
                                       getMoreOptionTrigger(),
                                     ],
-                                    errorMessage == ""
-                                        ? Container()
-                                        : Text(
-                                            errorMessage,
-                                            style: TextStyle(
-                                                color: mateRed,
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 16),
-                                          ),
-                                    errorMessage == ""
-                                        ? Container()
-                                        : const SizedBox(
-                                            height: 20,
-                                          ),
+                                    if (errorMessage == "")
+                                      Container()
+                                    else
+                                      Text(
+                                        errorMessage,
+                                        style: TextStyle(
+                                            color: mateRed,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16),
+                                      ),
+                                    if (errorMessage == "")
+                                      Container()
+                                    else
+                                      const SizedBox(
+                                        height: 20,
+                                      ),
                                   ],
                                 ),
                               ),
@@ -364,35 +365,35 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
                         if (amount == 0.0) ...[
                           getSubmitButton()
                         ] else ...[
-                          canDoSlydoTransfer(amount!, currentBalance!)
-                              ? getSubmitButton()
-                              : Container(
-                                  child: Center(
-                                      child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 16.0),
-                                          child: Text.rich(TextSpan(
-                                              text: AppLocalization.of(context)!
-                                                  .minimumTransfer,
+                          if (canDoSlydoTransfer(amount!, currentBalance!))
+                            getSubmitButton()
+                          else
+                            Container(
+                              child: Center(
+                                  child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 16.0),
+                                      child: Text.rich(TextSpan(
+                                          text: AppLocalization.of(context)!
+                                              .minimumTransfer,
+                                          style: TextStyle(
+                                              fontSize: 12,
+                                              color: blackFont,
+                                              fontWeight: FontWeight.w600),
+                                          children: <InlineSpan>[
+                                            TextSpan(
+                                              text: worldCurrencies[userBloc
+                                                      .user.currency!]! +
+                                                  moneyDisplayNormalizer(
+                                                      availableTransfer()),
                                               style: TextStyle(
                                                   fontSize: 12,
                                                   color: blackFont,
+                                                  fontFamily: "Inter",
                                                   fontWeight: FontWeight.w600),
-                                              children: <InlineSpan>[
-                                                TextSpan(
-                                                  text: worldCurrencies[userBloc
-                                                          .user.currency!]! +
-                                                      moneyDisplayNormalizer(
-                                                          availableTransfer()),
-                                                  style: TextStyle(
-                                                      fontSize: 12,
-                                                      color: blackFont,
-                                                      fontFamily: "Inter",
-                                                      fontWeight:
-                                                          FontWeight.w600),
-                                                )
-                                              ])))),
-                                ),
+                                            )
+                                          ])))),
+                            ),
                         ],
 
                         // getSubmitButton(),
@@ -419,7 +420,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
         const SizedBox(
           height: 20,
         ),
-        isFromChat ? Container() : sendMoneyAnonymouslySwitch(),
+        if (isFromChat) Container() else sendMoneyAnonymouslySwitch(),
       ],
     );
   }
@@ -484,37 +485,37 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
   Widget getDisplayCard() {
     initializeDisplayCard();
 
-    var avatarImage;
+    // var avatarImage;
     var qrCodeImage;
     if (_payee != null) {
-      Color borderColor = getUserTypeColor(user: _payee!);
+      // final Color borderColor = getUserTypeColor(user: _payee!);
 
-      avatarImage = Container(
-        height: 48,
-        width: 48,
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(
-              25,
-            ),
-            border: Border.all(color: borderColor, width: 2)),
-        child: GestureDetector(
-          onTap: () {
-            Navigator.of(context)
-                .pushNamed("/photo-viewer", arguments: _payee!.avatar);
-          },
-          child: ClipOval(
-            child: _payee!.avatar != null
-                ? CachedNetworkImage(
-                    imageUrl: _payee!.avatar!,
-                    colorBlendMode: BlendMode.darken,
-                    fit: BoxFit.fill,
-                    filterQuality: FilterQuality.high,
-                    errorWidget: imageErrorWidget,
-                  )
-                : const SizedBox.shrink(),
-          ),
-        ),
-      );
+      // avatarImage = Container(
+      //   height: 48,
+      //   width: 48,
+      //   decoration: BoxDecoration(
+      //       borderRadius: BorderRadius.circular(
+      //         25,
+      //       ),
+      //       border: Border.all(color: borderColor, width: 2)),
+      //   child: GestureDetector(
+      //     onTap: () {
+      //       Navigator.of(context)
+      //           .pushNamed("/photo-viewer", arguments: _payee!.avatar);
+      //     },
+      //     child: ClipOval(
+      //       child: _payee!.avatar != null
+      //           ? CachedNetworkImage(
+      //               imageUrl: _payee!.avatar!,
+      //               colorBlendMode: BlendMode.darken,
+      //               fit: BoxFit.fill,
+      //               filterQuality: FilterQuality.high,
+      //               errorWidget: imageErrorWidget,
+      //             )
+      //           : const SizedBox.shrink(),
+      //     ),
+      //   ),
+      // );
       setState(() {
         isValidPayee = true;
       });
@@ -603,7 +604,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
         }
       },
       onTap: () async {
-        CustomerProfile? userFound =
+        final CustomerProfile? userFound =
             await NavigationUtil.push(context, screen: const SearchUser());
 
         if (userFound != null) {
@@ -626,7 +627,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
       // inputFormatters: [FilteringTextInputFormatter.digitsOnly],
       controller: _amountController,
       onChanged: (val) {
-        double? value = double.tryParse(val.replaceAll(',', ''));
+        final double? value = double.tryParse(val.replaceAll(',', ''));
 
         if (value != null) {
           amount = value;
@@ -636,7 +637,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
       validator: (val) {
         if (val.isNotEmpty) {
           try {
-            double amount = double.parse(val.replaceAll(',', ''));
+            final double amount = double.parse(val.replaceAll(',', ''));
             if (amount >= 1.0) {
               return null;
             } else {
@@ -657,7 +658,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
           _recipientController.text = recipient!;
           if (mounted) setState(() {});
 
-          var customerProfile =
+          final customerProfile =
               await UserAuth().fetchCustomerProfileWithAuth(recipient);
 
           _payee = customerProfile;
@@ -796,11 +797,11 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
   }
 
   Widget checkImage() {
-    Color borderColor = getUserTypeColor(user: _payee!);
+    final Color borderColor = getUserTypeColor(user: _payee!);
     String url = "";
     url = _payee!.avatar.toString();
 
-    String imageUrl = url.replaceAll('https//', 'https://');
+    final String imageUrl = url.replaceAll('https//', 'https://');
     if (_payee!.avatar == "" ||
         _payee!.avatar ==
             "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png") {
@@ -884,11 +885,11 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
   }
 
   void sendMoneyAnonymousAlert() async {
-    FeeStructure? feeStructure = await DatabaseHelper().getFeeStructure();
+    final FeeStructure? feeStructure = await DatabaseHelper().getFeeStructure();
 
     if (feeStructure == null) return;
 
-    String anonymousFee =
+    final String anonymousFee =
         feeStructure.getFeeWithTax(type: FeesType.ANONYMOUS_TRANSACTION_FEE);
 
     showDialog<String>(
@@ -1023,7 +1024,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
   }
 
   void onSubmit() async {
-    PermissionType? hasPermission =
+    final PermissionType? hasPermission =
         userBloc.user.hasWritePermission(ProtectionPermission.transaction);
     if (hasPermission == PermissionType.WRITE) {
       if (FocusScope.of(context).hasFocus) {
@@ -1093,8 +1094,8 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
 
                       deviceData = await getDeviceInfo();
 
-                      String description = 'General Payment';
-                      var data = {
+                      final String description = 'General Payment';
+                      final data = {
                         "from_customer": userBloc.user.userName,
                         "to_customer": _recipientController.text.trim(),
                         "currency": userBloc.user.currency,
@@ -1147,7 +1148,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
 
                             ///check if page is from yarn
                             if (isFromYarn == true) {
-                              var jsonData = json.decode(response.body);
+                              final jsonData = json.decode(response.body);
 
                               updateYarnSupporter =
                                   await _auth.updateYarnSupporter(
@@ -1168,7 +1169,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
 
                             ///check if page is from moment
                             if (isFromMoment == true) {
-                              var jsonData = json.decode(response.body);
+                              final jsonData = json.decode(response.body);
 
                               updateMomentSupporter =
                                   await _auth.updateMomentSupporter(
@@ -1240,7 +1241,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
           }
         }
       } else {
-        var msg = AppLocalization.of(context)!.invalidRecipient;
+        final msg = AppLocalization.of(context)!.invalidRecipient;
         showToast(message: msg);
       }
     } else {

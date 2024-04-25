@@ -1,6 +1,5 @@
 import 'package:Slydo/data/state_notifiers/user_bloc.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +8,7 @@ import 'package:provider/provider.dart';
 
 import '../locale/app_localization.dart';
 
+// ignore: must_be_immutable
 class PermissionProtectionWidget extends StatelessWidget {
   PermissionProtectionWidget(
       {required this.child,
@@ -20,11 +20,11 @@ class PermissionProtectionWidget extends StatelessWidget {
 
   final Widget child;
   final String permissionName;
-  double position;
-  late UserBloc userBloc;
-  PermissionType? hasPermission;
+  final double position;
+  late final UserBloc userBloc;
+  late final PermissionType? hasPermission;
   bool isShowLock = false;
-  String? isLockForRead;
+  final String? isLockForRead;
 
   @override
   Widget build(BuildContext context) {

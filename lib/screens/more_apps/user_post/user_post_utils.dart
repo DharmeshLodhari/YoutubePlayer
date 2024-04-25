@@ -8,12 +8,12 @@ import 'package:uuid/uuid.dart';
 import '../../../data/state_notifier.dart';
 import '../../../utils/util.dart';
 import '../../../widget/loading_indicator.dart';
-import '../messaging/chat/models/ChatConversation.dart';
+import '../messaging/chat/models/chat_conversation.dart';
 import '../messaging/chat/share_in_chat/ShareInChat.dart';
 import 'models/user_post.dart';
 
 class UserPostUtils {
-  static deleteBlogPost(
+  static void deleteBlogPost(
       {required String blogId,
       required BuildContext context,
       required Function onDeleteBlog}) {
@@ -43,7 +43,7 @@ class UserPostUtils {
     });
   }
 
-  static sendPostToUserInChat(
+  static void sendPostToUserInChat(
       {required BuildContext context, required UserPost userPost}) async {
     final List<ChatConversation?> listOfRecipient =
         await ShareInChat().selectShareCustomer(context);

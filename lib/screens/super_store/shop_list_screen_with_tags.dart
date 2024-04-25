@@ -49,7 +49,7 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
   String? todayDealPrevious = "";
   String? productPrevious = "";
   late BasketBloc basketBloc;
-  List rowHeaders = [];
+  List<Map<String, dynamic>> rowHeaders = [];
   List<Product> storeProducts = [];
   bool noItemInList = false;
   String? next = "1";
@@ -637,14 +637,14 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
     );
   }
 
-  Future<List<Product>> getRowTitle(headers) async {
-    final List<Product> result = [];
-    for (var item in headers['results']) {
-      final Product product = await ShoppingAuthService().createProduct(item);
-      result.add(product);
-    }
-    return result;
-  }
+  // Future<List<Product>> getRowTitle(headers) async {
+  //   final List<Product> result = [];
+  //   for (var item in headers['results']) {
+  //     final Product product = await ShoppingAuthService().createProduct(item);
+  //     result.add(product);
+  //   }
+  //   return result;
+  // }
 
   Widget nearByBuildView() {
     return Container(
@@ -744,7 +744,7 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
     );
   }
 
-  Widget rowTitle(headers, {bool isLast = false}) {
+  Widget rowTitle(Map<String, dynamic> headers, {bool isLast = false}) {
     return SectionProducts(headers: headers, isLast: isLast);
   }
 

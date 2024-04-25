@@ -34,7 +34,7 @@ import '../../../payment_and_banking_auth.dart';
 
 // ignore: must_be_immutable
 class NewBeneficiaryTransfer extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
   final Function(bool)? callback;
 
   NewBeneficiaryTransfer({this.arguments, this.callback});
@@ -75,11 +75,11 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
   final amountTextController = TextEditingController();
   final accountNumberController = TextEditingController();
   GlobalKey searchItemTextFormField = GlobalKey();
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
   int bottomSheetSearchIndex = 0;
   bool noSearchedItem = false;
-  ScrollController _scrollController = new ScrollController();
+  final ScrollController _scrollController = ScrollController();
   int? amount = 0;
   late http.Response response;
   VirtualAccount? virtualAccount;
@@ -122,7 +122,7 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
       return _buildLoadingIndicator();
     }
 
-    bool isScreenIsSmall = MediaQuery.of(context).size.height < 600;
+    final bool isScreenIsSmall = MediaQuery.of(context).size.height < 600;
 
     return SingleChildScrollView(
       scrollDirection: Axis.vertical,
@@ -226,40 +226,41 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
                   const SizedBox(
                     height: 40,
                   ),
-                  canCashOut(amount!, accountBalance!)
-                      ? getSubmitButton()
-                      : Container(
-                          child: Center(
-                              child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 16.0),
-                                  child: Text.rich(TextSpan(
-                                      text: AppLocalization.of(context)!
-                                          .minimumTransfer,
+                  if (canCashOut(amount!, accountBalance!))
+                    getSubmitButton()
+                  else
+                    Container(
+                      child: Center(
+                          child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 16.0),
+                              child: Text.rich(TextSpan(
+                                  text: AppLocalization.of(context)!
+                                      .minimumTransfer,
+                                  style: TextStyle(
+                                      fontSize: 12,
+                                      color: blackFont,
+                                      fontWeight: FontWeight.w600),
+                                  children: <InlineSpan>[
+                                    TextSpan(
+                                      text: double.parse(moneyDisplayNormalizer(
+                                                  displayPossibleCashOutAmount(
+                                                      accountBalance!))) >=
+                                              35.00
+                                          ? worldCurrencies[
+                                                  userBloc.user.currency!]! +
+                                              moneyDisplayNormalizer(
+                                                  displayPossibleCashOutAmount(
+                                                      accountBalance!))
+                                          : '${worldCurrencies[userBloc.user.currency!]!}0.00',
                                       style: TextStyle(
                                           fontSize: 12,
                                           color: blackFont,
+                                          fontFamily: "Inter",
                                           fontWeight: FontWeight.w600),
-                                      children: <InlineSpan>[
-                                        TextSpan(
-                                          text: double.parse(moneyDisplayNormalizer(
-                                                      displayPossibleCashOutAmount(
-                                                          accountBalance!))) >=
-                                                  35.00
-                                              ? worldCurrencies[userBloc
-                                                      .user.currency!]! +
-                                                  moneyDisplayNormalizer(
-                                                      displayPossibleCashOutAmount(
-                                                          accountBalance!))
-                                              : '${worldCurrencies[userBloc.user.currency!]!}0.00',
-                                          style: TextStyle(
-                                              fontSize: 12,
-                                              color: blackFont,
-                                              fontFamily: "Inter",
-                                              fontWeight: FontWeight.w600),
-                                        )
-                                      ])))),
-                        ),
+                                    )
+                                  ])))),
+                    ),
                   const SizedBox(
                     height: 20,
                   ),
@@ -408,7 +409,7 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
       validator: (val) {
         if (val.isNotEmpty) {
           try {
-            double amount = double.parse(val.replaceAll(',', ''));
+            final double amount = double.parse(val.replaceAll(',', ''));
             if (amount > 0.0) {
               return null;
             } else {
@@ -440,7 +441,7 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
   }
 
   void onSubmit() async {
-    PermissionType? hasPermission =
+    final PermissionType? hasPermission =
         userBloc.user.hasWritePermission(ProtectionPermission.transaction);
     if (hasPermission == PermissionType.WRITE) {
       if (FocusScope.of(context).hasFocus) {
@@ -460,7 +461,7 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
       if (canSendMoney(amount,
           virtualAccount?.accountTier?.dailyCumulativeTransactionLimit!)) {
         try {
-          var data = {
+          final data = {
             "amount": moneyInputNormalizer(amount.toString()),
             "currency": userBloc.user.currency,
             "customer_bank_account": int.tryParse(bankId),
@@ -539,7 +540,7 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
     isLoading = true;
     if (mounted) setState(() {});
 
-    Map data = {
+    final Map data = {
       "customer_username": userName,
       "bank": selectedBank!.slug,
       "account_name": tempList['account_name'],
@@ -547,7 +548,7 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
       "is_default": false,
     };
 
-    Map<String, dynamic>? result = await _auth.addBankAccount(data);
+    final Map<String, dynamic>? result = await _auth.addBankAccount(data);
 
     isLoading = false;
     if (mounted) setState(() {});
@@ -559,10 +560,10 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
 
     if (result['status'] == 201) {
       //get the id
-      var tempList = result['results'];
+      final tempList = result['results'];
       bankId = tempList['id'].toString();
     } else {
-      dynamic jsonObject = jsonDecode(result['results']);
+      final dynamic jsonObject = jsonDecode(result['results']);
 
       if (jsonObject.containsKey("non_field_errors")) {
         showToast(message: jsonObject['non_field_errors'][0].toString());
@@ -583,13 +584,13 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
     isLoading = true;
     if (mounted) setState(() {});
 
-    Map data = {
+    final Map data = {
       "bank_code": selectedBank!.providerCode,
       "account_number": accountNumber,
     };
 
     try {
-      Map<String, dynamic>? result = await _auth.verifyBankAccount(data);
+      final Map<String, dynamic>? result = await _auth.verifyBankAccount(data);
 
       isLoading = false;
       if (mounted) setState(() {});
@@ -599,7 +600,7 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
         return;
       }
 
-      var tempList = result['results'];
+      final tempList = result['results'];
       // debugPrint('Fola verify::: ${tempList}');
 
       showDialogBox(
@@ -650,7 +651,7 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
   }
 
   void showSearchBankBottomSheet() async {
-    var result = await showModalBottomSheet<String>(
+    final result = await showModalBottomSheet<String>(
         backgroundColor: Colors.transparent,
         context: context,
         useRootNavigator: true,
@@ -849,7 +850,7 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         count = 0;
@@ -963,7 +964,7 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
                     child: Column(
                       children: [
                         if (bankList.length >= 1) ...[
-                          getResultTile(bankList[index]),
+                          bankCardDisplay(bankList[index]),
                         ] else ...[
                           // print('The array does not have a second element.');
                         ]
@@ -988,7 +989,7 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
   }
 
   void getBankListSearched() async {
-    String url =
+    final String url =
         "${AppConfig.baseUrl}/api/v1/transactions/get-bank-info/?search=${searchItemTextController.text}";
 
     if (!isItemLoading) {
@@ -999,7 +1000,7 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
           bottomSheetStateSetterGlobal!(() {});
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result =
+        final Map<String, dynamic>? result =
             await _auth.searchBankList(url, next, previous);
         if (result == null) {
           isItemLoading = false;
@@ -1008,7 +1009,7 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
-        List tempList = result['results'];
+        final List tempList = result['results'];
 
         isItemLoading = false;
         if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
@@ -1031,13 +1032,6 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
         if (mounted) setState(() {});
       }
     }
-  }
-
-  Widget getResultTile(var result) {
-    if (result is BankModel) {
-      return bankCardDisplay(result);
-    }
-    return Container();
   }
 
   Widget bankCardDisplay(BankModel bankModel) {
@@ -1077,7 +1071,7 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
   }
 
   Widget getBankLogoLeading(BankModel bankModel) {
-    String? bankUrl = bankModel.logoUrl == ""
+    final String? bankUrl = bankModel.logoUrl == ""
         ? getInitials(bankModel.name!).toUpperCase()
         : bankModel.logoUrl;
 
@@ -1090,7 +1084,7 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
     );
   }
 
-  checkBankUrl(BankModel bankModel) {
+  Widget checkBankUrl(BankModel bankModel) {
     if (bankModel.logoUrl == "") {
       return CircleAvatar(
         backgroundColor: navyBlue,
@@ -1152,8 +1146,8 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
 
   Future<void> getAccountBalance() async {
     await _auth.getAccountBalance().then((value) {
-      var data = value!;
-      var spendableBalance = data["spendable_balance"];
+      final data = value!;
+      final spendableBalance = data["spendable_balance"];
       if (mounted) {
         setState(() {
           accountBalance = spendableBalance;

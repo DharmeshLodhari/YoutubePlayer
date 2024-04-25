@@ -94,7 +94,7 @@ Color _kErrorLight = Colors.red;
 final Color _kErrorDark = Colors.red.shade400;
 Color _kCircleActiveLight = Colors.white;
 Color _kCircleActiveDark = Colors.black87;
-Color _kPendingActive = Colors.yellow;
+// Color _kPendingActive = Colors.yellow;
 Color _kDisabledLight = Colors.black38;
 Color _kDisabledDark = Colors.white38;
 double _kStepSize = 24.0;
@@ -113,9 +113,7 @@ class Step {
     this.state = StepState.indexed,
     this.isActive = false,
     this.label,
-  })  : assert(title != null),
-        assert(content != null),
-        assert(state != null);
+  });
 
   /// The title of the step that typically describes it.
   final Widget title;
@@ -197,10 +195,7 @@ class OrderTrackerStepper extends StatefulWidget {
     this.controlsBuilder,
     this.elevation,
     this.margin,
-  })  : assert(steps != null),
-        assert(type != null),
-        assert(currentStep != null),
-        assert(0 <= currentStep && currentStep < steps.length);
+  }) : assert(0 <= currentStep && currentStep < steps.length);
 
   @override
   State<OrderTrackerStepper> createState() => _OrderTrackerStepperState();
@@ -271,7 +266,6 @@ class _OrderTrackerStepperState extends State<OrderTrackerStepper>
     final StepState state =
         oldState ? _oldStates[index]! : widget.steps[index].state;
     final bool isDarkActive = _isDark() && widget.steps[index].isActive;
-    assert(state != null);
     switch (state) {
       case StepState.indexed:
       case StepState.disabled:
@@ -463,7 +457,7 @@ class _OrderTrackerStepperState extends State<OrderTrackerStepper>
               child: TextButton(
                 onPressed: widget.onStepCancel,
                 style: TextButton.styleFrom(
-                  primary: cancelColor,
+                  foregroundColor: cancelColor,
                   padding: buttonPadding,
                   shape: buttonShape,
                 ),
@@ -480,7 +474,6 @@ class _OrderTrackerStepperState extends State<OrderTrackerStepper>
     final ThemeData themeData = Theme.of(context);
     final TextTheme textTheme = themeData.textTheme;
 
-    assert(widget.steps[index].state != null);
     switch (widget.steps[index].state) {
       case StepState.indexed:
       case StepState.editing:
@@ -501,7 +494,6 @@ class _OrderTrackerStepperState extends State<OrderTrackerStepper>
     final ThemeData themeData = Theme.of(context);
     final TextTheme textTheme = themeData.textTheme;
 
-    assert(widget.steps[index].state != null);
     switch (widget.steps[index].state) {
       case StepState.indexed:
       case StepState.editing:
@@ -522,7 +514,6 @@ class _OrderTrackerStepperState extends State<OrderTrackerStepper>
     final ThemeData themeData = Theme.of(context);
     final TextTheme textTheme = themeData.textTheme;
 
-    assert(widget.steps[index].state != null);
     switch (widget.steps[index].state) {
       case StepState.indexed:
       case StepState.editing:
@@ -785,7 +776,6 @@ class _OrderTrackerStepperState extends State<OrderTrackerStepper>
       }
       return true;
     }());
-    assert(widget.type != null);
     switch (widget.type) {
       case StepperType.vertical:
         return _buildVertical();

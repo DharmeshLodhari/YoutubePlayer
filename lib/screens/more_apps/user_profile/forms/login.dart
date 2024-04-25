@@ -72,7 +72,7 @@ class _UserLoginState extends State<UserLogin> {
 
   List<CompanyName> companyList = [];
   // String businessName = "";
-  List<String> _dropdownItems = [];
+  final List<String> _dropdownItems = [];
 
   ScrollController scrollController = ScrollController();
 
@@ -100,7 +100,7 @@ class _UserLoginState extends State<UserLogin> {
       _selectedDialogCountry =
           CountryPickerUtils.getCountryByIsoCode(countryFromPref);
 
-      SecureUser secureUser = await SecureStorage().getUser();
+      final SecureUser secureUser = await SecureStorage().getUser();
       phoneNumberFromPref = secureUser.phoneNumber;
       passwordFromPref = secureUser.password;
       companyFromPref = secureUser.company;
@@ -167,22 +167,22 @@ class _UserLoginState extends State<UserLogin> {
   Widget _buildBody() {
     return SingleChildScrollView(
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Form(
           key: _loginFormKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               appIcon(),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               loginTitle(),
-              SizedBox(height: 30),
+              const SizedBox(height: 30),
               _buildTabs(),
-              SizedBox(height: 30),
+              const SizedBox(height: 30),
               _buildPageView(),
-              SizedBox(height: 30),
+              const SizedBox(height: 30),
               loginBtn(),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
             ],
           ),
         ),
@@ -268,9 +268,9 @@ class _UserLoginState extends State<UserLogin> {
     return Column(
       children: [
         phoneNumberField(),
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
         passwordPinFiled(),
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
         rememberMeAndForgotPasswordField(),
       ],
     );
@@ -280,11 +280,11 @@ class _UserLoginState extends State<UserLogin> {
     return Column(
       children: [
         companyNameField(),
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
         phoneNumberField(),
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
         passwordPinFiled(),
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
         rememberMeAndForgotPasswordField(),
       ],
     );
@@ -303,7 +303,7 @@ class _UserLoginState extends State<UserLogin> {
           controller: companyController,
           focusNode: companyFocusNode,
           onChanged: (String val) {
-            if (val != null && val.length >= 3) {
+            if (val.isNotEmpty && val.length >= 3) {
               searchCompanyName(val);
             } else {
               setState(() {
@@ -334,7 +334,7 @@ class _UserLoginState extends State<UserLogin> {
                 thickness: 5,
                 trackVisibility: true,
                 thumbColor: navyBlue,
-                radius: Radius.circular(15),
+                radius: const Radius.circular(15),
                 child: Container(
                   child: ListView(
                     padding: EdgeInsets.zero,
@@ -374,8 +374,8 @@ class _UserLoginState extends State<UserLogin> {
             searchFieldProps: TextFieldProps(
               cursorColor: navyBlue,
               decoration: InputDecoration(
-                contentPadding:
-                    EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
+                contentPadding: const EdgeInsets.symmetric(
+                    vertical: 10.0, horizontal: 10.0),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide(
@@ -481,7 +481,7 @@ class _UserLoginState extends State<UserLogin> {
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         Expanded(flex: 3, child: getCountryDropdown()),
-        SizedBox(
+        const SizedBox(
           width: 8,
         ),
         Expanded(
@@ -516,7 +516,7 @@ class _UserLoginState extends State<UserLogin> {
             fontFamily: "Inter",
           ),
         ),
-        SizedBox(
+        const SizedBox(
           height: 6,
         ),
         Card(
@@ -525,11 +525,11 @@ class _UserLoginState extends State<UserLogin> {
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
               side: BorderSide(color: greyBorderColor)),
-          margin: EdgeInsets.all(0),
+          margin: const EdgeInsets.all(0),
           borderOnForeground: true,
           child: ListTile(
             dense: true,
-            contentPadding: EdgeInsets.fromLTRB(8, 0, 0, 0),
+            contentPadding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
             onTap: () {
               _openCountryPickerDialog(isForLogin: true);
             },
@@ -543,9 +543,9 @@ class _UserLoginState extends State<UserLogin> {
   Widget _buildDialogItem(Country country) {
     return Row(
       children: <Widget>[
-        SizedBox(width: 4.0),
+        const SizedBox(width: 4.0),
         CountryPickerUtils.getDefaultFlagImage(country),
-        SizedBox(width: 8.0),
+        const SizedBox(width: 8.0),
         Expanded(
           child: Text(
             "+${country.phoneCode}",
@@ -562,7 +562,7 @@ class _UserLoginState extends State<UserLogin> {
           Icons.keyboard_arrow_down,
           color: blackFont,
         ),
-        SizedBox(width: 4.0),
+        const SizedBox(width: 4.0),
       ],
     );
   }
@@ -571,7 +571,7 @@ class _UserLoginState extends State<UserLogin> {
     return Row(
       children: <Widget>[
         CountryPickerUtils.getDefaultFlagImage(country),
-        SizedBox(width: 8.0),
+        const SizedBox(width: 8.0),
         Text(
           "+${country.phoneCode}",
           style: TextStyle(
@@ -580,7 +580,7 @@ class _UserLoginState extends State<UserLogin> {
             fontWeight: FontWeight.w600,
           ),
         ),
-        SizedBox(width: 8.0),
+        const SizedBox(width: 8.0),
         Expanded(
           child: Text(
             "(" + country.name! + ")",
@@ -603,7 +603,7 @@ class _UserLoginState extends State<UserLogin> {
           data: Theme.of(context).copyWith(primaryColor: navyBlue),
           child: CountryPickerDialog(
             isForLogin: isForLogin,
-            titlePadding: EdgeInsets.all(8.0),
+            titlePadding: const EdgeInsets.all(8.0),
             searchCursorColor: navyBlue,
             searchInputDecoration: InputDecoration(
               hintText: AppLocalization.of(context)!.search,
@@ -630,10 +630,10 @@ class _UserLoginState extends State<UserLogin> {
       );
 
   Widget passwordPinFiled() {
-    BoxDecoration pinPutDecoration = BoxDecoration(
+    final BoxDecoration pinPutDecoration = BoxDecoration(
         borderRadius: BorderRadius.circular(10),
         border: Border.all(color: greyBorderColor));
-    BoxDecoration selectedDecoration = BoxDecoration(
+    final BoxDecoration selectedDecoration = BoxDecoration(
         borderRadius: BorderRadius.circular(10),
         border: Border.all(color: navyBlue));
     return Container(
@@ -649,7 +649,7 @@ class _UserLoginState extends State<UserLogin> {
               fontFamily: "Inter",
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 6.0,
           ),
           PinPut(
@@ -693,17 +693,17 @@ class _UserLoginState extends State<UserLogin> {
         children: <Widget>[
           ClipRRect(
             clipBehavior: Clip.antiAliasWithSaveLayer,
-            borderRadius: BorderRadius.all(Radius.circular(5)),
+            borderRadius: const BorderRadius.all(Radius.circular(5)),
             child: SizedBox(
               width: Checkbox.width - 1.5,
               height: Checkbox.width - 1.5,
               child: Container(
-                decoration: new BoxDecoration(
+                decoration: BoxDecoration(
                   border: Border.all(
                     color: greyBorderColor,
                     width: 1,
                   ),
-                  borderRadius: new BorderRadius.circular(5),
+                  borderRadius: BorderRadius.circular(5),
                 ),
                 child: Theme(
                   data: ThemeData(
@@ -731,7 +731,7 @@ class _UserLoginState extends State<UserLogin> {
               ),
             ),
           ),
-          SizedBox(
+          const SizedBox(
             width: 12,
           ),
           Text(
@@ -856,7 +856,7 @@ class _UserLoginState extends State<UserLogin> {
           initializeShoppingCart();
           await clearDBMessages();
 
-          BackgroundFetchStopBloc backgroundFetchBloc =
+          final BackgroundFetchStopBloc backgroundFetchBloc =
               Provider.of<BackgroundFetchStopBloc>(
                   myGlobals.navigationKey.currentContext!,
                   listen: false);
@@ -883,11 +883,11 @@ class _UserLoginState extends State<UserLogin> {
         if (value != null) yarnSettingsBloc.yarnSettings = value;
       });
 
-      print(
+      debugPrint(
           'printing yarn settings id ............ ${yarnSettingsBloc.yarnSettings.allowAdultContent.toString()}');
-      print(
+      debugPrint(
           'printing yarn settings id 1 ............ ${yarnSettingsBloc.yarnSettings.allowSensitiveContent.toString()}');
-      print(
+      debugPrint(
           'printing yarn settings id ............ ${yarnSettingsBloc.yarnSettings.id.toString()}');
     }
   }
@@ -904,11 +904,13 @@ class _UserLoginState extends State<UserLogin> {
 
   void isRememberChecked() async {
     // await _sharedPreferences.clear();
-    bool isLoggedOut = await _sharedPreferences.setBool('isLoggedOut', false);
+    final bool isLoggedOut =
+        await _sharedPreferences.setBool('isLoggedOut', false);
 
-    bool isCheckedSet = await _sharedPreferences.setBool('isChecked', true);
+    final bool isCheckedSet =
+        await _sharedPreferences.setBool('isChecked', true);
 
-    bool countryCodeSet = await _sharedPreferences.setString(
+    final bool countryCodeSet = await _sharedPreferences.setString(
         'country', _selectedDialogCountry.isoCode!);
 
     if (!isCheckedSet || !isLoggedOut || !countryCodeSet) {
@@ -925,7 +927,7 @@ class _UserLoginState extends State<UserLogin> {
       phoneNumberFromTextField = phoneNumberFromTextField.replaceFirst("0", "");
     }
 
-    SecureUser secureUser = SecureUser(
+    final SecureUser secureUser = SecureUser(
       phoneNumber: phoneNumberFromTextField,
       password: password,
       company: companyName,
@@ -936,9 +938,9 @@ class _UserLoginState extends State<UserLogin> {
 
   void initializeShoppingCart() async {
     debugPrint("initializeShoppingCart called");
-    List items = await ShoppingAuthService().getShoppingCart();
+    final List items = await ShoppingAuthService().getShoppingCart();
     items.forEach((element) {
-      String type = element is Product ? "product" : "service";
+      final String type = element is Product ? "product" : "service";
       basketBloc.addItemToCart(
           item: element,
           type: type,

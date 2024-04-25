@@ -34,7 +34,7 @@ import '../../../../widget/customized_dropdown_field.dart';
 import '../../../../widget/customized_textform_field.dart';
 import '../../../widget/loading_indicator.dart';
 import '../../moments/screens/trimmer_view.dart';
-import '../messaging/chat/models/gif_model/GIFModel.dart';
+import '../messaging/chat/models/gif_model/gif_model.dart';
 import '../messaging/chat/utils.dart';
 import '../messaging/message_auth.dart';
 import '../service_hub/models/jobs.dart';
@@ -46,19 +46,20 @@ import 'models/Topics/yarn_model.dart';
 import 'models/ask_categories_model.dart';
 import 'models/share_as_yarn_model.dart';
 
+// ignore: must_be_immutable
 class ShareAsAyarnScreen extends StatefulWidget {
-  String? appTitle;
-  List<YarnCategories>? askCategories;
-  List<ShareAsYarnModel>? shareAsYarnModel;
-  YarnCategories? askCategory;
+  final String? appTitle;
+  late final List<YarnCategories>? askCategories;
+  late final List<ShareAsYarnModel>? shareAsYarnModel;
+  final YarnCategories? askCategory;
   bool? isYarn = false;
   bool? enableText = false; //TODO: this attribute should be deprecated
   bool isShare = true;
-  Yarn? yarnTopic;
-  CustomerProfile? userProfile;
-  Service? serviceModel;
-  Product? productModel;
-  JobModel? jobModel;
+  final Yarn? yarnTopic;
+  final CustomerProfile? userProfile;
+  final Service? serviceModel;
+  final Product? productModel;
+  final JobModel? jobModel;
 
   UserPost? blogPost;
 

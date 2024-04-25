@@ -3,8 +3,8 @@ import 'dart:io';
 
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/locator.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/AddGroupModel.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/GroupDetailModel.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/add_group_model.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/group_detail_model.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/user_tile_for_group_detail.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';

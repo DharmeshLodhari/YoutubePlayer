@@ -290,7 +290,7 @@ Widget showDiscountValue(
       "-" +
           (discountType == "percentage"
               ? discountValue.toString() + "% off"
-              : worldCurrencies[currency!]! +
+              : worldCurrencies[currency]! +
                   moneyDisplayNormalizer(discountValue.toInt()).toString()),
       style: TextStyle(
         color: white,
@@ -302,7 +302,7 @@ Widget showDiscountValue(
   );
 }
 
-bool checkDiscount(bool discountIsActive, num discountedPrice, num price) {
+bool checkDiscount(bool discountIsActive, num? discountedPrice, num price) {
   if (discountIsActive &
       (discountedPrice != null) &
       (price != discountedPrice)) {

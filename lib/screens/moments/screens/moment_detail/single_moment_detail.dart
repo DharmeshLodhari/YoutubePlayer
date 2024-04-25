@@ -13,7 +13,7 @@ import 'package:Slydo/screens/moments/screens/moments_service.dart';
 import 'package:Slydo/screens/moments/utils.dart';
 import 'package:Slydo/screens/moments/widgets/attachment_widget.dart';
 import 'package:Slydo/screens/moments/widgets/custom_moment_detail_button.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_conversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/share_in_chat/ShareInChat.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_report_screen.dart';
 import 'package:Slydo/screens/post_detail_page.dart';
@@ -87,30 +87,34 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
   }
 
   Future<bool> addLikeToMoment() async {
-    final MomentsModel data =
-        await MomentsService().likeMoment(widget.currentMoment.id!);
-    if (data != null) {
+    try {
+      final MomentsModel data =
+          await MomentsService().likeMoment(widget.currentMoment.id!);
       setState(() {
         widget.currentMoment.likes = data.likes;
         widget.currentMoment.dislikes = data.dislikes;
       });
-      return true;
+    } catch (error) {
+      return false;
     }
-    return false;
+
+    return true;
   }
 
   Future<bool> addDisLikeToMoment() async {
-    final MomentsModel data =
-        await MomentsService().dislikeMoment(widget.currentMoment.id!);
+    try {
+      final MomentsModel data =
+      await MomentsService().dislikeMoment(widget.currentMoment.id!);
 
-    if (data != null) {
       setState(() {
         widget.currentMoment.dislikes = data.dislikes;
         widget.currentMoment.likes = data.likes;
       });
       return true;
+    }catch(error)
+    {
+      return false;
     }
-    return false;
   }
 
   int getLikeCount() {
@@ -1253,8 +1257,7 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
   }
 
   bool commentingEnabled() {
-    return widget.currentMoment.enableCommenting != null &&
-        widget.currentMoment.enableCommenting;
+    return widget.currentMoment.enableCommenting;
   }
 
   Widget getPayMeBtn() {

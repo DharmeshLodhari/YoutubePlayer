@@ -17,11 +17,11 @@ import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_user_manager
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/connection_list_synchronizer.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/db_socket_message_handler.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/message_sound_player.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatMessageAction.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/GroupDetailModel.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/Participant.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/gif_model/GIFModel.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_conversation.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_message_action.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/group_detail_model.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/participant_model.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/gif_model/gif_model.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatMessage.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatMessagePagination.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/SocketQueueChatMessage.dart';
@@ -3194,7 +3194,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
                 width: 10,
               ),
               Icon(
-                SlydoAppIcon.send_message_2,
+                SlydoAppIcon.sendMessage2,
                 color: navyBlue,
                 size: 22,
               ),
@@ -4130,43 +4130,43 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     );
   }
 
-  Widget addToCartWidget({var item}) {
-    return RoundedBackgroundIcon(
-      borderRadius: 16,
-      height: 38,
-      width: 38,
-      icon: Icon(
-        SlydoAppIcon.add_cart,
-        color: navyBlue,
-        size: 20,
-      ),
-      backgroundColor: navyBlue.withOpacity(0.08),
-      onTap: () async {
-        final String type = item is Product ? "product" : "service";
-        debugPrint("item $item type:- $type");
-        basketBloc.addItemToCart(
-            item: item,
-            type: type,
-            currentUser: userBloc?.user.convertToUser());
-        late var mapData;
-        basketBloc.items.forEach((element) {
-          if (element["item"].checkID == item.checkID) {
-            mapData = element;
-            return;
-          }
-        });
-        final Map<String, dynamic> data = {
-          "type": type,
-          "id": mapData["item"].checkID,
-          "qty": mapData["qty"],
-        };
-        debugPrint("Data From Product Page : $data");
-        showToast(message: "Item added to the cart !!");
-
-        await ShoppingAuthService().addOrUpdateItemToShoppingCart(data);
-      },
-    );
-  }
+  // Widget addToCartWidget({var item}) {
+  //   return RoundedBackgroundIcon(
+  //     borderRadius: 16,
+  //     height: 38,
+  //     width: 38,
+  //     icon: Icon(
+  //       SlydoAppIcon.add_cart,
+  //       color: navyBlue,
+  //       size: 20,
+  //     ),
+  //     backgroundColor: navyBlue.withOpacity(0.08),
+  //     onTap: () async {
+  //       final String type = item is Product ? "product" : "service";
+  //       debugPrint("item $item type:- $type");
+  //       basketBloc.addItemToCart(
+  //           item: item,
+  //           type: type,
+  //           currentUser: userBloc?.user.convertToUser());
+  //       late var mapData;
+  //       basketBloc.items.forEach((element) {
+  //         if (element["item"].checkID == item.checkID) {
+  //           mapData = element;
+  //           return;
+  //         }
+  //       });
+  //       final Map<String, dynamic> data = {
+  //         "type": type,
+  //         "id": mapData["item"].checkID,
+  //         "qty": mapData["qty"],
+  //       };
+  //       debugPrint("Data From Product Page : $data");
+  //       showToast(message: "Item added to the cart !!");
+  //
+  //       await ShoppingAuthService().addOrUpdateItemToShoppingCart(data);
+  //     },
+  //   );
+  // }
 
   Widget unKnownMessageType(String? messageKind) {
     return Container(
@@ -4427,7 +4427,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   }
 
   // ignore: missing_return
-  Widget getResultTile(var result) {
+  Widget getResultTile(dynamic result) {
     if (isProductSearch) {
       if (result is Product) {
         return SearchProductTile(

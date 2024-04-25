@@ -9,7 +9,7 @@ import "package:uuid/uuid.dart";
 
 import '../../../../data/state_notifier.dart';
 import '../../../../utils/util.dart';
-import '../../messaging/chat/models/ChatConversation.dart';
+import '../../messaging/chat/models/chat_conversation.dart';
 import '../../messaging/chat/share_in_chat/ShareInChat.dart';
 
 class TopicActionsForNotification extends StatefulWidget {

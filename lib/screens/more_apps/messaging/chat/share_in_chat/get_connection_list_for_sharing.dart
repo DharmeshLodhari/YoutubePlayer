@@ -1,5 +1,5 @@
 import 'package:Slydo/data/state_notifier.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_conversation.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -13,9 +13,9 @@ class GetUserConnectionList extends StatefulWidget {
 
 class _GetUserConnectionListState extends State<GetUserConnectionList> {
   final GlobalKey<ScaffoldState> _scaffoldContactsListKey =
-      new GlobalKey<ScaffoldState>();
+      GlobalKey<ScaffoldState>();
   List<ChatConversation> connectionsList = [];
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
 
   bool isLoading = false;
   bool noItemInList = false;
@@ -43,7 +43,7 @@ class _GetUserConnectionListState extends State<GetUserConnectionList> {
         : isLoading && connectionsList.isEmpty
             ? buildLoadingIndicator(isLoading: isLoading)
             : ListView.builder(
-                padding: EdgeInsets.symmetric(
+                padding: const EdgeInsets.symmetric(
                   vertical: 4,
                 ),
                 //+1 for progressbar
@@ -62,7 +62,7 @@ class _GetUserConnectionListState extends State<GetUserConnectionList> {
   }
 
   void getList() async {
-    ConnectionListBloc _connectionListBloc =
+    final ConnectionListBloc _connectionListBloc =
         Provider.of<ConnectionListBloc>(context, listen: false);
 
     connectionsList.addAll(_connectionListBloc.connectionUsers);
@@ -168,7 +168,7 @@ class _ShareToUserTileState extends State<ShareToUserTile> {
   Widget getTile() {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       shadowColor: boxShadowTwo,
       elevation: 0,
       child: GestureDetector(
