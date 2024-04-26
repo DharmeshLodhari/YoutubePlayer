@@ -563,7 +563,7 @@ class MomentsService extends AuthService {
       String? channelUsername}) async {
     String url = "${AppConfig.baseUrl}/api/v1/social/moments/$momentId/";
 
-    if (channelUsername!.isNotEmpty) {
+    if (channelUsername != null) {
       url =
           "${AppConfig.baseUrl}/api/v1/social/moments/channel/$channelUsername/$momentId/";
     }

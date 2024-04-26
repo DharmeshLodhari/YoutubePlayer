@@ -881,7 +881,7 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
       onTap: () {
         Navigator.pop(context);
         MomentsService().updateMoment(
-            momentId: momentModel.id!, data: {"is_public": isPublic}).then(
+            momentId: momentModel.id ?? "", data: {"is_public": isPublic}).then(
           (value) {
             momentModel = value;
             if (mounted) setState(() {});

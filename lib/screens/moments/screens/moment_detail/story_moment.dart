@@ -1003,31 +1003,85 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
     }
 
     if (attachment.containsKey('product')) {
-      return attachmentWidget(
-          onTap: () {
-            Navigator.pushNamed(
-              context,
-              Routes.PRODUCT,
-              // arguments: {"productId": 'ce8d6464-8c7f-47db-a381-a163a258713a'},
-              arguments: {"productId": attachment['product']},
-            );
-          },
-          iconData: Icons.shopping_cart_rounded,
-          title: 'Product');
+      return InkWell(
+        onTap: () {
+          Navigator.pushNamed(
+            context,
+            Routes.PRODUCT,
+            // arguments: {"productId": 'ce8d6464-8c7f-47db-a381-a163a258713a'},
+            arguments: {"productId": attachment['product']},
+          );
+        },
+        child: Row(
+          children: [
+            Icon(
+              Icons.shopping_cart_rounded,
+              color: white,
+              size: 18,
+            ),
+            SizedBox(width: 5),
+            Text(
+              "Product",
+              style: TextStyle(
+                color: white,
+                fontWeight: FontWeight.w600,
+              ),
+            )
+          ],
+        ),
+      );
+      // return attachmentWidget(
+      //     onTap: () {
+      //       Navigator.pushNamed(
+      //         context,
+      //         Routes.PRODUCT,
+      //         // arguments: {"productId": 'ce8d6464-8c7f-47db-a381-a163a258713a'},
+      //         arguments: {"productId": attachment['product']},
+      //       );
+      //     },
+      //     iconData: Icons.shopping_cart_rounded,
+      //     title: 'Product');
     }
 
     if (attachment.containsKey('service')) {
-      return attachmentWidget(
-          onTap: () {
-            Navigator.pushNamed(
-              context,
-              Routes.SERVICE_DETAIL,
-              // arguments: {"serviceId": '08083ad8-04d9-4878-8b18-e820f7c680af'},
-              arguments: {"serviceId": attachment['service']},
-            );
-          },
-          iconData: Icons.handyman_rounded,
-          title: 'Service');
+      return InkWell(
+        onTap: () {
+          Navigator.pushNamed(
+            context,
+            Routes.SERVICE_DETAIL,
+            // arguments: {"serviceId": '08083ad8-04d9-4878-8b18-e820f7c680af'},
+            arguments: {"serviceId": attachment['service']},
+          );
+        },
+        child: Row(
+          children: [
+            Icon(
+              Icons.handyman_rounded,
+              color: white,
+              size: 18,
+            ),
+            SizedBox(width: 5),
+            Text(
+              "Service",
+              style: TextStyle(
+                color: white,
+                fontWeight: FontWeight.w600,
+              ),
+            )
+          ],
+        ),
+      );
+      // return attachmentWidget(
+      //     onTap: () {
+      //       Navigator.pushNamed(
+      //         context,
+      //         Routes.SERVICE_DETAIL,
+      //         // arguments: {"serviceId": '08083ad8-04d9-4878-8b18-e820f7c680af'},
+      //         arguments: {"serviceId": attachment['service']},
+      //       );
+      //     },
+      //     iconData: Icons.handyman_rounded,
+      //     title: 'Service');
     }
 
     if (attachment.containsKey('blog')) {

@@ -123,7 +123,36 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
   }
 
   Future<void> getAllData() async {
+    getNearByBusinessList();
     await fetchParallelData();
+    // final startTime1 = DateTime.now();
+    // await listOfSuperStores();
+    // final endTime1 = DateTime.now();
+    //
+    // debugPrint(
+    //     'Parallel Time111: ${endTime1.difference(startTime1).inSeconds}s');
+    //
+    // final startTime2 = DateTime.now();
+    // await getList();
+    // final endTime2 = DateTime.now();
+    //
+    // debugPrint(
+    //     'Parallel Time222: ${endTime2.difference(startTime2).inSeconds}s');
+    //
+    // final startTime3 = DateTime.now();
+    // await getNearByBusinessList();
+    // final endTime3 = DateTime.now();
+    //
+    // debugPrint(
+    //     'Parallel Time333: ${endTime3.difference(startTime3).inSeconds}s');
+    //
+    // final startTime4 = DateTime.now();
+    // await getTodaysDealProducts();
+    // final endTime4 = DateTime.now();
+    //
+    // debugPrint(
+    //     'Parallel Time444: ${endTime4.difference(startTime4).inSeconds}s');
+
     // await Future.wait([
     //   listOfSuperStores(withSetState: false),
     //   getList(withSetState: false),
@@ -171,15 +200,21 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
           ShoppingAuthService().listOfSuperStores(),
           ShoppingAuthService()
               .listOfDiscounts(next, previous, activeDiscount: true),
-          ShoppingAuthService().listOfMerchant(
-              nearByNext, nearByPrevious, _currentCategory,
-              nearBy: true),
+
           ShoppingAuthService().getProductListForSuperStore(
               todayDealNext, todayDealPrevious,
               todaysDeal: true),
+          // ShoppingAuthService().listOfMerchant(
+          //     nearByNext, nearByPrevious, _currentCategory,
+          //     nearBy: true),
         ];
 
+        final startTime = DateTime.now();
         List<Map<String, dynamic>?> results = await Future.wait(apiCalls);
+        final endTime = DateTime.now();
+
+        debugPrint(
+            'Parallel Time: ${endTime.difference(startTime).inSeconds}s');
 
         // Handle each API call result
         for (int i = 0; i < results.length; i++) {
@@ -202,17 +237,18 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
             var tempList = result['results'];
             itemList.addAll(tempList);
           } else if (i == 2) {
-            nearByCount = result['count'];
-            nearByNext = result['next'];
-            nearByPrevious = result['previous'];
-            var tempList1 = result['results'];
-            customerProfileListNearBy.addAll(tempList1);
-          } else if (i == 3) {
             todayDealNext = result['next'];
             todayDealPrevious = result['previous'];
             var tempList2 = result['results'];
             todaysDealList.addAll(tempList2);
           }
+          // else if (i == 3) {
+          //   nearByCount = result['count'];
+          //   nearByNext = result['next'];
+          //   nearByPrevious = result['previous'];
+          //   var tempList1 = result['results'];
+          //   customerProfileListNearBy.addAll(tempList1);
+          // }
         }
 
         noItemInList = false;
@@ -241,148 +277,148 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
     }
   }
 
-  // Future<void> getList({bool withSetState = true}) async {
-  //   if (!isLoading) {
-  //     if (next != null && !isLoading) {
-  //       isLoading = true;
-  //       if (mounted && withSetState) {
-  //         setState(() {});
-  //       }
-  //       Map<String, dynamic>? result = await ShoppingAuthService()
-  //           .listOfDiscounts(next, previous, activeDiscount: true);
-  //
-  //       if (result == null) {
-  //         isLoading = false;
-  //         noItemInList = true;
-  //         if (mounted && withSetState) {
-  //           setState(() {});
-  //         }
-  //         return;
-  //       }
-  //
-  //       itemCount = result['count'];
-  //       next = result['next'];
-  //       previous = result['previous'];
-  //       var tempList = result['results'];
-  //
-  //       noItemInList = false;
-  //       isLoading = false;
-  //       itemList.addAll(tempList);
-  //       if (mounted && withSetState) {
-  //         setState(() {});
-  //       }
-  //     }
-  //     if (itemList.isEmpty) {
-  //       noItemInList = true;
-  //       if (mounted && withSetState) {
-  //         setState(() {});
-  //       }
-  //     } else if (next == null && itemList.length > 6) {
-  //       _productScaffoldMessengerKey.currentState?.showSnackBar(SnackBar(
-  //         content:
-  //             Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-  //         duration: Duration(milliseconds: 500),
-  //       ));
-  //     }
-  //   }
-  // }
-  //
-  // Future<void> getTodaysDealProducts({bool withSetState = true}) async {
-  //   if (!isTodayDealLoading) {
-  //     if (todayDealNext != null && !isTodayDealLoading) {
-  //       isTodayDealLoading = true;
-  //       if (mounted && withSetState) {
-  //         setState(() {});
-  //       }
-  //
-  //       Map<String, dynamic>? result = await ShoppingAuthService()
-  //           .getProductListForSuperStore(todayDealNext, todayDealPrevious,
-  //               todaysDeal: true);
-  //
-  //       if (result == null) {
-  //         todaysDealsEmpty = true;
-  //         todaysDealsSizeBox = 22;
-  //         isTodayDealLoading = false;
-  //         if (mounted && withSetState) {
-  //           setState(() {});
-  //         }
-  //         return;
-  //       }
-  //
-  //       todayDealNext = result['next'];
-  //       todayDealPrevious = result['previous'];
-  //       var tempList = result['results'];
-  //
-  //       todaysDealsEmpty = false;
-  //       isTodayDealLoading = false;
-  //       todaysDealList.addAll(tempList);
-  //
-  //       if (mounted && withSetState) {
-  //         setState(() {});
-  //       }
-  //     }
-  //     if (todaysDealList.isEmpty) {
-  //       todaysDealsEmpty = true;
-  //       if (mounted && withSetState) {
-  //         setState(() {});
-  //       }
-  //     }
-  //   }
-  // }
-  //
-  // Future<void> getNearByBusinessList({bool withSetState = true}) async {
-  //   if (!isNearbyLoading) {
-  //     if (nearByNext != null && !isNearbyLoading) {
-  //       isNearbyLoading = true;
-  //       if (mounted && withSetState) {
-  //         setState(() {});
-  //       }
-  //
-  //       Map<String, dynamic>? result = await ShoppingAuthService()
-  //           .listOfMerchant(nearByNext, nearByPrevious, _currentCategory,
-  //               nearBy: true);
-  //
-  //       if (result == null) {
-  //         noNearByInList = true;
-  //
-  //         isNearbyLoading = false;
-  //         if (mounted && withSetState) {
-  //           setState(() {});
-  //         }
-  //         return;
-  //       }
-  //
-  //       nearByCount = result['count'];
-  //       nearByNext = result['next'];
-  //       nearByPrevious = result['previous'];
-  //       var tempList = result['results'];
-  //
-  //       noNearByInList = false;
-  //       isNearbyLoading = false;
-  //       customerProfileListNearBy.addAll(tempList);
-  //       if (mounted && withSetState) {
-  //         setState(() {});
-  //       }
-  //
-  //       // for(var item in customerProfileListNearBy){
-  //       //   debugPrint('Fola near by:::: ${item.toJson()}');
-  //       // }
-  //
-  //     }
-  //     if (customerProfileListNearBy.isEmpty) {
-  //       noNearByInList = true;
-  //       if (mounted && withSetState) {
-  //         setState(() {});
-  //       }
-  //     } else if (nearByNext == null && customerProfileListNearBy.length > 6) {
-  //       // _findBusinessScaffoldMessengerKey.currentState?.showSnackBar(SnackBar(
-  //       //   content:
-  //       //       Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-  //       //   duration: const Duration(milliseconds: 500),
-  //       // ));
-  //     }
-  //   }
-  // }
+  Future<void> getList({bool withSetState = true}) async {
+    if (!isLoading) {
+      if (next != null && !isLoading) {
+        isLoading = true;
+        if (mounted && withSetState) {
+          setState(() {});
+        }
+        Map<String, dynamic>? result = await ShoppingAuthService()
+            .listOfDiscounts(next, previous, activeDiscount: true);
+
+        if (result == null) {
+          isLoading = false;
+          noItemInList = true;
+          if (mounted && withSetState) {
+            setState(() {});
+          }
+          return;
+        }
+
+        itemCount = result['count'];
+        next = result['next'];
+        previous = result['previous'];
+        var tempList = result['results'];
+
+        noItemInList = false;
+        isLoading = false;
+        itemList.addAll(tempList);
+        if (mounted && withSetState) {
+          setState(() {});
+        }
+      }
+      if (itemList.isEmpty) {
+        noItemInList = true;
+        if (mounted && withSetState) {
+          setState(() {});
+        }
+      } else if (next == null && itemList.length > 6) {
+        _productScaffoldMessengerKey.currentState?.showSnackBar(SnackBar(
+          content:
+              Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
+          duration: Duration(milliseconds: 500),
+        ));
+      }
+    }
+  }
+
+  Future<void> getTodaysDealProducts({bool withSetState = true}) async {
+    if (!isTodayDealLoading) {
+      if (todayDealNext != null && !isTodayDealLoading) {
+        isTodayDealLoading = true;
+        if (mounted && withSetState) {
+          setState(() {});
+        }
+
+        Map<String, dynamic>? result = await ShoppingAuthService()
+            .getProductListForSuperStore(todayDealNext, todayDealPrevious,
+                todaysDeal: true);
+
+        if (result == null) {
+          todaysDealsEmpty = true;
+          todaysDealsSizeBox = 22;
+          isTodayDealLoading = false;
+          if (mounted && withSetState) {
+            setState(() {});
+          }
+          return;
+        }
+
+        todayDealNext = result['next'];
+        todayDealPrevious = result['previous'];
+        var tempList = result['results'];
+
+        todaysDealsEmpty = false;
+        isTodayDealLoading = false;
+        todaysDealList.addAll(tempList);
+
+        if (mounted && withSetState) {
+          setState(() {});
+        }
+      }
+      if (todaysDealList.isEmpty) {
+        todaysDealsEmpty = true;
+        if (mounted && withSetState) {
+          setState(() {});
+        }
+      }
+    }
+  }
+
+  Future<void> getNearByBusinessList({bool withSetState = true}) async {
+    if (!isNearbyLoading) {
+      if (nearByNext != null && !isNearbyLoading) {
+        isNearbyLoading = true;
+        if (mounted && withSetState) {
+          setState(() {});
+        }
+
+        Map<String, dynamic>? result = await ShoppingAuthService()
+            .listOfMerchant(nearByNext, nearByPrevious, _currentCategory,
+                nearBy: true);
+
+        if (result == null) {
+          // noNearByInList = true;
+
+          isNearbyLoading = false;
+          if (mounted && withSetState) {
+            setState(() {});
+          }
+          return;
+        }
+
+        nearByCount = result['count'];
+        nearByNext = result['next'];
+        nearByPrevious = result['previous'];
+        var tempList = result['results'];
+
+        // noNearByInList = false;
+        isNearbyLoading = false;
+        customerProfileListNearBy.addAll(tempList);
+        if (mounted && withSetState) {
+          setState(() {});
+        }
+
+        // for(var item in customerProfileListNearBy){
+        //   debugPrint('Fola near by:::: ${item.toJson()}');
+        // }
+
+      }
+      if (customerProfileListNearBy.isEmpty) {
+        // noNearByInList = true;
+        if (mounted && withSetState) {
+          setState(() {});
+        }
+      } else if (nearByNext == null && customerProfileListNearBy.length > 6) {
+        // _findBusinessScaffoldMessengerKey.currentState?.showSnackBar(SnackBar(
+        //   content:
+        //       Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
+        //   duration: const Duration(milliseconds: 500),
+        // ));
+      }
+    }
+  }
 
   _refreshPage() {
     productNext = "";
