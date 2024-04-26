@@ -476,10 +476,9 @@ class AuthService {
         return result;
       }
       final jsonData = json.decode(response.body);
-      final List<ProductIndustryResults> results =
-          (jsonData["results"] as List)
-              .map((e) => ProductIndustryResults.fromJson(e))
-              .toList();
+      final List<ProductIndustryResults> results = (jsonData["results"] as List)
+          .map((e) => ProductIndustryResults.fromJson(e))
+          .toList();
 
       final Map<String, dynamic> result = {"product": results};
 

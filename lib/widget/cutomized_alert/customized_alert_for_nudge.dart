@@ -161,19 +161,20 @@ class CustomizedAlertForNudge {
   Widget? _getImage() {
     debugPrint('MESSAGE DATA-> $image');
 
-    return roundedBackgroundIcon ?? (image != null && image!.isNotEmpty
+    return roundedBackgroundIcon ??
+        (image != null && image!.isNotEmpty
             ? ClipOval(
-              child: Image.network(
-                image!,
-                height: 170,
-                width: 170,
-                fit: BoxFit.fill,
-                filterQuality: FilterQuality.high,
-                cacheHeight: 170,
-                cacheWidth: 170,
-                frameBuilder: imageFrameBuilder,
-              ),
-            )
+                child: Image.network(
+                  image!,
+                  height: 170,
+                  width: 170,
+                  fit: BoxFit.fill,
+                  filterQuality: FilterQuality.high,
+                  cacheHeight: 170,
+                  cacheWidth: 170,
+                  frameBuilder: imageFrameBuilder,
+                ),
+              )
             : Container());
   }
 

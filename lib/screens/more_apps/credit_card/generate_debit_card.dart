@@ -212,10 +212,9 @@ class GenerateDebitCardState extends State<GenerateDebitCard> {
                                           fontWeight: FontWeight.w600),
                                       children: <InlineSpan>[
                                         TextSpan(
-                                          text: double.parse(
-                                                      moneyDisplayNormalizer(
-                                                          displayPossibleCashOutAmount(
-                                                              balance))) >=
+                                          text: double.parse(moneyDisplayNormalizer(
+                                                      displayPossibleCashOutAmount(
+                                                          balance))) >=
                                                   35.00
                                               ? worldCurrencies[userBloc!
                                                       .user.currency!]! +

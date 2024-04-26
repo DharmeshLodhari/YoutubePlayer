@@ -906,9 +906,9 @@ class _AddInvoiceState extends State<AddInvoice> {
       };
 
       for (var item in invoiceItem) {
-          final int index = invoiceItem.indexOf(item);
-          invoiceItem[index]!.amount = invoiceItem[index]!.amount! * 100;
-        }
+        final int index = invoiceItem.indexOf(item);
+        invoiceItem[index]!.amount = invoiceItem[index]!.amount! * 100;
+      }
       if (conversationId != null) {
         data['conversation_id'] = conversationId!;
       }
