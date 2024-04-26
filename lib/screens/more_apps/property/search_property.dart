@@ -633,25 +633,23 @@ class _SearchPropertyState extends State<SearchProperty> {
                       child: CustomizedDropDownField(
                         title: "Check in",
                         titleColor: blackFont,
-                        child: Container(
-                          child: ListTile(
-                            dense: true,
-                            title: Text(
-                              formatDateInDigit(checkInDate),
-                              style: TextStyle(
-                                color: blackFont,
-                                fontWeight: FontWeight.w600,
-                                fontSize: 16,
-                              ),
-                              overflow: TextOverflow.fade,
-                              softWrap: false,
-                              maxLines: 1,
+                        child: ListTile(
+                          dense: true,
+                          title: Text(
+                            formatDateInDigit(checkInDate),
+                            style: TextStyle(
+                              color: blackFont,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16,
                             ),
-                            trailing: Icon(
-                              SlydoAppIcon.date,
-                              size: 16,
-                              color: darkGrey,
-                            ),
+                            overflow: TextOverflow.fade,
+                            softWrap: false,
+                            maxLines: 1,
+                          ),
+                          trailing: Icon(
+                            SlydoAppIcon.date,
+                            size: 16,
+                            color: darkGrey,
                           ),
                         ),
                       ),
@@ -680,25 +678,23 @@ class _SearchPropertyState extends State<SearchProperty> {
                       child: CustomizedDropDownField(
                         title: "Check out",
                         titleColor: blackFont,
-                        child: Container(
-                          child: ListTile(
-                            dense: true,
-                            title: Text(
-                              formatDateInDigit(checkOutDate),
-                              style: TextStyle(
-                                color: blackFont,
-                                fontWeight: FontWeight.w600,
-                                fontSize: 16,
-                              ),
-                              overflow: TextOverflow.fade,
-                              softWrap: false,
-                              maxLines: 1,
+                        child: ListTile(
+                          dense: true,
+                          title: Text(
+                            formatDateInDigit(checkOutDate),
+                            style: TextStyle(
+                              color: blackFont,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16,
                             ),
-                            trailing: Icon(
-                              SlydoAppIcon.date,
-                              size: 16,
-                              color: darkGrey,
-                            ),
+                            overflow: TextOverflow.fade,
+                            softWrap: false,
+                            maxLines: 1,
+                          ),
+                          trailing: Icon(
+                            SlydoAppIcon.date,
+                            size: 16,
+                            color: darkGrey,
                           ),
                         ),
                       ),
@@ -768,7 +764,7 @@ class _SearchPropertyState extends State<SearchProperty> {
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: Container(
+              content: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   elevation: 2,
@@ -1119,7 +1115,7 @@ class _SearchPropertyState extends State<SearchProperty> {
       {required String title,
       StateSetter? bottomSheetSetState,
       required List<ChipData> children}) {
-    return Container(
+    return SizedBox(
       width: double.infinity,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1153,7 +1149,7 @@ class _SearchPropertyState extends State<SearchProperty> {
   }
 
   Widget buyOrRentSwitch({StateSetter? bottomSheetSetState}) {
-    return Container(
+    return SizedBox(
       width: MediaQuery.of(context).size.width - 40,
       height: 30,
       child: Row(
@@ -1188,26 +1184,22 @@ class _SearchPropertyState extends State<SearchProperty> {
   }
 
   Widget buyButton() {
-    return Container(
-      child: Text(
-        "Buy",
-        style: TextStyle(
-            fontWeight: isForBuyOrRent[0] ? FontWeight.w600 : FontWeight.w400,
-            fontSize: 16,
-            color: isForBuyOrRent[0] ? Colors.white : blackFont),
-      ),
+    return Text(
+      "Buy",
+      style: TextStyle(
+          fontWeight: isForBuyOrRent[0] ? FontWeight.w600 : FontWeight.w400,
+          fontSize: 16,
+          color: isForBuyOrRent[0] ? Colors.white : blackFont),
     );
   }
 
   Widget rentButton() {
-    return Container(
-      child: Text(
-        "Rent",
-        style: TextStyle(
-            fontWeight: isForBuyOrRent[1] ? FontWeight.w600 : FontWeight.w400,
-            fontSize: 16,
-            color: isForBuyOrRent[1] ? Colors.white : blackFont),
-      ),
+    return Text(
+      "Rent",
+      style: TextStyle(
+          fontWeight: isForBuyOrRent[1] ? FontWeight.w600 : FontWeight.w400,
+          fontSize: 16,
+          color: isForBuyOrRent[1] ? Colors.white : blackFont),
     );
   }
 
@@ -1548,7 +1540,7 @@ class _SearchPropertyState extends State<SearchProperty> {
       const SizedBox(
         height: 16,
       ),
-      Container(
+      SizedBox(
         height: 20,
         width: MediaQuery.of(context).size.width - 20,
         child: Stack(
@@ -1650,7 +1642,8 @@ class ChipData {
 }
 
 class SelectedItemWidget extends StatelessWidget {
-  const SelectedItemWidget(this.selectedItem, this.deleteSelectedItem);
+  const SelectedItemWidget(this.selectedItem, this.deleteSelectedItem,
+      {super.key});
 
   final String selectedItem;
   final VoidCallback deleteSelectedItem;
@@ -1690,7 +1683,7 @@ class SelectedItemWidget extends StatelessWidget {
 }
 
 class MyTextField extends StatelessWidget {
-  const MyTextField(this.controller, this.focusNode);
+  const MyTextField(this.controller, this.focusNode, {super.key});
 
   final TextEditingController controller;
   final FocusNode focusNode;
@@ -1772,6 +1765,8 @@ class MyTextField extends StatelessWidget {
 }
 
 class NoItemsFound extends StatelessWidget {
+  const NoItemsFound({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Row(

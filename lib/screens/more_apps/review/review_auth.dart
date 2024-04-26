@@ -9,7 +9,7 @@ class ReviewAuth extends AuthService {
   // Fetch User Review Details
   Future<Map<String, dynamic>> fetchUserReviews({String? userName}) async {
     final String url =
-        AppConfig.baseUrl + "/api/v1/social/review/users/$userName/";
+        "${AppConfig.baseUrl}/api/v1/social/review/users/$userName/";
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
     debugPrint(
@@ -26,7 +26,7 @@ class ReviewAuth extends AuthService {
   // Write User Reviews
   Future<bool> addUserReview(String userName, Map<String, dynamic> data) async {
     final String url =
-        AppConfig.baseUrl + "/api/v1/social/review/users/$userName/";
+        "${AppConfig.baseUrl}/api/v1/social/review/users/$userName/";
     final Map<String, String> headers = await getAuthHeaders();
     final _data = jsonEncode(data);
     debugPrint("Data:- $_data");
@@ -55,7 +55,7 @@ class ReviewAuth extends AuthService {
   Future<Review> updateUserReview(
       Review review, Map<String, dynamic> data) async {
     final String url =
-        AppConfig.baseUrl + "/api/v1/social/reviews/${review.id}/";
+        "${AppConfig.baseUrl}/api/v1/social/reviews/${review.id}/";
     final Map<String, String> headers = await getAuthHeaders();
     final _data = jsonEncode(data);
     final response = await httpPatch(url, body: _data, headers: headers);
@@ -84,7 +84,7 @@ class ReviewAuth extends AuthService {
   Future<Review> updateProductReview(
       Review review, Map<String, dynamic> data) async {
     final String url =
-        AppConfig.baseUrl + "/api/v1/social/reviews/${review.id}/";
+        "${AppConfig.baseUrl}/api/v1/social/reviews/${review.id}/";
     final Map<String, String> headers = await getAuthHeaders();
     final _data = jsonEncode(data);
     final response = await httpPatch(url, body: _data, headers: headers);
@@ -113,7 +113,7 @@ class ReviewAuth extends AuthService {
   Future<Review> updateServiceReview(
       Review review, Map<String, dynamic> data) async {
     final String url =
-        AppConfig.baseUrl + "/api/v1/social/reviews/${review.id}/";
+        "${AppConfig.baseUrl}/api/v1/social/reviews/${review.id}/";
     final Map<String, String> headers = await getAuthHeaders();
     final _data = jsonEncode(data);
     final response = await httpPatch(url, body: _data, headers: headers);
@@ -141,7 +141,7 @@ class ReviewAuth extends AuthService {
 
   Future<Review> likeReview(Review review) async {
     final String url =
-        AppConfig.baseUrl + "/api/v1/social/reviews/like/${review.id}/";
+        "${AppConfig.baseUrl}/api/v1/social/reviews/like/${review.id}/";
     final Map<String, String> headers = await getAuthHeaders();
     final response = await httpPost(url, headers: headers);
 
@@ -168,7 +168,7 @@ class ReviewAuth extends AuthService {
 
   Future<Review> dislikeReview(Review review) async {
     final String url =
-        AppConfig.baseUrl + "/api/v1/social/reviews/dislike/${review.id}/";
+        "${AppConfig.baseUrl}/api/v1/social/reviews/dislike/${review.id}/";
     final Map<String, String> headers = await getAuthHeaders();
     final response = await httpPost(url, headers: headers);
 
@@ -196,7 +196,7 @@ class ReviewAuth extends AuthService {
   // Write Product Reviews
   Future<bool> addProductReview(String id, Map<String, dynamic> data) async {
     final String url =
-        AppConfig.baseUrl + "/api/v1/social/review/products/$id/";
+        "${AppConfig.baseUrl}/api/v1/social/review/products/$id/";
     final Map<String, String> headers = await getAuthHeaders();
     final _data = jsonEncode(data);
     debugPrint("Data:- $_data");
@@ -224,7 +224,7 @@ class ReviewAuth extends AuthService {
   // Write Service Reviews
   Future<bool> addServiceReview(String id, Map<String, dynamic> data) async {
     final String url =
-        AppConfig.baseUrl + "/api/v1/social/review/services/$id/";
+        "${AppConfig.baseUrl}/api/v1/social/review/services/$id/";
     final Map<String, String> headers = await getAuthHeaders();
     final _data = jsonEncode(data);
     debugPrint("Data:- $_data");
@@ -252,7 +252,7 @@ class ReviewAuth extends AuthService {
   // Fetch Product Reviews
   Future<Map<String, dynamic>> fetchProductReviews({String? productId}) async {
     final String url =
-        AppConfig.baseUrl + "/api/v1/social/review/products/$productId/";
+        "${AppConfig.baseUrl}/api/v1/social/review/products/$productId/";
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
     debugPrint(
@@ -269,12 +269,12 @@ class ReviewAuth extends AuthService {
 
   Future<bool> checkIfCanReviewProductOrService(
       Map<String, dynamic> data) async {
-    final String url = AppConfig.baseUrl +
-        "/api/v1/social/reviews/check-if-user-can-review-product-or-service/";
+    final String url =
+        "${AppConfig.baseUrl}/api/v1/social/reviews/check-if-user-can-review-product-or-service/";
 
     final headers = await getAuthHeaders();
     final _data = jsonEncode(data);
-    debugPrint('CAN REVIEW URL :: ${_data}');
+    debugPrint('CAN REVIEW URL :: $_data');
 
     final response = await httpPost(url, headers: headers, body: _data);
     final jsonData = jsonDecode(response.body);
@@ -289,7 +289,7 @@ class ReviewAuth extends AuthService {
   // Fetch Service Reviews
   Future<Map<String, dynamic>> fetchServiceReviews({String? serviceId}) async {
     final String url =
-        AppConfig.baseUrl + "/api/v1/social/review/services/serviceId/";
+        "${AppConfig.baseUrl}/api/v1/social/review/services/serviceId/";
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
     debugPrint(

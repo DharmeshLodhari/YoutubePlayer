@@ -23,10 +23,10 @@ import 'connections_list.dart';
 class ConnectionDashboard extends StatefulWidget {
   final dynamic arguments;
 
-  ConnectionDashboard({this.arguments});
+  const ConnectionDashboard({super.key, this.arguments});
 
   @override
-  _ConnectionDashboardState createState() => _ConnectionDashboardState();
+  State<ConnectionDashboard> createState() => _ConnectionDashboardState();
 }
 
 class _ConnectionDashboardState extends State<ConnectionDashboard> {
@@ -377,7 +377,7 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
   Widget tabViews() {
     return IndexedStack(
       index: currentIndex,
-      children: [
+      children: const [
         ConnectionList(),
         ConnectionRequestList(),
         BlockedList(),

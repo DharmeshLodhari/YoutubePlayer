@@ -194,8 +194,8 @@ class _YarnCommentReplyListState extends State<YarnCommentReplyList> {
         }
 
         count = result['count'] ?? 0;
-        next = result['next'] != null ? result['next'] : "";
-        previous = result['previous'] != null ? result['previous'] : "";
+        next = result['next'] ?? "";
+        previous = result['previous'] ?? "";
         final tempList = result['results'];
         yarnComments = [];
         if (mounted) {

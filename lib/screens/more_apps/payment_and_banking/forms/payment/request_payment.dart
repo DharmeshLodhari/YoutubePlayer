@@ -34,7 +34,7 @@ class RequestPayment extends StatefulWidget {
 
   // Declare a field that holds the userData.
   @override
-  _RequestPaymentState createState() =>
+  State<RequestPayment> createState() =>
       _RequestPaymentState(arguments: arguments);
 }
 
@@ -76,21 +76,13 @@ class _RequestPaymentState extends State<RequestPayment> {
 
   @override
   void initState() {
-    isFromProfile = arguments != null
-        ? arguments['isFromProfile'] != null
-            ? arguments['isFromProfile']
-            : false
-        : false;
+    isFromProfile =
+        arguments != null ? arguments['isFromProfile'] ?? false : false;
     isFromChat = widget.arguments != null
-        ? widget.arguments['isFromChat'] != null
-            ? widget.arguments['isFromChat']
-            : false
+        ? widget.arguments['isFromChat'] ?? false
         : false;
-    conversationId = widget.arguments != null
-        ? widget.arguments['conversationId'] != null
-            ? widget.arguments['conversationId']
-            : null
-        : null;
+    conversationId =
+        widget.arguments != null ? widget.arguments['conversationId'] : null;
 
     /* adding listener on recipientFocus when user unFocus
     From Recipient Field then value of that field should be in lowerCase */
@@ -856,14 +848,14 @@ class _RequestPaymentState extends State<RequestPayment> {
                         if (mounted) {
                           if (response.statusCode == 406) {
                             errorMessage = jsonDecode(value.body)[0];
-                            showToast(message: "$errorMessage");
+                            showToast(message: errorMessage);
                             setState(() {});
                           } else {
                             debugPrint("ERROR:- ${response.body}");
                             setState(() {
                               errorMessage = AppLocalization.of(context)!
                                   .somethingWentWrong;
-                              showToast(message: "$errorMessage");
+                              showToast(message: errorMessage);
                             });
                           }
                         }

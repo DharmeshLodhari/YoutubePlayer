@@ -66,7 +66,7 @@ class _PostTileForInvoiceState extends State<PostTileForInvoice> {
               child: getPaymentContractTile(),
             ),
             if (isSender)
-              Container(
+              SizedBox(
                 width: 20,
                 child: isSender
                     ? Center(

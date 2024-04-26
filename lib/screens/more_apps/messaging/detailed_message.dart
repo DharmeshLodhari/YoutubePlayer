@@ -16,7 +16,7 @@ import 'message_auth.dart';
 class DetailedMessage extends StatefulWidget {
   final dynamic arguments;
 
-  DetailedMessage({this.arguments});
+  const DetailedMessage({super.key, this.arguments});
 
   @override
   _DetailedMessageState createState() =>
@@ -154,11 +154,9 @@ class _DetailedMessageState extends State<DetailedMessage> {
       leading: getLeading(),
       title: getSender(),
       subtitle: getRecipientWidget(),
-      trailing: Container(
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[getArchivedButton(), getIsStarredButton()],
-        ),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[getArchivedButton(), getIsStarredButton()],
       ),
       onTap: () {
         Navigator.pushNamed(context, '/profile',

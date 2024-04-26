@@ -153,7 +153,7 @@ class MessageLookup extends MessageLookupByLibrary {
                 "By clicking Register you are agreeing to the Terms and Conditions."),
         "done": MessageLookupByLibrary.simpleMessage("Done"),
         "driverLicence":
-            MessageLookupByLibrary.simpleMessage("Driver\'s License"),
+            MessageLookupByLibrary.simpleMessage("Driver's License"),
         "editProduct": MessageLookupByLibrary.simpleMessage("Edit Product"),
         "editProfile": MessageLookupByLibrary.simpleMessage("Edit Profile"),
         "editService": MessageLookupByLibrary.simpleMessage("Edit Service"),
@@ -347,7 +347,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "products": MessageLookupByLibrary.simpleMessage("Products"),
         "profile": MessageLookupByLibrary.simpleMessage("Profile"),
         "providersOtherService":
-            MessageLookupByLibrary.simpleMessage("Provider\'s Other Services"),
+            MessageLookupByLibrary.simpleMessage("Provider's Other Services"),
         "re": MessageLookupByLibrary.simpleMessage("Re"),
         "received": MessageLookupByLibrary.simpleMessage("Received"),
         "recipient": MessageLookupByLibrary.simpleMessage("Recipient"),
@@ -384,9 +384,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "selectYourPhoneCode":
             MessageLookupByLibrary.simpleMessage("Select your phone code"),
         "sellersOtherProduct":
-            MessageLookupByLibrary.simpleMessage("Seller\'s Other Products"),
+            MessageLookupByLibrary.simpleMessage("Seller's Other Products"),
         "sellersOtherServices":
-            MessageLookupByLibrary.simpleMessage("Seller\'s Other Services"),
+            MessageLookupByLibrary.simpleMessage("Seller's Other Services"),
         "send": MessageLookupByLibrary.simpleMessage("Send"),
         "sendMoney": MessageLookupByLibrary.simpleMessage("Send Money"),
         "sendPayment": MessageLookupByLibrary.simpleMessage("Send Payment"),
@@ -494,7 +494,7 @@ class MessageLookup extends MessageLookupByLibrary {
             "You Can Not Purchase This Item !!"),
         "youDontHaveAnyAccountPleaseAddOne":
             MessageLookupByLibrary.simpleMessage(
-                "You Don\'t have any Bank Account Please Add one"),
+                "You Don't have any Bank Account Please Add one"),
         "youHaveReachedBottomOfTheList": MessageLookupByLibrary.simpleMessage(
             "Your have reached the end of the list")
       };

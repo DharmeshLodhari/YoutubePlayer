@@ -950,7 +950,7 @@ class _EditJobState extends State<EditJob> {
   }
 
   Widget addLocalImages() {
-    return Container(
+    return SizedBox(
       height: 100,
       child: ListView.builder(
         controller: _scrollController,
@@ -1025,7 +1025,7 @@ class _EditJobState extends State<EditJob> {
   }
 
   Widget viewServerImages() {
-    return Container(
+    return SizedBox(
       height: 100,
       child: ListView.builder(
         controller: _scrollController,
@@ -1040,7 +1040,7 @@ class _EditJobState extends State<EditJob> {
   }
 
   Widget showServerImage(int index) {
-    return Container(
+    return SizedBox(
       height: 100,
       child: Stack(
         children: <Widget>[
@@ -1288,7 +1288,7 @@ class _EditJobState extends State<EditJob> {
   }
 
   Widget addImages() {
-    return Container(
+    return SizedBox(
       height: 100,
       child: ListView.builder(
         controller: _scrollController,
@@ -1379,7 +1379,7 @@ class _EditJobState extends State<EditJob> {
   }
 
   Widget showImage(int index) {
-    return Container(
+    return SizedBox(
       height: 100,
       child: Stack(
         children: <Widget>[
@@ -1809,7 +1809,7 @@ class _EditJobState extends State<EditJob> {
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: Container(
+              content: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   elevation: 2,
@@ -1888,7 +1888,7 @@ class _EditJobState extends State<EditJob> {
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: Container(
+              content: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   margin: EdgeInsets.zero,
@@ -2418,43 +2418,41 @@ class CustomizedRadioButtonRow extends StatelessWidget {
           children: [
             Expanded(
               flex: 1,
-              child: Container(
-                child: Row(
-                  children: [
-                    Radio(
-                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      visualDensity: const VisualDensity(
-                        horizontal: VisualDensity.minimumDensity,
-                        vertical: VisualDensity.minimumDensity,
-                      ),
-                      value: "Fixed",
-                      groupValue: groupValue,
-                      onChanged: (String? value) {
-                        // setState(() {
-                        //   groupValue = value!;
-                        // });
-                      },
+              child: Row(
+                children: [
+                  Radio(
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    visualDensity: const VisualDensity(
+                      horizontal: VisualDensity.minimumDensity,
+                      vertical: VisualDensity.minimumDensity,
                     ),
-                    const SizedBox(
-                      width: 5,
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        // setState(() {
-                        //   groupValue = "Fixed";
-                        // });
-                      },
-                      child: const Text(
-                        "Fixes",
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 14,
-                          fontFamily: "Inter",
-                        ),
+                    value: "Fixed",
+                    groupValue: groupValue,
+                    onChanged: (String? value) {
+                      // setState(() {
+                      //   groupValue = value!;
+                      // });
+                    },
+                  ),
+                  const SizedBox(
+                    width: 5,
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      // setState(() {
+                      //   groupValue = "Fixed";
+                      // });
+                    },
+                    child: const Text(
+                      "Fixes",
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 14,
+                        fontFamily: "Inter",
                       ),
-                    )
-                  ],
-                ),
+                    ),
+                  )
+                ],
               ),
             ),
             Expanded(

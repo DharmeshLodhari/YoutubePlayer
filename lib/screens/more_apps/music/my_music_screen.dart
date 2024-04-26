@@ -11,7 +11,7 @@ import 'my_wish_list.dart';
 class MyMusicScreen extends StatefulWidget {
   MusicPlayer? musicPlayer;
 
-  MyMusicScreen({this.musicPlayer});
+  MyMusicScreen({super.key, this.musicPlayer});
 
   @override
   _MyMusicScreenState createState() => _MyMusicScreenState();

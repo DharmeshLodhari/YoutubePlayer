@@ -20,8 +20,10 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import '../../../../../routes/route_constants.dart';
 
 class ConnectionRequestList extends StatefulWidget {
+  const ConnectionRequestList({super.key});
+
   @override
-  _ConnectionRequestListState createState() => _ConnectionRequestListState();
+  State<ConnectionRequestList> createState() => _ConnectionRequestListState();
 }
 
 class _ConnectionRequestListState extends State<ConnectionRequestList> {
@@ -42,9 +44,9 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
   bool noItemInList = false;
   final ScrollController _scrollController = ScrollController();
 
-  @protected
+  @override
   void initState() {
-    this.getList();
+    getList();
     super.initState();
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
@@ -262,8 +264,7 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
       title: AppLocalization.of(context)!.reject,
       description: isRequestSent
           ? "Are you sure want to cancel the request?"
-          : AppLocalization.of(context)!.areYouSureWantToRejectRequestFrom +
-              " ${user.displayName()}",
+          : "${AppLocalization.of(context)!.areYouSureWantToRejectRequestFrom} ${user.displayName()}",
       actionOneText: isRequestSent
           ? AppLocalization.of(context)!.yes
           : AppLocalization.of(context)!.reject,
@@ -277,9 +278,7 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
             context,
             isRequestSent
                 ? "Request canceled successfully !!"
-                : AppLocalization.of(context)!.requestFrom +
-                    " ${user.displayName()} " +
-                    AppLocalization.of(context)!.isRejectedSuccessfully);
+                : "${AppLocalization.of(context)!.requestFrom} ${user.displayName()} ${AppLocalization.of(context)!.isRejectedSuccessfully}");
         setState(() {
           connectionRequestList.removeAt(index);
           if (connectionRequestList.length <= 9) {
@@ -311,19 +310,16 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
       actionTwoTextColor: Colors.white,
       firstActionPrimary: false,
       title: AppLocalization.of(context)!.accept,
-      description: messageDecoderWithEmoji("Are you sure you want to add" +
-          " ${user.displayName()} " +
-          "as a friend?"),
+      description: messageDecoderWithEmoji(
+          "Are you sure you want to add ${user.displayName()} as a friend?"),
       actionOneText: AppLocalization.of(context)!.cancel,
       actionTwoText: AppLocalization.of(context)!.accept,
     );
     if (result != null && result) {
       final bool done = await UserAuth().acceptContactRequest(user);
       if (done) {
-        _showSnackBar(
-            context,
-            "${user.displayName()} " +
-                AppLocalization.of(context)!.isAddedToYourContactList);
+        _showSnackBar(context,
+            "${user.displayName()} ${AppLocalization.of(context)!.isAddedToYourContactList}");
 
         connectionRequestList.removeAt(index);
 
@@ -369,7 +365,7 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
 
 // ignore: must_be_immutable
 class VerticalListItem extends StatelessWidget {
-  VerticalListItem(this.data);
+  VerticalListItem(this.data, {super.key});
 
   final Map<String, dynamic> data;
 

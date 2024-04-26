@@ -67,23 +67,23 @@ class Envelope {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['amount'] = this.amount;
-    data['created_at'] = this.createdAt;
-    data['currency'] = this.currency;
-    data['from_customer'] = this.fromCustomer;
-    data['id'] = this.id;
-    data['is_open'] = this.isOpen;
-    data['is_paid'] = this.isPaid;
-    data['message'] = this.message;
-    data['open_at'] = this.openAt;
-    data['paid_at'] = this.paidAt;
-    data['pay_out_transaction'] = this.payOutTransaction;
-    data['title'] = this.title;
-    data['to_customer'] = this.toCustomer;
-    data['transaction'] = this.transaction;
-    data['type'] = this.type;
-    data['magic_envelope'] = this.magicEnvelope;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['amount'] = amount;
+    data['created_at'] = createdAt;
+    data['currency'] = currency;
+    data['from_customer'] = fromCustomer;
+    data['id'] = id;
+    data['is_open'] = isOpen;
+    data['is_paid'] = isPaid;
+    data['message'] = message;
+    data['open_at'] = openAt;
+    data['paid_at'] = paidAt;
+    data['pay_out_transaction'] = payOutTransaction;
+    data['title'] = title;
+    data['to_customer'] = toCustomer;
+    data['transaction'] = transaction;
+    data['type'] = type;
+    data['magic_envelope'] = magicEnvelope;
     return data;
   }
 }

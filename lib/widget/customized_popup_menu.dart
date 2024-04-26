@@ -60,7 +60,9 @@ class CustomizedPopUpMenu {
     if (_overlayEntry != null) {
       try {
         _overlayEntry?.remove();
-      } catch (e) {}
+      } catch (e) {
+        debugPrint("Error $e");
+      }
       isMenuOpen = !isMenuOpen;
       menuState(isMenuOpen);
     }

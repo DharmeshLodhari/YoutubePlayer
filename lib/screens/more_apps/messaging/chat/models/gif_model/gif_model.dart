@@ -73,30 +73,30 @@ class GIFModel {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['analytics_response_payload'] = this.analyticsResponsePayload;
-    data['bitly_gif_url'] = this.bitlyGifUrl;
-    data['bitly_url'] = this.bitlyUrl;
-    data['content_url'] = this.contentUrl;
-    data['embed_url'] = this.embedUrl;
-    data['id'] = this.id;
-    data['import_datetime'] = this.importDatetime;
-    data['is_sticker'] = this.isSticker;
-    data['rating'] = this.rating;
-    data['slug'] = this.slug;
-    data['source'] = this.source;
-    data['source_post_url'] = this.sourcePostUrl;
-    data['source_tld'] = this.sourceTld;
-    data['title'] = this.title;
-    data['trending_datetime'] = this.trendingDatetime;
-    data['type'] = this.type;
-    data['url'] = this.url;
-    data['username'] = this.username;
-    if (this.analytics != null) {
-      data['analytics'] = this.analytics!.toJson();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['analytics_response_payload'] = analyticsResponsePayload;
+    data['bitly_gif_url'] = bitlyGifUrl;
+    data['bitly_url'] = bitlyUrl;
+    data['content_url'] = contentUrl;
+    data['embed_url'] = embedUrl;
+    data['id'] = id;
+    data['import_datetime'] = importDatetime;
+    data['is_sticker'] = isSticker;
+    data['rating'] = rating;
+    data['slug'] = slug;
+    data['source'] = source;
+    data['source_post_url'] = sourcePostUrl;
+    data['source_tld'] = sourceTld;
+    data['title'] = title;
+    data['trending_datetime'] = trendingDatetime;
+    data['type'] = type;
+    data['url'] = url;
+    data['username'] = username;
+    if (analytics != null) {
+      data['analytics'] = analytics!.toJson();
     }
-    if (this.images != null) {
-      data['images'] = this.images!.toJson();
+    if (images != null) {
+      data['images'] = images!.toJson();
     }
     return data;
   }

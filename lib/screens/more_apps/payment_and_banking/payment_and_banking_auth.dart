@@ -237,7 +237,7 @@ class PaymentAndBankingAuth extends AuthService {
       final jsonData = json.decode(response.body);
 
       debugPrint(
-          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${jsonData}");
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- $jsonData");
 
       final Map<String, dynamic> result = {
         "count": jsonData["count"],
@@ -256,7 +256,7 @@ class PaymentAndBankingAuth extends AuthService {
   // update bank account information
   Future<bool> updateBankAccount(Map data) async {
     final String url =
-        "${AppConfig.baseUrl + "/api/v1/transactions/set-default-bank-account/" + data['uuid']}/";
+        "${"${AppConfig.baseUrl}/api/v1/transactions/set-default-bank-account/" + data['uuid']}/";
     final headers = await getAuthHeaders();
     late var response;
     final _data = jsonEncode(data);
@@ -1067,7 +1067,7 @@ class PaymentAndBankingAuth extends AuthService {
       final jsonData = json.decode(response.body);
 
       for (var item in jsonData["results"]) {
-        debugPrint("Fola payout list::: ${item}");
+        debugPrint("Fola payout list::: $item");
 
         final timeStamp = item["credited_at"] == null
             ? item["created_at"]

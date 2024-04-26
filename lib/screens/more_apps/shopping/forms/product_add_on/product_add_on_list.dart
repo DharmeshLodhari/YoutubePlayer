@@ -325,7 +325,7 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
               isAPILoading = true;
               if (mounted) setState(() {});
 
-              await loadAllCheckedAddOn();
+              loadAllCheckedAddOn();
 
               isAPILoading = false;
               if (mounted) setState(() {});

@@ -394,7 +394,9 @@ class _SearchUsersProductAndServiceState
           final int minAmount =
               int.parse(val.replaceAll(',', '').replaceAll('.', ''));
           filterModel.minAmount = minAmount;
-        } catch (e) {}
+        } catch (e) {
+          debugPrint("Error $e");
+        }
       },
       validator: (val) {
         if (val.toString().isEmpty) {
@@ -433,7 +435,9 @@ class _SearchUsersProductAndServiceState
           final int maxAmount =
               int.parse(val.replaceAll(',', '').replaceAll('.', ''));
           filterModel.maxAmount = maxAmount;
-        } catch (e) {}
+        } catch (e) {
+          debugPrint("Error $e");
+        }
       },
       validator: (val) {
         if (val.toString().isEmpty) {
@@ -765,7 +769,9 @@ class _SearchUsersProductAndServiceState
             tempList!.forEach((result) {
               results.add(getResultTile(result));
             });
-          } catch (e) {}
+          } catch (e) {
+            debugPrint("Error $e");
+          }
           setState(() {});
         }
       }

@@ -414,7 +414,7 @@ class ShopListScreenState extends State<ShopListScreen> {
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    "Found ${productCount} ${widget.industry}",
+                    "Found $productCount ${widget.industry}",
                     style: TextStyle(
                       fontWeight: FontWeight.w700,
                       fontSize: 18,

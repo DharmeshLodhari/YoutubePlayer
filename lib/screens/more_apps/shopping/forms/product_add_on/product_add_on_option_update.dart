@@ -175,7 +175,7 @@ class _ProductAddOnOptionUpdateState extends State<ProductAddOnOptionUpdate> {
   }
 
   Widget addImages() {
-    return Container(
+    return SizedBox(
       height: 100,
       child: ListView.builder(
         controller: _scrollController,
@@ -321,7 +321,7 @@ class _ProductAddOnOptionUpdateState extends State<ProductAddOnOptionUpdate> {
   }
 
   Widget showServerImage() {
-    return Container(
+    return SizedBox(
       height: 100,
       child: Stack(
         children: <Widget>[

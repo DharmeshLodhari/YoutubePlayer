@@ -10,6 +10,8 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'models/MovieItem.dart';
 
 class SpecificCategoryMovieList extends StatefulWidget {
+  const SpecificCategoryMovieList({super.key});
+
   @override
   _SpecificCategoryMovieListState createState() =>
       _SpecificCategoryMovieListState();

@@ -14,6 +14,8 @@ import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class SearchMovie extends StatefulWidget {
+  const SearchMovie({super.key});
+
   @override
   _SearchMovieState createState() => _SearchMovieState();
 }
@@ -377,7 +379,7 @@ class _SearchMovieState extends State<SearchMovie> {
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: Container(
+              content: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   elevation: 2,
@@ -498,7 +500,7 @@ class _SearchMovieState extends State<SearchMovie> {
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: Container(
+              content: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   elevation: 2,

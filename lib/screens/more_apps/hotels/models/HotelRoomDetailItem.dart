@@ -57,28 +57,28 @@ class HotelRoomDetailItem {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['about'] = this.about;
-    data['name'] = this.name;
-    data['owner_avatar'] = this.ownerAvatar;
-    data['owner_name'] = this.ownerName;
-    data['owner_user_name'] = this.ownerUserName;
-    data['short_detail'] = this.shortDetail;
-    if (this.images != null) {
-      data['images'] = this.images;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['about'] = about;
+    data['name'] = name;
+    data['owner_avatar'] = ownerAvatar;
+    data['owner_name'] = ownerName;
+    data['owner_user_name'] = ownerUserName;
+    data['short_detail'] = shortDetail;
+    if (images != null) {
+      data['images'] = images;
     }
-    if (this.location != null) {
-      data['location'] = this.location!.map((v) => v.toJson()).toList();
+    if (location != null) {
+      data['location'] = location!.map((v) => v.toJson()).toList();
     }
-    if (this.partners != null) {
-      data['partners'] = this.partners!.map((v) => v.toJson()).toList();
+    if (partners != null) {
+      data['partners'] = partners!.map((v) => v.toJson()).toList();
     }
-    if (this.recommendedItem != null) {
+    if (recommendedItem != null) {
       data['recommended_item'] =
-          this.recommendedItem!.map((v) => v.toJson()).toList();
+          recommendedItem!.map((v) => v.toJson()).toList();
     }
-    if (this.reviews != null) {
-      data['reviews'] = this.reviews!.map((v) => v.toJson()).toList();
+    if (reviews != null) {
+      data['reviews'] = reviews!.map((v) => v.toJson()).toList();
     }
     return data;
   }

@@ -24,14 +24,14 @@ class UserPostAuth extends AuthService {
 
     if (next == "") {
       if (titleToSearch != null) {
-        url = AppConfig.baseUrl +
-            "/api/v1/social/posts/public/?search=$titleToSearch";
+        url =
+            "${AppConfig.baseUrl}/api/v1/social/posts/public/?search=$titleToSearch";
       } else {
         if (slydoBlogsMenuString == "all") {
-          url = AppConfig.baseUrl + "/api/v1/social/posts/public/";
+          url = "${AppConfig.baseUrl}/api/v1/social/posts/public/";
         } else {
           url =
-              AppConfig.baseUrl + "/api/v1/social/posts/$slydoBlogsMenuString";
+              "${AppConfig.baseUrl}/api/v1/social/posts/$slydoBlogsMenuString";
         }
       }
     } else {
@@ -51,7 +51,7 @@ class UserPostAuth extends AuthService {
     }
     debugPrint(
         "URL $url STATUS CODE:- ${response.statusCode}  BODY:- ${response.body}");
-    return Future.error("${response.body}");
+    return Future.error(response.body);
   }
 
   Future<Map<String, dynamic>?> listUserPosts(
@@ -66,7 +66,7 @@ class UserPostAuth extends AuthService {
 
     if (next == "") {
       if (pageSize != null) {
-        url = url + "/api/v1/social/posts/user/$userName/?page_size=$pageSize";
+        url = "$url/api/v1/social/posts/user/$userName/?page_size=$pageSize";
       } else {
         if (channelUserName != '') {
           url =
@@ -91,12 +91,12 @@ class UserPostAuth extends AuthService {
     }
     debugPrint(
         "URL $url STATUS CODE:- ${response.statusCode}  BODY:- ${response.body}");
-    return Future.error("${response.body}");
+    return Future.error(response.body);
   }
 
   Future<List<UserPost>> getSimilarPosts({required String postID}) async {
     final url =
-        AppConfig.baseUrl + "/api/v1/social/posts/list-similar-post/$postID/";
+        "${AppConfig.baseUrl}/api/v1/social/posts/list-similar-post/$postID/";
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
     debugPrint(
@@ -110,12 +110,12 @@ class UserPostAuth extends AuthService {
 
       return userPostList;
     } else {
-      return Future.error("${response.body}");
+      return Future.error(response.body);
     }
   }
 
   Future<UserPost?> getSinglePost({required String postID}) async {
-    final url = AppConfig.baseUrl + "/api/v1/social/posts/$postID/";
+    final url = "${AppConfig.baseUrl}/api/v1/social/posts/$postID/";
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
     debugPrint(
@@ -127,13 +127,13 @@ class UserPostAuth extends AuthService {
     } else if (response.statusCode == 404) {
       return null;
     } else {
-      return Future.error("${response.body}");
+      return Future.error(response.body);
     }
   }
 
   Future<bool> updateBlogView({required String postId}) async {
     final url =
-        AppConfig.baseUrl + "/api/v1/social/post/update-post-views/$postId/";
+        "${AppConfig.baseUrl}/api/v1/social/post/update-post-views/$postId/";
     final Map<String, String> headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
 
@@ -160,7 +160,7 @@ class UserPostAuth extends AuthService {
   Future<dynamic> uploadPickedMediaForPostBody(
       {required String mediaFile}) async {
     final url =
-        AppConfig.baseUrl + "/api/v1/social/posts/blog-post-inline-media-file/";
+        "${AppConfig.baseUrl}/api/v1/social/posts/blog-post-inline-media-file/";
     final headers = await getAuthHeaders();
 
     debugPrint('MEDIA FILE ::: $mediaFile');
@@ -182,13 +182,13 @@ class UserPostAuth extends AuthService {
     final responseBody = await response.stream.bytesToString();
     final responseBodyDecoded = jsonDecode(responseBody);
 
-    debugPrint('MEDIA RESPONSE ::: ${responseBody}');
+    debugPrint('MEDIA RESPONSE ::: $responseBody');
 
     debugPrint(
         "URL $url STATUS CODE:- ${response.statusCode} BODY:- $responseBody");
 
     if (response.statusCode == 201 || response.statusCode == 200) {
-      debugPrint('MEDIA RESPONSE SUCCESS ::: ${responseBody}');
+      debugPrint('MEDIA RESPONSE SUCCESS ::: $responseBody');
       return responseBodyDecoded;
     } else {
       return Future.error(
@@ -213,13 +213,13 @@ class UserPostAuth extends AuthService {
     required String authorUserName,
     String? channelUsername,
   }) async {
-    var urlToPostBlog = AppConfig.baseUrl + "/api/v1/social/posts/";
+    var urlToPostBlog = "${AppConfig.baseUrl}/api/v1/social/posts/";
     if (channelUsername!.isNotEmpty) {
       urlToPostBlog =
           "${AppConfig.baseUrl}/api/v1/social/posts/channel/$channelUsername/";
     }
 
-    var urlToUpdateBlog = AppConfig.baseUrl + "/api/v1/social/posts/$blogId/";
+    var urlToUpdateBlog = "${AppConfig.baseUrl}/api/v1/social/posts/$blogId/";
     if (channelUsername.isNotEmpty) {
       urlToUpdateBlog =
           "${AppConfig.baseUrl}/api/v1/social/posts/channel/$blogId/";
@@ -228,7 +228,7 @@ class UserPostAuth extends AuthService {
     final String url = isUpdating ? urlToUpdateBlog : urlToPostBlog;
     final headers = await getAuthHeaders();
 
-    debugPrint('fola blog post::: ${url}');
+    debugPrint('fola blog post::: $url');
 
     String? blogImagePath;
     String? blogVideoPath;
@@ -286,7 +286,7 @@ class UserPostAuth extends AuthService {
   }
 
   Future<bool> deleteBlog({required String blogId}) async {
-    final url = AppConfig.baseUrl + "/api/v1/social/posts/$blogId/";
+    final url = "${AppConfig.baseUrl}/api/v1/social/posts/$blogId/";
     final Map<String, String> headers = await getAuthHeaders();
     final response = await httpDelete(url, headers: headers);
 
@@ -304,7 +304,7 @@ class UserPostAuth extends AuthService {
   }
 
   Future<UserPost> likeUserPost(UserPost post) async {
-    final url = AppConfig.baseUrl + "/api/v1/social/posts/like/${post.id}/";
+    final url = "${AppConfig.baseUrl}/api/v1/social/posts/like/${post.id}/";
     final Map<String, String> headers = await getAuthHeaders();
     final response = await httpPost(url, headers: headers);
 
@@ -332,7 +332,7 @@ class UserPostAuth extends AuthService {
   }
 
   Future<UserPost> dislikeUserPost(UserPost post) async {
-    final url = AppConfig.baseUrl + "/api/v1/social/posts/dislike/${post.id}/";
+    final url = "${AppConfig.baseUrl}/api/v1/social/posts/dislike/${post.id}/";
     final Map<String, String> headers = await getAuthHeaders();
     final response = await httpPost(url, headers: headers);
 

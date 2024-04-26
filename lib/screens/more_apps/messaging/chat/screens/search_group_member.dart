@@ -25,7 +25,7 @@ import '../../message_auth.dart';
 class SearchGroupMember extends StatefulWidget {
   final dynamic arguments;
 
-  SearchGroupMember({this.arguments});
+  const SearchGroupMember({this.arguments});
 
   @override
   _SearchGroupMemberState createState() => _SearchGroupMemberState();
@@ -59,7 +59,7 @@ class _SearchGroupMemberState extends State<SearchGroupMember> {
   late MainSocketProvider mainSocketProvider;
   StreamSubscription? streamSubscription;
 
-  @protected
+  @override
   void initState() {
     searchUserController = TextEditingController();
     _slideController = SlidableController(
@@ -69,7 +69,7 @@ class _SearchGroupMemberState extends State<SearchGroupMember> {
 
     groupDetail = widget.arguments["groupDetail"];
 
-    this.getList();
+    getList();
 
     super.initState();
     _scrollController.addListener(() {
@@ -264,7 +264,9 @@ class _SearchGroupMemberState extends State<SearchGroupMember> {
 
         final List<Participant> users = [];
 
-        tempList.forEach((element) => users.add(Participant.fromJson(element)));
+        for (var element in tempList) {
+          users.add(Participant.fromJson(element));
+        }
 
         isLoading = false;
         if (mounted) setState(() {});
@@ -622,13 +624,13 @@ class _SearchGroupMemberState extends State<SearchGroupMember> {
         if (value) {
           final List<Participant> usersAdded = [];
 
-          selectedUsers.forEach((element) {
+          for (var element in selectedUsers) {
             usersAdded.add(Participant(
                 avatar: element.avatar,
                 fullName: element.displayName(),
                 type: element.type,
                 userName: element.userName));
-          });
+          }
 
           groupDetail!.participants.addAll(usersAdded);
           showToast(message: "Users are added in group !!");
@@ -655,7 +657,7 @@ class _SearchGroupMemberState extends State<SearchGroupMember> {
 }
 
 class VerticalListItem extends StatefulWidget {
-  VerticalListItem(this.user, this.groupDetail);
+  const VerticalListItem(this.user, this.groupDetail, {super.key});
 
   final CustomerProfile user;
   final GroupDetailModel? groupDetail;

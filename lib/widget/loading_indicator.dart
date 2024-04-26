@@ -56,7 +56,7 @@ class CircularLoadingIndicatorWithPercentage extends StatefulWidget {
   CircularLoadingIndicatorWithPercentage({this.value, this.color});
 
   @override
-  _CircularLoadingIndicatorWithPercentageState createState() =>
+  State<CircularLoadingIndicatorWithPercentage> createState() =>
       _CircularLoadingIndicatorWithPercentageState();
 }
 

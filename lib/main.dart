@@ -108,7 +108,7 @@ void main() async {
   ).then((value) {
     runZonedGuarded(() {
       runApp(
-        MultiProvider(providers: providersList, child: MyApp()),
+        MultiProvider(providers: providersList, child: const MyApp()),
       );
     }, (exception, stack) {
       FirebaseCrashlytics.instance.recordError(exception, stack);
@@ -148,9 +148,11 @@ void getAppFeaturesFromServer() async {
 }
 
 class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
   //default local language
   @override
-  _MyAppState createState() => _MyAppState();
+  State<MyApp> createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
@@ -185,17 +187,17 @@ class _MyAppState extends State<MyApp> {
               _localeOverrideDelegate
             ],
             navigatorObservers: [MyRouteObserver()],
-            supportedLocales: [
-              const Locale('en', 'US'),
-              const Locale('fr', 'FR'),
-              const Locale('es', 'ES'),
-              const Locale('pt', 'PT'),
-              const Locale('am', 'ET'),
-              const Locale('ar', 'AE'),
-              const Locale('ha', 'KE'),
-              const Locale('sw', 'KE'),
-              const Locale('yo', 'NG'),
-              const Locale('zu', 'ZA'),
+            supportedLocales: const [
+              Locale('en', 'US'),
+              Locale('fr', 'FR'),
+              Locale('es', 'ES'),
+              Locale('pt', 'PT'),
+              Locale('am', 'ET'),
+              Locale('ar', 'AE'),
+              Locale('ha', 'KE'),
+              Locale('sw', 'KE'),
+              Locale('yo', 'NG'),
+              Locale('zu', 'ZA'),
             ],
             initialRoute: Routes.SPLASH,
             onGenerateRoute: RouteGenerator.generateRoute,

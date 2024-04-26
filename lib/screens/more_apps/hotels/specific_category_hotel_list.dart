@@ -10,7 +10,7 @@ import 'models/HotelRoomItem.dart';
 
 class SpecificCategoryHotelList extends StatefulWidget {
   @override
-  _SpecificCategoryHotelListState createState() =>
+  State<SpecificCategoryHotelList> createState() =>
       _SpecificCategoryHotelListState();
 }
 

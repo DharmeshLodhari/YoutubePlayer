@@ -118,11 +118,11 @@ class _MomentSearchScreenState extends State<MomentSearchScreen> {
       }
 
       searchMomentModelList.clear();
-      tempSearchMomentModelList.forEach((element) {
+      for (var element in tempSearchMomentModelList) {
         if (!(searchMomentModelList.contains(element))) {
           searchMomentModelList.add(element);
         }
-      });
+      }
 
       nextPage = value.next;
       searchMomentLoading = false;
@@ -487,7 +487,7 @@ class _SearchMomentSingleWidgetState extends State<SearchMomentSingleWidget> {
   List<Widget> getSubtitleTextWidget({required String userTextToSearch}) {
     final List<Widget> widgets = [];
 
-    widget.searchMomentModel.tags!.forEach((tag) {
+    for (var tag in widget.searchMomentModel.tags!) {
       widgets.add(
         Text(
           '#$tag ',
@@ -500,7 +500,7 @@ class _SearchMomentSingleWidgetState extends State<SearchMomentSingleWidget> {
                   : FontWeight.normal),
         ),
       );
-    });
+    }
     return widgets.take(3).toList();
   }
 }

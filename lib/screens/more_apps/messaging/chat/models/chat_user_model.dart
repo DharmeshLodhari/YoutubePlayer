@@ -28,10 +28,10 @@ class ChatUserModel {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['conversationId'] = this.conversationId;
-    data['messageCount'] = this.messageCount;
-    data['hashedMessage'] = this.hashedMessage;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['conversationId'] = conversationId;
+    data['messageCount'] = messageCount;
+    data['hashedMessage'] = hashedMessage;
     return data;
   }
 

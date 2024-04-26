@@ -18,10 +18,10 @@ import '../../../widget/image_crop.dart';
 class CreateMediaMomentScreen extends StatefulWidget {
   final dynamic arguments;
 
-  CreateMediaMomentScreen({Key? key, this.arguments}) : super(key: key);
+  const CreateMediaMomentScreen({Key? key, this.arguments}) : super(key: key);
 
   @override
-  _CreateMediaMomentScreenState createState() =>
+  State<CreateMediaMomentScreen> createState() =>
       _CreateMediaMomentScreenState();
 }
 

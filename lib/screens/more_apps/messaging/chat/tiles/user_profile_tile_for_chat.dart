@@ -15,7 +15,8 @@ class UserProfileTileForChat extends StatefulWidget {
   final Map<String, dynamic>? message;
   final ChatConversation? chatConversation;
 
-  UserProfileTileForChat({this.message, this.chatConversation});
+  const UserProfileTileForChat(
+      {super.key, this.message, this.chatConversation});
 
   @override
   _UserProfileTileForChatState createState() => _UserProfileTileForChatState();
@@ -158,7 +159,7 @@ class _UserProfileTileForChatState extends State<UserProfileTileForChat> {
 class UserProfileTile extends StatefulWidget {
   final CustomerProfile? user;
 
-  UserProfileTile({this.user});
+  const UserProfileTile({super.key, this.user});
 
   @override
   _UserProfileTileState createState() => _UserProfileTileState();

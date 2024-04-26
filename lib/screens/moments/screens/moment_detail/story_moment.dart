@@ -73,16 +73,17 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
   }
 
   Future<bool> addLikeToMoment() async {
-    final MomentsModel? data =
-        await MomentsService().likeMoment(currentMoment?.id ?? "");
-    if (data != null) {
+    try {
+      final MomentsModel data =
+          await MomentsService().likeMoment(currentMoment?.id ?? "");
       setState(() {
         currentMoment!.likes = data.likes;
         currentMoment!.dislikes = data.dislikes;
       });
       return true;
+    } catch (e) {
+      return false;
     }
-    return false;
   }
 
   Future<bool> addDisLikeToMoment() async {
@@ -690,10 +691,10 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
         await ShareInChat().selectShareCustomer(context);
     debugPrint("Selected users = ${listOfRecipient.length}");
 
-    listOfRecipient.forEach((recipient) {
+    for (var recipient in listOfRecipient) {
       addMomentPostToChat(
           recipientUser: recipient!, momentsModel: momentsModel);
-    });
+    }
   }
 
   Future<void> addMomentPostToChat({
@@ -961,9 +962,9 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
     if (currentMoment!.tags != null) {
       currentMoment!.tags!.join(', ');
 
-      currentMoment!.tags!.forEach((tag) {
+      for (var tag in currentMoment!.tags!) {
         formattedTagList.add('#$tag ');
-      });
+      }
 
       return ReadMoreText(
         formattedTagList.join(' '),

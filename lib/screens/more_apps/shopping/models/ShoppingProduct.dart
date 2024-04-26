@@ -82,30 +82,30 @@ class ShoppingProduct {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['available_from'] = this.availableFrom;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['available_from'] = availableFrom;
     // data['category'] = this.category;
-    data['condition'] = this.condition;
-    data['cover'] = this.cover;
-    data['created_at'] = this.createdAt;
-    data['currency'] = this.currency;
-    data['description'] = this.description;
-    data['id'] = this.id;
-    data['is_available'] = this.isAvailable;
-    data['manufacturer'] = this.manufacturer;
-    data['name'] = this.name;
-    data['price'] = this.price;
-    data['qr_code'] = this.qrCode;
-    data['seller'] = this.seller;
-    data['seller_avatar'] = this.sellerAvatar;
-    data['short_description'] = this.shortDescription;
-    data['type'] = this.type;
-    data["discount_value"] = this.discountValue;
-    data["discount_type"] = this.discountType;
-    data["discount_is_active"] = this.discountIsActive;
-    data["discounted_price"] = this.discountedPrice;
-    if (this.images != null) {
-      data['pictures'] = this.images!.map((v) => v.toJson()).toList();
+    data['condition'] = condition;
+    data['cover'] = cover;
+    data['created_at'] = createdAt;
+    data['currency'] = currency;
+    data['description'] = description;
+    data['id'] = id;
+    data['is_available'] = isAvailable;
+    data['manufacturer'] = manufacturer;
+    data['name'] = name;
+    data['price'] = price;
+    data['qr_code'] = qrCode;
+    data['seller'] = seller;
+    data['seller_avatar'] = sellerAvatar;
+    data['short_description'] = shortDescription;
+    data['type'] = type;
+    data["discount_value"] = discountValue;
+    data["discount_type"] = discountType;
+    data["discount_is_active"] = discountIsActive;
+    data["discounted_price"] = discountedPrice;
+    if (images != null) {
+      data['pictures'] = images!.map((v) => v.toJson()).toList();
     }
 
     return data;

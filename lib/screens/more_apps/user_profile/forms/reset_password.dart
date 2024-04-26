@@ -13,7 +13,7 @@ import '../user_auth.dart';
 class ResetPassword extends StatefulWidget {
   final dynamic arguments;
 
-  ResetPassword({required this.arguments});
+  const ResetPassword({super.key, required this.arguments});
 
   @override
   _ResetPasswordState createState() =>
@@ -47,6 +47,7 @@ class _ResetPasswordState extends State<ResetPassword> {
     super.initState();
   }
 
+  @override
   Widget build(BuildContext context) {
     return WillPopScope(
         onWillPop: () async {
@@ -108,12 +109,10 @@ class _ResetPasswordState extends State<ResetPassword> {
   }
 
   Widget resetPasswordTitle() {
-    return Container(
-      child: Text(
-        "Reset password",
-        style: TextStyle(
-            fontSize: 22, fontWeight: FontWeight.w700, color: blackFont),
-      ),
+    return Text(
+      "Reset password",
+      style: TextStyle(
+          fontSize: 22, fontWeight: FontWeight.w700, color: blackFont),
     );
   }
 

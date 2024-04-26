@@ -61,6 +61,10 @@ class AddOrEditYarn extends StatefulWidget {
   final String? passedCategory;
   final Function(Yarn)? onUpdateYarn;
   final String? channel;
+  final bool? isYarn;
+  Yarn? yarn;
+  List<YarnCategories>? askCategories;
+  List<ShareAsYarnModel>? shareAsYarnModel;
 
   AddOrEditYarn(
       {this.askCategories,
@@ -71,11 +75,6 @@ class AddOrEditYarn extends StatefulWidget {
       this.onUpdateYarn,
       this.channel,
       this.passedCategory});
-
-  final bool? isYarn;
-  Yarn? yarn;
-  List<YarnCategories>? askCategories;
-  List<ShareAsYarnModel>? shareAsYarnModel;
 
   @override
   State<AddOrEditYarn> createState() => _AddOrEditYarnState();
@@ -392,8 +391,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
       onChanged: onValueChange,
       inputFormatters: [LengthLimitingTextInputFormatter(400)],
       decoration: InputDecoration(
-        counterText:
-            textController!.text.length.toString() + "/" + 400.toString(),
+        counterText: "${textController!.text.length}/${400}",
         hintText: "Leave your thought",
         hintStyle: TextStyle(
           fontSize: 13,
@@ -671,7 +669,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
   }
 
   Widget gifPreviewList() {
-    return Container(
+    return SizedBox(
       height: MediaQuery.of(context).size.height / 3,
       child: _isGIFLoading
           ? Center(child: CircularLoadingIndicator())
@@ -698,7 +696,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
                       imageUrl: _gifs[index].images!.previewGif!.url!,
                       fit: BoxFit.fill,
                       errorWidget: imageErrorWidget,
-                      placeholder: (context, url) => Container(
+                      placeholder: (context, url) => SizedBox(
                           width: MediaQuery.of(context).size.width / 2,
                           child: Center(child: CircularLoadingIndicator())),
                     ),
@@ -921,7 +919,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(
+        SizedBox(
           height: 100,
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
@@ -983,7 +981,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Container(
+        SizedBox(
           height: 100,
           child: Stack(
             children: <Widget>[
@@ -1040,7 +1038,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Container(
+        SizedBox(
           height: 100,
           child: Stack(
             children: <Widget>[
@@ -1205,12 +1203,11 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
       key: UniqueKey(),
       onTap: (String? tappedUser) {
         if (tappedUser != null) {
-          textController!.text = textController!.text.replaceRange(
-                (textController!.text.length - (searchString?.length ?? 0)),
-                textController!.text.length,
-                tappedUser,
-              ) +
-              " ";
+          textController!.text = "${textController!.text.replaceRange(
+            (textController!.text.length - (searchString?.length ?? 0)),
+            textController!.text.length,
+            tappedUser,
+          )} ";
           textController!.selection = TextSelection.fromPosition(TextPosition(
             offset: textController!.text.length,
           ));
@@ -1352,7 +1349,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
 
             Navigator.pop(context);
           },
-          child: Container(
+          child: SizedBox(
             height: 48,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -2002,8 +1999,9 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     productOrServiceCount = 0;
     productOrServiceNext = "";
     productOrServicePrevious = "";
-    if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+    if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted) {
       bottomSheetStateSetterGlobal!(() {});
+    }
     if (mounted) setState(() {});
   }
 
@@ -2014,8 +2012,9 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
       if (productOrServiceNext != null && !isItemLoading) {
         isItemLoading = true;
 
-        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted) {
           bottomSheetStateSetterGlobal!(() {});
+        }
         if (mounted) setState(() {});
 
         final Map<String, dynamic>? result = await MessageAuth()
@@ -2031,8 +2030,9 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
         final List tempList = result['results'];
 
         isItemLoading = false;
-        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted) {
           bottomSheetStateSetterGlobal!(() {});
+        }
         if (mounted) setState(() {});
 
         tempList.forEach((item) {
@@ -2047,14 +2047,16 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
           }
         });
 
-        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+        if (bottomSheetStateSetterGlobal != null && bottomSheetMounted) {
           bottomSheetStateSetterGlobal!(() {});
+        }
         if (mounted) setState(() {});
       }
       if (searchedProductAndService.isEmpty) {
         noSearchedItem = true;
-        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+        if (bottomSheetStateSetterGlobal != null && bottomSheetMounted) {
           bottomSheetStateSetterGlobal!(() {});
+        }
         if (mounted) setState(() {});
       }
     }
@@ -2062,26 +2064,16 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
 
   String getSearchUrl() {
     if (isProductSearch) {
-      return AppConfig.baseUrl +
-          "/api/v1/search/products/?search=name__wildcard|*" +
-          searchItemTextController!.text +
-          "*";
+      return "${AppConfig.baseUrl}/api/v1/search/products/?search=name__wildcard|*${searchItemTextController!.text}*";
     }
     if (isServiceSearch) {
-      return AppConfig.baseUrl +
-          "/api/v1/search/services/?search=name__wildcard|*" +
-          searchItemTextController!.text +
-          "*";
+      return "${AppConfig.baseUrl}/api/v1/search/services/?search=name__wildcard|*${searchItemTextController!.text}*";
     }
     if (isUserSearch) {
-      return AppConfig.baseUrl +
-          "/api/v1/search/users/?search=" +
-          searchItemTextController!.text;
+      return "${AppConfig.baseUrl}/api/v1/search/users/?search=${searchItemTextController!.text}";
     }
     if (isBlogSearch) {
-      return AppConfig.baseUrl +
-          "/api/v1/social/posts/public/?search=" +
-          searchItemTextController!.text;
+      return "${AppConfig.baseUrl}/api/v1/social/posts/public/?search=${searchItemTextController!.text}";
     }
     return "";
   }

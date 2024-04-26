@@ -157,9 +157,9 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         reviewList.add(Review.fromJson(element));
       });
 
-      reviewList.forEach((element) {
+      for (var element in reviewList) {
         debugPrint('LIKES :: ${element.likes}');
-      });
+      }
 
       isReviewLoading = false;
       if (mounted) setState(() {});
@@ -177,7 +177,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     data['type'] = 'products';
     data['id'] = product?.id ?? "";
 
-    debugPrint('product URL :: ${data}');
+    debugPrint('product URL :: $data');
 
     ReviewAuth().checkIfCanReviewProductOrService(data).then((value) {
       canRate = value;
@@ -458,13 +458,13 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     final Map<String, dynamic>? itemData =
         await ShoppingAuthService().getProductOrService(url);
 
-    listOfRecipient.forEach((recipient) {
+    for (var recipient in listOfRecipient) {
       addProductOrServiceToChat(
           item: product,
           itemData: itemData,
           recipientUser: recipient!,
           url: url);
-    });
+    }
   }
 
   void addProductOrServiceToChat(
@@ -1386,66 +1386,63 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                                         },
                                         child: Stack(
                                           children: [
-                                            Container(
-                                              child: Center(
-                                                  child: ClipRRect(
-                                                borderRadius:
-                                                    const BorderRadius.all(
-                                                        Radius.circular(10)),
-                                                child: Stack(
-                                                  children: [
-                                                    CachedNetworkImage(
-                                                      placeholder: (context,
-                                                              url) =>
-                                                          Center(
-                                                              child:
-                                                                  CircularLoadingIndicator()),
-                                                      imageUrl: item!,
-                                                      fit: BoxFit.cover,
-                                                      height: double.infinity,
-                                                      width: double.infinity,
-                                                      errorWidget:
-                                                          productAndServiceBigErrorWidget,
-                                                    ),
-                                                    if (product!
-                                                            .pricePercentageChange !=
-                                                        0.0) ...[
-                                                      Positioned(
-                                                        top: 8,
-                                                        right: 100,
-                                                        child: Container(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                      .only(
-                                                                  left: 6.0,
-                                                                  right: 6.0,
-                                                                  top: 4.0,
-                                                                  bottom: 4.0),
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            color: naturalGreen,
-                                                            borderRadius:
-                                                                const BorderRadius
-                                                                        .all(
-                                                                    Radius
-                                                                        .circular(
-                                                                            8)),
-                                                          ),
-                                                          child: Text(
-                                                            "${product!.pricePercentageChange!.toInt()}% off",
-                                                            style:
-                                                                const TextStyle(
-                                                              color:
-                                                                  Colors.white,
-                                                            ),
+                                            Center(
+                                                child: ClipRRect(
+                                              borderRadius:
+                                                  const BorderRadius.all(
+                                                      Radius.circular(10)),
+                                              child: Stack(
+                                                children: [
+                                                  CachedNetworkImage(
+                                                    placeholder: (context,
+                                                            url) =>
+                                                        Center(
+                                                            child:
+                                                                CircularLoadingIndicator()),
+                                                    imageUrl: item!,
+                                                    fit: BoxFit.cover,
+                                                    height: double.infinity,
+                                                    width: double.infinity,
+                                                    errorWidget:
+                                                        productAndServiceBigErrorWidget,
+                                                  ),
+                                                  if (product!
+                                                          .pricePercentageChange !=
+                                                      0.0) ...[
+                                                    Positioned(
+                                                      top: 8,
+                                                      right: 100,
+                                                      child: Container(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                    .only(
+                                                                left: 6.0,
+                                                                right: 6.0,
+                                                                top: 4.0,
+                                                                bottom: 4.0),
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          color: naturalGreen,
+                                                          borderRadius:
+                                                              const BorderRadius
+                                                                      .all(
+                                                                  Radius
+                                                                      .circular(
+                                                                          8)),
+                                                        ),
+                                                        child: Text(
+                                                          "${product!.pricePercentageChange!.toInt()}% off",
+                                                          style:
+                                                              const TextStyle(
+                                                            color: Colors.white,
                                                           ),
                                                         ),
                                                       ),
-                                                    ]
-                                                  ],
-                                                ),
-                                              )),
-                                            ),
+                                                    ),
+                                                  ]
+                                                ],
+                                              ),
+                                            )),
                                             getOutOfStockTag(),
                                           ],
                                         ),

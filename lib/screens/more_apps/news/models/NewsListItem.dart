@@ -14,10 +14,10 @@ class NewsListItem {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['description'] = this.description;
-    data['image'] = this.image;
-    data['title'] = this.title;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['description'] = description;
+    data['image'] = image;
+    data['title'] = title;
     return data;
   }
 }

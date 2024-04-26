@@ -15,6 +15,8 @@ import '../../../data/currency.dart';
 import '../../../data/state_notifier.dart';
 
 class EventDetailPage extends StatefulWidget {
+  const EventDetailPage({super.key});
+
   @override
   _EventDetailPageState createState() => _EventDetailPageState();
 }
@@ -609,31 +611,29 @@ class _EventDetailPageState extends State<EventDetailPage> {
   }
 
   Widget moreLikeThis() {
-    return Container(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "More like this",
-            style: TextStyle(
-              fontWeight: FontWeight.w700,
-              fontSize: 18,
-              color: blackFont,
-            ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "More like this",
+          style: TextStyle(
+            fontWeight: FontWeight.w700,
+            fontSize: 18,
+            color: blackFont,
           ),
-          const SizedBox(
-            height: 12,
-          ),
-          Column(
-            children: event.similarEvent!
-                .map((element) => Container(
-                      margin: const EdgeInsets.only(bottom: 12),
-                      child: EventTileWithHeart(partialEvent: element),
-                    ))
-                .toList(),
-          ),
-        ],
-      ),
+        ),
+        const SizedBox(
+          height: 12,
+        ),
+        Column(
+          children: event.similarEvent!
+              .map((element) => Container(
+                    margin: const EdgeInsets.only(bottom: 12),
+                    child: EventTileWithHeart(partialEvent: element),
+                  ))
+              .toList(),
+        ),
+      ],
     );
   }
 

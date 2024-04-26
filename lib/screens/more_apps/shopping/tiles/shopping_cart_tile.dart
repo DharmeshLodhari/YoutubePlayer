@@ -580,7 +580,7 @@ class _ShoppingCartTileForServiceState
 
   String getServicePrice() {
     if (widget.item!.price.toString().length > 5) {
-      return widget.item!.price.toString().substring(0, 5) + "..";
+      return "${widget.item!.price.toString().substring(0, 5)}..";
     }
     return widget.item!.price.toString();
   }

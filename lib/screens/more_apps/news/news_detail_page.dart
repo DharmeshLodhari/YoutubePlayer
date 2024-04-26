@@ -1,6 +1,6 @@
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/news/CustomChip.dart';
-import 'package:Slydo/screens/more_apps/news/models/NewsDetailItem.dart';
+import 'package:Slydo/screens/more_apps/news/models/news_detail_item.dart';
 import 'package:Slydo/screens/more_apps/news/news_tile.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';

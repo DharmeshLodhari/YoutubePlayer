@@ -23,11 +23,11 @@ class ChatMessageAction {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['isDeletable'] = this.isDeletable;
-    data['isEditable'] = this.isEditable;
-    data['isReplyable'] = this.isReplyable;
-    data['message'] = this.message;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['isDeletable'] = isDeletable;
+    data['isEditable'] = isEditable;
+    data['isReplyable'] = isReplyable;
+    data['message'] = message;
     return data;
   }
 }

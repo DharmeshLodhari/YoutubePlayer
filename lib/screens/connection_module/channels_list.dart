@@ -13,7 +13,8 @@ import '../more_apps/messaging/chat/models/channel_model.dart';
 import '../more_apps/yarn/utils/yarn_enum.dart';
 
 class ChannelsList extends StatefulWidget {
-  ChannelsList();
+  const ChannelsList({super.key});
+
   @override
   State<ChannelsList> createState() => _ChannelsListState();
 }
@@ -218,7 +219,7 @@ class _ChannelsListState extends State<ChannelsList> {
             onChanged: (value) {
               if (value.length >= 3) {
                 _onRefresh();
-              } else if (value.length == 0) {
+              } else if (value.isEmpty) {
                 setState(() {
                   _onRefresh();
                 });

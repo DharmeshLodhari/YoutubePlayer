@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class MyMoviesScreen extends StatefulWidget {
+  const MyMoviesScreen({super.key});
+
   @override
   _MyMoviesScreenState createState() => _MyMoviesScreenState();
 }

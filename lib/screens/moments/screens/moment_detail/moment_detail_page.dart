@@ -87,7 +87,9 @@ class _MomentsDetailsScreenState extends State<MomentsDetailsScreen> {
     try {
       clearAllMedia();
       _verticalScrollPageViewCtrl.dispose();
-    } catch (error) {}
+    } catch (error) {
+      debugPrint("Error $error");
+    }
     super.dispose();
   }
 
@@ -199,7 +201,7 @@ class _MomentsDetailsScreenState extends State<MomentsDetailsScreen> {
       // Whether previous or next index depending on if the user has gotten to the top or end of the vertical list respectively.
       final int indexToWorkWith = getNextList ? nextIndex : previousIndex;
 
-      debugPrint('ERROR FETCHING MOMENT :: ${indexToWorkWith}');
+      debugPrint('ERROR FETCHING MOMENT :: $indexToWorkWith');
 
       if (widget.listOfConnectionNames.indices.contains(indexToWorkWith)) {
         try {
@@ -231,16 +233,20 @@ class _MomentsDetailsScreenState extends State<MomentsDetailsScreen> {
 
   void clearAllMedia() {
     log("DISPOSING VIDEO CONTROLLERS:- ${_videoPlayerControllers.length} PHOTO CONTROLLERS:- ${_photoViewController.length}");
-    _videoPlayerControllers.forEach((element) {
+    for (var element in _videoPlayerControllers) {
       try {
         element.dispose();
-      } catch (error) {}
-    });
-    _photoViewController.forEach((element) {
+      } catch (error) {
+        debugPrint("Error $error");
+      }
+    }
+    for (var element in _photoViewController) {
       try {
         element.dispose();
-      } catch (error) {}
-    });
+      } catch (error) {
+        debugPrint("Error $error");
+      }
+    }
   }
 
   @override
@@ -394,7 +400,9 @@ class MediaRendererPageViewState extends State<MediaRendererPageView> {
   void deactivate() {
     try {
       _pageCtrl?.dispose();
-    } catch (error) {}
+    } catch (error) {
+      debugPrint("Error $error");
+    }
 
     super.deactivate();
   }
@@ -444,6 +452,7 @@ class Range extends Iterable<int> {
   final int start;
   final int end;
 
+  @override
   int get length => end - start + 1;
 
   @override
@@ -451,9 +460,9 @@ class Range extends Iterable<int> {
       Iterable.generate(length, (i) => start + i).iterator;
 
   @override
-  bool contains(Object? index) {
-    if (index == null || index is! int) return false;
-    return index >= start && index <= end;
+  bool contains(Object? element) {
+    if (element == null || element is! int) return false;
+    return element >= start && element <= end;
   }
 
   @override

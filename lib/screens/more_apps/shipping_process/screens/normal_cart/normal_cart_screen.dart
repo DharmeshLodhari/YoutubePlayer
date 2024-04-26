@@ -423,7 +423,7 @@ class NormalCartScreenState extends State<NormalCartScreen> {
     final Map<String, dynamic> dataInfo =
         getUpdatedCartItem(type, basketBloc.items[index]["item"].id);
 
-    debugPrint('fola chat one fourrrr::: ${dataInfo}');
+    debugPrint('fola chat one fourrrr::: $dataInfo');
 
     //close pop up if quantity to reduce is 1 currently
     if (dataInfo["variants"] == null) {
@@ -529,12 +529,12 @@ class NormalCartScreenState extends State<NormalCartScreen> {
     );
 
     late var mapData;
-    basketBloc.items.forEach((element) {
+    for (var element in basketBloc.items) {
       if (element["item"].id == basketBloc.items[index]["item"].id) {
         mapData = element;
-        return;
+        continue;
       }
-    });
+    }
     final Map<String, dynamic> data = {
       "type": type,
       "id": mapData["item"].id,
@@ -565,12 +565,12 @@ class NormalCartScreenState extends State<NormalCartScreen> {
         basketBloc.items[index]["item"] is Product ? "product" : "service";
 
     late var mapData;
-    basketBloc.items.forEach((element) {
+    for (var element in basketBloc.items) {
       if (element["item"].id == basketBloc.items[index]["item"].id) {
         mapData = element;
-        return;
+        continue;
       }
-    });
+    }
     final Map data = {
       "type": type,
       "id": mapData["item"].id,
@@ -586,13 +586,13 @@ class NormalCartScreenState extends State<NormalCartScreen> {
     late var mapData;
     final String type =
         basketBloc.items[index]["item"] is Product ? "product" : "service";
-    basketBloc.items.forEach((element) {
+    for (var element in basketBloc.items) {
       if (element["item"].id == basketBloc.items[index]["item"].id) {
         element['qty'] = int.parse(element['qty'].toString()) + 1;
         mapData = element;
-        return;
+        continue;
       }
-    });
+    }
     if (mounted) setState(() {});
     //update to server
     final addOn = mapData['add_ons'];

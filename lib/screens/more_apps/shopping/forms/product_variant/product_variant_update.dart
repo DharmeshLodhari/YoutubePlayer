@@ -383,7 +383,7 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
   // }
 
   Widget viewServerImages() {
-    return Container(
+    return SizedBox(
       height: 100,
       child: ListView.builder(
         controller: _scrollController,
@@ -398,7 +398,7 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
   }
 
   Widget showServerImage(int index) {
-    return Container(
+    return SizedBox(
       height: 100,
       child: Stack(
         children: <Widget>[
@@ -484,7 +484,7 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
   }
 
   Widget addLocalImages() {
-    return Container(
+    return SizedBox(
       height: 100,
       child: ListView.builder(
         controller: _scrollController,
@@ -513,7 +513,7 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
           ),
           shadowColor: dividerColor,
           margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
-          child: Container(
+          child: SizedBox(
             width: 100,
             child: Image.file(
               File(croppedImageList[index]),

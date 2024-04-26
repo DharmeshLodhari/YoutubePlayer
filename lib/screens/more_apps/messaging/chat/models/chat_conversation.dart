@@ -80,7 +80,7 @@ class ChatConversation {
 
   /// Creating Server Payload From ChatConversation
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
     data['avatar'] = avatar;
     data['banner'] = banner;
     data['conversation_id'] = conversationId;
@@ -134,7 +134,7 @@ class ChatConversation {
 
   /// Creating DB Payload From ChatConversation
   Map<String, dynamic> toDBJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
     data['avatar'] = avatar;
     data['banner'] = banner;
     data['conversation_id'] = conversationId;

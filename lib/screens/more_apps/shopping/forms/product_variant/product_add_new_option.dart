@@ -181,7 +181,7 @@ class _ProductAddNewOptionState extends State<ProductAddNewOption> {
   }
 
   Widget addImages() {
-    return Container(
+    return SizedBox(
       height: 100,
       child: ListView.builder(
         controller: _scrollController,
@@ -283,7 +283,7 @@ class _ProductAddNewOptionState extends State<ProductAddNewOption> {
             ),
             shadowColor: dividerColor,
             margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
-            child: Container(
+            child: SizedBox(
               width: 100,
               child: Image.file(
                 File(croppedImageList[index]),
@@ -429,7 +429,7 @@ class _ProductAddNewOptionState extends State<ProductAddNewOption> {
   }
 
   bool validateDropdown() {
-    if (selectedType != null && selectedType != '') {
+    if (selectedType != null) {
       return true;
     } else {
       showToast(message: AppLocalization.of(context)!.pleaseSelectCategory);

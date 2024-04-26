@@ -18,12 +18,12 @@ class Bedroom {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['four_plus'] = this.fourPlus;
-    data['one'] = this.one;
-    data['studio'] = this.studio;
-    data['three'] = this.three;
-    data['two'] = this.two;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['four_plus'] = fourPlus;
+    data['one'] = one;
+    data['studio'] = studio;
+    data['three'] = three;
+    data['two'] = two;
     return data;
   }
 }

@@ -12,9 +12,9 @@ class PartialMovieItem {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['id'] = this.id;
-    data['poster'] = this.poster;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['poster'] = poster;
     return data;
   }
 }

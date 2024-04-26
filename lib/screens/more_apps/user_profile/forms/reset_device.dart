@@ -111,25 +111,23 @@ class _ResetDeviceState extends State<ResetDevice> {
   }
 
   Widget titleText() {
-    return Container(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "Slydo",
-            style: TextStyle(
-                fontSize: 22, fontWeight: FontWeight.w700, color: navyBlue),
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          Text(
-            "Reset your Slydo device",
-            style: TextStyle(
-                fontSize: 18, fontWeight: FontWeight.w700, color: blackFont),
-          ),
-        ],
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "Slydo",
+          style: TextStyle(
+              fontSize: 22, fontWeight: FontWeight.w700, color: navyBlue),
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        Text(
+          "Reset your Slydo device",
+          style: TextStyle(
+              fontSize: 18, fontWeight: FontWeight.w700, color: blackFont),
+        ),
+      ],
     );
   }
 

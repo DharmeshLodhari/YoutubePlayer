@@ -21,6 +21,8 @@ import 'property_dashboard_bloc.dart';
 import 'property_tile.dart';
 
 class PropertyDetailPage extends StatefulWidget {
+  const PropertyDetailPage({super.key});
+
   @override
   _PropertyDetailPageState createState() => _PropertyDetailPageState();
 }
@@ -280,92 +282,89 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
   }
 
   Widget eventPoster() {
-    return Container(
-      child: AspectRatio(
-        aspectRatio: 16 / 9,
-        child: Stack(
-          children: [
-            if (isVideo)
-              Chewie(
-                controller: _chewieController,
-                posterUrl: property.images!.first,
-                titleName: property.name,
-              )
-            else
-              Stack(
-                children: [
-                  CarouselSlider(
-                    options: CarouselOptions(
-                        viewportFraction: 1.0,
-                        enlargeCenterPage: true,
-                        autoPlay: false,
-                        // aspectRatio: 2,
-                        onPageChanged: (index, _) {
-                          if (mounted) {
-                            setState(() {
-                              _current = index;
-                            });
-                          }
-                        }),
-                    items: property.images!
-                        .map(
-                          (e) => InkWell(
-                            child: CachedNetworkImage(
-                              width: double.infinity,
-                              imageUrl: e,
-                              errorWidget: imageErrorWidget,
-                              fit: BoxFit.fill,
-                              filterQuality: FilterQuality.high,
-                            ),
-                            onTap: () {},
+    return AspectRatio(
+      aspectRatio: 16 / 9,
+      child: Stack(
+        children: [
+          if (isVideo)
+            Chewie(
+              controller: _chewieController,
+              posterUrl: property.images!.first,
+              titleName: property.name,
+            )
+          else
+            Stack(
+              children: [
+                CarouselSlider(
+                  options: CarouselOptions(
+                      viewportFraction: 1.0,
+                      enlargeCenterPage: true,
+                      autoPlay: false,
+                      // aspectRatio: 2,
+                      onPageChanged: (index, _) {
+                        if (mounted) {
+                          setState(() {
+                            _current = index;
+                          });
+                        }
+                      }),
+                  items: property.images!
+                      .map(
+                        (e) => InkWell(
+                          child: CachedNetworkImage(
+                            width: double.infinity,
+                            imageUrl: e,
+                            errorWidget: imageErrorWidget,
+                            fit: BoxFit.fill,
+                            filterQuality: FilterQuality.high,
                           ),
-                        )
-                        .toList(),
-                  ),
-                  Positioned(
-                    bottom: 0,
-                    left: MediaQuery.of(context).size.width / 2 -
-                        5 * property.images!.length,
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: property.images!.map((url) {
-                        final int index = property.images!.indexOf(url);
-                        return Container(
-                          width: 5.0,
-                          height: 5.0,
-                          margin: const EdgeInsets.symmetric(
-                              vertical: 10.0, horizontal: 2.0),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: _current == index
-                                ? Colors.white
-                                : Colors.white30,
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                  ),
-                ],
-              ),
-            Positioned(
-              right: 14,
-              top: 14,
-              child: InkWell(
-                child: Icon(
-                  isWishList ? SlydoAppIcon.heart_1 : SlydoAppIcon.heart_empty,
-                  color: Colors.white,
-                  size: 20,
+                          onTap: () {},
+                        ),
+                      )
+                      .toList(),
                 ),
-                onTap: () async {
-                  await PropertyAuthService().addToWishList();
-                  isWishList = !isWishList;
-                  setState(() {});
-                },
-              ),
+                Positioned(
+                  bottom: 0,
+                  left: MediaQuery.of(context).size.width / 2 -
+                      5 * property.images!.length,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: property.images!.map((url) {
+                      final int index = property.images!.indexOf(url);
+                      return Container(
+                        width: 5.0,
+                        height: 5.0,
+                        margin: const EdgeInsets.symmetric(
+                            vertical: 10.0, horizontal: 2.0),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color:
+                              _current == index ? Colors.white : Colors.white30,
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
+          Positioned(
+            right: 14,
+            top: 14,
+            child: InkWell(
+              child: Icon(
+                isWishList ? SlydoAppIcon.heart_1 : SlydoAppIcon.heart_empty,
+                color: Colors.white,
+                size: 20,
+              ),
+              onTap: () async {
+                await PropertyAuthService().addToWishList();
+                isWishList = !isWishList;
+                setState(() {});
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -413,7 +412,7 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
         ),
         Row(
           children: [
-            Container(
+            SizedBox(
               height: 32,
               width: 32,
               child: ClipOval(
@@ -766,59 +765,57 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
   }
 
   Widget rentDetail({required String categoryName}) {
-    return Container(
-      child: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text(
-                  categoryName,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 18,
-                    color: blackFont,
-                  ),
-                ),
-                GestureDetector(
-                  child: Text(
-                    "See all",
-                    style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14,
-                        color: navyBlue),
-                  ),
-                  onTap: () {
-                    Navigator.of(context).pushNamed("/property-category");
-                  },
-                ),
-              ],
-            ),
-          ),
-          Container(
-            height: 242,
-            color: Colors.white,
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Container(
-                padding: const EdgeInsets.only(left: 16, top: 16, bottom: 16),
-                child: Row(
-                  children: property.similarProperties!
-                      .map(
-                        (similarProperty) => Container(
-                          margin: const EdgeInsets.only(right: 12),
-                          child: rentCard(similarProperty: similarProperty),
-                        ),
-                      )
-                      .toList(),
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Text(
+                categoryName,
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 18,
+                  color: blackFont,
                 ),
               ),
+              GestureDetector(
+                child: Text(
+                  "See all",
+                  style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                      color: navyBlue),
+                ),
+                onTap: () {
+                  Navigator.of(context).pushNamed("/property-category");
+                },
+              ),
+            ],
+          ),
+        ),
+        Container(
+          height: 242,
+          color: Colors.white,
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Container(
+              padding: const EdgeInsets.only(left: 16, top: 16, bottom: 16),
+              child: Row(
+                children: property.similarProperties!
+                    .map(
+                      (similarProperty) => Container(
+                        margin: const EdgeInsets.only(right: 12),
+                        child: rentCard(similarProperty: similarProperty),
+                      ),
+                    )
+                    .toList(),
+              ),
             ),
-          )
-        ],
-      ),
+          ),
+        )
+      ],
     );
   }
 
@@ -1026,94 +1023,88 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
   }
 
   Widget reviewsList() {
-    return Container(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                "Reviews",
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              "Reviews",
+              style: TextStyle(
+                fontWeight: FontWeight.w700,
+                fontSize: 16,
+                color: blackFont,
+              ),
+            ),
+            GestureDetector(
+              child: Text(
+                "See all",
                 style: TextStyle(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 16,
-                  color: blackFont,
-                ),
+                    fontWeight: FontWeight.w600, fontSize: 14, color: navyBlue),
               ),
-              GestureDetector(
-                child: Text(
-                  "See all",
-                  style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14,
-                      color: navyBlue),
-                ),
-                onTap: () {
-                  Navigator.of(context).pushNamed("/reviews");
-                },
-              ),
-            ],
-          ),
-          const SizedBox(
-            height: 16,
-          ),
-          Column(
-            children: property.reviews!
-                .map((review) => Container(
-                      margin: const EdgeInsets.only(bottom: 12),
-                      child: ReviewTile(),
-                    ))
-                .toList(),
-          ),
-        ],
-      ),
+              onTap: () {
+                Navigator.of(context).pushNamed("/reviews");
+              },
+            ),
+          ],
+        ),
+        const SizedBox(
+          height: 16,
+        ),
+        Column(
+          children: property.reviews!
+              .map((review) => Container(
+                    margin: const EdgeInsets.only(bottom: 12),
+                    child: ReviewTile(),
+                  ))
+              .toList(),
+        ),
+      ],
     );
   }
 
   Widget aboutPartnerList() {
-    return Container(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "About the partner",
-            style: TextStyle(
-              fontWeight: FontWeight.w700,
-              fontSize: 16,
-              color: blackFont,
-            ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "About the partner",
+          style: TextStyle(
+            fontWeight: FontWeight.w700,
+            fontSize: 16,
+            color: blackFont,
           ),
-          const SizedBox(
-            height: 16,
-          ),
-          Column(
-            children: property.partners!
-                .map((partner) => Container(
-                      margin: const EdgeInsets.only(bottom: 12),
-                      child: Column(
-                        children: [
-                          InkWell(
-                              onTap: () {
-                                Navigator.of(context)
-                                    .pushNamed("/partner-detail");
-                              },
-                              child: PartnerTile()),
-                          const SizedBox(
-                            height: 16,
-                          ),
-                          Divider(
-                            thickness: 1,
-                            color: dividerColor,
-                            height: 0,
-                          ),
-                        ],
-                      ),
-                    ))
-                .toList(),
-          ),
-        ],
-      ),
+        ),
+        const SizedBox(
+          height: 16,
+        ),
+        Column(
+          children: property.partners!
+              .map((partner) => Container(
+                    margin: const EdgeInsets.only(bottom: 12),
+                    child: Column(
+                      children: [
+                        InkWell(
+                            onTap: () {
+                              Navigator.of(context)
+                                  .pushNamed("/partner-detail");
+                            },
+                            child: PartnerTile()),
+                        const SizedBox(
+                          height: 16,
+                        ),
+                        Divider(
+                          thickness: 1,
+                          color: dividerColor,
+                          height: 0,
+                        ),
+                      ],
+                    ),
+                  ))
+              .toList(),
+        ),
+      ],
     );
   }
 

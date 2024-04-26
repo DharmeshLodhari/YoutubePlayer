@@ -72,7 +72,9 @@ class MomentVideoPlayerState extends State<MomentVideoPlayer> {
     //await videoPlayerManager.dispose();
     try {
       _controller.dispose();
-    } catch (error) {}
+    } catch (error) {
+      debugPrint("Error $error");
+    }
 
     super.dispose();
   }
@@ -161,10 +163,11 @@ class MomentVideoPlayerState extends State<MomentVideoPlayer> {
   void showMediaIconFor2Seconds() {
     setState(() => showMediaIcon = true);
     Future.delayed(const Duration(seconds: 2), () {
-      if (mounted)
+      if (mounted) {
         setState(() {
           showMediaIcon = false;
         });
+      }
     });
   }
 }

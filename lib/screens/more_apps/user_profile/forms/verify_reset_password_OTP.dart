@@ -9,7 +9,7 @@ import '../user_auth.dart';
 class VerifyResetPasswordOTPScreen extends StatefulWidget {
   final dynamic arguments;
 
-  VerifyResetPasswordOTPScreen({this.arguments});
+  const VerifyResetPasswordOTPScreen({super.key, this.arguments});
 
   @override
   _VerifyResetPasswordOTPScreenState createState() =>
@@ -198,7 +198,7 @@ class _VerifyResetPasswordOTPScreenState
   void verifyOTP() {
     if (_verifyOtpFormKey.currentState!.validate()) {
       final String enteredOTP = otpController!.text.trim();
-      final String passwordToken = "true";
+      const String passwordToken = "true";
 
       UserAuth()
           .verifyPhoneNumber(phoneNumber, enteredOTP, passwordToken)

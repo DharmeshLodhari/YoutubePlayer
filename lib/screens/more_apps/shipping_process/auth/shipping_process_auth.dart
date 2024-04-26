@@ -38,7 +38,7 @@ class ShippingProcessAuthService extends AuthService {
       }
     } on Exception catch (e) {
       showToast(message: e.toString());
-      debugPrint("response ${e}");
+      debugPrint("response $e");
       debugPrint("Error: $e");
       throw e;
     } catch (err) {

@@ -51,15 +51,15 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
                 // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Row(
-                    children: [
-                      const Expanded(
+                    children: const [
+                      Expanded(
                         flex: 3,
                         child: CustomText(title: 'Category'),
                       ),
-                      const SizedBox(
+                      SizedBox(
                         height: 10,
                       ),
-                      const Expanded(flex: 2, child: CustomText(title: 'Date')),
+                      Expanded(flex: 2, child: CustomText(title: 'Date')),
                     ],
                   ),
                   Row(
@@ -88,15 +88,15 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
                             color: const Color(0xfffafbff),
                           ),
                           child: Row(
-                            children: [
-                              const Icon(
+                            children: const [
+                              Icon(
                                 Icons.calendar_today,
                                 size: 18,
                               ),
-                              const SizedBox(
+                              SizedBox(
                                 width: 5,
                               ),
-                              const Text(
+                              Text(
                                 "13/08/2020",
                                 style: TextStyle(
                                   color: Color(0xff030e36),
@@ -118,21 +118,20 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
                 // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Row(
-                    children: [
-                      const Expanded(flex: 3, child: CustomText(title: 'Fee')),
-                      const SizedBox(
+                    children: const [
+                      Expanded(flex: 3, child: CustomText(title: 'Fee')),
+                      SizedBox(
                         height: 10,
                       ),
-                      const Expanded(
-                          flex: 2, child: CustomText(title: 'Location')),
+                      Expanded(flex: 2, child: CustomText(title: 'Location')),
                     ],
                   ),
                   const SizedBox(
                     height: 6,
                   ),
                   Row(
-                    children: [
-                      const Expanded(
+                    children: const [
+                      Expanded(
                         flex: 3,
                         child: Text(
                           "#1,000,000",
@@ -144,7 +143,7 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
                           ),
                         ),
                       ),
-                      const Expanded(
+                      Expanded(
                         flex: 2,
                         child: Text(
                           "Ikeja, Lagos",
@@ -167,14 +166,12 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
                 // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Row(
-                    children: [
-                      const Expanded(
-                          flex: 3, child: CustomText(title: 'posted by')),
-                      const SizedBox(
+                    children: const [
+                      Expanded(flex: 3, child: CustomText(title: 'posted by')),
+                      SizedBox(
                         height: 10,
                       ),
-                      const Expanded(
-                          flex: 2, child: CustomText(title: 'Status')),
+                      Expanded(flex: 2, child: CustomText(title: 'Status')),
                     ],
                   ),
                   const SizedBox(
@@ -223,12 +220,12 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const CustomText(title: 'Applied by'),
-                  const SizedBox(
+                children: const [
+                  CustomText(title: 'Applied by'),
+                  SizedBox(
                     height: 6,
                   ),
-                  const Text(
+                  Text(
                     "200+",
                     style: TextStyle(
                       color: Color(0xff75818f),
@@ -244,12 +241,12 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const CustomText(title: 'Description'),
-                  const SizedBox(
+                children: const [
+                  CustomText(title: 'Description'),
+                  SizedBox(
                     height: 6,
                   ),
-                  const Text(
+                  Text(
                     "I need a photographer for a 1year baby photoshoot. ",
                     style: TextStyle(
                       color: Color(0xff8d92a3),

@@ -593,7 +593,7 @@ class _SearchModuleState extends State<SearchModule> {
             tempList?.forEach((result) {
               results.add(getResultTile(result));
             });
-            debugPrint('FINAL RESULT-> ${results}');
+            debugPrint('FINAL RESULT-> $results');
           } catch (e) {
             debugPrint('CANNOT SHOW SEARCH RESULT -> ${e.toString()}');
           }
@@ -649,21 +649,13 @@ class _SearchModuleState extends State<SearchModule> {
   String getSearchUrl(String searchedText) {
     switch (selectedMenuItemIndex) {
       case 0:
-        return AppConfig.baseUrl +
-            "/api/v1/search/users/?search=" +
-            searchedText;
+        return "${AppConfig.baseUrl}/api/v1/search/users/?search=$searchedText";
       case 1:
-        return AppConfig.baseUrl +
-            "/api/v1/search/products/?search=" +
-            searchedText;
+        return "${AppConfig.baseUrl}/api/v1/search/products/?search=$searchedText";
       case 2:
-        return AppConfig.baseUrl +
-            "/api/v1/search/services/?search=" +
-            searchedText;
+        return "${AppConfig.baseUrl}/api/v1/search/services/?search=$searchedText";
       default:
-        return AppConfig.baseUrl +
-            "/api/v1/search/users/?search=" +
-            searchedText;
+        return "${AppConfig.baseUrl}/api/v1/search/users/?search=$searchedText";
     }
   }
 
@@ -834,7 +826,9 @@ class _SearchModuleState extends State<SearchModule> {
 
     try {
       imageUrl = object["cover"];
-    } catch (e) {}
+    } catch (e) {
+      debugPrint("Error $e");
+    }
     return GestureDetector(
       onTap: () {
         Navigator.of(context)
@@ -988,7 +982,9 @@ class _SearchModuleState extends State<SearchModule> {
     var imageUrl;
     try {
       imageUrl = object["cover"];
-    } catch (e) {}
+    } catch (e) {
+      debugPrint("Error $e");
+    }
 
     return GestureDetector(
       onTap: () {
@@ -1071,7 +1067,7 @@ class _SearchModuleState extends State<SearchModule> {
   void loadUsers(List data) {
     switch (selectedMenuItemIndex) {
       case 0:
-        data.forEach((item) {
+        for (var item in data) {
           if (mounted) {
             setState(() {
               if (data.isNotEmpty) {
@@ -1080,10 +1076,10 @@ class _SearchModuleState extends State<SearchModule> {
               results.add(getUserTile(item));
             });
           }
-        });
+        }
         break;
       case 1:
-        data.forEach((item) {
+        for (var item in data) {
           if (mounted) {
             setState(() {
               if (data.isNotEmpty) {
@@ -1092,10 +1088,10 @@ class _SearchModuleState extends State<SearchModule> {
               results.add(getProductTile(item));
             });
           }
-        });
+        }
         break;
       case 2:
-        data.forEach((item) {
+        for (var item in data) {
           if (mounted) {
             setState(() {
               if (data.isNotEmpty) {
@@ -1104,7 +1100,7 @@ class _SearchModuleState extends State<SearchModule> {
               results.add(getServiceTile(item));
             });
           }
-        });
+        }
         break;
     }
   }
@@ -1371,8 +1367,8 @@ class _SearchModuleState extends State<SearchModule> {
       actionTwoBgColor: greyBorderColor,
       actionTwoTextColor: blackFont,
       title: AppLocalization.of(context)!.block,
-      description: AppLocalization.of(context)!.areYouSureWantToBlock +
-          " ${user.displayName()}",
+      description:
+          "${AppLocalization.of(context)!.areYouSureWantToBlock} ${user.displayName()}",
       actionOneText: AppLocalization.of(context)!.block,
       actionTwoText: AppLocalization.of(context)!.cancel,
     );
@@ -1380,8 +1376,8 @@ class _SearchModuleState extends State<SearchModule> {
       final bool done = await UserAuth().blockUser(user);
       if (done) {
         showSnackbar(context,
-            message: "${user.displayName()} " +
-                AppLocalization.of(context)!.isBlockedSuccessfully);
+            message:
+                "${user.displayName()} ${AppLocalization.of(context)!.isBlockedSuccessfully}");
 
         final ConnectionListBloc connectionListBloc =
             Provider.of<ConnectionListBloc>(context, listen: false);

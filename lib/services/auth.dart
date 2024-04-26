@@ -471,12 +471,12 @@ class AuthService {
       if (!response.body.contains('results')) {
         final Map<String, dynamic> result = {"product": []};
 
-        debugPrint('CALLING OTHER check 2 ---> ${result}');
+        debugPrint('CALLING OTHER check 2 ---> $result');
 
         return result;
       }
       final jsonData = json.decode(response.body);
-      final List<ProductIndustryResults>? results =
+      final List<ProductIndustryResults> results =
           (jsonData["results"] as List)
               .map((e) => ProductIndustryResults.fromJson(e))
               .toList();

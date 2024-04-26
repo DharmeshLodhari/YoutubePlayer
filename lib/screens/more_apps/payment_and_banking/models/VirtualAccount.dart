@@ -65,34 +65,33 @@ class VirtualAccount {
   Map<String, dynamic> toJson() {
     // ignore: unnecessary_new
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['account_name'] = this.accountName;
-    data['account_number'] = this.accountNumber;
-    data['created_at'] = this.createdAt;
-    data['customer_username'] = this.customerUsername;
-    data['is_active'] = this.isActive;
-    data['note'] = this.note;
-    data['updated_at'] = this.updatedAt;
-    if (this.financialInstitution != null) {
-      data['financial_institution'] = this.financialInstitution!.toJson();
+    data['account_name'] = accountName;
+    data['account_number'] = accountNumber;
+    data['created_at'] = createdAt;
+    data['customer_username'] = customerUsername;
+    data['is_active'] = isActive;
+    data['note'] = note;
+    data['updated_at'] = updatedAt;
+    if (financialInstitution != null) {
+      data['financial_institution'] = financialInstitution!.toJson();
     }
-    if (this.accountTier != null) {
-      data['account_tier'] = this.accountTier!.toJson();
+    if (accountTier != null) {
+      data['account_tier'] = accountTier!.toJson();
     }
     return data;
   }
 
   Map<String, dynamic> toDBJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['account_name'] = this.accountName;
-    data['account_number'] = this.accountNumber;
-    data['created_at'] = this.createdAt;
-    data['customer_username'] = this.customerUsername;
-    data['is_active'] = this.isActive == true ? 1 : 0;
-    data['note'] = this.note;
-    data['updated_at'] = this.updatedAt;
-    data['financial_institution'] =
-        jsonEncode(this.financialInstitution!.toJson());
-    data['account_tier'] = jsonEncode(this.accountTier!.toJson());
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['account_name'] = accountName;
+    data['account_number'] = accountNumber;
+    data['created_at'] = createdAt;
+    data['customer_username'] = customerUsername;
+    data['is_active'] = isActive == true ? 1 : 0;
+    data['note'] = note;
+    data['updated_at'] = updatedAt;
+    data['financial_institution'] = jsonEncode(financialInstitution!.toJson());
+    data['account_tier'] = jsonEncode(accountTier!.toJson());
     return data;
   }
 }

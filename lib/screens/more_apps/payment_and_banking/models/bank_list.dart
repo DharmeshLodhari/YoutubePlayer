@@ -19,12 +19,12 @@ class BankList {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['count'] = this.count;
-    data['next'] = this.next;
-    data['previous'] = this.previous;
-    if (this.results != null) {
-      data['results'] = this.results!.map((v) => v.toJson()).toList();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['count'] = count;
+    data['next'] = next;
+    data['previous'] = previous;
+    if (results != null) {
+      data['results'] = results!.map((v) => v.toJson()).toList();
     }
     return data;
   }
@@ -64,14 +64,14 @@ class BankModel {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['name'] = this.name;
-    data['short_name'] = this.shortName;
-    data['provider_code'] = this.providerCode;
-    data['logo_url'] = this.logoUrl;
-    data['country'] = this.country;
-    data['slug'] = this.slug;
-    data['id'] = this.id;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['name'] = name;
+    data['short_name'] = shortName;
+    data['provider_code'] = providerCode;
+    data['logo_url'] = logoUrl;
+    data['country'] = country;
+    data['slug'] = slug;
+    data['id'] = id;
     return data;
   }
 }

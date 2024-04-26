@@ -26,7 +26,7 @@ class SharedCartBloc extends ChangeNotifier {
   }
 
   SharedCartModel getSharedCartModel() {
-    if (cartList.isNotEmpty && cartList.length >= 0) {
+    if (cartList.isNotEmpty) {
       return _cartList[_currentSelectedIndex ?? 0];
     } else {
       return SharedCartModel();
@@ -114,7 +114,6 @@ class SharedCartBloc extends ChangeNotifier {
         sh.members?[index].paymentValue =
             (((getSharedCartModel().getSharedCartTotalPrice()) * val) / 100)
                 .floor();
-        ;
         notifyListeners();
         break;
       }
@@ -172,7 +171,7 @@ class SharedCartBloc extends ChangeNotifier {
 
     final UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
 
-    final SharedCartMemberModel? currentUser = userBloc.user.convertToUser();
+    final SharedCartMemberModel currentUser = userBloc.user.convertToUser();
 
     if (tempList != null && (tempList as List).isNotEmpty) {
       final List items = tempList;

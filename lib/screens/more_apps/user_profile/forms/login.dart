@@ -636,42 +636,40 @@ class _UserLoginState extends State<UserLogin> {
     final BoxDecoration selectedDecoration = BoxDecoration(
         borderRadius: BorderRadius.circular(10),
         border: Border.all(color: navyBlue));
-    return Container(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(
-            "Password",
-            style: TextStyle(
-              fontSize: 14,
-              color: darkGrey,
-              fontWeight: FontWeight.w400,
-              fontFamily: "Inter",
-            ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          "Password",
+          style: TextStyle(
+            fontSize: 14,
+            color: darkGrey,
+            fontWeight: FontWeight.w400,
+            fontFamily: "Inter",
           ),
-          const SizedBox(
-            height: 6.0,
-          ),
-          PinPut(
-            eachFieldWidth: 45,
-            eachFieldHeight: 45,
-            obscureText: '•',
-            validator: (val) => val!.length < 4
-                ? AppLocalization.of(context)!.invalidPassword
-                : null,
-            fieldsCount: 6,
-            focusNode: _pinPutFocusNode,
-            controller: passwordController,
-            submittedFieldDecoration: pinPutDecoration,
-            selectedFieldDecoration: selectedDecoration,
-            followingFieldDecoration: pinPutDecoration,
-            pinAnimationType: PinAnimationType.scale,
-            textInputAction: TextInputAction.done,
-            keyboardType: TextInputType.number,
-            textStyle: TextStyle(color: blackFont, fontSize: 35),
-          ),
-        ],
-      ),
+        ),
+        const SizedBox(
+          height: 6.0,
+        ),
+        PinPut(
+          eachFieldWidth: 45,
+          eachFieldHeight: 45,
+          obscureText: '•',
+          validator: (val) => val!.length < 4
+              ? AppLocalization.of(context)!.invalidPassword
+              : null,
+          fieldsCount: 6,
+          focusNode: _pinPutFocusNode,
+          controller: passwordController,
+          submittedFieldDecoration: pinPutDecoration,
+          selectedFieldDecoration: selectedDecoration,
+          followingFieldDecoration: pinPutDecoration,
+          pinAnimationType: PinAnimationType.scale,
+          textInputAction: TextInputAction.done,
+          keyboardType: TextInputType.number,
+          textStyle: TextStyle(color: blackFont, fontSize: 35),
+        ),
+      ],
     );
   }
 
@@ -939,14 +937,14 @@ class _UserLoginState extends State<UserLogin> {
   void initializeShoppingCart() async {
     debugPrint("initializeShoppingCart called");
     final List items = await ShoppingAuthService().getShoppingCart();
-    items.forEach((element) {
+    for (var element in items) {
       final String type = element is Product ? "product" : "service";
       basketBloc.addItemToCart(
           item: element,
           type: type,
           currentUser: userBloc.user.convertToUser(),
           withApiCall: false);
-    });
+    }
     await sharedCartBloc.refreshAllCart(context);
   }
 

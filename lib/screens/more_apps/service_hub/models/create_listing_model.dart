@@ -24,13 +24,13 @@ class CreateListingModel {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['id'] = this.id;
-    data['type'] = this.type;
-    data['is_active'] = this.isActive;
-    data['created_at'] = this.createdAt;
-    data['expiration_date'] = this.expirationDate;
-    data['job'] = this.job;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['type'] = type;
+    data['is_active'] = isActive;
+    data['created_at'] = createdAt;
+    data['expiration_date'] = expirationDate;
+    data['job'] = job;
     return data;
   }
 }

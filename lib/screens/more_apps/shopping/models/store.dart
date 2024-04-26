@@ -646,7 +646,7 @@ class Product extends PurchasableItem {
 
   // ignore: missing_return
   String getImageId(String? imageUrl) {
-    debugPrint("${serverImages}");
+    debugPrint("$serverImages");
     for (var data in pictureMap!) {
       if (data.path == imageUrl) {
         return data.id.toString();
@@ -670,53 +670,53 @@ class Product extends PurchasableItem {
 
   Product copyWith({int? quantity, bool withSelectedAddOn = false}) {
     final Product product = Product(
-      id: this.id,
-      name: this.name ?? "",
-      description: this.description ?? "",
-      shortDescription: this.shortDescription ?? "",
-      price: this.price,
-      enableInSuperStore: this.enableInSuperStore ?? false,
-      localImages: this.localImages ?? [],
-      serverImages: this.serverImages,
-      cover: this.cover ?? "",
-      seller: this.seller ?? "",
-      sellerAvatar: this.sellerAvatar ?? "",
-      sellerFullName: this.sellerFullName ?? "",
-      qrCode: this.qrCode ?? "",
-      condition: this.condition ?? "",
-      category: this.category,
-      subCategory: this.subCategory,
-      customCategory: this.customCategory,
-      tags: this.tags ?? [],
-      preparationTime: this.preparationTime ?? 0,
-      manufacturer: this.manufacturer ?? "",
-      isAvailable: this.isAvailable ?? true,
-      availableFrom: this.availableFrom,
-      currency: this.currency ?? "NGN",
-      pictureMap: this.pictureMap ?? [],
-      rating: this.rating,
-      canRate: this.canRate ?? false,
+      id: id,
+      name: name ?? "",
+      description: description ?? "",
+      shortDescription: shortDescription ?? "",
+      price: price,
+      enableInSuperStore: enableInSuperStore ?? false,
+      localImages: localImages ?? [],
+      serverImages: serverImages,
+      cover: cover ?? "",
+      seller: seller ?? "",
+      sellerAvatar: sellerAvatar ?? "",
+      sellerFullName: sellerFullName ?? "",
+      qrCode: qrCode ?? "",
+      condition: condition ?? "",
+      category: category,
+      subCategory: subCategory,
+      customCategory: customCategory,
+      tags: tags ?? [],
+      preparationTime: preparationTime ?? 0,
+      manufacturer: manufacturer ?? "",
+      isAvailable: isAvailable ?? true,
+      availableFrom: availableFrom,
+      currency: currency ?? "NGN",
+      pictureMap: pictureMap ?? [],
+      rating: rating,
+      canRate: canRate ?? false,
       // variant: this.variant,
-      variantModels: this.variantModels?.map((e) => e.copyWith()).toList(),
+      variantModels: variantModels?.map((e) => e.copyWith()).toList(),
       // addOns: this.addOns,
-      addOnsModels: this.addOnsModels?.map((e) => e.copyWith()).toList(),
-      weight: this.weight,
-      weightSiUnit: this.widthSiUnit,
-      height: this.height,
-      heightSiUnit: this.heightSiUnit,
-      widthSiUnit: this.widthSiUnit,
-      trackInventory: this.trackInventory,
+      addOnsModels: addOnsModels?.map((e) => e.copyWith()).toList(),
+      weight: weight,
+      weightSiUnit: widthSiUnit,
+      height: height,
+      heightSiUnit: heightSiUnit,
+      widthSiUnit: widthSiUnit,
+      trackInventory: trackInventory,
       quantity: quantity ?? this.quantity,
-      pricePercentageChange: this.pricePercentageChange ?? 0.0,
+      pricePercentageChange: pricePercentageChange ?? 0.0,
       // isSelected: this.isSelected ?? 0.0,
       // discountedPrice: object["discounted_price"],
       // discountIsActive: object["discount_is_active"],
       // discountType: object["discount_type"],
       // discountValue: object["discount_value"],
-      oldPrice: this.oldPrice,
-      isShippable: this.isShippable,
-      addressId: this.addressId,
-      itemAddedBy: this.itemAddedBy,
+      oldPrice: oldPrice,
+      isShippable: isShippable,
+      addressId: addressId,
+      itemAddedBy: itemAddedBy,
       // itemUpdatedBy: this.itemUpdatedBy,
       // qty: qty ?? this.qty,
     );
@@ -1115,7 +1115,7 @@ class Variant {
 
   // ignore: missing_return
   String getImageId(String? imageUrl) {
-    debugPrint("${serverImages}");
+    debugPrint("$serverImages");
     // for (var data in this.pictureMap!) {
     //   if (data['file'] == imageUrl) {
     //     return data['id'].toString();
@@ -1311,19 +1311,19 @@ class AddOnOption {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['id'] = this.id;
-    data['picture'] = this.picture;
-    data['name'] = this.name;
-    data['description'] = this.description;
-    data['merchant'] = this.merchant;
-    data['select_type'] = this.selectType;
-    data['currency'] = this.currency;
-    data['price'] = this.price;
-    data['is_available'] = this.isAvailable;
-    data['created_at'] = this.createdAt;
-    data['quantity'] = this.quantity;
-    data['added_by'] = this.addedBy;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['picture'] = picture;
+    data['name'] = name;
+    data['description'] = description;
+    data['merchant'] = merchant;
+    data['select_type'] = selectType;
+    data['currency'] = currency;
+    data['price'] = price;
+    data['is_available'] = isAvailable;
+    data['created_at'] = createdAt;
+    data['quantity'] = quantity;
+    data['added_by'] = addedBy;
     return data;
   }
 
@@ -1476,21 +1476,21 @@ class AddOns {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['id'] = this.id;
-    if (this.options != null) {
-      data['options'] = this.options!.map((v) => v.toJson()).toList();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    if (options != null) {
+      data['options'] = options!.map((v) => v.toJson()).toList();
     }
-    data['merchant'] = this.merchant;
-    data['name'] = this.name;
-    data['description'] = this.description;
-    data['input_type'] = this.inputType;
-    data['select_type'] = this.selectType;
-    data['is_required'] = this.isRequired;
+    data['merchant'] = merchant;
+    data['name'] = name;
+    data['description'] = description;
+    data['input_type'] = inputType;
+    data['select_type'] = selectType;
+    data['is_required'] = isRequired;
     // if(data['is_checked'] == null){
     //   isRequired = data['is_checked'] ?? false;
     // }
-    data['created_at'] = this.createdAt;
+    data['created_at'] = createdAt;
     return data;
   }
 
@@ -1548,9 +1548,9 @@ class Tags {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['id'] = this.id;
-    data['name'] = this.name;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['name'] = name;
     return data;
   }
 }

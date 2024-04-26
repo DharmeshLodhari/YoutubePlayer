@@ -33,16 +33,16 @@ class UserReviewModel {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['job_contractor'] = this.jobContractor;
-    data['job_owner'] = this.jobOwner;
-    data['score'] = this.score;
-    data['review'] = this.review;
-    data['job'] = this.job;
-    data['job_owner_name'] = this.jobOwnerName;
-    data['job_contractor_name'] = this.jobContractorName;
-    data['owner_avatar'] = this.ownerAvatar;
-    data['contractor_avatar'] = this.contractorAvatar;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['job_contractor'] = jobContractor;
+    data['job_owner'] = jobOwner;
+    data['score'] = score;
+    data['review'] = review;
+    data['job'] = job;
+    data['job_owner_name'] = jobOwnerName;
+    data['job_contractor_name'] = jobContractorName;
+    data['owner_avatar'] = ownerAvatar;
+    data['contractor_avatar'] = contractorAvatar;
     return data;
   }
 

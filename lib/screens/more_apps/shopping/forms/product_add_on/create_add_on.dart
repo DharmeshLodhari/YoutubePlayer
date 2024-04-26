@@ -159,22 +159,20 @@ class _CreateAddOnState extends State<CreateAddOn> {
   }
 
   Widget getDescription() {
-    return Container(
-      child: CustomizedTextFormField(
-        maxLines: 3,
-        labelText: "Description",
-        textCapitalization: TextCapitalization.sentences,
-        // controller: groupDescriptionController,
-        validator: (val) {
-          if (val.isNotEmpty) {
-            return null;
-          }
-          return AppLocalization.of(context)!.descriptionMustNotEmpty;
-        },
-        onChanged: (val) {
-          description = val;
-        },
-      ),
+    return CustomizedTextFormField(
+      maxLines: 3,
+      labelText: "Description",
+      textCapitalization: TextCapitalization.sentences,
+      // controller: groupDescriptionController,
+      validator: (val) {
+        if (val.isNotEmpty) {
+          return null;
+        }
+        return AppLocalization.of(context)!.descriptionMustNotEmpty;
+      },
+      onChanged: (val) {
+        description = val;
+      },
     );
   }
 
@@ -466,7 +464,7 @@ class _CreateAddOnState extends State<CreateAddOn> {
   Widget _buildAddOnOptionList() {
     return isLoading && productAddOnOptionList.isEmpty
         ? buildLoadingIndicator(isLoading: isLoading)
-        : Container(
+        : SizedBox(
             height: 80 * productAddOnOptionList.length.toDouble(),
             child: ListView.builder(
               padding: const EdgeInsets.symmetric(vertical: 16),

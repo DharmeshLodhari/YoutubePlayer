@@ -79,67 +79,65 @@ class _AccountTypeState extends State<AccountType> {
         body: SingleChildScrollView(
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Container(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  appIcon(),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  registerTitle(),
-                  const SizedBox(height: 40),
-                  Form(
-                    key: _personalDetailFormKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Text(
-                          'Account type',
-                          style: TextStyle(color: darkGrey, fontSize: 14),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                appIcon(),
+                const SizedBox(
+                  height: 10,
+                ),
+                registerTitle(),
+                const SizedBox(height: 40),
+                Form(
+                  key: _personalDetailFormKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(
+                        'Account type',
+                        style: TextStyle(color: darkGrey, fontSize: 14),
+                      ),
+                      const SizedBox(height: 6),
+                      Container(
+                        height: 50,
+                        padding: const EdgeInsets.symmetric(horizontal: 14.0),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: dividerColor),
+                          borderRadius: BorderRadius.circular(10),
                         ),
-                        const SizedBox(height: 6),
-                        Container(
-                          height: 50,
-                          padding: const EdgeInsets.symmetric(horizontal: 14.0),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: dividerColor),
-                            borderRadius: BorderRadius.circular(10),
+                        child: DropdownButton2(
+                          isExpanded: true,
+                          value: accountType,
+                          dropdownDecoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(14),
                           ),
-                          child: DropdownButton2(
-                            isExpanded: true,
-                            value: accountType,
-                            dropdownDecoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(14),
-                            ),
-                            hint: const Text('Select an account type'),
-                            underline: const SizedBox.shrink(),
-                            items: ['Personal', 'Business'].map((String item) {
-                              return DropdownMenuItem(
-                                value: item,
-                                child: Text(item),
-                              );
-                            }).toList(),
-                            onChanged: (String? value) {
-                              setState(() {
-                                accountType = value;
-                                accountTypeChosen = true;
-                                isPersonalAccount = accountType == 'Personal';
-                              });
-                            },
-                          ),
+                          hint: const Text('Select an account type'),
+                          underline: const SizedBox.shrink(),
+                          items: ['Personal', 'Business'].map((String item) {
+                            return DropdownMenuItem(
+                              value: item,
+                              child: Text(item),
+                            );
+                          }).toList(),
+                          onChanged: (String? value) {
+                            setState(() {
+                              accountType = value;
+                              accountTypeChosen = true;
+                              isPersonalAccount = accountType == 'Personal';
+                            });
+                          },
                         ),
-                        Visibility(
-                          visible: accountTypeChosen,
-                          child: accountType == 'Personal'
-                              ? personalAccountFields()
-                              : businessAccountFields(),
-                        ),
-                      ],
-                    ),
+                      ),
+                      Visibility(
+                        visible: accountTypeChosen,
+                        child: accountType == 'Personal'
+                            ? personalAccountFields()
+                            : businessAccountFields(),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
@@ -218,31 +216,27 @@ class _AccountTypeState extends State<AccountType> {
   }
 
   Widget appIcon() {
-    return Container(
-      child: Image.asset(
-        "assets/images/app_logo_navyBlue.png",
-        height: MediaQuery.of(context).size.height / 16,
-        frameBuilder: imageFrameBuilder,
-      ),
+    return Image.asset(
+      "assets/images/app_logo_navyBlue.png",
+      height: MediaQuery.of(context).size.height / 16,
+      frameBuilder: imageFrameBuilder,
     );
   }
 
   Widget registerTitle() {
-    return Container(
-      child: Row(
-        children: <Widget>[
-          Text(
-            "Slydo ",
-            style: TextStyle(
-                fontSize: 22, fontWeight: FontWeight.w700, color: navyBlue),
-          ),
-          Text(
-            "Registration",
-            style: TextStyle(
-                fontSize: 22, fontWeight: FontWeight.w700, color: blackFont),
-          ),
-        ],
-      ),
+    return Row(
+      children: <Widget>[
+        Text(
+          "Slydo ",
+          style: TextStyle(
+              fontSize: 22, fontWeight: FontWeight.w700, color: navyBlue),
+        ),
+        Text(
+          "Registration",
+          style: TextStyle(
+              fontSize: 22, fontWeight: FontWeight.w700, color: blackFont),
+        ),
+      ],
     );
   }
 

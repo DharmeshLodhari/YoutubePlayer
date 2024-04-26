@@ -50,38 +50,38 @@ class SocketQueueChatMessage {
   }
 
   Map<String, dynamic> toJson({bool isForSendingToSocket = false}) {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['author'] = this.author;
-    data['author_avatar'] = this.authorAvatar;
-    data['author_full_name'] = this.authorName;
-    data['check_id'] = this.checkId;
-    data['conversation_id'] = this.conversationId;
-    data['created_at'] = this.createdAt;
-    data['delivered'] = this.delivered!
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['author'] = author;
+    data['author_avatar'] = authorAvatar;
+    data['author_full_name'] = authorName;
+    data['check_id'] = checkId;
+    data['conversation_id'] = conversationId;
+    data['created_at'] = createdAt;
+    data['delivered'] = delivered!
         ? isForSendingToSocket
             ? true
             : 1
         : isForSendingToSocket
             ? false
             : 0;
-    data['kind'] = this.kind;
-    data['message'] = this.message;
-    data['read_by_author'] = this.readByAuthor!
+    data['kind'] = kind;
+    data['message'] = message;
+    data['read_by_author'] = readByAuthor!
         ? isForSendingToSocket
             ? true
             : 1
         : isForSendingToSocket
             ? false
             : 0;
-    data['read_by_recipient'] = this.readByRecipient!
+    data['read_by_recipient'] = readByRecipient!
         ? isForSendingToSocket
             ? true
             : 1
         : isForSendingToSocket
             ? false
             : 0;
-    data['type'] = this.type;
-    data['replied_to'] = this.repliedTo;
+    data['type'] = type;
+    data['replied_to'] = repliedTo;
     return data;
   }
 }

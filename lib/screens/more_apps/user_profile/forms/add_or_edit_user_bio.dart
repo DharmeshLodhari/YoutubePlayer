@@ -193,25 +193,25 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
 
   void addUserAddedOpeningHour() {
     final List<String?> updatedDays = [];
-    userBioDetail!.openingHours.forEach((element) {
+    for (var element in userBioDetail!.openingHours) {
       final String time = element.time!.trim();
       final List<String> openingAndClosingTime = time.split("-");
 
-      userAddedOpeningHours.forEach((existing) {
+      for (var existing in userAddedOpeningHours) {
         if (element.day == existing["day"]) {
           updatedDays.add(element.day);
           existing['is_open'] = true;
           existing['starting_hour'] = openingAndClosingTime[0].trim();
           existing['closing_hour'] = openingAndClosingTime[1].trim();
         }
-      });
-    });
+      }
+    }
 
-    userAddedOpeningHours.forEach((element) {
+    for (var element in userAddedOpeningHours) {
       if (!updatedDays.contains(element["day"])) {
         element["is_open"] = false;
       }
-    });
+    }
 
     setState(() {});
   }
@@ -1176,7 +1176,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
   void addOpeningHoursToUserAboutObject() {
     userBioDetail!.openingHours = [];
 
-    userAddedOpeningHours.forEach((element) {
+    for (var element in userAddedOpeningHours) {
       if (element["is_open"]) {
         final OpeningHourForDay openingHour = OpeningHourForDay();
 
@@ -1189,11 +1189,11 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
           userBioDetail!.openingHours.add(openingHour);
         }
       }
-    });
+    }
 
-    userBioDetail!.openingHours.forEach((element) {
+    for (var element in userBioDetail!.openingHours) {
       debugPrint('OPENING HOURS ---> ${element.toJson()}');
-    });
+    }
   }
 
   Future<String?> selectImageAction({String? imageName}) async {

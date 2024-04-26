@@ -18,6 +18,7 @@ enum IndicatorHeight { small, large }
 class Shiddo extends StoryItem {
   /// Specifies how long the page should be displayed. It should be a reasonable
   /// amount of time greater than 0 milliseconds.
+  @override
   final Duration duration;
 
   /// Has this page been shown already? This is used to indicate that the page
@@ -28,11 +29,13 @@ class Shiddo extends StoryItem {
   /// last unshown page will have their `shown` attribute altered to false. This
   /// is because the next item to be displayed is taken by the last unshown
   /// story item.
+  @override
   bool shown;
 
   MomentsModel momentsModel;
 
   /// The page content
+  @override
   final Widget view;
   Shiddo(
     this.view, {
@@ -204,7 +207,7 @@ class Shiddo extends StoryItem {
                       alignment: Alignment.bottomLeft,
                       child: Container(
                         width: double.infinity,
-                        child: caption == null ? const SizedBox() : caption,
+                        child: caption ?? const SizedBox(),
                       ),
                     ),
                   ),
@@ -364,7 +367,7 @@ class Shiddo extends StoryItem {
               alignment: Alignment.bottomLeft,
               child: Container(
                 width: double.infinity,
-                child: caption == null ? const SizedBox() : caption,
+                child: caption ?? const SizedBox(),
               ),
             ),
           ),
@@ -414,7 +417,8 @@ class StoryViewShiddo extends StatefulWidget {
   // Indicator Foreground Color
   final Color? indicatorForegroundColor;
 
-  StoryViewShiddo({
+  const StoryViewShiddo({
+    super.key,
     required this.storyItems,
     required this.controller,
     this.onComplete,
@@ -461,9 +465,9 @@ class StoryViewShiddoState extends State<StoryViewShiddo>
     // false
     final firstPage = widget.storyItems.firstWhereOrNull((it) => !it!.shown);
     if (firstPage == null) {
-      widget.storyItems.forEach((it2) {
+      for (var it2 in widget.storyItems) {
         it2!.shown = false;
-      });
+      }
     } else {
       final lastShownPos = widget.storyItems.indexOf(firstPage);
       widget.storyItems.sublist(lastShownPos).forEach((it) {
@@ -471,17 +475,17 @@ class StoryViewShiddoState extends State<StoryViewShiddo>
       });
     }
 
-    this._playbackSubscription =
+    _playbackSubscription =
         widget.controller.playbackNotifier.listen((playbackStatus) {
       switch (playbackStatus) {
         case PlaybackState.play:
           _removeNextHold();
-          this._animationController?.forward();
+          _animationController?.forward();
           break;
 
         case PlaybackState.pause:
           _holdNext(); // then pause animation
-          this._animationController?.stop(canceled: false);
+          _animationController?.stop(canceled: false);
           break;
 
         case PlaybackState.next:
@@ -560,9 +564,9 @@ class StoryViewShiddoState extends State<StoryViewShiddo>
     }
 
     if (widget.repeat) {
-      widget.storyItems.forEach((it) {
+      for (var it in widget.storyItems) {
         it!.shown = false;
-      });
+      }
 
       _beginPlay();
     }
@@ -571,15 +575,15 @@ class StoryViewShiddoState extends State<StoryViewShiddo>
   void _goBack() {
     _animationController!.stop();
 
-    if (this._currentStory == null) {
+    if (_currentStory == null) {
       widget.storyItems.last!.shown = false;
     }
 
-    if (this._currentStory == widget.storyItems.first) {
+    if (_currentStory == widget.storyItems.first) {
       _beginPlay();
     } else {
-      this._currentStory!.shown = false;
-      final int lastPos = widget.storyItems.indexOf(this._currentStory);
+      _currentStory!.shown = false;
+      final int lastPos = widget.storyItems.indexOf(_currentStory);
       final previous = widget.storyItems[lastPos - 1]!;
 
       previous.shown = false;
@@ -589,11 +593,11 @@ class StoryViewShiddoState extends State<StoryViewShiddo>
   }
 
   void _goForward() {
-    if (this._currentStory != widget.storyItems.last) {
+    if (_currentStory != widget.storyItems.last) {
       _animationController!.stop();
 
       // get last showing
-      final _last = this._currentStory;
+      final _last = _currentStory;
 
       if (_last != null) {
         _last.shown = true;
@@ -648,7 +652,7 @@ class StoryViewShiddoState extends State<StoryViewShiddo>
                     widget.storyItems
                         .map((it) => PageData(it!.duration, it.shown))
                         .toList(),
-                    this._currentAnimation,
+                    _currentAnimation,
                     key: UniqueKey(),
                     indicatorHeight: widget.inline
                         ? IndicatorHeight.small
@@ -691,9 +695,7 @@ class StoryViewShiddoState extends State<StoryViewShiddo>
                 onVerticalDragUpdate: widget.onVerticalSwipeComplete == null
                     ? null
                     : (details) {
-                        if (verticalDragInfo == null) {
-                          verticalDragInfo = VerticalDragInfo();
-                        }
+                        verticalDragInfo ??= VerticalDragInfo();
 
                         verticalDragInfo!.update(details.primaryDelta!);
 
@@ -746,7 +748,7 @@ class PageBar extends StatefulWidget {
   final Color? indicatorColor;
   final Color? indicatorForegroundColor;
 
-  PageBar(
+  const PageBar(
     this.pages,
     this.animation, {
     this.indicatorHeight = IndicatorHeight.large,
@@ -793,8 +795,8 @@ class PageBarState extends State<PageBar> {
       children: widget.pages.map((it) {
         return Expanded(
           child: Container(
-            padding: EdgeInsets.only(
-                right: widget.pages.last == it ? 0 : this.spacing),
+            padding:
+                EdgeInsets.only(right: widget.pages.last == it ? 0 : spacing),
             child: StoryProgressIndicator(
               isPlaying(it) ? widget.animation!.value : (it.shown ? 1 : 0),
               indicatorHeight:
@@ -818,8 +820,9 @@ class StoryProgressIndicator extends StatelessWidget {
   final Color? indicatorColor;
   final Color? indicatorForegroundColor;
 
-  StoryProgressIndicator(
+  const StoryProgressIndicator(
     this.value, {
+    super.key,
     this.indicatorHeight = 5,
     this.indicatorColor,
     this.indicatorForegroundColor,
@@ -829,14 +832,14 @@ class StoryProgressIndicator extends StatelessWidget {
   Widget build(BuildContext context) {
     return CustomPaint(
       size: Size.fromHeight(
-        this.indicatorHeight,
+        indicatorHeight,
       ),
       foregroundPainter: IndicatorOval(
-        this.indicatorForegroundColor ?? Colors.white.withOpacity(0.8),
-        this.value,
+        indicatorForegroundColor ?? Colors.white.withOpacity(0.8),
+        value,
       ),
       painter: IndicatorOval(
-        this.indicatorColor ?? Colors.white.withOpacity(0.4),
+        indicatorColor ?? Colors.white.withOpacity(0.4),
         1.0,
       ),
     );
@@ -851,10 +854,10 @@ class IndicatorOval extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()..color = this.color;
+    final paint = Paint()..color = color;
     canvas.drawRRect(
         RRect.fromRectAndRadius(
-            Rect.fromLTWH(0, 0, size.width * this.widthFactor, size.height),
+            Rect.fromLTWH(0, 0, size.width * widthFactor, size.height),
             const Radius.circular(3)),
         paint);
   }

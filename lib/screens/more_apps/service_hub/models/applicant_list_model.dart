@@ -21,12 +21,12 @@ class JobApplicantModel {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['number_of_jobs'] = this.numberOfJobs;
-    data['applicant_username'] = this.applicantUsername;
-    data['applicant_name'] = this.applicantName;
-    data['applicant_avatar'] = this.applicantAvatar;
-    data['ratings'] = this.ratings;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['number_of_jobs'] = numberOfJobs;
+    data['applicant_username'] = applicantUsername;
+    data['applicant_name'] = applicantName;
+    data['applicant_avatar'] = applicantAvatar;
+    data['ratings'] = ratings;
     return data;
   }
 }

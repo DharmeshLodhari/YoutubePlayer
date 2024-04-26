@@ -14,7 +14,7 @@ class EnvelopeTileForChat extends StatefulWidget {
   final Map<String, dynamic>? message;
   final ChatConversation? chatConversation;
 
-  EnvelopeTileForChat({this.message, this.chatConversation});
+  const EnvelopeTileForChat({super.key, this.message, this.chatConversation});
 
   @override
   _EnvelopeTileForChatState createState() => _EnvelopeTileForChatState();
@@ -66,7 +66,7 @@ class _EnvelopeTileForChatState extends State<EnvelopeTileForChat> {
                   message: message, envelope: envelope, isSend: isSend),
             ),
             if (isSend)
-              Container(
+              SizedBox(
                 width: 20,
                 child: isSend
                     ? Center(
@@ -208,7 +208,7 @@ class _EnvelopeTileForChatState extends State<EnvelopeTileForChat> {
                   ),
                 ),
                 if (widget.chatConversation!.isGroupConversation!)
-                  Container(
+                  SizedBox(
                     width: 60,
                     child: Stack(
                       children: [

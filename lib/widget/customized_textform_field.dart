@@ -124,9 +124,7 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
                 Text(
                   widget.labelText,
                   style: TextStyle(
-                    color: widget.labelColor != null
-                        ? widget.labelColor
-                        : darkGrey,
+                    color: widget.labelColor ?? darkGrey,
                     fontSize: widget.fontSize,
                     fontWeight: widget.fontWeight,
                     fontFamily: "Inter",
@@ -144,9 +142,7 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
                 Text(
                   "${widget.controller!.text.toString().length}/6",
                   style: TextStyle(
-                    color: widget.labelColor != null
-                        ? widget.labelColor
-                        : darkGrey,
+                    color: widget.labelColor ?? darkGrey,
                     fontSize: 14,
                   ),
                 )
@@ -187,7 +183,7 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
           cursorColor: navyBlue,
           decoration: InputDecoration(
             helperText: widget.helperText,
-            hintText: widget.hintText != null ? widget.hintText : null,
+            hintText: widget.hintText,
             hintStyle: TextStyle(
               color: darkGrey.withOpacity(0.5),
               fontSize: 14,
@@ -297,7 +293,7 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
           obscureText: widget.obscureText,
           maxLength: widget.maxLength,
           maxLines: widget.maxLines,
-          focusNode: widget.focusNode != null ? widget.focusNode : null,
+          focusNode: widget.focusNode,
           onChanged: (val) {
             if (widget.whenToVerifyInputFromServer != null) {
               if (widget.whenToVerifyInputFromServer!(val) == true) {

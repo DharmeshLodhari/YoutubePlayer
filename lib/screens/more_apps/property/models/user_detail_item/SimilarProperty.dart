@@ -23,12 +23,12 @@ class SimilarProperty {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['currency'] = this.currency;
-    data['image'] = this.image;
-    data['name'] = this.name;
-    data['price'] = this.price;
-    data['short_description'] = this.shortDescription;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['currency'] = currency;
+    data['image'] = image;
+    data['name'] = name;
+    data['price'] = price;
+    data['short_description'] = shortDescription;
     return data;
   }
 }

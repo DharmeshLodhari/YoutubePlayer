@@ -259,7 +259,9 @@ class _AddOrUpdateInvoiceItemState extends State<AddOrUpdateInvoiceItem> {
           try {
             double.parse(val.replaceAll(',', ''));
             return null;
-          } catch (e) {}
+          } catch (e) {
+            debugPrint("Error $e");
+          }
         }
         return AppLocalization.of(context)!.invalidAmount;
       },

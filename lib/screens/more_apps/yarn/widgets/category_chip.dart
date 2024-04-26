@@ -23,7 +23,7 @@ class CategoryChip extends StatefulWidget {
   final bool selected;
 
   @override
-  _CategoryChipState createState() => _CategoryChipState();
+  State<CategoryChip> createState() => _CategoryChipState();
 }
 
 class _CategoryChipState extends State<CategoryChip> {

@@ -51,22 +51,21 @@ class EventDetailItem {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['about'] = this.about;
-    data['currency'] = this.currency;
-    data['event_time'] = this.eventTime;
-    data['image'] = this.image;
-    data['name'] = this.name;
-    data['owner_avatar'] = this.ownerAvatar;
-    data['owner_name'] = this.ownerName;
-    data['owner_user_name'] = this.ownerUserName;
-    data['price'] = this.price;
-    if (this.location != null) {
-      data['location'] = this.location!.map((v) => v.toJson()).toList();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['about'] = about;
+    data['currency'] = currency;
+    data['event_time'] = eventTime;
+    data['image'] = image;
+    data['name'] = name;
+    data['owner_avatar'] = ownerAvatar;
+    data['owner_name'] = ownerName;
+    data['owner_user_name'] = ownerUserName;
+    data['price'] = price;
+    if (location != null) {
+      data['location'] = location!.map((v) => v.toJson()).toList();
     }
-    if (this.similarEvent != null) {
-      data['similar_event'] =
-          this.similarEvent!.map((v) => v.toJson()).toList();
+    if (similarEvent != null) {
+      data['similar_event'] = similarEvent!.map((v) => v.toJson()).toList();
     }
     return data;
   }

@@ -21,14 +21,14 @@ class CablePlan {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['name'] = this.name;
-    data['price'] = this.price;
-    if (this.features != null) {
-      data['features'] = this.features;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['name'] = name;
+    data['price'] = price;
+    if (features != null) {
+      data['features'] = features;
     }
-    if (this.packs != null) {
-      data['packs'] = this.packs!.map((v) => v.toJson()).toList();
+    if (packs != null) {
+      data['packs'] = packs!.map((v) => v.toJson()).toList();
     }
     return data;
   }

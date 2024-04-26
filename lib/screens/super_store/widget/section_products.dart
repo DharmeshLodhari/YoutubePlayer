@@ -26,7 +26,7 @@ class _SectionProductsState extends State<SectionProducts> {
     isLoading = true;
     if (mounted) setState(() {});
     for (var item in headers?['results']) {
-      final Product product = await ShoppingAuthService().createProduct(item);
+      final Product product = ShoppingAuthService().createProduct(item);
       result.add(product);
     }
     isLoading = false;

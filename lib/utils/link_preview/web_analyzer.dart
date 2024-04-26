@@ -96,7 +96,9 @@ class WebAnalyzer {
         info._timeout = DateTime.now().add(cache);
         _map[url] = info;
       }
-    } catch (e) {}
+    } catch (e) {
+      // debugPrint("Error $e");
+    }
 
     // print("$url cost ${DateTime.now().difference(start).inMilliseconds}");
 
@@ -247,7 +249,9 @@ class WebAnalyzer {
       } catch (e) {
         try {
           html = gbk.decode(response.bodyBytes);
-        } catch (e) {}
+        } catch (e) {
+          // debugPrint("Error $e");
+        }
       }
 
       if (html == null) {

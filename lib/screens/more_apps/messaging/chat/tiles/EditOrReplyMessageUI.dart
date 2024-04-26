@@ -20,7 +20,8 @@ class EditOrReplyMessageUI extends StatefulWidget {
   final Map<String, dynamic>? messageData;
   final ChatConversation? chatConversation;
 
-  EditOrReplyMessageUI({this.messageData, this.chatConversation});
+  const EditOrReplyMessageUI(
+      {super.key, this.messageData, this.chatConversation});
 
   @override
   _EditOrReplyMessageUIState createState() => _EditOrReplyMessageUIState();
@@ -380,7 +381,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
             ),
           ),
           if (widget.chatConversation!.isGroupConversation!)
-            Container(
+            SizedBox(
               height: 50,
               width: 70,
               child: Stack(
@@ -425,7 +426,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
               ),
             )
           else
-            Container(
+            const SizedBox(
               width: 1,
               height: 1,
             ),
@@ -504,7 +505,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
             ),
           ),
           if (widget.chatConversation!.isGroupConversation!)
-            Container(
+            SizedBox(
               height: 50,
               width: 70,
               child: Stack(
@@ -549,7 +550,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
               ),
             )
           else
-            Container(
+            const SizedBox(
               width: 1,
               height: 1,
             ),
@@ -915,7 +916,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  messageDecoderWithEmoji("${envelope.title ?? ""}")!,
+                  messageDecoderWithEmoji(envelope.title ?? "")!,
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
@@ -940,7 +941,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
             ),
           ),
           if (widget.chatConversation!.isGroupConversation!)
-            Container(
+            SizedBox(
               height: 50,
               width: 80,
               child: Stack(
@@ -985,7 +986,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
               ),
             )
           else
-            Container(
+            const SizedBox(
               width: 1,
               height: 1,
             ),

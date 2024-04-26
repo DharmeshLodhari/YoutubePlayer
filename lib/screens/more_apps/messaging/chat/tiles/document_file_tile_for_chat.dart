@@ -25,7 +25,8 @@ class DocumentFileTileForChat extends StatefulWidget {
   final Map<String, dynamic> message;
   final ChatConversation? chatConversation;
 
-  DocumentFileTileForChat({required this.message, this.chatConversation});
+  const DocumentFileTileForChat(
+      {super.key, required this.message, this.chatConversation});
 
   @override
   State<DocumentFileTileForChat> createState() =>
@@ -59,7 +60,7 @@ class _DocumentFileTileForChatState extends State<DocumentFileTileForChat> {
                   chatConversation: widget.chatConversation!,
                 ),
                 if (isSend)
-                  Container(
+                  SizedBox(
                       width: 20, child: getMessageTick(message: widget.message))
                 else
                   Container(),

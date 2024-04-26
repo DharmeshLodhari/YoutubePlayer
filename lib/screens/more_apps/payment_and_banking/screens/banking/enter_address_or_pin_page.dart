@@ -246,11 +246,9 @@ class _EnterAddressOrPinPinPageState extends State<EnterAddressOrPinPinPage> {
   }
 
   Widget enterPinDescription() {
-    return Container(
-      child: Text(
-        "Enter your pin below",
-        style: TextStyle(fontSize: 14, color: darkGrey),
-      ),
+    return Text(
+      "Enter your pin below",
+      style: TextStyle(fontSize: 14, color: darkGrey),
     );
   }
 

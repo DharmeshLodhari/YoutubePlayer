@@ -50,10 +50,10 @@ import 'more_apps/yarn/yarn_dashboard_bloc.dart';
 class Dashboard extends StatefulWidget {
   final dynamic arguments;
 
-  Dashboard({this.arguments});
+  const Dashboard({super.key, this.arguments});
 
   @override
-  _DashboardState createState() => _DashboardState(arguments: arguments);
+  State<Dashboard> createState() => _DashboardState(arguments: arguments);
 }
 
 class _DashboardState extends State<Dashboard> {
@@ -96,7 +96,7 @@ class _DashboardState extends State<Dashboard> {
       _pages = [
         KeepAlivePage(wantKeepAlive: false, child: Home()),
         const SuperStoreHome(),
-        KeepAlivePage(wantKeepAlive: true, child: ConnectionDashboard()),
+        KeepAlivePage(wantKeepAlive: true, child: const ConnectionDashboard()),
         GeneralSettingScreen(),
       ];
     });
@@ -409,7 +409,7 @@ class _DashboardState extends State<Dashboard> {
       badgeStyle: badges.BadgeStyle(
         shape: badges.BadgeShape.circle,
         badgeColor: naturalGreen,
-        padding: basketBloc.basketItems.length == 0
+        padding: basketBloc.basketItems.isEmpty
             ? const EdgeInsets.all(0)
             : const EdgeInsets.all(4),
         elevation: 0,
@@ -425,7 +425,7 @@ class _DashboardState extends State<Dashboard> {
   }
 
   Widget? getBadgeContent() {
-    if (basketBloc.basketItems.length == 0) {
+    if (basketBloc.basketItems.isEmpty) {
       return null;
     }
     return Text(

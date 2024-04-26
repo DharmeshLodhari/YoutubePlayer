@@ -53,17 +53,17 @@ class _BarChartState extends State<BarChart> {
       mostExpensive = 0;
       barData = [0, 0, 0, 0, 0, 0, 0];
 
-      expenses!.forEach((dynamic data) {
+      for (var data in expenses!) {
         if (data["amount"] > mostExpensive) {
           mostExpensive = double.parse(data["amount"].toString());
         }
-      });
+      }
       getData(expenses!);
     });
   }
 
   void getData(List<dynamic> expenses) {
-    expenses.forEach((data) {
+    for (var data in expenses) {
       final amount = double.parse(data["amount"].toString());
       if (amount >= 0.01) {
         setState(() {
@@ -71,7 +71,7 @@ class _BarChartState extends State<BarChart> {
         });
       }
       barData[data["day"] - 1] = double.parse(data["amount"].toString());
-    });
+    }
   }
 
   @override

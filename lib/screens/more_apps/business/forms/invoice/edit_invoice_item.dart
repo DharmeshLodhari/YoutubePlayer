@@ -246,7 +246,9 @@ class _EditInvoiceItemState extends State<EditInvoiceItem> {
           try {
             double.parse(val.replaceAll(',', ''));
             return null;
-          } catch (e) {}
+          } catch (e) {
+            debugPrint("Error $e");
+          }
         }
         return AppLocalization.of(context)!.invalidAmount;
       },

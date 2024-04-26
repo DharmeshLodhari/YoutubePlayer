@@ -16,7 +16,7 @@ class MomentTileForChat extends StatefulWidget {
   final Map<String, dynamic>? message;
   final ChatConversation? chatConversation;
 
-  MomentTileForChat(
+  const MomentTileForChat(
       {Key? key, required this.message, required this.chatConversation})
       : super(key: key);
 
@@ -145,12 +145,12 @@ class _MomentTileForChatState extends State<MomentTileForChat> {
                                 ),
                               ],
                             )
-                          : Container(
+                          : const SizedBox(
                               height: 0,
                               width: 0,
                             )
                     else
-                      Container(
+                      const SizedBox(
                         height: 0,
                         width: 0,
                       ),
@@ -258,7 +258,7 @@ class _MomentTileForChatState extends State<MomentTileForChat> {
                 ),
               ),
               if (isSend)
-                Container(
+                SizedBox(
                   width: 20,
                   child: isSend
                       ? Center(

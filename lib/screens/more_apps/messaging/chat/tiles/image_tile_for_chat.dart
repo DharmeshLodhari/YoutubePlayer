@@ -13,7 +13,7 @@ class ImageTileForChat extends StatelessWidget {
   final Map<String, dynamic>? message;
   final ChatConversation? chatConversation;
 
-  ImageTileForChat({this.message, this.chatConversation});
+  const ImageTileForChat({super.key, this.message, this.chatConversation});
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +46,7 @@ class ImageTileForChat extends StatelessWidget {
                     "type": "image",
                     "file": message!['media'],
                     "message": message!['text'],
-                    "poster": message!["poster"] ?? null
+                    "poster": message!["poster"]
                   },
                 );
               },
@@ -168,7 +168,7 @@ class ImageTileForChat extends StatelessWidget {
                           fit: BoxFit.cover,
                           imageBuilder: buildImage,
                           progressIndicatorBuilder:
-                              (context, url, downloadProgress) => Container(
+                              (context, url, downloadProgress) => SizedBox(
                             height: MediaQuery.of(context).size.width / 3,
                             width: MediaQuery.of(context).size.width / 1.8,
                             child: Center(
@@ -192,7 +192,7 @@ class ImageTileForChat extends StatelessWidget {
 
             //Message tick
             if (isSend)
-              Container(
+              SizedBox(
                 width: 20,
                 child: isSend
                     ? Center(

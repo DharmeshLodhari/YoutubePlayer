@@ -38,17 +38,17 @@ class Original {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['frames'] = this.frames;
-    data['hash'] = this.hash;
-    data['height'] = this.height;
-    data['mp4'] = this.mp4;
-    data['mp4_size'] = this.mp4Size;
-    data['size'] = this.size;
-    data['url'] = this.url;
-    data['webp'] = this.webp;
-    data['webp_size'] = this.webpSize;
-    data['width'] = this.width;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['frames'] = frames;
+    data['hash'] = hash;
+    data['height'] = height;
+    data['mp4'] = mp4;
+    data['mp4_size'] = mp4Size;
+    data['size'] = size;
+    data['url'] = url;
+    data['webp'] = webp;
+    data['webp_size'] = webpSize;
+    data['width'] = width;
     return data;
   }
 }

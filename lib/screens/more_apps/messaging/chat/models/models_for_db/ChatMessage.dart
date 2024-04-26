@@ -116,60 +116,59 @@ class ChatMessage {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['author'] = this.author;
-    data['author_full_name'] = this.authorFullName;
-    data['check_id'] = this.checkId;
-    data['conversation_id'] = this.conversationId;
-    data['created_at'] = this.createdAt;
-    data['deleted_for_author'] = this.deletedForAuthor;
-    data['deleted_for_recipient'] = this.deletedForRecipient;
-    data['delivered'] = this.delivered;
-    data['id'] = this.messageId;
-    data['kind'] = this.kind;
-    data['media'] = this.media;
-    data['meta_data'] = this.metaData;
-    data['poster'] = this.poster;
-    data['read_by_author'] = this.readByAuthor;
-    data['read_by_recipient'] = this.readByRecipient;
-    data['replied_to'] = this.repliedTo;
-    data['text'] = this.text;
-    data['type'] = this.type;
-    data['updated_at'] = this.updatedAt;
-    data['was_edited'] = this.wasEdited;
-    data["to_customer_avatar"] = this.toCustomerAvatar;
-    data["from_customer_avatar"] = this.fromCustomerAvatar;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['author'] = author;
+    data['author_full_name'] = authorFullName;
+    data['check_id'] = checkId;
+    data['conversation_id'] = conversationId;
+    data['created_at'] = createdAt;
+    data['deleted_for_author'] = deletedForAuthor;
+    data['deleted_for_recipient'] = deletedForRecipient;
+    data['delivered'] = delivered;
+    data['id'] = messageId;
+    data['kind'] = kind;
+    data['media'] = media;
+    data['meta_data'] = metaData;
+    data['poster'] = poster;
+    data['read_by_author'] = readByAuthor;
+    data['read_by_recipient'] = readByRecipient;
+    data['replied_to'] = repliedTo;
+    data['text'] = text;
+    data['type'] = type;
+    data['updated_at'] = updatedAt;
+    data['was_edited'] = wasEdited;
+    data["to_customer_avatar"] = toCustomerAvatar;
+    data["from_customer_avatar"] = fromCustomerAvatar;
     return data;
   }
 
   Map<String, dynamic> toDBJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['author'] = this.author;
-    data['author_full_name'] = this.authorFullName;
-    data['check_id'] = this.checkId;
-    data['conversation_id'] = this.conversationId;
-    data['created_at'] = convertStringToMillisecondsSinceEpoch(this.createdAt);
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['author'] = author;
+    data['author_full_name'] = authorFullName;
+    data['check_id'] = checkId;
+    data['conversation_id'] = conversationId;
+    data['created_at'] = convertStringToMillisecondsSinceEpoch(createdAt);
     data['deleted_for_author'] =
-        convertBoolToInt(this.deletedForAuthor, defaultValue: false);
+        convertBoolToInt(deletedForAuthor, defaultValue: false);
     data['deleted_for_recipient'] =
-        convertBoolToInt(this.deletedForRecipient, defaultValue: false);
-    data['delivered'] = convertBoolToInt(this.delivered, defaultValue: false);
-    data['message_id'] = this.messageId;
-    data['kind'] = this.kind;
-    data['media'] = this.media;
-    data['meta_data'] = this.metaData == null ? "{}" : this.metaData;
-    data['poster'] = this.poster;
-    data['read_by_author'] =
-        convertBoolToInt(this.readByAuthor, defaultValue: true);
+        convertBoolToInt(deletedForRecipient, defaultValue: false);
+    data['delivered'] = convertBoolToInt(delivered, defaultValue: false);
+    data['message_id'] = messageId;
+    data['kind'] = kind;
+    data['media'] = media;
+    data['meta_data'] = metaData == null ? "{}" : metaData;
+    data['poster'] = poster;
+    data['read_by_author'] = convertBoolToInt(readByAuthor, defaultValue: true);
     data['read_by_recipient'] =
-        convertBoolToInt(this.readByRecipient, defaultValue: false);
-    data['replied_to'] = this.repliedTo == null ? "{}" : this.repliedTo;
-    data['text'] = this.text;
-    data['type'] = this.type ?? "chatroom_message";
-    data['updated_at'] = convertStringToMillisecondsSinceEpoch(this.updatedAt);
-    data['was_edited'] = convertBoolToInt(this.wasEdited, defaultValue: false);
-    data["to_customer_avatar"] = this.toCustomerAvatar ?? defaultImage;
-    data["from_customer_avatar"] = this.fromCustomerAvatar ?? defaultImage;
+        convertBoolToInt(readByRecipient, defaultValue: false);
+    data['replied_to'] = repliedTo == null ? "{}" : repliedTo;
+    data['text'] = text;
+    data['type'] = type ?? "chatroom_message";
+    data['updated_at'] = convertStringToMillisecondsSinceEpoch(updatedAt);
+    data['was_edited'] = convertBoolToInt(wasEdited, defaultValue: false);
+    data["to_customer_avatar"] = toCustomerAvatar ?? defaultImage;
+    data["from_customer_avatar"] = fromCustomerAvatar ?? defaultImage;
     return data;
   }
 

@@ -44,19 +44,19 @@ class MovieDetailItem {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['category'] = this.category;
-    data['currency'] = this.currency;
-    data['description'] = this.description;
-    data['name'] = this.name;
-    data['poster'] = this.poster;
-    data['price'] = this.price;
-    data['rating'] = this.rating;
-    data['starring'] = this.starring;
-    data['time'] = this.time;
-    data['video'] = this.video;
-    data['viewing_rating'] = this.viewingRating;
-    data['year'] = this.year;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['category'] = category;
+    data['currency'] = currency;
+    data['description'] = description;
+    data['name'] = name;
+    data['poster'] = poster;
+    data['price'] = price;
+    data['rating'] = rating;
+    data['starring'] = starring;
+    data['time'] = time;
+    data['video'] = video;
+    data['viewing_rating'] = viewingRating;
+    data['year'] = year;
     return data;
   }
 }

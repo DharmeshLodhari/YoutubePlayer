@@ -29,10 +29,10 @@ import '../more_apps/user_profile/screens/user_profile_module_new/profile_templa
 class QrCodePage extends StatefulWidget {
   final dynamic arguments;
 
-  QrCodePage({this.arguments, Key? key}) : super(key: key);
+  const QrCodePage({this.arguments, Key? key}) : super(key: key);
 
   @override
-  _QrCodePageState createState() => _QrCodePageState();
+  State<QrCodePage> createState() => _QrCodePageState();
 }
 
 class _QrCodePageState extends State<QrCodePage> {

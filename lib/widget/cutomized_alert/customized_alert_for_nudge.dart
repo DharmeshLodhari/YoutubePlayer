@@ -159,26 +159,22 @@ class CustomizedAlertForNudge {
 
 // Returns alert image for icon
   Widget? _getImage() {
-    debugPrint('MESSAGE DATA-> ${image}');
+    debugPrint('MESSAGE DATA-> $image');
 
-    return roundedBackgroundIcon != null
-        ? roundedBackgroundIcon
-        : image != null && image!.isNotEmpty
-            ? Container(
-                child: ClipOval(
-                  child: Image.network(
-                    image!,
-                    height: 170,
-                    width: 170,
-                    fit: BoxFit.fill,
-                    filterQuality: FilterQuality.high,
-                    cacheHeight: 170,
-                    cacheWidth: 170,
-                    frameBuilder: imageFrameBuilder,
-                  ),
-                ),
-              )
-            : Container();
+    return roundedBackgroundIcon ?? (image != null && image!.isNotEmpty
+            ? ClipOval(
+              child: Image.network(
+                image!,
+                height: 170,
+                width: 170,
+                fit: BoxFit.fill,
+                filterQuality: FilterQuality.high,
+                cacheHeight: 170,
+                cacheWidth: 170,
+                frameBuilder: imageFrameBuilder,
+              ),
+            )
+            : Container());
   }
 
 // Shows alert with selected animation

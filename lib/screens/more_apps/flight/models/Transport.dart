@@ -35,16 +35,16 @@ class Transport {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['currency'] = this.currency;
-    data['date'] = this.date;
-    data['from'] = this.from;
-    data['logo'] = this.logo;
-    data['name'] = this.name;
-    data['price'] = this.price;
-    data['time'] = this.time;
-    data['to'] = this.to;
-    data['travel_time'] = this.travelTime;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['currency'] = currency;
+    data['date'] = date;
+    data['from'] = from;
+    data['logo'] = logo;
+    data['name'] = name;
+    data['price'] = price;
+    data['time'] = time;
+    data['to'] = to;
+    data['travel_time'] = travelTime;
     return data;
   }
 }

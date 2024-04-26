@@ -79,31 +79,31 @@ class CreateJobModel {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['id'] = this.id;
-    data['tags'] = this.tags;
-    if (this.pictures != null) {
-      data['pictures'] = this.pictures!.map((v) => v.toJson()).toList();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['tags'] = tags;
+    if (pictures != null) {
+      data['pictures'] = pictures!.map((v) => v.toJson()).toList();
     }
-    data['video'] = this.video;
-    if (this.category != null) {
-      data['category'] = this.category!.toJson();
+    data['video'] = video;
+    if (category != null) {
+      data['category'] = category!.toJson();
     }
-    data['owner_avatar'] = this.ownerAvatar;
-    data['owner_name'] = this.ownerName;
-    data['applicants_count'] = this.applicantsCount;
-    data['title'] = this.title;
-    data['pay'] = this.pay;
-    data['status'] = this.status;
-    data['owner'] = this.owner;
-    data['is_listed'] = this.isListed;
-    data['applicants'] = this.applicants;
-    data['assignee'] = this.assignee;
-    data['description'] = this.description;
-    data['due_date'] = this.dueDate;
-    data['creation_date'] = this.creationDate;
-    data['city'] = this.city;
-    data['state'] = this.state;
+    data['owner_avatar'] = ownerAvatar;
+    data['owner_name'] = ownerName;
+    data['applicants_count'] = applicantsCount;
+    data['title'] = title;
+    data['pay'] = pay;
+    data['status'] = status;
+    data['owner'] = owner;
+    data['is_listed'] = isListed;
+    data['applicants'] = applicants;
+    data['assignee'] = assignee;
+    data['description'] = description;
+    data['due_date'] = dueDate;
+    data['creation_date'] = creationDate;
+    data['city'] = city;
+    data['state'] = state;
     // data['location'] = this.location;
     return data;
   }
@@ -123,10 +123,10 @@ class Pictures {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['id'] = this.id;
-    data['image'] = this.image;
-    data['caption'] = this.caption;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['image'] = image;
+    data['caption'] = caption;
     return data;
   }
 }
@@ -145,10 +145,10 @@ class Category {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['slug'] = this.slug;
-    data['image'] = this.image;
-    data['name'] = this.name;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['slug'] = slug;
+    data['image'] = image;
+    data['name'] = name;
     return data;
   }
 }

@@ -94,11 +94,10 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
         widget.currentMoment.likes = data.likes;
         widget.currentMoment.dislikes = data.dislikes;
       });
+      return true;
     } catch (error) {
       return false;
     }
-
-    return true;
   }
 
   Future<bool> addDisLikeToMoment() async {
@@ -819,10 +818,10 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
         await ShareInChat().selectShareCustomer(context);
     debugPrint("Selected users = ${listOfRecipient.length}");
 
-    listOfRecipient.forEach((recipient) {
+    for (var recipient in listOfRecipient) {
       addMomentPostToChat(
           recipientUser: recipient!, momentsModel: momentsModel);
-    });
+    }
   }
 
   Future<void> addMomentPostToChat({
@@ -1098,9 +1097,9 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
     if (widget.currentMoment.tags != null) {
       widget.currentMoment.tags!.join(', ');
 
-      widget.currentMoment.tags!.forEach((tag) {
+      for (var tag in widget.currentMoment.tags!) {
         formattedTagList.add('#$tag ');
-      });
+      }
 
       return ReadMoreText(
         formattedTagList.join(' '),

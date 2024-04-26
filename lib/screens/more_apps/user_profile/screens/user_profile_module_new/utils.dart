@@ -6,10 +6,10 @@ import 'package:flutter/material.dart';
 import '../../../yarn/models/Topics/yarn_model.dart';
 
 Widget getFollowersWidget(YarnQuotePreview widget,
-    {double radiusSize: 32,
-    double radiusShift: 10,
-    double radiusHeight: 32,
-    double radiusWidth: 32}) {
+    {double radiusSize = 32,
+    double radiusShift = 10,
+    double radiusHeight = 32,
+    double radiusWidth = 32}) {
   final List<UserFollowers> viewers = [];
 
   if (widget.yarn.viewersAvatars != null) {
@@ -28,10 +28,10 @@ Widget getFollowersWidget(YarnQuotePreview widget,
 
 Widget followersWidget(
     {List<UserFollowers>? userImages,
-    double radiusSize: 32,
-    double radiusShift: 10,
-    double radiusHeight: 32,
-    double radiusWidth: 32}) {
+    double radiusSize = 32,
+    double radiusShift = 10,
+    double radiusHeight = 32,
+    double radiusWidth = 32}) {
   final int count = userImages!.length;
   if (count == 0) {
     return const SizedBox();
@@ -52,10 +52,10 @@ Widget followersWidget(
 
 Widget getMembersWidget(
     {List<UserFollowers>? userImages,
-    double radiusSize: 20,
-    double radiusShift: 10,
-    double radiusHeight: 20,
-    double radiusWidth: 20}) {
+    double radiusSize = 20,
+    double radiusShift = 10,
+    double radiusHeight = 20,
+    double radiusWidth = 20}) {
   final int count = userImages!.length;
   if (count == 0) {
     return const SizedBox();
@@ -76,8 +76,8 @@ Widget getMembersWidget(
 
 Widget buildFollowersCountWidget(List<UserFollowers> userFollowers,
     {List<UserFollowers>? userImages,
-    double radiusHeight: 32,
-    double radiusWidth: 32}) {
+    double radiusHeight = 32,
+    double radiusWidth = 32}) {
   final int count = userFollowers.length - 4;
   return Container(
     height: radiusHeight,
@@ -102,9 +102,9 @@ Widget buildFollowersCountWidget(List<UserFollowers> userFollowers,
 
 Widget buildStackedFollowersWidget(
     {List<UserFollowers>? images,
-    double radiusSize: 32,
-    double radiusShift: 10}) {
-  if (images!.length != 0) {
+    double radiusSize = 32,
+    double radiusShift = 10}) {
+  if (images!.isNotEmpty) {
     final items = images
         .map((image) => buildImage(image.avatar ?? '', image.fullName ?? ''))
         .toList();
@@ -123,10 +123,10 @@ Widget buildStackedFollowersWidget(
 
 Widget buildMultipleFollowersWidget(
     {List<UserFollowers>? userImages,
-    double radiusSize: 32,
-    double radiusShift: 10,
-    double radiusHeight: 32,
-    double radiusWidth: 32}) {
+    double radiusSize = 32,
+    double radiusShift = 10,
+    double radiusHeight = 32,
+    double radiusWidth = 32}) {
   return Padding(
     padding: const EdgeInsets.only(right: 12),
     child: StackedWidgets(

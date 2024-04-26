@@ -19,7 +19,7 @@ class MaterialVideoProgressBar extends StatefulWidget {
   final Function()? onDragUpdate;
 
   @override
-  _VideoProgressBarState createState() {
+  State<MaterialVideoProgressBar> createState() {
     return _VideoProgressBarState();
   }
 }

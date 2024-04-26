@@ -243,7 +243,7 @@ class _EditServiceState extends State<EditService> {
   }
 
   Widget addLocalImages() {
-    return Container(
+    return SizedBox(
       height: 100,
       child: ListView.builder(
         controller: _scrollController,
@@ -263,7 +263,7 @@ class _EditServiceState extends State<EditService> {
   }
 
   Widget viewServerImages() {
-    return Container(
+    return SizedBox(
       height: 100,
       child: ListView.builder(
         controller: _scrollController,
@@ -472,7 +472,7 @@ class _EditServiceState extends State<EditService> {
   bool checkImageLimitForServerImage() {
     if (serviceLocalImages.length + serviceImagesFromServer.length !=
             imageCount ||
-        serviceImagesFromServer.length != 0) {
+        serviceImagesFromServer.isNotEmpty) {
       return true;
     }
     return false;
@@ -482,7 +482,7 @@ class _EditServiceState extends State<EditService> {
   bool checkImageLimitForLocalImage() {
     if (serviceLocalImages.length + serviceImagesFromServer.length !=
             imageCount ||
-        serviceLocalImages.length != 0) {
+        serviceLocalImages.isNotEmpty) {
       return true;
     }
     return false;
@@ -565,7 +565,7 @@ class _EditServiceState extends State<EditService> {
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: Container(
+              content: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   elevation: 2,

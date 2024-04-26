@@ -340,8 +340,8 @@ class SharedCartAuthService extends AuthService {
     if (cartId == null) {
       return false;
     }
-    final String url = AppConfig.baseUrl +
-        "/api/v1/shopping-cart/add-item-to-shared-cart/$cartId/";
+    final String url =
+        "${AppConfig.baseUrl}/api/v1/shopping-cart/add-item-to-shared-cart/$cartId/";
     final requestData = jsonEncode(data);
     final headers = await getAuthHeaders();
 
@@ -364,8 +364,8 @@ class SharedCartAuthService extends AuthService {
     if (cartId == null) {
       return false;
     }
-    final String url = AppConfig.baseUrl +
-        "/api/v1/shopping-cart/remove-item-from-shared-cart/$cartId/";
+    final String url =
+        "${AppConfig.baseUrl}/api/v1/shopping-cart/remove-item-from-shared-cart/$cartId/";
     final requestData = jsonEncode(data);
     final headers = await getAuthHeaders();
 
@@ -388,8 +388,8 @@ class SharedCartAuthService extends AuthService {
     if (cartId == null) {
       return false;
     }
-    final String url = AppConfig.baseUrl +
-        "/api/v1/shopping-cart/add-members-to-shared-shopping-cart/$cartId/";
+    final String url =
+        "${AppConfig.baseUrl}/api/v1/shopping-cart/add-members-to-shared-shopping-cart/$cartId/";
     final requestData = jsonEncode(data);
     final headers = await getAuthHeaders();
 
@@ -413,8 +413,8 @@ class SharedCartAuthService extends AuthService {
       return false;
     }
 
-    final String url = AppConfig.baseUrl +
-        "/api/v1/shopping-cart/remove-members-from-shared-shopping-cart/$cartId/";
+    final String url =
+        "${AppConfig.baseUrl}/api/v1/shopping-cart/remove-members-from-shared-shopping-cart/$cartId/";
 
     final requestData = jsonEncode(data);
     final headers = await getAuthHeaders();
@@ -438,8 +438,8 @@ class SharedCartAuthService extends AuthService {
     if (cartId == null) {
       return false;
     }
-    final String url = AppConfig.baseUrl +
-        "/api/v1/shopping-cart/update-cart-meta-data-shared-shopping-cart/$cartId/";
+    final String url =
+        "${AppConfig.baseUrl}/api/v1/shopping-cart/update-cart-meta-data-shared-shopping-cart/$cartId/";
     final requestData = jsonEncode(data);
     final headers = await getAuthHeaders();
 

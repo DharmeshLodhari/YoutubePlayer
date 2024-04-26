@@ -104,10 +104,10 @@ import '../tiles/yarn_question_tile.dart';
 class ChatScreenGroupMessage extends StatefulWidget {
   final dynamic arguments;
 
-  ChatScreenGroupMessage({this.arguments});
+  const ChatScreenGroupMessage({super.key, this.arguments});
 
   @override
-  _ChatScreenGroupMessageState createState() => _ChatScreenGroupMessageState();
+  State<ChatScreenGroupMessage> createState() => _ChatScreenGroupMessageState();
 }
 
 class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
@@ -346,8 +346,9 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   void setupSynchronizer() {
     _chatSynchronizerTimer =
         Timer.periodic(_chatSynchronizeTime, (timer) async {
-      if (mounted)
+      if (mounted) {
         await ChatMessageSynchronizer().syncMessages(fetchFresh: true);
+      }
     });
   }
 
@@ -406,7 +407,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     final List<ChatMessage> messages = await ChatMessageHandler()
         .getChatMessages(chatConversation: chatConversation!);
 
-    messages.forEach((message) {
+    for (var message in messages) {
       bool isPresent = false;
       for (int i = 0; i < messageList.length; i++) {
         final Map<String, dynamic> decodePresentMessage =
@@ -427,7 +428,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         messageList.add(encodedMessage);
         storeMessagesTemporary(message: encodedMessage);
       }
-    });
+    }
 
     if (mounted) setState(() {});
 
@@ -538,7 +539,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   }
 
   void disposeAudioPlayers() {
-    messageList.forEach((element) {
+    for (var element in messageList) {
       final Map<String, dynamic>? messageData = jsonDecode(element!);
 
       AssetsAudioPlayer.allPlayers().forEach((key, value) {
@@ -546,7 +547,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
           value.dispose();
         }
       });
-    });
+    }
   }
 
   @override
@@ -809,11 +810,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
           if (isFirstTime &&
               MediaQuery.of(myGlobals.scaffoldKey.currentContext!).size.height >
                   704) {
-            debugPrint("height:- " +
-                MediaQuery.of(myGlobals.scaffoldKey.currentContext!)
-                    .size
-                    .height
-                    .toString());
+            debugPrint(
+                "height:- ${MediaQuery.of(myGlobals.scaffoldKey.currentContext!).size.height}");
             getPreviousMessages();
           }
         });
@@ -842,7 +840,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     debugPrint('message type data ::: ${messageData['type']}');
 
     if (messageData['type'] != "pong") {
-      debugPrint('message type ::: ${messageData}');
+      debugPrint('message type ::: $messageData');
       // debugPrint('(MESSAGE TYPE) ----> $messageData');
     }
 
@@ -957,8 +955,9 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
             message:
                 "${messageData['meta_data']['author']} has deleted this group !!");
 
-        if (mounted)
+        if (mounted) {
           Navigator.popUntil(context, ModalRoute.withName(Routes.DASHBOARD));
+        }
         return;
       } else if (messageData['meta_data']['action'] == "remove_user") {
         final List users = messageData['meta_data']['users'];
@@ -972,8 +971,9 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
               message:
                   "${messageData['meta_data']['author']} has removed you from group !!");
 
-          if (mounted)
+          if (mounted) {
             Navigator.popUntil(context, ModalRoute.withName(Routes.DASHBOARD));
+          }
           return;
         }
       }
@@ -986,9 +986,10 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     if (result != null) {
       if (result is ChatConversation) {
         chatConversation = result;
-        if (chatConversation!.isGroupConversation!)
+        if (chatConversation!.isGroupConversation!) {
           groupDetail =
               GroupDetailModel.fromChatConversation(chatConversation!);
+        }
 
         updateParticipantRights();
         if (mounted) setState(() {});
@@ -1234,8 +1235,9 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
   void menuStateChange(bool isOpen) {
     isPopMenuOpen = isOpen;
-    if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+    if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted) {
       bottomSheetStateSetterGlobal!(() {});
+    }
     if (mounted) setState(() {});
   }
 
@@ -1276,7 +1278,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
                         color: blackFont,
                       ),
                     )
-                  : Container(
+                  : const SizedBox(
                       height: 0,
                       width: 0,
                     ),
@@ -1737,7 +1739,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
             }
 
             if (minuteDifference.inMinutes.abs() == 0) {
-              userStatus = 'last seen today at ' + lastSeenTime;
+              userStatus = 'last seen today at $lastSeenTime';
               if (mounted) setState(() {});
               return;
             }
@@ -1748,13 +1750,13 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
             return;
           }
 
-          userStatus = 'last seen today at ' + lastSeenTime;
+          userStatus = 'last seen today at $lastSeenTime';
           if (mounted) setState(() {});
           return;
         }
 
         if (yesterday == lastSeenDate) {
-          userStatus = 'last seen yesterday at ' + lastSeenTime;
+          userStatus = 'last seen yesterday at $lastSeenTime';
           if (mounted) setState(() {});
           return;
         }
@@ -1762,11 +1764,11 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         if (lastSeenDateTime.difference(now).inDays.abs() < 7) {
           final int weekDay = lastSeenDateTime.weekday;
           final String dayName = getDayName(day: weekDay);
-          userStatus = 'last seen ' + dayName + ' at ' + lastSeenTime;
+          userStatus = 'last seen $dayName at $lastSeenTime';
           if (mounted) setState(() {});
           return;
         }
-        userStatus = 'last seen ' + lastSeenDateString + ' at ' + lastSeenTime;
+        userStatus = 'last seen $lastSeenDateString at $lastSeenTime';
       }
       if (mounted) setState(() {});
     }
@@ -1796,7 +1798,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         ),
       );
     } else {
-      return Container(
+      return SizedBox(
         height: 36,
         width: 36,
         child: Container(
@@ -1932,7 +1934,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   }
 
   Widget gifPreviewList() {
-    return Container(
+    return SizedBox(
       height: MediaQuery.of(context).size.height / 3,
       child: _isGIFLoading
           ? Center(child: CircularLoadingIndicator())
@@ -1961,7 +1963,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
                       imageUrl: _gifs[index].images!.previewGif!.url!,
                       fit: BoxFit.fill,
                       errorWidget: imageErrorWidget,
-                      placeholder: (context, url) => Container(
+                      placeholder: (context, url) => SizedBox(
                           width: MediaQuery.of(context).size.width / 2,
                           child: Center(child: CircularLoadingIndicator())),
                     ),
@@ -2045,10 +2047,10 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       ),
       child: Row(
         children: <Widget>[
-          Container(
+          const SizedBox(
             width: 50,
             height: 50,
-            child: const FlareActor(
+            child: FlareActor(
               "assets/images/flare/voice_record_active.flr",
               animation: "record",
             ),
@@ -2260,11 +2262,11 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   Widget getGroupUserList() {
     final List<Participant> participantList = [];
 
-    groupDetail!.participants.forEach((element) {
+    for (var element in groupDetail!.participants) {
       if (element.userName != userBloc!.user.userName) {
         participantList.add(element);
       }
-    });
+    }
 
     return ListView.builder(
       itemBuilder: (context, index) {
@@ -2349,7 +2351,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       onTap: () async {
         final bool isPermissionGranted = await requestGalleryPermission();
         if (isPermissionGranted) {
-          await addMediaToMessage;
+          addMediaToMessage;
         } else {
           final bool isPermissionIsDenied =
               await isPermanentlyDeniedPermission();
@@ -2877,10 +2879,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   }
 
   void addProductOrServiceToChat(dynamic item) async {
-    final String url = AppConfig.baseUrl +
-        "/api/v1/${item is Product ? "products" : "services"}/" +
-        item.id +
-        "/";
+    final String url =
+        "${AppConfig.baseUrl + "/api/v1/${item is Product ? "products" : "services"}/" + item.id}/";
 
     final Map<String, dynamic>? itemData =
         await ShoppingAuthService().getProductOrService(url);
@@ -3072,7 +3072,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 100),
       child: messageIsText
-          ? Container(
+          ? const SizedBox(
               height: 0,
               width: 0,
             )
@@ -4175,7 +4175,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   }
 
   void checkMessageForRead() {
-    messageList.forEach((element) {
+    for (var element in messageList) {
       ///{id: e2230d61-c7e6-4825-a7c2-318a47671ff0,
       /// check_id: 1eb55ef5-87c3-4d85-9bd5-6f277a52b4f8,
       /// conversation: 3fe1e3b6-5802-4ade-b4f3-8f21d7b8ebd7,
@@ -4194,7 +4194,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
           storeMessagesTemporary(message: element);
         }
       }
-    });
+    }
 
     acknowledgeThatMessageAreRead();
   }
@@ -4337,8 +4337,9 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     productOrServiceCount = 0;
     productOrServiceNext = "";
     productOrServicePrevious = "";
-    if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+    if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted) {
       bottomSheetStateSetterGlobal!(() {});
+    }
     if (mounted) setState(() {});
   }
 
@@ -4349,8 +4350,9 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       if (productOrServiceNext != null && !isItemLoading) {
         isItemLoading = true;
 
-        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted) {
           bottomSheetStateSetterGlobal!(() {});
+        }
         if (mounted) setState(() {});
 
         final Map<String, dynamic>? result = await MessageAuth()
@@ -4366,26 +4368,29 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         final List tempList = result['results'];
 
         isItemLoading = false;
-        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted) {
           bottomSheetStateSetterGlobal!(() {});
+        }
         if (mounted) setState(() {});
 
-        tempList.forEach((item) {
+        for (var item in tempList) {
           if (isProductSearch) {
             searchedProductAndService.add(Product.fromJson(item));
           } else if (isServiceSearch) {
             searchedProductAndService.add(Service.fromJson(item));
           }
-        });
+        }
 
-        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted) {
           bottomSheetStateSetterGlobal!(() {});
+        }
         if (mounted) setState(() {});
       }
       if (searchedProductAndService.isEmpty) {
         noSearchedItem = true;
-        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted) {
           bottomSheetStateSetterGlobal!(() {});
+        }
         if (mounted) setState(() {});
       }
     }
@@ -4393,16 +4398,10 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
   String getSearchUrl() {
     if (isProductSearch) {
-      return AppConfig.baseUrl +
-          "/api/v1/search/products/?search=name__wildcard|*" +
-          searchItemTextController!.text +
-          "*";
+      return "${AppConfig.baseUrl}/api/v1/search/products/?search=name__wildcard|*${searchItemTextController!.text}*";
     }
     if (isServiceSearch) {
-      return AppConfig.baseUrl +
-          "/api/v1/search/services/?search=name__wildcard|*" +
-          searchItemTextController!.text +
-          "*";
+      return "${AppConfig.baseUrl}/api/v1/search/services/?search=name__wildcard|*${searchItemTextController!.text}*";
     }
     return "";
   }
@@ -4411,16 +4410,16 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     String url = getSearchUrl();
 
     if (bottomSheetSearchIndex == 0 && isProductSearch) {
-      url += "&search=seller:" + chatConversation!.userName!;
+      url += "&search=seller:${chatConversation!.userName!}";
       return url;
     } else if (bottomSheetSearchIndex == 1 && isProductSearch) {
-      url += "&search=seller:" + userBloc!.user.userName!;
+      url += "&search=seller:${userBloc!.user.userName!}";
       return url;
     } else if (bottomSheetSearchIndex == 0 && isServiceSearch) {
-      url += "&search=provider:" + chatConversation!.userName!;
+      url += "&search=provider:${chatConversation!.userName!}";
       return url;
     } else if (bottomSheetSearchIndex == 1 && isServiceSearch) {
-      url += "&search=provider:" + userBloc!.user.userName!;
+      url += "&search=provider:${userBloc!.user.userName!}";
       return url;
     }
     return url;
@@ -4764,7 +4763,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     final String? messageId = messageData["check_id"];
 
     if (chatConversation != null && chatConversation!.conversationId != null) {
-      final Map<String, dynamic> data = Map<String, dynamic>();
+      final Map<String, dynamic> data = <String, dynamic>{};
 
       data["check_id"] = messageId;
       data["conversation_id"] =
@@ -4862,7 +4861,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     debugPrint(
         "recipientUser = $chatConversation  recipientUser.conversationId = ${chatConversation!.conversationId}");
     if (chatConversation != null && chatConversation!.conversationId != null) {
-      final Map<String, dynamic> data = Map<String, dynamic>();
+      final Map<String, dynamic> data = <String, dynamic>{};
 
       final Map<String, dynamic> oldMessageData = jsonDecode(editingMessage!);
       debugPrint("old Data :- $oldMessageData");

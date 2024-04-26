@@ -131,22 +131,20 @@ class _AddShippingOptionsState extends State<AddShippingOptions> {
                 ),
               ),
             ),
-            Container(
-              child: Column(
-                children: [
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  if (amount == 0.0) ...[
-                    const SizedBox()
-                  ] else ...[
-                    getSubmitButton()
-                  ],
-                  const SizedBox(
-                    height: 20,
-                  ),
+            Column(
+              children: [
+                const SizedBox(
+                  height: 20,
+                ),
+                if (amount == 0.0) ...[
+                  const SizedBox()
+                ] else ...[
+                  getSubmitButton()
                 ],
-              ),
+                const SizedBox(
+                  height: 20,
+                ),
+              ],
             ),
           ],
         ),

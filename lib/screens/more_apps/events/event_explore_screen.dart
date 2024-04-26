@@ -18,6 +18,8 @@ import '../messaging/chat/utils.dart';
 import 'models/CityData.dart';
 
 class EventExploreScreen extends StatefulWidget {
+  const EventExploreScreen({super.key});
+
   @override
   _EventExploreScreenState createState() => _EventExploreScreenState();
 }
@@ -272,7 +274,7 @@ class _EventExploreScreenState extends State<EventExploreScreen> {
   Widget eventCarouselSlider() {
     return Container(
       child: isSliderLoading
-          ? Container(
+          ? SizedBox(
               height: 180,
               child: Center(
                 child: CircularLoadingIndicator(),
@@ -316,63 +318,61 @@ class _EventExploreScreenState extends State<EventExploreScreen> {
   }
 
   Widget exploreByCity() {
-    return Container(
-      child: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text(
-                  "Explore by City",
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Text(
+                "Explore by City",
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 18,
+                  color: blackFont,
+                ),
+              ),
+              GestureDetector(
+                child: Text(
+                  "See all",
                   style: TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 18,
-                    color: blackFont,
-                  ),
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                      color: navyBlue),
                 ),
-                GestureDetector(
-                  child: Text(
-                    "See all",
-                    style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14,
-                        color: navyBlue),
-                  ),
-                  onTap: () {
-                    Navigator.of(context).pushNamed("/event-category");
-                  },
-                ),
-              ],
-            ),
+                onTap: () {
+                  Navigator.of(context).pushNamed("/event-category");
+                },
+              ),
+            ],
           ),
-          Container(
-            height: 210,
-            color: Colors.white,
-            child: isExploreByCityLoading
-                ? Center(
-                    child: CircularLoadingIndicator(),
-                  )
-                : SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Container(
-                      padding: const EdgeInsets.only(left: 16),
-                      child: Row(
-                        children: listOfCity
-                            .map(
-                              (cityData) => Container(
-                                margin: const EdgeInsets.only(right: 12),
-                                child: cityCard(cityData: cityData),
-                              ),
-                            )
-                            .toList(),
-                      ),
+        ),
+        Container(
+          height: 210,
+          color: Colors.white,
+          child: isExploreByCityLoading
+              ? Center(
+                  child: CircularLoadingIndicator(),
+                )
+              : SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Container(
+                    padding: const EdgeInsets.only(left: 16),
+                    child: Row(
+                      children: listOfCity
+                          .map(
+                            (cityData) => Container(
+                              margin: const EdgeInsets.only(right: 12),
+                              child: cityCard(cityData: cityData),
+                            ),
+                          )
+                          .toList(),
                     ),
                   ),
-          )
-        ],
-      ),
+                ),
+        )
+      ],
     );
   }
 
@@ -461,7 +461,7 @@ class _EventExploreScreenState extends State<EventExploreScreen> {
             color: Colors.white,
             padding: const EdgeInsets.symmetric(vertical: 16),
             child: isPopularInLocationLoading
-                ? Container(
+                ? SizedBox(
                     height: 100,
                     child: Center(
                       child: CircularLoadingIndicator(),
@@ -528,7 +528,7 @@ class _EventExploreScreenState extends State<EventExploreScreen> {
                 padding: const EdgeInsets.only(left: 16, right: 16),
                 child: Column(
                   children: [
-                    Container(
+                    SizedBox(
                       height: 244,
                       child: isEventListLoading
                           ? Center(
@@ -613,7 +613,7 @@ class _EventExploreScreenState extends State<EventExploreScreen> {
                                                   ],
                                                 ),
                                               ),
-                                              Container(
+                                              SizedBox(
                                                 height: 86,
                                                 child: Center(
                                                   child: Row(
@@ -647,7 +647,7 @@ class _EventExploreScreenState extends State<EventExploreScreen> {
                       height: 12,
                     ),
                     if (isEventListLoading)
-                      Container(
+                      SizedBox(
                         height: 180,
                         child: Center(
                           child: CircularLoadingIndicator(),
@@ -678,7 +678,7 @@ class _EventExploreScreenState extends State<EventExploreScreen> {
       onTap: () {
         Navigator.of(context).pushNamed("/event-detail");
       },
-      child: Container(
+      child: SizedBox(
         height: 132,
         width: 218,
         child: Stack(

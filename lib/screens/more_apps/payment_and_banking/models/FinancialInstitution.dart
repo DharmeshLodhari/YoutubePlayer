@@ -14,7 +14,7 @@ class FinancialInstitution {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
     data['country'] = this.country;
     data['logo'] = this.logo;
     data['name'] = this.name;

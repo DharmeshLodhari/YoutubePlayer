@@ -26,18 +26,16 @@ class ChatMessageSettings {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['playIncomingMessageSound'] = this.playIncomingMessageSound;
-    data['playOutgoingMessageSound'] = this.playOutgoingMessageSound;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['playIncomingMessageSound'] = playIncomingMessageSound;
+    data['playOutgoingMessageSound'] = playOutgoingMessageSound;
     return data;
   }
 
   Map<String, dynamic> toDBJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['playIncomingMessageSound'] =
-        this.playIncomingMessageSound == true ? 1 : 0;
-    data['playOutgoingMessageSound'] =
-        this.playOutgoingMessageSound == true ? 1 : 0;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['playIncomingMessageSound'] = playIncomingMessageSound == true ? 1 : 0;
+    data['playOutgoingMessageSound'] = playOutgoingMessageSound == true ? 1 : 0;
     return data;
   }
 }

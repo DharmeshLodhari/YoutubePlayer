@@ -84,7 +84,7 @@ class DatabaseHelper {
   Future<bool> isLoggedIn() async {
     final dbClient = await db;
     final res = await dbClient.query(USER_TABLE);
-    return res.length > 0 ? true : false;
+    return res.isNotEmpty ? true : false;
   }
 
   // Get the current user
@@ -94,7 +94,7 @@ class DatabaseHelper {
     final List<Map<String, dynamic>> res = await dbClient.query(USER_TABLE);
 
     User? user;
-    if (res.length > 0) {
+    if (res.isNotEmpty) {
       final obj = res.first;
 
       user = User(
@@ -148,7 +148,7 @@ class DatabaseHelper {
     final dbClient = await db;
     final List<Map<String, dynamic>> res = await dbClient.query(JWT_TABLE);
     Jwt? jwt;
-    if (res.length > 0) {
+    if (res.isNotEmpty) {
       jwt = Jwt.fromDBJson(res.last);
     }
     return Future.value(jwt);
@@ -162,7 +162,7 @@ class DatabaseHelper {
     final List<Map<String, dynamic>> res = await dbClient.query(DEVICE_TABLE);
 
     Map<String, dynamic>? deviceData;
-    if (res.length > 0) {
+    if (res.isNotEmpty) {
       deviceData = res.first;
     }
     return deviceData;
@@ -186,7 +186,9 @@ class DatabaseHelper {
     final dbClient = await db;
     try {
       await dbClient.delete(DEVICE_TABLE);
-    } catch (e) {}
+    } catch (e) {
+      debugPrint("Error $e");
+    }
     final int res = await dbClient.insert(DEVICE_TABLE, data);
     return res;
   }
@@ -212,10 +214,10 @@ class DatabaseHelper {
 
     final Batch insertUserBatch = dbClient.batch();
 
-    users.forEach((user) {
+    for (var user in users) {
       insertUserBatch.insert(CHAT_USER_TABLE, user.toJson(),
           conflictAlgorithm: ConflictAlgorithm.ignore);
-    });
+    }
 
     await insertUserBatch.commit();
   }
@@ -300,7 +302,7 @@ class DatabaseHelper {
     final List<Map<String, dynamic>> res =
         await dbClient.query(SOCKET_QUEUE_TABLE);
 
-    if (res.length > 0) {
+    if (res.isNotEmpty) {
       final List<SocketQueueChatMessage> socketQueueChatMessages = res
           .map((element) => SocketQueueChatMessage.fromJson(element))
           .toList();
@@ -357,7 +359,7 @@ class DatabaseHelper {
 
     final Batch insertUserBatch = dbClient.batch();
 
-    chatConversations.forEach((user) {
+    for (var user in chatConversations) {
       final Map<String, dynamic> data = user.toDBJson();
 
       /// for checking if the chatConversation is already stored in the db
@@ -376,7 +378,7 @@ class DatabaseHelper {
 
       insertUserBatch.insert(USER_CONNECTION_TABLE, data,
           conflictAlgorithm: ConflictAlgorithm.ignore);
-    });
+    }
 
     return await insertUserBatch.commit();
   }
@@ -390,7 +392,7 @@ class DatabaseHelper {
 
     final Batch insertUserBatch = dbClient.batch();
 
-    chatConversations.forEach((user) {
+    for (var user in chatConversations) {
       final Map<String, dynamic> data = user.toDBJson();
 
       /// for checking if the chatConversation is already stored in the db
@@ -409,7 +411,7 @@ class DatabaseHelper {
 
       insertUserBatch.insert(USER_CONNECTION_TABLE, data,
           conflictAlgorithm: ConflictAlgorithm.ignore);
-    });
+    }
 
     final result = await insertUserBatch.commit();
     debugPrint("Result From Batch:- $result");
@@ -419,7 +421,7 @@ class DatabaseHelper {
 
   Future<int> addUserConnection(
       {required ChatConversation chatConversation}) async {
-    final Database? dbClient = await db;
+    final Database dbClient = await db;
 
     final List<ChatConversation> existingChatConversation =
         await getUserConnections();
@@ -442,9 +444,9 @@ class DatabaseHelper {
       data["last_message_time"] = dateTime.millisecondsSinceEpoch;
     }
 
-    final int? result = await dbClient?.insert(USER_CONNECTION_TABLE, data,
+    final int result = await dbClient.insert(USER_CONNECTION_TABLE, data,
         conflictAlgorithm: ConflictAlgorithm.ignore);
-    return result ?? 0;
+    return result;
   }
 
   /*Returns a list of all your user's connection name.*/
@@ -454,7 +456,7 @@ class DatabaseHelper {
     final List<Map<String, dynamic>> result =
         await dbClient.query(USER_CONNECTION_TABLE);
 
-    if (result.length > 0) {
+    if (result.isNotEmpty) {
       final List<String> connectionList = [];
       for (int i = 0; i < result.length; i++) {
         connectionList.add(result[i]['username']);
@@ -473,12 +475,12 @@ class DatabaseHelper {
     final List<Map<String, dynamic>> result = await dbClient.query(
         USER_CONNECTION_TABLE,
         where: "username = ?",
-        whereArgs: ['$userName'],
+        whereArgs: [userName],
         limit: 1);
 
     debugPrint('CONNECTION RESULT NAME ::: $userName');
     debugPrint('CONNECTION RESULT ::: $result');
-    return result.length > 0;
+    return result.isNotEmpty;
   }
 
   Future<List<ChatConversation>> getUserConnections() async {
@@ -487,7 +489,7 @@ class DatabaseHelper {
     final List<Map<String, dynamic>> res = await dbClient
         .query(USER_CONNECTION_TABLE, orderBy: "last_message_time DESC");
 
-    if (res.length > 0) {
+    if (res.isNotEmpty) {
       final List<ChatConversation> connectionList =
           res.map((element) => ChatConversation.fromDBJson(element)).toList();
 
@@ -520,7 +522,7 @@ class DatabaseHelper {
         where: "username LIKE ? OR full_name LIKE ?",
         whereArgs: ['%$searchedText%', '%$searchedText%']);
 
-    if (result.length > 0) {
+    if (result.isNotEmpty) {
       final List<ChatConversation> connectionList = result
           .map((element) => ChatConversation.fromDBJson(element))
           .toList();
@@ -534,7 +536,7 @@ class DatabaseHelper {
 
     final List<Map<String, dynamic>> res =
         await dbClient.query(USER_CONNECTION_TABLE);
-    if (res.length > 0) {
+    if (res.isNotEmpty) {
       return res.length;
     }
     return 0;
@@ -586,7 +588,7 @@ class DatabaseHelper {
     final List<Map<String, dynamic>> res = await dbClient
         .query(USER_CONNECTION_TABLE, orderBy: "created_at DESC", limit: 1);
 
-    if (res.length > 0) {
+    if (res.isNotEmpty) {
       final ChatConversation chatConversation =
           ChatConversation.fromDBJson(res.first);
       return chatConversation;
@@ -601,12 +603,12 @@ class DatabaseHelper {
 
     final Batch insertUserBatch = dbClient.batch();
 
-    chatMessages.forEach((chatMessage) {
+    for (var chatMessage in chatMessages) {
       final Map<String, dynamic> data = chatMessage.toDBJson();
 
       insertUserBatch.insert(CHAT_MESSAGE_TABLE, data,
           conflictAlgorithm: ConflictAlgorithm.ignore);
-    });
+    }
 
     final List<dynamic> result = await insertUserBatch.commit();
 
@@ -627,7 +629,7 @@ class DatabaseHelper {
     final List<Map<String, dynamic>> result = await dbClient.rawQuery(
         "SELECT * FROM $CHAT_MESSAGE_TABLE WHERE id IN $secondRemove ORDER BY created_at DESC");
 
-    if (result.length > 0) {
+    if (result.isNotEmpty) {
       final List<ChatMessage> chatMessages = result.map((element) {
         // debugPrint(
         //     "ELEMENT ID:- ${element['id']} TEXT ${element['text']} CREATED AT:- ${convertMillisecondsSinceEpochToString(element['created_at'])}");
@@ -643,12 +645,12 @@ class DatabaseHelper {
 
     final Batch insertUserBatch = dbClient.batch();
 
-    chatMessages.forEach((chatMessage) {
+    for (var chatMessage in chatMessages) {
       final Map<String, dynamic> data = chatMessage.toDBJson();
 
       insertUserBatch.insert(CHAT_MESSAGE_TABLE, data,
           conflictAlgorithm: ConflictAlgorithm.replace);
-    });
+    }
 
     final List<dynamic> result = await insertUserBatch.commit();
 
@@ -665,7 +667,7 @@ class DatabaseHelper {
         where: "conversation_id = ? AND check_id = ?",
         whereArgs: [chatMessage.conversationId, chatMessage.checkId]);
 
-    if (res.length > 0) {
+    if (res.isNotEmpty) {
       final int result = await dbClient.update(
           CHAT_MESSAGE_TABLE, chatMessage.toDBJson(),
           where: "conversation_id = ? AND check_id = ?",
@@ -690,7 +692,7 @@ class DatabaseHelper {
         where: "conversation_id = ?",
         whereArgs: [chatConversation.conversationId]);
 
-    if (res.length > 0) {
+    if (res.isNotEmpty) {
       final List<ChatMessage> chatMessages = res.map((element) {
         return ChatMessage.fromDBJson(element);
       }).toList();
@@ -708,7 +710,7 @@ class DatabaseHelper {
         where: "conversation_id = ? AND check_id = ?",
         whereArgs: [conversationId, checkId]);
 
-    if (res.length > 0) {
+    if (res.isNotEmpty) {
       final List<ChatMessage> chatMessages = res.map((element) {
         return ChatMessage.fromDBJson(element);
       }).toList();
@@ -728,7 +730,7 @@ class DatabaseHelper {
         whereArgs: [conversationId, 1],
         limit: limit);
 
-    if (res.length > 0) {
+    if (res.isNotEmpty) {
       final List<ChatMessage> chatMessages = res.map((element) {
         return ChatMessage.fromDBJson(element);
       }).toList();
@@ -802,7 +804,7 @@ class DatabaseHelper {
         where: "conversation_id = ? AND check_id = ?",
         whereArgs: [chatMessage.conversationId, chatMessage.checkId]);
 
-    if (res.length > 0) {
+    if (res.isNotEmpty) {
       final int result = await dbClient.update(
           CHAT_MESSAGE_TABLE, chatMessage.toDBJson(),
           where: "conversation_id = ? AND check_id = ?",
@@ -832,7 +834,7 @@ class DatabaseHelper {
         "SELECT * FROM $CHAT_MESSAGE_TABLE where delivered=? order by created_at DESC;",
         [1]);
 
-    if (res.length > 0) {
+    if (res.isNotEmpty) {
       final newMap = groupBy(res, (dynamic obj) => obj['conversation_id']);
       // debugPrint("==> $newMap");
       final List<Map<String, dynamic>> messages = [];
@@ -841,9 +843,9 @@ class DatabaseHelper {
       });
 
       final List<ChatMessage> chatMessages = [];
-      messages.forEach((message) {
+      for (var message in messages) {
         chatMessages.add(ChatMessage.fromDBJson(message));
-      });
+      }
       debugPrint("Messages from DB:- ${chatMessages.length}");
       return chatMessages;
     }
@@ -895,7 +897,7 @@ class DatabaseHelper {
         where: "conversation_id = ?",
         whereArgs: [conversationId]);
 
-    if (result.length > 0) {
+    if (result.isNotEmpty) {
       final ChatMessagePagination chatMessagePagination =
           ChatMessagePagination.fromJson(result.first);
       return chatMessagePagination;
@@ -949,8 +951,9 @@ class DatabaseHelper {
 
     final List<Map<String, dynamic>> virtualAccounts =
         await dbClient.query(VIRTUAL_ACCOUNT_TABLE);
-    if (virtualAccounts.length > 0)
+    if (virtualAccounts.isNotEmpty) {
       return VirtualAccount.fromDBJson(virtualAccounts.first);
+    }
     return null;
   }
 
@@ -989,7 +992,7 @@ class DatabaseHelper {
 
     final List<Map<String, dynamic>> generalSettings =
         await dbClient.query(APP_SETTING_TABLE);
-    if (generalSettings.length > 0) {
+    if (generalSettings.isNotEmpty) {
       return generalSettings.first;
     }
     return Future.value({});
@@ -1030,8 +1033,9 @@ class DatabaseHelper {
 
     final List<Map<String, dynamic>> feeStructure =
         await dbClient.query(FEE_STRUCTURE);
-    if (feeStructure.length > 0)
+    if (feeStructure.isNotEmpty) {
       return FeeStructure.fromJson(feeStructure.first);
+    }
     return null;
   }
 
@@ -1063,8 +1067,9 @@ class DatabaseHelper {
 
     final List<Map<String, dynamic>> userCategoriesStructure =
         await dbClient.query(YARN_CATEGORY);
-    if (userCategoriesStructure.length > 0)
+    if (userCategoriesStructure.isNotEmpty) {
       return UserCategoriesStructure.fromJson(userCategoriesStructure.first);
+    }
     return null;
   }
 
@@ -1175,8 +1180,9 @@ class DatabaseHelper {
 
     final List<Map<String, dynamic>> atPickupLocation = await dbClient
         .query(RIDER_AT_LOCATION, where: "order_id = ?", whereArgs: [orderId]);
-    if (atPickupLocation.length > 0)
+    if (atPickupLocation.isNotEmpty) {
       return NearByLocation.fromDBJson(atPickupLocation.first);
+    }
     return null;
   }
 

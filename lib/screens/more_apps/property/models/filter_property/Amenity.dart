@@ -38,17 +38,17 @@ class Amenity {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['ac'] = this.ac;
-    data['any'] = this.any;
-    data['dishwasher'] = this.dishwasher;
-    data['doorman'] = this.doorman;
-    data['gated_entry'] = this.gatedEntry;
-    data['gym'] = this.gym;
-    data['heating'] = this.heating;
-    data['laundry'] = this.laundry;
-    data['parking'] = this.parking;
-    data['pool'] = this.pool;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['ac'] = ac;
+    data['any'] = any;
+    data['dishwasher'] = dishwasher;
+    data['doorman'] = doorman;
+    data['gated_entry'] = gatedEntry;
+    data['gym'] = gym;
+    data['heating'] = heating;
+    data['laundry'] = laundry;
+    data['parking'] = parking;
+    data['pool'] = pool;
     return data;
   }
 }

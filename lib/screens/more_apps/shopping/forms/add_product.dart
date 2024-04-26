@@ -479,7 +479,7 @@ class _AddProductState extends State<AddProduct> {
   }
 
   Widget addImages() {
-    return Container(
+    return SizedBox(
       height: 100,
       child: ListView.builder(
         controller: _scrollController,
@@ -570,7 +570,7 @@ class _AddProductState extends State<AddProduct> {
   }
 
   Widget showImage(int index) {
-    return Container(
+    return SizedBox(
       height: 100,
       child: Stack(
         children: <Widget>[
@@ -1130,7 +1130,7 @@ class _AddProductState extends State<AddProduct> {
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: Container(
+              content: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   elevation: 2,
@@ -1210,7 +1210,7 @@ class _AddProductState extends State<AddProduct> {
   }
 
   Widget getProductConditionField() {
-    debugPrint("my controller :- ${_myController}");
+    debugPrint("my controller :- $_myController");
     return CustomizedDropDownField(
       title: "Product condition",
       child: ListTile(
@@ -1353,7 +1353,7 @@ class _AddProductState extends State<AddProduct> {
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: Container(
+              content: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   margin: EdgeInsets.zero,
@@ -1453,7 +1453,7 @@ class _AddProductState extends State<AddProduct> {
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: Container(
+              content: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   margin: EdgeInsets.zero,
@@ -2694,26 +2694,24 @@ class _AddProductState extends State<AddProduct> {
           if (mounted) setState(() {});
         }
       },
-      child: Container(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Add Product Variation',
-              maxLines: 1,
-              style: TextStyle(
-                  color: productAddOnsList.isNotEmpty ? darkGrey : navyBlue,
-                  fontFamily: "Inter",
-                  fontWeight: FontWeight.w500,
-                  fontSize: 14),
-            ),
-            Icon(
-              Icons.arrow_forward_ios,
-              size: 16,
-              color: blackFont,
-            ),
-          ],
-        ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            'Add Product Variation',
+            maxLines: 1,
+            style: TextStyle(
+                color: productAddOnsList.isNotEmpty ? darkGrey : navyBlue,
+                fontFamily: "Inter",
+                fontWeight: FontWeight.w500,
+                fontSize: 14),
+          ),
+          Icon(
+            Icons.arrow_forward_ios,
+            size: 16,
+            color: blackFont,
+          ),
+        ],
       ),
     );
   }
@@ -2810,26 +2808,24 @@ class _AddProductState extends State<AddProduct> {
           if (mounted) setState(() {});
         }
       },
-      child: Container(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Add Product Add-ons',
-              maxLines: 1,
-              style: TextStyle(
-                  color: productVariantList.isNotEmpty ? darkGrey : navyBlue,
-                  fontWeight: FontWeight.w500,
-                  fontFamily: "Inter",
-                  fontSize: 14),
-            ),
-            Icon(
-              Icons.arrow_forward_ios,
-              size: 16,
-              color: blackFont,
-            ),
-          ],
-        ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            'Add Product Add-ons',
+            maxLines: 1,
+            style: TextStyle(
+                color: productVariantList.isNotEmpty ? darkGrey : navyBlue,
+                fontWeight: FontWeight.w500,
+                fontFamily: "Inter",
+                fontSize: 14),
+          ),
+          Icon(
+            Icons.arrow_forward_ios,
+            size: 16,
+            color: blackFont,
+          ),
+        ],
       ),
     );
   }
@@ -2879,7 +2875,7 @@ class _AddProductState extends State<AddProduct> {
   Widget _buildAddOnList() {
     return isLoading && productAddOnsList.isEmpty
         ? buildLoadingIndicator(isLoading: isLoading)
-        : Container(
+        : SizedBox(
             // height: 200,
             height: 80 * productAddOnsList.length.toDouble(),
             child: ListView.builder(

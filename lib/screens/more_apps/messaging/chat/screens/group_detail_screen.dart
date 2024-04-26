@@ -89,9 +89,10 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
                 message:
                     "${messageData['meta_data']['author']} has deleted this group !!");
 
-            if (mounted)
+            if (mounted) {
               Navigator.popUntil(
                   context, ModalRoute.withName(Routes.DASHBOARD));
+            }
             return;
           } else if (messageData['meta_data']['action'] == "remove_user") {
             final List users = messageData['meta_data']['users'];
@@ -103,9 +104,10 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
                   message:
                       "${messageData['meta_data']['author']} has removed you from group !!");
 
-              if (mounted)
+              if (mounted) {
                 Navigator.popUntil(
                     context, ModalRoute.withName(Routes.DASHBOARD));
+              }
               return;
             }
           }
@@ -1037,9 +1039,10 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
               conversationId: conversationId);
           dashboardBloc.index = 3;
           showToast(message: "You deleted the ${groupDetail?.fullName}!!");
-          if (mounted)
+          if (mounted) {
             Navigator.of(context)
                 .popUntil(ModalRoute.withName(Routes.DASHBOARD));
+          }
         }
       }).catchError((error) {
         isExitingGroup = false;

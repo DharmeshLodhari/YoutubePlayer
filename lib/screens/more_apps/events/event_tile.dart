@@ -38,7 +38,7 @@ class EventTile extends StatelessWidget {
                   width: 16,
                 ),
                 Expanded(
-                  child: Container(
+                  child: SizedBox(
                     height: 86,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -124,7 +124,7 @@ class _EventTileWithHeartState extends State<EventTileWithHeart> {
                 width: 16,
               ),
               Expanded(
-                child: Container(
+                child: SizedBox(
                   height: 86,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -179,7 +179,7 @@ class _EventTileWithHeartState extends State<EventTileWithHeart> {
                   ),
                 ),
               ),
-              Container(
+              SizedBox(
                 height: 86,
                 child: Center(
                   child: IconButton(

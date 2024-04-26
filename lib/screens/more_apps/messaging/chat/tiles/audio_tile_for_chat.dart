@@ -11,7 +11,7 @@ class AudioTileForChat extends StatefulWidget {
   final Map<String, dynamic>? message;
   final ChatConversation? chatConversation;
 
-  AudioTileForChat({this.message, this.chatConversation});
+  const AudioTileForChat({super.key, this.message, this.chatConversation});
 
   @override
   _AudioTileForChatState createState() => _AudioTileForChatState();
@@ -184,7 +184,7 @@ class _AudioTileForChatState extends State<AudioTileForChat> {
               ),
             ),
             if (isSend)
-              Container(
+              SizedBox(
                 width: 20,
                 child: isSend
                     ? Center(

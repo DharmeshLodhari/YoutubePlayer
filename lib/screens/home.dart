@@ -57,10 +57,10 @@ import 'more_apps/user_profile/user_auth.dart';
 import 'more_apps/yarn/yarn_dashboard.dart';
 
 class Home extends StatefulWidget {
-  Home({Key? key}) : super(key: key);
+  const Home({Key? key}) : super(key: key);
 
   @override
-  _HomeState createState() => _HomeState();
+  State<Home> createState() => _HomeState();
 }
 
 class _HomeState extends State<Home> {
@@ -114,20 +114,20 @@ class _HomeState extends State<Home> {
     getYarnList(categoryId: null);
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-      SharedPreferences _sharedPreferences;
+      SharedPreferences sharedPreferences;
 
-      _sharedPreferences = await SharedPreferences.getInstance();
+      sharedPreferences = await SharedPreferences.getInstance();
       bool isAppTutorialDone = false;
       try {
         isAppTutorialDone =
-            _sharedPreferences.getBool('isAppTutorialDone') ?? false;
+            sharedPreferences.getBool('isAppTutorialDone') ?? false;
       } catch (error) {
         isAppTutorialDone = false;
       }
 
       if (!isAppTutorialDone) {
         final bool result =
-            await _sharedPreferences.setBool("isAppTutorialDone", true);
+            await sharedPreferences.setBool("isAppTutorialDone", true);
         debugPrint("result:- $result");
         await Future.delayed(const Duration(milliseconds: 1500)).then((value) {
           AppTutorialController().showTutorial(context);
@@ -148,7 +148,7 @@ class _HomeState extends State<Home> {
         isLoading = true;
         if (mounted) setState(() {});
 
-        final String latestTrending = 'latest';
+        const String latestTrending = 'latest';
 
         final Map<String, dynamic>? result = await YarnAuth().getAllYarn(
             next, previous ?? '',
@@ -205,17 +205,17 @@ class _HomeState extends State<Home> {
           if (yarnDashboardBloc.createYarnTopicList.isNotEmpty) {
             ///add createYarnTopicList to tempList if any
 
-            yarnDashboardBloc.createYarnTopicList.forEach((item) {
+            for (var item in yarnDashboardBloc.createYarnTopicList) {
               tempList.insert(0, item);
-            });
+            }
           }
 
           if (yarnDashboardBloc.reYarnTopicList.isNotEmpty) {
             ///add reYarnTopicList to tempList if any
 
-            yarnDashboardBloc.reYarnTopicList.forEach((item) {
+            for (var item in yarnDashboardBloc.reYarnTopicList) {
               tempList.insert(0, item);
-            });
+            }
           }
 
           if (deleteYarnTopicList.isNotEmpty) {
@@ -606,7 +606,7 @@ class _HomeState extends State<Home> {
       },
     ];
 
-    return Container(
+    return SizedBox(
       height: 100.0,
       child: ListView(
         scrollDirection: Axis.horizontal,
@@ -629,7 +629,7 @@ class _HomeState extends State<Home> {
   }
 
   Widget shortcutView(
-      String imagePath, String title, String ForReadPermission) {
+      String imagePath, String title, String forReadPermission) {
     // return !userBloc.user.hasWritePermission(title)
     //     ? Stack(
     //         children: [
@@ -645,16 +645,16 @@ class _HomeState extends State<Home> {
     //         ],
     //       )
     //     : _buildIconAndText(imagePath, title);
-    return _buildIconAndText(imagePath, title, ForReadPermission);
+    return _buildIconAndText(imagePath, title, forReadPermission);
   }
 
   Widget _buildIconAndText(
-      String imagePath, String title, String ForReadPermission) {
+      String imagePath, String title, String forReadPermission) {
     return PermissionProtectionWidget(
       permissionName: title,
       isShowLock: true,
       position: 0,
-      isLockForRead: ForReadPermission,
+      isLockForRead: forReadPermission,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -740,49 +740,47 @@ class _HomeState extends State<Home> {
     final dynamicHeight =
         calculateDynamicHeight(longestSubTitle!, screenHeight);
 
-    return Container(
-      child: Column(
-        // padding: EdgeInsets.zero,
-        children: List.generate(
-          ((shortcuts.length + 1) / 2).ceil(), // Adjusted the generation logic
-          (index) {
-            final startIndex = index * 2;
-            final endIndex = startIndex + 2;
-            final pairShortcuts = shortcuts.sublist(
-              startIndex,
-              endIndex.clamp(
-                  0, shortcuts.length), // Use clamp to avoid out-of-bounds
-            );
+    return Column(
+      // padding: EdgeInsets.zero,
+      children: List.generate(
+        ((shortcuts.length + 1) / 2).ceil(), // Adjusted the generation logic
+        (index) {
+          final startIndex = index * 2;
+          final endIndex = startIndex + 2;
+          final pairShortcuts = shortcuts.sublist(
+            startIndex,
+            endIndex.clamp(
+                0, shortcuts.length), // Use clamp to avoid out-of-bounds
+          );
 
-            // If the pairShortcuts list has fewer than 2 items, add empty placeholders
-            while (pairShortcuts.length < 2) {
-              pairShortcuts.add({});
-            }
+          // If the pairShortcuts list has fewer than 2 items, add empty placeholders
+          while (pairShortcuts.length < 2) {
+            pairShortcuts.add({});
+          }
 
-            return Row(
-              children: pairShortcuts.map((shortcut) {
-                return Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(0.0),
-                    child: shortcut.isEmpty
-                        ? Container() // Empty view placeholder
-                        : GestureDetector(
-                            onTap: () {
-                              onClickShortcutExtra(shortcut['title']!);
-                            },
-                            child: shortcutViewExtra(
-                                shortcut['imagePath']!,
-                                shortcut['title']!,
-                                shortcut['subTitle']!,
-                                shortcut['color']!,
-                                dynamicHeight),
-                          ),
-                  ),
-                );
-              }).toList(),
-            );
-          },
-        ),
+          return Row(
+            children: pairShortcuts.map((shortcut) {
+              return Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(0.0),
+                  child: shortcut.isEmpty
+                      ? Container() // Empty view placeholder
+                      : GestureDetector(
+                          onTap: () {
+                            onClickShortcutExtra(shortcut['title']!);
+                          },
+                          child: shortcutViewExtra(
+                              shortcut['imagePath']!,
+                              shortcut['title']!,
+                              shortcut['subTitle']!,
+                              shortcut['color']!,
+                              dynamicHeight),
+                        ),
+                ),
+              );
+            }).toList(),
+          );
+        },
       ),
     );
   }
@@ -858,7 +856,7 @@ class _HomeState extends State<Home> {
 
   Widget shortcutViewExtra(String imagePath, String title, String subTitle,
       String color, double dynamicHeight) {
-    final double opacity = 0.8;
+    const double opacity = 0.8;
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
       padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
@@ -1088,7 +1086,7 @@ class _HomeState extends State<Home> {
         badgeStyle: badges.BadgeStyle(
           shape: badges.BadgeShape.circle,
           badgeColor: naturalGreen,
-          padding: basketBloc.basketItems.length == 0
+          padding: basketBloc.basketItems.isEmpty
               ? const EdgeInsets.all(0)
               : const EdgeInsets.all(4),
           elevation: 0,
@@ -1248,7 +1246,7 @@ class _HomeState extends State<Home> {
   }
 
   Widget? getBadgeContent() {
-    if (basketBloc.basketItems.length == 0) {
+    if (basketBloc.basketItems.isEmpty) {
       return null;
     }
     return Text(
@@ -1263,9 +1261,9 @@ class _HomeState extends State<Home> {
 
   String getBadgeCount() {
     int totalItem = 0;
-    basketBloc.basketItems.forEach((element) {
+    for (var element in basketBloc.basketItems) {
       totalItem = totalItem + int.parse(element.qty.toString());
-    });
+    }
     return totalItem > 99 ? '99+' : totalItem.toString();
   }
 
@@ -1539,7 +1537,7 @@ class _HomeState extends State<Home> {
     return GestureDetector(
       onTap: () {
         NavigationUtil.push(context,
-            screen: QRCodeView(arguments: {'isRequest': false}));
+            screen: QRCodeView(arguments: const {'isRequest': false}));
         // NavigationUtil.push(context, screen: QrCodePage(arguments: {'isProfile': 'false', 'virtualAccount': virtualAccount}));
       },
       child: Container(
@@ -1553,14 +1551,14 @@ class _HomeState extends State<Home> {
           ),
         ), //
         child: Row(
-          children: [
-            const Icon(
+          children: const [
+            Icon(
               SlydoAppIcon.qr_code,
               size: 15,
               color: Colors.white,
             ),
-            const SizedBox(width: 7),
-            const Text(
+            SizedBox(width: 7),
+            Text(
               'QR',
               style: TextStyle(
                 fontSize: 15,
@@ -1997,7 +1995,7 @@ class _HomeState extends State<Home> {
         isLoading = true;
         if (mounted) setState(() {});
 
-        final User? _user = await DatabaseHelper().getUser();
+        final User? user = await DatabaseHelper().getUser();
 
         final SharedPreferences sharedPreferences =
             await SharedPreferences.getInstance();
@@ -2014,13 +2012,13 @@ class _HomeState extends State<Home> {
         bool isStaffLogin = secureUser.isStaffLogin ?? false;
 
         if (phoneNumber != "") {
-          phoneNumber = "+" + country.phoneCode! + phoneNumber;
+          phoneNumber = "+${country.phoneCode!}$phoneNumber";
         }
 
         if (phoneNumber == "" || password == "") {
-          phoneNumber = _user?.phoneNumber ?? "";
-          password = _user?.password ?? "";
-          company = _user?.staff?.employerUsername ?? "";
+          phoneNumber = user?.phoneNumber ?? "";
+          password = user?.password ?? "";
+          company = user?.staff?.employerUsername ?? "";
           if (company.isNotEmpty) {
             isStaffLogin = true;
           }
@@ -2049,7 +2047,7 @@ class _HomeState extends State<Home> {
         isLoading = false;
         if (mounted) setState(() {});
         // showToast(message: err.toString());
-        debugPrint("Cannot Update Avatar : " + err.toString());
+        debugPrint("Cannot Update Avatar : $err");
       }
     }
   }

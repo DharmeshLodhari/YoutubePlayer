@@ -6,11 +6,11 @@ import 'package:Slydo/flutter_polyline_points/utils/polyline_result.dart';
 import 'package:Slydo/flutter_polyline_points/utils/polyline_waypoint.dart';
 import 'package:Slydo/flutter_polyline_points/utils/request_enums.dart';
 
-import 'PointLatLng.dart';
 import 'network_util.dart';
+import 'point_lat_lng.dart';
 
-export 'PointLatLng.dart';
 export 'network_util.dart';
+export 'point_lat_lng.dart';
 
 class PolylinePoints {
   /// Get the list of coordinates between two geographical positions

@@ -17,12 +17,12 @@ class Geometry {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    if (this.location != null) {
-      data['location'] = this.location!.toJson();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    if (location != null) {
+      data['location'] = location!.toJson();
     }
-    if (this.viewport != null) {
-      data['viewport'] = this.viewport!.toJson();
+    if (viewport != null) {
+      data['viewport'] = viewport!.toJson();
     }
     return data;
   }

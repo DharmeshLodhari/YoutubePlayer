@@ -21,12 +21,12 @@ class ActiveJobListing {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['count'] = this.count;
-    data['next'] = this.next;
-    data['previous'] = this.previous;
-    if (this.results != null) {
-      data['results'] = this.results!.map((v) => v.toJson()).toList();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['count'] = count;
+    data['next'] = next;
+    data['previous'] = previous;
+    if (results != null) {
+      data['results'] = results!.map((v) => v.toJson()).toList();
     }
     return data;
   }
@@ -58,15 +58,15 @@ class ActiveListingData {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['id'] = this.id;
-    if (this.job != null) {
-      data['job'] = this.job!.toJson();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    if (job != null) {
+      data['job'] = job!.toJson();
     }
-    data['type'] = this.type;
-    data['is_active'] = this.isActive;
-    data['created_at'] = this.createdAt;
-    data['expiration_date'] = this.expirationDate;
+    data['type'] = type;
+    data['is_active'] = isActive;
+    data['created_at'] = createdAt;
+    data['expiration_date'] = expirationDate;
     return data;
   }
 }

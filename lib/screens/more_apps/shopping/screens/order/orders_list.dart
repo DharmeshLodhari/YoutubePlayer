@@ -59,9 +59,9 @@ class _OrdersListState extends State<OrdersList> {
   // DateTimeRange dateTimeRange = DateTimeRange(start: DateTime.parse("2020-01-01"), end: DateTime.now(),
   // );
 
-  @protected
+  @override
   void initState() {
-    this.getList();
+    getList();
     super.initState();
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
@@ -546,8 +546,8 @@ class _OrdersListState extends State<OrdersList> {
 }
 
 class VerticalListItem extends StatelessWidget {
-  VerticalListItem(this.order,
-      {required this.onPaymentSuccessfulFromDetailPage});
+  const VerticalListItem(this.order,
+      {super.key, required this.onPaymentSuccessfulFromDetailPage});
 
   final Function onPaymentSuccessfulFromDetailPage;
   final Order order;

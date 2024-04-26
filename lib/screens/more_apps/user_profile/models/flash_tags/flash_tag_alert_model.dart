@@ -136,6 +136,7 @@ class FlashTagCategory {
     }
   }
 
+  @override
   String toString() {
     switch (_category) {
       case "Crawling text":

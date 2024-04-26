@@ -24,8 +24,10 @@ import 'package:video_player/video_player.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 
 class AddProperty extends StatefulWidget {
+  const AddProperty({super.key});
+
   @override
-  _AddPropertyState createState() => _AddPropertyState();
+  State<AddProperty> createState() => _AddPropertyState();
 }
 
 class _AddPropertyState extends State<AddProperty> {
@@ -359,7 +361,7 @@ class _AddPropertyState extends State<AddProperty> {
   }
 
   Widget addImages() {
-    return Container(
+    return SizedBox(
       height: 100,
       child: ListView.builder(
         controller: _imageScrollController,
@@ -444,7 +446,7 @@ class _AddPropertyState extends State<AddProperty> {
   }
 
   Widget showImage(int index) {
-    return Container(
+    return SizedBox(
       height: 100,
       child: Stack(
         children: <Widget>[
@@ -498,7 +500,7 @@ class _AddPropertyState extends State<AddProperty> {
   }
 
   Widget addVideos() {
-    return Container(
+    return SizedBox(
       height: 100,
       child: ListView.builder(
         controller: _videoScrollController,
@@ -638,7 +640,7 @@ class _AddPropertyState extends State<AddProperty> {
                 content: Stack(
                   clipBehavior: Clip.none,
                   children: [
-                    Container(
+                    SizedBox(
                       width: MediaQuery.of(context).size.width - 40,
                       child: Card(
                         elevation: 2,
@@ -770,7 +772,7 @@ class _AddPropertyState extends State<AddProperty> {
   }
 
   Widget showVideo(int index) {
-    return Container(
+    return SizedBox(
       height: 100,
       child: Stack(
         children: <Widget>[
@@ -791,7 +793,7 @@ class _AddPropertyState extends State<AddProperty> {
                           fit: BoxFit.fill),
                     ),
                   )
-                : Container(
+                : SizedBox(
                     width: 100,
                     height: 100,
                     child: Center(
@@ -916,7 +918,7 @@ class _AddPropertyState extends State<AddProperty> {
         const SizedBox(
           height: 8,
         ),
-        Container(
+        SizedBox(
           width: MediaQuery.of(context).size.width - 40,
           height: 30,
           child: Row(
@@ -1019,7 +1021,7 @@ class _AddPropertyState extends State<AddProperty> {
                 contentPadding: EdgeInsets.zero,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10)),
-                content: Container(
+                content: SizedBox(
                   width: MediaQuery.of(context).size.width - 40,
                   child: Card(
                     elevation: 2,
@@ -1149,7 +1151,7 @@ class _AddPropertyState extends State<AddProperty> {
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: Container(
+              content: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   elevation: 2,
@@ -1346,7 +1348,7 @@ class _AddPropertyState extends State<AddProperty> {
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: Container(
+              content: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   elevation: 2,
@@ -1424,7 +1426,7 @@ class _AddPropertyState extends State<AddProperty> {
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: Container(
+              content: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   margin: EdgeInsets.zero,
@@ -1503,7 +1505,7 @@ class _AddPropertyState extends State<AddProperty> {
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: Container(
+              content: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   margin: EdgeInsets.zero,
@@ -1582,7 +1584,7 @@ class _AddPropertyState extends State<AddProperty> {
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: Container(
+              content: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   margin: EdgeInsets.zero,
@@ -1712,7 +1714,7 @@ class _AddPropertyState extends State<AddProperty> {
                 contentPadding: EdgeInsets.zero,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10)),
-                content: Container(
+                content: SizedBox(
                   width: MediaQuery.of(context).size.width - 40,
                   child: Card(
                     elevation: 2,
@@ -1866,7 +1868,7 @@ class _AddPropertyState extends State<AddProperty> {
                 contentPadding: EdgeInsets.zero,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10)),
-                content: Container(
+                content: SizedBox(
                   width: MediaQuery.of(context).size.width - 40,
                   child: Card(
                     elevation: 2,
@@ -2011,7 +2013,7 @@ class _AddPropertyState extends State<AddProperty> {
                   contentPadding: EdgeInsets.zero,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10)),
-                  content: Container(
+                  content: SizedBox(
                     width: MediaQuery.of(context).size.width - 40,
                     child: Card(
                       elevation: 2,
@@ -2253,7 +2255,7 @@ class _AddPropertyState extends State<AddProperty> {
 }
 
 class AspectRatioVideo extends StatefulWidget {
-  AspectRatioVideo(this.controller);
+  const AspectRatioVideo(this.controller, {super.key});
 
   final VideoPlayerController controller;
 

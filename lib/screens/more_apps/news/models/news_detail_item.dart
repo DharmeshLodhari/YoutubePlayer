@@ -53,23 +53,22 @@ class NewsDetailItem {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['author'] = this.author;
-    data['author_avatar'] = this.authorAvatar;
-    data['description'] = this.description;
-    data['poster'] = this.poster;
-    data['read'] = this.readTime;
-    data['short_description'] = this.shortDescription;
-    data['sub_header'] = this.subHeader;
-    data['title'] = this.title;
-    data['upload_time'] = this.uploadTime;
-    data['video'] = this.video;
-    if (this.newsListItems != null) {
-      data['news_list_items'] =
-          this.newsListItems!.map((v) => v.toJson()).toList();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['author'] = author;
+    data['author_avatar'] = authorAvatar;
+    data['description'] = description;
+    data['poster'] = poster;
+    data['read'] = readTime;
+    data['short_description'] = shortDescription;
+    data['sub_header'] = subHeader;
+    data['title'] = title;
+    data['upload_time'] = uploadTime;
+    data['video'] = video;
+    if (newsListItems != null) {
+      data['news_list_items'] = newsListItems!.map((v) => v.toJson()).toList();
     }
-    if (this.tags != null) {
-      data['tags'] = this.tags;
+    if (tags != null) {
+      data['tags'] = tags;
     }
     return data;
   }

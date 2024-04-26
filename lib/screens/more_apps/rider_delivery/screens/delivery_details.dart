@@ -21,7 +21,7 @@ import 'package:url_launcher/url_launcher.dart';
 class DeliveryDetails extends StatefulWidget {
   final dynamic arguments;
 
-  DeliveryDetails({Key? key, this.arguments}) : super(key: key);
+  const DeliveryDetails({Key? key, this.arguments}) : super(key: key);
 
   @override
   State<DeliveryDetails> createState() => _DeliveryDetailsState();

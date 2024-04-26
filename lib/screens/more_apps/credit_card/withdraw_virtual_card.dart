@@ -160,44 +160,42 @@ class WithdrawVirtualCardState extends State<WithdrawVirtualCard> {
                       ),
                     ),
                   ),
-                  Container(
-                    child: Column(
-                      children: [
-                        const SizedBox(
-                          height: 20,
+                  Column(
+                    children: [
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      if (canWithdraw(usdCheck!, allCards.availableBalance!))
+                        getSubmitButton()
+                      else
+                        Container(
+                          child: Center(
+                              child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 16.0),
+                                  child: Text.rich(TextSpan(
+                                      text: AppLocalization.of(context)!
+                                          .availableFund,
+                                      style: TextStyle(
+                                          fontSize: 12,
+                                          color: blackFont,
+                                          fontWeight: FontWeight.w600),
+                                      children: <InlineSpan>[
+                                        TextSpan(
+                                          text: formatAsDollar(
+                                              allCards.availableBalance!),
+                                          style: TextStyle(
+                                              fontSize: 12,
+                                              color: blackFont,
+                                              fontFamily: "Inter",
+                                              fontWeight: FontWeight.w600),
+                                        )
+                                      ])))),
                         ),
-                        if (canWithdraw(usdCheck!, allCards.availableBalance!))
-                          getSubmitButton()
-                        else
-                          Container(
-                            child: Center(
-                                child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 16.0),
-                                    child: Text.rich(TextSpan(
-                                        text: AppLocalization.of(context)!
-                                            .availableFund,
-                                        style: TextStyle(
-                                            fontSize: 12,
-                                            color: blackFont,
-                                            fontWeight: FontWeight.w600),
-                                        children: <InlineSpan>[
-                                          TextSpan(
-                                            text: formatAsDollar(
-                                                allCards.availableBalance!),
-                                            style: TextStyle(
-                                                fontSize: 12,
-                                                color: blackFont,
-                                                fontFamily: "Inter",
-                                                fontWeight: FontWeight.w600),
-                                          )
-                                        ])))),
-                          ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                      ],
-                    ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -232,7 +230,7 @@ class WithdrawVirtualCardState extends State<WithdrawVirtualCard> {
       }
     }
 
-    return Container(
+    return SizedBox(
       height: 200,
       child: Card(
         elevation: 0,

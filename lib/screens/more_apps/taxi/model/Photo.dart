@@ -18,12 +18,12 @@ class Photo {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['height'] = this.height;
-    data['photo_reference'] = this.photoReference;
-    data['width'] = this.width;
-    if (this.htmlAttributions != null) {
-      data['html_attributions'] = this.htmlAttributions;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['height'] = height;
+    data['photo_reference'] = photoReference;
+    data['width'] = width;
+    if (htmlAttributions != null) {
+      data['html_attributions'] = htmlAttributions;
     }
     return data;
   }

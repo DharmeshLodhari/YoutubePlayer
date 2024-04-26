@@ -20,7 +20,7 @@ class ComposeMessage extends StatefulWidget {
   final dynamic arguments;
   String? username;
 
-  ComposeMessage({this.arguments, this.username});
+  ComposeMessage({super.key, this.arguments, this.username});
 
   @override
   _ComposeMessageState createState() =>

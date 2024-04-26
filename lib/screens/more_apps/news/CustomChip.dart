@@ -8,7 +8,8 @@ class CustomChip extends StatelessWidget {
   final Color? textColor;
   final EdgeInsets? padding;
 
-  CustomChip({this.text = "", this.padding, this.color, this.textColor});
+  CustomChip(
+      {super.key, this.text = "", this.padding, this.color, this.textColor});
 
   @override
   Widget build(BuildContext context) {

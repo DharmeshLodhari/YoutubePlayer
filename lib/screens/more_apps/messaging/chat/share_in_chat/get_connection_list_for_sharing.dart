@@ -20,7 +20,7 @@ class _GetUserConnectionListState extends State<GetUserConnectionList> {
   bool isLoading = false;
   bool noItemInList = false;
 
-  @protected
+  @override
   void initState() {
     this.getList();
     super.initState();
@@ -224,13 +224,11 @@ class _ShareToUserTileState extends State<ShareToUserTile> {
   }
 
   Widget getTrailing() {
-    return Container(
-      child: Icon(
-        isSelected
-            ? Icons.radio_button_checked_outlined
-            : Icons.radio_button_off_outlined,
-        color: isSelected ? navyBlue : dividerColor,
-      ),
+    return Icon(
+      isSelected
+          ? Icons.radio_button_checked_outlined
+          : Icons.radio_button_off_outlined,
+      color: isSelected ? navyBlue : dividerColor,
     );
   }
 }

@@ -14,7 +14,7 @@ class UserPostList extends StatefulWidget {
   final String? titleToSearch;
   final String? channelUserName;
 
-  UserPostList(
+  const UserPostList(
       {@required this.user, this.titleToSearch, this.channelUserName, Key? key})
       : super(key: key);
 
@@ -132,9 +132,9 @@ class _UserPostListState extends State<UserPostList> {
 
         final List<UserPost> posts = [];
 
-        tempList.forEach((element) {
+        for (var element in tempList) {
           posts.add(UserPost.fromJson(element));
-        });
+        }
 
         if (mounted) {
           setState(() {

@@ -13,12 +13,12 @@ class MoneyFormatterSettings {
       this.symbolAndNumberSeparator,
       this.fractionDigits,
       this.compactFormatType}) {
-    this.symbol = this.symbol ?? '\$';
-    this.thousandSeparator = this.thousandSeparator ?? ',';
-    this.decimalSeparator = this.decimalSeparator ?? '.';
-    this.symbolAndNumberSeparator = this.symbolAndNumberSeparator ?? ' ';
-    this.fractionDigits = this.fractionDigits ?? 2;
-    this.compactFormatType = this.compactFormatType ?? CompactFormatType.short;
+    symbol = symbol ?? '\$';
+    thousandSeparator = thousandSeparator ?? ',';
+    decimalSeparator = decimalSeparator ?? '.';
+    symbolAndNumberSeparator = symbolAndNumberSeparator ?? ' ';
+    fractionDigits = fractionDigits ?? 2;
+    compactFormatType = compactFormatType ?? CompactFormatType.short;
   }
 
   /// The [symbol] that will be used on formatted output, default value is $ (Dollar Sign)

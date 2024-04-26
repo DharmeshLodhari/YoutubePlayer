@@ -10,7 +10,7 @@ import 'package:flutter/services.dart';
 class AddMoneyToSlydoTwo extends StatefulWidget {
   final dynamic arguments;
 
-  AddMoneyToSlydoTwo({this.arguments});
+  const AddMoneyToSlydoTwo({super.key, this.arguments});
 
   @override
   _AddMoneyToSlydoTwoState createState() => _AddMoneyToSlydoTwoState();

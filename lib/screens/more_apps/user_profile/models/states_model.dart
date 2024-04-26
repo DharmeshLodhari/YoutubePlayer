@@ -18,11 +18,11 @@ class StatesModel {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['id'] = this.id;
-    data['name'] = this.name;
-    if (this.country != null) {
-      data['country'] = this.country!.toJson();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['name'] = name;
+    if (country != null) {
+      data['country'] = country!.toJson();
     }
     return data;
   }
@@ -44,10 +44,10 @@ class Country {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['id'] = this.id;
-    data['name'] = this.name;
-    data['iso_code'] = this.isoCode;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['name'] = name;
+    data['iso_code'] = isoCode;
     return data;
   }
 }
@@ -66,9 +66,9 @@ class Cities {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['name'] = this.name;
-    data['state_code'] = this.stateCode;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['name'] = name;
+    data['state_code'] = stateCode;
     return data;
   }
 }

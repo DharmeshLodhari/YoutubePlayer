@@ -41,7 +41,7 @@ class CustomizeProfileScreenState extends State<CustomizeProfileScreen> {
   Map<String, bool> reorderedBoolMap = {};
   Function(Map<String, dynamic>)? callbackProductService;
 
-  @protected
+  @override
   void initState() {
     isLoading = true;
     getCustomizeProfile();
@@ -50,6 +50,7 @@ class CustomizeProfileScreenState extends State<CustomizeProfileScreen> {
     super.initState();
   }
 
+  @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
 

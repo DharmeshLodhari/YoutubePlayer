@@ -187,7 +187,9 @@ Future<void> fcmBackgroundMessageHandler(RemoteMessage remoteMessage) async {
       }
       AwesomeNotificationService().showNotification(message: data);
     }
-  } catch (error) {}
+  } catch (error) {
+    debugPrint("Error $error");
+  }
 
   return Future<void>.value();
 }
@@ -272,7 +274,7 @@ class PushNotificationService {
               ? notification["data"]
               : jsonDecode(notification["data"]);
 
-          debugPrint('FRANK DECODED MESSAGE ---> ${decodeMessage}');
+          debugPrint('FRANK DECODED MESSAGE ---> $decodeMessage');
         } catch (error) {
           debugPrint("ERROR:- while adding data to db from FCM $notification");
         }
@@ -334,7 +336,7 @@ class PushNotificationService {
           default:
         }
       } else {
-        debugPrint('FRANK ELSE BLOCK LINE 265 ---> ${notification}');
+        debugPrint('FRANK ELSE BLOCK LINE 265 ---> $notification');
 
         if ((notification["body"].toString().toLowerCase() == "hello" ||
                     notification["body"].toString().toLowerCase() == "null") &&
@@ -492,7 +494,9 @@ class PushNotificationService {
         Navigator.of(context!).popUntil(ModalRoute.withName('/dashboard'));
         Navigator.of(context).pushNamed(Routes.SHOPPING_CART);
       }
-    } catch (error) {}
+    } catch (error) {
+      debugPrint("Error $error");
+    }
   }
 
   void _navigateToItemDetail(

@@ -38,17 +38,17 @@ class NudgeNotification {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['actions'] = this.actions;
-    data['author'] = this.author;
-    data['author_avatar'] = this.authorAvatar;
-    data['check_id'] = this.checkId;
-    data['conversation_id'] = this.conversationId;
-    data['created_at'] = this.createdAt;
-    data['notification_id'] = this.notificationId;
-    data['recipient'] = this.recipient;
-    data['recipient_username'] = this.recipientUsername;
-    data['type'] = this.type;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['actions'] = actions;
+    data['author'] = author;
+    data['author_avatar'] = authorAvatar;
+    data['check_id'] = checkId;
+    data['conversation_id'] = conversationId;
+    data['created_at'] = createdAt;
+    data['notification_id'] = notificationId;
+    data['recipient'] = recipient;
+    data['recipient_username'] = recipientUsername;
+    data['type'] = type;
     return data;
   }
 }

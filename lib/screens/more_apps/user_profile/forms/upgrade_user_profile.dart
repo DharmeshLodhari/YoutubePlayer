@@ -67,9 +67,9 @@ class _UpgradeUserProfileState extends State<UpgradeUserProfile> {
       if (mounted) {
         setState(() {
           final List categoriesList = result["results"]["data"];
-          categoriesList.forEach((data) {
+          for (var data in categoriesList) {
             paymentCategories.add(data["name"]);
-          });
+          }
           isLoading = false;
         });
       }
@@ -81,9 +81,9 @@ class _UpgradeUserProfileState extends State<UpgradeUserProfile> {
       if (mounted) {
         setState(() {
           final List profileUpgradeTypeAndPrice = result!;
-          profileUpgradeTypeAndPrice.forEach((data) {
+          for (var data in profileUpgradeTypeAndPrice) {
             type.add({"name": data["account_type"], "price": data["price"]});
-          });
+          }
           isLoading = false;
 
           hideAmountTobePaidDropDown();
@@ -94,11 +94,11 @@ class _UpgradeUserProfileState extends State<UpgradeUserProfile> {
 
   void hideAmountTobePaidDropDown() {
     hideAmountDropDown = false;
-    type.forEach((element) {
+    for (var element in type) {
       if (element["price"].toString() == "0") {
         hideAmountDropDown = true;
       }
-    });
+    }
     setState(() {});
   }
 
@@ -218,11 +218,11 @@ class _UpgradeUserProfileState extends State<UpgradeUserProfile> {
         onChanged: (value) {
           setState(() {
             selectedType = value;
-            type.forEach((element) {
+            for (var element in type) {
               if (element["name"] == selectedType) {
                 price = element["price"].toString();
               }
-            });
+            }
           });
         },
         items: type.map((type) {

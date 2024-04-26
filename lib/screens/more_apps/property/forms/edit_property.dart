@@ -355,7 +355,7 @@ class _EditPropertyState extends State<EditProperty> {
   }
 
   Widget addImages() {
-    return Container(
+    return SizedBox(
       height: 100,
       child: ListView.builder(
         controller: _imageScrollController,
@@ -440,7 +440,7 @@ class _EditPropertyState extends State<EditProperty> {
   }
 
   Widget showImage(int index) {
-    return Container(
+    return SizedBox(
       height: 100,
       child: Stack(
         children: <Widget>[
@@ -494,7 +494,7 @@ class _EditPropertyState extends State<EditProperty> {
   }
 
   Widget addVideos() {
-    return Container(
+    return SizedBox(
       height: 100,
       child: ListView.builder(
         controller: _videoScrollController,
@@ -619,7 +619,7 @@ class _EditPropertyState extends State<EditProperty> {
                 content: Stack(
                   clipBehavior: Clip.none,
                   children: [
-                    Container(
+                    SizedBox(
                       width: MediaQuery.of(context).size.width - 40,
                       child: Card(
                         elevation: 2,
@@ -751,7 +751,7 @@ class _EditPropertyState extends State<EditProperty> {
   }
 
   Widget showVideo(int index) {
-    return Container(
+    return SizedBox(
       height: 100,
       child: Stack(
         children: <Widget>[
@@ -772,7 +772,7 @@ class _EditPropertyState extends State<EditProperty> {
                           fit: BoxFit.fill),
                     ),
                   )
-                : Container(
+                : SizedBox(
                     width: 100,
                     height: 100,
                     child: Center(
@@ -897,7 +897,7 @@ class _EditPropertyState extends State<EditProperty> {
         const SizedBox(
           height: 8,
         ),
-        Container(
+        SizedBox(
           width: MediaQuery.of(context).size.width - 40,
           height: 30,
           child: Row(
@@ -1000,7 +1000,7 @@ class _EditPropertyState extends State<EditProperty> {
                 contentPadding: EdgeInsets.zero,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10)),
-                content: Container(
+                content: SizedBox(
                   width: MediaQuery.of(context).size.width - 40,
                   child: Card(
                     elevation: 2,
@@ -1130,7 +1130,7 @@ class _EditPropertyState extends State<EditProperty> {
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: Container(
+              content: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   elevation: 2,
@@ -1327,7 +1327,7 @@ class _EditPropertyState extends State<EditProperty> {
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: Container(
+              content: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   elevation: 2,
@@ -1405,7 +1405,7 @@ class _EditPropertyState extends State<EditProperty> {
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: Container(
+              content: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   margin: EdgeInsets.zero,
@@ -1484,7 +1484,7 @@ class _EditPropertyState extends State<EditProperty> {
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: Container(
+              content: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   margin: EdgeInsets.zero,
@@ -1563,7 +1563,7 @@ class _EditPropertyState extends State<EditProperty> {
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: Container(
+              content: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   margin: EdgeInsets.zero,
@@ -1693,7 +1693,7 @@ class _EditPropertyState extends State<EditProperty> {
                 contentPadding: EdgeInsets.zero,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10)),
-                content: Container(
+                content: SizedBox(
                   width: MediaQuery.of(context).size.width - 40,
                   child: Card(
                     elevation: 2,
@@ -1847,7 +1847,7 @@ class _EditPropertyState extends State<EditProperty> {
                 contentPadding: EdgeInsets.zero,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10)),
-                content: Container(
+                content: SizedBox(
                   width: MediaQuery.of(context).size.width - 40,
                   child: Card(
                     elevation: 2,
@@ -1992,7 +1992,7 @@ class _EditPropertyState extends State<EditProperty> {
                   contentPadding: EdgeInsets.zero,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10)),
-                  content: Container(
+                  content: SizedBox(
                     width: MediaQuery.of(context).size.width - 40,
                     child: Card(
                       elevation: 2,

@@ -418,17 +418,15 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
               Navigator.pop(context);
             },
           ),
-          title: Container(
-            child: const Text(
-              "Details",
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 22,
-                fontWeight: FontWeight.w600,
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+          title: const Text(
+            "Details",
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 22,
+              fontWeight: FontWeight.w600,
             ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
           titleSpacing: 0,
           backgroundColor: navyBlue,

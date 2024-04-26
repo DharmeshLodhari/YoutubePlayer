@@ -10,8 +10,8 @@ class Onclick {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['url'] = this.url;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['url'] = url;
     return data;
   }
 }

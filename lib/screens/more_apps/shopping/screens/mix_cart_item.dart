@@ -70,14 +70,14 @@ class _MixCartItemState extends State<MixCartItem> {
   void initializeShoppingCart() async {
     debugPrint("initializeShoppingCart called");
     final List items = await ShoppingAuthService().getShoppingCart();
-    items.forEach((element) {
+    for (var element in items) {
       final String type = element is Product ? "product" : "service";
       basketBloc.addItemToCart(
         item: element,
         type: type,
         currentUser: userBloc.user.convertToUser(),
       );
-    });
+    }
   }
 
   @override
@@ -404,13 +404,13 @@ class _MixCartItemState extends State<MixCartItem> {
       currentUser: userBloc.user.convertToUser(),
     );
     late var mapData;
-    basketBloc.items.forEach((element) {
+    for (var element in basketBloc.items) {
       if (element["item"].conversationID ==
           basketBloc.items[index]["item"].conversationID) {
         mapData = element;
-        return;
+        continue;
       }
-    });
+    }
     final Map<String, dynamic> data = {
       "type": type,
       "id": mapData["item"].conversationID,
@@ -425,13 +425,13 @@ class _MixCartItemState extends State<MixCartItem> {
         basketBloc.items[index]["item"] is Product ? "product" : "service";
 
     late var mapData;
-    basketBloc.items.forEach((element) {
+    for (var element in basketBloc.items) {
       if (element["item"].conversationID ==
           basketBloc.items[index]["item"].conversationID) {
         mapData = element;
-        return;
+        continue;
       }
-    });
+    }
     final Map data = {
       "type": type,
       "id": mapData["item"].conversationID,

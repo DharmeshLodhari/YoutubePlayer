@@ -17,6 +17,7 @@ import '../../credit_card/utils/utils.dart';
 class PaymentRequestTile extends StatelessWidget {
   final PaymentRequest? paymentRequest;
   Widget? expandedWidget = Container();
+  @override
   Key? key;
 
   PaymentRequestTile({this.paymentRequest, this.expandedWidget, this.key})
@@ -183,6 +184,7 @@ class CardTransactionTile extends StatelessWidget {
   CardTransactionTile({this.transaction, this.expandedWidget, this.key})
       : super(key: key);
 
+  @override
   Key? key;
 
   @override

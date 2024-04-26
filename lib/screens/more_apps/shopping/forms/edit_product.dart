@@ -276,16 +276,16 @@ class _EditProductState extends State<EditProduct> {
           debugPrint(
               'CURRENT PRODUCT NAME :::: ${selectedProductCategory?.name}');
 
-          conditions.forEach((condition) {
+          for (var condition in conditions) {
             if (condition.name == currentProduct.condition) {
               selectedProductCondition = condition;
             }
-          });
-          deliverTimeCondition.forEach((preparation) {
+          }
+          for (var preparation in deliverTimeCondition) {
             if (preparation.name == currentProduct.preparationTime.toString()) {
               selectedPreparationCondition = preparation;
             }
-          });
+          }
 
           if (weight != 0.0) {
             pickedMeasurementList.add('Weight');
@@ -652,7 +652,7 @@ class _EditProductState extends State<EditProduct> {
   }
 
   Widget addLocalImages() {
-    return Container(
+    return SizedBox(
       height: 100,
       child: ListView.builder(
         controller: _scrollController,
@@ -672,7 +672,7 @@ class _EditProductState extends State<EditProduct> {
   }
 
   Widget viewServerImages() {
-    return Container(
+    return SizedBox(
       height: 100,
       child: ListView.builder(
         controller: _scrollController,
@@ -882,7 +882,7 @@ class _EditProductState extends State<EditProduct> {
   }
 
   Widget showServerImage(int index) {
-    return Container(
+    return SizedBox(
       height: 100,
       child: Stack(
         children: <Widget>[
@@ -939,7 +939,7 @@ class _EditProductState extends State<EditProduct> {
                     }
                   }
                 }).catchError((error) {
-                  debugPrint("ERROR " + error.toString());
+                  debugPrint("ERROR $error");
                 });
               },
             ),
@@ -965,7 +965,7 @@ class _EditProductState extends State<EditProduct> {
   bool checkImageLimitForServerImage() {
     if (productLocalImages.length + productImagesFromServer.length !=
             imageCount ||
-        productImagesFromServer.length != 0) {
+        productImagesFromServer.isNotEmpty) {
       return true;
     }
     return false;
@@ -975,7 +975,7 @@ class _EditProductState extends State<EditProduct> {
   bool checkImageLimitForLocalImage() {
     if (productLocalImages.length + productImagesFromServer.length !=
             imageCount ||
-        productLocalImages.length != 0) {
+        productLocalImages.isNotEmpty) {
       return true;
     }
     return false;
@@ -1486,7 +1486,7 @@ class _EditProductState extends State<EditProduct> {
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: Container(
+              content: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   margin: EdgeInsets.zero,
@@ -1646,7 +1646,7 @@ class _EditProductState extends State<EditProduct> {
             Expanded(
               child: Text(
                 selectedProductCondition != null
-                    ? " (" + selectedProductCondition!.description + ")"
+                    ? " (${selectedProductCondition!.description})"
                     : "",
                 maxLines: 1,
                 style: const TextStyle(
@@ -2068,7 +2068,7 @@ class _EditProductState extends State<EditProduct> {
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: Container(
+              content: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   margin: EdgeInsets.zero,
@@ -2097,10 +2097,7 @@ class _EditProductState extends State<EditProduct> {
                                     Expanded(
                                       child: Text(
                                         selectedProductCondition != null
-                                            ? " (" +
-                                                selectedProductCondition!
-                                                    .description +
-                                                ")"
+                                            ? " (${selectedProductCondition!.description})"
                                             : "",
                                         maxLines: 1,
                                         style: TextStyle(
@@ -2134,7 +2131,7 @@ class _EditProductState extends State<EditProduct> {
                                 ),
                                 Expanded(
                                   child: Text(
-                                    " (" + condition.description + ")",
+                                    " (${condition.description})",
                                     maxLines: 1,
                                     style: TextStyle(
                                         fontSize: 16, color: blackFont),
@@ -2385,22 +2382,20 @@ class _EditProductState extends State<EditProduct> {
       },
       child: CustomizedDropDownField(
         title: "Available from",
-        child: Container(
-          child: ListTile(
-            dense: true,
-            title: Text(
-              formatDate(productAvailableFrom!),
-              style: TextStyle(
-                color: blackFont,
-                fontWeight: FontWeight.w600,
-                fontSize: 16,
-              ),
+        child: ListTile(
+          dense: true,
+          title: Text(
+            formatDate(productAvailableFrom!),
+            style: TextStyle(
+              color: blackFont,
+              fontWeight: FontWeight.w600,
+              fontSize: 16,
             ),
-            trailing: Icon(
-              SlydoAppIcon.date,
-              size: 16,
-              color: darkGrey,
-            ),
+          ),
+          trailing: Icon(
+            SlydoAppIcon.date,
+            size: 16,
+            color: darkGrey,
           ),
         ),
       ),
@@ -2884,26 +2879,24 @@ class _EditProductState extends State<EditProduct> {
           if (mounted) setState(() {});
         }
       },
-      child: Container(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Add Product Variation',
-              maxLines: 1,
-              style: TextStyle(
-                  color: productAddOnsList.isNotEmpty ? darkGrey : navyBlue,
-                  fontFamily: "Inter",
-                  fontWeight: FontWeight.w500,
-                  fontSize: 14),
-            ),
-            Icon(
-              Icons.arrow_forward_ios,
-              size: 16,
-              color: blackFont,
-            ),
-          ],
-        ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            'Add Product Variation',
+            maxLines: 1,
+            style: TextStyle(
+                color: productAddOnsList.isNotEmpty ? darkGrey : navyBlue,
+                fontFamily: "Inter",
+                fontWeight: FontWeight.w500,
+                fontSize: 14),
+          ),
+          Icon(
+            Icons.arrow_forward_ios,
+            size: 16,
+            color: blackFont,
+          ),
+        ],
       ),
     );
   }
@@ -2998,7 +2991,7 @@ class _EditProductState extends State<EditProduct> {
   Widget _buildAddOnList() {
     return isLoading && productAddOnsList.isEmpty
         ? buildLoadingIndicator(isLoading: isLoading)
-        : Container(
+        : SizedBox(
             // height: 200,
             height: 80 * productAddOnsList.length.toDouble(),
             child: ListView.builder(

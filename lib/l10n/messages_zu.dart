@@ -146,14 +146,14 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Describe your service here"),
         "description": MessageLookupByLibrary.simpleMessage("Description"),
         "descriptionMustNotEmpty":
-            MessageLookupByLibrary.simpleMessage("Description can\'t be empty"),
+            MessageLookupByLibrary.simpleMessage("Description can't be empty"),
         "details": MessageLookupByLibrary.simpleMessage("Details"),
         "documentVerificationTermsAndCondition":
             MessageLookupByLibrary.simpleMessage(
                 "By clicking Register, you are agreeing to our Terms and Conditions."),
         "done": MessageLookupByLibrary.simpleMessage("Done"),
         "driverLicence":
-            MessageLookupByLibrary.simpleMessage("Driver\'s license"),
+            MessageLookupByLibrary.simpleMessage("Driver's license"),
         "editProduct": MessageLookupByLibrary.simpleMessage("Edit Product"),
         "editProfile": MessageLookupByLibrary.simpleMessage("Edit profile"),
         "editService": MessageLookupByLibrary.simpleMessage("Edit Service"),
@@ -292,7 +292,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "passwordMustBeOfFourDigit":
             MessageLookupByLibrary.simpleMessage("Password must be 4 digits"),
         "passwordShouldNotEmpty":
-            MessageLookupByLibrary.simpleMessage("Password can\'t be empty"),
+            MessageLookupByLibrary.simpleMessage("Password can't be empty"),
         "paymentRequestAccepted":
             MessageLookupByLibrary.simpleMessage("Payment request accepted"),
         "paymentRequestRejected":
@@ -344,7 +344,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "products": MessageLookupByLibrary.simpleMessage("Products"),
         "profile": MessageLookupByLibrary.simpleMessage("Profile"),
         "providersOtherService":
-            MessageLookupByLibrary.simpleMessage("Provider\'s Other Services"),
+            MessageLookupByLibrary.simpleMessage("Provider's Other Services"),
         "re": MessageLookupByLibrary.simpleMessage("Re"),
         "received": MessageLookupByLibrary.simpleMessage("Received"),
         "recipient": MessageLookupByLibrary.simpleMessage("Recipient"),
@@ -379,9 +379,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "selectYourPhoneCode":
             MessageLookupByLibrary.simpleMessage("Select your phone code"),
         "sellersOtherProduct":
-            MessageLookupByLibrary.simpleMessage("Seller\'s Other Products"),
+            MessageLookupByLibrary.simpleMessage("Seller's Other Products"),
         "sellersOtherServices":
-            MessageLookupByLibrary.simpleMessage("Seller\'s Other Services"),
+            MessageLookupByLibrary.simpleMessage("Seller's Other Services"),
         "send": MessageLookupByLibrary.simpleMessage("Send"),
         "sendMoney": MessageLookupByLibrary.simpleMessage("Send money"),
         "sendPayment": MessageLookupByLibrary.simpleMessage("Send payment"),
@@ -489,7 +489,7 @@ class MessageLookup extends MessageLookupByLibrary {
             "You cannot purchase this item"),
         "youDontHaveAnyAccountPleaseAddOne":
             MessageLookupByLibrary.simpleMessage(
-                "You don\'t have any bank account. Please add one"),
+                "You don't have any bank account. Please add one"),
         "youHaveReachedBottomOfTheList": MessageLookupByLibrary.simpleMessage(
             "You have reached the end of the list")
       };

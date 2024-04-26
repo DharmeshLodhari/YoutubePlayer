@@ -198,48 +198,45 @@ class SearchTransactionCardState extends State<SearchTransactionCard> {
   }
 
   Widget scaffoldBody() {
-    return Container(
-      child: Column(
-        children: [
-          const SizedBox(height: 6),
-          searchBox(),
-          const SizedBox(height: 12),
-          if (isLoading)
-            const CircularProgressIndicator()
-          else
-            const SizedBox.shrink(),
-          if (isSearchIsEmpty)
-            Expanded(
-              child: NoItemInList(
-                msg:
-                    AppLocalization.of(context)!.pleaseTypeSomethingToGetResult,
-                isResult: false,
-              ),
-            )
-          else
-            noItemInList
-                ? Expanded(
-                    child: NoItemInList(
-                      msg: AppLocalization.of(context)!.noResultFound,
-                    ),
-                  )
-                : Expanded(
-                    child: ListView(
-                        children: transactionList
-                            .map(
-                              (transaction) => Container(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 8, horizontal: 10),
-                                child: Container(
-                                  // margin: const EdgeInsets.all(8.0),
-                                  child: showCardTransaction(transaction),
-                                ),
-                              ),
-                            )
-                            .toList()),
+    return Column(
+      children: [
+        const SizedBox(height: 6),
+        searchBox(),
+        const SizedBox(height: 12),
+        if (isLoading)
+          const CircularProgressIndicator()
+        else
+          const SizedBox.shrink(),
+        if (isSearchIsEmpty)
+          Expanded(
+            child: NoItemInList(
+              msg: AppLocalization.of(context)!.pleaseTypeSomethingToGetResult,
+              isResult: false,
+            ),
+          )
+        else
+          noItemInList
+              ? Expanded(
+                  child: NoItemInList(
+                    msg: AppLocalization.of(context)!.noResultFound,
                   ),
-        ],
-      ),
+                )
+              : Expanded(
+                  child: ListView(
+                      children: transactionList
+                          .map(
+                            (transaction) => Container(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 8, horizontal: 10),
+                              child: Container(
+                                // margin: const EdgeInsets.all(8.0),
+                                child: showCardTransaction(transaction),
+                              ),
+                            ),
+                          )
+                          .toList()),
+                ),
+      ],
     );
   }
 

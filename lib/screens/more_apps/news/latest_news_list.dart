@@ -12,6 +12,8 @@ import 'models/NewsListItem.dart';
 import 'news_tile.dart';
 
 class LatestNewsList extends StatefulWidget {
+  const LatestNewsList({super.key});
+
   @override
   _LatestNewsListState createState() => _LatestNewsListState();
 }

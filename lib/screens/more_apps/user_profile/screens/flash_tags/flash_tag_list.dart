@@ -21,7 +21,7 @@ class FlashTagList extends StatefulWidget {
   CustomerProfile? user;
 
   FlashTagList({required this.arguments, Key? key}) : super(key: key) {
-    this.user = arguments["user"] as CustomerProfile;
+    user = arguments["user"] as CustomerProfile;
   }
 
   @override
@@ -45,7 +45,7 @@ class _FlashTagListState extends State<FlashTagList> {
 
   @override
   void initState() {
-    this.getList();
+    getList();
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
               _scrollController.position.maxScrollExtent &&

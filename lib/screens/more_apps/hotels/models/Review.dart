@@ -18,12 +18,12 @@ class Review {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['date'] = this.date;
-    data['detail'] = this.detail;
-    data['name'] = this.name;
-    data['star'] = this.star;
-    data['user_avatar'] = this.userAvatar;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['date'] = date;
+    data['detail'] = detail;
+    data['name'] = name;
+    data['star'] = star;
+    data['user_avatar'] = userAvatar;
     return data;
   }
 }

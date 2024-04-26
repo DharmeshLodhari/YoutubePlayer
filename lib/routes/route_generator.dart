@@ -379,7 +379,7 @@ class RouteGenerator {
         );
       case Routes.ADD_ACCOUNT:
         return PageTransition(
-          child: AddAccount(),
+          child: const AddAccount(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -569,7 +569,7 @@ class RouteGenerator {
 
       case Routes.ADD_BANK_ACCOUNT:
         return PageTransition(
-          child: AddAccount(),
+          child: const AddAccount(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -657,7 +657,7 @@ class RouteGenerator {
         );
       case Routes.USER_ADDRESS:
         return PageTransition(
-          child: UserAddress(),
+          child: const UserAddress(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -863,14 +863,6 @@ class RouteGenerator {
       case Routes.INVOICE_SCREEN:
         return PageTransition(
           child: const InvoiceScreen(),
-          type: PageTransitionType.bottomToTop,
-          curve: Curves.ease,
-          settings: settings,
-        );
-
-      case Routes.CONTRACT_SCREEN:
-        return PageTransition(
-          child: const ContractScreen(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -1235,7 +1227,7 @@ class RouteGenerator {
 
       case Routes.MOVIE_CATEGORY:
         return PageTransition(
-          child: SpecificCategoryMovieList(),
+          child: const SpecificCategoryMovieList(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -1243,7 +1235,7 @@ class RouteGenerator {
 
       case Routes.SEARCH_MOVIE:
         return PageTransition(
-          child: SearchMovie(),
+          child: const SearchMovie(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -1269,7 +1261,7 @@ class RouteGenerator {
 
       case Routes.MUSIC_CATEGORY:
         return PageTransition(
-          child: SpecificCategoryMusicList(),
+          child: const SpecificCategoryMusicList(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -1331,7 +1323,7 @@ class RouteGenerator {
 
       case Routes.EVENT_DETAIL:
         return PageTransition(
-          child: EventDetailPage(),
+          child: const EventDetailPage(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -1407,7 +1399,7 @@ class RouteGenerator {
 
       case Routes.PROPERTY_CATEGORY:
         return PageTransition(
-          child: SpecificCategoryPropertyList(),
+          child: const SpecificCategoryPropertyList(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -1423,7 +1415,7 @@ class RouteGenerator {
 
       case Routes.PROPERTY_DETAIL:
         return PageTransition(
-          child: PropertyDetailPage(),
+          child: const PropertyDetailPage(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,

@@ -33,7 +33,7 @@ class CommentListWidget extends StatefulWidget {
       : super(key: key);
 
   @override
-  _CommentListWidgetState createState() => _CommentListWidgetState();
+  State<CommentListWidget> createState() => _CommentListWidgetState();
 }
 
 class _CommentListWidgetState extends State<CommentListWidget> {

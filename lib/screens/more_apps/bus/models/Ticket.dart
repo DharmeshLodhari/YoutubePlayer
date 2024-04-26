@@ -32,7 +32,7 @@ class Ticket {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
     data['from'] = this.from;
     data['from_time'] = this.fromTime;
     data['gate'] = this.gate;

@@ -16,7 +16,7 @@ import 'music_tile.dart';
 
 class SearchMusic extends StatefulWidget {
   @override
-  _SearchMusicState createState() => _SearchMusicState();
+  State<SearchMusic> createState() => _SearchMusicState();
 }
 
 class _SearchMusicState extends State<SearchMusic> {
@@ -375,7 +375,7 @@ class _SearchMusicState extends State<SearchMusic> {
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: Container(
+              content: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   elevation: 2,
@@ -496,7 +496,7 @@ class _SearchMusicState extends State<SearchMusic> {
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: Container(
+              content: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   elevation: 2,

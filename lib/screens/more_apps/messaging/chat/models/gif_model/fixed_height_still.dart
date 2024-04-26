@@ -16,11 +16,11 @@ class FixedHeightStill {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['height'] = this.height;
-    data['size'] = this.size;
-    data['url'] = this.url;
-    data['width'] = this.width;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['height'] = height;
+    data['size'] = size;
+    data['url'] = url;
+    data['width'] = width;
     return data;
   }
 }

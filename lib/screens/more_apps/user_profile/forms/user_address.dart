@@ -20,7 +20,8 @@ class UserAddress extends StatefulWidget {
   final String? customerName;
   final bool fromCheckoutScreen;
 
-  UserAddress({this.customerName, this.fromCheckoutScreen = false});
+  const UserAddress(
+      {super.key, this.customerName, this.fromCheckoutScreen = false});
   @override
   _UserAddressState createState() => _UserAddressState();
 }

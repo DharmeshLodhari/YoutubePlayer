@@ -12,7 +12,7 @@ class PlusCode {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
     data['compound_code'] = this.compoundCode;
     data['global_code'] = this.globalCode;
     return data;

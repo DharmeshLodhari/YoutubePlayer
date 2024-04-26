@@ -19,12 +19,12 @@ class PartialMusicItem {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['currency'] = this.currency;
-    data['id'] = this.id;
-    data['name'] = this.name;
-    data['poster'] = this.poster;
-    data['price'] = this.price;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['currency'] = currency;
+    data['id'] = id;
+    data['name'] = name;
+    data['poster'] = poster;
+    data['price'] = price;
     return data;
   }
 }

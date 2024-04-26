@@ -22,7 +22,7 @@ class CartAlbumTile extends StatelessWidget {
           child: ListTile(
             contentPadding:
                 const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
-            leading: Container(
+            leading: SizedBox(
               height: 68,
               width: 68,
               child: ClipRRect(
@@ -96,7 +96,7 @@ class CartMusicTile extends StatelessWidget {
           child: ListTile(
             contentPadding:
                 const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
-            leading: Container(
+            leading: SizedBox(
               height: 68,
               width: 68,
               child: ClipRRect(
@@ -170,7 +170,7 @@ class CartMovieTile extends StatelessWidget {
           child: ListTile(
             contentPadding:
                 const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
-            leading: Container(
+            leading: SizedBox(
               height: 68,
               width: 68,
               child: ClipRRect(

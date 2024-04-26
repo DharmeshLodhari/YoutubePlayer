@@ -12,7 +12,7 @@ class OpeningHourForDay {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
     data['day'] = this.day;
     data['time'] = this.time;
     return data;

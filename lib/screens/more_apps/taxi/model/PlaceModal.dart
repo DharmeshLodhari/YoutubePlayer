@@ -72,31 +72,31 @@ class PlaceModal {
   Map<String, dynamic> toJson() {
     // ignore: unnecessary_new
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['business_status'] = this.businessStatus;
-    data['formatted_address'] = this.formattedAddress;
-    data['icon'] = this.icon;
-    data['icon_background_color'] = this.iconBackgroundColor;
-    data['icon_mask_base_uri'] = this.iconMaskBaseUri;
-    data['name'] = this.name;
-    data['place_id'] = this.placeId;
-    data['price_level'] = this.priceLevel;
-    data['rating'] = this.rating;
-    data['reference'] = this.reference;
-    data['user_ratings_total'] = this.userRatingsTotal;
-    if (this.geometry != null) {
-      data['geometry'] = this.geometry!.toJson();
+    data['business_status'] = businessStatus;
+    data['formatted_address'] = formattedAddress;
+    data['icon'] = icon;
+    data['icon_background_color'] = iconBackgroundColor;
+    data['icon_mask_base_uri'] = iconMaskBaseUri;
+    data['name'] = name;
+    data['place_id'] = placeId;
+    data['price_level'] = priceLevel;
+    data['rating'] = rating;
+    data['reference'] = reference;
+    data['user_ratings_total'] = userRatingsTotal;
+    if (geometry != null) {
+      data['geometry'] = geometry!.toJson();
     }
-    if (this.openingHours != null) {
-      data['opening_hours'] = this.openingHours!.toJson();
+    if (openingHours != null) {
+      data['opening_hours'] = openingHours!.toJson();
     }
-    if (this.photos != null) {
-      data['photos'] = this.photos!.map((v) => v.toJson()).toList();
+    if (photos != null) {
+      data['photos'] = photos!.map((v) => v.toJson()).toList();
     }
-    if (this.plusCode != null) {
-      data['plus_code'] = this.plusCode!.toJson();
+    if (plusCode != null) {
+      data['plus_code'] = plusCode!.toJson();
     }
-    if (this.types != null) {
-      data['types'] = this.types;
+    if (types != null) {
+      data['types'] = types;
     }
     return data;
   }

@@ -52,39 +52,39 @@ class MainSocketMessageModel {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['author'] = this.author;
-    data['conversation'] = this.conversation;
-    data['created_at'] = this.createdAt;
-    data['deleted_for_author'] = this.deletedForAuthor;
-    data['deleted_for_recipient'] = this.deletedForRecipient;
-    data['delivered'] = this.delivered;
-    data['id'] = this.id;
-    data['kind'] = this.kind;
-    data['read_by_author'] = this.readByAuthor;
-    data['read_by_recipient'] = this.readByRecipient;
-    data['text'] = this.text;
-    data['type'] = this.type;
-    data['updated_at'] = this.updatedAt;
-    data['was_edited'] = this.wasEdited;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['author'] = author;
+    data['conversation'] = conversation;
+    data['created_at'] = createdAt;
+    data['deleted_for_author'] = deletedForAuthor;
+    data['deleted_for_recipient'] = deletedForRecipient;
+    data['delivered'] = delivered;
+    data['id'] = id;
+    data['kind'] = kind;
+    data['read_by_author'] = readByAuthor;
+    data['read_by_recipient'] = readByRecipient;
+    data['text'] = text;
+    data['type'] = type;
+    data['updated_at'] = updatedAt;
+    data['was_edited'] = wasEdited;
     return data;
   }
 
   Map<String, dynamic> toHashedJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['author'] = this.author;
-    data['conversation'] = this.conversation;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['author'] = author;
+    data['conversation'] = conversation;
     data['created_at'] = generateCreatedAt();
     data['updated_at'] = generateUpdatedAt();
-    data['deleted_for_author'] = this.deletedForAuthor;
-    data['deleted_for_recipient'] = this.deletedForRecipient;
-    data['delivered'] = this.delivered;
-    data['kind'] = this.kind;
-    data['read_by_author'] = this.readByAuthor;
-    data['read_by_recipient'] = this.readByRecipient;
-    data['text'] = this.text;
-    data['type'] = this.type;
-    data['was_edited'] = this.wasEdited;
+    data['deleted_for_author'] = deletedForAuthor;
+    data['deleted_for_recipient'] = deletedForRecipient;
+    data['delivered'] = delivered;
+    data['kind'] = kind;
+    data['read_by_author'] = readByAuthor;
+    data['read_by_recipient'] = readByRecipient;
+    data['text'] = text;
+    data['type'] = type;
+    data['was_edited'] = wasEdited;
     return data;
   }
 

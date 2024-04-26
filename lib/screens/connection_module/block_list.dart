@@ -16,8 +16,10 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import '../../../../../routes/route_constants.dart';
 
 class BlockedList extends StatefulWidget {
+  const BlockedList({super.key});
+
   @override
-  _BlockedListState createState() => _BlockedListState();
+  State<BlockedList> createState() => _BlockedListState();
 }
 
 class _BlockedListState extends State<BlockedList> {
@@ -37,9 +39,9 @@ class _BlockedListState extends State<BlockedList> {
   bool isLoading = false;
   bool noItemInList = false;
 
-  @protected
+  @override
   void initState() {
-    this.getList();
+    getList();
     super.initState();
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
@@ -151,8 +153,9 @@ class _BlockedListState extends State<BlockedList> {
 
         final List<CustomerProfile> users = [];
 
-        tempList
-            .forEach((element) => users.add(CustomerProfile.fromJson(element)));
+        for (var element in tempList) {
+          users.add(CustomerProfile.fromJson(element));
+        }
 
         isLoading = false;
         blockList.addAll(users);
@@ -221,8 +224,8 @@ class _BlockedListState extends State<BlockedList> {
       actionTwoTextColor: Colors.white,
       firstActionPrimary: false,
       title: AppLocalization.of(context)!.unblock,
-      description: AppLocalization.of(context)!.areYouSureWantToUnblock +
-          " ${user.displayName()}",
+      description:
+          "${AppLocalization.of(context)!.areYouSureWantToUnblock} ${user.displayName()}",
       actionOneText: AppLocalization.of(context)!.cancel,
       actionTwoText: AppLocalization.of(context)!.accept,
     );
@@ -230,10 +233,8 @@ class _BlockedListState extends State<BlockedList> {
       bool done = await UserAuth().unBlockUser(user);
       done = true;
       if (done) {
-        _showSnackBar(
-            context,
-            "${user.displayName()} " +
-                AppLocalization.of(context)!.isUnblockedSuccessfully);
+        _showSnackBar(context,
+            "${user.displayName()} ${AppLocalization.of(context)!.isUnblockedSuccessfully}");
         setState(() {
           blockList.removeAt(index);
           if (blockList.length <= 9) {
@@ -267,7 +268,7 @@ class _BlockedListState extends State<BlockedList> {
 }
 
 class VerticalListItem extends StatelessWidget {
-  VerticalListItem(this.user);
+  const VerticalListItem(this.user, {super.key});
 
   final CustomerProfile user;
 

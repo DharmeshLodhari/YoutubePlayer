@@ -43,11 +43,11 @@ class BasketBloc extends ChangeNotifier {
   int getProductOrServiceQuantityInCart(String id) {
     int quantity = 0;
 
-    _basketItems.forEach((element) {
+    for (var element in _basketItems) {
       if (element.item?.id == id) {
         quantity = int.parse(element.qty.toString());
       }
-    });
+    }
     return quantity;
   }
 
@@ -56,8 +56,8 @@ class BasketBloc extends ChangeNotifier {
 
     for (var item in _basketItems) {
       int variantTotal = 0;
-      int AddOnOptionTotal = 0;
-      int AddOnTotal = 0;
+      int addOnOptionTotal = 0;
+      int addOnTotal = 0;
       int normalTotal = 0;
       if (item.item?.isProduct ?? false) {
         if (item.hasVariant) {
@@ -70,14 +70,14 @@ class BasketBloc extends ChangeNotifier {
           final Product product = item.item as Product;
           for (AddOns itemAddOn in item.addOns ?? []) {
             for (var option in itemAddOn.options!) {
-              AddOnOptionTotal +=
+              addOnOptionTotal +=
                   int.parse(option.price.toString()) * option.quantity;
             }
           }
           normalTotal = product.getProductRealPrice() *
               int.parse(product.quantity.toString());
-          AddOnTotal = AddOnOptionTotal + normalTotal;
-          totalPrice += AddOnTotal;
+          addOnTotal = addOnOptionTotal + normalTotal;
+          totalPrice += addOnTotal;
         } else {
           final Product product = item.item as Product;
 
@@ -621,7 +621,7 @@ class BasketBloc extends ChangeNotifier {
 
     bool flag = false;
 
-    _basketItems.forEach((element) {
+    for (var element in _basketItems) {
       if (element.item?.id == item.id) {
         flag = true;
 
@@ -638,9 +638,9 @@ class BasketBloc extends ChangeNotifier {
         }
 
         addedOrUpdatedItem = element;
-        return;
+        continue;
       }
-    });
+    }
 
     if (!flag) {
       if (withApiCall == true) {
@@ -664,7 +664,7 @@ class BasketBloc extends ChangeNotifier {
     /// add or update this item to the server
     if (withApiCall && addedOrUpdatedItem != null) {
       final BasketListModifierPayload data = _basketItems.toPayload(
-          addedOrUpdatedItem!,
+          addedOrUpdatedItem,
           actionType: BasketListModifierAction.increaseQty);
       if (data.payload.isNotEmpty) {
         ShoppingAuthService().addOrUpdateItemToShoppingCart(data.payload);
@@ -842,7 +842,7 @@ class BasketBloc extends ChangeNotifier {
     final List itemsCart = await ShoppingAuthService().getShoppingCart();
     final UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
 
-    final SharedCartMemberModel? currentUser = userBloc.user.convertToUser();
+    final SharedCartMemberModel currentUser = userBloc.user.convertToUser();
 
     for (var element in itemsCart) {
       final String type = element is Product ? "product" : "service";
@@ -1118,7 +1118,7 @@ class BasketBloc extends ChangeNotifier {
   int getSubTotalPriceByMerchant({required String merchantUserName}) {
     int subTotal = 0;
 
-    items.forEach((element) {
+    for (var element in items) {
       final item = element['item'];
 
       if (merchantUserName == item.getMerchantUserName()) {
@@ -1143,7 +1143,7 @@ class BasketBloc extends ChangeNotifier {
           }
         }
       }
-    });
+    }
 
     return subTotal;
   }

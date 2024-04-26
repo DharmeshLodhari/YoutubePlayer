@@ -31,8 +31,8 @@ import '../widget/rounded_background_icon.dart';
 import 'more_apps/messaging/chat/models/chat_conversation.dart';
 import 'more_apps/messaging/chat/share_in_chat/ShareInChat.dart';
 import 'more_apps/news/CustomChip.dart';
-import 'more_apps/news/models/NewsDetailItem.dart';
 import 'more_apps/news/models/NewsListItem.dart';
+import 'more_apps/news/models/news_detail_item.dart';
 import 'more_apps/news/news_tile.dart';
 import 'more_apps/user_post/models/user_post.dart';
 import 'more_apps/user_post/tile/user_post_tile.dart';
@@ -841,30 +841,27 @@ class _PostDetailPageScaffoldBodyState
       onTap: user.userName == widget.userPost.authorUsername
           ? () => showToast(message: 'You cannot dislike your post')
           : dislikeUnlikePost,
-      child: Container(
-        child: Row(
-          children: [
-            Icon(
-              widget.userPost.userDisLiked == true
-                  ? Icons.thumb_down_alt_rounded
-                  : Icons.thumb_down_alt_outlined,
-              size: 16,
-              color:
-                  widget.userPost.userDisLiked! == true ? mateRed : blackFont,
+      child: Row(
+        children: [
+          Icon(
+            widget.userPost.userDisLiked == true
+                ? Icons.thumb_down_alt_rounded
+                : Icons.thumb_down_alt_outlined,
+            size: 16,
+            color: widget.userPost.userDisLiked! == true ? mateRed : blackFont,
+          ),
+          const SizedBox(width: 4),
+          Text(
+            widget.userPost.dislikes != null
+                ? widget.userPost.dislikes!.toString()
+                : '0',
+            style: TextStyle(
+              color: blackFont,
+              fontWeight: FontWeight.w400,
+              fontSize: 14,
             ),
-            const SizedBox(width: 4),
-            Text(
-              widget.userPost.dislikes != null
-                  ? widget.userPost.dislikes!.toString()
-                  : '0',
-              style: TextStyle(
-                color: blackFont,
-                fontWeight: FontWeight.w400,
-                fontSize: 14,
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

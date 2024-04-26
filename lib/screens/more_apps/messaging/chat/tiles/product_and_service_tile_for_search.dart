@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 class SearchProductTile extends StatefulWidget {
   Product product;
 
-  SearchProductTile({required this.product});
+  SearchProductTile({super.key, required this.product});
 
   @override
   _SearchProductTileState createState() => _SearchProductTileState();

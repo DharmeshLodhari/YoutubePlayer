@@ -314,7 +314,7 @@ class _UserProductListState extends State<UserProductList> {
             children: [
               if (widget.type == null)
                 Text(
-                  "Found ${productCount} products",
+                  "Found $productCount products",
                   style: TextStyle(
                     fontWeight: FontWeight.w700,
                     fontSize: 18,

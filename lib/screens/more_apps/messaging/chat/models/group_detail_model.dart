@@ -106,23 +106,23 @@ class GroupDetailModel {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['avatar'] = this.avatar;
-    data['banner'] = this.banner;
-    data['conversation_id'] = this.conversationId;
-    data['full_name'] = this.fullName;
-    data['is_group_conversation'] = this.isGroupConversation;
-    data['type'] = this.type;
-    data['conversation_type'] = this.conversationType;
-    data['username'] = this.username;
-    data['owner'] = this.owner;
-    data['description'] = this.description;
-    data['created_at'] = this.createdAt;
-    data['admin_users'] = this.adminUsers;
-    data['blocked_participants'] = this.blockedParticipants;
-    data['muted_participants'] = this.mutedParticipants;
-    data['is_verified'] = this.isVerified;
-    data['participants'] = this.participants.map((v) => v.toJson()).toList();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['avatar'] = avatar;
+    data['banner'] = banner;
+    data['conversation_id'] = conversationId;
+    data['full_name'] = fullName;
+    data['is_group_conversation'] = isGroupConversation;
+    data['type'] = type;
+    data['conversation_type'] = conversationType;
+    data['username'] = username;
+    data['owner'] = owner;
+    data['description'] = description;
+    data['created_at'] = createdAt;
+    data['admin_users'] = adminUsers;
+    data['blocked_participants'] = blockedParticipants;
+    data['muted_participants'] = mutedParticipants;
+    data['is_verified'] = isVerified;
+    data['participants'] = participants.map((v) => v.toJson()).toList();
     return data;
   }
 }

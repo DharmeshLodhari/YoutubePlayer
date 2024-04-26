@@ -9,6 +9,7 @@ import 'scrollable_positioned_list.dart';
 ///
 /// See [ScrollablePositionedList]
 class StickyGroupedListView<T, E> extends StatefulWidget {
+  @override
   final Key? key;
 
   /// Items of which [itemBuilder] or [indexedItemBuilder] produce the list.

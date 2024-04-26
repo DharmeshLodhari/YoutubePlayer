@@ -141,7 +141,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
     data['type'] = 'services';
     data['id'] = service?.id ?? "";
 
-    debugPrint('service data :: ${data}');
+    debugPrint('service data :: $data');
 
     ReviewAuth().checkIfCanReviewProductOrService(data).then((value) {
       canRate = value;
@@ -496,7 +496,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
         badgeStyle: badges.BadgeStyle(
             shape: badges.BadgeShape.circle,
             badgeColor: naturalGreen,
-            padding: basketBloc.basketItems.length == 0
+            padding: basketBloc.basketItems.isEmpty
                 ? const EdgeInsets.all(0)
                 : const EdgeInsets.all(4)),
         child: Center(
@@ -607,7 +607,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
       badgeStyle: badges.BadgeStyle(
         shape: badges.BadgeShape.circle,
         badgeColor: naturalGreen,
-        padding: basketBloc.basketItems.length == 0
+        padding: basketBloc.basketItems.isEmpty
             ? const EdgeInsets.all(0)
             : const EdgeInsets.all(4),
       ),
@@ -628,7 +628,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   }
 
   Widget? getBadgeContent() {
-    if (basketBloc.basketItems.length == 0) {
+    if (basketBloc.basketItems.isEmpty) {
       return null;
     }
     return Text(
@@ -771,7 +771,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   }
 
   Widget _buildReviewList() {
-    return reviewList.length == 0
+    return reviewList.isEmpty
         ? Center(
             child: Text(
               "No Review yet",
@@ -872,7 +872,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
               }
             }
           },
-          child: Container(
+          child: SizedBox(
             width: double.infinity,
             child: Center(
               child: Text(
@@ -912,7 +912,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                     Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
                         arguments: service?.providerAvatar);
                   },
-                  child: Container(
+                  child: SizedBox(
                     height: 48,
                     width: 48,
                     child: ClipOval(
@@ -1236,7 +1236,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   }
 
   Widget _buildProviderOtherServices() {
-    return Container(
+    return SizedBox(
       height: 310,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

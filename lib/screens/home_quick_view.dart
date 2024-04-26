@@ -457,7 +457,7 @@ class _HomeQuickViewState extends State<HomeQuickView> {
   }
 
   Widget shortcutView(
-      String imagePath, String title, String ForReadPermission) {
+      String imagePath, String title, String forReadPermission) {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 8.0),
       padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 8.0),
@@ -481,7 +481,7 @@ class _HomeQuickViewState extends State<HomeQuickView> {
               permissionName: title,
               isShowLock: true,
               position: 10,
-              isLockForRead: ForReadPermission,
+              isLockForRead: forReadPermission,
               child: Row(
                 children: [
                   SvgPicture.asset(
@@ -577,7 +577,7 @@ class _HomeQuickViewState extends State<HomeQuickView> {
         }
         break;
       case ProtectionPermission.chat:
-        NavigationUtil.push(context, screen: ConnectionDashboard());
+        NavigationUtil.push(context, screen: const ConnectionDashboard());
         break;
       case ProtectionPermission.inbox:
         Navigator.of(context).pushNamed(Routes.MESSAGE_LIST);
@@ -601,7 +601,7 @@ class _HomeQuickViewState extends State<HomeQuickView> {
       case ProtectionPermission.channel:
         NavigationUtil.push(
           context,
-          screen: ChannelsList(),
+          screen: const ChannelsList(),
         );
         break;
       case ProtectionPermission.order:

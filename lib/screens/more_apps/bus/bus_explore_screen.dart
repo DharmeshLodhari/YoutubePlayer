@@ -227,25 +227,23 @@ class _BusExploreScreenState extends State<BusExploreScreen> {
             },
             child: CustomizedDropDownField(
               title: "Departure date",
-              child: Container(
-                child: ListTile(
-                  dense: true,
-                  title: Text(
-                    formatDateInDigit(departureDate),
-                    style: TextStyle(
-                      color: blackFont,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
-                    ),
-                    overflow: TextOverflow.fade,
-                    softWrap: false,
-                    maxLines: 1,
+              child: ListTile(
+                dense: true,
+                title: Text(
+                  formatDateInDigit(departureDate),
+                  style: TextStyle(
+                    color: blackFont,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
                   ),
-                  trailing: Icon(
-                    SlydoAppIcon.date,
-                    size: 16,
-                    color: darkGrey,
-                  ),
+                  overflow: TextOverflow.fade,
+                  softWrap: false,
+                  maxLines: 1,
+                ),
+                trailing: Icon(
+                  SlydoAppIcon.date,
+                  size: 16,
+                  color: darkGrey,
                 ),
               ),
             ),

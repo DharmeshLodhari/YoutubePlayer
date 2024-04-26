@@ -3426,13 +3426,6 @@ class AppLocalization {
     );
   }
 
-  String get top_Up {
-    return Intl.message(
-      "Top Up",
-      name: "top_Up",
-    );
-  }
-
   String get topUp {
     return Intl.message(
       "TopUp",

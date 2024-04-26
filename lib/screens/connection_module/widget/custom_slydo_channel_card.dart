@@ -22,12 +22,13 @@ class CustomSlydoChannelCard extends StatefulWidget {
   final TileRenderPlace tileRenderPlace;
 
   CustomSlydoChannelCard({
+    super.key,
     required this.channelModel,
     this.tileRenderPlace = TileRenderPlace.YarnTimeLine,
   });
 
   @override
-  _CustomSlydoChannelCardState createState() => _CustomSlydoChannelCardState();
+  State<CustomSlydoChannelCard> createState() => _CustomSlydoChannelCardState();
 }
 
 class _CustomSlydoChannelCardState extends State<CustomSlydoChannelCard> {
@@ -70,7 +71,7 @@ class _CustomSlydoChannelCardState extends State<CustomSlydoChannelCard> {
             clipBehavior: Clip.none,
             alignment: Alignment.topCenter,
             children: [
-              Container(
+              SizedBox(
                   height: getContainerHeight(widget.tileRenderPlace, context),
                   child: getWallpaper()),
               Positioned(
@@ -124,81 +125,78 @@ class _CustomSlydoChannelCardState extends State<CustomSlydoChannelCard> {
                               "searchedUserName": widget.channelModel!.owner!
                             });
                       },
-                      child: Container(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Align(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                appendStringDot(
+                                    messageDecoderWithEmoji(
+                                            widget.channelModel!.groupName ??
+                                                "") ??
+                                        "",
+                                    widget.tileRenderPlace ==
+                                            TileRenderPlace.Thiny
+                                        ? 13
+                                        : 20),
+                                style: TextStyle(
+                                    fontSize: widget.tileRenderPlace ==
+                                            TileRenderPlace.Thiny
+                                        ? 12
+                                        : 16,
+                                    fontWeight: FontWeight.w700,
+                                    color: yarnBlack),
+                              )),
+                          Row(
+                            children: [
+                              Align(
                                 alignment: Alignment.centerLeft,
-                                child: Text(
-                                  appendStringDot(
-                                      messageDecoderWithEmoji(
-                                              widget.channelModel!.groupName ??
-                                                  "") ??
-                                          "",
-                                      widget.tileRenderPlace ==
-                                              TileRenderPlace.Thiny
-                                          ? 13
-                                          : 20),
-                                  style: TextStyle(
+                                child: userNameWithVerifiedIcon(
+                                    name: appendStringDot(
+                                        messageDecoderWithEmoji(
+                                                '@${widget.channelModel!.owner}') ??
+                                            "",
+                                        widget.tileRenderPlace ==
+                                                TileRenderPlace.Thiny
+                                            ? 13
+                                            : 20),
+                                    isVerified: false,
+                                    textStyle: TextStyle(
                                       fontSize: widget.tileRenderPlace ==
                                               TileRenderPlace.Thiny
-                                          ? 12
-                                          : 16,
-                                      fontWeight: FontWeight.w700,
-                                      color: yarnBlack),
-                                )),
-                            Row(
-                              children: [
-                                Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: userNameWithVerifiedIcon(
-                                      name: appendStringDot(
-                                          messageDecoderWithEmoji(
-                                                  '@${widget.channelModel!.owner}') ??
-                                              "",
-                                          widget.tileRenderPlace ==
-                                                  TileRenderPlace.Thiny
-                                              ? 13
-                                              : 20),
-                                      isVerified: false,
-                                      textStyle: TextStyle(
-                                        fontSize: widget.tileRenderPlace ==
-                                                TileRenderPlace.Thiny
-                                            ? 11
-                                            : 14,
-                                        color: HexColor("#151515"),
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                      verifiedIconColor: verifyGreen,
-                                      verifiedIconSize:
-                                          widget.tileRenderPlace ==
-                                                  TileRenderPlace.Thiny
-                                              ? 12
-                                              : 15),
-                                ),
-                                if (widget.channelModel?.isMember == false) ...[
-                                  const SizedBox(width: 20),
-                                  Text(
-                                    '${getFormattedViewCount(
-                                      noOfViews:
-                                          widget.channelModel!.noOfMembers!,
-                                      addViewText: false,
-                                    )} Member(s)',
-                                    maxLines: 1,
-                                    style: TextStyle(
-                                      color: black,
-                                      fontSize: 12,
+                                          ? 11
+                                          : 14,
+                                      color: HexColor("#151515"),
                                       fontWeight: FontWeight.w500,
                                     ),
-                                    overflow: TextOverflow.fade,
-                                    softWrap: false,
-                                  )
-                                ],
+                                    verifiedIconColor: verifyGreen,
+                                    verifiedIconSize: widget.tileRenderPlace ==
+                                            TileRenderPlace.Thiny
+                                        ? 12
+                                        : 15),
+                              ),
+                              if (widget.channelModel?.isMember == false) ...[
+                                const SizedBox(width: 20),
+                                Text(
+                                  '${getFormattedViewCount(
+                                    noOfViews:
+                                        widget.channelModel!.noOfMembers!,
+                                    addViewText: false,
+                                  )} Member(s)',
+                                  maxLines: 1,
+                                  style: TextStyle(
+                                    color: black,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                  overflow: TextOverflow.fade,
+                                  softWrap: false,
+                                )
                               ],
-                            ),
-                          ],
-                        ),
+                            ],
+                          ),
+                        ],
                       ),
                     ),
                     Container(

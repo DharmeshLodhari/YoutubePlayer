@@ -142,34 +142,31 @@ class _VerifyRegistrationOTPScreenState
                         flex: 6,
                         child: Form(
                           key: _verifyOtpFormKey,
-                          child: Container(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                verifyOTPTitle(),
-                                flexibleSpace(flex: 1),
-                                expirationNote(),
-                                flexibleSpace(flex: 3),
-                                if (phoneNumber == null ||
-                                    phoneNumber == "") ...[
-                                  selectCountryField(),
-                                  const SizedBox(height: 12),
-                                  phoneNumberField(),
-                                  const SizedBox(height: 12),
-                                ],
-                                otpFillUpField(),
-                                flexibleSpace(flex: 1),
-                                if (phoneNumber != null) ...[
-                                  Align(
-                                    alignment: Alignment.centerRight,
-                                    child: resendOtp(),
-                                  ),
-                                ],
-                                flexibleSpace(flex: 2),
-                                verifyBtn(),
-                                flexibleSpace(flex: 1),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              verifyOTPTitle(),
+                              flexibleSpace(flex: 1),
+                              expirationNote(),
+                              flexibleSpace(flex: 3),
+                              if (phoneNumber == null || phoneNumber == "") ...[
+                                selectCountryField(),
+                                const SizedBox(height: 12),
+                                phoneNumberField(),
+                                const SizedBox(height: 12),
                               ],
-                            ),
+                              otpFillUpField(),
+                              flexibleSpace(flex: 1),
+                              if (phoneNumber != null) ...[
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: resendOtp(),
+                                ),
+                              ],
+                              flexibleSpace(flex: 2),
+                              verifyBtn(),
+                              flexibleSpace(flex: 1),
+                            ],
                           ),
                         ),
                       ),

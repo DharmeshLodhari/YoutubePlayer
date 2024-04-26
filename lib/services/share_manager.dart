@@ -109,7 +109,9 @@ class ShareManager {
             openPopup();
           }
         }
-      } catch (e) {}
+      } catch (e) {
+        debugPrint("Error $e");
+      }
     });
   }
 

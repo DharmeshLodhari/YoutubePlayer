@@ -28,36 +28,36 @@ class ImageEmbedBuilder implements EmbedBuilder {
 
     var image;
     final imageUrl = standardizeImageUrl(node.value.data);
-    Tuple2<double?, double?>? _widthHeight;
+    Tuple2<double?, double?>? widthHeight;
     final style = node.style.attributes['style'];
     if (base.isMobile() && style != null) {
-      final _attrs = base.parseKeyValuePairs(style.value.toString(), {
+      final attrs = base.parseKeyValuePairs(style.value.toString(), {
         Attribute.mobileWidth,
         Attribute.mobileHeight,
         Attribute.mobileMargin,
         Attribute.mobileAlignment
       });
-      if (_attrs.isNotEmpty) {
+      if (attrs.isNotEmpty) {
         assert(
-            _attrs[Attribute.mobileWidth] != null &&
-                _attrs[Attribute.mobileHeight] != null,
+            attrs[Attribute.mobileWidth] != null &&
+                attrs[Attribute.mobileHeight] != null,
             'mobileWidth and mobileHeight must be specified');
-        final w = double.parse(_attrs[Attribute.mobileWidth]!);
-        final h = double.parse(_attrs[Attribute.mobileHeight]!);
-        _widthHeight = Tuple2(w, h);
-        final m = _attrs[Attribute.mobileMargin] == null
+        final w = double.parse(attrs[Attribute.mobileWidth]!);
+        final h = double.parse(attrs[Attribute.mobileHeight]!);
+        widthHeight = Tuple2(w, h);
+        final m = attrs[Attribute.mobileMargin] == null
             ? 0.0
-            : double.parse(_attrs[Attribute.mobileMargin]!);
-        final a = base.getAlignment(_attrs[Attribute.mobileAlignment]);
+            : double.parse(attrs[Attribute.mobileMargin]!);
+        final a = base.getAlignment(attrs[Attribute.mobileAlignment]);
         image = Padding(
             padding: EdgeInsets.all(m),
             child: imageByUrl(imageUrl, width: w, height: h, alignment: a));
       }
     }
 
-    if (_widthHeight == null) {
+    if (widthHeight == null) {
       image = imageByUrl(imageUrl);
-      _widthHeight = Tuple2((image as Image).width, image.height);
+      widthHeight = Tuple2((image as Image).width, image.height);
     }
 
     if (!readOnly && base.isMobile()) {
@@ -75,7 +75,7 @@ class ImageEmbedBuilder implements EmbedBuilder {
                       showCupertinoModalPopup<void>(
                           context: context,
                           builder: (context) {
-                            final _screenSize = MediaQuery.of(context).size;
+                            final screenSize = MediaQuery.of(context).size;
                             return ImageResizer(
                                 onImageResize: (w, h) {
                                   final res = getEmbedNode(
@@ -87,10 +87,10 @@ class ImageEmbedBuilder implements EmbedBuilder {
                                     ..formatText(
                                         res.item1, 1, StyleAttribute(attr));
                                 },
-                                imageWidth: _widthHeight?.item1,
-                                imageHeight: _widthHeight?.item2,
-                                maxWidth: _screenSize.width,
-                                maxHeight: _screenSize.height);
+                                imageWidth: widthHeight?.item1,
+                                imageHeight: widthHeight?.item2,
+                                maxWidth: screenSize.width,
+                                maxHeight: screenSize.height);
                           });
                     },
                   );

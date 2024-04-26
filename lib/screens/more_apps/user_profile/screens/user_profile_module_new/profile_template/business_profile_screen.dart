@@ -669,6 +669,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
     );
   }
 
+  @override
   Future<void> dispose() async {
     super.dispose();
     scrollController?.dispose();

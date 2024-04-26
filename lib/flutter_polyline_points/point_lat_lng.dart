@@ -1,14 +1,11 @@
-
-
 /// A pair of latitude and longitude coordinates, stored as degrees.
 class PointLatLng {
-
   /// Creates a geographical location specified in degrees [latitude] and
   /// [longitude].
   ///
   const PointLatLng(double latitude, double longitude)
-      : this.latitude = latitude,
-        this.longitude = longitude;
+      : latitude = latitude,
+        longitude = longitude;
 
   /// The latitude in degrees.
   final double latitude;

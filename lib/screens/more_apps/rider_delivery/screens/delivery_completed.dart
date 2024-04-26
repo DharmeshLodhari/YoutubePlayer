@@ -17,7 +17,7 @@ import 'package:provider/provider.dart';
 class DeliveryCompleted extends StatefulWidget {
   final dynamic arguments;
 
-  DeliveryCompleted({Key? key, this.arguments}) : super(key: key);
+  const DeliveryCompleted({Key? key, this.arguments}) : super(key: key);
 
   @override
   State<DeliveryCompleted> createState() => _DeliveryCompletedState();

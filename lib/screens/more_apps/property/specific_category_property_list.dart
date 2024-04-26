@@ -12,6 +12,8 @@ import 'property_dashboard_bloc.dart';
 import 'property_tile.dart';
 
 class SpecificCategoryPropertyList extends StatefulWidget {
+  const SpecificCategoryPropertyList({super.key});
+
   @override
   _SpecificCategoryPropertyListState createState() =>
       _SpecificCategoryPropertyListState();

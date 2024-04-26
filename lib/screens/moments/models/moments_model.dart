@@ -285,14 +285,14 @@ class SearchMomentModel extends Equatable {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['id'] = this.id;
-    data['owner'] = this.owner;
-    data['created_at'] = this.createdAt;
-    data['tags'] = this.tags;
-    data['media_type'] = this.mediaType;
-    data['avatar'] = this.avatar;
-    data['owner_name'] = this.ownerName;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['owner'] = owner;
+    data['created_at'] = createdAt;
+    data['tags'] = tags;
+    data['media_type'] = mediaType;
+    data['avatar'] = avatar;
+    data['owner_name'] = ownerName;
     return data;
   }
 }

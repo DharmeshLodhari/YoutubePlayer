@@ -100,37 +100,24 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
   @override
   void initState() {
     final String? defaultReferenceText =
-        widget.arguments['defaultReferenceText'] != null
-            ? widget.arguments['defaultReferenceText']
-            : null;
+        widget.arguments['defaultReferenceText'];
     _referenceController = TextEditingController(text: defaultReferenceText);
     reference = _referenceController.text;
 
     isFromProfile = widget.arguments != null
-        ? widget.arguments['isFromProfile'] != null
-            ? widget.arguments['isFromProfile']
-            : false
+        ? widget.arguments['isFromProfile'] ?? false
         : false;
     isFromChat = widget.arguments != null
-        ? widget.arguments['isFromChat'] != null
-            ? widget.arguments['isFromChat']
-            : false
+        ? widget.arguments['isFromChat'] ?? false
         : false;
     isFromYarn = widget.arguments != null
-        ? widget.arguments['isFromYarn'] != null
-            ? widget.arguments['isFromYarn']
-            : false
+        ? widget.arguments['isFromYarn'] ?? false
         : false;
     isFromMoment = widget.arguments != null
-        ? widget.arguments['isFromMoment'] != null
-            ? widget.arguments['isFromMoment']
-            : false
+        ? widget.arguments['isFromMoment'] ?? false
         : false;
-    conversationId = widget.arguments != null
-        ? widget.arguments['conversationId'] != null
-            ? widget.arguments['conversationId']
-            : null
-        : null;
+    conversationId =
+        widget.arguments != null ? widget.arguments['conversationId'] : null;
     product = widget.arguments != null ? widget.arguments['product'] : null;
     service = widget.arguments != null ? widget.arguments['service'] : null;
     itemIndex = widget.arguments != null ? widget.arguments['itemIndex'] : null;
@@ -269,7 +256,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
         enableMargin: true,
       );
     }
-    return Container(
+    return SizedBox(
       height: 10,
       width: 10,
     );
@@ -466,7 +453,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
         },
       );
     }
-    return Container(
+    return SizedBox(
       height: 1,
       width: 1,
     );
@@ -728,7 +715,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: Container(
+              content: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   elevation: 2,
@@ -906,7 +893,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
           content: Stack(
             clipBehavior: Clip.none,
             children: [
-              Container(
+              SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   elevation: 2,
@@ -1255,7 +1242,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
       try {
         basketBloc.removeItemFromCart(basketBloc.items[itemIndex!]);
       } catch (e) {
-        debugPrint("SendPayment PopFromShopping cart : " + e.toString());
+        debugPrint("SendPayment PopFromShopping cart : $e");
       }
     }
   }

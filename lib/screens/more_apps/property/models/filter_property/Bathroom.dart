@@ -18,12 +18,12 @@ class Bathroom {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['five_plus'] = this.fivePlus;
-    data['four'] = this.four;
-    data['one'] = this.one;
-    data['three'] = this.three;
-    data['two'] = this.two;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['five_plus'] = fivePlus;
+    data['four'] = four;
+    data['one'] = one;
+    data['three'] = three;
+    data['two'] = two;
     return data;
   }
 }

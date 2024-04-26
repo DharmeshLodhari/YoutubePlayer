@@ -8,7 +8,7 @@ import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 
 class FormVariantsTile extends StatelessWidget {
-  FormVariantsTile(
+  const FormVariantsTile(
       {required this.productVariantList,
       required this.index,
       super.key,

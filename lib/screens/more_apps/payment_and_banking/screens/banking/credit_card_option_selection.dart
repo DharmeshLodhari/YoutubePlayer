@@ -25,6 +25,7 @@ class _CreditCardOptionSelectionState extends State<CreditCardOptionSelection> {
     appConfigurationModel = getIt<AppConfigurationBloc>().appConfigurationModel;
   }
 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,

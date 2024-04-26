@@ -407,7 +407,7 @@ Future<T?> showPickItemDialog<T>({
       insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
       contentPadding: EdgeInsets.zero,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      content: Container(
+      content: SizedBox(
         width: MediaQuery.of(context).size.width - 40,
         child: Card(
           margin: EdgeInsets.zero,
@@ -484,7 +484,7 @@ void showSwipeHintCard({required BuildContext context}) {
     builder: (context) => Dialog(
       elevation: 0,
       insetPadding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Container(
+      child: SizedBox(
         width: MediaQuery.of(context).size.width,
         child: Image.asset(
           "assets/images/card_swipe_hint.png",
@@ -501,7 +501,7 @@ void showHoldHintCard({required BuildContext context}) {
     builder: (context) => Dialog(
       elevation: 0,
       insetPadding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Container(
+      child: SizedBox(
         width: MediaQuery.of(context).size.width,
         child: Image.asset(
           "assets/images/card_hold_hint.png",
@@ -578,7 +578,7 @@ Future<bool> showInAppLocationAlertPopUp(
       child: Dialog(
         elevation: 0,
         insetPadding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-        child: Container(
+        child: SizedBox(
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height,
           child: Container(

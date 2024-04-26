@@ -16,11 +16,11 @@ class Partner {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['name'] = this.name;
-    data['star'] = this.star;
-    data['user_avatar'] = this.userAvatar;
-    data['user_tag'] = this.userTag;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['name'] = name;
+    data['star'] = star;
+    data['user_avatar'] = userAvatar;
+    data['user_tag'] = userTag;
     return data;
   }
 }

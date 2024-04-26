@@ -14,10 +14,10 @@ class Picture {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['file'] = this.path;
-    data['id'] = this.id;
-    data['title'] = this.title;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['file'] = path;
+    data['id'] = id;
+    data['title'] = title;
     return data;
   }
 }

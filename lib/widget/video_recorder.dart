@@ -161,10 +161,8 @@ class _VideoRecorderState extends State<VideoRecorder> {
           }
           return Stack(
             children: <Widget>[
-              Container(
-                child: Center(
-                  child: _cameraPreviewWidget(),
-                ),
+              Center(
+                child: _cameraPreviewWidget(),
               ),
               Container(
                 height: MediaQuery.of(context).size.height,

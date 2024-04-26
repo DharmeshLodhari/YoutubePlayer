@@ -14,7 +14,7 @@ class PayoutTile extends StatelessWidget {
   final Payout? payout;
   final Key? key;
 
-  PayoutTile({this.payout, this.key}) : super(key: key);
+  const PayoutTile({this.payout, this.key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

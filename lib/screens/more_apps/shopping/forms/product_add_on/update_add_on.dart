@@ -353,23 +353,21 @@ class _UpdateAddOnState extends State<UpdateAddOn> {
           if (mounted) setState(() {});
         }
       },
-      child: Container(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Add Options',
-              maxLines: 1,
-              style: TextStyle(
-                  color: navyBlue, fontWeight: FontWeight.w600, fontSize: 14),
-            ),
-            Icon(
-              SlydoAppIcon.add,
-              size: 16,
-              color: blackFont,
-            ),
-          ],
-        ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            'Add Options',
+            maxLines: 1,
+            style: TextStyle(
+                color: navyBlue, fontWeight: FontWeight.w600, fontSize: 14),
+          ),
+          Icon(
+            SlydoAppIcon.add,
+            size: 16,
+            color: blackFont,
+          ),
+        ],
       ),
     );
   }

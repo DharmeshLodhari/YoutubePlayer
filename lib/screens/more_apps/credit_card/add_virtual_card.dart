@@ -17,7 +17,7 @@ class AddVirtualCard extends StatefulWidget {
   const AddVirtualCard({Key? key}) : super(key: key);
 
   @override
-  _AddVirtualCardState createState() => _AddVirtualCardState();
+  State<AddVirtualCard> createState() => _AddVirtualCardState();
 }
 
 class _AddVirtualCardState extends State<AddVirtualCard> {

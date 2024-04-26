@@ -25,8 +25,10 @@ final List<dynamic> services = [
 ];
 
 class ExploreList extends StatefulWidget {
+  const ExploreList({super.key});
+
   @override
-  _ExploreListState createState() => _ExploreListState();
+  State<ExploreList> createState() => _ExploreListState();
 }
 
 class _ExploreListState extends State<ExploreList> {
@@ -203,7 +205,7 @@ class _ExploreListState extends State<ExploreList> {
         });
       }
     }
-    if (isSearchBoxOpen && searchController!.text.length == 0) {
+    if (isSearchBoxOpen && searchController!.text.isEmpty) {
       if (mounted) {
         setState(() {
           isSearchBoxOpen = false;

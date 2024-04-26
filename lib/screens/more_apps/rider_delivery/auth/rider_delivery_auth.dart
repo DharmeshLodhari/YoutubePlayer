@@ -132,8 +132,8 @@ class RiderDeliveryAuthService extends AuthService {
     if (journeyId == null) {
       return false;
     }
-    final String url = AppConfig.baseUrl +
-        "/api/v1/shipping/journeys/$journeyId/accept-offer/";
+    final String url =
+        "${AppConfig.baseUrl}/api/v1/shipping/journeys/$journeyId/accept-offer/";
     final headers = await getAuthHeaders();
     final response = await httpPatch(url, headers: headers);
 
@@ -156,8 +156,8 @@ class RiderDeliveryAuthService extends AuthService {
     if (journeyId == null) {
       return false;
     }
-    final String url = AppConfig.baseUrl +
-        "/api/v1/shipping/journeys/$journeyId/reject-offer/";
+    final String url =
+        "${AppConfig.baseUrl}/api/v1/shipping/journeys/$journeyId/reject-offer/";
     final headers = await getAuthHeaders();
     final response = await httpPatch(url, headers: headers);
 
@@ -180,8 +180,8 @@ class RiderDeliveryAuthService extends AuthService {
     if (journeyId == null) {
       return false;
     }
-    final String url = AppConfig.baseUrl +
-        "/api/v1/shipping/journeys/$journeyId/start-journey/";
+    final String url =
+        "${AppConfig.baseUrl}/api/v1/shipping/journeys/$journeyId/start-journey/";
     final headers = await getAuthHeaders();
     final response = await httpPatch(url, headers: headers);
 
@@ -205,7 +205,7 @@ class RiderDeliveryAuthService extends AuthService {
       return false;
     }
     final String url =
-        AppConfig.baseUrl + "/api/v1/shipping/journeys/$journeyId/end-journey/";
+        "${AppConfig.baseUrl}/api/v1/shipping/journeys/$journeyId/end-journey/";
     final headers = await getAuthHeaders();
     final response = await httpPatch(url, headers: headers);
 
@@ -228,8 +228,8 @@ class RiderDeliveryAuthService extends AuthService {
     if (journeyId == null) {
       return false;
     }
-    final String url = AppConfig.baseUrl +
-        "/api/v1/shipping/journeys/$journeyId/cancel-offer/";
+    final String url =
+        "${AppConfig.baseUrl}/api/v1/shipping/journeys/$journeyId/cancel-offer/";
     final headers = await getAuthHeaders();
 
     //create multipart request for POST or PATCH method
@@ -260,8 +260,8 @@ class RiderDeliveryAuthService extends AuthService {
     if (journeyId == null) {
       return false;
     }
-    final String url = AppConfig.baseUrl +
-        "/api/v1/shipping/journeys/$journeyId/update-current-location/";
+    final String url =
+        "${AppConfig.baseUrl}/api/v1/shipping/journeys/$journeyId/update-current-location/";
     final headers = await getAuthHeaders();
 
     //create multipart request for POST or PATCH method
@@ -293,8 +293,8 @@ class RiderDeliveryAuthService extends AuthService {
     if (journeyId == null) {
       return false;
     }
-    final String url = AppConfig.baseUrl +
-        "/api/v1/shipping/journeys/$journeyId/update-journey-route/";
+    final String url =
+        "${AppConfig.baseUrl}/api/v1/shipping/journeys/$journeyId/update-journey-route/";
     final headers = await getAuthHeaders();
 
     //create multipart request for POST or PATCH method
@@ -325,8 +325,8 @@ class RiderDeliveryAuthService extends AuthService {
     if (journeyId == null) {
       return false;
     }
-    final String url = AppConfig.baseUrl +
-        "/api/v1/shipping/journeys/$journeyId/send-delivery-evidence/";
+    final String url =
+        "${AppConfig.baseUrl}/api/v1/shipping/journeys/$journeyId/send-delivery-evidence/";
     final headers = await getAuthHeaders();
 
     //create multipart request for POST or PATCH method
@@ -421,8 +421,8 @@ class RiderDeliveryAuthService extends AuthService {
     if (orderId == null) {
       return false;
     }
-    final String url = AppConfig.baseUrl +
-        "/api/v1/order/$orderId/set-rider-in-pickup-location/";
+    final String url =
+        "${AppConfig.baseUrl}/api/v1/order/$orderId/set-rider-in-pickup-location/";
     final headers = await getAuthHeaders();
 
     try {
@@ -446,8 +446,8 @@ class RiderDeliveryAuthService extends AuthService {
     if (orderId == null) {
       return false;
     }
-    final String url = AppConfig.baseUrl +
-        "/api/v1/order/$orderId/set-rider-in-delivery-location/";
+    final String url =
+        "${AppConfig.baseUrl}/api/v1/order/$orderId/set-rider-in-delivery-location/";
     final headers = await getAuthHeaders();
 
     try {
@@ -472,7 +472,7 @@ class RiderDeliveryAuthService extends AuthService {
       return false;
     }
     final String url =
-        AppConfig.baseUrl + "/api/v1/order/$orderId/set-rider-picked-up-order/";
+        "${AppConfig.baseUrl}/api/v1/order/$orderId/set-rider-picked-up-order/";
     final headers = await getAuthHeaders();
 
     try {

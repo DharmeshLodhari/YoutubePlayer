@@ -133,7 +133,7 @@ class _ListCategoryProductState extends State<ListCategoryProduct> {
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  "Found ${productCount} ${widget.categoryName}",
+                  "Found $productCount ${widget.categoryName}",
                   style: TextStyle(
                     fontWeight: FontWeight.w700,
                     fontSize: 18,

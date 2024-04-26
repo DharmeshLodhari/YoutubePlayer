@@ -182,7 +182,7 @@ class _CustomizedPassCodeScreenState extends State<CustomizedPassCodeScreen>
   }
 
   void _onDeleteCancelButtonPressed() {
-    if (enteredPasscode.length > 0) {
+    if (enteredPasscode.isNotEmpty) {
       setState(() {
         enteredPasscode =
             enteredPasscode.substring(0, enteredPasscode.length - 1);
@@ -242,14 +242,11 @@ class _CustomizedPassCodeScreenState extends State<CustomizedPassCodeScreen>
   }
 
   Widget _buildDeleteButton() {
-    return Container(
-      child: CupertinoButton(
-        onPressed: _onDeleteCancelButtonPressed,
-        child: Container(
-          child: enteredPasscode.length == 0
-              ? widget.cancelButton
-              : widget.deleteButton,
-        ),
+    return CupertinoButton(
+      onPressed: _onDeleteCancelButtonPressed,
+      child: Container(
+        child:
+            enteredPasscode.isEmpty ? widget.cancelButton : widget.deleteButton,
       ),
     );
   }

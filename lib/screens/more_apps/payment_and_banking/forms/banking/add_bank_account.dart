@@ -24,8 +24,10 @@ import '../../models/transactions.dart';
 import '../../payment_and_banking_auth.dart';
 
 class AddAccount extends StatefulWidget {
+  const AddAccount({super.key});
+
   @override
-  _AddAccountState createState() => _AddAccountState();
+  State<AddAccount> createState() => _AddAccountState();
 }
 
 class _AddAccountState extends State<AddAccount> {
@@ -410,12 +412,12 @@ class _AddAccountState extends State<AddAccount> {
     }
 
     if (result['status'] == 201) {
-      BankAccount? _bankAccount;
+      BankAccount? bankAccount;
       await _auth.getBankAccounts().then((accounts) {
         try {
-          _bankAccount = accounts[0];
-          if (_bankAccount != null) {
-            bankAccountBloc.bankAccount = _bankAccount;
+          bankAccount = accounts[0];
+          if (bankAccount != null) {
+            bankAccountBloc.bankAccount = bankAccount;
           }
         } catch (e) {
           isLoading = false;
@@ -838,7 +840,7 @@ class _AddAccountState extends State<AddAccount> {
                     },
                     child: Column(
                       children: [
-                        if (bankList.length >= 1) ...[
+                        if (bankList.isNotEmpty) ...[
                           bankCardDisplay(bankList[index]),
                         ] else ...[
                           // print('The array does not have a second element.');
@@ -872,8 +874,9 @@ class _AddAccountState extends State<AddAccount> {
       if (next != null && !isItemLoading) {
         isItemLoading = true;
 
-        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+        if (bottomSheetStateSetterGlobal != null && bottomSheetMounted) {
           bottomSheetStateSetterGlobal!(() {});
+        }
         if (mounted) setState(() {});
 
         final Map<String, dynamic>? result =
@@ -888,8 +891,9 @@ class _AddAccountState extends State<AddAccount> {
         final List tempList = result['results'];
 
         isItemLoading = false;
-        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+        if (bottomSheetStateSetterGlobal != null && bottomSheetMounted) {
           bottomSheetStateSetterGlobal!(() {});
+        }
         bankList.clear();
         if (mounted) setState(() {});
 
@@ -897,14 +901,16 @@ class _AddAccountState extends State<AddAccount> {
           bankList.add(BankModel.fromJson(item));
         });
 
-        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+        if (bottomSheetStateSetterGlobal != null && bottomSheetMounted) {
           bottomSheetStateSetterGlobal!(() {});
+        }
         if (mounted) setState(() {});
       }
       if (bankList.isEmpty) {
         noSearchedItem = true;
-        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted) {
           bottomSheetStateSetterGlobal!(() {});
+        }
         if (mounted) setState(() {});
       }
     }

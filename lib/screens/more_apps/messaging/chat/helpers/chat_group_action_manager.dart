@@ -310,11 +310,13 @@ class ChatGroupActionManager {
       if (chatConversation.participants.contains(user)) {
         chatConversation.participants.remove(user);
 
-        if (chatConversation.mutedParticipants.contains(user))
+        if (chatConversation.mutedParticipants.contains(user)) {
           chatConversation.mutedParticipants.remove(user);
+        }
 
-        if (chatConversation.blockedParticipants.contains(user))
+        if (chatConversation.blockedParticipants.contains(user)) {
           chatConversation.blockedParticipants.remove(user);
+        }
 
         connectionListBloc.updateChatConversation(
             chatConversation: chatConversation);
@@ -613,11 +615,13 @@ class ChatGroupActionManagerForLiveConversation {
       if (chatConversationToUpdate!.participants.contains(user)) {
         chatConversationToUpdate!.participants.remove(user);
 
-        if (chatConversationToUpdate!.mutedParticipants.contains(user))
+        if (chatConversationToUpdate!.mutedParticipants.contains(user)) {
           chatConversationToUpdate!.mutedParticipants.remove(user);
+        }
 
-        if (chatConversationToUpdate!.blockedParticipants.contains(user))
+        if (chatConversationToUpdate!.blockedParticipants.contains(user)) {
           chatConversationToUpdate!.blockedParticipants.remove(user);
+        }
         return chatConversationToUpdate;
       }
     }
@@ -634,11 +638,13 @@ class ChatGroupActionManagerForLiveConversation {
       if (participant != null) {
         groupDetailModelToUpdate!.participants.remove(participant);
 
-        if (groupDetailModelToUpdate!.mutedParticipants.contains(user))
+        if (groupDetailModelToUpdate!.mutedParticipants.contains(user)) {
           groupDetailModelToUpdate!.mutedParticipants.remove(user);
+        }
 
-        if (groupDetailModelToUpdate!.blockedParticipants.contains(user))
+        if (groupDetailModelToUpdate!.blockedParticipants.contains(user)) {
           groupDetailModelToUpdate!.blockedParticipants.remove(user);
+        }
 
         return groupDetailModelToUpdate;
       }
@@ -656,11 +662,13 @@ class ChatGroupActionManagerForLiveConversation {
       if (chatConversationToUpdate!.participants.contains(user)) {
         chatConversationToUpdate!.participants.remove(user);
 
-        if (chatConversationToUpdate!.mutedParticipants.contains(user))
+        if (chatConversationToUpdate!.mutedParticipants.contains(user)) {
           chatConversationToUpdate!.mutedParticipants.remove(user);
+        }
 
-        if (chatConversationToUpdate!.blockedParticipants.contains(user))
+        if (chatConversationToUpdate!.blockedParticipants.contains(user)) {
           chatConversationToUpdate!.blockedParticipants.remove(user);
+        }
         return chatConversationToUpdate;
       }
     }
@@ -677,11 +685,13 @@ class ChatGroupActionManagerForLiveConversation {
       if (participant != null) {
         groupDetailModelToUpdate!.participants.remove(participant);
 
-        if (groupDetailModelToUpdate!.mutedParticipants.contains(user))
+        if (groupDetailModelToUpdate!.mutedParticipants.contains(user)) {
           groupDetailModelToUpdate!.mutedParticipants.remove(user);
+        }
 
-        if (groupDetailModelToUpdate!.blockedParticipants.contains(user))
+        if (groupDetailModelToUpdate!.blockedParticipants.contains(user)) {
           groupDetailModelToUpdate!.blockedParticipants.remove(user);
+        }
 
         return groupDetailModelToUpdate;
       }

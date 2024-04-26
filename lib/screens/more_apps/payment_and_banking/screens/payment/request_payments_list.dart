@@ -67,6 +67,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
   bool isFirstTime = true;
   late UserBloc userBloc;
 
+  @override
   @protected
   void initState() {
     // secureScreen();
@@ -912,9 +913,10 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
 }
 
 class VerticalListItem extends StatefulWidget {
-  VerticalListItem(this.paymentRequest, {this.key}) : super(key: key);
+  const VerticalListItem(this.paymentRequest, {this.key}) : super(key: key);
 
   final PaymentRequest paymentRequest;
+  @override
   final Key? key;
 
   @override
@@ -1059,8 +1061,8 @@ class _VerticalListItemState extends State<VerticalListItem> {
               }
               if (result) {
                 showToast(
-                    message: "${widget.paymentRequest.payee} " +
-                        AppLocalization.of(context)!.isBlocked);
+                    message:
+                        "${widget.paymentRequest.payee} ${AppLocalization.of(context)!.isBlocked}");
               } else {
                 showToast(message: AppLocalization.of(context)!.error);
               }

@@ -212,7 +212,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
         const SizedBox(width: 8.0),
         Expanded(
           child: Text(
-            "(" + country.name! + ")",
+            "(${country.name!})",
             overflow: TextOverflow.fade,
             softWrap: false,
             style: TextStyle(
@@ -316,7 +316,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
       }
 
       final String phoneNumber =
-          "+" + _selectedDialogCountry.phoneCode! + phoneNumberFromTextField;
+          "+${_selectedDialogCountry.phoneCode!}$phoneNumberFromTextField";
 
       UserAuth().passwordResetOtp(phoneNumber).then((value) {
         response = value;

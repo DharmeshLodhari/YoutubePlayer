@@ -175,7 +175,7 @@ class MomentsService extends AuthService {
 
     debugPrint('COMMENTS MOMENTS ::: ${response.statusCode}');
     debugPrint('COMMENTS MOMENTS ::: ${response.body}');
-    debugPrint('COMMENTS MOMENTS PINNED ::: ${pinnedYarn}');
+    debugPrint('COMMENTS MOMENTS PINNED ::: $pinnedYarn');
     if (response.statusCode == 200) {
       final jsonData = jsonDecode(response.body);
       List results = jsonData['results'];
@@ -440,7 +440,7 @@ class MomentsService extends AuthService {
 
       for (var item in results) {
         final YarnComment commentsDetail = YarnComment.fromJson(item);
-        debugPrint('Fola test getAllComments::: ${item}');
+        debugPrint('Fola test getAllComments::: $item');
 
         commentsDetails.add(commentsDetail);
       }
@@ -488,7 +488,7 @@ class MomentsService extends AuthService {
       String? channelUsername}) async {
     String url = "${AppConfig.baseUrl}/api/v1/social/moments/";
 
-    debugPrint("URL FOR CREATE MOMENT test ${channelUsername}");
+    debugPrint("URL FOR CREATE MOMENT test $channelUsername");
 
     if (channelUsername!.isNotEmpty) {
       url =
@@ -731,7 +731,7 @@ class MomentsService extends AuthService {
       debugPrint('RESULT LENGTH -> ${results.length}');
 
       for (var item in results) {
-        debugPrint('RESULT searched item moment:::: ${item}');
+        debugPrint('RESULT searched item moment:::: $item');
       }
 
       return BasePaginationModel<List<SearchMomentModel>>.fromJson(

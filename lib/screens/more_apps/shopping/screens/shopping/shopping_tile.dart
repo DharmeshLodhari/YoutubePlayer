@@ -234,7 +234,7 @@ class ShoppingTileWithHeartWithProduct extends StatefulWidget {
   const ShoppingTileWithHeartWithProduct({Key? key, this.product})
       : super(key: key);
   @override
-  _ShoppingTileWithHeartWithProductState createState() =>
+  State<ShoppingTileWithHeartWithProduct> createState() =>
       _ShoppingTileWithHeartWithProductState();
 }
 

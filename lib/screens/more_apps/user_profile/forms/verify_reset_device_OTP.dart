@@ -9,7 +9,7 @@ import 'package:pinput/pin_put/pin_put.dart';
 class VerifyResetDeviceOTPScreen extends StatefulWidget {
   final dynamic arguments;
 
-  VerifyResetDeviceOTPScreen({this.arguments});
+  const VerifyResetDeviceOTPScreen({super.key, this.arguments});
 
   @override
   _VerifyResetDeviceOTPScreenState createState() =>
@@ -72,20 +72,18 @@ class _VerifyResetDeviceOTPScreenState
                   flex: 6,
                   child: Form(
                     key: _verifyOtpFormKey,
-                    child: Container(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          verifyOTPTitle(),
-                          flexibleSpace(flex: 1),
-                          expirationNote(),
-                          flexibleSpace(flex: 3),
-                          otpFillUpField(),
-                          flexibleSpace(flex: 2),
-                          verifyBtn(),
-                          flexibleSpace(flex: 1),
-                        ],
-                      ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        verifyOTPTitle(),
+                        flexibleSpace(flex: 1),
+                        expirationNote(),
+                        flexibleSpace(flex: 3),
+                        otpFillUpField(),
+                        flexibleSpace(flex: 2),
+                        verifyBtn(),
+                        flexibleSpace(flex: 1),
+                      ],
                     ),
                   ),
                 ),

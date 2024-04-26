@@ -10,10 +10,10 @@ import 'package:printing/printing.dart';
 class PrintQRCode extends StatefulWidget {
   final dynamic arguments;
 
-  PrintQRCode({required this.arguments});
+  const PrintQRCode({super.key, required this.arguments});
 
   @override
-  _PrintQRCodeState createState() => _PrintQRCodeState();
+  State<PrintQRCode> createState() => _PrintQRCodeState();
 }
 
 class _PrintQRCodeState extends State<PrintQRCode> {

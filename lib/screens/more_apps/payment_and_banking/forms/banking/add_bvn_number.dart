@@ -22,7 +22,7 @@ import '../../../../../widget/customized_dropdown_field.dart';
 class AddBvnNumber extends StatefulWidget {
   final dynamic arguments;
 
-  AddBvnNumber({this.arguments});
+  const AddBvnNumber({super.key, this.arguments});
 
   @override
   _AddBvnNumberState createState() => _AddBvnNumberState();
@@ -231,7 +231,7 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: Container(
+              content: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   margin: EdgeInsets.zero,
@@ -668,7 +668,7 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: Container(
+              content: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   elevation: 2,

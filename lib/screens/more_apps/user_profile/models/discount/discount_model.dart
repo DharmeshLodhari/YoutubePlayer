@@ -44,7 +44,7 @@ class DiscountModel {
     isActive = json['is_active'] != null ? json['is_active'] as bool : true;
     value = json['value'];
     if (json['start_date'] != null) {
-      final List<int>? parse = json['start_date']
+      final List<int> parse = json['start_date']
           .toString()
           .split("-")
           .toList()
@@ -56,7 +56,7 @@ class DiscountModel {
     }
 
     if (json['end_date'] != null) {
-      final List<int>? parse = json['end_date']
+      final List<int> parse = json['end_date']
           .toString()
           .split("-")
           .toList()
@@ -68,19 +68,19 @@ class DiscountModel {
     }
 
     if (json['only_from'] != null) {
-      final List<int>? parse = json['only_from']
+      final List<int> parse = json['only_from']
           .toString()
           .split(":")
           .toList()
           .map((e) => int.parse(e))
           .toList();
-      if (parse != null) {
+      if (parse.isNotEmpty) {
         onlyFrom = DateTime(DateTime.now().year, DateTime.now().month,
             DateTime.now().day, parse[0], parse[1]);
       }
     }
     if (json['only_to'] != null) {
-      final List<int>? parse = json['only_to']
+      final List<int> parse = json['only_to']
           .toString()
           .split(":")
           .toList()
@@ -106,13 +106,13 @@ class DiscountModel {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['id'] = this.id;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
     map['type'] = type?.toValue();
-    data['name'] = this.name;
-    data['merchant'] = this.merchant;
-    data['is_active'] = this.isActive;
-    data['value'] = this.value;
+    data['name'] = name;
+    data['merchant'] = merchant;
+    data['is_active'] = isActive;
+    data['value'] = value;
     if (startDate != null) {
       map['start_date'] = startDate?.toString();
     }
@@ -129,13 +129,13 @@ class DiscountModel {
       map['created_at'] = createdAt?.toString();
     }
 
-    data['only_from'] = this.onlyFrom;
-    data['only_to'] = this.onlyTo;
-    data['created_at'] = this.createdAt;
-    if (this.consumables != null) {
-      data['consumables'] = this.consumables!.toJson();
+    data['only_from'] = onlyFrom;
+    data['only_to'] = onlyTo;
+    data['created_at'] = createdAt;
+    if (consumables != null) {
+      data['consumables'] = consumables!.toJson();
     }
-    data['poster'] = this.poster;
+    data['poster'] = poster;
     return data;
   }
 
@@ -186,7 +186,7 @@ class DiscountModel {
         onlyFrom: onlyFrom ?? this.onlyFrom,
         onlyTo: onlyTo ?? this.onlyTo,
         consumables: consumables ?? this.consumables,
-        poster: poster ?? this.poster);
+        poster: poster ?? poster);
   }
 
   void addProductsToDiscount(List<String?> products) {
@@ -226,6 +226,7 @@ class DiscountTagCategory {
     }
   }
 
+  @override
   String toString() {
     switch (_category) {
       case "Percentage %":
@@ -263,8 +264,8 @@ class Consumables {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['Product'] = this.product;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['Product'] = product;
     return data;
   }
 }

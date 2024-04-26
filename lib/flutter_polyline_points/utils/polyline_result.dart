@@ -1,4 +1,4 @@
-import 'package:Slydo/flutter_polyline_points/PointLatLng.dart';
+import 'package:Slydo/flutter_polyline_points/point_lat_lng.dart';
 
 /// description:
 /// project: flutter_polyline_points

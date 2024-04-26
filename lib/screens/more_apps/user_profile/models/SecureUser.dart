@@ -17,11 +17,11 @@ class SecureUser {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['password'] = this.password;
-    data['phoneNumber'] = this.phoneNumber;
-    data['company'] = this.company;
-    data['isStaffLogin'] = this.isStaffLogin;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['password'] = password;
+    data['phoneNumber'] = phoneNumber;
+    data['company'] = company;
+    data['isStaffLogin'] = isStaffLogin;
     return data;
   }
 }

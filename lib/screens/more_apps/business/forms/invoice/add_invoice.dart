@@ -672,25 +672,23 @@ class _AddInvoiceState extends State<AddInvoice> {
             },
             child: CustomizedDropDownField(
               title: "Due date",
-              child: Container(
-                child: ListTile(
-                  dense: true,
-                  title: Text(
-                    formatDateInDigit(dueDate),
-                    style: TextStyle(
-                      color: blackFont,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
-                    ),
-                    overflow: TextOverflow.fade,
-                    softWrap: false,
-                    maxLines: 1,
+              child: ListTile(
+                dense: true,
+                title: Text(
+                  formatDateInDigit(dueDate),
+                  style: TextStyle(
+                    color: blackFont,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
                   ),
-                  trailing: Icon(
-                    SlydoAppIcon.date,
-                    size: 16,
-                    color: darkGrey,
-                  ),
+                  overflow: TextOverflow.fade,
+                  softWrap: false,
+                  maxLines: 1,
+                ),
+                trailing: Icon(
+                  SlydoAppIcon.date,
+                  size: 16,
+                  color: darkGrey,
                 ),
               ),
             ),
@@ -907,12 +905,10 @@ class _AddInvoiceState extends State<AddInvoice> {
         "items": invoiceItem
       };
 
-      invoiceItem.forEach(
-        (item) {
+      for (var item in invoiceItem) {
           final int index = invoiceItem.indexOf(item);
           invoiceItem[index]!.amount = invoiceItem[index]!.amount! * 100;
-        },
-      );
+        }
       if (conversationId != null) {
         data['conversation_id'] = conversationId!;
       }

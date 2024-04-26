@@ -121,7 +121,7 @@ class _SuperBlogState extends State<SuperBlog> {
   void initState() {
     _pageViewCtrl = PageController(initialPage: 0);
 
-    this.getListOfBlogs();
+    getListOfBlogs();
     _postScrollController.addListener(() {
       if (_postScrollController.position.pixels ==
               _postScrollController.position.maxScrollExtent &&
@@ -531,7 +531,7 @@ class _SlydoBlogsListState extends State<SlydoBlogsList> {
 
   @override
   void initState() {
-    this.getListOfBlogs();
+    getListOfBlogs();
     _postScrollController.addListener(() {
       if (_postScrollController.position.pixels ==
               _postScrollController.position.maxScrollExtent &&

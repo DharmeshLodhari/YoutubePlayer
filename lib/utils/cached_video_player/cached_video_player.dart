@@ -388,7 +388,9 @@ class CachedVideoPlayerController
     _isDisposed = true;
     try {
       super.dispose();
-    } catch (error) {}
+    } catch (error) {
+      debugPrint("Error $error");
+    }
   }
 
   /// Starts playing the video.

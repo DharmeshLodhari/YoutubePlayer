@@ -12,9 +12,9 @@ class Looping {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['mp4'] = this.mp4;
-    data['mp4_size'] = this.mp4Size;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['mp4'] = mp4;
+    data['mp4_size'] = mp4Size;
     return data;
   }
 }

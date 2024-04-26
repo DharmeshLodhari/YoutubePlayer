@@ -245,9 +245,9 @@ class AddInvoiceBloc extends ChangeNotifier {
 
   void updateTotal() {
     int sum = 0;
-    _items.forEach((element) {
+    for (var element in _items) {
       sum += (element!.amount! * element.quantity!);
-    });
+    }
     _total = sum;
   }
 }
@@ -259,10 +259,10 @@ class ShareMessageToChatBloc extends ChangeNotifier {
     bool isAlreadyPresent = false;
 
     /// Check for user is already in the list
-    _recipientUsers.forEach((element) {
+    for (var element in _recipientUsers) {
       if (element!.userName == chatConversation!.userName)
         isAlreadyPresent = true;
-    });
+    }
 
     /// if user not present in the list then we add that user in recipient list
     if (!isAlreadyPresent) {
@@ -275,10 +275,10 @@ class ShareMessageToChatBloc extends ChangeNotifier {
   void printRecipient() {
     debugPrint("Sharing to ${_recipientUsers.length} Users");
 
-    _recipientUsers.forEach((element) {
+    for (var element in _recipientUsers) {
       debugPrint(
           "==> Username ${element!.userName} ConversationId:- ${element.conversationId}");
-    });
+    }
   }
 
   void removeRecipient({ChatConversation? customerProfile, String? username}) {

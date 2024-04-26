@@ -7,10 +7,10 @@ class YarnCategories {
   YarnCategories({this.id, this.name, this.color, this.image});
 
   YarnCategories.fromJson(object) {
-    this.id = object['id'];
-    this.name = object['name'];
-    this.color = object['color'];
-    this.image = object['image'];
+    id = object['id'];
+    name = object['name'];
+    color = object['color'];
+    image = object['image'];
   }
 
   Map toJson() => {
@@ -29,8 +29,8 @@ class UsersCategories {
   UsersCategories({this.id, this.owner, this.categories});
 
   UsersCategories.fromJson(object) {
-    this.id = object["id"];
-    this.owner = object["owner"];
+    id = object["id"];
+    owner = object["owner"];
     if (object["categories"] != null) {
       categories = [];
       object["categories"].forEach((v) {
@@ -53,8 +53,8 @@ class UserCategoriesStructure {
   UserCategoriesStructure({this.userId, this.userSelectedCategory});
 
   UserCategoriesStructure.fromJson(object) {
-    this.userId = object['user_id'];
-    this.userSelectedCategory = object['categories'];
+    userId = object['user_id'];
+    userSelectedCategory = object['categories'];
   }
 
   Map<String, dynamic> toJson() => {
@@ -80,11 +80,11 @@ class UserYarnSettings {
       this.categories});
 
   UserYarnSettings.fromJson(object) {
-    this.id = object["id"];
-    this.allowAdultContent = object['allow_adult_content'] ?? false;
-    this.allowSensitiveContent = object['allow_sensitive_content'] ?? false;
-    this.allowNotification = object['allow_notification'] ?? false;
-    this.owner = object["owner"];
-    this.categories = UsersCategories.fromJson(object);
+    id = object["id"];
+    allowAdultContent = object['allow_adult_content'] ?? false;
+    allowSensitiveContent = object['allow_sensitive_content'] ?? false;
+    allowNotification = object['allow_notification'] ?? false;
+    owner = object["owner"];
+    categories = UsersCategories.fromJson(object);
   }
 }

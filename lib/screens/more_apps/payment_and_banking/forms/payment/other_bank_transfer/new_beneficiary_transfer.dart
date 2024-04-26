@@ -37,7 +37,7 @@ class NewBeneficiaryTransfer extends StatefulWidget {
   final dynamic arguments;
   final Function(bool)? callback;
 
-  NewBeneficiaryTransfer({this.arguments, this.callback});
+  const NewBeneficiaryTransfer({super.key, this.arguments, this.callback});
 
   // Declare a field that holds the userData.
   @override
@@ -996,8 +996,9 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
       if (next != null && !isItemLoading) {
         isItemLoading = true;
 
-        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+        if (bottomSheetStateSetterGlobal != null && bottomSheetMounted) {
           bottomSheetStateSetterGlobal!(() {});
+        }
         if (mounted) setState(() {});
 
         final Map<String, dynamic>? result =
@@ -1012,8 +1013,9 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
         final List tempList = result['results'];
 
         isItemLoading = false;
-        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted) {
           bottomSheetStateSetterGlobal!(() {});
+        }
         bankList.clear();
         if (mounted) setState(() {});
 
@@ -1021,14 +1023,16 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
           bankList.add(BankModel.fromJson(item));
         });
 
-        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted) {
           bottomSheetStateSetterGlobal!(() {});
+        }
         if (mounted) setState(() {});
       }
       if (bankList.isEmpty) {
         noSearchedItem = true;
-        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted) {
           bottomSheetStateSetterGlobal!(() {});
+        }
         if (mounted) setState(() {});
       }
     }

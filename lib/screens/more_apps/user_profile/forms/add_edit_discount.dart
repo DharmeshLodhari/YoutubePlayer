@@ -527,22 +527,20 @@ class _AddEditDiscountState extends State<AddEditDiscount> {
       },
       child: CustomizedDropDownField(
         title: "Start Time",
-        child: Container(
-          child: ListTile(
-            dense: true,
-            title: Text(
-              startTimeFrom != null ? formatTime(startTimeFrom.toString()) : "",
-              style: TextStyle(
-                color: blackFont,
-                fontWeight: FontWeight.w600,
-                fontSize: 16,
-              ),
+        child: ListTile(
+          dense: true,
+          title: Text(
+            startTimeFrom != null ? formatTime(startTimeFrom.toString()) : "",
+            style: TextStyle(
+              color: blackFont,
+              fontWeight: FontWeight.w600,
+              fontSize: 16,
             ),
-            trailing: Icon(
-              SlydoAppIcon.clock,
-              size: 16,
-              color: darkGrey,
-            ),
+          ),
+          trailing: Icon(
+            SlydoAppIcon.clock,
+            size: 16,
+            color: darkGrey,
           ),
         ),
       ),

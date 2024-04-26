@@ -32,15 +32,15 @@ class _AddDocumentState extends State<AddDocument> {
   Widget build(BuildContext context) {
     _forms = [
       WillPopScope(
-        onWillPop: () => Future.sync(this.onWillPop),
+        onWillPop: () => Future.sync(onWillPop),
         child: formOne(),
       ),
       WillPopScope(
-        onWillPop: () => Future.sync(this.onWillPop),
+        onWillPop: () => Future.sync(onWillPop),
         child: formTwo(),
       ),
       WillPopScope(
-        onWillPop: () => Future.sync(this.onWillPop),
+        onWillPop: () => Future.sync(onWillPop),
         child: formThree(),
       ),
     ];

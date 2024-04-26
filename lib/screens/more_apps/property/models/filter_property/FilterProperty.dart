@@ -66,32 +66,32 @@ class FilterProperty {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['check_in_date'] = this.checkInDate;
-    data['check_out_date'] = this.checkOutDate;
-    data['is_for_buy'] = this.isForBuy;
-    data['is_furnished'] = this.isFurnished;
-    data['is_roommates_needed'] = this.isRoommatesNeeded;
-    data['max_price'] = this.maxPrice;
-    data['min_price'] = this.minPrice;
-    data['no_of_guest'] = this.noOfGuest;
-    if (this.amenity != null) {
-      data['amenity'] = this.amenity!.toJson();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['check_in_date'] = checkInDate;
+    data['check_out_date'] = checkOutDate;
+    data['is_for_buy'] = isForBuy;
+    data['is_furnished'] = isFurnished;
+    data['is_roommates_needed'] = isRoommatesNeeded;
+    data['max_price'] = maxPrice;
+    data['min_price'] = minPrice;
+    data['no_of_guest'] = noOfGuest;
+    if (amenity != null) {
+      data['amenity'] = amenity!.toJson();
     }
-    if (this.bathroom != null) {
-      data['bathroom'] = this.bathroom!.toJson();
+    if (bathroom != null) {
+      data['bathroom'] = bathroom!.toJson();
     }
-    if (this.bedroom != null) {
-      data['bedroom'] = this.bedroom!.toJson();
+    if (bedroom != null) {
+      data['bedroom'] = bedroom!.toJson();
     }
-    if (this.petPolicy != null) {
-      data['pet_policy'] = this.petPolicy!.toJson();
+    if (petPolicy != null) {
+      data['pet_policy'] = petPolicy!.toJson();
     }
-    if (this.propertyType != null) {
-      data['property_type'] = this.propertyType!.toJson();
+    if (propertyType != null) {
+      data['property_type'] = propertyType!.toJson();
     }
-    if (this.rentDuration != null) {
-      data['rent_duration'] = this.rentDuration!.toJson();
+    if (rentDuration != null) {
+      data['rent_duration'] = rentDuration!.toJson();
     }
     return data;
   }

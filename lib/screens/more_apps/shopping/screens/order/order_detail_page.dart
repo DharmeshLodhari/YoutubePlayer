@@ -295,7 +295,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
       ),
       centerTitle: false,
       title: Text(
-        "${"Ref # :" + (order?.id ?? "")}",
+        "${"Ref # :${order?.id ?? ""}"}",
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
@@ -850,7 +850,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
 
   String? getOrderNote() {
     if (order?.note == "") {
-      return AppLocalization.of(context)!.noSpecialNoteAttached + " !!";
+      return "${AppLocalization.of(context)!.noSpecialNoteAttached} !!";
     }
     return order?.note;
   }
@@ -1040,7 +1040,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Text(
-                  AppLocalization.of(context)!.subTotal + " : ",
+                  "${AppLocalization.of(context)!.subTotal} : ",
                   style: TextStyle(
                     fontSize: 14,
                     color: black,
@@ -1072,7 +1072,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Text(
-                  AppLocalization.of(context)!.shipping + " : ",
+                  "${AppLocalization.of(context)!.shipping} : ",
                   style: TextStyle(
                     fontSize: 14,
                     color: black,
@@ -1104,7 +1104,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Text(
-                  AppLocalization.of(context)!.tax + " : ",
+                  "${AppLocalization.of(context)!.tax} : ",
                   style: TextStyle(
                     fontSize: 14,
                     color: black,
@@ -1137,7 +1137,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Text(
-                  AppLocalization.of(context)!.total + " : ",
+                  "${AppLocalization.of(context)!.total} : ",
                   style: TextStyle(
                     fontSize: 14,
                     color: black,

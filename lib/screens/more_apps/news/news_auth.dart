@@ -1,5 +1,5 @@
-import 'package:Slydo/screens/more_apps/news/models/NewsDetailItem.dart';
 import 'package:Slydo/screens/more_apps/news/models/SubscriptionItem.dart';
+import 'package:Slydo/screens/more_apps/news/models/news_detail_item.dart';
 import 'package:Slydo/services/auth.dart';
 
 import 'models/NewsListItem.dart';

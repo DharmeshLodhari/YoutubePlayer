@@ -321,9 +321,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
     final allMerchants = basketBloc.merchantData;
 
-    allMerchants.forEach((element) {
+    for (var element in allMerchants) {
       merchantFullNames.add(element['name']!);
-    });
+    }
 
     final String? pickedMerchantName = await showPickItemDialog<String>(
       context: context,
@@ -366,12 +366,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             if (mounted) setState(() {});
 
             debugPrint('VALUE :: $value');
-            value.forEach((element) {
+            for (var element in value) {
               // String shippingOption = element.name;
               // int shippingOptionAmount = element.price;
               // String currencySymbol = worldCurrencies[element.currency] ?? '';
               shippingOptions.add(element);
-            });
+            }
           },
         ).catchError((error) {
           shippingOptionsLoading = false;

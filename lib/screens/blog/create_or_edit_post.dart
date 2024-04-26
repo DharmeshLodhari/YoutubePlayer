@@ -30,7 +30,7 @@ class CreateOrEditPostScreen extends StatefulWidget {
   final UserPost? userPost;
   final String? channel;
 
-  CreateOrEditPostScreen({Key? key, this.userPost, this.channel})
+  const CreateOrEditPostScreen({Key? key, this.userPost, this.channel})
       : super(key: key);
 
   @override
@@ -146,7 +146,9 @@ class _CreateOrEditPostScreenState extends State<CreateOrEditPostScreen> {
       _quillBodyTextController = flutterQuill.QuillController(
           document: flutterQuill.Document.fromJson(blogBodyTextJson),
           selection: const TextSelection.collapsed(offset: 0));
-    } catch (e) {}
+    } catch (e) {
+      debugPrint("Error $e");
+    }
   }
 
   @override
@@ -529,16 +531,16 @@ class _CreateOrEditPostScreenState extends State<CreateOrEditPostScreen> {
   }
 
   void createOrUpdateBlogPost() {
-    final List<String>? newUserTags =
+    final List<String> newUserTags =
         []; // For replacing the # in a tag with an empty string.
 
-    userTags.forEach((tag) {
+    for (var tag in userTags) {
       if (tag.startsWith('#')) {
-        newUserTags?.add(tag.replaceAll("#", ''));
+        newUserTags.add(tag.replaceAll("#", ''));
       } else {
-        newUserTags?.add(tag);
+        newUserTags.add(tag);
       }
-    });
+    }
 
     final userBloc = Provider.of<UserBloc>(context, listen: false);
     UserPostAuth()
@@ -608,8 +610,8 @@ class _CreateOrEditPostScreenState extends State<CreateOrEditPostScreen> {
         setState(() {
           _imagePath = croppedImage;
           isImagePicked = true;
-          debugPrint('Fola cropped:::: ${croppedImage}');
-          debugPrint('Fola cropped 000:::: ${_imagePath}');
+          debugPrint('Fola cropped:::: $croppedImage');
+          debugPrint('Fola cropped 000:::: $_imagePath');
         });
       }
     }
@@ -691,12 +693,12 @@ class _CreateOrEditPostScreenState extends State<CreateOrEditPostScreen> {
           child: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [
+              children: const [
                 // Icon(
                 //   Icons.add_circle,
                 //   size: 40,
                 // ),
-                const Text('Tap here to add blog post header image')
+                Text('Tap here to add blog post header image')
               ],
             ),
           ),

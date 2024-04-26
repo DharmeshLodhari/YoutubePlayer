@@ -3,7 +3,7 @@ import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 
 class FormAddOnTile extends StatelessWidget {
-  FormAddOnTile(
+  const FormAddOnTile(
       {required this.productAddOnsList, required this.index, super.key});
 
   final List<AddOns> productAddOnsList;

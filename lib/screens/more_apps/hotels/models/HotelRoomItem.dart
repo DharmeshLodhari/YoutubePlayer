@@ -29,15 +29,15 @@ class HotelRoomItem {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['address1'] = this.address1;
-    data['address2'] = this.address2;
-    data['currency'] = this.currency;
-    data['name'] = this.name;
-    data['price'] = this.price;
-    data['rating'] = this.rating;
-    if (this.images != null) {
-      data['images'] = this.images;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['address1'] = address1;
+    data['address2'] = address2;
+    data['currency'] = currency;
+    data['name'] = name;
+    data['price'] = price;
+    data['rating'] = rating;
+    if (images != null) {
+      data['images'] = images;
     }
     return data;
   }

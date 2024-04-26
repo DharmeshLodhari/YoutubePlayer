@@ -10,6 +10,8 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'music_tile.dart';
 
 class MyWishList extends StatefulWidget {
+  const MyWishList({super.key});
+
   @override
   _MyWishListState createState() => _MyWishListState();
 }

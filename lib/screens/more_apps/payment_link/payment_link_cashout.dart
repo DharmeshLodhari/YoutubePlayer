@@ -531,9 +531,9 @@ class _PaymentLinkCashOutState extends State<PaymentLinkCashOut> {
         bankList.clear();
         if (mounted) setState(() {});
 
-        tempList.forEach((item) {
+        for (var item in tempList) {
           bankList.add(BankModel.fromJson(item));
-        });
+        }
 
         if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted) {
           bottomSheetStateSetterGlobal!(() {});
@@ -890,38 +890,36 @@ class _PaymentLinkCashOutState extends State<PaymentLinkCashOut> {
     final BoxDecoration selectedDecoration = BoxDecoration(
         borderRadius: BorderRadius.circular(10),
         border: Border.all(color: navyBlue));
-    return Container(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(
-            AppLocalization.of(context)!.pincode,
-            style: TextStyle(
-                fontSize: 16, color: blackFont, fontWeight: FontWeight.w600),
-          ),
-          const SizedBox(
-            height: 6.0,
-          ),
-          PinPut(
-            eachFieldWidth: 45,
-            eachFieldHeight: 45,
-            obscureText: '•',
-            validator: (val) => val!.length < 4
-                ? AppLocalization.of(context)!.invalidPassword
-                : null,
-            fieldsCount: 6,
-            focusNode: _pinPutFocusNode,
-            controller: pinController,
-            submittedFieldDecoration: pinPutDecoration,
-            selectedFieldDecoration: selectedDecoration,
-            followingFieldDecoration: pinPutDecoration,
-            pinAnimationType: PinAnimationType.scale,
-            textInputAction: TextInputAction.done,
-            keyboardType: TextInputType.number,
-            textStyle: TextStyle(color: blackFont, fontSize: 35),
-          ),
-        ],
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          AppLocalization.of(context)!.pincode,
+          style: TextStyle(
+              fontSize: 16, color: blackFont, fontWeight: FontWeight.w600),
+        ),
+        const SizedBox(
+          height: 6.0,
+        ),
+        PinPut(
+          eachFieldWidth: 45,
+          eachFieldHeight: 45,
+          obscureText: '•',
+          validator: (val) => val!.length < 4
+              ? AppLocalization.of(context)!.invalidPassword
+              : null,
+          fieldsCount: 6,
+          focusNode: _pinPutFocusNode,
+          controller: pinController,
+          submittedFieldDecoration: pinPutDecoration,
+          selectedFieldDecoration: selectedDecoration,
+          followingFieldDecoration: pinPutDecoration,
+          pinAnimationType: PinAnimationType.scale,
+          textInputAction: TextInputAction.done,
+          keyboardType: TextInputType.number,
+          textStyle: TextStyle(color: blackFont, fontSize: 35),
+        ),
+      ],
     );
   }
 

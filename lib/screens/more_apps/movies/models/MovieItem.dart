@@ -32,15 +32,15 @@ class MovieItem {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['currency'] = this.currency;
-    data['genre'] = this.genre;
-    data['id'] = this.id;
-    data['name'] = this.name;
-    data['poster'] = this.poster;
-    data['price'] = this.price;
-    data['rating'] = this.rating;
-    data['year'] = this.year;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['currency'] = currency;
+    data['genre'] = genre;
+    data['id'] = id;
+    data['name'] = name;
+    data['poster'] = poster;
+    data['price'] = price;
+    data['rating'] = rating;
+    data['year'] = year;
     return data;
   }
 }

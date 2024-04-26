@@ -16,11 +16,11 @@ class DownsizedSmall {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['height'] = this.height;
-    data['mp4'] = this.mp4;
-    data['mp4_size'] = this.mp4Size;
-    data['width'] = this.width;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['height'] = height;
+    data['mp4'] = mp4;
+    data['mp4_size'] = mp4Size;
+    data['width'] = width;
     return data;
   }
 }

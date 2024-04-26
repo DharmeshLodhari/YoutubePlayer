@@ -29,7 +29,7 @@ import '../screens/subscriptions/subscription_model.dart';
 class SignUp extends StatefulWidget {
   final dynamic arguments;
 
-  SignUp({required this.arguments});
+  const SignUp({super.key, required this.arguments});
 
   @override
   _SignUpState createState() => _SignUpState(arguments: arguments);
@@ -456,41 +456,35 @@ class _SignUpState extends State<SignUp> {
   }
 
   Widget appIcon() {
-    return Container(
-      child: Image.asset(
-        "assets/images/app_logo_navyBlue.png",
-        height: MediaQuery.of(context).size.height / 16,
-        frameBuilder: imageFrameBuilder,
-      ),
+    return Image.asset(
+      "assets/images/app_logo_navyBlue.png",
+      height: MediaQuery.of(context).size.height / 16,
+      frameBuilder: imageFrameBuilder,
     );
   }
 
   Widget registerTitle() {
-    return Container(
-      child: Row(
-        children: <Widget>[
-          Text(
-            "Slydo ",
-            style: TextStyle(
-                fontSize: 22, fontWeight: FontWeight.w700, color: navyBlue),
-          ),
-          Text(
-            "Registration",
-            style: TextStyle(
-                fontSize: 22, fontWeight: FontWeight.w700, color: blackFont),
-          ),
-        ],
-      ),
+    return Row(
+      children: <Widget>[
+        Text(
+          "Slydo ",
+          style: TextStyle(
+              fontSize: 22, fontWeight: FontWeight.w700, color: navyBlue),
+        ),
+        Text(
+          "Registration",
+          style: TextStyle(
+              fontSize: 22, fontWeight: FontWeight.w700, color: blackFont),
+        ),
+      ],
     );
   }
 
   Widget nameInstructionNote() {
-    return Container(
-      child: Text(
-        "Please ensure the information below matches that which is on your government issued ID",
-        style: TextStyle(
-            fontSize: 12, color: blackFont, fontWeight: FontWeight.w600),
-      ),
+    return Text(
+      "Please ensure the information below matches that which is on your government issued ID",
+      style: TextStyle(
+          fontSize: 12, color: blackFont, fontWeight: FontWeight.w600),
     );
   }
 

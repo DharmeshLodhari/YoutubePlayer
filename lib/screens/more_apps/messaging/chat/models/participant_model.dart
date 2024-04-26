@@ -26,13 +26,13 @@ class Participant {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['avatar'] = this.avatar;
-    data['full_name'] = this.fullName;
-    data['type'] = this.type;
-    data['username'] = this.userName;
-    data['is_verified'] = this.isVerified;
-    data['nickname'] = this.nickName;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['avatar'] = avatar;
+    data['full_name'] = fullName;
+    data['type'] = type;
+    data['username'] = userName;
+    data['is_verified'] = isVerified;
+    data['nickname'] = nickName;
     return data;
   }
 }

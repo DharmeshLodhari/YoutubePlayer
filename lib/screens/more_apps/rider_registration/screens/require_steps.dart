@@ -257,7 +257,6 @@ class _RequireStepsState extends State<RequireSteps> {
         showToast(message: error.toString());
       });
     }
-    ;
   }
 
   Future<void> updateRiderKYC() async {
@@ -286,6 +285,5 @@ class _RequireStepsState extends State<RequireSteps> {
         showToast(message: error.toString());
       });
     }
-    ;
   }
 }

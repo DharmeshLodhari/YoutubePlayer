@@ -15,7 +15,8 @@ class VideoTileForChat extends StatelessWidget {
   final Map<String, dynamic>? message;
   final ChatConversation? chatConversation;
 
-  VideoTileForChat({required this.message, this.chatConversation});
+  const VideoTileForChat(
+      {super.key, required this.message, this.chatConversation});
 
   @override
   Widget build(BuildContext context) {
@@ -196,7 +197,7 @@ class VideoTileForChat extends StatelessWidget {
                               errorWidget: imageErrorWidget,
                             ),
                           ),
-                          Container(
+                          SizedBox(
                             height: MediaQuery.of(context).size.width / 3,
                             width: MediaQuery.of(context).size.width / 1.8,
                             // height: MediaQuery.of(context).size.width / 2.2,
@@ -226,7 +227,7 @@ class VideoTileForChat extends StatelessWidget {
               ),
             ),
             if (isSend)
-              Container(
+              SizedBox(
                 width: 20,
                 child: isSend
                     ? Center(

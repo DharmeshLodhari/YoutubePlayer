@@ -103,7 +103,9 @@ Future<List> fetchYarnData(String? searchedUserName, String isChannel) async {
         isType: false,
         userName: searchedUserName,
         isChannel: isChannel);
-  } catch (error) {}
+  } catch (error) {
+    debugPrint("Error $error");
+  }
   if (data != null) {
     // debugPrint('IS SHOW YARN ---> $data');
 
@@ -119,7 +121,9 @@ Future<List> fetchChannelData(String? searchedUserName) async {
   try {
     basePaginationModel = await MessageAuth()
         .getChannels(nextUrl: '', searchText: '', ownerName: searchedUserName);
-  } catch (error) {}
+  } catch (error) {
+    debugPrint("Error $error");
+  }
   if (basePaginationModel != null) {
     // debugPrint('IS SHOW CHANNELS ---> $basePaginationModel');
 
@@ -157,7 +161,9 @@ Future<List> fetchMomentData(
   try {
     momentsModel = await MomentsService().getMomentsWithOwnerName(
         ownerName: searchedUserName!, channelUsername: channelUsername);
-  } catch (error) {}
+  } catch (error) {
+    debugPrint("Error $error");
+  }
   if (momentsModel.isNotEmpty) {
     // debugPrint('IS SHOW MOMENTS ---> $momentsModel');
 
@@ -173,7 +179,9 @@ Future<List> fetchProductData(String? searchedUserName, bool? isChannel) async {
   try {
     data = await ShoppingAuthService()
         .listOfProduct("", "", "", isChannel, userName: searchedUserName);
-  } catch (error) {}
+  } catch (error) {
+    debugPrint("Error $error");
+  }
   if (data != null) {
     debugPrint('IS SHOW PRODUCT ---> $data');
     final List<dynamic> result = data["results"];
@@ -188,7 +196,9 @@ Future<List> fetchServiceData(String? searchedUserName) async {
   try {
     data = await ShoppingAuthService()
         .listServicesByProvider("", "", userName: searchedUserName);
-  } catch (error) {}
+  } catch (error) {
+    debugPrint("Error $error");
+  }
   if (data != null) {
     final List<dynamic> result = data["results"];
     if (result.isNotEmpty) return result;

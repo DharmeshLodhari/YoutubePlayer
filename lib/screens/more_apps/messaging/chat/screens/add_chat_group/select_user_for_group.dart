@@ -395,7 +395,7 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
 
         final List<CustomerProfile> users = [];
 
-        tempList.forEach((element) {
+        for (var element in tempList) {
           final CustomerProfile customerProfile =
               CustomerProfile.fromJson(element);
 
@@ -403,7 +403,7 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
               customerProfile.userName != "slydo") {
             users.add(customerProfile);
           }
-        });
+        }
 
         if (widget.arguments["create"] == "addMember") {
           for (int i = 0; i < users.length; i++) {

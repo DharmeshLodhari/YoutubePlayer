@@ -163,7 +163,7 @@ class _TransactionGraphState extends State<TransactionGraph> {
                             thickness: 1,
                           ),
                           if (isLoading)
-                            Container(
+                            SizedBox(
                               height: 240,
                               child: Center(
                                 child: CircularLoadingIndicator(),
@@ -297,7 +297,7 @@ class _TransactionGraphState extends State<TransactionGraph> {
               GestureDetector(
                 child: Row(
                   children: <Widget>[
-                    Container(
+                    SizedBox(
                       height: 10,
                       width: 10,
                       child: ClipOval(
@@ -324,7 +324,7 @@ class _TransactionGraphState extends State<TransactionGraph> {
               GestureDetector(
                 child: Row(
                   children: <Widget>[
-                    Container(
+                    SizedBox(
                       height: 10,
                       width: 10,
                       child: ClipOval(

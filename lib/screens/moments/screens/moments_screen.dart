@@ -623,7 +623,7 @@ class ContactMomentsCard extends StatefulWidget {
   final MomentsModel userMomentModel;
   final List<String> listOfConnectionsNames;
 
-  ContactMomentsCard({
+  const ContactMomentsCard({
     Key? key,
     required this.index,
     required this.nextPageUrl,
@@ -777,7 +777,7 @@ class ExploreMomentsCard extends StatefulWidget {
   final bool showProfileAvatar;
   final List<ExploreMomentsModel> exploreMomentsModelList;
 
-  ExploreMomentsCard(
+  const ExploreMomentsCard(
       {Key? key,
       this.onTap,
       this.showProfileAvatar =
@@ -816,7 +816,7 @@ class _ExploreMomentsCardState extends State<ExploreMomentsCard> {
             momentsModel: e));
       }
       log('message...first${widget.exploreMomentsModelList[widget.index].moments!.length}');
-      log('message...second${e}');
+      log('message...second$e');
     }).toList();
     super.initState();
   }

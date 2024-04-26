@@ -16,7 +16,7 @@ import 'music_tile.dart';
 class MyMusicList extends StatefulWidget {
   MusicPlayer? musicPlayer;
 
-  MyMusicList({this.musicPlayer});
+  MyMusicList({super.key, this.musicPlayer});
 
   @override
   _MyMusicListState createState() => _MyMusicListState();
