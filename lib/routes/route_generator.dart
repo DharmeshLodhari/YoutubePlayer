@@ -71,6 +71,7 @@ import 'package:Slydo/screens/more_apps/payment_and_banking/screens/payment/requ
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/payment/transaction_detail_page.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/payment/transaction_graph.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/payment/transactions_list.dart';
+import 'package:Slydo/screens/more_apps/payment_link/payment_link.dart';
 import 'package:Slydo/screens/more_apps/property/forms/add_property.dart';
 import 'package:Slydo/screens/more_apps/property/forms/edit_property.dart';
 import 'package:Slydo/screens/more_apps/property/property_dashboard.dart';
@@ -400,6 +401,13 @@ class RouteGenerator {
             callback: args['callback'],
             arguments: settings.arguments,
           ),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+      case Routes.PAYMENT_LINK:
+        return PageTransition(
+          child: PaymentLink(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,

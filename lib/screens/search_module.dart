@@ -336,6 +336,7 @@ class _SearchModuleState extends State<SearchModule> {
                 }
               } else if (value.length == 0) {
                 setState(() {
+                  results.clear();
                   autoCompleteSearchText = value;
                   isSuggestion = true;
                 });
@@ -388,9 +389,11 @@ class _SearchModuleState extends State<SearchModule> {
                 noItemInList = false;
                 isLoading = false;
 
-                setState(() {});
-                getSearchUserList();
-                FocusScope.of(context).unfocus();
+                if (val.length >= 3) {
+                  setState(() {});
+                  getSearchUserList();
+                  FocusScope.of(context).unfocus();
+                }
               }
             },
           ),

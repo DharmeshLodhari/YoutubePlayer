@@ -75,6 +75,7 @@ class Routes {
   static const String CREDIT_CARD_LIST = "/credit-card-list";
   static const String CREDIT_CARD_OPTION_SELECTION =
       "/credit-card-option-selection";
+  static const String PAYMENT_LINK = "/payment-link";
   static const String ENTER_PIN = "/enter-pin";
   static const String UPGRADE_ACCOUNT = "/upgrade-account";
   static const String ADD_MONEY_TO_SLYDO_ONE = "/add-money-to-slydo-one";
