@@ -42,6 +42,7 @@ class _AddServiceState extends State<AddService> {
   String serviceCategory = "";
   String serviceCondition = "";
   String servicePrice = "";
+  String searchKeyword = "";
   bool serviceIsAvailable = false;
   DateTime serviceAvailableFrom = DateTime.now();
   List<ServiceCategory>? serviceCategories;
@@ -157,6 +158,8 @@ class _AddServiceState extends State<AddService> {
                       getServiceShortDescription(),
                       SizedBox(height: 10),
                       getServiceDescription(),
+                      SizedBox(height: 10),
+                      getSearchEngineKeyword(),
                       SizedBox(height: 40),
                       getSubmitButton(),
                       SizedBox(height: 40),
@@ -351,6 +354,28 @@ class _AddServiceState extends State<AddService> {
       onChanged: (val) {
         serviceShortDescription = val;
       },
+    );
+  }
+
+  Widget getSearchEngineKeyword() {
+    return Column(
+      children: [
+        CustomizedTextFormField(
+          labelText: "Search Keyword - SEO (Optional)",
+          onChanged: (val) {
+            searchKeyword = val;
+          },
+        ),
+        Text(
+          'These words will help customer see your service online when they search it.',
+          style: TextStyle(
+            color: darkGrey,
+            fontSize: 12,
+            fontWeight: FontWeight.w400,
+            fontFamily: "Inter",
+          ),
+        )
+      ],
     );
   }
 
@@ -638,6 +663,7 @@ class _AddServiceState extends State<AddService> {
           service.price = moneyInputNormalizer(servicePrice).toString();
           service.availableFrom = serviceAvailableFrom;
           service.isAvailable = serviceIsAvailable;
+          service.searchKeyword = searchKeyword;
 
           await _auth.addService(service).then((value) {
             Navigator.pop(context);

@@ -212,6 +212,7 @@ class MainSocketProvider extends ChangeNotifier {
 
   /// for connecting the user socket
   Future<void> connect() async {
+    return Future.value();
     _isConnected = false;
 
     /// change socket url according to recipient user url

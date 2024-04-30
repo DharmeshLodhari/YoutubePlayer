@@ -293,6 +293,7 @@ class Product extends PurchasableItem {
   int? oldPrice;
   bool? isShippable;
   String? addressId;
+  String? searchKeyword;
 
   // DateTime? createdAt;
   // bool? enableInSuperstore;
@@ -368,6 +369,7 @@ class Product extends PurchasableItem {
     this.isShippable,
     this.addressId,
     this.itemAddedBy,
+    this.searchKeyword,
     // this.itemUpdatedBy,
     // this.qty,
   });
@@ -412,6 +414,7 @@ class Product extends PurchasableItem {
       'is_shippable': isShippable,
       'address_id': addressId,
       'added_by': itemAddedBy,
+      'search_keyword': searchKeyword,
       // 'item_updated_by': itemUpdatedBy,
       // 'qty': qty,
     };
@@ -465,6 +468,7 @@ class Product extends PurchasableItem {
       'is_shippable': isShippable,
       'address_id': addressId,
       "added_by": itemAddedBy?.map((v) => v.toJson()).toList(),
+      "search_keyword": searchKeyword,
       // "item_updated_by": itemUpdatedBy?.toJson(),
       // 'qty': qty,
     };
@@ -717,6 +721,7 @@ class Product extends PurchasableItem {
       isShippable: this.isShippable,
       addressId: this.addressId,
       itemAddedBy: this.itemAddedBy,
+      searchKeyword: this.searchKeyword,
       // itemUpdatedBy: this.itemUpdatedBy,
       // qty: qty ?? this.qty,
     );
@@ -1630,27 +1635,30 @@ class Service extends PurchasableItem {
   List<dynamic>? pictureMap;
   double? rating;
   bool? canRate = false;
+  String? searchKeyword;
 
-  Service(
-      {super.id,
-      this.name,
-      this.description,
-      this.shortDescription,
-      this.price,
-      this.localImages,
-      this.serverImages,
-      this.cover = "",
-      this.provider,
-      this.providerAvatar,
-      this.providerFullName,
-      this.qrCode,
-      this.category,
-      this.isAvailable,
-      this.availableFrom,
-      this.currency,
-      this.pictureMap,
-      this.rating = 0.0,
-      this.canRate});
+  Service({
+    super.id,
+    this.name,
+    this.description,
+    this.shortDescription,
+    this.price,
+    this.localImages,
+    this.serverImages,
+    this.cover = "",
+    this.provider,
+    this.providerAvatar,
+    this.providerFullName,
+    this.qrCode,
+    this.category,
+    this.isAvailable,
+    this.availableFrom,
+    this.currency,
+    this.pictureMap,
+    this.rating = 0.0,
+    this.canRate,
+    this.searchKeyword,
+  });
 
   String? getMerchantUserName() {
     return provider;
@@ -1700,7 +1708,8 @@ class Service extends PurchasableItem {
       "is_available": isAvailable,
       "available_from": availableFrom,
       "provider_avatar": providerAvatar,
-      "provider_fullname": providerFullName
+      "provider_fullname": providerFullName,
+      "search_keyword": searchKeyword,
     };
   }
 
@@ -1720,7 +1729,8 @@ class Service extends PurchasableItem {
       "currency": currency,
       'rating': rating,
       "provider_avatar": providerAvatar,
-      "provider_fullname": providerFullName
+      "provider_fullname": providerFullName,
+      "search_keyword": searchKeyword,
     };
   }
 
@@ -1744,6 +1754,7 @@ class Service extends PurchasableItem {
     pictureMap = object["pictureMap"] ?? [];
     rating = formatRating(double.parse(object['rating']?.toString() ?? "0"));
     canRate = object["can_rate"] ?? false;
+    searchKeyword = object["search_keyword"] ?? "";
   }
 
   List<String> getServiceImages(List? data) {

@@ -120,45 +120,47 @@ class _MomentsTabState extends State<MomentsTab> {
         onRefresh: _onRefresh,
         child: Column(
           children: [
-            myMomentsList.isEmpty
-                ? Expanded(
-                    child: NoItemInList(
-                      msg: AppLocalization.of(context)!.noMoments,
-                    ),
-                  )
-                : Expanded(
-                    child: ListView(
-                      controller: _myMomentsScrollController,
-                      children: [
-                        const SizedBox(height: 16),
-                        isMyMomentsLoading
-                            ? Shimmer.fromColors(
-                                baseColor: Colors.white,
-                                highlightColor: greyBorderColor,
-                                child: GridView.builder(
-                                  shrinkWrap: true,
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  gridDelegate:
-                                      const SliverGridDelegateWithMaxCrossAxisExtent(
-                                    maxCrossAxisExtent: 200,
-                                    mainAxisExtent: 300,
-                                  ),
-                                  itemCount: 2,
-                                  itemBuilder: (context, index) {
-                                    return Card(
-                                      color: Colors.grey,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(6),
-                                      ),
-                                    );
-                                  },
-                                ),
-                              )
-                            : const SizedBox.shrink(),
-                        myMomentsListWidget(),
-                      ],
-                    ),
-                  ),
+            if (myMomentsList.isEmpty)
+              Expanded(
+                child: NoItemInList(
+                  msg: AppLocalization.of(context)!.noMoments,
+                ),
+              )
+            else
+              Expanded(
+                child: ListView(
+                  controller: _myMomentsScrollController,
+                  children: [
+                    const SizedBox(height: 16),
+                    if (isMyMomentsLoading)
+                      Shimmer.fromColors(
+                        baseColor: Colors.white,
+                        highlightColor: greyBorderColor,
+                        child: GridView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          gridDelegate:
+                              const SliverGridDelegateWithMaxCrossAxisExtent(
+                            maxCrossAxisExtent: 200,
+                            mainAxisExtent: 300,
+                          ),
+                          itemCount: 2,
+                          itemBuilder: (context, index) {
+                            return Card(
+                              color: Colors.grey,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                            );
+                          },
+                        ),
+                      )
+                    else
+                      const SizedBox.shrink(),
+                    myMomentsListWidget(),
+                  ],
+                ),
+              ),
           ],
         ),
       ),
@@ -171,59 +173,60 @@ class _MomentsTabState extends State<MomentsTab> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        myMomentsNext == "" && isMyMomentsLoading
-            ? const SizedBox.shrink()
-            : GridView.builder(
-                shrinkWrap: true,
-                padding: EdgeInsets.zero,
-                physics: const NeverScrollableScrollPhysics(),
-                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                  mainAxisExtent: 300,
-                  maxCrossAxisExtent: 200,
-                ),
-                itemCount: myMomentsList.length,
-                itemBuilder: (context, index) {
-                  return ExploreMomentsCard(
-                    index: index,
-                    showProfileAvatar: false,
-                    onTap: () {
-                      if (momentClicked == true) return;
-                      momentClicked = true;
-                      if (mounted) setState(() {});
-                      MomentsService()
-                          .getSingleMoment(momentId: myMomentsList[index].id!)
-                          .then((momentsModelList) {
-                        momentClicked = false;
-                        if (mounted) setState(() {});
+        if (myMomentsNext == "" && isMyMomentsLoading)
+          const SizedBox.shrink()
+        else
+          GridView.builder(
+            shrinkWrap: true,
+            padding: EdgeInsets.zero,
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+              mainAxisExtent: 300,
+              maxCrossAxisExtent: 200,
+            ),
+            itemCount: myMomentsList.length,
+            itemBuilder: (context, index) {
+              return ExploreMomentsCard(
+                index: index,
+                showProfileAvatar: false,
+                onTap: () {
+                  if (momentClicked == true) return;
+                  momentClicked = true;
+                  if (mounted) setState(() {});
+                  MomentsService()
+                      .getSingleMoment(momentId: myMomentsList[index].id!)
+                      .then((momentsModelList) {
+                    momentClicked = false;
+                    if (mounted) setState(() {});
 
-                        NavigationUtil.push(
-                          context,
-                          screen: MomentsDetailsScreen(
-                            indexOfMoment: 0,
-                            // Wrapping it around a List ([]) because the moment detail screen requires a List<List<MomentModel>>
-                            momentsModelList: [momentsModelList],
-                          ),
-                        );
-                      }).catchError((e) {
-                        momentClicked = false;
-                        if (mounted) setState(() {});
+                    NavigationUtil.push(
+                      context,
+                      screen: MomentsDetailsScreen(
+                        indexOfMoment: 0,
+                        // Wrapping it around a List ([]) because the moment detail screen requires a List<List<MomentModel>>
+                        momentsModelList: [momentsModelList],
+                      ),
+                    );
+                  }).catchError((e) {
+                    momentClicked = false;
+                    if (mounted) setState(() {});
 
-                        showToast(message: 'ERROR -> $e');
-                      });
-                    },
-                    exploreMomentsModelList: myMomentsList
-                        .map(
-                          (e) => ExploreMomentsModel(
-                            owner: e.owner,
-                            avatar: e.avatar,
-                            moments: [myMomentsList[index]],
-                            // ownerName: e.ownerName,
-                          ),
-                        )
-                        .toList(),
-                  );
+                    showToast(message: 'ERROR -> $e');
+                  });
                 },
-              ),
+                exploreMomentsModelList: myMomentsList
+                    .map(
+                      (e) => ExploreMomentsModel(
+                        owner: e.owner,
+                        avatar: e.avatar,
+                        moments: [myMomentsList[index]],
+                        // ownerName: e.ownerName,
+                      ),
+                    )
+                    .toList(),
+              );
+            },
+          ),
       ],
     );
   }

@@ -348,25 +348,25 @@ class _ShippingOptionsListState extends State<ShippingOptionsList> {
 
   showDeleteShippingOptionDialog(ShippingOptionsListModel? shippingModel) {
     showDialogBox(
-        context: context,
-        actionOneTextColor: white,
-        actionOneBgColor: mateRed,
-        actionTwoTextColor: blackFont,
-        actionTwoBgColor: greyBorderColor,
-        title: 'Delete',
-        actionTwoText: AppLocalization.of(context)!.cancel,
-        actionOneText: AppLocalization.of(context)!.delete,
-        description: 'Are you sure you want to delete this Shipping Option?',
-        roundedBackgroundIcon: RoundedBackgroundIcon(
-          enableMargin: false,
-          width: 90,
-          height: 90,
-          image: Icon(SlydoAppIcon.delete, color: mateRed),
-        ),
-        leftButtonOnPressed: () => deleteShippingOption(shippingModel),
-        rightButtonOnPressed: () {
-          return;
-        });
+      context: context,
+      actionOneTextColor: blackFont,
+      actionOneBgColor: greyBorderColor,
+      actionTwoTextColor: white,
+      actionTwoBgColor: mateRed,
+      title: 'Delete Shipping Option',
+      actionOneText: AppLocalization.of(context)!.discard,
+      actionTwoText: AppLocalization.of(context)!.continueMsg,
+      description: 'Are you sure you want to delete this shipping option?',
+      roundedBackgroundIcon: RoundedBackgroundIcon(
+        enableMargin: false,
+        width: 90,
+        height: 90,
+        image: Image.asset('assets/images/delete_dialog_icon.png'),
+      ),
+      rightButtonOnPressed: () async {
+        deleteShippingOption(shippingModel);
+      },
+    );
   }
 
   @override

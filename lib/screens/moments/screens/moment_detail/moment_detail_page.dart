@@ -55,6 +55,8 @@ class _MomentsDetailsScreenState extends State<MomentsDetailsScreen> {
 
   List<CachedVideoPlayerController> _videoPlayerControllers = [];
   List<PhotoViewController> _photoViewController = [];
+  // late List<String> videoUrls;
+  // late List<File> cachedVideos;
 
   @override
   void initState() {
@@ -67,6 +69,24 @@ class _MomentsDetailsScreenState extends State<MomentsDetailsScreen> {
       getListOfMomentsModelList();
     }
   }
+
+  // Future<void> _downloadAndCacheVideos() async {
+  //   if (widget.momentsModelList != null && widget.momentsModelList.isNotEmpty) {
+  //     for (var momentsModel in widget.momentsModelList) {
+  //       momentsModel
+  //           .where((element) => element.mediaType == 'video')
+  //           .map((e) => videoUrls.add(e.media ?? ""));
+  //     }
+  //     cachedVideos = await Future.wait(
+  //         videoUrls.map((url) => DefaultCacheManager().getSingleFile(url)));
+  //     _videoPlayerControllers = cachedVideos
+  //         .map((video) => CachedVideoPlayerController.file(video))
+  //         .toList();
+  //     await Future.wait(
+  //         _videoPlayerControllers.map((controller) => controller.initialize()));
+  //     setState(() {});
+  //   }
+  // }
 
   // To get the initial page that the pageview will show when the user gets this screen and
   // the previous and next two moments(if there is) have been loaded.
@@ -155,6 +175,7 @@ class _MomentsDetailsScreenState extends State<MomentsDetailsScreen> {
                 channelUsername: '');
         widget.momentsModelList = List.from(widget.momentsModelList)
           ..add(momentsModelList);
+        // _downloadAndCacheVideos();
       }
 
       showLoadingIndicator(loadingNextPageUrl: loadingNextPageUrl, show: false);

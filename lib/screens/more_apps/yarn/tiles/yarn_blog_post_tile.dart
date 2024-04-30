@@ -442,13 +442,13 @@ class _YarnBlogPostTileState extends State<YarnBlogPostTile> {
             Navigator.pop(context);
             showDialogBox(
               context: context,
-              actionOneTextColor: white,
-              actionOneBgColor: mateRed,
-              actionTwoTextColor: blackFont,
-              actionTwoBgColor: greyBorderColor,
-              title: AppLocalization.of(context)!.delete,
-              actionTwoText: AppLocalization.of(context)!.cancel,
-              actionOneText: AppLocalization.of(context)!.delete,
+              actionOneTextColor: blackFont,
+              actionOneBgColor: greyBorderColor,
+              actionTwoTextColor: white,
+              actionTwoBgColor: mateRed,
+              title: 'Delete Blog Post',
+              actionOneText: AppLocalization.of(context)!.discard,
+              actionTwoText: AppLocalization.of(context)!.continueMsg,
               description: 'Are you sure you want to delete this blog post?',
               roundedBackgroundIcon: RoundedBackgroundIcon(
                 width: 90,
@@ -456,7 +456,7 @@ class _YarnBlogPostTileState extends State<YarnBlogPostTile> {
                 enableMargin: false,
                 image: Image.asset('assets/images/delete_dialog_icon.png'),
               ),
-              leftButtonOnPressed: () {
+              rightButtonOnPressed: () {
                 UserPostUtils.deleteBlogPost(
                   context: context,
                   blogId: widget.post!.id!,

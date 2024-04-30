@@ -470,13 +470,13 @@ class _PostDetailPageState extends State<PostDetailPage> {
             Navigator.pop(context);
             showDialogBox(
               context: context,
-              actionOneTextColor: white,
-              actionOneBgColor: mateRed,
-              actionTwoTextColor: blackFont,
-              actionTwoBgColor: greyBorderColor,
-              title: AppLocalization.of(context)!.delete,
-              actionTwoText: AppLocalization.of(context)!.cancel,
-              actionOneText: AppLocalization.of(context)!.delete,
+              actionOneTextColor: blackFont,
+              actionOneBgColor: greyBorderColor,
+              actionTwoTextColor: white,
+              actionTwoBgColor: mateRed,
+              title: 'Delete Blog Post',
+              actionOneText: AppLocalization.of(context)!.discard,
+              actionTwoText: AppLocalization.of(context)!.continueMsg,
               description: 'Are you sure you want to delete this blog post?',
               roundedBackgroundIcon: RoundedBackgroundIcon(
                 enableMargin: false,
@@ -484,7 +484,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
                 height: 90,
                 image: Image.asset('assets/images/delete_dialog_icon.png'),
               ),
-              leftButtonOnPressed: () {
+              rightButtonOnPressed: () {
                 UserPostUtils.deleteBlogPost(
                     onDeleteBlog: () {
                       Navigator.pop(context);

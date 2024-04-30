@@ -19,8 +19,10 @@ import 'package:Slydo/widget/customized_checkbox_field.dart';
 import 'package:Slydo/widget/customized_dropdown_field.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/delete_product_and_service_confirm_alert.dart';
+import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/image_crop.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
+import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -59,6 +61,7 @@ class _EditProductState extends State<EditProduct> {
   String? productName = "";
   String? productDescription = "";
   String? productShortDescription = "";
+  String? searchKeyword = "";
   String? productCategory = "";
   String productSubCategory = "";
   ProductCategory? pressedCustomCategory;
@@ -104,6 +107,7 @@ class _EditProductState extends State<EditProduct> {
   TextEditingController weightController = TextEditingController();
   TextEditingController heightController = TextEditingController();
   TextEditingController widthController = TextEditingController();
+  TextEditingController searchKeywordController = TextEditingController();
   TextEditingController inventoryCountController = TextEditingController();
   int inventoryCount = 0;
   List<Variant> productVariantList = [];
@@ -191,9 +195,9 @@ class _EditProductState extends State<EditProduct> {
           currentProduct = value;
 
           // assigning to our edit controllers
-          productTitleController.text = currentProduct.name!;
+          productTitleController.text = currentProduct.name ?? "";
           productDescriptionController.text =
-              messageDecoderWithEmoji(currentProduct.description!)!;
+              messageDecoderWithEmoji(currentProduct.description) ?? "";
 
           productPriceController.text = moneyNormalizer(currentProduct.price!);
 
@@ -204,7 +208,7 @@ class _EditProductState extends State<EditProduct> {
               currentProduct.customCategory?.name ?? "";
 
           productShortDescriptionController.text =
-              messageDecoderWithEmoji(currentProduct.shortDescription!)!;
+              messageDecoderWithEmoji(currentProduct.shortDescription) ?? "";
 
           productImagesFromServer.addAll(currentProduct.serverImages!);
           productName = currentProduct.name;
@@ -272,6 +276,9 @@ class _EditProductState extends State<EditProduct> {
           selectedSubCategory = currentProduct.subCategory;
           selectedCustomCategory = currentProduct.customCategory;
           userTags = currentProduct.tags!;
+          searchKeyword = currentProduct.searchKeyword;
+          searchKeywordController.text =
+              messageDecoderWithEmoji(currentProduct.searchKeyword) ?? "";
 
           print('CURRENT PRODUCT NAME :::: ${selectedProductCategory?.name}');
 
@@ -520,7 +527,8 @@ class _EditProductState extends State<EditProduct> {
                       getProductShortDescription(),
                       SizedBox(height: 10),
                       getProductDescription(),
-
+                      SizedBox(height: 10),
+                      getSearchEngineKeyword(),
                       SizedBox(height: 20),
                       getIsAvailableField(),
                       const SizedBox(height: 16),
@@ -1426,6 +1434,29 @@ class _EditProductState extends State<EditProduct> {
     );
   }
 
+  Widget getSearchEngineKeyword() {
+    return Column(
+      children: [
+        CustomizedTextFormField(
+          controller: searchKeywordController,
+          labelText: "Search Keyword - SEO (Optional)",
+          onChanged: (val) {
+            searchKeyword = val;
+          },
+        ),
+        Text(
+          'These words will help customer see your product online when they search it.',
+          style: TextStyle(
+            color: darkGrey,
+            fontSize: 12,
+            fontWeight: FontWeight.w400,
+            fontFamily: "Inter",
+          ),
+        )
+      ],
+    );
+  }
+
   Widget getCategoryField() {
     return CustomizedDropDownField(
       title: AppLocalization.of(context)!.category,
@@ -2216,7 +2247,7 @@ class _EditProductState extends State<EditProduct> {
                 text: AppLocalization.of(context)!.delete,
                 onPressed: () async {
                   FocusScope.of(context).unfocus();
-                  deleteProduct();
+                  deleteProductDialog();
                 }),
           ),
           SizedBox(width: 8),
@@ -2242,6 +2273,29 @@ class _EditProductState extends State<EditProduct> {
           ),
         ],
       ),
+    );
+  }
+
+  void deleteProductDialog() {
+    showDialogBox(
+      context: context,
+      actionOneTextColor: blackFont,
+      actionOneBgColor: greyBorderColor,
+      actionTwoTextColor: white,
+      actionTwoBgColor: mateRed,
+      title: 'Delete Product',
+      actionOneText: AppLocalization.of(context)!.discard,
+      actionTwoText: AppLocalization.of(context)!.continueMsg,
+      description: 'Are you sure you want to delete this product?',
+      roundedBackgroundIcon: RoundedBackgroundIcon(
+        enableMargin: false,
+        width: 90,
+        height: 90,
+        image: Image.asset('assets/images/delete_dialog_icon.png'),
+      ),
+      rightButtonOnPressed: () {
+        deleteProduct();
+      },
     );
   }
 
@@ -2308,6 +2362,7 @@ class _EditProductState extends State<EditProduct> {
           currentProduct.trackInventory = trackInventory;
           currentProduct.quantity = inventoryCount;
           currentProduct.addressId = defaultAddress?.id;
+          currentProduct.searchKeyword = searchKeyword;
           await _auth
               .editProduct(currentProduct, productAddOnsList)
               .then((value) {
@@ -3063,6 +3118,7 @@ class _EditProductState extends State<EditProduct> {
     productPriceController.dispose();
     _scrollController.dispose();
     scrollControllerVariant.dispose();
+    searchKeywordController.dispose();
     _myController.dispose();
 
     super.dispose();

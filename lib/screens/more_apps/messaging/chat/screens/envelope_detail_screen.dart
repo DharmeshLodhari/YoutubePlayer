@@ -16,7 +16,6 @@ import 'package:provider/provider.dart';
 import '../../../../../locale/app_localization.dart';
 import '../../../../../routes/route_constants.dart';
 import '../../../../../utils/my_audio_player.dart';
-import '../../../../../utils/slydo_app_icon_icons.dart';
 import '../../../../../widget/dialog.dart';
 import '../../../../../widget/rounded_background_icon.dart';
 
@@ -348,21 +347,21 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
   showDialogToDeleteEnvelope() {
     showDialogBox(
       context: context,
-      actionOneTextColor: white,
-      actionOneBgColor: mateRed,
-      actionTwoTextColor: blackFont,
-      actionTwoBgColor: greyBorderColor,
-      title: 'Delete',
-      actionTwoText: AppLocalization.of(context)!.cancel,
-      actionOneText: AppLocalization.of(context)!.delete,
+      actionOneTextColor: blackFont,
+      actionOneBgColor: greyBorderColor,
+      actionTwoTextColor: white,
+      actionTwoBgColor: mateRed,
+      title: 'Delete Envelope',
+      actionOneText: AppLocalization.of(context)!.discard,
+      actionTwoText: AppLocalization.of(context)!.continueMsg,
       description: 'Are you sure you want to delete this envelope?',
       roundedBackgroundIcon: RoundedBackgroundIcon(
         enableMargin: false,
         width: 90,
         height: 90,
-        image: Icon(SlydoAppIcon.delete, color: mateRed),
+        image: Image.asset('assets/images/delete_dialog_icon.png'),
       ),
-      leftButtonOnPressed: () {
+      rightButtonOnPressed: () {
         deleteEnvelope();
       },
     );

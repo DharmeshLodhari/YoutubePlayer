@@ -3,6 +3,7 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:Slydo/widget/slide_action_button.dart';
@@ -503,11 +504,34 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
           backgroundColor: mateRed,
           icon: SlydoAppIcon.remove,
           onTap: () async {
-            deleteAddOnOption(addOnOption!);
+            deleteAddOnDialog(addOnOption!);
           },
           title: AppLocalization.of(context)!.delete,
           slideController: _slideController),
     ];
+  }
+
+  void deleteAddOnDialog(AddOnOption addOnOption) {
+    showDialogBox(
+      context: context,
+      actionOneTextColor: blackFont,
+      actionOneBgColor: greyBorderColor,
+      actionTwoTextColor: white,
+      actionTwoBgColor: mateRed,
+      title: 'Delete Add-on Option',
+      actionOneText: AppLocalization.of(context)!.discard,
+      actionTwoText: AppLocalization.of(context)!.continueMsg,
+      description: 'Are you sure you want to delete this add-on option?',
+      roundedBackgroundIcon: RoundedBackgroundIcon(
+        enableMargin: false,
+        width: 90,
+        height: 90,
+        image: Image.asset('assets/images/delete_dialog_icon.png'),
+      ),
+      rightButtonOnPressed: () async {
+        deleteAddOnOption(addOnOption);
+      },
+    );
   }
 
   void deleteAddOnOption(AddOnOption addOnOption) {

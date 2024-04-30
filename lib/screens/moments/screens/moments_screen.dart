@@ -60,10 +60,10 @@ class _MomentsScreenState extends State<MomentsScreen> {
   bool isExploreMomentsLoading = false;
   List<ExploreMomentsModel> exploreMomentsList = [];
   List<MomentsModel> contactMomentsList = [];
-  ScrollController _myConnectionsScrollController = ScrollController();
-  ScrollController _exploreScrollController = ScrollController();
+  final ScrollController _myConnectionsScrollController = ScrollController();
+  final ScrollController _exploreScrollController = ScrollController();
 
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
   bool showExploreMomentsPaginationLoading = false;
@@ -294,13 +294,13 @@ class _MomentsScreenState extends State<MomentsScreen> {
             size: 14,
           ),
           onPressed: () {
-            NavigationUtil.push(context, screen: MomentSearchScreen());
+            NavigationUtil.push(context, screen: const MomentSearchScreen());
           },
         ),
         addMomentsBtn(),
-        SizedBox(width: 10),
+        const SizedBox(width: 10),
         myMomentsBtn(),
-        SizedBox(width: 14),
+        const SizedBox(width: 14),
       ],
     );
   }
@@ -344,7 +344,7 @@ class _MomentsScreenState extends State<MomentsScreen> {
 
   Widget scaffoldBody() {
     if (storageIsNull) {
-      return Center(
+      return const Center(
         child:
             Text('We experienced a fault. Please restart app to view moments.'),
       );
@@ -367,33 +367,34 @@ class _MomentsScreenState extends State<MomentsScreen> {
           controller: _exploreScrollController,
           children: [
             contactMomentsListWidget(),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             adverts(),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             exploreMomentsListWidget(),
-            isExploreMomentsLoading
-                ? Shimmer.fromColors(
-                    baseColor: Colors.white,
-                    highlightColor: greyBorderColor,
-                    child: GridView.builder(
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                        maxCrossAxisExtent: 200,
-                        mainAxisExtent: 300,
+            if (isExploreMomentsLoading)
+              Shimmer.fromColors(
+                baseColor: Colors.white,
+                highlightColor: greyBorderColor,
+                child: GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                    maxCrossAxisExtent: 200,
+                    mainAxisExtent: 300,
+                  ),
+                  itemCount: 2,
+                  itemBuilder: (context, index) {
+                    return Card(
+                      color: Colors.grey,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(6),
                       ),
-                      itemCount: 2,
-                      itemBuilder: (context, index) {
-                        return Card(
-                          color: Colors.grey,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                        );
-                      },
-                    ),
-                  )
-                : SizedBox.shrink(),
+                    );
+                  },
+                ),
+              )
+            else
+              const SizedBox.shrink(),
             Visibility(
               visible: !isContactMomentsLoading &&
                   !isExploreMomentsLoading &&
@@ -403,9 +404,10 @@ class _MomentsScreenState extends State<MomentsScreen> {
                 child: Column(
                   children: [
                     Lottie.asset('assets/lottie/no_moment_lottie.json'),
-                    SizedBox(height: 20),
-                    Text('Create a moment with the camera icon at the top.'),
-                    Text('Pull down to refresh to see latest moments.'),
+                    const SizedBox(height: 20),
+                    const Text(
+                        'Create a moment with the camera icon at the top.'),
+                    const Text('Pull down to refresh to see latest moments.'),
                   ],
                 ),
               ),
@@ -418,7 +420,7 @@ class _MomentsScreenState extends State<MomentsScreen> {
 
   Widget adverts() {
     if (!hasAdverts) {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -432,7 +434,7 @@ class _MomentsScreenState extends State<MomentsScreen> {
             fontFamily: "Inter",
           ),
         ),
-        SizedBox(height: 12),
+        const SizedBox(height: 12),
         SizedBox(
           height: 140,
           width: MediaQuery.of(context).size.width,
@@ -457,7 +459,7 @@ class _MomentsScreenState extends State<MomentsScreen> {
           child: ListView.builder(
             shrinkWrap: true,
             scrollDirection: Axis.horizontal,
-            physics: NeverScrollableScrollPhysics(),
+            physics: const NeverScrollableScrollPhysics(),
             itemCount: 4,
             itemBuilder: (context, index) {
               return SizedBox(
@@ -475,7 +477,7 @@ class _MomentsScreenState extends State<MomentsScreen> {
     }
 
     if (contactMomentsList.isEmpty) {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     }
 
     return Column(
@@ -486,13 +488,13 @@ class _MomentsScreenState extends State<MomentsScreen> {
             CircleAvatar(
               radius: 10,
               backgroundColor: navyBlue,
-              child: Icon(
+              child: const Icon(
                 Icons.group,
                 color: Colors.white,
                 size: 14,
               ),
             ),
-            SizedBox(width: 6),
+            const SizedBox(width: 6),
             Text(
               "My Friends",
               style: TextStyle(
@@ -502,17 +504,17 @@ class _MomentsScreenState extends State<MomentsScreen> {
                 fontFamily: "Inter",
               ),
             ),
-            SizedBox(width: 10),
+            const SizedBox(width: 10),
           ],
         ),
-        SizedBox(height: 12),
+        const SizedBox(height: 12),
         SizedBox(
           height: 180,
           child: ListView.builder(
             shrinkWrap: true,
             controller: _myConnectionsScrollController,
             scrollDirection: Axis.horizontal,
-            padding: EdgeInsets.symmetric(vertical: 4),
+            padding: const EdgeInsets.symmetric(vertical: 4),
             itemCount: contactMomentsList.length + 1,
             itemBuilder: (BuildContext context, int index) {
               if (index == contactMomentsList.length) {
@@ -536,7 +538,7 @@ class _MomentsScreenState extends State<MomentsScreen> {
 
   Widget exploreMomentsListWidget() {
     if (exploreMomentsList.isEmpty) {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -548,7 +550,7 @@ class _MomentsScreenState extends State<MomentsScreen> {
               color: navyBlue,
               size: 24,
             ),
-            SizedBox(width: 6),
+            const SizedBox(width: 6),
             Text(
               "Explore",
               style: TextStyle(
@@ -560,25 +562,26 @@ class _MomentsScreenState extends State<MomentsScreen> {
             ),
           ],
         ),
-        SizedBox(height: 12),
-        nextExploreMoments == "" && isExploreMomentsLoading
-            ? SizedBox.shrink()
-            : GridView.builder(
-                shrinkWrap: true,
-                padding: EdgeInsets.zero,
-                physics: NeverScrollableScrollPhysics(),
-                gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                  mainAxisExtent: 300,
-                  maxCrossAxisExtent: 200,
-                ),
-                itemCount: exploreMomentsList.length,
-                itemBuilder: (context, index) {
-                  return ExploreMomentsCard(
-                    index: index,
-                    exploreMomentsModelList: exploreMomentsList,
-                  );
-                },
-              ),
+        const SizedBox(height: 12),
+        if (nextExploreMoments == "" && isExploreMomentsLoading)
+          const SizedBox.shrink()
+        else
+          GridView.builder(
+            shrinkWrap: true,
+            padding: EdgeInsets.zero,
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+              mainAxisExtent: 300,
+              maxCrossAxisExtent: 200,
+            ),
+            itemCount: exploreMomentsList.length,
+            itemBuilder: (context, index) {
+              return ExploreMomentsCard(
+                index: index,
+                exploreMomentsModelList: exploreMomentsList,
+              );
+            },
+          ),
       ],
     );
   }
@@ -708,12 +711,12 @@ class _ContactMomentsCardState extends State<ContactMomentsCard> {
                             Shadow(
                               blurRadius: 4.0,
                               color: blackFont,
-                              offset: Offset(0.0, 0),
+                              offset: const Offset(0.0, 0),
                             ),
                           ],
                         ),
                       ),
-                      SizedBox(height: 3),
+                      const SizedBox(height: 3),
                       Text(
                         getFormattedViewCount(
                             noOfViews: widget.userMomentModel.views),
@@ -724,7 +727,7 @@ class _ContactMomentsCardState extends State<ContactMomentsCard> {
                             Shadow(
                               blurRadius: 4.0,
                               color: blackFont,
-                              offset: Offset(0.0, 0),
+                              offset: const Offset(0.0, 0),
                             ),
                           ],
                           color: Colors.white,
@@ -740,22 +743,23 @@ class _ContactMomentsCardState extends State<ContactMomentsCard> {
                 child: isConnectionsMomentLoading
                     ? CircleAvatar(
                         backgroundColor: greyBorderColor,
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
+                        child: const Padding(
+                          padding: EdgeInsets.all(8.0),
                           child: CircularProgressIndicator(),
                         ),
                       )
-                    : SizedBox.shrink(),
+                    : const SizedBox.shrink(),
               ),
-              widget.userMomentModel.mediaType == 'video'
-                  ? Align(
-                      alignment: Alignment.topRight,
-                      child: Padding(
-                        padding: const EdgeInsets.only(right: 4.0),
-                        child: SvgPicture.asset("yarn/cam_vec".toSVG()),
-                      ),
-                    )
-                  : SizedBox.shrink(),
+              if (widget.userMomentModel.mediaType == 'video')
+                Align(
+                  alignment: Alignment.topRight,
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 4.0),
+                    child: SvgPicture.asset("yarn/cam_vec".toSVG()),
+                  ),
+                )
+              else
+                const SizedBox.shrink(),
             ],
           ),
         ),
@@ -800,7 +804,7 @@ class _ExploreMomentsCardState extends State<ExploreMomentsCard> {
         storyItems.add(Shiddo.pageImage(
             url: e.media!,
             controller: storyController,
-            duration: Duration(seconds: 10),
+            duration: const Duration(seconds: 10),
             momentsModel: e));
       }
       if (e.mediaType == 'video') {
@@ -854,18 +858,18 @@ class _ExploreMomentsCardState extends State<ExploreMomentsCard> {
                   widget.exploreMomentsModelList[widget.index].moments!.first,
               context: context,
             ),
-            widget.showProfileAvatar
-                ? Align(
-                    alignment: Alignment.topLeft,
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 8.0, top: 10),
-                      child: MomentsUtils().getUserProfilePic(
-                          widget.exploreMomentsModelList[widget.index].avatar!,
-                          widget.exploreMomentsModelList[widget.index]
-                              .ownerName!),
-                    ),
-                  )
-                : SizedBox.shrink(),
+            if (widget.showProfileAvatar)
+              Align(
+                alignment: Alignment.topLeft,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 8.0, top: 10),
+                  child: MomentsUtils().getUserProfilePic(
+                      widget.exploreMomentsModelList[widget.index].avatar!,
+                      widget.exploreMomentsModelList[widget.index].ownerName!),
+                ),
+              )
+            else
+              const SizedBox.shrink(),
             Align(
               alignment: Alignment.bottomLeft,
               child: Padding(
@@ -886,7 +890,7 @@ class _ExploreMomentsCardState extends State<ExploreMomentsCard> {
                           Shadow(
                             blurRadius: 4.0,
                             color: blackFont,
-                            offset: Offset(0.0, 0),
+                            offset: const Offset(0.0, 0),
                           ),
                         ],
                         color: Colors.white,
@@ -906,29 +910,30 @@ class _ExploreMomentsCardState extends State<ExploreMomentsCard> {
                           Shadow(
                             blurRadius: 4.0,
                             color: blackFont,
-                            offset: Offset(0.0, 0),
+                            offset: const Offset(0.0, 0),
                           ),
                         ],
                         color: Colors.white,
                         fontWeight: FontWeight.w400,
                       ),
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                   ],
                 ),
               ),
             ),
-            widget.exploreMomentsModelList[widget.index].moments!.first
-                        .mediaType ==
-                    'video'
-                ? Align(
-                    alignment: Alignment.topRight,
-                    child: Padding(
-                      padding: const EdgeInsets.only(right: 8.0, top: 12.0),
-                      child: SvgPicture.asset("yarn/cam_vec".toSVG()),
-                    ),
-                  )
-                : SizedBox.shrink(),
+            if (widget.exploreMomentsModelList[widget.index].moments!.first
+                    .mediaType ==
+                'video')
+              Align(
+                alignment: Alignment.topRight,
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 8.0, top: 12.0),
+                  child: SvgPicture.asset("yarn/cam_vec".toSVG()),
+                ),
+              )
+            else
+              const SizedBox.shrink(),
           ],
         ),
       ),
@@ -938,7 +943,7 @@ class _ExploreMomentsCardState extends State<ExploreMomentsCard> {
 
 Widget momentListLengthWidget(int? length, {double? fontSize}) {
   return length == null
-      ? SizedBox.shrink()
+      ? const SizedBox.shrink()
       : Padding(
           padding: const EdgeInsets.all(4.0),
           child: Container(
@@ -989,7 +994,7 @@ Widget _getMediaRenderer(
     if (momentModel.mediaPoster == null) {
       return Container(
         decoration: BoxDecoration(
-          color: Color(0XFFdcdcdc).withOpacity(0.5),
+          color: const Color(0XFFdcdcdc).withOpacity(0.5),
           borderRadius: BorderRadius.circular(10),
         ),
       );

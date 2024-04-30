@@ -252,11 +252,7 @@ class _CustomCategoryListState extends State<CustomCategoryList> {
           ],
         ),
         leftButtonOnPressed: () async {
-          bool result =
-              await ShoppingAuthService().deleteCustomCategory(prod.id);
-          _onProductRefresh();
-          _controller.clear();
-          Navigator.pop(context);
+          deleteCategoryDialog(prod.id);
         },
         rightButtonOnPressed: () async {
           bool result = await ShoppingAuthService()
@@ -265,6 +261,32 @@ class _CustomCategoryListState extends State<CustomCategoryList> {
           _controller.clear();
           Navigator.pop(context);
         });
+  }
+
+  void deleteCategoryDialog(id) {
+    showDialogBox(
+      context: context,
+      actionOneTextColor: blackFont,
+      actionOneBgColor: greyBorderColor,
+      actionTwoTextColor: white,
+      actionTwoBgColor: mateRed,
+      title: 'Delete Custom Category',
+      actionOneText: AppLocalization.of(context)!.discard,
+      actionTwoText: AppLocalization.of(context)!.continueMsg,
+      description: 'Are you sure you want to delete this custom category?',
+      roundedBackgroundIcon: RoundedBackgroundIcon(
+        enableMargin: false,
+        width: 90,
+        height: 90,
+        image: Image.asset('assets/images/delete_dialog_icon.png'),
+      ),
+      rightButtonOnPressed: () async {
+        bool result = await ShoppingAuthService().deleteCustomCategory(id);
+        _onProductRefresh();
+        _controller.clear();
+        Navigator.pop(context);
+      },
+    );
   }
 
   @override

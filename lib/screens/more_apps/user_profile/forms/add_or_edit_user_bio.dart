@@ -6,6 +6,8 @@ import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/OpeningHour.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/UserAbout.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/screens/super_store/models/product_industry_model.dart';
+import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -16,6 +18,7 @@ import 'package:Slydo/widget/image_crop.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -46,6 +49,10 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
   late TextEditingController _userNameController;
   TextEditingController? _nicknameController;
   ShippingAddress? defaultAddress;
+  String? industryId;
+  String? industryName;
+  List<ProductIndustryResults> industries = [];
+  bool loading = false;
 
   List<String> openingHoursDays = [
     "Monday",
@@ -121,9 +128,15 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
     _fullNameController = TextEditingController();
 
     WidgetsBinding.instance.addPostFrameCallback((timestamp) async {
+      if (userBloc.user.type == "Business") {
+        await getProductIndustries();
+      }
       await getAddress();
       userBioDetail = userBloc.userAbout;
       bioController?.text = messageDecoderWithEmoji(userBloc.user.bio!)!;
+      if (userBioDetail?.industry != null) {
+        industryId = userBioDetail?.industry?.id ?? "";
+      }
       if (userBioDetail?.userAddress?.addressLine1 != null) {
         addressLine1Controller?.text =
             userBioDetail?.userAddress?.addressLine1 ?? "";
@@ -165,6 +178,21 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
     });
 
     super.initState();
+  }
+
+  getProductIndustries() async {
+    loading = true;
+    if (mounted) setState(() {});
+    var result = await AuthService().listOfIndustries();
+    if (result != null) {
+      industries = result["product"];
+      loading = false;
+      if (mounted) setState(() {});
+    } else {
+      industries = [];
+      loading = false;
+      if (mounted) setState(() {});
+    }
   }
 
   Future<void> getAddress() async {
@@ -272,6 +300,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
         children: <Widget>[
           SizedBox(height: 20),
           addBioField(),
+          if (userBloc.user.type == "Business") industryDropdown(),
           SizedBox(height: 20),
           addContactNumberField(),
           SizedBox(height: 20),
@@ -291,6 +320,80 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
           addOpeningHour(),
         ],
       ),
+    );
+  }
+
+  Widget industryDropdown() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(height: 20),
+        Text(
+          'Industry',
+          style: TextStyle(
+            color: darkGrey,
+            fontSize: 16,
+            fontFamily: "Inter",
+            fontWeight: FontWeight.w400,
+          ),
+        ),
+        SizedBox(height: 6),
+        DropdownButtonFormField2(
+          buttonHeight: 50,
+          isExpanded: true,
+          value: industryId,
+          style: TextStyle(
+            fontSize: 16,
+            color: blackFont,
+            fontWeight: FontWeight.w600,
+          ),
+          decoration: InputDecoration(
+            contentPadding: EdgeInsets.symmetric(horizontal: 0),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(
+                color: greyBorderColor,
+                width: 1.0,
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(
+                color: greyBorderColor,
+                width: 1.0,
+              ),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(
+                color: greyBorderColor,
+                width: 1.0,
+              ),
+            ),
+          ),
+          items: industries.map((ProductIndustryResults item) {
+            return DropdownMenuItem<String>(
+              value: item.id,
+              child: Text(item.name!),
+            );
+          }).toList(),
+          onChanged: (String? value) {
+            setState(() {
+              industryId = value!;
+              var selectedIndustry =
+                  industries.firstWhere((industry) => industry.id == value);
+              industryName = selectedIndustry.name;
+            });
+          },
+          validator: (String? value) {
+            if (value != null && value.isNotEmpty) {
+              return null;
+            } else {
+              return 'Pick an industry';
+            }
+          },
+        ),
+      ],
     );
   }
 
@@ -1122,7 +1225,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
           child: CircularLoadingIndicator(),
         ),
       );
-      userBioDetail!.userAddress = UserAddress(
+      userBioDetail?.userAddress = UserAddress(
         state: pickedStateId,
         id: userBloc.userAbout?.userAddress?.id,
         city: userBloc.userAbout?.userAddress?.city,
@@ -1159,19 +1262,21 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
   }
 
   void addDataToUserAboutObject() {
-    userBioDetail!.bio = bioController!.text.trim();
-    userBioDetail!.userAddress!.addressLine1 =
-        addressLine1Controller!.text.trim();
-    userBioDetail!.userAddress!.addressLine2 =
-        addressLine2Controller!.text.trim();
-    userBioDetail!.userAddress!.city = cityController!.text.trim();
-    userBioDetail!.contact = contactNumberController!.text.trim();
+    userBioDetail?.bio = bioController!.text.trim();
+    userBioDetail?.userAddress?.addressLine1 =
+        addressLine1Controller?.text.trim();
+    userBioDetail?.userAddress?.addressLine2 =
+        addressLine2Controller?.text.trim();
+    userBioDetail?.userAddress?.city = cityController!.text.trim();
+    userBioDetail?.contact = contactNumberController!.text.trim();
+    userBioDetail?.industry?.id = industryId;
+    userBioDetail?.industry?.name = industryName;
 
     addOpeningHoursToUserAboutObject();
   }
 
   void addOpeningHoursToUserAboutObject() {
-    userBioDetail!.openingHours = [];
+    userBioDetail?.openingHours = [];
 
     userAddedOpeningHours.forEach((element) {
       if (element["is_open"]) {
@@ -1180,15 +1285,15 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
         openingHour.day = element["day"];
         openingHour.time =
             "${element["starting_hour"]} - ${element["closing_hour"]}";
-        if (userBioDetail!.openingHours == null) {
-          userBioDetail!.openingHours = [openingHour];
+        if (userBioDetail?.openingHours == null) {
+          userBioDetail?.openingHours = [openingHour];
         } else {
-          userBioDetail!.openingHours.add(openingHour);
+          userBioDetail?.openingHours.add(openingHour);
         }
       }
     });
 
-    userBioDetail!.openingHours.forEach((element) {
+    userBioDetail?.openingHours.forEach((element) {
       debugPrint('OPENING HOURS ---> ${element.toJson()}');
     });
   }

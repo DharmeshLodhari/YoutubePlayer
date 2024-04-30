@@ -41,17 +41,34 @@ class MomentVideoPlayerState extends State<MomentVideoPlayer> {
     debugPrint('VIDEO MEDIA --> ${widget.momentsModel.media!.length}');
     // videoPlayerManager = VideoPlayerManager();
     // videoPlayerManager.init(widget.momentsModel.media!);
+    // widget.controller.stop();
 
     _controller = CachedVideoPlayerController.network(
       widget.momentsModel.media!,
     )..initialize().then((value) async {
         await _controller.play();
+        widget.controller.forward();
         initialized = true;
         setState(() {});
       }).catchError((e) {
         Navigator.pop(context);
         showToast(message: 'Unable to display moment');
       });
+
+    _controller.addListener(() {
+      if (_controller.value.isBuffering) {
+        if (widget.controller.isAnimating) {
+          print("BUFFERING !! STOPPING ANIMATION CONTROLLER");
+          widget.controller.stop();
+        }
+      } else {
+        print("NOT BUFFERING !!");
+        if (widget.controller.isAnimating == false) {
+          print("NOT BUFFERING !! STARTIING ANIMATION CONTROLLER");
+          widget.controller.forward();
+        }
+      }
+    });
 
     widget.videoPlayerControllers.add(_controller);
     super.initState();
@@ -63,13 +80,16 @@ class MomentVideoPlayerState extends State<MomentVideoPlayer> {
       widget.controller.stop();
     } else {
       _controller.play();
-      widget.controller.animateBack(widget.value!);
+      widget.controller.forward();
     }
   }
 
   @override
   void dispose() async {
     //await videoPlayerManager.dispose();
+    for (var controller in widget.videoPlayerControllers) {
+      controller.dispose();
+    }
     try {
       _controller.dispose();
     } catch (error) {}
@@ -90,13 +110,13 @@ class MomentVideoPlayerState extends State<MomentVideoPlayer> {
             child: InkWell(
               onTap: () {
                 if (_controller.value.isPlaying) {
+                  _controller.pause();
                   widget.controller.stop();
                   showMediaIconFor2Seconds();
-                  _controller.pause();
                 } else {
                   _controller.play();
+                  widget.controller.forward();
                   showMediaIconFor2Seconds();
-                  widget.controller.animateBack(widget.value!);
                 }
               },
               child: Stack(
@@ -146,7 +166,7 @@ class MomentVideoPlayerState extends State<MomentVideoPlayer> {
                   )
                 : Container(
                     decoration: BoxDecoration(
-                      color: Color(0XFFdcdcdc).withOpacity(0.5),
+                      color: const Color(0XFFdcdcdc).withOpacity(0.5),
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
@@ -159,7 +179,7 @@ class MomentVideoPlayerState extends State<MomentVideoPlayer> {
 
   showMediaIconFor2Seconds() {
     setState(() => showMediaIcon = true);
-    Future.delayed(Duration(seconds: 2), () {
+    Future.delayed(const Duration(seconds: 2), () {
       if (mounted)
         setState(() {
           showMediaIcon = false;

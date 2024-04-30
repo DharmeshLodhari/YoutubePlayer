@@ -552,6 +552,13 @@ class AppLocalization {
     );
   }
 
+  String get discard {
+    return Intl.message(
+      "Discard",
+      name: "discard",
+    );
+  }
+
   String get viewCart {
     return Intl.message(
       "View Cart",

@@ -11,7 +11,6 @@ import 'package:uuid/uuid.dart';
 import '../../../../data/state_notifier.dart';
 import '../../../../locale/app_localization.dart';
 import '../../../../utils/navigation_util.dart';
-import '../../../../utils/slydo_app_icon_icons.dart';
 import '../../../../utils/util.dart';
 import '../../../../widget/dialog.dart';
 import '../../../../widget/rounded_background_icon.dart';
@@ -342,22 +341,22 @@ class _YarnOptionsState extends State<YarnOptions> {
   showDeleteYarnDialog() {
     showDialogBox(
         context: context,
-        actionOneTextColor: white,
-        actionOneBgColor: mateRed,
-        actionTwoTextColor: blackFont,
-        actionTwoBgColor: greyBorderColor,
-        title: 'Delete',
-        actionTwoText: AppLocalization.of(context)!.cancel,
-        actionOneText: AppLocalization.of(context)!.delete,
+        actionOneTextColor: blackFont,
+        actionOneBgColor: greyBorderColor,
+        actionTwoTextColor: white,
+        actionTwoBgColor: mateRed,
+        title: 'Delete Yarn',
+        actionOneText: AppLocalization.of(context)!.discard,
+        actionTwoText: AppLocalization.of(context)!.continueMsg,
         description: 'Are you sure you want to delete this yarn?',
         roundedBackgroundIcon: RoundedBackgroundIcon(
           enableMargin: false,
           width: 90,
           height: 90,
-          image: Icon(SlydoAppIcon.delete, color: mateRed),
+          image: Image.asset('assets/images/delete_dialog_icon.png'),
         ),
-        leftButtonOnPressed: () => deleteYarnAndQuestion(),
-        rightButtonOnPressed: () {
+        rightButtonOnPressed: () => deleteYarnAndQuestion(),
+        leftButtonOnPressed: () {
           return Navigator.pop(context);
         });
   }
@@ -365,25 +364,25 @@ class _YarnOptionsState extends State<YarnOptions> {
   showDeleteYarnCommentDialog() {
     showDialogBox(
         context: context,
-        actionOneTextColor: white,
-        actionOneBgColor: mateRed,
-        actionTwoTextColor: blackFont,
-        actionTwoBgColor: greyBorderColor,
-        title: 'Delete',
-        actionTwoText: AppLocalization.of(context)!.cancel,
-        actionOneText: AppLocalization.of(context)!.delete,
+        actionOneTextColor: blackFont,
+        actionOneBgColor: greyBorderColor,
+        actionTwoTextColor: white,
+        actionTwoBgColor: mateRed,
+        title: 'Delete Comment',
+        actionOneText: AppLocalization.of(context)!.discard,
+        actionTwoText: AppLocalization.of(context)!.continueMsg,
         description: 'Are you sure you want to delete this comment?',
         roundedBackgroundIcon: RoundedBackgroundIcon(
           enableMargin: false,
           width: 90,
           height: 90,
-          image: Icon(SlydoAppIcon.delete, color: mateRed),
+          image: Image.asset('assets/images/delete_dialog_icon.png'),
         ),
-        leftButtonOnPressed: () {
+        rightButtonOnPressed: () {
           // Navigator.pop(context);
           return deleteComment();
         },
-        rightButtonOnPressed: () {
+        leftButtonOnPressed: () {
           return Navigator.pop(context);
         });
   }

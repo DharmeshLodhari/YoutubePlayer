@@ -12,8 +12,10 @@ import 'package:Slydo/widget/customized_checkbox_field.dart';
 import 'package:Slydo/widget/customized_dropdown_field.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/delete_product_and_service_confirm_alert.dart';
+import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/image_crop.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
+import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -50,6 +52,7 @@ class _EditServiceState extends State<EditService> {
   String? serviceDescription = "";
   String? serviceCategory = "";
   String? serviceShortDescription = "";
+  String? searchKeyword = "";
   String? servicePrice = "";
   ServiceCategory? selectedServiceCategory;
   bool? serviceIsAvailable = false;
@@ -61,6 +64,7 @@ class _EditServiceState extends State<EditService> {
   TextEditingController serviceShortDescriptionController =
       TextEditingController();
   TextEditingController servicePriceController = TextEditingController();
+  TextEditingController searchKeywordController = TextEditingController();
   List<ServiceCategory>? serviceCategories;
   bool isLoading = false;
   bool isAPILoading = false;
@@ -109,10 +113,12 @@ class _EditServiceState extends State<EditService> {
       // assigning to our edit controllers
 
       serviceTitleController.text = currentService.name!;
-      serviceDescriptionController.text = currentService.description!;
+      serviceDescriptionController.text =
+          messageDecoderWithEmoji(currentService.description) ?? "";
       servicePriceController.text =
           moneyNormalizer(int.parse(currentService.price!)).toString();
-      serviceShortDescriptionController.text = currentService.shortDescription!;
+      serviceShortDescriptionController.text =
+          messageDecoderWithEmoji(currentService.shortDescription) ?? "";
 
       serviceImagesFromServer.addAll(currentService.serverImages!);
       serviceName = currentService.name;
@@ -122,6 +128,9 @@ class _EditServiceState extends State<EditService> {
       serviceIsAvailable = currentService.isAvailable;
       serviceAvailableFrom = currentService.availableFrom;
       serviceShortDescription = currentService.shortDescription;
+      searchKeyword = messageDecoderWithEmoji(currentService.searchKeyword);
+      searchKeywordController.text =
+          messageDecoderWithEmoji(currentService.searchKeyword) ?? "";
 
       // assigning the dropdown from currentProduct
       serviceCategories?.forEach((catagory) {
@@ -219,6 +228,8 @@ class _EditServiceState extends State<EditService> {
                       getServiceShortDescription(),
                       SizedBox(height: 10),
                       getServiceDescription(),
+                      SizedBox(height: 10),
+                      getSearchEngineKeyword(),
                       SizedBox(height: 40),
                       getSubmitButton(),
                       SizedBox(height: 40),
@@ -517,6 +528,29 @@ class _EditServiceState extends State<EditService> {
     );
   }
 
+  Widget getSearchEngineKeyword() {
+    return Column(
+      children: [
+        CustomizedTextFormField(
+          controller: searchKeywordController,
+          labelText: "Search Keyword - SEO (Optional)",
+          onChanged: (val) {
+            searchKeyword = val;
+          },
+        ),
+        Text(
+          'These words will help customer see your service online when they search it.',
+          style: TextStyle(
+            color: darkGrey,
+            fontSize: 12,
+            fontWeight: FontWeight.w400,
+            fontFamily: "Inter",
+          ),
+        )
+      ],
+    );
+  }
+
   Widget getServiceDescription() {
     return CustomizedTextFormField(
       maxLines: 5,
@@ -671,7 +705,7 @@ class _EditServiceState extends State<EditService> {
               backgroundColor: mateRed,
               onPressed: () async {
                 FocusScope.of(context).unfocus();
-                deleteProduct();
+                deleteServiceDialog();
               }),
         ),
         SizedBox(
@@ -701,6 +735,29 @@ class _EditServiceState extends State<EditService> {
     );
   }
 
+  void deleteServiceDialog() {
+    showDialogBox(
+      context: context,
+      actionOneTextColor: blackFont,
+      actionOneBgColor: greyBorderColor,
+      actionTwoTextColor: white,
+      actionTwoBgColor: mateRed,
+      title: 'Delete Service',
+      actionOneText: AppLocalization.of(context)!.discard,
+      actionTwoText: AppLocalization.of(context)!.continueMsg,
+      description: 'Are you sure you want to delete this service?',
+      roundedBackgroundIcon: RoundedBackgroundIcon(
+        enableMargin: false,
+        width: 90,
+        height: 90,
+        image: Image.asset('assets/images/delete_dialog_icon.png'),
+      ),
+      rightButtonOnPressed: () {
+        deleteService();
+      },
+    );
+  }
+
   Future<void> editService() async {
     if (_formKey.currentState!.validate()) {
       if (serviceLocalImages.length >= 0) {
@@ -716,6 +773,7 @@ class _EditServiceState extends State<EditService> {
           currentService.price = moneyInputNormalizer(servicePrice!).toString();
           currentService.isAvailable = serviceIsAvailable;
           currentService.availableFrom = serviceAvailableFrom;
+          currentService.searchKeyword = searchKeyword;
 
           await _auth.editService(currentService).then((value) {
             showToast(
@@ -797,7 +855,7 @@ class _EditServiceState extends State<EditService> {
     );
   }
 
-  void deleteProduct() async {
+  void deleteService() async {
     bool? result = await showDialog(
       context: context,
       builder: (context) => ConfirmDelete(),
@@ -821,6 +879,7 @@ class _EditServiceState extends State<EditService> {
     serviceShortDescriptionController.dispose();
     servicePriceController.dispose();
     _scrollController.dispose();
+    searchKeywordController.dispose();
     super.dispose();
   }
 }

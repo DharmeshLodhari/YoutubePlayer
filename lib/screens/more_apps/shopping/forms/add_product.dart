@@ -58,6 +58,7 @@ class _AddProductState extends State<AddProduct> {
   String productName = "";
   String productDescription = "";
   String productShortDescription = "";
+  String searchKeyword = "";
   String productCategory = "";
   String productSubCategory = "";
   String productCondition = "";
@@ -345,6 +346,8 @@ class _AddProductState extends State<AddProduct> {
                       getProductShortDescription(),
                       const SizedBox(height: 10),
                       getProductDescription(),
+                      const SizedBox(height: 10),
+                      getSearchEngineKeyword(),
                       const SizedBox(height: 20),
                       getIsAvailableField(),
                       const SizedBox(height: 16),
@@ -655,6 +658,28 @@ class _AddProductState extends State<AddProduct> {
     );
   }
 
+  Widget getSearchEngineKeyword() {
+    return Column(
+      children: [
+        CustomizedTextFormField(
+          labelText: "Search Keyword - SEO (Optional)",
+          onChanged: (val) {
+            searchKeyword = val;
+          },
+        ),
+        Text(
+          'These words will help customer see your product online when they search it.',
+          style: TextStyle(
+            color: darkGrey,
+            fontSize: 12,
+            fontWeight: FontWeight.w400,
+            fontFamily: "Inter",
+          ),
+        )
+      ],
+    );
+  }
+
   Widget getProductDescription() {
     return CustomizedTextFormField(
       maxLines: 5,
@@ -747,21 +772,6 @@ class _AddProductState extends State<AddProduct> {
           // selectItemCategory();
         },
       ),
-    );
-  }
-
-  Widget getTags() {
-    return CustomizedTextFormField(
-      labelText: "Tags",
-      validator: (val) {
-        if (val.isNotEmpty) {
-          return null;
-        }
-        return AppLocalization.of(context)!.shortDescription;
-      },
-      onChanged: (val) {
-        productShortDescription = val;
-      },
     );
   }
 
@@ -2100,6 +2110,7 @@ class _AddProductState extends State<AddProduct> {
           product.discount = selectedDiscount;
           product.quantity = inventoryCount;
           product.addressId = defaultAddress?.id;
+          product.searchKeyword = searchKeyword;
 
           // product.variant = [];
 

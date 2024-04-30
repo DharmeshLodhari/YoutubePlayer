@@ -1,4 +1,5 @@
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/states_model.dart';
@@ -7,6 +8,8 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_checkbox_field.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
+import 'package:Slydo/widget/dialog.dart';
+import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
@@ -856,13 +859,7 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
                     ? () {}
                     : () async {
                         FocusScope.of(context).unfocus();
-                        isDeleteLoading = true;
-                        if (mounted) setState(() {});
-
-                        await deleteItem();
-
-                        isDeleteLoading = false;
-                        if (mounted) setState(() {});
+                        deleteDispachAddressDialog();
                       },
                 backgroundColor: red,
                 textColor: Colors.white,
@@ -915,6 +912,35 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
       textColor: Colors.white,
       text: "Save",
       isLoading: isAPILoading,
+    );
+  }
+
+  void deleteDispachAddressDialog() {
+    showDialogBox(
+      context: context,
+      actionOneTextColor: blackFont,
+      actionOneBgColor: greyBorderColor,
+      actionTwoTextColor: white,
+      actionTwoBgColor: mateRed,
+      title: 'Delete Dispatch Address',
+      actionOneText: AppLocalization.of(context)!.discard,
+      actionTwoText: AppLocalization.of(context)!.continueMsg,
+      description: 'Are you sure you want to delete this dispatch address?',
+      roundedBackgroundIcon: RoundedBackgroundIcon(
+        enableMargin: false,
+        width: 90,
+        height: 90,
+        image: Image.asset('assets/images/delete_dialog_icon.png'),
+      ),
+      rightButtonOnPressed: () async {
+        isDeleteLoading = true;
+        if (mounted) setState(() {});
+
+        await deleteItem();
+
+        isDeleteLoading = false;
+        if (mounted) setState(() {});
+      },
     );
   }
 

@@ -160,7 +160,7 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
           });
         });
     }
-    controller.animateTo(5.0);
+    // controller.animateTo(5.0);
     pageController = widget.pageCtrl;
 
     super.initState();
@@ -272,16 +272,16 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
 
                                     showDialogBox(
                                       context: context,
-                                      actionOneTextColor: white,
-                                      actionOneBgColor: mateRed,
-                                      actionTwoTextColor: blackFont,
-                                      actionTwoBgColor: greyBorderColor,
-                                      title:
-                                          AppLocalization.of(context)!.delete,
-                                      actionTwoText:
-                                          AppLocalization.of(context)!.cancel,
+                                      actionOneTextColor: blackFont,
+                                      actionOneBgColor: greyBorderColor,
+                                      actionTwoTextColor: white,
+                                      actionTwoBgColor: mateRed,
+                                      title: 'Delete Moment',
                                       actionOneText:
-                                          AppLocalization.of(context)!.delete,
+                                          AppLocalization.of(context)!.discard,
+                                      actionTwoText:
+                                          AppLocalization.of(context)!
+                                              .continueMsg,
                                       description:
                                           'Are you sure you want to delete this moment?',
                                       roundedBackgroundIcon:
@@ -292,7 +292,7 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
                                         image: Image.asset(
                                             'assets/images/delete_dialog_icon.png'),
                                       ),
-                                      leftButtonOnPressed: () {
+                                      rightButtonOnPressed: () {
                                         showDialog(
                                             context: context,
                                             builder: (dialogLoadingContext) =>

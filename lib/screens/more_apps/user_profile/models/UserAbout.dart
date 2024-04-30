@@ -13,20 +13,20 @@ class UserAbout {
       this.userAddress,
       this.contact = "",
       this.wallpaper = "",
-      this.openingHours = const [], this.industry});
+      this.openingHours = const [],
+      this.industry});
 
   factory UserAbout.fromJson(Map<String, dynamic> json) {
     return UserAbout(
-      userAddress: UserAddress.fromJson(json['address']),
-      wallpaper: json['wallpaper'] ?? "",
-      contact: json['contact'] ?? "",
-      openingHours: json['opening_hours'] != null
-          ? (json['opening_hours'] as List)
-              .map((i) => OpeningHourForDay.fromJson(i))
-              .toList()
-          : [],
-      industry: Industry.fromJson(json['industry'])
-    );
+        userAddress: UserAddress.fromJson(json['address']),
+        wallpaper: json['wallpaper'] ?? "",
+        contact: json['contact'] ?? "",
+        openingHours: json['opening_hours'] != null
+            ? (json['opening_hours'] as List)
+                .map((i) => OpeningHourForDay.fromJson(i))
+                .toList()
+            : [],
+        industry: Industry.fromJson(json['industry']));
   }
 
   Map<String, dynamic> toJson() {
@@ -42,7 +42,7 @@ class UserAbout {
     }
 
     data['opening_hours'] = this.openingHours.map((v) => v.toJson()).toList();
-    data['industry'] = this.industry!.toJson();
+    data['industry'] = this.industry;
     return data;
   }
 }
@@ -89,13 +89,12 @@ class UserAddress {
     return data;
   }
 }
+
 class Industry {
   String? id;
   String? name;
 
-  Industry(
-      {this.id,
-      this.name});
+  Industry({this.id, this.name});
 
   factory Industry.fromJson(Map<String, dynamic>? json) {
     if (json != null) {
