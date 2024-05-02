@@ -663,7 +663,7 @@ class _AddServiceState extends State<AddService> {
           service.price = moneyInputNormalizer(servicePrice).toString();
           service.availableFrom = serviceAvailableFrom;
           service.isAvailable = serviceIsAvailable;
-          service.searchKeyword = searchKeyword;
+          service.searchKeywords = searchKeyword.split(", ");
 
           await _auth.addService(service).then((value) {
             Navigator.pop(context);

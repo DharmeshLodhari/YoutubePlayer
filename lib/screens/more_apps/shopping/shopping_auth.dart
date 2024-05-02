@@ -327,6 +327,7 @@ class ShoppingAuthService extends AuthService {
         ? []
         : (item['add_ons'] as List).map((i) => AddOns.fromJson(i)).toList();
     product.addressId = item['address_id'];
+    product.searchKeywords = item['search_keywords'];
     // product.qty = item['qty'];
     return product;
   }

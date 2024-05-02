@@ -293,7 +293,7 @@ class Product extends PurchasableItem {
   int? oldPrice;
   bool? isShippable;
   String? addressId;
-  String? searchKeyword;
+  List<String>? searchKeywords;
 
   // DateTime? createdAt;
   // bool? enableInSuperstore;
@@ -369,7 +369,7 @@ class Product extends PurchasableItem {
     this.isShippable,
     this.addressId,
     this.itemAddedBy,
-    this.searchKeyword,
+    this.searchKeywords,
     // this.itemUpdatedBy,
     // this.qty,
   });
@@ -414,7 +414,7 @@ class Product extends PurchasableItem {
       'is_shippable': isShippable,
       'address_id': addressId,
       'added_by': itemAddedBy,
-      'search_keyword': searchKeyword,
+      'search_keywords': searchKeywords,
       // 'item_updated_by': itemUpdatedBy,
       // 'qty': qty,
     };
@@ -468,7 +468,9 @@ class Product extends PurchasableItem {
       'is_shippable': isShippable,
       'address_id': addressId,
       "added_by": itemAddedBy?.map((v) => v.toJson()).toList(),
-      "search_keyword": searchKeyword,
+      "search_keywords": searchKeywords == null
+          ? []
+          : List<String>.from(searchKeywords!.map((x) => x)),
       // "item_updated_by": itemUpdatedBy?.toJson(),
       // 'qty': qty,
     };
@@ -721,7 +723,7 @@ class Product extends PurchasableItem {
       isShippable: this.isShippable,
       addressId: this.addressId,
       itemAddedBy: this.itemAddedBy,
-      searchKeyword: this.searchKeyword,
+      searchKeywords: this.searchKeywords,
       // itemUpdatedBy: this.itemUpdatedBy,
       // qty: qty ?? this.qty,
     );
@@ -1635,7 +1637,7 @@ class Service extends PurchasableItem {
   List<dynamic>? pictureMap;
   double? rating;
   bool? canRate = false;
-  String? searchKeyword;
+  List<String>? searchKeywords;
 
   Service({
     super.id,
@@ -1657,7 +1659,7 @@ class Service extends PurchasableItem {
     this.pictureMap,
     this.rating = 0.0,
     this.canRate,
-    this.searchKeyword,
+    this.searchKeywords,
   });
 
   String? getMerchantUserName() {
@@ -1709,7 +1711,7 @@ class Service extends PurchasableItem {
       "available_from": availableFrom,
       "provider_avatar": providerAvatar,
       "provider_fullname": providerFullName,
-      "search_keyword": searchKeyword,
+      "search_keywords": searchKeywords,
     };
   }
 
@@ -1730,7 +1732,9 @@ class Service extends PurchasableItem {
       'rating': rating,
       "provider_avatar": providerAvatar,
       "provider_fullname": providerFullName,
-      "search_keyword": searchKeyword,
+      "search_keywords": searchKeywords == null
+          ? []
+          : List<String>.from(searchKeywords!.map((x) => x)),
     };
   }
 
@@ -1754,7 +1758,7 @@ class Service extends PurchasableItem {
     pictureMap = object["pictureMap"] ?? [];
     rating = formatRating(double.parse(object['rating']?.toString() ?? "0"));
     canRate = object["can_rate"] ?? false;
-    searchKeyword = object["search_keyword"] ?? "";
+    searchKeywords = object["search_keywords"] ?? "";
   }
 
   List<String> getServiceImages(List? data) {

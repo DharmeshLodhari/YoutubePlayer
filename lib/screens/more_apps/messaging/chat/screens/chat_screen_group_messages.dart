@@ -4694,7 +4694,6 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
           iconData: SlydoAppIcon.edit,
           onTap: () {
             editChatMessage(message: message);
-
             Navigator.pop(context);
           },
         ));
@@ -4702,16 +4701,18 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     }
     if (isDeletable) {
       if (chatMessageAction.isDeletable!) {
-        elements.add(bottomSheetItem(
-          title: messageData['kind'] == "envelope" ? "Cancel" : "Delete",
-          iconData: messageData['kind'] == "envelope"
-              ? SlydoAppIcon.remove
-              : SlydoAppIcon.delete,
-          onTap: () {
-            Navigator.pop(context);
-            deleteChatMessage(message: message);
-          },
-        ));
+        elements.add(
+          bottomSheetItem(
+            title: messageData['kind'] == "envelope" ? "Cancel" : "Delete",
+            iconData: messageData['kind'] == "envelope"
+                ? SlydoAppIcon.remove
+                : SlydoAppIcon.delete,
+            onTap: () {
+              Navigator.pop(context);
+              deleteChatMessageDialog(message: message);
+            },
+          ),
+        );
       }
     }
 
@@ -4727,6 +4728,29 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     }
 
     return elements;
+  }
+
+  void deleteChatMessageDialog({required String message}) {
+    showDialogBox(
+      context: context,
+      actionOneTextColor: blackFont,
+      actionOneBgColor: greyBorderColor,
+      actionTwoTextColor: white,
+      actionTwoBgColor: mateRed,
+      title: 'Delete Message',
+      actionOneText: AppLocalization.of(context)!.discard,
+      actionTwoText: AppLocalization.of(context)!.continueMsg,
+      description: 'Are you sure you want to delete this message?',
+      roundedBackgroundIcon: RoundedBackgroundIcon(
+        enableMargin: false,
+        width: 90,
+        height: 90,
+        image: Image.asset('assets/images/delete_dialog_icon.png'),
+      ),
+      rightButtonOnPressed: () {
+        deleteChatMessage(message: message);
+      },
+    );
   }
 
   void deleteChatMessage({required String message}) async {

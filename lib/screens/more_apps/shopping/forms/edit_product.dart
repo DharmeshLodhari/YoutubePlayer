@@ -276,9 +276,11 @@ class _EditProductState extends State<EditProduct> {
           selectedSubCategory = currentProduct.subCategory;
           selectedCustomCategory = currentProduct.customCategory;
           userTags = currentProduct.tags!;
-          searchKeyword = currentProduct.searchKeyword;
-          searchKeywordController.text =
-              messageDecoderWithEmoji(currentProduct.searchKeyword) ?? "";
+          searchKeyword = messageDecoderWithEmoji(
+              currentProduct.searchKeywords?.join(", "));
+          searchKeywordController.text = messageDecoderWithEmoji(
+                  currentProduct.searchKeywords?.join(", ")) ??
+              "";
 
           print('CURRENT PRODUCT NAME :::: ${selectedProductCategory?.name}');
 
@@ -2362,7 +2364,7 @@ class _EditProductState extends State<EditProduct> {
           currentProduct.trackInventory = trackInventory;
           currentProduct.quantity = inventoryCount;
           currentProduct.addressId = defaultAddress?.id;
-          currentProduct.searchKeyword = searchKeyword;
+          currentProduct.searchKeywords = searchKeyword?.split(", ");
           await _auth
               .editProduct(currentProduct, productAddOnsList)
               .then((value) {

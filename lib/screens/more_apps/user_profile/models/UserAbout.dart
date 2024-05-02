@@ -7,26 +7,33 @@ class UserAbout {
   String wallpaper;
   List<OpeningHourForDay> openingHours;
   Industry? industry;
+  List<String>? searchKeywords;
 
-  UserAbout(
-      {this.bio = '',
-      this.userAddress,
-      this.contact = "",
-      this.wallpaper = "",
-      this.openingHours = const [],
-      this.industry});
+  UserAbout({
+    this.bio = '',
+    this.userAddress,
+    this.contact = "",
+    this.wallpaper = "",
+    this.openingHours = const [],
+    this.industry,
+    this.searchKeywords,
+  });
 
   factory UserAbout.fromJson(Map<String, dynamic> json) {
     return UserAbout(
-        userAddress: UserAddress.fromJson(json['address']),
-        wallpaper: json['wallpaper'] ?? "",
-        contact: json['contact'] ?? "",
-        openingHours: json['opening_hours'] != null
-            ? (json['opening_hours'] as List)
-                .map((i) => OpeningHourForDay.fromJson(i))
-                .toList()
-            : [],
-        industry: Industry.fromJson(json['industry']));
+      userAddress: UserAddress.fromJson(json['address']),
+      wallpaper: json['wallpaper'] ?? "",
+      contact: json['contact'] ?? "",
+      openingHours: json['opening_hours'] != null
+          ? (json['opening_hours'] as List)
+              .map((i) => OpeningHourForDay.fromJson(i))
+              .toList()
+          : [],
+      industry: Industry.fromJson(json['industry']),
+      searchKeywords: json["search_keywords"] == null
+          ? []
+          : List<String>.from(json["search_keywords"]!.map((x) => x)),
+    );
   }
 
   Map<String, dynamic> toJson() {
@@ -42,7 +49,10 @@ class UserAbout {
     }
 
     data['opening_hours'] = this.openingHours.map((v) => v.toJson()).toList();
-    data['industry'] = this.industry;
+    data['industry'] = this.industry?.id;
+    data["search_keywords"] = searchKeywords == null
+        ? []
+        : List<String>.from(searchKeywords!.map((x) => x));
     return data;
   }
 }

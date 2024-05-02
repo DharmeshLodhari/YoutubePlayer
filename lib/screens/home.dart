@@ -650,27 +650,47 @@ class _HomeState extends State<Home> {
 
   Widget _buildIconAndText(
       String imagePath, String title, String ForReadPermission) {
-    return PermissionProtectionWidget(
-      permissionName: title,
-      isShowLock: true,
-      position: 0,
-      isLockForRead: ForReadPermission,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          SvgPicture.asset(
-            imagePath.toSVG(),
-          ),
-          const SizedBox(height: 10),
-          Text(
-            title,
-            style: const TextStyle(
-                fontSize: 13, fontWeight: FontWeight.w600, fontFamily: "Inter"),
-          ),
-        ],
-      ),
-    );
+    return title == ProtectionPermission.services
+        ? Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              SvgPicture.asset(
+                imagePath.toSVG(),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                title,
+                style: const TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    fontFamily: "Inter"),
+              ),
+            ],
+          )
+        : PermissionProtectionWidget(
+            permissionName: title,
+            isShowLock: true,
+            position: 0,
+            isLockForRead: ForReadPermission,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                SvgPicture.asset(
+                  imagePath.toSVG(),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  title,
+                  style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      fontFamily: "Inter"),
+                ),
+              ],
+            ),
+          );
   }
 
   void onClickShortcut(String shortcut) {
@@ -1126,14 +1146,17 @@ class _HomeState extends State<Home> {
   }
 
   Future<void> showNoAddressFoundDialog(BuildContext context) async {
-    showDialogBoxWithTitle(
+    showDialogBoxWithColumnButton(
       context: context,
-      actionTextColor: white,
-      actionBgColor: navyBlue,
+      actionTwoTextColor: white,
+      actionOneTextColor: navyBlue,
+      actionOneBgColor: white,
+      actionTwoBgColor: navyBlue,
       title: AppLocalization.of(context)!.noAddressFound,
-      actionText: AppLocalization.of(context)!.addNewAddress,
+      actionOne: AppLocalization.of(context)!.useCurrentLocation,
+      actionTwo: AppLocalization.of(context)!.addNewAddress,
       description: AppLocalization.of(context)!.addressFoundMsg,
-      ButtonOnPressed: () {
+      ButtonTwoOnPressed: () {
         NavigationUtil.push(context, screen: AddEditShippingAddress())
             .whenComplete(() => getAddressList());
       },
@@ -1141,14 +1164,17 @@ class _HomeState extends State<Home> {
   }
 
   Future<void> showChangeAddressDialog(BuildContext context) async {
-    showDialogBoxWithTitle(
+    showDialogBoxWithColumnButton(
       context: context,
-      actionTextColor: white,
-      actionBgColor: navyBlue,
+      actionTwoTextColor: white,
+      actionOneTextColor: navyBlue,
+      actionOneBgColor: white,
+      actionTwoBgColor: navyBlue,
       title: AppLocalization.of(context)!.changeAddress,
-      actionText: AppLocalization.of(context)!.selectAddress,
+      actionOne: AppLocalization.of(context)!.useCurrentLocation,
+      actionTwo: AppLocalization.of(context)!.changeAddress,
       description: AppLocalization.of(context)!.changeAddressMsg,
-      ButtonOnPressed: () async {
+      ButtonTwoOnPressed: () async {
         await Navigator.of(context)
             .pushNamed(Routes.DISPATCH_ADDRESS)
             .whenComplete(() => getAddressList());

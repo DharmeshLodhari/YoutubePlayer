@@ -810,7 +810,7 @@ class _ExploreMomentsCardState extends State<ExploreMomentsCard> {
       if (e.mediaType == 'video') {
         storyItems.add(Shiddo.pageVideo(e.media!,
             controller: storyController,
-            duration: Duration(seconds: e.duration!),
+            duration: Duration(milliseconds: e.duration!),
             momentsModel: e));
       }
       log('message...first${widget.exploreMomentsModelList[widget.index].moments!.length}');

@@ -134,7 +134,8 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
         widget.videoPlayerControllers.isEmpty) {
       controller = AnimationController(
         vsync: this,
-        duration: Duration(seconds: widget.currentMoment.duration ?? 30),
+        duration:
+            Duration(milliseconds: widget.currentMoment.duration ?? 30000),
       )..addListener(() {
           WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
             if (mounted) setState(() {});
@@ -144,7 +145,8 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
         widget.videoPlayerControllers.isNotEmpty) {
       controller = AnimationController(
         vsync: this,
-        duration: Duration(seconds: widget.currentMoment.duration ?? 30),
+        duration:
+            Duration(milliseconds: widget.currentMoment.duration ?? 30000),
       )..addListener(() {
           WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
             if (mounted) setState(() {});

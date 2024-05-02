@@ -12,7 +12,12 @@ import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:dropdown_search/dropdown_search.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:location/location.dart';
 import 'package:provider/provider.dart';
 
 class AddEditShippingAddress extends StatefulWidget {
@@ -26,6 +31,11 @@ class AddEditShippingAddress extends StatefulWidget {
 
 class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
   final _formKey = GlobalKey<FormState>();
+
+  late GoogleMapController mapController;
+  LocationData? currentLocation;
+  Set<Marker> currentLocationMarker = <Marker>{};
+  String? _mapStyle;
 
   bool isAPILoading = false;
 
@@ -49,6 +59,12 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
 
   @override
   void initState() {
+    getCurrentLocation();
+
+    rootBundle.loadString('assets/map_style.json').then((string) {
+      _mapStyle = string;
+    });
+
     if (widget.shippingAddress != null) {
       isEdit = true;
     }
@@ -60,6 +76,87 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
       getShippingStates();
     });
     super.initState();
+  }
+
+  void getCurrentLocation() async {
+    Location location = Location();
+
+    // Request permission to access the device's location
+    bool serviceEnabled = await location.serviceEnabled();
+    if (!serviceEnabled) {
+      serviceEnabled = await location.requestService();
+      if (!serviceEnabled) {
+        print('Location services are disabled.');
+        return;
+      }
+    }
+
+    // Check if permission to access location is granted
+    PermissionStatus permissionGranted = await location.hasPermission();
+    if (permissionGranted == PermissionStatus.denied) {
+      permissionGranted = await location.requestPermission();
+      if (permissionGranted != PermissionStatus.granted) {
+        print('Location permission denied.');
+        return;
+      }
+    }
+
+    try {
+      if (isEdit) {
+        currentLocationMarker = {
+          Marker(
+            markerId: MarkerId('currentLocation'),
+            position: LatLng(
+                shippingAddress.latitude ?? 0, shippingAddress.longitude ?? 0),
+            infoWindow: InfoWindow(title: 'Current Location'),
+          )
+        };
+      } else {
+        currentLocation = await location.getLocation();
+
+        if (currentLocation != null) {
+          currentLocationMarker = {
+            Marker(
+              markerId: MarkerId('currentLocation'),
+              position: LatLng(currentLocation?.latitude ?? 0,
+                  currentLocation?.longitude ?? 0),
+              infoWindow: InfoWindow(title: 'Current Location'),
+            )
+          };
+        }
+      }
+    } catch (e) {
+      debugPrint('Error getting location: $e');
+    }
+    // final LocationData location = await _locationTracker.getLocation();
+  }
+
+  void _onMapCreated(GoogleMapController controller) {
+    setState(() {
+      controller.setMapStyle(_mapStyle);
+      mapController = controller;
+    });
+  }
+
+  void _changeLocation(LatLng newLocation) {
+    LocationData currentLocation = LocationData.fromMap({
+      'latitude': newLocation.latitude,
+      'longitude': newLocation.longitude,
+    });
+
+    setState(() {
+      currentLocation = currentLocation;
+      debugPrint(
+          'getChangeLocation: ${currentLocation.latitude}, ${currentLocation.longitude}');
+      currentLocationMarker = {
+        Marker(
+          markerId: MarkerId('currentLocation'),
+          position: newLocation,
+          infoWindow: InfoWindow(title: 'Current Location'),
+        )
+      };
+    });
+    mapController.animateCamera(CameraUpdate.newLatLng(newLocation));
   }
 
   void getShippingStates() async {
@@ -190,6 +287,10 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 const SizedBox(height: 20),
+                showMapLocation(),
+                const SizedBox(
+                  height: 16,
+                ),
                 addTitleField(),
                 const SizedBox(
                   height: 16,
@@ -249,6 +350,40 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
       onPressed: () {
         Navigator.pop(context);
       },
+    );
+  }
+
+  Widget showMapLocation() {
+    return Container(
+      height: 200,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(5),
+        color: greyBorderColor,
+      ),
+      child: currentLocation == null && isEdit == false
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : GoogleMap(
+              onMapCreated: _onMapCreated,
+              initialCameraPosition: CameraPosition(
+                target: isEdit
+                    ? LatLng(shippingAddress.latitude ?? 0,
+                        shippingAddress.longitude ?? 0)
+                    : LatLng(currentLocation?.latitude ?? 0,
+                        currentLocation?.longitude ?? 0),
+                zoom: 15.0,
+              ),
+              markers: currentLocationMarker,
+              onTap: (LatLng location) {
+                _changeLocation(location);
+              },
+              gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>[
+                new Factory<OneSequenceGestureRecognizer>(
+                  () => new EagerGestureRecognizer(),
+                ),
+              ].toSet(),
+            ),
     );
   }
 
@@ -432,65 +567,65 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
     );
   }
 
-  Widget stateDropdown() {
-    return DropdownButtonFormField2(
-      buttonHeight: 50,
-      isExpanded: true,
-      value: selectedState,
-      style: TextStyle(
-        fontSize: 16,
-        color: blackFont,
-        fontWeight: FontWeight.w600,
-      ),
-      decoration: InputDecoration(
-        contentPadding: EdgeInsets.symmetric(horizontal: 0),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(
-            color: greyBorderColor,
-            width: 1.0,
-          ),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(
-            color: greyBorderColor,
-            width: 1.0,
-          ),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(
-            color: greyBorderColor,
-            width: 1.0,
-          ),
-        ),
-      ),
-      items: itemList.map((StatesModel item) {
-        return DropdownMenuItem<String>(
-          value: item.name,
-          child: Text(item.name!),
-        );
-      }).toList(),
-      onChanged: (String? value) async {
-        StatesModel picked =
-            itemList.firstWhere((element) => element.name == value);
-        selectedCity = null;
-        await getShippingCities(picked.isoCode);
-        shippingAddress.stateName = picked.name;
-        setState(() {
-          selectedState = value!;
-        });
-      },
-      validator: (String? value) {
-        if (value != null && value.isNotEmpty) {
-          return null;
-        } else {
-          return 'Pick a state';
-        }
-      },
-    );
-  }
+  // Widget stateDropdown() {
+  //   return DropdownButtonFormField2(
+  //     buttonHeight: 50,
+  //     isExpanded: true,
+  //     value: selectedState,
+  //     style: TextStyle(
+  //       fontSize: 16,
+  //       color: blackFont,
+  //       fontWeight: FontWeight.w600,
+  //     ),
+  //     decoration: InputDecoration(
+  //       contentPadding: EdgeInsets.symmetric(horizontal: 0),
+  //       enabledBorder: OutlineInputBorder(
+  //         borderRadius: BorderRadius.circular(10),
+  //         borderSide: BorderSide(
+  //           color: greyBorderColor,
+  //           width: 1.0,
+  //         ),
+  //       ),
+  //       focusedBorder: OutlineInputBorder(
+  //         borderRadius: BorderRadius.circular(10),
+  //         borderSide: BorderSide(
+  //           color: greyBorderColor,
+  //           width: 1.0,
+  //         ),
+  //       ),
+  //       errorBorder: OutlineInputBorder(
+  //         borderRadius: BorderRadius.circular(10),
+  //         borderSide: BorderSide(
+  //           color: greyBorderColor,
+  //           width: 1.0,
+  //         ),
+  //       ),
+  //     ),
+  //     items: itemList.map((StatesModel item) {
+  //       return DropdownMenuItem<String>(
+  //         value: item.name,
+  //         child: Text(item.name!),
+  //       );
+  //     }).toList(),
+  //     onChanged: (String? value) async {
+  //       StatesModel picked =
+  //           itemList.firstWhere((element) => element.name == value);
+  //       selectedCity = null;
+  //       await getShippingCities(picked.isoCode);
+  //       shippingAddress.stateName = picked.name;
+  //       setState(() {
+  //         selectedState = value!;
+  //       });
+  //     },
+  //     validator: (String? value) {
+  //       if (value != null && value.isNotEmpty) {
+  //         return null;
+  //       } else {
+  //         return 'Pick a state';
+  //       }
+  //     },
+  //   );
+  // }
 
   Widget stateDropdownSearch() {
     return DropdownSearch<String>(

@@ -2110,7 +2110,7 @@ class _AddProductState extends State<AddProduct> {
           product.discount = selectedDiscount;
           product.quantity = inventoryCount;
           product.addressId = defaultAddress?.id;
-          product.searchKeyword = searchKeyword;
+          product.searchKeywords = searchKeyword.split(", ");
 
           // product.variant = [];
 

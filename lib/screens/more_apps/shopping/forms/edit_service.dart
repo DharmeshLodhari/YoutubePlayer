@@ -128,9 +128,11 @@ class _EditServiceState extends State<EditService> {
       serviceIsAvailable = currentService.isAvailable;
       serviceAvailableFrom = currentService.availableFrom;
       serviceShortDescription = currentService.shortDescription;
-      searchKeyword = messageDecoderWithEmoji(currentService.searchKeyword);
+      searchKeyword =
+          messageDecoderWithEmoji(currentService.searchKeywords?.join(", "));
       searchKeywordController.text =
-          messageDecoderWithEmoji(currentService.searchKeyword) ?? "";
+          messageDecoderWithEmoji(currentService.searchKeywords?.join(", ")) ??
+              "";
 
       // assigning the dropdown from currentProduct
       serviceCategories?.forEach((catagory) {
@@ -773,7 +775,7 @@ class _EditServiceState extends State<EditService> {
           currentService.price = moneyInputNormalizer(servicePrice!).toString();
           currentService.isAvailable = serviceIsAvailable;
           currentService.availableFrom = serviceAvailableFrom;
-          currentService.searchKeyword = searchKeyword;
+          currentService.searchKeywords = searchKeyword?.split(", ");
 
           await _auth.editService(currentService).then((value) {
             showToast(

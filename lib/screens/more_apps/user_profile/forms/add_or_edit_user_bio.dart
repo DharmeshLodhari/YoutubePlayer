@@ -18,7 +18,7 @@ import 'package:Slydo/widget/image_crop.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:dropdown_button2/dropdown_button2.dart';
+import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -53,6 +53,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
   String? industryName;
   List<ProductIndustryResults> industries = [];
   bool loading = false;
+  String searchKeywords = "";
 
   List<String> openingHoursDays = [
     "Monday",
@@ -134,8 +135,12 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
       await getAddress();
       userBioDetail = userBloc.userAbout;
       bioController?.text = messageDecoderWithEmoji(userBloc.user.bio!)!;
+      if (userBioDetail?.searchKeywords != null) {
+        searchKeywords = userBioDetail?.searchKeywords?.join(", ") ?? "";
+      }
       if (userBioDetail?.industry != null) {
         industryId = userBioDetail?.industry?.id ?? "";
+        industryName = userBioDetail?.industry?.name ?? "";
       }
       if (userBioDetail?.userAddress?.addressLine1 != null) {
         addressLine1Controller?.text =
@@ -302,6 +307,8 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
           addBioField(),
           if (userBloc.user.type == "Business") industryDropdown(),
           SizedBox(height: 20),
+          getSearchEngineKeyword(),
+          SizedBox(height: 20),
           addContactNumberField(),
           SizedBox(height: 20),
           addAddressLine1Field(),
@@ -338,51 +345,88 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
           ),
         ),
         SizedBox(height: 6),
-        DropdownButtonFormField2(
-          buttonHeight: 50,
-          isExpanded: true,
-          value: industryId,
-          style: TextStyle(
-            fontSize: 16,
-            color: blackFont,
-            fontWeight: FontWeight.w600,
-          ),
-          decoration: InputDecoration(
-            contentPadding: EdgeInsets.symmetric(horizontal: 0),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(
-                color: greyBorderColor,
-                width: 1.0,
+        DropdownSearch<String>(
+          popupProps: PopupProps.dialog(
+              showSearchBox: true,
+              searchFieldProps: TextFieldProps(
+                cursorColor: navyBlue,
+                decoration: InputDecoration(
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(
+                      color: greyBorderColor,
+                      width: 1.0,
+                    ),
+                  ),
+                  disabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(
+                      color: greyBorderColor,
+                      width: 1.0,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(
+                      color: navyBlue,
+                      width: 1.0,
+                    ),
+                  ),
+                  errorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(
+                      color: greyBorderColor,
+                      width: 1.0,
+                    ),
+                  ),
+                  focusedErrorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(
+                      color: greyBorderColor,
+                      width: 1.0,
+                    ),
+                  ),
+                ),
+              )),
+          dropdownDecoratorProps: DropDownDecoratorProps(
+            dropdownSearchDecoration: InputDecoration(
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: greyBorderColor,
+                  width: 1.0,
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: greyBorderColor,
+                  width: 1.0,
+                ),
+              ),
+              errorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: greyBorderColor,
+                  width: 1.0,
+                ),
               ),
             ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(
-                color: greyBorderColor,
-                width: 1.0,
-              ),
-            ),
-            errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(
-                color: greyBorderColor,
-                width: 1.0,
-              ),
+            baseStyle: TextStyle(
+              fontSize: 16,
+              color: blackFont,
+              fontWeight: FontWeight.w600,
             ),
           ),
           items: industries.map((ProductIndustryResults item) {
-            return DropdownMenuItem<String>(
-              value: item.id,
-              child: Text(item.name!),
-            );
+            return messageDecoderWithEmoji(item.name) ?? "";
           }).toList(),
           onChanged: (String? value) {
             setState(() {
-              industryId = value!;
+              industryName = value!;
               var selectedIndustry =
-                  industries.firstWhere((industry) => industry.id == value);
-              industryName = selectedIndustry.name;
+                  industries.firstWhere((industry) => industry.name == value);
+              industryId = selectedIndustry.id;
             });
           },
           validator: (String? value) {
@@ -392,7 +436,63 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
               return 'Pick an industry';
             }
           },
+          selectedItem: industryName,
         ),
+        // DropdownButtonFormField2(
+        //   buttonHeight: 50,
+        //   isExpanded: true,
+        //   value: industryId,
+        //   style: TextStyle(
+        //     fontSize: 16,
+        //     color: blackFont,
+        //     fontWeight: FontWeight.w600,
+        //   ),
+        //   decoration: InputDecoration(
+        //     contentPadding: EdgeInsets.symmetric(horizontal: 0),
+        //     enabledBorder: OutlineInputBorder(
+        //       borderRadius: BorderRadius.circular(10),
+        //       borderSide: BorderSide(
+        //         color: greyBorderColor,
+        //         width: 1.0,
+        //       ),
+        //     ),
+        //     focusedBorder: OutlineInputBorder(
+        //       borderRadius: BorderRadius.circular(10),
+        //       borderSide: BorderSide(
+        //         color: greyBorderColor,
+        //         width: 1.0,
+        //       ),
+        //     ),
+        //     errorBorder: OutlineInputBorder(
+        //       borderRadius: BorderRadius.circular(10),
+        //       borderSide: BorderSide(
+        //         color: greyBorderColor,
+        //         width: 1.0,
+        //       ),
+        //     ),
+        //   ),
+        //   items: industries.map((ProductIndustryResults item) {
+        //     return DropdownMenuItem<String>(
+        //       value: item.id,
+        //       child: Text(item.name!),
+        //     );
+        //   }).toList(),
+        //   onChanged: (String? value) {
+        //     setState(() {
+        //       industryId = value!;
+        //       // var selectedIndustry =
+        //       //     industries.firstWhere((industry) => industry.id == value);
+        //       // industryName = selectedIndustry.name;
+        //     });
+        //   },
+        //   validator: (String? value) {
+        //     if (value != null && value.isNotEmpty) {
+        //       return null;
+        //     } else {
+        //       return 'Pick an industry';
+        //     }
+        //   },
+        // ),
       ],
     );
   }
@@ -829,6 +929,28 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
         }
         return "Invalid Contact number";
       },
+    );
+  }
+
+  Widget getSearchEngineKeyword() {
+    return Column(
+      children: [
+        CustomizedTextFormField(
+          labelText: "SEO (Optional)",
+          onChanged: (val) {
+            searchKeywords = val;
+          },
+        ),
+        Text(
+          'These keywords will help google recommend your business when they search online.',
+          style: TextStyle(
+            color: darkGrey,
+            fontSize: 12,
+            fontWeight: FontWeight.w400,
+            fontFamily: "Inter",
+          ),
+        )
+      ],
     );
   }
 
@@ -1270,7 +1392,9 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
     userBioDetail?.userAddress?.city = cityController!.text.trim();
     userBioDetail?.contact = contactNumberController!.text.trim();
     userBioDetail?.industry?.id = industryId;
-    userBioDetail?.industry?.name = industryName;
+    userBioDetail?.searchKeywords = searchKeywords.split(", ");
+    ;
+    // userBioDetail?.industry?.name = industryName;
 
     addOpeningHoursToUserAboutObject();
   }
