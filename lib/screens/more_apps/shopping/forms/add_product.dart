@@ -54,6 +54,7 @@ class _AddProductState extends State<AddProduct> {
 
   // TextEditingController _myController = TextEditingController();
   TextfieldTagsController _myController = TextfieldTagsController();
+  TextfieldTagsController textfieldTagsController = TextfieldTagsController();
   List<PickedFile> productImages = [];
   String productName = "";
   String productDescription = "";
@@ -661,6 +662,12 @@ class _AddProductState extends State<AddProduct> {
   Widget getSearchEngineKeyword() {
     return Column(
       children: [
+        // CustomTextFieldTag(
+        //     textfieldTagsController: textfieldTagsController,
+        //     readOnly: false,
+        //     onTap: (String tag) {
+        //       debugPrint("$tag");
+        //     }),
         CustomizedTextFormField(
           labelText: "Search Keyword - SEO (Optional)",
           onChanged: (val) {
@@ -1313,6 +1320,7 @@ class _AddProductState extends State<AddProduct> {
           height: 6,
         ),
         CustomTextFieldTag(
+          initialTags: ["Test"],
           textfieldTagsController: _myController,
           onTap: (String tag) {
             setState(() {
@@ -2945,6 +2953,7 @@ class _AddProductState extends State<AddProduct> {
   void dispose() {
     _scrollController.dispose();
     _myController.dispose();
+    textfieldTagsController.dispose();
     userTags = [];
     super.dispose();
   }

@@ -2,6 +2,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+
 import '../../../../utils/colors.dart';
 
 class MomentDashView extends StatefulWidget {
@@ -42,6 +43,20 @@ class _MomentDashViewState extends State<MomentDashView>
     } else {
       controller.lowerBound;
     }
+
+    controller.addListener(() {
+      if (controller.value == 1.0) {
+        if (widget.currentPageViewIndex == widget.lengthOfMoment - 1) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            Navigator.pop(context);
+          });
+          // break;
+        }
+        _pageController?.nextPage(
+            duration: const Duration(milliseconds: 50), curve: Curves.easeIn);
+        controller.reset();
+      }
+    });
 
     super.initState();
   }
@@ -85,15 +100,6 @@ class _MomentDashViewState extends State<MomentDashView>
         ),
       );
       widgets.add(widget);
-
-      if (controller.value == 1.0) {
-        _pageController?.nextPage(
-            duration: const Duration(milliseconds: 50), curve: Curves.easeIn);
-        controller.reset();
-        if (currentIndex == lengthOfMoment) {
-          break;
-        }
-      }
     }
 
     return widgets;

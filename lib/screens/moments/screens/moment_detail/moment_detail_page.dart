@@ -438,9 +438,15 @@ class MediaRendererPageViewState extends State<MediaRendererPageView> {
                 curve: Curves.easeIn);
           },
           onRightSwipe: () {
-            _pageCtrl!.nextPage(
-                duration: const Duration(milliseconds: 200),
-                curve: Curves.easeIn);
+            if (widget.momentsModelList.length - 1 ==
+                _pageCtrl?.page?.toInt()) {
+              widget.onMomentPop;
+              Navigator.pop(context);
+            } else {
+              _pageCtrl!.nextPage(
+                  duration: const Duration(milliseconds: 200),
+                  curve: Curves.easeIn);
+            }
           },
           onMomentPop: widget.onMomentPop,
           pageCtrl: _pageCtrl!,

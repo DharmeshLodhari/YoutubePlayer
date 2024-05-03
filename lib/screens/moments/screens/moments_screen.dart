@@ -804,7 +804,7 @@ class _ExploreMomentsCardState extends State<ExploreMomentsCard> {
         storyItems.add(Shiddo.pageImage(
             url: e.media!,
             controller: storyController,
-            duration: const Duration(seconds: 10),
+            duration: const Duration(milliseconds: 10000),
             momentsModel: e));
       }
       if (e.mediaType == 'video') {

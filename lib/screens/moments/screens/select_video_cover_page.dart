@@ -10,7 +10,6 @@ import 'package:Slydo/widget/image_crop.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class SelectVideoCoverPage extends StatefulWidget {
@@ -141,13 +140,12 @@ class _SelectVideoCoverPageState extends State<SelectVideoCoverPage> {
     return ClipRRect(
       borderRadius: BorderRadius.circular(15),
       child: imagePath == null
-          ? Image.asset(
-              defaultProductAndServiceImage,
-              width: double.infinity,
-              height: double.infinity,
-              colorBlendMode: BlendMode.darken,
-              fit: BoxFit.fill,
-              filterQuality: FilterQuality.high,
+          ? Center(
+              child: Image.asset(
+                defaultProductAndServiceImage,
+                colorBlendMode: BlendMode.darken,
+                filterQuality: FilterQuality.high,
+              ),
             )
           : Image(
               image: FileImage(
@@ -220,16 +218,25 @@ class _SelectVideoCoverPageState extends State<SelectVideoCoverPage> {
   Future<void> deleteFiles() async {
     try {
       // Get the download directory path
-      Directory? downloadDirectory = await getDownloadsDirectory();
-      String? downloadPath = downloadDirectory?.path;
+      // Directory? downloadDirectory = await getDownloadsDirectory();
+      // String? downloadPath = downloadDirectory?.path;
+      // Path to the directory
+      String downloadPath = '/storage/emulated/0/Download';
+
+      // Create a Directory object from the path
+      Directory downloadDirectory = Directory(downloadPath);
 
       // List all files in the download directory
-      List<FileSystemEntity>? fileList = downloadDirectory?.listSync();
+      List<FileSystemEntity>? fileList = downloadDirectory.listSync();
 
       // Iterate through each file and delete if it starts with "extracted_"
       for (FileSystemEntity file in fileList ?? []) {
         if (file is File && file.path.startsWith('$downloadPath/extracted_')) {
-          await file.delete();
+          if (await file.exists()) {
+            file.delete();
+          } else {
+            print('Error');
+          }
         }
       }
 

@@ -414,7 +414,7 @@ class Product extends PurchasableItem {
       'is_shippable': isShippable,
       'address_id': addressId,
       'added_by': itemAddedBy,
-      'search_keywords': searchKeywords,
+      'search_keywords': searchKeywords?.join(", "),
       // 'item_updated_by': itemUpdatedBy,
       // 'qty': qty,
     };

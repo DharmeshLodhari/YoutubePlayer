@@ -87,9 +87,9 @@ class MomentVideoPlayerState extends State<MomentVideoPlayer> {
   @override
   void dispose() async {
     //await videoPlayerManager.dispose();
-    for (var controller in widget.videoPlayerControllers) {
-      controller.dispose();
-    }
+    // for (var controller in widget.videoPlayerControllers) {
+    //   controller.dispose();
+    // }
     try {
       _controller.dispose();
     } catch (error) {}
@@ -149,32 +149,36 @@ class MomentVideoPlayerState extends State<MomentVideoPlayer> {
       );
     }
     return Container(
-      color: greyBorderColor,
       child: Center(
         child: Stack(
           fit: StackFit.expand,
           children: [
-            widget.momentsModel.mediaPoster != null
-                ? CachedNetworkImage(
-                    imageUrl: widget.momentsModel.mediaPoster!,
-                    fit: BoxFit.fitWidth,
-                    memCacheHeight:
-                        (MediaQuery.of(context).size.height * 0.8).toInt(),
-                    placeholder: (context, _) {
-                      return Container(color: Colors.grey);
-                    },
-                  )
-                : Container(
-                    decoration: BoxDecoration(
-                      color: const Color(0XFFdcdcdc).withOpacity(0.5),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
+            _buildBackground(),
             Center(child: CircularLoadingIndicator()),
           ],
         ),
       ),
     );
+  }
+
+  Widget _buildBackground() {
+    debugPrint("poster ${widget.momentsModel.mediaPoster}");
+    if (widget.momentsModel.mediaPoster != null)
+      return CachedNetworkImage(
+        imageUrl: widget.momentsModel.mediaPoster!,
+        fit: BoxFit.fitWidth,
+        memCacheHeight: (MediaQuery.of(context).size.height * 0.8).toInt(),
+        placeholder: (context, _) {
+          return Container(color: black);
+        },
+      );
+    else
+      return Container(
+        decoration: BoxDecoration(
+          color: black,
+          borderRadius: BorderRadius.circular(10),
+        ),
+      );
   }
 
   showMediaIconFor2Seconds() {
