@@ -99,6 +99,7 @@ class _DashboardState extends State<Dashboard> {
         KeepAlivePage(wantKeepAlive: true, child: ConnectionDashboard()),
         GeneralSettingScreen(),
       ];
+      setState(() {});
     });
 
     if (mounted) MainSocketMessageHandler().dispose();

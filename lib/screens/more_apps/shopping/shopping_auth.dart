@@ -563,7 +563,11 @@ class ShoppingAuthService extends AuthService {
     debugPrint('DATA from ---> $_data');
 
     _data.forEach((k, v) {
-      request.fields[k] = v.toString();
+      if (k == "search_keywords") {
+        request.fields[k] = jsonEncode(v);
+      } else {
+        request.fields[k] = v.toString();
+      }
     });
 
     debugPrint('DATA from two ---> $_data');
@@ -813,8 +817,13 @@ class ShoppingAuthService extends AuthService {
     }
 
     _data.forEach((k, v) {
-      request.fields[k] = v.toString();
+      if (k == "search_keywords") {
+        request.fields[k] = jsonEncode(v);
+      } else {
+        request.fields[k] = v.toString();
+      }
     });
+
     List<MultipartFile> newList = [];
     for (int i = 0; i < product.localImages!.length; i++) {
       // Add fields
@@ -1030,7 +1039,11 @@ class ShoppingAuthService extends AuthService {
     _data["image_count"] = service.localImages!.length;
 
     _data.forEach((k, v) {
-      request.fields[k] = v.toString();
+      if (k == "search_keywords") {
+        request.fields[k] = jsonEncode(v);
+      } else {
+        request.fields[k] = v.toString();
+      }
     });
     List<MultipartFile> newList = [];
     for (int i = 0; i < service.localImages!.length; i++) {
@@ -1080,7 +1093,11 @@ class ShoppingAuthService extends AuthService {
     _data["image_count"] = service.localImages!.length;
 
     _data.forEach((k, v) {
-      request.fields[k] = v.toString();
+      if (k == "search_keywords") {
+        request.fields[k] = jsonEncode(v);
+      } else {
+        request.fields[k] = v.toString();
+      }
     });
 
     if (service.localImages!.length > 0) {

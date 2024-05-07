@@ -532,11 +532,15 @@ class UserAuth extends AuthService {
       Map<String, dynamic> data = userAbout.toJson();
 
       data.forEach((key, value) {
-        request.fields[key] =
-            (value is List<Map> || value is Map) ? jsonEncode(value) : value;
+        if (key == "search_keywords") {
+          request.fields[key] = jsonEncode(value);
+        } else {
+          request.fields[key] =
+              (value is List<Map> || value is Map) ? jsonEncode(value) : value;
+        }
       });
 
-      request.fields['nickname'] = nickName!;
+      request.fields['nickname'] = nickName ?? "";
       debugPrint("Files send:- d ${request.files}");
 
       //create multipart using filepath, string or bytes

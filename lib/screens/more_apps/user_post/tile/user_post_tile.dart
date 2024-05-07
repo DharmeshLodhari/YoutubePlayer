@@ -340,6 +340,7 @@ class _PostTileState extends State<PostTile> {
                                 imageUrl: widget.post?.image ?? "",
                               ),
                       ),
+                      // ignore: prefer_if_elements_to_conditional_expressions
                       widget.showAuthorDetails
                           ? Positioned(
                               left: 10,

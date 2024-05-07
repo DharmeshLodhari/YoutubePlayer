@@ -103,7 +103,8 @@ Widget buildStackedFollowersWidget(
     double radiusShift: 10}) {
   if (images!.length != 0) {
     final items = images
-        .map((image) => buildImage(image.avatar ?? '', image.fullName ?? ''))
+        .map((image) => buildImage(
+            image.avatar ?? '', image.fullName ?? '', image.accountType ?? ""))
         .toList();
 
     return Padding(
@@ -132,8 +133,10 @@ Widget buildMultipleFollowersWidget(
       items: [
         ...List.generate(
             4,
-            (index) => buildImage(userImages![index].avatar ?? "",
-                userImages[index].fullName ?? '')),
+            (index) => buildImage(
+                userImages![index].avatar ?? "",
+                userImages[index].fullName ?? '',
+                userImages[index].accountType ?? "")),
         if (userImages != null && userImages.length != 4)
           buildFollowersCountWidget(userImages,
               radiusWidth: radiusWidth, radiusHeight: radiusHeight),

@@ -96,6 +96,7 @@ class _HomeState extends State<Home> {
   List<ExploreMomentsModel> exploreMomentsList = [];
   List<MomentsModel> momentsList = [];
   ScrollController _myConnectionsScrollController = ScrollController();
+  late SharedPreferences _sharedPreferences;
 
   List<Yarn> yarnTopicList = [];
   late YarnDashboardBloc yarnDashboardBloc;
@@ -114,8 +115,6 @@ class _HomeState extends State<Home> {
     getYarnList(categoryId: null);
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-      SharedPreferences _sharedPreferences;
-
       _sharedPreferences = await SharedPreferences.getInstance();
       bool isAppTutorialDone = false;
       try {
@@ -321,9 +320,9 @@ class _HomeState extends State<Home> {
       }
     }
 
-    accountNumber = virtualAccount!.accountNumber!;
-    bankName = virtualAccount!.financialInstitution!.name!;
-    accountName = virtualAccount!.accountName!;
+    accountNumber = virtualAccount?.accountNumber ?? "";
+    bankName = virtualAccount?.financialInstitution?.name ?? "";
+    accountName = virtualAccount?.accountName ?? "";
 
     if (mounted) setState(() {});
   }
@@ -1009,6 +1008,7 @@ class _HomeState extends State<Home> {
   }
 
   Widget _appBar() {
+    Color borderColor = getUserTypeColorByType(type: userBloc.user.type ?? "");
     return AppBar(
       backgroundColor: Colors.transparent,
       automaticallyImplyLeading: false,
@@ -1018,8 +1018,14 @@ class _HomeState extends State<Home> {
         onTap: () {
           profileAndroidSheet();
         },
-        child: userImageUserInitialsPic(
-            userBloc.user.avatar ?? "", userBloc.user.fullName ?? "", 25, 45),
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border.all(color: borderColor, width: 2),
+            shape: BoxShape.circle,
+          ),
+          child: userImageUserInitialsPic(
+              userBloc.user.avatar ?? "", userBloc.user.fullName ?? "", 25, 45),
+        ),
       ),
       title: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1152,10 +1158,14 @@ class _HomeState extends State<Home> {
       actionOneTextColor: navyBlue,
       actionOneBgColor: white,
       actionTwoBgColor: navyBlue,
+      isOverlayTapDismiss: false,
       title: AppLocalization.of(context)!.noAddressFound,
       actionOne: AppLocalization.of(context)!.useCurrentLocation,
       actionTwo: AppLocalization.of(context)!.addNewAddress,
       description: AppLocalization.of(context)!.addressFoundMsg,
+      ButtonOneOnPressed: () {
+        userBloc.updateLocation = true;
+      },
       ButtonTwoOnPressed: () {
         NavigationUtil.push(context, screen: AddEditShippingAddress())
             .whenComplete(() => getAddressList());
@@ -1170,10 +1180,14 @@ class _HomeState extends State<Home> {
       actionOneTextColor: navyBlue,
       actionOneBgColor: white,
       actionTwoBgColor: navyBlue,
+      isOverlayTapDismiss: false,
       title: AppLocalization.of(context)!.changeAddress,
       actionOne: AppLocalization.of(context)!.useCurrentLocation,
       actionTwo: AppLocalization.of(context)!.changeAddress,
       description: AppLocalization.of(context)!.changeAddressMsg,
+      ButtonOneOnPressed: () {
+        userBloc.updateLocation = true;
+      },
       ButtonTwoOnPressed: () async {
         await Navigator.of(context)
             .pushNamed(Routes.DISPATCH_ADDRESS)
@@ -1194,51 +1208,47 @@ class _HomeState extends State<Home> {
       },
       child: Row(
         children: [
-          Container(
-            padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 5.0),
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(15.0),
-                border: Border.all(color: navyBlue)),
-            child: Row(
-              children: [
-                Icon(
-                  Icons.location_pin,
-                  color: Colors.black,
-                  size: 18.0,
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 5.0),
-                  child: Text(
-                    _buildLocationText(),
-                    style: TextStyle(
-                        fontSize: 12,
-                        fontFamily: 'Inter',
-                        color: black,
-                        fontWeight: FontWeight.w300),
-                  ),
-                ),
-                Icon(
-                  Icons.keyboard_arrow_down,
-                  color: Colors.black,
-                  size: 15.0,
-                ),
-              ],
+          Icon(
+            Icons.location_pin,
+            color: Colors.black,
+            size: 16.0,
+          ),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 3.0),
+            child: Text(
+              _buildLocationText(),
+              style: TextStyle(
+                fontSize: 12,
+                fontFamily: 'Inter',
+                color: black,
+                fontWeight: FontWeight.w300,
+              ),
             ),
           ),
-          Container(),
+          if (defaultAddress?.city != null &&
+              userBloc.user.isCurrentLocation != true)
+            Icon(
+              Icons.keyboard_arrow_down,
+              color: Colors.black,
+              size: 15.0,
+            ),
         ],
       ),
     );
   }
 
   String _buildLocationText() {
-    if (isEmpty) {
-      return 'Select Location';
+    if (userBloc.user.isCurrentLocation == true) {
+      return 'Using your current location';
     } else {
-      if (defaultAddress?.city == null) {
-        return 'Select Location';
+      if (isEmpty) {
+        return 'Select Address';
       } else {
-        return "${defaultAddress?.city}, ${defaultAddress?.stateName}";
+        if (defaultAddress?.city == null) {
+          return 'Select Address';
+        } else {
+          return "${defaultAddress?.city}, ${defaultAddress?.stateName}";
+        }
       }
     }
   }
@@ -1262,7 +1272,7 @@ class _HomeState extends State<Home> {
       setState(() {
         isLoading = false;
         isEmpty = tempList.isEmpty;
-        if (isEmpty) {
+        if (isEmpty && userBloc.user.isCurrentLocation == false) {
           showNoAddressFoundDialog(context);
         }
         defaultAddress = tempList.firstWhere((element) => element.is_default!);

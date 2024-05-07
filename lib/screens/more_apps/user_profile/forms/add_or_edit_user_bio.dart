@@ -1252,7 +1252,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
         } else {
           isSearchedUserAboutLoading = true;
           if (mounted) setState(() {});
-          String nickName = _nicknameController!.text.trim();
+          String nickName = _nicknameController?.text.trim() ?? "";
 
           UserBloc tempUserBloc = Provider.of<UserBloc>(context, listen: false);
 
@@ -1393,7 +1393,6 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
     userBioDetail?.contact = contactNumberController!.text.trim();
     userBioDetail?.industry?.id = industryId;
     userBioDetail?.searchKeywords = searchKeywords.split(", ");
-    ;
     // userBioDetail?.industry?.name = industryName;
 
     addOpeningHoursToUserAboutObject();

@@ -56,6 +56,7 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
   List<String> states = [];
   late UserBloc userBloc;
   String? name, phone;
+  final Location location = Location();
 
   @override
   void initState() {
@@ -79,7 +80,7 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
   }
 
   void getCurrentLocation() async {
-    Location location = Location();
+    // Location location = Location();
 
     // Request permission to access the device's location
     bool serviceEnabled = await location.serviceEnabled();
@@ -103,33 +104,41 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
 
     try {
       if (isEdit) {
+        currentLocation = LocationData.fromMap({
+          'latitude': shippingAddress.latitude,
+          'longitude': shippingAddress.longitude,
+        });
+      } else {
+        currentLocation = await location.getLocation();
+      }
+      if (currentLocation != null) {
         currentLocationMarker = {
           Marker(
             markerId: MarkerId('currentLocation'),
-            position: LatLng(
-                shippingAddress.latitude ?? 0, shippingAddress.longitude ?? 0),
+            position: LatLng(currentLocation?.latitude ?? 0,
+                currentLocation?.longitude ?? 0),
             infoWindow: InfoWindow(title: 'Current Location'),
           )
         };
-      } else {
-        currentLocation = await location.getLocation();
-
-        if (currentLocation != null) {
-          currentLocationMarker = {
-            Marker(
-              markerId: MarkerId('currentLocation'),
-              position: LatLng(currentLocation?.latitude ?? 0,
-                  currentLocation?.longitude ?? 0),
-              infoWindow: InfoWindow(title: 'Current Location'),
-            )
-          };
-        }
       }
     } catch (e) {
       debugPrint('Error getting location: $e');
     }
     // final LocationData location = await _locationTracker.getLocation();
   }
+
+  // Future<LocationData?> getCurrentLocation() async {
+  //   LocationData? currentLocation;
+  //   try {
+  //     currentLocation = await location.getLocation();
+  //     double? accuracy = currentLocation.accuracy;
+  //     print('Location Accuracy: $accuracy meters');
+  //   } catch (e) {
+  //     print('Error getting location: $e');
+  //   }
+  //   // final LocationData location = await _locationTracker.getLocation();
+  //   return currentLocation;
+  // }
 
   void _onMapCreated(GoogleMapController controller) {
     setState(() {
@@ -1088,6 +1097,8 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
       shippingAddress.first_name = userBloc.user.fullName!.split(" ").first;
       shippingAddress.last_name = userBloc.user.fullName!.split(" ").last;
       shippingAddress.is_residential = shippingAddress.is_residential;
+      shippingAddress.latitude = currentLocation?.latitude;
+      shippingAddress.longitude = currentLocation?.longitude;
 
       await ShoppingAuthService()
           .addUpdateAddress(shippingAddress, isEdit: isEdit)

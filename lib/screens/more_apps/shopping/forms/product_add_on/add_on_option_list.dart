@@ -64,7 +64,9 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
       if (_scrollController.position.pixels ==
               _scrollController.position.maxScrollExtent &&
           _scrollController.position.pixels != 0) {
-        getAddOnOptionList();
+        if (next != null) {
+          getAddOnOptionList();
+        }
       }
     });
 
@@ -88,6 +90,7 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
         noItemInList = true;
         return;
       }
+      addOnOptionList = [];
       count = result['count'];
       next = result['next'];
       previous = result['previous'];
@@ -159,8 +162,11 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
         key: _scaffoldMessengerKey,
         child: Scaffold(
           key: _scaffoldKey,
-          backgroundColor: Colors.white,
+          backgroundColor: lightGrey,
           appBar: appBar() as PreferredSizeWidget?,
+          floatingActionButton: getSubmitButton(),
+          floatingActionButtonLocation:
+              FloatingActionButtonLocation.centerFloat,
           body: SmartRefresher(
               enablePullDown: true,
               header: WaterDropHeader(
@@ -238,63 +244,50 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
   }
 
   Widget _buildAddOnOptionList() {
-    return Stack(
-      children: [
-        noItemInList
-            ? NoItemInList(
-                title: AppLocalization.of(context)!.noAddOnYet,
-                msg: AppLocalization.of(context)!.noAddOnYetSub,
-              )
-            : isLoading && addOnOptionList.isEmpty
-                ? buildLoadingIndicator(isLoading: isLoading)
-                : ListView.builder(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    //+1 for progressbar
-                    itemCount: addOnOptionList.length + 1,
-                    itemBuilder: (BuildContext context, int index) {
-                      if (index == addOnOptionList.length) {
-                        return buildJumpingLoadingIndicator(
-                            isLoading: isLoading);
-                      } else {
-                        return _getSlidableWithLists(
-                            context,
-                            GestureDetector(
-                              onTap: () async {
-                                // toggleAddOnCheckedState(index);
-                                final data = await Navigator.of(context)
-                                    .pushNamed(
-                                        Routes.PRODUCT_ADD_ON_OPTION_UPDATE,
-                                        arguments: {
-                                      'addOnOption': addOnOptionList[index],
-                                      'productId': productId,
-                                    });
+    return noItemInList
+        ? NoItemInList(
+            title: AppLocalization.of(context)!.noAddOnYet,
+            msg: AppLocalization.of(context)!.noAddOnYetSub,
+          )
+        : isLoading && addOnOptionList.isEmpty
+            ? buildLoadingIndicator(isLoading: isLoading)
+            : ListView.builder(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                //+1 for progressbar
+                itemCount: addOnOptionList.length + 1,
+                itemBuilder: (BuildContext context, int index) {
+                  if (index == addOnOptionList.length) {
+                    return buildJumpingLoadingIndicator(isLoading: isLoading);
+                  } else {
+                    return _getSlidableWithLists(
+                        context,
+                        GestureDetector(
+                          onTap: () async {
+                            // toggleAddOnCheckedState(index);
+                            final data = await Navigator.of(context).pushNamed(
+                                Routes.PRODUCT_ADD_ON_OPTION_UPDATE,
+                                arguments: {
+                                  'addOnOption': addOnOptionList[index],
+                                  'productId': productId,
+                                });
 
-                                // Handle the result (map) received from PRODUCT_ADD_ON_OPTION_UPDATE
-                                if (data != null && data is AddOnOption) {
-                                  //save the add-on option details for later use
-                                  // _onRefresh();
-                                  updateItemById(data.id!, data);
-                                  if (mounted) setState(() {});
-                                }
-                              },
-                              child: addOnOptionTile(
-                                  addOnOption: addOnOptionList[index],
-                                  index: index),
-                            ),
-                            addOnOptionList[index]);
-                      }
-                    },
-                    controller: _scrollController,
-                  ),
-        Positioned(
-          bottom: 25, // Adjust the distance from the bottom as needed
-          right: 25,
-          left: 25,
-
-          child: getSubmitButton(),
-        ),
-      ],
-    );
+                            // Handle the result (map) received from PRODUCT_ADD_ON_OPTION_UPDATE
+                            if (data != null && data is AddOnOption) {
+                              //save the add-on option details for later use
+                              // _onRefresh();
+                              updateItemById(data.id!, data);
+                              if (mounted) setState(() {});
+                            }
+                          },
+                          child: addOnOptionTile(
+                              addOnOption: addOnOptionList[index],
+                              index: index),
+                        ),
+                        addOnOptionList[index]);
+                  }
+                },
+                controller: _scrollController,
+              );
   }
 
   Widget addOnOptionTile({required AddOnOption addOnOption, int? index}) {
@@ -387,24 +380,27 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
   }
 
   Widget getSubmitButton() {
-    return CurvedButton(
-      onPressed: isAPILoading
-          ? () {}
-          : () async {
-              FocusScope.of(context).unfocus();
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: CurvedButton(
+        onPressed: isAPILoading
+            ? () {}
+            : () async {
+                FocusScope.of(context).unfocus();
 
-              isAPILoading = true;
-              if (mounted) setState(() {});
+                isAPILoading = true;
+                if (mounted) setState(() {});
 
-              await loadAllCheckedAddOn();
+                await loadAllCheckedAddOn();
 
-              isAPILoading = false;
-              if (mounted) setState(() {});
-            },
-      backgroundColor: navyBlue,
-      textColor: Colors.white,
-      text: "Save",
-      isLoading: isAPILoading,
+                isAPILoading = false;
+                if (mounted) setState(() {});
+              },
+        backgroundColor: navyBlue,
+        textColor: Colors.white,
+        text: "Save",
+        isLoading: isAPILoading,
+      ),
     );
   }
 

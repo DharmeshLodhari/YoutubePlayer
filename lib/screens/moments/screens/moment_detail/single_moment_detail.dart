@@ -155,7 +155,7 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
     } else {
       controller = AnimationController(
         vsync: this,
-        duration: const Duration(milliseconds: 10000),
+        duration: const Duration(seconds: 10),
       )..addListener(() {
           WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
             if (mounted) setState(() {});

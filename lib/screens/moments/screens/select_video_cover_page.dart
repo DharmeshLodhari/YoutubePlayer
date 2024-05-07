@@ -97,42 +97,59 @@ class _SelectVideoCoverPageState extends State<SelectVideoCoverPage> {
 
   Widget _buildBody() {
     return Padding(
-      padding: EdgeInsets.all(25.0),
-      child: Column(
-        children: [
-          Expanded(
-            child: mediaRenderer(),
-          ),
-          SizedBox(height: 20.0),
-          isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : frames.isEmpty
-                  ? const SizedBox.shrink()
-                  : Container(
-                      height: 70,
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        shrinkWrap: true,
-                        itemBuilder: (context, index) => GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              imagePath = frames[index];
-                            });
-                          },
+      padding: const EdgeInsets.all(25.0),
+      child: isLoading
+          ? Center(
+              child: CircularProgressIndicator(
+              color: navyBlue,
+            ))
+          : Column(
+              children: [
+                Expanded(
+                  child: mediaRenderer(),
+                ),
+                const SizedBox(height: 20.0),
+                if (frames.isEmpty)
+                  const SizedBox.shrink()
+                else
+                  Container(
+                    height: 75,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) => GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            imagePath = frames[index];
+                          });
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(5.0),
+                            border: Border.all(
+                              color: imagePath == frames[index]
+                                  ? navyBlue
+                                  : transparent, // Apply border if selected
+                              width: imagePath == frames[index]
+                                  ? 4
+                                  : 0, // Adjust border width as needed
+                            ),
+                          ),
                           child: Image.file(
                             height: 70,
-                            width: 60,
+                            width: 50,
                             File(frames[index]),
                             fit: BoxFit.fill,
                           ),
                         ),
-                        itemCount: frames.length,
                       ),
+                      itemCount: frames.length,
                     ),
-          SizedBox(height: 20.0),
-          _buildButton()
-        ],
-      ),
+                  ),
+                const SizedBox(height: 20.0),
+                _buildButton()
+              ],
+            ),
     );
   }
 
@@ -151,7 +168,7 @@ class _SelectVideoCoverPageState extends State<SelectVideoCoverPage> {
               image: FileImage(
                 File(imagePath ?? ""),
               ),
-              fit: BoxFit.fill,
+              fit: BoxFit.cover,
             ),
     );
   }
@@ -205,11 +222,12 @@ class _SelectVideoCoverPageState extends State<SelectVideoCoverPage> {
       isLoading = true;
     });
     frames = await VideoFrameExtractor.fromNetwork(
-      videoUrl: url,
-      imagesCount: 8,
-      destinationDirectoryPath: '/storage/emulated/0/Download',
-      onProgress: (progress) {},
-    );
+        videoUrl: url,
+        imagesCount: 8,
+        destinationDirectoryPath: '/storage/emulated/0/Download',
+        onProgress: (progress) {},
+        quality: 8);
+    imagePath = frames[0];
     setState(() {
       isLoading = false;
     });

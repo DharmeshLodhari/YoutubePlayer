@@ -36,6 +36,7 @@ class User {
   Staff? staff;
   Permissions? permissions;
   ShippingAddress? defaultAddress;
+  bool? isCurrentLocation;
 
   // Pass in as named parameter in constructor
   User({
@@ -62,6 +63,7 @@ class User {
     this.staff,
     this.permissions,
     this.defaultAddress,
+    this.isCurrentLocation,
   });
 
   factory User.fromJson(Map<String, dynamic> json,

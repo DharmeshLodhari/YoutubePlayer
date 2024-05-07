@@ -474,66 +474,66 @@ class _MomentsScreenState extends State<MomentsScreen> {
           ),
         ),
       );
-    }
-
-    if (contactMomentsList.isEmpty) {
-      return const SizedBox.shrink();
-    }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
+    } else {
+      if (contactMomentsList.isEmpty) {
+        return const SizedBox.shrink();
+      } else {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CircleAvatar(
-              radius: 10,
-              backgroundColor: navyBlue,
-              child: const Icon(
-                Icons.group,
-                color: Colors.white,
-                size: 14,
+            Row(
+              children: [
+                CircleAvatar(
+                  radius: 10,
+                  backgroundColor: navyBlue,
+                  child: const Icon(
+                    Icons.group,
+                    color: Colors.white,
+                    size: 14,
+                  ),
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  "My Friends",
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: blackFont,
+                    // fontSize: 16,P
+                    fontFamily: "Inter",
+                  ),
+                ),
+                const SizedBox(width: 10),
+              ],
+            ),
+            const SizedBox(height: 12),
+            SizedBox(
+              height: 180,
+              child: ListView.builder(
+                shrinkWrap: true,
+                controller: _myConnectionsScrollController,
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                itemCount: contactMomentsList.length + 1,
+                itemBuilder: (BuildContext context, int index) {
+                  if (index == contactMomentsList.length) {
+                    return buildLoadingIndicator(
+                        isLoading: isContactMomentsLoading);
+                  } else {
+                    return ContactMomentsCard(
+                      index: index,
+                      nextPageUrl: nextContactMoments,
+                      userMomentModel: contactMomentsList[index],
+                      listOfConnectionsNames:
+                          contactMomentsList.map((e) => e.owner!).toList(),
+                    );
+                  }
+                },
               ),
             ),
-            const SizedBox(width: 6),
-            Text(
-              "My Friends",
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                color: blackFont,
-                // fontSize: 16,P
-                fontFamily: "Inter",
-              ),
-            ),
-            const SizedBox(width: 10),
           ],
-        ),
-        const SizedBox(height: 12),
-        SizedBox(
-          height: 180,
-          child: ListView.builder(
-            shrinkWrap: true,
-            controller: _myConnectionsScrollController,
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(vertical: 4),
-            itemCount: contactMomentsList.length + 1,
-            itemBuilder: (BuildContext context, int index) {
-              if (index == contactMomentsList.length) {
-                return buildLoadingIndicator(
-                    isLoading: isContactMomentsLoading);
-              } else {
-                return ContactMomentsCard(
-                  index: index,
-                  nextPageUrl: nextContactMoments,
-                  userMomentModel: contactMomentsList[index],
-                  listOfConnectionsNames:
-                      contactMomentsList.map((e) => e.owner!).toList(),
-                );
-              }
-            },
-          ),
-        ),
-      ],
-    );
+        );
+      }
+    }
   }
 
   Widget exploreMomentsListWidget() {
@@ -804,7 +804,7 @@ class _ExploreMomentsCardState extends State<ExploreMomentsCard> {
         storyItems.add(Shiddo.pageImage(
             url: e.media!,
             controller: storyController,
-            duration: const Duration(milliseconds: 10000),
+            duration: const Duration(seconds: 10),
             momentsModel: e));
       }
       if (e.mediaType == 'video') {
