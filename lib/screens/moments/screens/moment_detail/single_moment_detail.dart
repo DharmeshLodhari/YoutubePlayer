@@ -161,6 +161,7 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
             if (mounted) setState(() {});
           });
         });
+      controller.forward();
     }
     // controller.animateTo(5.0);
     pageController = widget.pageCtrl;

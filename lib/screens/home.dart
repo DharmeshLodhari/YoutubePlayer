@@ -96,7 +96,7 @@ class _HomeState extends State<Home> {
   List<ExploreMomentsModel> exploreMomentsList = [];
   List<MomentsModel> momentsList = [];
   ScrollController _myConnectionsScrollController = ScrollController();
-  late SharedPreferences _sharedPreferences;
+  SharedPreferences? _sharedPreferences;
 
   List<Yarn> yarnTopicList = [];
   late YarnDashboardBloc yarnDashboardBloc;
@@ -111,22 +111,23 @@ class _HomeState extends State<Home> {
   void initState() {
     appConfigurationModel = getIt<AppConfigurationBloc>().appConfigurationModel;
 
-    getAddressList();
     getYarnList(categoryId: null);
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
       _sharedPreferences = await SharedPreferences.getInstance();
+      await getAddressList();
       bool isAppTutorialDone = false;
       try {
         isAppTutorialDone =
-            _sharedPreferences.getBool('isAppTutorialDone') ?? false;
+            _sharedPreferences?.getBool('isAppTutorialDone') ?? false;
       } catch (error) {
         isAppTutorialDone = false;
       }
 
       if (!isAppTutorialDone) {
         bool result =
-            await _sharedPreferences.setBool("isAppTutorialDone", true);
+            await _sharedPreferences?.setBool("isAppTutorialDone", true) ??
+                false;
         debugPrint("result:- $result");
         await Future.delayed(const Duration(milliseconds: 1500)).then((value) {
           AppTutorialController().showTutorial(context);
@@ -1163,8 +1164,9 @@ class _HomeState extends State<Home> {
       actionOne: AppLocalization.of(context)!.useCurrentLocation,
       actionTwo: AppLocalization.of(context)!.addNewAddress,
       description: AppLocalization.of(context)!.addressFoundMsg,
-      ButtonOneOnPressed: () {
-        userBloc.updateLocation = true;
+      ButtonOneOnPressed: () async {
+        await _sharedPreferences?.setBool("isCurrentLocation", true);
+        setState(() {});
       },
       ButtonTwoOnPressed: () {
         NavigationUtil.push(context, screen: AddEditShippingAddress())
@@ -1185,8 +1187,9 @@ class _HomeState extends State<Home> {
       actionOne: AppLocalization.of(context)!.useCurrentLocation,
       actionTwo: AppLocalization.of(context)!.changeAddress,
       description: AppLocalization.of(context)!.changeAddressMsg,
-      ButtonOneOnPressed: () {
-        userBloc.updateLocation = true;
+      ButtonOneOnPressed: () async {
+        await _sharedPreferences?.setBool("isCurrentLocation", true);
+        setState(() {});
       },
       ButtonTwoOnPressed: () async {
         await Navigator.of(context)
@@ -1198,6 +1201,8 @@ class _HomeState extends State<Home> {
   }
 
   Widget _buildCurrentLocation() {
+    bool getLocationStatus =
+        _sharedPreferences?.getBool('isCurrentLocation') ?? false;
     return InkWell(
       onTap: () {
         if (!isEmpty) {
@@ -1225,8 +1230,7 @@ class _HomeState extends State<Home> {
               ),
             ),
           ),
-          if (defaultAddress?.city != null &&
-              userBloc.user.isCurrentLocation != true)
+          if (defaultAddress?.city != null && getLocationStatus != true)
             Icon(
               Icons.keyboard_arrow_down,
               color: Colors.black,
@@ -1238,7 +1242,9 @@ class _HomeState extends State<Home> {
   }
 
   String _buildLocationText() {
-    if (userBloc.user.isCurrentLocation == true) {
+    bool getLocationStatus =
+        _sharedPreferences?.getBool('isCurrentLocation') ?? false;
+    if (getLocationStatus == true) {
       return 'Using your current location';
     } else {
       if (isEmpty) {
@@ -1253,7 +1259,9 @@ class _HomeState extends State<Home> {
     }
   }
 
-  void getAddressList() async {
+  Future<void> getAddressList() async {
+    bool getLocationStatus =
+        _sharedPreferences?.getBool('isCurrentLocation') ?? false;
     if (mounted) setState(() {});
 
     Map<String, dynamic>? result =
@@ -1268,19 +1276,15 @@ class _HomeState extends State<Home> {
 
     List<ShippingAddress> tempList = result['results'];
 
-    if (mounted) {
-      setState(() {
-        isLoading = false;
-        isEmpty = tempList.isEmpty;
-        if (isEmpty && userBloc.user.isCurrentLocation == false) {
-          showNoAddressFoundDialog(context);
-        }
-        defaultAddress = tempList.firstWhere((element) => element.is_default!);
-        if (defaultAddress != null) {
-          userBloc.user.defaultAddress = defaultAddress;
-        }
-      });
+    isEmpty = tempList.isEmpty;
+    if (isEmpty && getLocationStatus == false) {
+      showNoAddressFoundDialog(context);
     }
+    defaultAddress = tempList.firstWhere((element) => element.is_default!);
+    if (defaultAddress != null) {
+      userBloc.user.defaultAddress = defaultAddress;
+    }
+    if (mounted) setState(() {});
   }
 
   Widget? getBadgeContent() {
@@ -1290,10 +1294,11 @@ class _HomeState extends State<Home> {
     return Text(
       getBadgeCount(),
       style: const TextStyle(
-          fontFamily: 'Inter',
-          fontSize: 10,
-          color: Colors.white,
-          fontWeight: FontWeight.bold),
+        fontFamily: 'Inter',
+        fontSize: 10,
+        color: Colors.white,
+        fontWeight: FontWeight.bold,
+      ),
     );
   }
 

@@ -100,9 +100,26 @@ class _SelectVideoCoverPageState extends State<SelectVideoCoverPage> {
       padding: const EdgeInsets.all(25.0),
       child: isLoading
           ? Center(
-              child: CircularProgressIndicator(
-              color: navyBlue,
-            ))
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircularProgressIndicator(
+                    color: navyBlue,
+                  ),
+                  SizedBox(height: 20),
+                  Text(
+                    "Extracting images, This may take up to 20 seconds.",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: darkGrey,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      fontFamily: "Inter",
+                    ),
+                  )
+                ],
+              ),
+            )
           : Column(
               children: [
                 Expanded(
@@ -221,10 +238,11 @@ class _SelectVideoCoverPageState extends State<SelectVideoCoverPage> {
     setState(() {
       isLoading = true;
     });
+    var tempDir = Directory.systemTemp;
     frames = await VideoFrameExtractor.fromNetwork(
         videoUrl: url,
         imagesCount: 8,
-        destinationDirectoryPath: '/storage/emulated/0/Download',
+        destinationDirectoryPath: tempDir.path,
         onProgress: (progress) {},
         quality: 8);
     imagePath = frames[0];

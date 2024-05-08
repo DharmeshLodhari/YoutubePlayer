@@ -2478,7 +2478,7 @@ class ShoppingAuthService extends AuthService {
       return Future.error(response.body);
     }
 
-    if (response.statusCode == 201) {
+    if (response.statusCode == 201 || response.statusCode == 200) {
       ShippingAddress item =
           ShippingAddress.fromJson(jsonDecode(response.body));
       return item;

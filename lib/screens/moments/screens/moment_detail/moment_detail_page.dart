@@ -189,13 +189,17 @@ class _MomentsDetailsScreenState extends State<MomentsDetailsScreen> {
 
   showLoadingIndicator({required bool loadingNextPageUrl, required bool show}) {
     if (loadingNextPageUrl) {
-      setState(() {
-        nextPageUrlLoading = show;
-      });
+      if (mounted) {
+        setState(() {
+          nextPageUrlLoading = show;
+        });
+      }
     } else {
-      setState(() {
-        loadingMoments = show;
-      });
+      if (mounted) {
+        setState(() {
+          loadingMoments = show;
+        });
+      }
     }
   }
 

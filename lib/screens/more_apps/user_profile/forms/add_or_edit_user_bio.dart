@@ -45,6 +45,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
   TextEditingController? addressLine1Controller;
   TextEditingController? addressLine2Controller;
   TextEditingController? contactNumberController;
+  TextEditingController? searchKeywordController;
   late TextEditingController _fullNameController;
   late TextEditingController _userNameController;
   TextEditingController? _nicknameController;
@@ -124,6 +125,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
     addressLine1Controller = TextEditingController();
     addressLine2Controller = TextEditingController();
     contactNumberController = TextEditingController();
+    searchKeywordController = TextEditingController();
     _userNameController = TextEditingController();
     _nicknameController = TextEditingController();
     _fullNameController = TextEditingController();
@@ -137,6 +139,8 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
       bioController?.text = messageDecoderWithEmoji(userBloc.user.bio!)!;
       if (userBioDetail?.searchKeywords != null) {
         searchKeywords = userBioDetail?.searchKeywords?.join(", ") ?? "";
+        searchKeywordController?.text =
+            userBioDetail?.searchKeywords?.join(", ") ?? "";
       }
       if (userBioDetail?.industry != null) {
         industryId = userBioDetail?.industry?.id ?? "";
@@ -936,6 +940,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
     return Column(
       children: [
         CustomizedTextFormField(
+          controller: searchKeywordController,
           labelText: "SEO (Optional)",
           onChanged: (val) {
             searchKeywords = val;

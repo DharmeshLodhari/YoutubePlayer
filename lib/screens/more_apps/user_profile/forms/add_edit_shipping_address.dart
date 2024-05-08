@@ -71,10 +71,10 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
     }
     shippingAddress = widget.shippingAddress?.copyWith() ?? ShippingAddress();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       userBloc = Provider.of<UserBloc>(context, listen: false);
 
-      getShippingStates();
+      await getShippingStates();
     });
     super.initState();
   }
@@ -109,7 +109,14 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
           'longitude': shippingAddress.longitude,
         });
       } else {
-        currentLocation = await location.getLocation();
+        // currentLocation = await location.getLocation();
+        currentLocation = await Future.any([
+          location.getLocation(),
+          Future.delayed(Duration(seconds: 5), () => null),
+        ]);
+        if (currentLocation == null) {
+          currentLocation = await location.getLocation();
+        }
       }
       if (currentLocation != null) {
         currentLocationMarker = {
@@ -168,7 +175,7 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
     mapController.animateCamera(CameraUpdate.newLatLng(newLocation));
   }
 
-  void getShippingStates() async {
+  Future<void> getShippingStates() async {
     selectedState = shippingAddress.stateName;
     selectedCity = shippingAddress.city;
     if (mounted) setState(() {});
@@ -1092,6 +1099,7 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
     if (_formKey.currentState?.validate() ?? false) {
       //the api call will first create the product then use the id from the
       //response to save the variant
+      shippingAddress.country = "NG";
       shippingAddress.email = userBloc.user.userName! + "@slydo.co";
       shippingAddress.phone = userBloc.user.phoneNumber;
       shippingAddress.first_name = userBloc.user.fullName!.split(" ").first;
@@ -1103,12 +1111,16 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
       await ShoppingAuthService()
           .addUpdateAddress(shippingAddress, isEdit: isEdit)
           .then((value) async {
-        Navigator.pop(context, true);
-        showToast(
-          message: isEdit
-              ? "Address updated successfully"
-              : "Address added successfully",
-        );
+        if (value != null) {
+          Navigator.pop(context, true);
+          showToast(
+            message: isEdit
+                ? "Address updated successfully"
+                : "Address added successfully",
+          );
+        } else {
+          showToast(message: "Failed to add address");
+        }
       }).catchError((error) {
         debugPrint("Product check::: ${error.toString()}");
         showToast(message: error.toString());

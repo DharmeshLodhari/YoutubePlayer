@@ -1,4 +1,3 @@
-import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/add_edit_shipping_address.dart';
@@ -13,7 +12,6 @@ import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
@@ -43,7 +41,6 @@ class _DispatchAddressState extends State<DispatchAddress> {
   late SharedPreferences _sharedPreferences;
   bool isLoading = false;
   bool noItemInList = false;
-  late UserBloc userBloc;
 
   bool isForSelection = false;
   Function(ShippingAddress)? onShippingAddressChange;
@@ -190,7 +187,8 @@ class _DispatchAddressState extends State<DispatchAddress> {
     for (ShippingAddress address in itemList) {
       if (address.is_default == true && isForSelection == false) {
         selectedShippingAddress = address;
-        userBloc.updateLocation = false;
+        await _sharedPreferences.setBool("isCurrentLocation", false);
+        setState(() {});
         break;
       }
 
@@ -198,7 +196,8 @@ class _DispatchAddressState extends State<DispatchAddress> {
           selectedShippingAddress != null &&
           selectedShippingAddress?.id == address.id) {
         selectedShippingAddress = address;
-        userBloc.updateLocation = false;
+        await _sharedPreferences.setBool("isCurrentLocation", false);
+        setState(() {});
         break;
       }
     }
@@ -222,7 +221,6 @@ class _DispatchAddressState extends State<DispatchAddress> {
 
   @override
   Widget build(BuildContext context) {
-    userBloc = Provider.of<UserBloc>(context);
     return ScaffoldMessenger(
       key: _messengerScaffoldKey,
       child: Scaffold(

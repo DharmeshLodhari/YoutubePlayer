@@ -19,7 +19,6 @@ class UserBloc extends ChangeNotifier {
     password: null,
     currency: null,
     defaultAddress: null,
-    isCurrentLocation: null,
   );
 
   ChatMessageSettings _chatMessageSettings = ChatMessageSettings();
@@ -37,11 +36,6 @@ class UserBloc extends ChangeNotifier {
   // Setter
   set user(User val) {
     _user = val;
-    notifyListeners();
-  }
-
-  set updateLocation(bool selectedLocation) {
-    _user.isCurrentLocation = selectedLocation;
     notifyListeners();
   }
 

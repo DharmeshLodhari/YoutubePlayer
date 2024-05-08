@@ -421,10 +421,13 @@ class AuthService {
   Future<Map<String, String>> getUserLocationHeader() async {
     Map<String, String> data = {};
     Location location = Location();
+    SharedPreferences _sharedPreferences =
+        await SharedPreferences.getInstance();
     UserBloc userBloc = Provider.of<UserBloc>(
         myGlobals.navigationKey.currentContext!,
         listen: false);
-    bool getLocationStatus = userBloc.user.isCurrentLocation ?? false;
+    bool getLocationStatus =
+        _sharedPreferences.getBool('isCurrentLocation') ?? false;
     try {
       // var status = await Permission.location.status;
       // if (status.isGranted) {
