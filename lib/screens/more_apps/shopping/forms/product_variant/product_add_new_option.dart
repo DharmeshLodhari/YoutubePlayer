@@ -47,10 +47,11 @@ class _ProductAddNewOptionState extends State<ProductAddNewOption> {
   bool productIsAvailable = false;
   bool inventoryIsAvailable = false;
   bool trackInventory = false;
+  DateTime todayDate = DateTime.now();
   String? productAvailableFrom;
   bool isLoading = false;
   bool isAPILoading = false;
-  int inventoryCount = 0;
+  int inventoryCount = 1;
   List<VariantTypes> typeList = [
     VariantTypes.Size,
     VariantTypes.Color,
@@ -71,6 +72,7 @@ class _ProductAddNewOptionState extends State<ProductAddNewOption> {
   void initState() {
     //get value if its form edit or add product
     optionOnWhatToDo = widget.arguments["option"];
+    productAvailableFrom = DateFormat('yyyy-MM-dd').format(todayDate);
     super.initState();
   }
 
@@ -722,7 +724,7 @@ class _ProductAddNewOptionState extends State<ProductAddNewOption> {
         variant.price = moneyInputNormalizer(variantPrice).toString();
         variant.isAvailable = productIsAvailable;
         variant.availableFrom = productAvailableFrom;
-        variant.trackInventory = trackInventory;
+        variant.trackInventory = inventoryIsAvailable;
         variant.currency = 'NGN';
         if (optionOnWhatToDo == 'new') {
           //send the variant detail back to the previous page

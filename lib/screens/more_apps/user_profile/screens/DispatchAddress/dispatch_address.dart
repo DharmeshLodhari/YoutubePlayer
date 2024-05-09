@@ -127,6 +127,10 @@ class _DispatchAddressState extends State<DispatchAddress> {
         isLoading = false;
         itemList.addAll(tempList);
 
+        if (itemList.length == 1) {
+          await _sharedPreferences.setBool("isCurrentLocation", false);
+        }
+
         if (mounted) setState(() {});
 
         /// to getDefault selected address

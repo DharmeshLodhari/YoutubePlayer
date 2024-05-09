@@ -92,7 +92,7 @@ class FormVariantsTile extends StatelessWidget {
     String? sercerUrl = "";
     String? localUrl = "";
 
-    if (type != 'add') {
+    if (productVariant.serverImages != null) {
       for (var item in productVariant.serverImages ?? []) {
         sercerUrl = item;
       }
@@ -119,7 +119,7 @@ class FormVariantsTile extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
           image: DecorationImage(
-              image: type == 'add'
+              image: localUrl != null && localUrl.isNotEmpty
                   ? FileImage(
                       File(localUrl ?? ""),
                     )
