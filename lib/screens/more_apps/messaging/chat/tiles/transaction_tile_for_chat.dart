@@ -731,7 +731,7 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
               paymentRequest,
               messageId: widget.message!["id"]);
 
-          if (response.statusCode == 200) {
+          if (response.statusCode == 200 || response.statusCode == 201) {
             showToast(message: "Payment request fulfilled !!");
           } else {
             debugPrint(

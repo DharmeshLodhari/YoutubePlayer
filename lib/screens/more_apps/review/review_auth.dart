@@ -13,7 +13,7 @@ class ReviewAuth extends AuthService {
     var response = await httpGet(url, headers: headers);
     debugPrint(
         "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       Map<String, dynamic> jsonData = jsonDecode(response.body);
       return jsonData;
     } else if (response.statusCode == 404) {
@@ -287,7 +287,7 @@ class ReviewAuth extends AuthService {
     var response = await httpGet(url, headers: headers);
     debugPrint(
         "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       Map<String, dynamic> jsonData = jsonDecode(response.body);
       return jsonData;
     }

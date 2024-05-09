@@ -490,7 +490,8 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
 
                   Navigator.pop(context);
 
-                  if (response.statusCode == 201) {
+                  if (response.statusCode == 200 ||
+                      response.statusCode == 201) {
                     Navigator.pop(context);
                     Navigator.of(context)
                         .pushNamed(Routes.TRANSACTIONS, arguments: {'page': 1});

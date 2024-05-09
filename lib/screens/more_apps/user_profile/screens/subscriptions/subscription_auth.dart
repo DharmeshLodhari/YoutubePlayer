@@ -16,7 +16,7 @@ class SubscriptionsAuth extends AuthService {
     print('GET SUBSCRIPTION LIST');
     debugPrint(
         "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       List results = jsonDecode(response.body)['results'];
       List<SubscriptionsModel> subscriptionModelList =
           results.map((json) => SubscriptionsModel.fromJson(json)).toList();
@@ -37,7 +37,7 @@ class SubscriptionsAuth extends AuthService {
     var response = await httpGet(url, headers: headers);
     debugPrint(
         "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       if (jsonDecode(response.body)['available'] == true) {
         return true;
       } else {

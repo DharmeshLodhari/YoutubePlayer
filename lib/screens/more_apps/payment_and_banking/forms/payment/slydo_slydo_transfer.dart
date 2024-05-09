@@ -1140,7 +1140,8 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
                           return Future.error(response.body);
                         }
 
-                        if (response.statusCode == 200) {
+                        if (response.statusCode == 200 ||
+                            response.statusCode == 201) {
                           try {
                             popFromShoppingCart(product);
                             //Pop Circular Progress Indicator

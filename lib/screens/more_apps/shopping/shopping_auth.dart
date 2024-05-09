@@ -49,7 +49,7 @@ class ShoppingAuthService extends AuthService {
     var response = await httpGet(url, headers: headers);
     debugPrint('STORE URL BODY ---> ${response.body}');
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       var jsonData = json.decode(response.body);
       debugPrint('SHOPPPING AUTH ---> ${jsonData["results"]}');
 
@@ -96,7 +96,7 @@ class ShoppingAuthService extends AuthService {
     var response = await httpGet(url, headers: headers);
     debugPrint('STORE URL BODY ---> ${response.body}');
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       var jsonData = json.decode(response.body);
 
       List<ShoppingProduct> products = [];
@@ -116,7 +116,7 @@ class ShoppingAuthService extends AuthService {
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
     var jsonData = json.decode(response.body);
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       ShoppingProduct product = ShoppingProduct.fromJson(jsonData);
       return product;
     } else {
@@ -140,7 +140,7 @@ class ShoppingAuthService extends AuthService {
 
     debugPrint('SEARCH BODY ---> ${response.body}');
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       var jsonData = json.decode(response.body);
 
       Map<String, dynamic> result = {
@@ -172,7 +172,7 @@ class ShoppingAuthService extends AuthService {
 
     debugPrint('SEARCH BODY ---> ${response.body}');
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       var jsonData = json.decode(response.body);
 
       Map<String, dynamic> result = {
@@ -202,7 +202,7 @@ class ShoppingAuthService extends AuthService {
 
     debugPrint('SEARCH BODY ---> ${response.body}');
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       var jsonData = json.decode(response.body);
 
       Map<String, dynamic> result = {
@@ -239,7 +239,7 @@ class ShoppingAuthService extends AuthService {
     var response = await httpGet(url, headers: headers);
 
     debugPrint('SHOPPING CART MODEL ::: ${response.body}');
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       ShoppingCartModelFromQrCode shoppingCartModel =
           ShoppingCartModelFromQrCode.fromJson(jsonDecode(response.body));
       return shoppingCartModel;
@@ -256,7 +256,7 @@ class ShoppingAuthService extends AuthService {
     var headers = await getAuthHeaders();
     var response = await httpPost(url, headers: headers);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     } else {
       return false;
@@ -378,7 +378,7 @@ class ShoppingAuthService extends AuthService {
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       if (!response.body.contains('results')) {
         Map<String, dynamic> result = {
           "count": '',
@@ -426,7 +426,7 @@ class ShoppingAuthService extends AuthService {
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       if (!response.body.contains('results')) {
         Map<String, dynamic> result = {"sectionProducts": []};
 
@@ -467,7 +467,7 @@ class ShoppingAuthService extends AuthService {
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       if (!response.body.contains('results')) {
         Map<String, dynamic> result = {"store": []};
 
@@ -506,7 +506,7 @@ class ShoppingAuthService extends AuthService {
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       if (!response.body.contains('results')) {
         Map<String, dynamic> result = {"product": []};
 
@@ -603,7 +603,7 @@ class ShoppingAuthService extends AuthService {
         "URL $url PRODUCT STATUS CODE:- ${response.statusCode} BODY:- $responseBody");
 
     bool backValue = false;
-    if (response.statusCode == 201) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       debugPrint('DATA from add product ---> ${responseBody}');
 
       var jsonData = json.decode(responseBody);
@@ -668,7 +668,7 @@ class ShoppingAuthService extends AuthService {
     }
     var responseBody = await response.stream.bytesToString();
 
-    if (response.statusCode == 201) {
+    if (response.statusCode == 201 || response.statusCode == 200) {
       return true;
     } else {
       debugPrint(
@@ -688,7 +688,7 @@ class ShoppingAuthService extends AuthService {
 
     debugPrint('SEARCH BODY ---> ${response.body}');
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       List<Variant> variantList = [];
       var jsonData = json.decode(response.body);
 
@@ -851,7 +851,7 @@ class ShoppingAuthService extends AuthService {
     var responseBody = await response.stream.bytesToString();
     debugPrint('UPDATE PRODUCT RESPONSE -> ${responseBody}');
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     } else {
       throw responseBody;
@@ -865,7 +865,7 @@ class ShoppingAuthService extends AuthService {
     var response = await httpGet(url, headers: headers);
     var jsonData = json.decode(response.body);
     log("jsonData :- $jsonData");
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       Product product = createProduct(jsonData);
       return product;
     } else {
@@ -879,7 +879,7 @@ class ShoppingAuthService extends AuthService {
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
     var jsonData = json.decode(response.body);
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return jsonData;
     } else {
       throw jsonData;
@@ -954,7 +954,7 @@ class ShoppingAuthService extends AuthService {
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       List<Service> serviceList = [];
       var jsonData = json.decode(response.body);
       for (var item in jsonData["results"]) {
@@ -994,7 +994,7 @@ class ShoppingAuthService extends AuthService {
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       List<Service> serviceList = [];
       var jsonData = json.decode(response.body);
       for (var item in jsonData["results"]) {
@@ -1072,7 +1072,7 @@ class ShoppingAuthService extends AuthService {
           "Please upload smaller images, One or all of your images are too large.");
     }
     var responseBody = await response.stream.bytesToString();
-    if (response.statusCode == 201) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     } else {
       throw responseBody;
@@ -1124,7 +1124,7 @@ class ShoppingAuthService extends AuthService {
     }
 
     var responseBody = await response.stream.bytesToString();
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     } else {
       throw responseBody;
@@ -1137,7 +1137,7 @@ class ShoppingAuthService extends AuthService {
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
     var jsonData = json.decode(response.body);
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       Service service = createService(jsonData);
       return service;
     } else {
@@ -1171,7 +1171,7 @@ class ShoppingAuthService extends AuthService {
         AppConfig.baseUrl + "/api/v1/order/" + orderId + "/update-status/";
     var headers = await getAuthHeaders();
     var response = await httpPatch(url, headers: headers, body: _data);
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     }
     return false;
@@ -1184,7 +1184,7 @@ class ShoppingAuthService extends AuthService {
     String url = AppConfig.baseUrl + "/api/v1/order/" + orderId + "/add-note/";
     var headers = await getAuthHeaders();
     var response = await httpPatch(url, headers: headers, body: _data);
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     }
     return false;
@@ -1227,7 +1227,7 @@ class ShoppingAuthService extends AuthService {
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       var jsonData = json.decode(response.body);
 
       List items = [];
@@ -1261,7 +1261,7 @@ class ShoppingAuthService extends AuthService {
     debugPrint('BODY shipping:: ${response.body}');
     debugPrint('STATUS CO  :: ${response.statusCode}');
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       List jsonDataResult = jsonData['results'];
 
       return jsonDataResult
@@ -1281,7 +1281,7 @@ class ShoppingAuthService extends AuthService {
     var response = await httpGet(url, headers: headers);
     var jsonData = json.decode(response.body);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       log("DATA=> $jsonData");
       List items = [];
       var data = jsonData["results"];
@@ -1300,7 +1300,7 @@ class ShoppingAuthService extends AuthService {
     var response = await httpGet(url, headers: headers);
     var jsonData = jsonDecode(response.body);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return getCartItems(jsonData);
     }
 
@@ -1313,7 +1313,7 @@ class ShoppingAuthService extends AuthService {
     var _data = jsonEncode(data);
     var response = await httpPatch(url, headers: headers, body: _data);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     }
     return false;
@@ -1324,7 +1324,7 @@ class ShoppingAuthService extends AuthService {
     var _data = jsonEncode(data);
     var headers = await getAuthHeaders();
     var response = await httpPatch(url, headers: headers, body: _data);
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     } else
       return false;
@@ -1339,7 +1339,7 @@ class ShoppingAuthService extends AuthService {
     var response = await httpPost(url, headers: headers, body: _data);
     var jsonData = jsonDecode(response.body);
 
-    if (response.statusCode == 201) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return jsonData;
     } else {
       return null;
@@ -1355,7 +1355,7 @@ class ShoppingAuthService extends AuthService {
     var response = await httpPost(url, headers: headers, body: _data);
     var jsonData = jsonDecode(response.body);
 
-    if (response.statusCode == 201) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return jsonData;
     } else {
       return null;
@@ -1411,7 +1411,7 @@ class ShoppingAuthService extends AuthService {
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
     List items = [];
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       var jsonData = json.decode(response.body);
       var data = jsonData["results"];
       for (int i = 0; i < data.length; i++) {
@@ -1465,7 +1465,7 @@ class ShoppingAuthService extends AuthService {
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       List<Service> serviceList = [];
       var jsonData = json.decode(response.body);
       for (var item in jsonData["results"]) {
@@ -1533,7 +1533,7 @@ class ShoppingAuthService extends AuthService {
     debugPrint('SEARCH FILTER STATUS CODE ---> ${response.statusCode}');
     debugPrint('SEARCH FILTER BODY ---> ${response.body}');
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       List<Product> productList = [];
       var jsonData = json.decode(response.body);
       for (var item in jsonData["results"]) {
@@ -1609,7 +1609,7 @@ class ShoppingAuthService extends AuthService {
     debugPrint('SEARCH FILTER STATUS CODE ---> ${response.statusCode}');
     debugPrint('SEARCH FILTER BODY ---> ${response.body}');
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       List<Product> productList = [];
       var jsonData = json.decode(response.body);
       for (var item in jsonData["results"]) {
@@ -1684,7 +1684,7 @@ class ShoppingAuthService extends AuthService {
     debugPrint('SEARCH FILTER STATUS CODE ---> ${response.statusCode}');
     debugPrint('SEARCH FILTER BODY ---> ${response.body}');
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       List<Service> serviceList = [];
       var jsonData = json.decode(response.body);
       for (var item in jsonData["results"]) {
@@ -1718,7 +1718,7 @@ class ShoppingAuthService extends AuthService {
     String url = AppConfig.baseUrl + "/api/v1/services/choices/";
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       var jsonData = jsonDecode(response.body);
 
       List<dynamic> results = jsonData["results"];
@@ -1744,7 +1744,7 @@ class ShoppingAuthService extends AuthService {
 
     debugPrint(
         "URL FOR CATEGORIES $url STATUS CODE:- ${response.statusCode} Body:- ${response.body}");
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       var jsonData = jsonDecode(response.body);
 
       List<dynamic> results = jsonData["results"];
@@ -1771,7 +1771,7 @@ class ShoppingAuthService extends AuthService {
 
     debugPrint(
         "URL FOR CATEGORIES $url STATUS CODE:- ${response.statusCode} Body:- ${response.body}");
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       var jsonData = jsonDecode(response.body);
 
       List<dynamic> results = jsonData["results"];
@@ -1800,7 +1800,7 @@ class ShoppingAuthService extends AuthService {
 
     debugPrint(
         "URL FOR CATEGORIES $url STATUS CODE:- ${response.statusCode} Body:- ${response.body}");
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       var jsonData = jsonDecode(response.body);
 
       List<dynamic> results = jsonData["results"];
@@ -1829,7 +1829,7 @@ class ShoppingAuthService extends AuthService {
     var headers = await getAuthHeaders();
     var response = await httpPost(url, headers: headers, body: _data);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     }
     return false;
@@ -1847,7 +1847,7 @@ class ShoppingAuthService extends AuthService {
     print("__________________________________ ${data}");
     print("__________________________________ ${response}");
     print("__________________________________ ${id}");
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     }
 
@@ -1877,7 +1877,7 @@ class ShoppingAuthService extends AuthService {
 
     debugPrint(
         "URL FOR CATEGORIES $url STATUS CODE:- ${response.statusCode} Body:- ${response.body}");
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       var jsonData = jsonDecode(response.body);
 
       List<dynamic> results = jsonData["results"];
@@ -1920,7 +1920,7 @@ class ShoppingAuthService extends AuthService {
 
     debugPrint(
         "URL FOR CATEGORIES $url STATUS CODE:- ${response.statusCode} Body:- ${response.body}");
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       List<Tags> categories = [];
       var jsonData = json.decode(response.body);
       for (var item in jsonData["results"]) {
@@ -1961,7 +1961,7 @@ class ShoppingAuthService extends AuthService {
     debugPrint(
         "URL FOR CATEGORIES $url STATUS CODE:- ${response.statusCode} Body:- ${response.body}");
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       var jsonData = jsonDecode(response.body);
 
       List<dynamic> results = jsonData["results"];
@@ -2011,7 +2011,7 @@ class ShoppingAuthService extends AuthService {
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       List<CustomerProfile> customerProfileList = [];
       var jsonData = json.decode(response.body);
       for (var item in jsonData["results"]) {
@@ -2083,7 +2083,7 @@ class ShoppingAuthService extends AuthService {
     debugPrint('SEARCH FILTER STATUS CODE ---> ${response.statusCode}');
     // debugPrint('SEARCH FILTER BODY ---> ${response.body}');
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       List<CustomerProfile> customerProfileList = [];
       var jsonData = json.decode(response.body);
       for (var item in jsonData["results"]) {
@@ -2133,7 +2133,7 @@ class ShoppingAuthService extends AuthService {
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       if (!response.body.contains('results')) {
         Map<String, dynamic> result = {
           "count": '',
@@ -2197,7 +2197,7 @@ class ShoppingAuthService extends AuthService {
     FlashTagAlertModel flashTagAlertModel =
         FlashTagAlertModel.fromJson(jsonDecode(response.body));
 
-    if (response.statusCode == 201) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return flashTagAlertModel;
     }
     return null;
@@ -2227,7 +2227,7 @@ class ShoppingAuthService extends AuthService {
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       List<StatesModel> stateList = [];
       var jsonData = json.decode(response.body);
 
@@ -2257,7 +2257,7 @@ class ShoppingAuthService extends AuthService {
     var headers = await getAuthHeaders();
     var response = await httpPatch(url, headers: headers);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       if (!response.body.contains('results')) {
         Map<String, dynamic> result = {
           "count": '',
@@ -2304,7 +2304,7 @@ class ShoppingAuthService extends AuthService {
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       List<Cities> cityList = [];
       var jsonData = json.decode(response.body);
 
@@ -2341,7 +2341,7 @@ class ShoppingAuthService extends AuthService {
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       if (!response.body.contains('results')) {
         Map<String, dynamic> result = {
           "count": '',
@@ -2397,7 +2397,7 @@ class ShoppingAuthService extends AuthService {
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       if (!response.body.contains('results')) {
         Map<String, dynamic> result = {
           "count": '',
@@ -2547,7 +2547,7 @@ class ShoppingAuthService extends AuthService {
 
     debugPrint('Add-Ons BODY ---> ${response.body}');
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       var jsonData = json.decode(response.body);
 
       List<AddOns> items = [];
@@ -2583,7 +2583,7 @@ class ShoppingAuthService extends AuthService {
 
     debugPrint('Add-On Options BODY ---> ${response.body}');
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       var jsonData = json.decode(response.body);
 
       List<AddOnOption> items = [];
@@ -2648,7 +2648,7 @@ class ShoppingAuthService extends AuthService {
     var responseBody = await response.stream.bytesToString();
     debugPrint("$responseBody");
 
-    if (response.statusCode == 201) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       debugPrint("DATA:- ${request.fields}");
       debugPrint(
           "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- $responseBody");
@@ -2690,7 +2690,7 @@ class ShoppingAuthService extends AuthService {
     var responseBody = await response.stream.bytesToString();
     debugPrint("$responseBody");
 
-    if (response.statusCode == 201) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       // debugPrint("DATA:- ${request.fields}");
       debugPrint(
           "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- $responseBody");

@@ -93,7 +93,7 @@ class FormVariantsTile extends StatelessWidget {
     String? localUrl = "";
 
     if (type != 'add') {
-      for (var item in productVariant.serverImages!) {
+      for (var item in productVariant.serverImages ?? []) {
         sercerUrl = item;
       }
       sercerUrl = sercerUrl!.replaceAll('https//', 'https://');

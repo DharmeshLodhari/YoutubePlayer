@@ -98,7 +98,7 @@ class AuthService {
   //   var response = await http.post(url, body: _body, headers: headers);
   //   print('RESPONSE:-----> $response');
   //
-  //   if (response.statusCode == 200) {
+  //   if (response.statusCode == 200 || response.statusCode == 201) {
   //     debugPrint(
   //         "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
   //
@@ -142,7 +142,7 @@ class AuthService {
     debugPrint(url);
     var response = await httpGet(url);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       var jsonData = json.decode(response.body) as List<dynamic>;
       List<CompanyName> result =
           jsonData.map((e) => CompanyName.fromJson(e)).toList();
@@ -208,7 +208,7 @@ class AuthService {
 
     var response = await http.post(url, body: _body, headers: headers);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       debugPrint(
           "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
 
@@ -464,7 +464,7 @@ class AuthService {
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       if (!response.body.contains('results')) {
         Map<String, dynamic> result = {"product": []};
 
@@ -510,7 +510,7 @@ class AuthService {
     var _data = jsonEncode(data);
 
     var response = await httpPost(url, headers: headers, body: _data);
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     }
     debugPrint(
@@ -591,7 +591,7 @@ class AuthService {
         .timeout(timeOutDuration, onTimeout: () => timeOutFunction());
 
     print('SEARCH USER ::: ${response.body}');
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       var jsonData = json.decode(response.body);
 
       Map<String, dynamic> result = {

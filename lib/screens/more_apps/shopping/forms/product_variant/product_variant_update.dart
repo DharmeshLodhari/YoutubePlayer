@@ -15,6 +15,7 @@ import 'package:Slydo/widget/image_crop.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../../widget/rounded_background_icon.dart';
@@ -46,7 +47,7 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
   bool productIsAvailable = false;
   bool inventoryIsAvailable = false;
   bool trackInventory = false;
-  DateTime productAvailableFrom = DateTime.now();
+  String? productAvailableFrom;
   bool isLoading = false;
   bool isAPILoading = false;
   int inventoryCount = 0;
@@ -703,7 +704,10 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
               DateTime.now().year, DateTime.now().month, DateTime.now().day),
           lastDate: DateTime(2101),
         ).then((value) {
-          productAvailableFrom = DateTime(value!.year, value.month, value.day);
+          DateTime selectedDate = DateTime(value!.year, value.month, value.day);
+
+          productAvailableFrom = DateFormat('yyyy-MM-dd').format(selectedDate);
+          // productAvailableFrom = DateTime(value!.year, value.month, value.day);
           setState(() {});
         }).catchError((error) {});
       },
@@ -713,7 +717,7 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
           child: ListTile(
             dense: true,
             title: Text(
-              formatDate(productAvailableFrom),
+              productAvailableFrom ?? "",
               style: TextStyle(
                 color: blackFont,
                 fontWeight: FontWeight.w600,

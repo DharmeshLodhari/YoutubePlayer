@@ -406,7 +406,7 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
 
       response = value;
       var jsonData = json.decode(response.body);
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
         _auth
             .updateStatusPayment(
                 jobId: jobmodel!.id, transactionId: jsonData['transaction_id'])

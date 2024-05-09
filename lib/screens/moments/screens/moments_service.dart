@@ -38,7 +38,7 @@ class MomentsService extends AuthService {
     final headers = await getAuthHeaders();
 
     Response response = await httpGet(url, headers: headers);
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       var jsonData = jsonDecode(response.body);
 
       List<ExploreMomentsModel> momentsList = [];
@@ -81,7 +81,7 @@ class MomentsService extends AuthService {
     debugPrint('CONTACT MOMENT ::: ${response.body}');
     debugPrint('CONTACT MOMENT ::: ${response.statusCode}');
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       var jsonData = jsonDecode(response.body);
       debugPrint('GET CONTACT LIST :::: $jsonData');
 
@@ -127,7 +127,7 @@ class MomentsService extends AuthService {
 
     Response response = await httpGet(url, headers: headers);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       List jsonData = [];
 
       if (channelUsername != '') {
@@ -150,7 +150,7 @@ class MomentsService extends AuthService {
     Response response = await httpGet(url, headers: headers);
 
     debugPrint('SINGLE MOMENT ::: ${response.body}');
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       var jsonData = jsonDecode(response.body);
 
       return [MomentsModel.fromJson(jsonData)];
@@ -176,7 +176,7 @@ class MomentsService extends AuthService {
     debugPrint('COMMENTS MOMENTS ::: ${response.statusCode}');
     debugPrint('COMMENTS MOMENTS ::: ${response.body}');
     debugPrint('COMMENTS MOMENTS PINNED ::: ${pinnedYarn}');
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final jsonData = jsonDecode(response.body);
       List results = jsonData['results'];
 
@@ -297,7 +297,7 @@ class MomentsService extends AuthService {
 
     var responseBody = await response.stream.bytesToString();
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       YarnComment yarnComment = YarnComment.fromJson(json.decode(responseBody));
 
       return yarnComment;
@@ -390,7 +390,7 @@ class MomentsService extends AuthService {
 
     var responseBody = await response.stream.bytesToString();
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       YarnComment yarnComment = YarnComment.fromJson(json.decode(responseBody));
 
       return yarnComment;
@@ -416,7 +416,7 @@ class MomentsService extends AuthService {
 
     debugPrint(
         "COMMENTS RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body.toString()}");
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       List<YarnComment> commentsDetails = [];
       var jsonData = json.decode(response.body);
 
@@ -471,7 +471,7 @@ class MomentsService extends AuthService {
     debugPrint(
         "RESPONSE PINNED GET CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       var data = json.decode(response.body);
       return data;
     } else if (response.statusCode == 500) {
@@ -636,7 +636,7 @@ class MomentsService extends AuthService {
     debugPrint(
         "UPDATE MOMENT VIEW URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     } else {
       if (response.statusCode != 500) {
@@ -721,7 +721,7 @@ class MomentsService extends AuthService {
     debugPrint(
         "SEARCH MOMENT $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final jsonData = jsonDecode(response.body);
       List results = jsonData['results'];
 

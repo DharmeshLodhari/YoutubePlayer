@@ -39,7 +39,7 @@ class BusinessAuth extends AuthService {
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       var jsonData = json.decode(response.body);
       debugPrint('GET CONTRACT LIST :::: $jsonData');
 
@@ -73,7 +73,7 @@ class BusinessAuth extends AuthService {
     var response = await httpGet(url, headers: headers);
 
     debugPrint('GET CONTRACT ::: ${json.decode(response.body)}');
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       ContractModel contract =
           ContractModel.fromJson(json.decode(response.body));
 
@@ -90,7 +90,7 @@ class BusinessAuth extends AuthService {
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     } else {
       return false;
@@ -121,7 +121,7 @@ class BusinessAuth extends AuthService {
         await httpPost(url, body: jsonEncode(data), headers: headers);
 
     debugPrint('GET CONVERSATION ID :: ${response.body}');
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       var jsonData = jsonDecode(response.body);
       return jsonData['conversation_id'];
     } else {
@@ -149,7 +149,7 @@ class BusinessAuth extends AuthService {
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
     debugPrint("${response.body}");
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       List<Transaction> transactions = [];
       // This variable will hold list of transactions we got from server
       // var user = await getUser();
@@ -203,7 +203,7 @@ class BusinessAuth extends AuthService {
     debugPrint("$_data");
     var response = await httpPost(url, body: _data, headers: headers);
     debugPrint('ADD CONTRACT RESPONSE ::: ${response.body}');
-    if (response.statusCode == 201) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     } else {
       var jsonData = json.decode(response.body);
@@ -220,7 +220,7 @@ class BusinessAuth extends AuthService {
     debugPrint('UPDATE CONTRACT ::: ${response.body}');
     debugPrint('STATUS :: ${json.decode(response.body)['status']}');
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     }
     var jsonData = json.decode(response.body);
@@ -254,7 +254,7 @@ class BusinessAuth extends AuthService {
 
     debugPrint('GET INVOICE LIST ::: ${response.body}');
     var jsonData = json.decode(response.body);
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       List<InvoiceModel> invoiceList = [];
       List jsonResult = jsonData['results'];
 
@@ -281,7 +281,7 @@ class BusinessAuth extends AuthService {
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       InvoiceModel invoice = InvoiceModel.fromJson(json.decode(response.body));
       return invoice;
     }
@@ -298,7 +298,7 @@ class BusinessAuth extends AuthService {
     var response = await httpPost(url, body: _data, headers: headers);
 
     debugPrint('ADD INVOICE RESPONSE ::: ${response.body}');
-    if (response.statusCode == 201) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     }
     var jsonData = json.decode(response.body);
@@ -315,7 +315,7 @@ class BusinessAuth extends AuthService {
     debugPrint('DATA ::: $_data');
     debugPrint('UPDATE INVOICE RESPONSE ::: ${response.body}');
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     }
     var jsonData = json.decode(response.body);
@@ -344,7 +344,7 @@ class BusinessAuth extends AuthService {
 
     var response = await httpGet(url, headers: headers);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     }
     var jsonData = json.decode(response.body);
@@ -359,7 +359,7 @@ class BusinessAuth extends AuthService {
     var response = await httpGet(url, headers: headers);
     debugPrint('PAY INVOICE ::: ${response.body}');
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     }
     var jsonData = json.decode(response.body);
@@ -411,7 +411,7 @@ class BusinessAuth extends AuthService {
     debugPrint('UPDATE INVOICE ITEM ::: ${response.body}');
     debugPrint('UPDATE INVOICE ITEM ::: ${response.statusCode}');
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     }
 
@@ -424,7 +424,7 @@ class BusinessAuth extends AuthService {
   //   var data = invoice.toJson();
   //   var _data = jsonEncode(data);
   //   var response = await httpPost(url, body: _data, headers: headers);
-  //   if (response.statusCode == 201) {
+  //   if (response.statusCode == 200 || response.statusCode == 201) {
   //     return true;
   //   }
   //   var jsonData = json.decode(response.body);

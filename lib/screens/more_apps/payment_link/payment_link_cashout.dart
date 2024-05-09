@@ -1065,7 +1065,7 @@ class _PaymentLinkCashOutState extends State<PaymentLinkCashOut> {
           return Future.error(response.body);
         }
 
-        if (response.statusCode == 201) {
+        if (response.statusCode == 200 || response.statusCode == 201) {
           showSnackbar(context,
               message: 'Payment link successfully cashed out..',
               duration: 2000);

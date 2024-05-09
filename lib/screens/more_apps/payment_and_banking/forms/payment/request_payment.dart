@@ -822,7 +822,8 @@ class _RequestPaymentState extends State<RequestPayment> {
 
                     await _auth.createPaymentRequests(data).then((value) {
                       response = value;
-                      if (response.statusCode == 201) {
+                      if (response.statusCode == 200 ||
+                          response.statusCode == 201) {
                         Navigator.pop(context);
                         if (!isFromChat!) {
                           _dashboardBloc.index = 0;
@@ -874,7 +875,8 @@ class _RequestPaymentState extends State<RequestPayment> {
                 },
                 cancelCallBack: () async {
                   Navigator.pop(context);
-                  requestPaymentScaffoldMessenger.currentState?.showSnackBar(SnackBar(
+                  requestPaymentScaffoldMessenger.currentState
+                      ?.showSnackBar(SnackBar(
                     content: Text(AppLocalization.of(context)!.invalidPassword),
                   ));
                 });

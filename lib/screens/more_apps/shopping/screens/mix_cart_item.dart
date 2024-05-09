@@ -620,7 +620,8 @@ class _MixCartItemState extends State<MixCartItem> {
                   }
                   var response =
                       await _auth.makePaymentForCartOrder({"orders": orders});
-                  if (response.statusCode == 200) {
+                  if (response.statusCode == 200 ||
+                      response.statusCode == 201) {
                     Navigator.popAndPushNamed(
                       context,
                       Routes.ORDERS_LIST,

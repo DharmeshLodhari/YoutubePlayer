@@ -752,7 +752,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
             if (!result) return;
 
             var response = await _auth.acceptPaymentRequests(paymentRequest);
-            if (response.statusCode == 200) {
+            if (response.statusCode == 200 || response.statusCode == 201) {
               _showSnackBar(
                   context, AppLocalization.of(context)!.paymentRequestAccepted);
               if (mounted) {

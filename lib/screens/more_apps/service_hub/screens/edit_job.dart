@@ -585,20 +585,20 @@ class _EditJobState extends State<EditJob> {
         });
       }
 
-      StatesModel? selectedStateModel;
-
-      for (StatesModel statesModel in tempList) {
-        if (statesModel.name == shippingAddress?.stateName) {
-          selectedStateModel = statesModel;
-          break;
-        }
-      }
-      if (selectedStateModel != null) {
-        String? code = selectedStateModel.isoCode;
-        if (code != null) {
-          getShippingCities(code);
-        }
-      }
+      // StatesModel? selectedStateModel;
+      //
+      // for (StatesModel statesModel in tempList) {
+      //   if (statesModel.name == shippingAddress?.stateName) {
+      //     selectedStateModel = statesModel;
+      //     break;
+      //   }
+      // }
+      // if (selectedStateModel != null) {
+      //   String? code = selectedStateModel.isoCode;
+      //   if (code != null) {
+      //     getShippingCities(code);
+      //   }
+      // }
     }
   }
 
@@ -1526,13 +1526,13 @@ class _EditJobState extends State<EditJob> {
           fontWeight: FontWeight.w600,
         ),
       ),
-      onChanged: (String? value) async {
-        StatesModel picked =
-            stateList.firstWhere((element) => element.name == value);
-        selectedCity = null;
-        await getShippingCities(picked.isoCode);
-        shippingAddress?.stateName = picked.name;
-        setState(() {
+      onChanged: (String? value) {
+        setState(() async {
+          StatesModel picked =
+              stateList.firstWhere((element) => element.name == value);
+          selectedCity = null;
+          await getShippingCities(picked.isoCode);
+          shippingAddress?.stateName = picked.name;
           selectedState = value!;
         });
       },

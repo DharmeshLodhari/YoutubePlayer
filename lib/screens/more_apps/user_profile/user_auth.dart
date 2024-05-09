@@ -42,7 +42,7 @@ class UserAuth extends AuthService {
     debugPrint(
         "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       var jsonData = json.decode(response.body);
 
       CustomerProfile customerProfile = CustomerProfile.fromJson(jsonData);
@@ -62,7 +62,7 @@ class UserAuth extends AuthService {
     var response = await httpGet(url, headers: headers);
 
     print('FETCH PROFILE WITH AUTH ::: $url ${response.body}');
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       var jsonData = json.decode(response.body);
 
       CustomerProfile customerProfile = CustomerProfile.fromJson(jsonData);
@@ -89,7 +89,7 @@ class UserAuth extends AuthService {
     print('FETCH CUSTOMER FOLLOWER ::: $url ${response.body}');
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       List<UserFollowers> userFollowers = [];
       var jsonData = json.decode(response.body);
       for (var item in jsonData['results']) {
@@ -151,7 +151,7 @@ class UserAuth extends AuthService {
       }
       var responseBody = await response.stream.bytesToString();
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
         var jsonData = jsonDecode(responseBody);
 
         CustomerProfile customerProfile = CustomerProfile(
@@ -222,7 +222,7 @@ class UserAuth extends AuthService {
       var response = await request.send();
 
       var responseBody = await response.stream.bytesToString();
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
         var jsonData = json.decode(responseBody);
 
         User user = await createUser(jsonData);
@@ -308,7 +308,7 @@ class UserAuth extends AuthService {
     debugPrint(
         'RESEND OTP REGISTER PHONE NUMBER RESPONSE ::: ${response.body}');
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     } else {
       if (AppConfig.enableLogs.value) debugPrint("DATA SENT:- $data");
@@ -353,7 +353,7 @@ class UserAuth extends AuthService {
     debugPrint('PHONE NUMBER DATA ::: $data');
     debugPrint(
         "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       if (jsonData['exist'] == true) {
         // If {"exist":true} it means phone number already exists on our server so the user can't proceed with the entered phone number.
         return false;
@@ -388,7 +388,7 @@ class UserAuth extends AuthService {
 
     debugPrint('VERIFY PHONE NUMBER RESPONSE DATA ::: ${response.body}');
     var jsonData = json.decode(response.body);
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       var resetToken = jsonData['reset-token'];
 
       if (resetToken != null) {
@@ -428,7 +428,7 @@ class UserAuth extends AuthService {
     var jsonData = jsonDecode(response.body);
     debugPrint(
         "URL:- $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     } else {
       throw jsonData;
@@ -443,7 +443,7 @@ class UserAuth extends AuthService {
     debugPrint(
         "URL:- $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       // Because the jwt expires every 5 minutes we will take note of the time they
       // where  created and the use that to compute the expiration time of the
       // token. So that we will only use the token if its still valid.
@@ -482,7 +482,7 @@ class UserAuth extends AuthService {
     debugPrint('USER ADDRESS -> $url');
     debugPrint('USER ADDRESS -> $jsonData');
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       debugPrint('USER ADDRESS ::: $jsonData');
       return ShippingAddress.fromJson(jsonData);
     }
@@ -502,7 +502,7 @@ class UserAuth extends AuthService {
 
     debugPrint('FETCH USER ABOUT INFO RESPONSE ::: ${response.body}');
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       var jsonData = jsonDecode(response.body);
       return UserAbout.fromJson(jsonData);
     }
@@ -576,7 +576,7 @@ class UserAuth extends AuthService {
       debugPrint(
           "URL: $url STATUSCODE:- ${response.statusCode} body:- $responseBody");
     }
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return UserAbout.fromJson(jsonDecode(responseBody));
     }
     return Future.error("$responseBody");
@@ -591,7 +591,7 @@ class UserAuth extends AuthService {
 
     debugPrint('FETCH STATE RESPONSE ::: ${response.body}');
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       List responseBody = jsonDecode(response.body);
       return responseBody.map((e) => StatesModel.fromJson(e)).toList();
     }
@@ -644,7 +644,7 @@ class UserAuth extends AuthService {
           "RESPONSE :- STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
     }
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       dynamic responseData = jsonDecode(responseBody);
       return {
         "nickname": responseData['nickname'],
@@ -705,7 +705,7 @@ class UserAuth extends AuthService {
     var response = await httpGet(url, headers: headers);
     debugPrint('USER RES CONTACTS :::: $response');
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       var jsonData = json.decode(response.body) ?? {};
       debugPrint('USER CONTACTS :::: $jsonData');
 
@@ -739,7 +739,7 @@ class UserAuth extends AuthService {
     var response =
         await httpPost(url, headers: headers, body: jsonEncode(data));
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       debugPrint("STATUSCODE:- ${response.statusCode} BODY:- ${response.body}");
       return jsonDecode(response.body);
     } else {
@@ -757,7 +757,7 @@ class UserAuth extends AuthService {
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       var jsonData = jsonDecode(response.body);
       debugPrint("STATUS CODE:- ${response.statusCode}");
       debugPrint("response from fetchCustomer = $jsonData");
@@ -782,7 +782,7 @@ class UserAuth extends AuthService {
     var response = await httpPatch(url, headers: headers, body: _data);
     debugPrint(
         "RESPONSE :- STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     }
     return false;
@@ -799,7 +799,7 @@ class UserAuth extends AuthService {
     var response = await httpPatch(url, headers: headers, body: _data);
     // debugPrint("data $_data");
     // debugPrint("response ${response.statusCode} ${response.body}");
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     }
     return false;
@@ -816,7 +816,7 @@ class UserAuth extends AuthService {
     debugPrint("is In Request List-->${response.body}");
     debugPrint("is In Request List-->${response.statusCode}");
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     }
     return false;
@@ -831,7 +831,7 @@ class UserAuth extends AuthService {
     var response = await httpPost(url, headers: headers, body: _data);
     debugPrint("Data :- $data");
     debugPrint("response :- ${response.body}");
-    if (response.statusCode == 201) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     }
     return false;
@@ -851,7 +851,7 @@ class UserAuth extends AuthService {
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       var jsonData = json.decode(response.body);
 
       Map<String, dynamic> result = {
@@ -874,7 +874,7 @@ class UserAuth extends AuthService {
     var _data = jsonEncode(data);
     var response = await httpPatch(url, headers: headers, body: _data);
     log('message......mesaaager  ooooo. ${response.statusCode}');
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     }
     return false;
@@ -886,7 +886,7 @@ class UserAuth extends AuthService {
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await httpPatch(url, headers: headers, body: _data);
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     }
     return false;
@@ -905,7 +905,7 @@ class UserAuth extends AuthService {
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       var jsonData = json.decode(response.body);
 
       Map<String, dynamic> result = {
@@ -928,7 +928,7 @@ class UserAuth extends AuthService {
     var _data = jsonEncode(data);
     var response = await httpPatch(url, headers: headers, body: _data);
     debugPrint('RES __ ${response.body}');
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     }
     return false;
@@ -941,7 +941,7 @@ class UserAuth extends AuthService {
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await httpPatch(url, headers: headers, body: _data);
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     }
     return false;
@@ -964,7 +964,7 @@ class UserAuth extends AuthService {
     String url = AppConfig.baseUrl + "/api/v1/user/profile-pricing/";
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       var jsonData = json.decode(response.body);
       return jsonData["results"];
     } else {
@@ -986,7 +986,7 @@ class UserAuth extends AuthService {
     // debugPrint("DATA SENT:- $_data");
     // var response = await httpPost(url, body: _data, headers: headers);
     //
-    // if (response.statusCode == 200) {
+    // if (response.statusCode == 200 || response.statusCode == 201) {
     return true;
     // } else {
     //   debugPrint(
@@ -1009,7 +1009,7 @@ class UserAuth extends AuthService {
     //
     // debugPrint("RESPONSE=> ${response.body}");
     //
-    // if (response.statusCode == 200) {
+    // if (response.statusCode == 200 || response.statusCode == 201) {
     //   var jsonData = json.decode(response.body);
     var jsonData = {"otp": "123456"};
     return jsonData['otp'];
@@ -1028,7 +1028,7 @@ class UserAuth extends AuthService {
     // var _data = jsonEncode(data);
     // var response = await httpPost(url, body: _data, headers: headers);
     //
-    // if (response.statusCode == 200) {
+    // if (response.statusCode == 200 || response.statusCode == 201) {
     //   var jsonData = json.decode(response.body);
     //   var resetToken = jsonData['reset-token'];
     //   return resetToken;
@@ -1050,7 +1050,7 @@ class UserAuth extends AuthService {
   //
   //   var response = await httpGet(url, headers: headers);
   //
-  //   if (response.statusCode == 200) {
+  //   if (response.statusCode == 200 || response.statusCode == 201) {
   //     debugPrint("Result:- ${response.body}");
   //     return true;
   //   } else {
@@ -1081,7 +1081,7 @@ class UserAuth extends AuthService {
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       var jsonData = json.decode(response.body);
 
       Map<String, dynamic> result = {
@@ -1149,7 +1149,7 @@ class UserAuth extends AuthService {
 
     debugPrint('FOLLOWING LIST ::: ${response.statusCode}');
     debugPrint('FOLLOWING LIST ::: ${response.body}');
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final jsonData = jsonDecode(response.body);
       List results = jsonData['results'];
 
@@ -1176,7 +1176,7 @@ class UserAuth extends AuthService {
 
     debugPrint('SUGGESTIONS LIST ::: ${response.statusCode}');
     debugPrint('SUGGESTIONS LIST ::: ${response.body}');
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final jsonData = jsonDecode(response.body);
       List results = jsonData['results'];
 
@@ -1214,7 +1214,7 @@ class UserAuth extends AuthService {
     debugPrint(
         "RESPONSE STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       var jsonData = json.decode(response.body);
 
       Map<String, dynamic> result = {"results": jsonData};
@@ -1233,7 +1233,7 @@ class UserAuth extends AuthService {
     debugPrint(
         "RESPONSE STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     }
     return false;

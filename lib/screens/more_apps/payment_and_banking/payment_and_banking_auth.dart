@@ -23,7 +23,7 @@ class PaymentAndBankingAuth extends AuthService {
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       var jsonData = json.decode(response.body);
       List<BankAccount> accounts = [];
       for (var item in jsonData['results']) {
@@ -54,7 +54,7 @@ class PaymentAndBankingAuth extends AuthService {
         "${AppConfig.baseUrl}/api/v1/transactions/check-account-balance/";
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       var jsonData = json.decode(response.body);
       return jsonData;
     } else {
@@ -74,7 +74,7 @@ class PaymentAndBankingAuth extends AuthService {
     print('VERIFY CARD RESPONSE ::: $response');
     debugPrint(
         "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       if (jsonDecode(response.body)['msg'] == 'valid') {
         return true;
       } else {
@@ -95,7 +95,7 @@ class PaymentAndBankingAuth extends AuthService {
     var response = await httpPost(url,
         body: _data, headers: headers as Map<String, dynamic>?);
     var jsonData = json.decode(response.body);
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       var resetToken = jsonData['reset-token'];
       return resetToken;
     } else {
@@ -123,7 +123,7 @@ class PaymentAndBankingAuth extends AuthService {
       return Future.error(response.body);
     }
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       var jsonData = jsonDecode(response.body);
 
       responseString = 'successful';
@@ -175,7 +175,7 @@ class PaymentAndBankingAuth extends AuthService {
     var _data = jsonEncode(data);
     var response = await httpPost(url, headers: headers, body: _data);
 
-    if (response.statusCode == 201) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       var jsonData = json.decode(response.body);
       Map<String, dynamic> result = {
         "status": 201,
@@ -204,7 +204,7 @@ class PaymentAndBankingAuth extends AuthService {
     debugPrint(
         "status code :- ${response.statusCode} VerifyBankAccount ---> response ${response.body}");
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       var jsonData = json.decode(response.body);
 
       Map<String, dynamic> result = {
@@ -231,7 +231,7 @@ class PaymentAndBankingAuth extends AuthService {
 
     var response = await httpGet(url, headers: headers);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       var jsonData = json.decode(response.body);
 
       debugPrint(
@@ -295,7 +295,7 @@ class PaymentAndBankingAuth extends AuthService {
 
     print('Bank List DATA :::: ${json.decode(response.body)}');
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       var jsonData = json.decode(response.body);
       List<BankAccount> accounts = [];
       for (var item in jsonData['results']) {
@@ -342,7 +342,7 @@ class PaymentAndBankingAuth extends AuthService {
 
     print('SHIPPING OPTIONS List DATA :::: ${json.decode(response.body)}');
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       var jsonData = json.decode(response.body);
       List<ShippingOptionsListModel> shippingModelList = [];
 
@@ -432,7 +432,7 @@ class PaymentAndBankingAuth extends AuthService {
       return Future.error(response.body);
     }
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       if (jsonDecode(response.body)['validationRequired'] == true) {
         responseString = 'otp';
       }
@@ -465,7 +465,7 @@ class PaymentAndBankingAuth extends AuthService {
       return Future.error(response.body);
     }
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       if (jsonDecode(response.body)['validationRequired'] == true) {
         responseString = 'otp';
       }
@@ -496,7 +496,7 @@ class PaymentAndBankingAuth extends AuthService {
     debugPrint('CREDIT CARD LIST STATUS CODE ::: ${response.statusCode}');
     print('CREDIT CARD LIST ----> ${response.body}');
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       var jsonData = json.decode(response.body);
 
       List resultData = jsonData['results'];
@@ -561,7 +561,7 @@ class PaymentAndBankingAuth extends AuthService {
         "${AppConfig.baseUrl}/api/v1/transactions/transaction-filter/?week=$weekNumber";
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       var jsonData = json.decode(response.body);
       return jsonData;
     } else {
@@ -574,7 +574,7 @@ class PaymentAndBankingAuth extends AuthService {
     String url = "${AppConfig.baseUrl}/api/v1/transactions/payment-category/";
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       var jsonData = json.decode(response.body);
 
       Map<String, dynamic> result = {
@@ -624,7 +624,7 @@ class PaymentAndBankingAuth extends AuthService {
     debugPrint("RESPONSE STATUS CODE:- ${response.statusCode}");
     debugPrint("RESPONSE BODY:- ${response.body}");
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     } else {
       return false;
@@ -690,7 +690,7 @@ class PaymentAndBankingAuth extends AuthService {
 
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       List<PaymentRequest> paymentRequests = [];
       // This variable will hold list of transactions we got from server
       await getUser();
@@ -1056,7 +1056,7 @@ class PaymentAndBankingAuth extends AuthService {
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       List<Payout> payouts = [];
       var jsonData = json.decode(response.body);
 
@@ -1190,7 +1190,7 @@ class PaymentAndBankingAuth extends AuthService {
     try {
       handleServerErrors(response);
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
         return KycModel.fromJson(jsonDecode(response.body));
       } else {
         return Future.error(jsonDecode(response.body));
@@ -1242,7 +1242,7 @@ class PaymentAndBankingAuth extends AuthService {
           "Please upload smaller images, One or all of your images are too large.");
     }
     var responseBody = await response.stream.bytesToString();
-    if (response.statusCode == 201) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     }
     debugPrint(

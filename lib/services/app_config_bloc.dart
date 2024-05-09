@@ -23,7 +23,7 @@ class AppFeaturesService extends AuthService {
 
     debugPrint('SETTINGS :: ${response.body}');
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       var jsonData = jsonDecode(response.body);
       return AppConfigurationModel.fromJson(jsonData);
     } else {

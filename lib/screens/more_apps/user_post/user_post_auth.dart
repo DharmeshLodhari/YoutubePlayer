@@ -44,7 +44,7 @@ class UserPostAuth extends AuthService {
     debugPrint(
         "ALL POST URL $url STATUS CODE:- ${response.statusCode} LIST USER POST BODY:- ${response.body}");
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       Map<String, dynamic> jsonData = jsonDecode(response.body);
 
       return jsonData;
@@ -85,7 +85,7 @@ class UserPostAuth extends AuthService {
     debugPrint(
         "URL $url STATUS CODE:- ${response.statusCode} LIST USER POST BODY:- ${response.body}");
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       Map<String, dynamic> jsonData = jsonDecode(response.body);
       return jsonData;
     }
@@ -101,7 +101,7 @@ class UserPostAuth extends AuthService {
     var response = await httpGet(url, headers: headers);
     debugPrint(
         "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       List jsonData = jsonDecode(response.body)['results'];
       print('JSON RESULT :::: $jsonData');
 
@@ -121,7 +121,7 @@ class UserPostAuth extends AuthService {
     debugPrint(
         "URL GET POST $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       debugPrint('AUTHOR NAME ::: ${jsonDecode(response.body)}');
       return UserPost.fromJson(jsonDecode(response.body));
     } else if (response.statusCode == 404) {
@@ -140,7 +140,7 @@ class UserPostAuth extends AuthService {
     debugPrint(
         "UPDATE POST VIEW URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     } else {
       if (response.statusCode != 500) {

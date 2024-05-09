@@ -30,7 +30,7 @@ class UtilityAuth extends AuthService {
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       List<ProviderModel> providerModelList = [];
 
       var jsonData = json.decode(response.body);
@@ -64,7 +64,7 @@ class UtilityAuth extends AuthService {
     var response = await httpGet(url, headers: headers);
     print('provider details response ::: ${response.body}');
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       List providerProduct = jsonDecode(response.body)['products'];
       List<ProviderProductModel> providerDetailsModelList = providerProduct
           .map((json) => ProviderProductModel.fromJson(json))
@@ -93,7 +93,7 @@ class UtilityAuth extends AuthService {
     var response = await httpGet(url, headers: headers);
 
     print('HISTORY :::: ${response.body}');
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       var jsonData = json.decode(response.body);
       List resultList = jsonData['results'];
 
@@ -146,7 +146,7 @@ class UtilityAuth extends AuthService {
     var response = await httpGet(url, headers: headers);
 
     print('TRANSACTION DETAILS RESPONSE ::: ${response.body}');
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final jsonData = jsonDecode(response.body);
       return UtilityHistoryModel.fromJson(jsonData);
     } else {
@@ -180,7 +180,7 @@ class UtilityAuth extends AuthService {
 
     print('VERIFY REFERENCE RESPONSE ::: ${response.body}');
     return 'a';
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       // return jsonDecode(response.body)['customer_id'];
     } else {
       return null;

@@ -307,7 +307,7 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
             var response = await PaymentAndBankingAuth()
                 .makePaymentForCartOrder({"orders": orders});
 
-            if (response.statusCode == 200) {
+            if (response.statusCode == 200 || response.statusCode == 201) {
               shippingProcessBloc.isPaymentSuccessfully(true);
               showToast(
                   message: AppLocalization.of(context)!.sendPaymentSuccess);

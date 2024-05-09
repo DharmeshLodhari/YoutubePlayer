@@ -245,20 +245,20 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
         });
       }
 
-      StatesModel? selectedStateModel;
-
-      for (StatesModel statesModel in tempList) {
-        if (statesModel.name == shippingAddress?.stateName) {
-          selectedStateModel = statesModel;
-          break;
-        }
-      }
-      if (selectedStateModel != null) {
-        String? code = selectedStateModel.isoCode;
-        if (code != null) {
-          getShippingCities(code);
-        }
-      }
+      // StatesModel? selectedStateModel;
+      //
+      // for (StatesModel statesModel in tempList) {
+      //   if (statesModel.name == shippingAddress?.stateName) {
+      //     selectedStateModel = statesModel;
+      //     break;
+      //   }
+      // }
+      // if (selectedStateModel != null) {
+      //   String? code = selectedStateModel.isoCode;
+      //   if (code != null) {
+      //     getShippingCities(code);
+      //   }
+      // }
     }
   }
 
@@ -877,14 +877,14 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
           fontWeight: FontWeight.w600,
         ),
       ),
-      onChanged: (String? value) async {
-        StatesModel picked =
-            stateList.firstWhere((element) => element.name == value);
-        selectedCity = null;
-        await getShippingCities(picked.isoCode);
-        shippingAddress?.stateName = picked.name;
-        setState(() {
-          selectedState = value!;
+      onChanged: (String? value) {
+        setState(() async {
+          StatesModel picked =
+              stateList.firstWhere((element) => element.name == value);
+          selectedCity = null;
+          await getShippingCities(picked.isoCode);
+          shippingAddress?.stateName = picked.name;
+          selectedState = value;
         });
       },
       validator: (String? value) {

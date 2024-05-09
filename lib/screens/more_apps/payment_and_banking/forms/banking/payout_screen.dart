@@ -354,7 +354,8 @@ class _PayoutScreenState extends State<PayoutScreen> {
 
                     Navigator.pop(context);
 
-                    if (response.statusCode == 201) {
+                    if (response.statusCode == 200 ||
+                        response.statusCode == 201) {
                       Navigator.pop(context);
                       Navigator.of(context).popAndPushNamed('/payout-list');
                     } else if (response.statusCode == 500) {

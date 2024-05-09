@@ -28,7 +28,7 @@ class ShippingProcessAuthService extends AuthService {
       debugPrint('Fetch Package Details BODY ---> ${response.body}');
       print("response ${response.body}");
       print(response.statusCode);
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
         List jsonDataResult = jsonData;
         return jsonDataResult
             .map((json) => PackageDetailsModel.fromJson(json))
@@ -74,7 +74,7 @@ class ShippingProcessAuthService extends AuthService {
     debugPrint('BODY shipping:: ${response.body}');
     debugPrint('STATUS CO  :: ${response.statusCode}');
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       if (packageDetailsModel.shippingType == ShippingTypes.courier) {
         List jsonDataResult = json.decode(response.body);
         return jsonDataResult
@@ -181,7 +181,7 @@ class ShippingProcessAuthService extends AuthService {
     debugPrint('BODY shipping:: ${response.body}');
     debugPrint('STATUS CO  :: ${response.statusCode}');
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final Map<String, dynamic> data = json.decode(response.body);
 
       String id = data['id'];

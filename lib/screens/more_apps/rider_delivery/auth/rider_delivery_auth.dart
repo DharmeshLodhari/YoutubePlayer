@@ -30,7 +30,7 @@ class RiderDeliveryAuthService extends AuthService {
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       List<DeliveryModel> askCategories = [];
       var jsonData = json.decode(response.body);
 
@@ -74,7 +74,7 @@ class RiderDeliveryAuthService extends AuthService {
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       List<DeliveryModel> askCategories = [];
       var jsonData = json.decode(response.body);
 
@@ -111,7 +111,7 @@ class RiderDeliveryAuthService extends AuthService {
       debugPrint('Fetch Job URL BODY ---> ${response.body}');
 
       print(response.statusCode);
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
         final Map<String, dynamic> jsonData = json.decode(response.body);
         return DeliveryModel.fromJson(jsonData);
       } else {
@@ -401,7 +401,7 @@ class RiderDeliveryAuthService extends AuthService {
       debugPrint('Fetch rider location URL BODY ---> ${response.body}');
 
       print(response.statusCode);
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
         final Map<String, dynamic> jsonData = json.decode(response.body);
         return jsonData;
       } else {

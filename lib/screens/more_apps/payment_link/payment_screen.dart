@@ -408,7 +408,7 @@ class _PaymentLinkScreenState extends State<PaymentLinkScreen> {
                   return Future.error(response.body);
                 }
 
-                if (response.statusCode == 201) {
+                if (response.statusCode == 200 || response.statusCode == 201) {
                   showDataAlert(res['link']);
                   Navigator.pop(context);
                   Navigator.pop(context);

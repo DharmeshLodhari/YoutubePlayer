@@ -465,7 +465,8 @@ class _OrdersListState extends State<OrdersList> {
                     (response) {
                       Navigator.pop(context);
 
-                      if (response.statusCode == 200) {
+                      if (response.statusCode == 200 ||
+                          response.statusCode == 201) {
                         showToast(message: 'Payment successful');
                         _refresh();
                       } else if (response.statusCode == 500) {

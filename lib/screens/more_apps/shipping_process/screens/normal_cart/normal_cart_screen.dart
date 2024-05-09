@@ -902,7 +902,7 @@ class NormalCartScreenState extends State<NormalCartScreen> {
 //                     await _auth.makePaymentForCartOrder({"orders": orders});
 //                 Navigator.popUntil(
 //                     context, ModalRoute.withName(Routes.DASHBOARD));
-//                 if (response.statusCode == 200) {
+//                 if (response.statusCode == 200 || response.statusCode == 201) {
 //                   Navigator.pushNamed(context, Routes.ORDERS_LIST);
 //                 } else if (response.statusCode == 500) {
 //                   showToast(

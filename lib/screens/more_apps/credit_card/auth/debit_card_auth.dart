@@ -1,15 +1,15 @@
 import 'dart:convert';
+
 import 'package:Slydo/services/auth.dart';
 import 'package:flutter/cupertino.dart';
+
 import '../../../../data/environment.dart';
 import '../../../../utils/util.dart';
 import '../models/all_cards.dart';
 import '../models/card_transactions.dart';
 import '../models/exchange_rate.dart';
 
-
 class DebitCardAuth extends AuthService {
-
   // Get all virtual cards
   Future<Map<String, dynamic>?> getAllCards(
       String? next, String? previous) async {
@@ -31,7 +31,7 @@ class DebitCardAuth extends AuthService {
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       List<AllCards> cards = [];
       var jsonData = json.decode(response.body);
 
@@ -66,7 +66,8 @@ class DebitCardAuth extends AuthService {
       return null;
     }
     if (next == "") {
-      url = "${AppConfig.baseUrl}/api/v1/virtual-cards/transactions/?card_id=$currentCardId";
+      url =
+          "${AppConfig.baseUrl}/api/v1/virtual-cards/transactions/?card_id=$currentCardId";
     } else {
       url = getSecureUrl(url: next);
     }
@@ -78,8 +79,7 @@ class DebitCardAuth extends AuthService {
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
-    if (response.statusCode == 200) {
-
+    if (response.statusCode == 200 || response.statusCode == 201) {
       List<CardTransactions> cardTransaction = [];
       var jsonData = json.decode(response.body);
 
@@ -105,15 +105,16 @@ class DebitCardAuth extends AuthService {
   }
 
   // Search single virtual cards transactions
-  Future<Map<String, dynamic>?> searchSingleCardsTransactions(
-      String? next, String? previous, String? currentCardId, String? searchText) async {
+  Future<Map<String, dynamic>?> searchSingleCardsTransactions(String? next,
+      String? previous, String? currentCardId, String? searchText) async {
     debugPrint("CALLING SEARCH SINGLE CARDS TRANSACTIONS");
     String url = "";
     if (next == null) {
       return null;
     }
     if (next == "") {
-      url = "${AppConfig.baseUrl}/api/v1/virtual-cards/transactions?card_id=$currentCardId&search=$searchText";
+      url =
+          "${AppConfig.baseUrl}/api/v1/virtual-cards/transactions?card_id=$currentCardId&search=$searchText";
     } else {
       url = getSecureUrl(url: next);
     }
@@ -125,8 +126,7 @@ class DebitCardAuth extends AuthService {
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
-    if (response.statusCode == 200) {
-
+    if (response.statusCode == 200 || response.statusCode == 201) {
       List<CardTransactions> cardTransaction = [];
       var jsonData = json.decode(response.body);
 
@@ -151,12 +151,11 @@ class DebitCardAuth extends AuthService {
     }
   }
 
-
   // Get exchange rate
   Future<ExchangeRate?> getExchangeRate() async {
     debugPrint("CALLING EXCHANGE RATE");
 
-    String  url = "${AppConfig.baseUrl}/api/v1/virtual-cards/exchange-rate/";
+    String url = "${AppConfig.baseUrl}/api/v1/virtual-cards/exchange-rate/";
     debugPrint(url);
 
     var headers = await getAuthHeaders();
@@ -165,14 +164,13 @@ class DebitCardAuth extends AuthService {
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       var jsonData = json.decode(response.body);
 
       // debugPrint("JSON EXCHANGE RATE::- $jsonData");
 
       ExchangeRate exchangeRate = ExchangeRate.fromJson(jsonData);
       return exchangeRate;
-
     } else if (response.statusCode == 500) {
       return null;
     } else {
@@ -190,7 +188,7 @@ class DebitCardAuth extends AuthService {
 
     var headers = await getAuthHeaders();
     var response =
-    await httpPost(url, headers: headers, body: jsonEncode(body));
+        await httpPost(url, headers: headers, body: jsonEncode(body));
 
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
@@ -200,7 +198,6 @@ class DebitCardAuth extends AuthService {
     } else if (response.statusCode == 500) {
       return null;
     } else {
-
       return null;
     }
   }
@@ -210,7 +207,7 @@ class DebitCardAuth extends AuthService {
     debugPrint("FREEZE CARD");
 
     String url =
-      "${AppConfig.baseUrl}/api/v1/virtual-cards/cards/$cardId/activate-deactivate/";
+        "${AppConfig.baseUrl}/api/v1/virtual-cards/cards/$cardId/activate-deactivate/";
 
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
@@ -219,7 +216,7 @@ class DebitCardAuth extends AuthService {
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     } else if (response.statusCode == 500) {
       return null;
@@ -233,7 +230,7 @@ class DebitCardAuth extends AuthService {
     debugPrint("TERMINATE CARD");
 
     String url =
-      "${AppConfig.baseUrl}/api/v1/virtual-cards/cards/$cardId/terminate/";
+        "${AppConfig.baseUrl}/api/v1/virtual-cards/cards/$cardId/terminate/";
 
     var headers = await getAuthHeaders();
     var response = await httpPatch(url, headers: headers);
@@ -241,7 +238,7 @@ class DebitCardAuth extends AuthService {
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     } else if (response.statusCode == 500) {
       return null;
@@ -265,7 +262,7 @@ class DebitCardAuth extends AuthService {
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     } else if (response.statusCode == 500) {
       return null;
@@ -283,12 +280,15 @@ class DebitCardAuth extends AuthService {
 
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
-    var response = await httpPatch(url, headers: headers, body: _data, newTimeOutDuration: Duration(seconds: 45));
+    var response = await httpPatch(url,
+        headers: headers,
+        body: _data,
+        newTimeOutDuration: Duration(seconds: 45));
 
     debugPrint(
         "RESPONSE WITHDRAW CARD CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     } else if (response.statusCode == 500) {
       return null;
@@ -298,11 +298,11 @@ class DebitCardAuth extends AuthService {
   }
 
   // edit card label
-  Future<bool?> updateCardLabel(Map<String, dynamic> data, String cardId) async {
+  Future<bool?> updateCardLabel(
+      Map<String, dynamic> data, String cardId) async {
     debugPrint("Update Card Label");
 
-    String url =
-        "${AppConfig.baseUrl}/api/v1/virtual-cards/cards/$cardId/";
+    String url = "${AppConfig.baseUrl}/api/v1/virtual-cards/cards/$cardId/";
 
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
@@ -311,7 +311,7 @@ class DebitCardAuth extends AuthService {
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     } else if (response.statusCode == 500) {
       return null;
@@ -319,5 +319,4 @@ class DebitCardAuth extends AuthService {
       return null;
     }
   }
-
 }

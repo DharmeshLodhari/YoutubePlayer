@@ -925,7 +925,6 @@ extension StringOperations on VariantTypes {
 class Variant {
   String? id;
   String? title;
-  String? size;
   String? colour;
   VariantTypes? type;
   String? price;
@@ -934,7 +933,7 @@ class Variant {
   List<String?>? serverImages;
   int? quantity;
   bool? isAvailable;
-  DateTime? availableFrom;
+  String? availableFrom;
   String? currency;
   bool? trackInventory;
   List<AddedBy>? addedBy;
@@ -951,7 +950,6 @@ class Variant {
   Variant({
     this.id,
     this.title,
-    this.size,
     this.colour,
     this.trackInventory,
     this.type,
@@ -974,7 +972,6 @@ class Variant {
     }
     data.addAll({
       "title": title,
-      "size": size,
       "colour": colour,
       "price": price,
       "type": type?.toName(),
@@ -993,14 +990,13 @@ class Variant {
     return {
       "id": id,
       "title": title,
-      "size": size,
       "colour": colour,
       "price": price,
       "type": type,
       "value": value,
       "quantity": quantity,
       "is_available": isAvailable,
-      "available_from": availableFrom.toString(),
+      "available_from": availableFrom,
       "track_inventory": trackInventory,
       "currency": currency,
       "added_by": addedBy,
@@ -1040,7 +1036,7 @@ class Variant {
       localImages: object["localImages"] ?? [],
       serverImages: getProductImages(object["pictures"]),
       isAvailable: object["is_available"] ?? true,
-      availableFrom: getProductDateTime(object["available_from"]),
+      availableFrom: object["available_from"],
       currency: object["currency"] ?? "NGN",
       addedBy: object["added_by"] == null
           ? []
@@ -1199,7 +1195,6 @@ class Variant {
     return Variant(
       id: id ?? this.id,
       title: title ?? this.title,
-      size: size ?? this.size,
       colour: colour ?? this.colour,
       type: type ?? this.type,
       price: price ?? this.price,
@@ -1208,7 +1203,7 @@ class Variant {
       serverImages: serverImages ?? this.serverImages,
       quantity: quantity ?? this.quantity,
       isAvailable: isAvailable ?? this.isAvailable,
-      availableFrom: availableFrom ?? this.availableFrom,
+      availableFrom: this.availableFrom,
       currency: currency ?? this.currency,
       addedBy: addedBy ?? this.addedBy,
       trackInventory: trackInventory ?? this.trackInventory,

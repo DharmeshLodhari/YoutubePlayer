@@ -327,7 +327,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
 
         isLoading = false;
 
-        if (response.statusCode == 200) {
+        if (response.statusCode == 200 || response.statusCode == 201) {
           Navigator.of(context).popAndPushNamed('/reset-password',
               arguments: {'phoneNumber': phoneNumber});
         } else if (response.statusCode == 400) {

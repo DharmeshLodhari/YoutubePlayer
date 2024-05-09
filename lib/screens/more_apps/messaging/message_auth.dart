@@ -26,7 +26,7 @@ class MessageAuth extends AuthService {
     var _data = jsonEncode(data);
     var response = await httpPost(url, body: _data, headers: headers);
 
-    if (response.statusCode == 201) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     } else {
       debugPrint(
@@ -74,7 +74,7 @@ class MessageAuth extends AuthService {
           "Please upload smaller image, Your image is too large.");
     }
     var responseBody = await response.stream.bytesToString();
-    if (response.statusCode == 201) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     } else {
       debugPrint(
@@ -91,7 +91,7 @@ class MessageAuth extends AuthService {
     debugPrint(
         "Data Sent MESSAGE ID:- $messageId CONVERSATION ID:- $conversationId DATA:- $data");
     var response = await httpPost(url, body: data, headers: headers);
-    if (response.statusCode == 201) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     } else {
       debugPrint(
@@ -111,7 +111,7 @@ class MessageAuth extends AuthService {
     var headers = await getAuthHeaders();
     var response = await httpPatch(url, headers: headers);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     } else {
       debugPrint(
@@ -140,7 +140,7 @@ class MessageAuth extends AuthService {
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       var jsonData = json.decode(response.body);
       Message message = Message(
         subject: jsonData["subject"],
@@ -173,7 +173,7 @@ class MessageAuth extends AuthService {
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       var jsonData = json.decode(response.body);
       return jsonData["count"] as int;
     } else {
@@ -188,7 +188,7 @@ class MessageAuth extends AuthService {
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       var jsonData = json.decode(response.body);
       return jsonData["count"] as int;
     } else {
@@ -221,7 +221,7 @@ class MessageAuth extends AuthService {
     debugPrint('MESSAGE URL ::: ${response.statusCode}');
     debugPrint('MESSAGE ::: ${response.body}');
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       List<PartialMessage> messagesList = [];
       var jsonData = json.decode(response.body);
       for (var item in jsonData["results"]) {
@@ -281,7 +281,7 @@ class MessageAuth extends AuthService {
 
     var response = await httpGet(url, headers: headers);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       List<String> previousMessages = [];
       var jsonData = json.decode(response.body);
       for (var item in jsonData["results"]) {
@@ -316,7 +316,7 @@ class MessageAuth extends AuthService {
     var response = await httpGet(url, headers: headers)
         .timeout(timeOutDuration, onTimeout: () => timeOutFunction());
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       var jsonData = json.decode(response.body);
       return jsonData;
     } else {
@@ -340,7 +340,7 @@ class MessageAuth extends AuthService {
 
     var response = await httpGet(url, headers: headers);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       var jsonData = json.decode(response.body);
 
       Map<String, dynamic> result = {
@@ -420,7 +420,7 @@ class MessageAuth extends AuthService {
     var responseBody = await response.stream.bytesToString();
     debugPrint("$responseBody");
 
-    if (response.statusCode == 201) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       debugPrint("DATA:- ${request.fields}");
       debugPrint(
           "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- $responseBody");
@@ -491,7 +491,7 @@ class MessageAuth extends AuthService {
 
     log("URL:- $url REQUEST FIELDS:- ${request.fields} RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- $responseBody");
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       debugPrint(
           "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- $responseBody");
       return jsonDecode(responseBody);
@@ -513,7 +513,7 @@ class MessageAuth extends AuthService {
     var response = await httpGet(url, headers: headers)
         .timeout(timeOutDuration, onTimeout: () => timeOutFunction());
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       Map<String, dynamic> jsonData = json.decode(response.body);
       log("URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  \nRESPONSE BODY:- \n${response.body}");
       GroupDetailModel groupDetailModel = GroupDetailModel.fromJson(jsonData);
@@ -533,7 +533,7 @@ class MessageAuth extends AuthService {
     var response = await httpGet(url, headers: headers)
         .timeout(timeOutDuration, onTimeout: () => timeOutFunction());
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       Map<String, dynamic> jsonData = json.decode(response.body);
       // GroupDetailModel groupDetailModel = GroupDetailModel.fromJson(jsonData);
       debugPrint(jsonData.toString());
@@ -563,7 +563,7 @@ class MessageAuth extends AuthService {
     var response =
         await httpPost(url, headers: headers, body: jsonEncode(data));
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     } else {
       debugPrint(
@@ -592,7 +592,7 @@ class MessageAuth extends AuthService {
     debugPrint(
         "JOIN CHANNEL:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     } else if (response.statusCode == 412) {
       return Future.error(jsonDecode(response.body)['error']);
@@ -815,7 +815,7 @@ class MessageAuth extends AuthService {
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       var jsonData = json.decode(response.body);
       Map<String, dynamic> result = {
         "count": jsonData["count"],
@@ -862,7 +862,7 @@ class MessageAuth extends AuthService {
 
     var response = await httpGet(url, headers: headers);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       debugPrint(
           "STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
 
@@ -920,7 +920,7 @@ class MessageAuth extends AuthService {
 
     var response = await httpPatch(url, headers: headers, body: _data);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       debugPrint(
           "STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
       return jsonDecode(response.body);
@@ -946,7 +946,7 @@ class MessageAuth extends AuthService {
 
     var response = await httpPatch(url, headers: headers, body: _data);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       debugPrint(
           "STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
       return jsonDecode(response.body);
@@ -1078,7 +1078,7 @@ class MessageAuth extends AuthService {
 
     var response = await httpGet(url, headers: headers);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       Map<String, dynamic> responseBody = jsonDecode(response.body);
 
       List data = responseBody['data'];
@@ -1169,7 +1169,7 @@ class MessageAuth extends AuthService {
     debugPrint(
         "GET CHANNELS $url ${response.statusCode}  RESPONSE BODY:- ${response.body}");
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       debugPrint(
           "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
 
@@ -1200,7 +1200,7 @@ class MessageAuth extends AuthService {
     debugPrint(
         "GET CHANNELS two $url ${response.statusCode}  RESPONSE BODY:- ${response.body}");
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       debugPrint(
           "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
 

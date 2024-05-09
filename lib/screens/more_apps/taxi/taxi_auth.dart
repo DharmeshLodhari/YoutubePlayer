@@ -17,7 +17,7 @@ class TaxiAuth extends AuthService {
     url = Uri.encodeFull(url);
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       debugPrint("URL:- $url statusCode:- ${response.statusCode}");
 
       Map<String, dynamic> responseBody = jsonDecode(response.body);
@@ -49,7 +49,7 @@ class TaxiAuth extends AuthService {
     url = Uri.encodeFull(url);
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       Directions directions = Directions.fromMap(jsonDecode(response.body));
 
       return directions;
