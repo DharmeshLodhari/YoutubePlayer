@@ -1,8 +1,11 @@
 import 'package:Slydo/screens/more_apps/payment_and_banking/forms/payment/other_bank_transfer.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/forms/payment/slydo_slydo_transfer.dart';
+import 'package:Slydo/screens/scan_qr_code.dart';
+import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/tab_selection.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 
 class SendPayment extends StatefulWidget {
   var arguments;
@@ -69,6 +72,23 @@ class _SendPaymentState extends State<SendPayment> {
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
+      actions: [
+        if (currentAskTapOnHome == 0)
+          GestureDetector(
+            onTap: () {
+              NavigationUtil.push(context,
+                  screen: QRCodeView(arguments: {'isRequest': false}));
+            },
+            child: SvgPicture.asset(
+              'assets/images/rider/scan_qr.svg',
+              width: 20,
+              height: 20,
+            ),
+          ),
+        const SizedBox(
+          width: 20,
+        ),
+      ],
     );
   }
 

@@ -292,8 +292,9 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
       List<ProductCategory> result =
           await ShoppingAuthService().obtainCustomCategory(user!);
       List<ProductCategory> initial = [];
-      initial.add(ProductCategory("All", id: "all"));
       initial.add(ProductCategory("Explore", id: "main"));
+      initial.add(ProductCategory("All", id: "all"));
+
       initial.addAll(result);
       customCategories = initial;
       selectedCategory = customCategories.first.id;
@@ -487,7 +488,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
       color: white,
       child: Column(
         children: [
-          SizedBox(height: 24),
+          SizedBox(height: 15),
           Container(
             height: 20,
             margin: EdgeInsets.only(right: 24, left: 10),
@@ -548,7 +549,6 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
               child: Divider(
                 color: greySecondaryYarn.withOpacity(.6),
               )),
-          SizedBox(height: 14),
         ],
       ),
     );

@@ -2,17 +2,17 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
-import 'package:Slydo/screens/super_store/widget/section_products.dart';
+import 'package:Slydo/screens/super_store/widget/explore_products.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/custom_box_shadow.dart';
 import 'package:Slydo/widget/custom_pagination.dart';
+import 'package:Slydo/widget/customized_popup_menu.dart';
+import 'package:Slydo/widget/item_display_card.dart';
+import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shimmer/shimmer.dart';
-
-import '../../../../../widget/item_display_card.dart';
-import '../../../../../widget/no_item_in_list.dart';
 
 // ignore: must_be_immutable
 class UserProductList extends StatefulWidget {
@@ -52,6 +52,11 @@ class _UserProductListState extends State<UserProductList> {
   bool isProductLoading = false;
   bool noProductInList = false;
   bool _isSnackBarShowing = false;
+
+  GlobalKey _key = LabeledGlobalKey("productPopUpMenu");
+  late CustomizedPopUpMenu menu;
+  int selectedMenuItemIndex = 0;
+  bool isPopMenuOpen = false;
 
   @override
   void initState() {
@@ -219,6 +224,23 @@ class _UserProductListState extends State<UserProductList> {
 
   @override
   Widget build(BuildContext context) {
+    menu = CustomizedPopUpMenu(
+      buttonKey: _key,
+      context: context,
+      childList: [
+        CustomizedPopUpMenuItem(title: "All", value: "all"),
+        CustomizedPopUpMenuItem(title: "Newest", value: "newest"),
+        CustomizedPopUpMenuItem(title: "Oldest", value: "oldest"),
+        CustomizedPopUpMenuItem(title: "Highest Price", value: 'highest_price'),
+        CustomizedPopUpMenuItem(title: "Lowest Price", value: 'lowest_price'),
+        CustomizedPopUpMenuItem(title: "In stock", value: 'in_stock'),
+        CustomizedPopUpMenuItem(title: "Out of stock", value: 'out_of_stock'),
+      ],
+      selectedIndex: selectedMenuItemIndex,
+      right: 16,
+    );
+    menu.onChange = menuItemSelectionChange;
+    menu.menuState = menuStateChange;
     return widget.type != null
         ? _buildProductView()
         : CustomPagination(
@@ -229,6 +251,33 @@ class _UserProductListState extends State<UserProductList> {
             },
             child: _buildProductView(),
           );
+  }
+
+  void menuItemSelectionChange(String value, int index) {
+    switch (value) {
+      case "newest":
+        break;
+      case "oldest":
+        break;
+      case "highest_price":
+        break;
+      case "lowest_price":
+        break;
+      case "in_stock":
+        break;
+      case "out_of_stock":
+        break;
+      default:
+        break;
+    }
+    setState(() {});
+    debugPrint('menuItemSelectionChange--->');
+    // _onRefresh();
+  }
+
+  void menuStateChange(bool isOpen) {
+    isPopMenuOpen = isOpen;
+    setState(() {});
   }
 
   Widget _buildProductView() {
@@ -256,7 +305,6 @@ class _UserProductListState extends State<UserProductList> {
 
   Widget _buildList() {
     return SingleChildScrollView(
-      physics: ScrollPhysics(),
       child: noProductInList
           ? Container(
               constraints: BoxConstraints(
@@ -298,7 +346,14 @@ class _UserProductListState extends State<UserProductList> {
     return Column(
       children: [
         ...sectionProductList
-            .map((headers) => SectionProducts(headers: headers))
+            .map((headers) => Column(
+                  children: [
+                    SizedBox(
+                      height: 15,
+                    ),
+                    ExploreProducts(headers: headers),
+                  ],
+                ))
             .toList()
       ],
     );
@@ -311,13 +366,24 @@ class _UserProductListState extends State<UserProductList> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (widget.type == null)
-                Text(
-                  "Found ${productCount} products",
-                  style: TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 18,
-                    fontFamily: "Inter",
-                    color: blackFont,
+                Container(
+                  padding: EdgeInsets.only(top: 30),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          "Found ${productCount} products",
+                          style: TextStyle(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 18,
+                            fontFamily: "Inter",
+                            color: blackFont,
+                          ),
+                        ),
+                      ),
+                      popUpMenuButton(),
+                    ],
                   ),
                 ),
               SizedBox(height: 10),
@@ -381,6 +447,37 @@ class _UserProductListState extends State<UserProductList> {
     //       );
     //   },
     // );
+  }
+
+  Widget popUpMenuButton() {
+    return GestureDetector(
+      onTap: () {
+        debugPrint("popupmenu onPress");
+        if (menu.isMenuOpen) {
+          menu.closeMenu();
+        } else {
+          menu.openMenu();
+        }
+      },
+      child: SizedBox(
+        key: _key,
+        height: 34,
+        width: 34,
+        child: Card(
+          color: isPopMenuOpen ? navyBlue : iconBtnGrey,
+          elevation: 0,
+          margin: EdgeInsets.zero,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Icon(
+            Icons.filter_alt_rounded,
+            color: isPopMenuOpen ? Colors.white : Colors.black,
+            // size: 20,
+          ),
+        ),
+      ),
+    );
   }
 
   Widget productTile(int index) {

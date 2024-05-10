@@ -344,7 +344,6 @@ class ShoppingAuthService extends AuthService {
     bool otherDeals = false,
   }) async {
     debugPrint('CALLING PRODUCT');
-
     debugPrint('CALLING PRODUCT channel::: ${channel}');
 
     String url = "";
