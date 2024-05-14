@@ -166,7 +166,7 @@ class _UserServiceListState extends State<UserServiceList> {
                 ),
                 gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
                   mainAxisSpacing: 8,
-                  mainAxisExtent: 274,
+                  mainAxisExtent: 260,
                   crossAxisSpacing: 15,
                   maxCrossAxisExtent: 200,
                 ),

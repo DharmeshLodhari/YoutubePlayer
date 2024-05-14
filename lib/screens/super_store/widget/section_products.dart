@@ -66,9 +66,9 @@ class _SectionProductsState extends State<SectionProducts> {
                     _buildViewMore(context)
                   ],
                 ),
-                SizedBox(height: 11),
+                SizedBox(height: 10),
                 SizedBox(
-                  height: 274,
+                  height: 260,
                   child: ListView.separated(
                     separatorBuilder: (BuildContext context, int index) {
                       return SizedBox(width: 16);

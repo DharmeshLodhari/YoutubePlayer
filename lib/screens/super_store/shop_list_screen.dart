@@ -437,7 +437,7 @@ class ShopListScreenState extends State<ShopListScreen> {
                     gridDelegate:
                         const SliverGridDelegateWithMaxCrossAxisExtent(
                       mainAxisSpacing: 22,
-                      mainAxisExtent: 274,
+                      mainAxisExtent: 260,
                       crossAxisSpacing: 15,
                       maxCrossAxisExtent: 200,
                     ),

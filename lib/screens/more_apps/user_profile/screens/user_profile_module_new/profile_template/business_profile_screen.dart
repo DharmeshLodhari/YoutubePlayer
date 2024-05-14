@@ -491,7 +491,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
           SizedBox(height: 15),
           Container(
             height: 20,
-            margin: EdgeInsets.only(right: 24, left: 10),
+            margin: EdgeInsets.only(right: 16),
             alignment: Alignment.centerLeft,
             child: ListView(
               shrinkWrap: true,
@@ -544,11 +544,11 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
               ],
             ),
           ),
-          Container(
-              margin: EdgeInsets.only(left: 30),
-              child: Divider(
-                color: greySecondaryYarn.withOpacity(.6),
-              )),
+          // Container(
+          //     margin: EdgeInsets.only(left: 30),
+          //     child: Divider(
+          //       color: greySecondaryYarn.withOpacity(.6),
+          //     )),
         ],
       ),
     );
@@ -580,6 +580,9 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
         if (customCategories.isNotEmpty &&
             _currentUser.tabs[_currentIndex].name == "product")
           customCategoryWidget(),
+        SizedBox(
+          height: 20,
+        ),
         Expanded(
           child: (customCategories.isNotEmpty &&
                   _currentUser.tabs[_currentIndex].name == "product" &&

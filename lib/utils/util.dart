@@ -692,8 +692,8 @@ Widget customAppBar({required BuildContext context, required String title}) {
 
 Widget getColoredLabeledWidget({required String text, required Color color}) {
   return Container(
-    margin: const EdgeInsets.only(left: 8.0),
-    padding: const EdgeInsets.symmetric(horizontal: 6.0),
+    margin: const EdgeInsets.only(left: 5.0),
+    padding: const EdgeInsets.symmetric(horizontal: 5.0),
     decoration: BoxDecoration(
       color: color,
       borderRadius: BorderRadius.circular(6),

@@ -2361,7 +2361,7 @@ class _EditProductState extends State<EditProduct> {
                   ? 'm'
                   : '';
           currentProduct.discount = selectedDiscount;
-          currentProduct.trackInventory = trackInventory;
+          currentProduct.trackInventory = trackInventoryView;
           currentProduct.quantity = inventoryCount;
           currentProduct.addressId = defaultAddress?.id;
           currentProduct.searchKeywords = searchKeyword?.split(", ");

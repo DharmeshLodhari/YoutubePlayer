@@ -57,6 +57,7 @@ class _UserProductListState extends State<UserProductList> {
   late CustomizedPopUpMenu menu;
   int selectedMenuItemIndex = 0;
   bool isPopMenuOpen = false;
+  String selectedFilter = "";
 
   @override
   void initState() {
@@ -80,7 +81,11 @@ class _UserProductListState extends State<UserProductList> {
   getNextUrl() {
     setState(() {
       if (widget.next != null) {
-        productNext = widget.next;
+        if (widget.next?.contains("custom_category") ?? false) {
+          productNext = "${widget.next}&sort_by=$selectedFilter";
+        } else {
+          productNext = widget.next;
+        }
       }
     });
   }
@@ -115,11 +120,17 @@ class _UserProductListState extends State<UserProductList> {
 
         debugPrint('CALLING PRODUCT channel::: ${widget.channel!}');
 
-        Map<String, dynamic>? result = await ShoppingAuthService()
-            .listOfProduct(productNext, productPrevious, "", widget.channel!,
-                userName: widget.channel == false
-                    ? widget.user!.userName
-                    : widget.user!.nickName);
+        Map<String, dynamic>? result =
+            await ShoppingAuthService().listOfProduct(
+          productNext,
+          productPrevious,
+          "",
+          widget.channel!,
+          userName: widget.channel == false
+              ? widget.user!.userName
+              : widget.user!.nickName,
+          selectedFilter: selectedFilter,
+        );
 
         if (result == null) {
           isProductLoading = false;
@@ -234,6 +245,7 @@ class _UserProductListState extends State<UserProductList> {
         CustomizedPopUpMenuItem(title: "Highest Price", value: 'highest_price'),
         CustomizedPopUpMenuItem(title: "Lowest Price", value: 'lowest_price'),
         CustomizedPopUpMenuItem(title: "In stock", value: 'in_stock'),
+        CustomizedPopUpMenuItem(title: "Coming soon", value: 'coming_soon'),
         CustomizedPopUpMenuItem(title: "Out of stock", value: 'out_of_stock'),
       ],
       selectedIndex: selectedMenuItemIndex,
@@ -254,18 +266,55 @@ class _UserProductListState extends State<UserProductList> {
   }
 
   void menuItemSelectionChange(String value, int index) {
+    selectedMenuItemIndex = index;
     switch (value) {
+      case "all":
+        setState(() {
+          selectedFilter = " ";
+          _onProductRefresh();
+        });
+        break;
       case "newest":
+        setState(() {
+          selectedFilter = "newest";
+          _onProductRefresh();
+        });
         break;
       case "oldest":
+        setState(() {
+          selectedFilter = "oldest";
+          _onProductRefresh();
+        });
         break;
       case "highest_price":
+        setState(() {
+          selectedFilter = "highest-price";
+          _onProductRefresh();
+        });
         break;
       case "lowest_price":
+        setState(() {
+          selectedFilter = "lowest-price";
+          _onProductRefresh();
+        });
         break;
       case "in_stock":
+        setState(() {
+          selectedFilter = "on-sale";
+          _onProductRefresh();
+        });
+        break;
+      case "coming_soon":
+        setState(() {
+          selectedFilter = "coming-soon";
+          _onProductRefresh();
+        });
         break;
       case "out_of_stock":
+        setState(() {
+          selectedFilter = "out-of-stock";
+          _onProductRefresh();
+        });
         break;
       default:
         break;
@@ -287,7 +336,7 @@ class _UserProductListState extends State<UserProductList> {
         key: _productScaffoldKey,
         body: Container(
           color: lightGrey,
-          padding: EdgeInsets.all(16),
+          padding: EdgeInsets.only(left: 16, right: 16, bottom: 16),
           child: SmartRefresher(
             enablePullDown: true,
             header: WaterDropHeader(
@@ -348,9 +397,6 @@ class _UserProductListState extends State<UserProductList> {
         ...sectionProductList
             .map((headers) => Column(
                   children: [
-                    SizedBox(
-                      height: 15,
-                    ),
                     ExploreProducts(headers: headers),
                   ],
                 ))
@@ -366,25 +412,22 @@ class _UserProductListState extends State<UserProductList> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (widget.type == null)
-                Container(
-                  padding: EdgeInsets.only(top: 30),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          "Found ${productCount} products",
-                          style: TextStyle(
-                            fontWeight: FontWeight.w700,
-                            fontSize: 18,
-                            fontFamily: "Inter",
-                            color: blackFont,
-                          ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        "Found ${productCount} products",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 16,
+                          fontFamily: "Inter",
+                          color: blackFont,
                         ),
                       ),
-                      popUpMenuButton(),
-                    ],
-                  ),
+                    ),
+                    popUpMenuButton(),
+                  ],
                 ),
               SizedBox(height: 10),
               (widget.type != null) ? sectionProducts() : _buildGridView(),
@@ -414,7 +457,7 @@ class _UserProductListState extends State<UserProductList> {
                 ),
                 gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
                   mainAxisSpacing: 8,
-                  mainAxisExtent: 274,
+                  mainAxisExtent: 260,
                   crossAxisSpacing: 15,
                   maxCrossAxisExtent: 200,
                 ),
@@ -461,8 +504,8 @@ class _UserProductListState extends State<UserProductList> {
       },
       child: SizedBox(
         key: _key,
-        height: 34,
-        width: 34,
+        height: 30,
+        width: 30,
         child: Card(
           color: isPopMenuOpen ? navyBlue : iconBtnGrey,
           elevation: 0,
@@ -472,6 +515,7 @@ class _UserProductListState extends State<UserProductList> {
           ),
           child: Icon(
             Icons.filter_alt_rounded,
+            size: 20,
             color: isPopMenuOpen ? Colors.white : Colors.black,
             // size: 20,
           ),

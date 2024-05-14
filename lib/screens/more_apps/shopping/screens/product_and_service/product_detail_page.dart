@@ -1304,49 +1304,49 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                                         errorWidget:
                                             productAndServiceBigErrorWidget,
                                       ),
-                                      if (checkDiscount(
-                                          product!.discountIsActive!,
-                                          product!.discountedPrice!,
-                                          product!.price!))
-                                        Positioned(
-                                          top: 20,
-                                          right: 10,
-                                          child: showDiscountValue(
-                                              product!.discountType!,
-                                              product!.discountValue!,
-                                              product!.currency),
-                                        ),
-                                      if (product!.pricePercentageChange !=
-                                          0.0) ...[
-                                        Positioned(
-                                          top: 8,
-                                          right: 100,
-                                          child: Container(
-                                            padding: EdgeInsets.only(
-                                                left: 6.0,
-                                                right: 6.0,
-                                                top: 4.0,
-                                                bottom: 4.0),
-                                            decoration: BoxDecoration(
-                                              color: naturalGreen,
-                                              borderRadius: BorderRadius.all(
-                                                  Radius.circular(8)),
-                                            ),
-                                            child: Text(
-                                              "${product!.pricePercentageChange!.toInt()}% off",
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ]
+                                      productStockAndDetailTag(),
+                                      // if (checkDiscount(
+                                      //     product!.discountIsActive!,
+                                      //     product!.discountedPrice!,
+                                      //     product!.price!))
+                                      //   Positioned(
+                                      //     top: 20,
+                                      //     right: 10,
+                                      //     child: showDiscountValue(
+                                      //         product!.discountType!,
+                                      //         product!.discountValue!,
+                                      //         product!.currency),
+                                      //   ),
+                                      // if (product!.pricePercentageChange != 0.0) ...[
+                                      //   Positioned(
+                                      //     top: 8,
+                                      //     right: 100,
+                                      //     child: Container(
+                                      //       padding: EdgeInsets.only(
+                                      //           left: 6.0,
+                                      //           right: 6.0,
+                                      //           top: 4.0,
+                                      //           bottom: 4.0),
+                                      //       decoration: BoxDecoration(
+                                      //         color: naturalGreen,
+                                      //         borderRadius: BorderRadius.all(
+                                      //             Radius.circular(8)),
+                                      //       ),
+                                      //       child: Text(
+                                      //         "${product!.pricePercentageChange!.toInt()}% off",
+                                      //         style: TextStyle(
+                                      //           color: Colors.white,
+                                      //         ),
+                                      //       ),
+                                      //     ),
+                                      //   ),
+                                      // ]
                                     ],
                                   ),
                                 )),
                               ),
                             ),
-                            getOutOfStockTag(),
+                            // getOutOfStockTag(),
                           ],
                         ),
                       )
@@ -1472,6 +1472,49 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         });
   }
 
+  Widget productStockAndDetailTag() {
+    if (product?.availableFrom?.isAfter(DateTime.now()) ?? false) {
+      return Positioned(
+        top: 20,
+        right: 10,
+        child: showColoredLabeledWidget(
+            text: AppLocalization.of(context)!.comingSoon, color: starYellow),
+      );
+    } else if (product?.trackInventory == true &&
+        ((product?.quantity ?? 0) <= 0)) {
+      return Positioned(
+        top: 20,
+        right: 10,
+        child: showColoredLabeledWidget(
+            text: AppLocalization.of(context)!.outOfStock, color: red),
+      );
+    } else if ((product?.discountedPrice != null &&
+            product?.discountedPrice != 0) ||
+        (product?.pricePercentageChange != null &&
+            product?.pricePercentageChange != 0.0)) {
+      return buildDiscountPrice();
+    } else {
+      return SizedBox();
+    }
+  }
+
+  Widget buildDiscountPrice() {
+    if (product?.discountedPrice != null && product?.discountedPrice != 0) {
+      if (checkDiscount(product?.discountIsActive ?? false,
+          product?.discountedPrice ?? 0, product?.price ?? 0)) {
+        return Positioned(
+            top: 20,
+            right: 10,
+            child: showDiscountValue(product?.discountType ?? "",
+                product?.discountValue ?? 0, product?.currency));
+      } else {
+        return SizedBox();
+      }
+    } else {
+      return SizedBox();
+    }
+  }
+
   Widget getOutOfStockTag() {
     if (!(product?.isProductAvailableNow() ?? false)) {
       return Positioned(
@@ -1491,27 +1534,36 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         productIsLoading = true;
       });
     await _auth.getProduct(productId).then((value) {
-      product = value;
+      if (value != null) {
+        product = value;
 
-      displayProductImages = product!.serverImages;
-      productIsLoading = false;
+        displayProductImages = product!.serverImages;
+        productIsLoading = false;
 
-      //     Variant.convertToVariantList(product!.variantModels!);
+        //     Variant.convertToVariantList(product!.variantModels!);
 
-      //get the price and more information to string
-      price = product!.price.toString();
-      moreInformation = product!.description.toString();
+        //get the price and more information to string
+        price = product!.price.toString();
+        moreInformation = product!.description.toString();
 
-      // addOnList = product!.addOns != null
-      //     ? AddOns.convertToAddOnList(product!.addOns!)
-      //     : [];
+        // addOnList = product!.addOns != null
+        //     ? AddOns.convertToAddOnList(product!.addOns!)
+        //     : [];
 
-      colorGroups = {};
-      sizeGroups = {};
-      colorGroups = product?.getVariants(variantType: VariantTypes.Color) ?? {};
-      sizeGroups = product?.getVariants(variantType: VariantTypes.Size) ?? {};
+        colorGroups = {};
+        sizeGroups = {};
+        colorGroups =
+            product?.getVariants(variantType: VariantTypes.Color) ?? {};
+        sizeGroups = product?.getVariants(variantType: VariantTypes.Size) ?? {};
 
-      if (mounted) setState(() {});
+        if (mounted) setState(() {});
+      } else {
+        if (mounted)
+          setState(() {
+            productIsLoading = false;
+          });
+        Navigator.pop(context);
+      }
     }).catchError((e) {
       if (mounted)
         setState(() {

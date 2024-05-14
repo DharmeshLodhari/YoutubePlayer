@@ -3047,7 +3047,7 @@ class AppLocalization {
 
   String get comingSoon {
     return Intl.message(
-      "Coming Sonn!",
+      "Coming Soon",
       name: "comingSoon",
     );
   }

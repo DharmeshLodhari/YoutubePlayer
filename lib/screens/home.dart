@@ -1216,14 +1216,14 @@ class _HomeState extends State<Home> {
           Icon(
             Icons.location_pin,
             color: Colors.black,
-            size: 16.0,
+            size: 15.0,
           ),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 3.0),
             child: Text(
               _buildLocationText(),
               style: TextStyle(
-                fontSize: 12,
+                fontSize: 11,
                 fontFamily: 'Inter',
                 color: black,
                 fontWeight: FontWeight.w300,
@@ -1280,7 +1280,8 @@ class _HomeState extends State<Home> {
     if (isEmpty && getLocationStatus == false) {
       showNoAddressFoundDialog(context);
     }
-    defaultAddress = tempList.firstWhere((element) => element.is_default!);
+    defaultAddress =
+        tempList.firstWhere((element) => element.is_default ?? false);
     if (defaultAddress != null) {
       userBloc.user.defaultAddress = defaultAddress;
     }

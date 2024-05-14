@@ -609,7 +609,8 @@ class Product extends PurchasableItem {
   bool isProductAvailableNow() {
     if ((isAvailable ?? false) &&
         quantity! >= 1 &&
-        (availableFrom?.isBefore(DateTime.now()) ?? false)) {
+        ((availableFrom?.isBefore(DateTime.now()) ?? false) ||
+            (availableFrom?.isAtSameMomentAs(DateTime.now()) ?? false))) {
       return true;
     }
     return false;
@@ -1753,7 +1754,7 @@ class Service extends PurchasableItem {
     pictureMap = object["pictureMap"] ?? [];
     rating = formatRating(double.parse(object['rating']?.toString() ?? "0"));
     canRate = object["can_rate"] ?? false;
-    searchKeywords = object["search_keywords"] ?? "";
+    searchKeywords = object["search_keywords"] ?? [];
   }
 
   List<String> getServiceImages(List? data) {

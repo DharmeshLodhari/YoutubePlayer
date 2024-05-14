@@ -17,9 +17,10 @@ import 'package:Slydo/utils/country_picker/utils.dart';
 import 'package:Slydo/utils/global_key.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
-import 'package:location/location.dart';
+// import 'package:location/location.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
@@ -35,6 +36,7 @@ class AuthService {
   final String timeOutErrorMessage = "Server is not responding";
 
   DatabaseHelper _db = DatabaseHelper();
+  // Location location = Location();
 
   static const int API_CALL_RETRY_COUNT = 5;
 
@@ -420,7 +422,7 @@ class AuthService {
 
   Future<Map<String, String>> getUserLocationHeader() async {
     Map<String, String> data = {};
-    Location location = Location();
+
     SharedPreferences _sharedPreferences =
         await SharedPreferences.getInstance();
     UserBloc userBloc = Provider.of<UserBloc>(
@@ -432,11 +434,14 @@ class AuthService {
       // var status = await Permission.location.status;
       // if (status.isGranted) {
       if (getLocationStatus) {
-        LocationData locationData = await location.getLocation();
+        // LocationData locationData = await location.getLocation();
+        Position position = await Geolocator.getCurrentPosition(
+            desiredAccuracy: LocationAccuracy.high,
+            timeLimit: Duration(seconds: 10));
 
         data.addAll({
           "X-User-Current-Location":
-              "${locationData.longitude}, ${locationData.latitude}"
+              "${position.longitude}, ${position.latitude}"
         });
       } else {
         data.addAll({
@@ -612,7 +617,8 @@ class AuthService {
       debugPrint("Timeout on URL:- $url");
     }
 
-    return Future.error("$timeOutErrorMessage");
+    return Future.error(
+        "$timeOutErrorMessage $url took more than ${timeOutDuration.inSeconds}");
   }
 
   Future<void> wasTokenBlackListed(var response) async {

@@ -16,8 +16,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:location/location.dart';
+// import 'package:location/location.dart';
 import 'package:provider/provider.dart';
 
 class AddEditShippingAddress extends StatefulWidget {
@@ -33,7 +34,7 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
   final _formKey = GlobalKey<FormState>();
 
   late GoogleMapController mapController;
-  LocationData? currentLocation;
+  Position? currentLocation;
   Set<Marker> currentLocationMarker = <Marker>{};
   String? _mapStyle;
 
@@ -56,7 +57,7 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
   List<String> states = [];
   late UserBloc userBloc;
   String? name, phone;
-  final Location location = Location();
+  // final Location location = Location();
 
   @override
   void initState() {
@@ -80,42 +81,22 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
   }
 
   void getCurrentLocation() async {
-    // Location location = Location();
-
-    // Request permission to access the device's location
-    bool serviceEnabled = await location.serviceEnabled();
-    if (!serviceEnabled) {
-      serviceEnabled = await location.requestService();
-      if (!serviceEnabled) {
-        print('Location services are disabled.');
-        return;
-      }
-    }
-
-    // Check if permission to access location is granted
-    PermissionStatus permissionGranted = await location.hasPermission();
-    if (permissionGranted == PermissionStatus.denied) {
-      permissionGranted = await location.requestPermission();
-      if (permissionGranted != PermissionStatus.granted) {
-        print('Location permission denied.');
-        return;
-      }
-    }
-
     try {
       if (isEdit) {
-        currentLocation = LocationData.fromMap({
+        currentLocation = Position.fromMap({
           'latitude': shippingAddress.latitude,
           'longitude': shippingAddress.longitude,
         });
       } else {
         // currentLocation = await location.getLocation();
         currentLocation = await Future.any([
-          location.getLocation(),
+          Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high),
           Future.delayed(Duration(seconds: 5), () => null),
         ]);
         if (currentLocation == null) {
-          currentLocation = await location.getLocation();
+          currentLocation = await Geolocator.getCurrentPosition(
+              desiredAccuracy: LocationAccuracy.high);
+          // currentLocation = await location.getLocation();
         }
       }
       if (currentLocation != null) {
@@ -155,7 +136,7 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
   }
 
   void _changeLocation(LatLng newLocation) {
-    LocationData currentLocation = LocationData.fromMap({
+    Position currentLocation = Position.fromMap({
       'latitude': newLocation.latitude,
       'longitude': newLocation.longitude,
     });

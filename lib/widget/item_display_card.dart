@@ -115,42 +115,8 @@ class _DisplayProductState extends State<DisplayProduct> {
                       child: getRating(
                           numberOfRating: widget.product.rating?.toInt()),
                     ),
-                    widget.product.discountedPrice != null
-                        ? (checkDiscount(
-                                widget.product.discountIsActive!,
-                                widget.product.discountedPrice!,
-                                widget.product.price!))
-                            ? Positioned(
-                                top: 10,
-                                right: 10,
-                                child: showDiscountValue(
-                                    widget.product.discountType!,
-                                    widget.product.discountValue!,
-                                    widget.product.currency))
-                            : SizedBox()
-                        : SizedBox(),
 
-                    if ((widget.product.pricePercentageChange != null) &
-                        (widget.product.pricePercentageChange != 0.0)) ...[
-                      Positioned(
-                        top: 8,
-                        right: 8,
-                        child: Container(
-                          padding: EdgeInsets.only(
-                              left: 6.0, right: 6.0, top: 4.0, bottom: 4.0),
-                          decoration: BoxDecoration(
-                            color: naturalGreen,
-                            borderRadius: BorderRadius.all(Radius.circular(8)),
-                          ),
-                          child: Text(
-                            "${widget.product.pricePercentageChange!.toString()}% off",
-                            style: TextStyle(
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
+                    productStockAndDetailTag(),
 
                     displayShoppingCartControls(),
                     // TODO: to be added in future
@@ -186,7 +152,7 @@ class _DisplayProductState extends State<DisplayProduct> {
                         messageDecoderWithEmoji(
                               truncateString(
                                 str: widget.product.shortDescription!,
-                                lengthToTruncateAt: 60,
+                                lengthToTruncateAt: 50,
                                 showEllipsis: true,
                               ),
                             ) ??
@@ -194,7 +160,7 @@ class _DisplayProductState extends State<DisplayProduct> {
                         style: TextStyle(
                           fontFamily: "Inter",
                           fontWeight: FontWeight.w400,
-                          fontSize: 10,
+                          fontSize: 12,
                           color: yarnBlack,
                         ),
                       ),
@@ -202,7 +168,7 @@ class _DisplayProductState extends State<DisplayProduct> {
                         height: 6,
                       ),
                       Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -215,7 +181,7 @@ class _DisplayProductState extends State<DisplayProduct> {
                                       style: TextStyle(
                                         fontFamily: "Inter",
                                         fontWeight: FontWeight.bold,
-                                        fontSize: 14.8,
+                                        fontSize: 14,
                                         color: navyBlue,
                                       ),
                                     ),
@@ -240,7 +206,7 @@ class _DisplayProductState extends State<DisplayProduct> {
                                     ),
                                   ],
                                 ),
-                                SizedBox(height: 5),
+                                SizedBox(height: 4),
                                 widget.product.discountedPrice != null
                                     ? (checkDiscount(
                                             widget.product.discountIsActive!,
@@ -254,7 +220,7 @@ class _DisplayProductState extends State<DisplayProduct> {
                                                 style: TextStyle(
                                                   fontFamily: "Inter",
                                                   fontWeight: FontWeight.w400,
-                                                  fontSize: 12.8,
+                                                  fontSize: 12,
                                                   color: navyBlue,
                                                   decoration: TextDecoration
                                                       .lineThrough,
@@ -277,7 +243,6 @@ class _DisplayProductState extends State<DisplayProduct> {
                                     : SizedBox(),
                               ],
                             ),
-                            const Expanded(child: SizedBox(width: 40)),
                             displayShoppingAddingToCartControl()
                           ]),
                     ],
@@ -454,6 +419,70 @@ class _DisplayProductState extends State<DisplayProduct> {
       type: type,
       currentUser: userBloc.user.convertToUser(),
     );
+  }
+
+  Widget productStockAndDetailTag() {
+    if (widget.product.availableFrom?.isAfter(DateTime.now()) ?? false) {
+      return Positioned(
+        top: 10,
+        right: 10,
+        child: showColoredLabeledWidget(
+            text: AppLocalization.of(context)!.comingSoon, color: starYellow),
+      );
+    } else if (widget.product.trackInventory == true &&
+        widget.product.quantity! <= 0) {
+      return Positioned(
+        top: 10,
+        right: 10,
+        child: showColoredLabeledWidget(
+            text: AppLocalization.of(context)!.outOfStock, color: red),
+      );
+    } else if ((widget.product.discountedPrice != null &&
+            widget.product.discountedPrice != 0) ||
+        (widget.product.pricePercentageChange != null &&
+            widget.product.pricePercentageChange != 0.0)) {
+      return buildDiscountPrice();
+    } else {
+      return SizedBox();
+    }
+  }
+
+  Widget buildDiscountPrice() {
+    if (widget.product.discountedPrice != null &&
+        widget.product.discountedPrice != 0) {
+      if (checkDiscount(widget.product.discountIsActive!,
+          widget.product.discountedPrice!, widget.product.price!)) {
+        return Positioned(
+            top: 10,
+            right: 10,
+            child: showDiscountValue(widget.product.discountType!,
+                widget.product.discountValue!, widget.product.currency));
+      } else {
+        return SizedBox();
+      }
+    } else {
+      return SizedBox();
+    }
+    // if ((widget.product.pricePercentageChange != null) &
+    // (widget.product.pricePercentageChange != 0.0)) ...[
+    // Positioned(
+    // top: 8,
+    // right: 8,
+    // child: Container(
+    // padding: EdgeInsets.only(
+    // left: 6.0, right: 6.0, top: 4.0, bottom: 4.0),
+    // decoration: BoxDecoration(
+    // color: naturalGreen,
+    // borderRadius: BorderRadius.all(Radius.circular(8)),
+    // ),
+    // child: Text(
+    // "${widget.product.pricePercentageChange!.toString()}% off",
+    // style: TextStyle(
+    // color: Colors.white,
+    // ),
+    // ),
+    // ),
+    // )
   }
 
   Widget displayShoppingCartControls() {

@@ -341,6 +341,7 @@ class ShoppingAuthService extends AuthService {
     String? category,
     bool? channel, {
     String? userName,
+    String selectedFilter = "",
     bool otherDeals = false,
   }) async {
     debugPrint('CALLING PRODUCT');
@@ -354,8 +355,8 @@ class ShoppingAuthService extends AuthService {
       if (otherDeals == true) {
         url = AppConfig.baseUrl + "/api/v1/products/?other_deals=true";
       } else {
-        url =
-            AppConfig.baseUrl + "/api/v1/products/by-seller/" + userName! + "/";
+        url = AppConfig.baseUrl +
+            "/api/v1/products/by-seller/$userName/?sort_by=$selectedFilter";
       }
     } else {
       url = getSecureUrl(url: next);
@@ -861,7 +862,11 @@ class ShoppingAuthService extends AuthService {
   Future<Product> getProduct(String id) async {
     String url = AppConfig.baseUrl + "/api/v1/products/" + id + "/";
     var headers = await getAuthHeaders();
+    final startTime = DateTime.now();
     var response = await httpGet(url, headers: headers);
+    final endTime = DateTime.now();
+    Duration _responseTime = endTime.difference(startTime);
+
     var jsonData = json.decode(response.body);
     log("jsonData :- $jsonData");
     if (response.statusCode == 200 || response.statusCode == 201) {

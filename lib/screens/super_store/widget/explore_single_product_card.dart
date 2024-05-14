@@ -59,8 +59,8 @@ class _ExploreSingleProductState extends State<ExploreSingleProduct> {
             arguments: {"product": widget.product});
       },
       child: Container(
-        margin: const EdgeInsets.only(bottom: 15),
-        padding: const EdgeInsets.all(15),
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: Colors.white,
           border: Border.all(
@@ -97,8 +97,8 @@ class _ExploreSingleProductState extends State<ExploreSingleProduct> {
       child: CachedNetworkImage(
         imageUrl: widget.product.cover!,
         fit: BoxFit.cover,
-        height: 80,
-        width: 80,
+        height: 70,
+        width: 70,
         errorWidget: productAndServiceBigErrorWidget,
       ),
     );
@@ -112,23 +112,23 @@ class _ExploreSingleProductState extends State<ExploreSingleProduct> {
         Text(
           truncateString(
             str: messageDecoderWithEmoji(widget.product.name) ?? "",
-            lengthToTruncateAt: 16,
+            lengthToTruncateAt: 15,
             showEllipsis: false,
           ),
           style: TextStyle(
             color: blackFont,
-            fontSize: 16,
+            fontSize: 14,
             fontWeight: FontWeight.bold,
           ),
         ),
         const SizedBox(
-          height: 7,
+          height: 8,
         ),
         Text(
           messageDecoderWithEmoji(
                 truncateString(
                   str: widget.product.shortDescription!,
-                  lengthToTruncateAt: 25,
+                  lengthToTruncateAt: 15,
                   showEllipsis: true,
                 ),
               ) ??
@@ -141,7 +141,7 @@ class _ExploreSingleProductState extends State<ExploreSingleProduct> {
           ),
         ),
         const SizedBox(
-          height: 3,
+          height: 2,
         ),
         Row(
           children: [
@@ -324,7 +324,7 @@ class _ExploreSingleProductState extends State<ExploreSingleProduct> {
         ),
         child: Icon(
           Icons.add,
-          size: 22,
+          size: 26,
           color: black,
         ),
       ),

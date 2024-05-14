@@ -53,7 +53,7 @@ class _ExploreProductsState extends State<ExploreProducts> {
               Text(widget.headers["name"],
                   style: TextStyle(
                     color: black,
-                    fontSize: 14,
+                    fontSize: 16,
                     height: 1,
                     fontFamily: "Inter",
                     fontWeight: FontWeight.w600,
@@ -69,7 +69,7 @@ class _ExploreProductsState extends State<ExploreProducts> {
             padding: EdgeInsets.all(0.0),
             physics: NeverScrollableScrollPhysics(),
             scrollDirection: Axis.vertical,
-            itemCount: 3,
+            itemCount: result.length > 4 ? 3 : result.length,
             itemBuilder: (context, index) {
               if (index == result.length) {
                 return buildLoadingIndicator(isLoading: isLoading);

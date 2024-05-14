@@ -299,6 +299,23 @@ Widget showDiscountValue(String discountType, num discountValue, currency) {
   );
 }
 
+Widget showColoredLabeledWidget({required String text, required Color color}) {
+  return Container(
+    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+    decoration:
+        BoxDecoration(color: color, borderRadius: BorderRadius.circular(5)),
+    child: Text(
+      text,
+      style: TextStyle(
+        color: white,
+        fontSize: 10,
+        fontFamily: 'Inter',
+        fontWeight: FontWeight.w700,
+      ),
+    ),
+  );
+}
+
 bool checkDiscount(bool discountIsActive, num discountedPrice, num price) {
   if (discountIsActive &
       (discountedPrice != null) &
