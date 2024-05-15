@@ -89,7 +89,7 @@ class DisplayProductForDiscount extends StatelessWidget {
                         messageDecoderWithEmoji(
                               truncateString(
                                 str: product.shortDescription!,
-                                lengthToTruncateAt: 60,
+                                lengthToTruncateAt: 45,
                                 showEllipsis: true,
                               ),
                             ) ??

@@ -112,6 +112,7 @@ class _SearchUsersProductAndServiceState
       onSlideAnimationChanged: handleSlideAnimationChanged2,
       onSlideIsOpenChanged: handleSlideIsOpenChanged2,
     );
+    getList();
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
               _scrollController.position.maxScrollExtent &&
@@ -122,33 +123,33 @@ class _SearchUsersProductAndServiceState
       }
     });
 
-    searchItemTextController.addListener(() {
-      if (searchItemTextController.text.length >= 5) {
-        autoCompleteSearchText = searchItemTextController.text;
-
-        setState(() {
-          count = 0;
-          next = "";
-          previous = "";
-          results.clear();
-          noItemInList = false;
-          getList();
-        });
-      }
-      if (results.isNotEmpty || searchItemTextController.text.length != 0) {
-        if (mounted) {
-          setState(() {
-            isSearchIsEmpty = false;
-          });
-        }
-      } else {
-        if (mounted) {
-          setState(() {
-            isSearchIsEmpty = true;
-          });
-        }
-      }
-    });
+    // searchItemTextController.addListener(() {
+    //   if (searchItemTextController.text.length >= 5) {
+    //     autoCompleteSearchText = searchItemTextController.text;
+    //
+    //     setState(() {
+    //       count = 0;
+    //       next = "";
+    //       previous = "";
+    //       results.clear();
+    //       noItemInList = false;
+    //       getList();
+    //     });
+    //   }
+    //   if (results.isNotEmpty || searchItemTextController.text.length != 0) {
+    //     if (mounted) {
+    //       setState(() {
+    //         isSearchIsEmpty = false;
+    //       });
+    //     }
+    //   } else {
+    //     if (mounted) {
+    //       setState(() {
+    //         isSearchIsEmpty = true;
+    //       });
+    //     }
+    //   }
+    // });
 
     super.initState();
   }
@@ -473,6 +474,32 @@ class _SearchUsersProductAndServiceState
                 ),
                 cursorWidth: 1.5,
                 cursorColor: navyBlue,
+                onChanged: (value) {
+                  if (value.length >= 3) {
+                    searchItems();
+
+                    if (results.isNotEmpty ||
+                        searchItemTextController.text.length != 0) {
+                      if (mounted) {
+                        setState(() {
+                          isSearchIsEmpty = false;
+                        });
+                      }
+                    } else {
+                      if (mounted) {
+                        setState(() {
+                          isSearchIsEmpty = true;
+                        });
+                      }
+                    }
+                  } else if (value.length == 0) {
+                    setState(() {
+                      isSearchIsEmpty = true;
+                      results.clear();
+                      autoCompleteSearchText = value;
+                    });
+                  }
+                },
                 decoration: InputDecoration(
                   hintText: selectedMenuItemIndex == 0
                       ? "Search product"
@@ -519,7 +546,12 @@ class _SearchUsersProductAndServiceState
                   ),
                 ),
                 onFieldSubmitted: (val) {
-                  searchItems();
+                  if (mounted) {
+                    if (val.length >= 3) {
+                      searchItems();
+                    }
+                  }
+                  // searchItems();
                 },
               ),
             ),
@@ -585,9 +617,11 @@ class _SearchUsersProductAndServiceState
       previous = "";
       results.clear();
       noItemInList = false;
+      isLoading = false;
+
       if (mounted) setState(() {});
-      FocusScope.of(context).unfocus();
       getList();
+      // FocusScope.of(context).unfocus();
     }
   }
 
@@ -727,12 +761,12 @@ class _SearchUsersProductAndServiceState
   }
 
   void getList() async {
-    if (!_formFieldKey.currentState!.validate()) {
-      /// open filters when user has some error in filter fields validation
-      showFilterOptions = true;
-      if (mounted) setState(() {});
-      return;
-    }
+    // if (!_formFieldKey.currentState!.validate()) {
+    //   /// open filters when user has some error in filter fields validation
+    //   showFilterOptions = true;
+    //   if (mounted) setState(() {});
+    //   return;
+    // }
 
     /// close filter when user press search button
     showFilterOptions = false;
@@ -1062,51 +1096,6 @@ class _SearchUsersProductAndServiceState
           moneyDisplayNormalizer(int.parse(service.price.toString())),
           style: TextStyle(
               color: blackFont, fontWeight: FontWeight.bold, fontSize: 14),
-        ),
-      ],
-    );
-  }
-
-  Widget autoComplete() {
-    return Column(
-      children: <Widget>[
-        TextFormField(
-          key: textFormField,
-          controller: searchItemTextController,
-          decoration: InputDecoration(
-            contentPadding: EdgeInsets.all(10),
-            hintText: hint,
-            isDense: true,
-            enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                color: Colors.white,
-                width: 1,
-              ),
-              borderRadius: BorderRadius.circular(6),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                color: blackFont,
-                width: 1,
-              ),
-              borderRadius: BorderRadius.circular(6),
-            ),
-            fillColor: Colors.white,
-            filled: true,
-          ),
-          style: TextStyle(color: Colors.black, fontSize: 16),
-          onFieldSubmitted: (val) {
-            if (mounted) {
-              setState(() {
-                count = 0;
-                next = "";
-                previous = "";
-                results.clear();
-                noItemInList = false;
-                getList();
-              });
-            }
-          },
         ),
       ],
     );

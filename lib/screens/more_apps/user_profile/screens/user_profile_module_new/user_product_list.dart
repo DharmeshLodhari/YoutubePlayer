@@ -1,14 +1,20 @@
+import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/discount/discount_model.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/screens/super_store/super_store_industry.dart';
 import 'package:Slydo/screens/super_store/widget/explore_products.dart';
+import 'package:Slydo/utils/navigation_util.dart';
+import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/custom_box_shadow.dart';
 import 'package:Slydo/widget/custom_pagination.dart';
-import 'package:Slydo/widget/customized_popup_menu.dart';
 import 'package:Slydo/widget/item_display_card.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -52,17 +58,42 @@ class _UserProductListState extends State<UserProductList> {
   bool isProductLoading = false;
   bool noProductInList = false;
   bool _isSnackBarShowing = false;
+  int currentIndex = 0;
+  bool isLoading = false;
+  String? next = "";
+  String? previous = "";
+  List<DiscountModel> itemList = [];
+  bool noItemInList = false;
+  int? itemCount = 0;
+  CarouselController _controller = CarouselController();
 
-  GlobalKey _key = LabeledGlobalKey("productPopUpMenu");
-  late CustomizedPopUpMenu menu;
-  int selectedMenuItemIndex = 0;
-  bool isPopMenuOpen = false;
-  String selectedFilter = "";
+  String selectedFilter = "all";
+  List<Filter> filterList = [
+    Filter(title: "All", value: "all"),
+    Filter(title: "Newest", value: "newest"),
+    Filter(title: "Oldest", value: "oldest"),
+    Filter(title: "Highest Price", value: 'highest_price'),
+    Filter(title: "Lowest Price", value: 'lowest_price'),
+    Filter(title: "In stock", value: 'in_stock'),
+    Filter(title: "Coming soon", value: 'coming_soon'),
+    Filter(title: "Out of stock", value: 'out_of_stock'),
+  ];
+  // List<String> filterList = [
+  //   "All",
+  //   "Newest",
+  //   "Oldest",
+  //   "Highest Price",
+  //   "Lowest Price",
+  //   "In stock",
+  //   "Coming soon",
+  //   "Out of stock"
+  // ];
 
   @override
   void initState() {
     getNextUrl();
 
+    fetchMerchantDiscount();
     widget.type != null ? listOfUsersProduct() : this.getProductList();
 
     _productScrollController.addListener(() {
@@ -78,10 +109,56 @@ class _UserProductListState extends State<UserProductList> {
     super.initState();
   }
 
+  void fetchMerchantDiscount() async {
+    if (!isLoading) {
+      if (mounted) {
+        setState(() {
+          isLoading = true;
+        });
+      }
+      Map<String, dynamic>? result = await ShoppingAuthService()
+          .listOfMerchantDiscounts(next, previous, widget.user);
+      if (result == null) {
+        isLoading = false;
+        noItemInList = true;
+        return;
+      }
+      itemList = [];
+      itemCount = result['count'];
+      next = result['next'];
+      previous = result['previous'];
+      var tempList = result['results'];
+
+      itemList.addAll(tempList);
+
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+          noItemInList = false;
+        });
+      }
+
+      if (itemList.isEmpty) {
+        if (mounted) {
+          setState(() {
+            noItemInList = true;
+          });
+        }
+      } else if (next == null && itemList.length > 6) {
+        _productMessengerScaffoldKey.currentState?.showSnackBar(SnackBar(
+          content:
+              Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
+          duration: Duration(milliseconds: 500),
+        ));
+      }
+    }
+  }
+
   getNextUrl() {
     setState(() {
       if (widget.next != null) {
         if (widget.next?.contains("custom_category") ?? false) {
+          if (selectedFilter == "all") selectedFilter = "";
           productNext = "${widget.next}&sort_by=$selectedFilter";
         } else {
           productNext = widget.next;
@@ -120,6 +197,7 @@ class _UserProductListState extends State<UserProductList> {
 
         debugPrint('CALLING PRODUCT channel::: ${widget.channel!}');
 
+        if (selectedFilter == "all") selectedFilter = "";
         Map<String, dynamic>? result =
             await ShoppingAuthService().listOfProduct(
           productNext,
@@ -235,24 +313,24 @@ class _UserProductListState extends State<UserProductList> {
 
   @override
   Widget build(BuildContext context) {
-    menu = CustomizedPopUpMenu(
-      buttonKey: _key,
-      context: context,
-      childList: [
-        CustomizedPopUpMenuItem(title: "All", value: "all"),
-        CustomizedPopUpMenuItem(title: "Newest", value: "newest"),
-        CustomizedPopUpMenuItem(title: "Oldest", value: "oldest"),
-        CustomizedPopUpMenuItem(title: "Highest Price", value: 'highest_price'),
-        CustomizedPopUpMenuItem(title: "Lowest Price", value: 'lowest_price'),
-        CustomizedPopUpMenuItem(title: "In stock", value: 'in_stock'),
-        CustomizedPopUpMenuItem(title: "Coming soon", value: 'coming_soon'),
-        CustomizedPopUpMenuItem(title: "Out of stock", value: 'out_of_stock'),
-      ],
-      selectedIndex: selectedMenuItemIndex,
-      right: 16,
-    );
-    menu.onChange = menuItemSelectionChange;
-    menu.menuState = menuStateChange;
+    // menu = CustomizedPopUpMenu(
+    //   buttonKey: _key,
+    //   context: context,
+    //   childList: [
+    //     CustomizedPopUpMenuItem(title: "All", value: "all"),
+    //     CustomizedPopUpMenuItem(title: "Newest", value: "newest"),
+    //     CustomizedPopUpMenuItem(title: "Oldest", value: "oldest"),
+    //     CustomizedPopUpMenuItem(title: "Highest Price", value: 'highest_price'),
+    //     CustomizedPopUpMenuItem(title: "Lowest Price", value: 'lowest_price'),
+    //     CustomizedPopUpMenuItem(title: "In stock", value: 'in_stock'),
+    //     CustomizedPopUpMenuItem(title: "Coming soon", value: 'coming_soon'),
+    //     CustomizedPopUpMenuItem(title: "Out of stock", value: 'out_of_stock'),
+    //   ],
+    //   selectedIndex: selectedMenuItemIndex,
+    //   right: 16,
+    // );
+    // menu.onChange = menuItemSelectionChange;
+    // menu.menuState = menuStateChange;
     return widget.type != null
         ? _buildProductView()
         : CustomPagination(
@@ -265,12 +343,11 @@ class _UserProductListState extends State<UserProductList> {
           );
   }
 
-  void menuItemSelectionChange(String value, int index) {
-    selectedMenuItemIndex = index;
+  void menuItemSelectionChange(String value) {
     switch (value) {
       case "all":
         setState(() {
-          selectedFilter = " ";
+          selectedFilter = "all";
           _onProductRefresh();
         });
         break;
@@ -324,19 +401,32 @@ class _UserProductListState extends State<UserProductList> {
     // _onRefresh();
   }
 
-  void menuStateChange(bool isOpen) {
-    isPopMenuOpen = isOpen;
-    setState(() {});
-  }
-
   Widget _buildProductView() {
     return ScaffoldMessenger(
       key: _productMessengerScaffoldKey,
-      child: Scaffold(
-        key: _productScaffoldKey,
-        body: Container(
-          color: lightGrey,
-          padding: EdgeInsets.only(left: 16, right: 16, bottom: 16),
+      child:
+          // Scaffold(
+          //   key: _productScaffoldKey,
+          //   floatingActionButton: widget.type == null
+          //       ? FloatingActionButton.small(
+          //           onPressed: () async {
+          //             await Future.delayed(Duration(milliseconds: 100))
+          //                 .then((value) => showFilterProductSheet());
+          //           },
+          //           backgroundColor: navyBlue,
+          //           child: Icon(
+          //             Icons.filter_alt_rounded,
+          //             size: 20,
+          //             color: Colors.white,
+          //             // size: 20,
+          //           ),
+          //         )
+          //       : SizedBox(),
+          //   body:
+          Container(
+        color: lightGrey,
+        padding: EdgeInsets.only(left: 16, right: 16, bottom: 16),
+        child: Expanded(
           child: SmartRefresher(
             enablePullDown: true,
             header: WaterDropHeader(
@@ -349,7 +439,97 @@ class _UserProductListState extends State<UserProductList> {
           ),
         ),
       ),
+      // ),
     );
+  }
+
+  void showFilterProductSheet() {
+    showModalBottomSheet<void>(
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        context: context,
+        enableDrag: true,
+        builder: (BuildContext context) {
+          return StatefulBuilder(
+            builder: (BuildContext context, StateSetter bottomSheetSetState) =>
+                Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20)),
+              ),
+              color: Colors.white,
+              margin: EdgeInsets.zero,
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Text(
+                      "Filter",
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontFamily: "Inter",
+                          fontWeight: FontWeight.w700,
+                          color: blackFont),
+                    ),
+                    SizedBox(height: 40),
+                    SingleChildScrollView(
+                      child: Column(
+                        children: filterList.map<Widget>((filter) {
+                          if (selectedFilter == "") selectedFilter = "all";
+                          if (selectedFilter == filter.value) {
+                            return Container(
+                              color: selectedListItemBackgroundBlue,
+                              child: ListTile(
+                                dense: true,
+                                title: Text(
+                                  filter.title ?? "",
+                                  overflow: TextOverflow.fade,
+                                  softWrap: false,
+                                  style: TextStyle(
+                                      color: navyBlue,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600),
+                                ),
+                                trailing: Icon(
+                                  SlydoAppIcon.checked,
+                                  color: navyBlue,
+                                  size: 12,
+                                ),
+                                onTap: () {
+                                  Navigator.pop(context);
+                                  menuItemSelectionChange(filter.value ?? "");
+                                },
+                              ),
+                            );
+                          }
+                          return ListTile(
+                            title: Text(
+                              filter.title ?? "",
+                              softWrap: false,
+                              overflow: TextOverflow.fade,
+                              style: TextStyle(
+                                  color: blackFont,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w400),
+                            ),
+                            dense: true,
+                            onTap: () {
+                              Navigator.pop(context);
+                              menuItemSelectionChange(filter.value ?? "");
+                            },
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                  ],
+                ),
+              ),
+            ),
+          );
+        });
   }
 
   Widget _buildList() {
@@ -394,6 +574,7 @@ class _UserProductListState extends State<UserProductList> {
   Widget sectionProducts() {
     return Column(
       children: [
+        if (itemList.isNotEmpty) _buildMerchantDiscount(),
         ...sectionProductList
             .map((headers) => Column(
                   children: [
@@ -403,6 +584,104 @@ class _UserProductListState extends State<UserProductList> {
             .toList()
       ],
     );
+  }
+
+  onPageFunction(int index, CarouselPageChangedReason reason) {
+    currentIndex = index;
+    setState(() {});
+  }
+
+  Widget _buildMerchantDiscount() {
+    return SizedBox(
+      height: 151,
+      child: Column(
+        children: [
+          Expanded(
+            child: CarouselSlider(
+              carouselController: _controller,
+              options: CarouselOptions(
+                  height: 150,
+                  autoPlay: true,
+                  enlargeCenterPage: true,
+                  viewportFraction: 1,
+                  aspectRatio: 16 / 9,
+                  // onPageChanged: (index, reason) {
+                  //   setState(() {
+                  //     _current = index;
+                  //   });
+                  // }),
+                  // enableInfiniteScroll: false,
+                  // viewportFraction: 1.0,
+                  // enlargeCenterPage: true,
+                  // autoPlay: true,
+                  // aspectRatio: 1.7,
+                  onPageChanged: onPageFunction),
+              items: itemList
+                  .map(
+                    (e) => InkWell(
+                      onTap: () {
+                        String url = AppConfig.baseUrl +
+                            "/api/v1/products/products-by-discount/${e.id}";
+                        NavigationUtil.push(context,
+                            screen: SuperStoreIndustry(
+                                next: url,
+                                appTitle: e.name!,
+                                searchQuery: {"discount": e.id!}));
+                      },
+                      child: Container(
+                        width: MediaQuery.of(context).size.width,
+                        height: 150,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(10.0),
+                          child: getImage(e),
+                        ),
+                        // decoration: BoxDecoration(
+                        //   borderRadius: BorderRadius.circular(10),
+                        //   image: DecorationImage(
+                        //     fit: BoxFit.fill,
+                        //     image: getImage(e),
+                        //   ),
+                        // ),
+                      ),
+                    ),
+                  )
+                  .toList(),
+            ),
+          ),
+          SizedBox(
+            height: 20,
+          ),
+          // Row(
+          //   crossAxisAlignment: CrossAxisAlignment.end,
+          //   mainAxisAlignment: MainAxisAlignment.center,
+          //   children: itemList.map((url) {
+          //     int index = itemList.indexOf(url);
+          //     return Container(
+          //       width: 5.0,
+          //       height: 5.0,
+          //       margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 2.0),
+          //       decoration: BoxDecoration(
+          //         shape: BoxShape.circle,
+          //         color: currentIndex == index ? navyBlue : navyBlueLight,
+          //       ),
+          //     );
+          //   }).toList(),
+          // )
+        ],
+      ),
+    );
+  }
+
+  Widget getImage(DiscountModel item) {
+    if (item.poster != null) {
+      return CachedNetworkImage(
+        imageUrl: item.poster!,
+        errorWidget: imageErrorWidget,
+        fit: BoxFit.fill,
+      );
+    } else {
+      return Image.asset(defaultProductAndServiceImage);
+    }
   }
 
   Widget _buildProductList() {
@@ -494,32 +773,15 @@ class _UserProductListState extends State<UserProductList> {
 
   Widget popUpMenuButton() {
     return GestureDetector(
-      onTap: () {
-        debugPrint("popupmenu onPress");
-        if (menu.isMenuOpen) {
-          menu.closeMenu();
-        } else {
-          menu.openMenu();
-        }
+      onTap: () async {
+        await Future.delayed(Duration(milliseconds: 100))
+            .then((value) => showFilterProductSheet());
       },
-      child: SizedBox(
-        key: _key,
-        height: 30,
-        width: 30,
-        child: Card(
-          color: isPopMenuOpen ? navyBlue : iconBtnGrey,
-          elevation: 0,
-          margin: EdgeInsets.zero,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Icon(
-            Icons.filter_alt_rounded,
-            size: 20,
-            color: isPopMenuOpen ? Colors.white : Colors.black,
-            // size: 20,
-          ),
-        ),
+      child: Icon(
+        Icons.filter_alt_rounded,
+        size: 20,
+        color: navyBlue,
+        // size: 20,
       ),
     );
   }
@@ -558,4 +820,11 @@ class _UserProductListState extends State<UserProductList> {
     }
     return SizedBox.shrink();
   }
+}
+
+class Filter {
+  String? title;
+  String? value;
+
+  Filter({this.title, this.value});
 }

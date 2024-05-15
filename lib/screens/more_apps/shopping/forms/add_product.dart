@@ -1320,7 +1320,7 @@ class _AddProductState extends State<AddProduct> {
           height: 6,
         ),
         CustomTextFieldTag(
-          initialTags: ["Test"],
+          // initialTags: ["Test"],
           textfieldTagsController: _myController,
           onTap: (String tag) {
             setState(() {

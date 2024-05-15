@@ -56,7 +56,7 @@ double getBgHeightOfAppBar(String bio, bool hasAddress, bool hasContact) {
     if (Platform.isAndroid) {
       height = 360;
     } else {
-      height = 335;
+      height = 40;
     }
   } else if (bioLength <= 100) {
     // if (hasAddress && hasContact) {
@@ -69,7 +69,7 @@ double getBgHeightOfAppBar(String bio, bool hasAddress, bool hasContact) {
     if (Platform.isAndroid) {
       height = 380;
     } else {
-      height = 350;
+      height = 360;
     }
   } else if (bioLength <= 200) {
     // if (hasAddress && hasContact) {
@@ -82,7 +82,7 @@ double getBgHeightOfAppBar(String bio, bool hasAddress, bool hasContact) {
     if (Platform.isAndroid) {
       height = 400;
     } else {
-      height = 370;
+      height = 380;
     }
   }
 
@@ -223,14 +223,12 @@ Widget momentTab(CustomerProfile? searchedUser, String channelUsername) {
 
 Widget productTab(CustomerProfile? searchedUser, bool isOwner, bool isChannel,
     {String? next, String? type}) {
-  return KeepAlivePage(
-    child: UserProductList(
-        user: searchedUser,
-        isOwner: isOwner,
-        channel: isChannel,
-        next: next,
-        type: type),
-  );
+  return UserProductList(
+      user: searchedUser,
+      isOwner: isOwner,
+      channel: isChannel,
+      next: next,
+      type: type);
 }
 
 Widget serviceTab(CustomerProfile? searchedUser, bool isOwner) {

@@ -17,6 +17,7 @@ import 'package:Slydo/screens/more_apps/yarn/share_as_a_yarn_screen.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_dashboard_bloc.dart';
 import 'package:Slydo/services/app_config_bloc.dart';
+import 'package:Slydo/services/app_tutorial_controller.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
@@ -25,6 +26,7 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/bottom_sheet_item.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
+import 'package:badges/badges.dart' as badges;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -44,6 +46,7 @@ import '../screens/user_profile_module_new/utils.dart';
 
 class GetAppbarTile extends StatefulWidget {
   CustomerProfile? searchedUser;
+
   bool isLoading = true;
   bool isShrink = false;
   ScrollController? scrollController;
@@ -71,6 +74,7 @@ class GetAppbarTile extends StatefulWidget {
 class _GetAppbarTileState extends State<GetAppbarTile> {
   CustomerProfile? searchedUser;
   late UserBloc userBloc;
+  late BasketBloc basketBloc;
   bool isOwner = false;
   String? searchedUserName;
   bool isInRequestList = false;
@@ -107,6 +111,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
+    basketBloc = Provider.of<BasketBloc>(context);
     customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
     yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context, listen: false);
 
@@ -1089,6 +1094,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
 
   List<Widget> actionButtons() {
     return [
+      getCartIcon(),
       getQRCodeIcon(),
       widget.userType == 'channel' ? const SizedBox() : getSearchIcon(),
       menuIcon(),
@@ -1107,6 +1113,80 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
             ],
           )
         : Container();
+  }
+
+  Widget getCartIcon() {
+    return Row(
+      children: [
+        _cartBtn(),
+        const SizedBox(
+          width: 8,
+        ),
+      ],
+    );
+  }
+
+  Widget _cartBtn() {
+    return RoundedBackgroundIcon(
+      height: 34,
+      width: 34,
+      key: tutorialProfileCartKey,
+      icon: badges.Badge(
+        badgeContent: getBadgeContent(),
+        position: badges.BadgePosition.topEnd(
+            end: getBadgeCount().length == 1 ? -3 : 0, top: 0),
+        badgeAnimation: const badges.BadgeAnimation.rotation(
+          animationDuration: Duration(seconds: 1),
+          colorChangeAnimationDuration: Duration(seconds: 1),
+          loopAnimation: false,
+          curve: Curves.fastOutSlowIn,
+          colorChangeAnimationCurve: Curves.easeInCubic,
+        ),
+        badgeStyle: badges.BadgeStyle(
+          shape: badges.BadgeShape.circle,
+          badgeColor: naturalGreen,
+          padding: basketBloc.basketItems.length == 0
+              ? const EdgeInsets.all(0)
+              : EdgeInsets.all(4),
+          elevation: 0,
+        ),
+        child: Center(
+          child: Icon(
+            SlydoAppIconNew.cart,
+            color: Colors.white,
+            size: 16,
+          ),
+        ),
+      ),
+      backgroundColor: lightGrey.withOpacity(0.1),
+      enableMargin: false,
+      onTap: () {
+        NavigationUtil.pushNamed(context, routeName: Routes.SHOPPING_CART);
+      },
+    );
+  }
+
+  Widget? getBadgeContent() {
+    if (basketBloc.basketItems.length == 0) {
+      return null;
+    }
+    return Text(
+      getBadgeCount(),
+      style: const TextStyle(
+        fontFamily: 'Inter',
+        fontSize: 10,
+        color: Colors.white,
+        fontWeight: FontWeight.bold,
+      ),
+    );
+  }
+
+  String getBadgeCount() {
+    int totalItem = 0;
+    basketBloc.basketItems.forEach((element) {
+      totalItem = totalItem + int.parse(element.qty.toString());
+    });
+    return totalItem > 99 ? '99+' : totalItem.toString();
   }
 
   Widget getQRCodeIcon() {

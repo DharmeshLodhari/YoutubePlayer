@@ -152,7 +152,7 @@ class _DisplayProductState extends State<DisplayProduct> {
                         messageDecoderWithEmoji(
                               truncateString(
                                 str: widget.product.shortDescription!,
-                                lengthToTruncateAt: 50,
+                                lengthToTruncateAt: 45,
                                 showEllipsis: true,
                               ),
                             ) ??
@@ -160,12 +160,12 @@ class _DisplayProductState extends State<DisplayProduct> {
                         style: TextStyle(
                           fontFamily: "Inter",
                           fontWeight: FontWeight.w400,
-                          fontSize: 12,
+                          fontSize: 10,
                           color: yarnBlack,
                         ),
                       ),
                       const SizedBox(
-                        height: 6,
+                        height: 5,
                       ),
                       Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,

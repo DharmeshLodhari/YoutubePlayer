@@ -3,12 +3,14 @@ import 'package:Slydo/data/state_notifiers/basket_bloc.dart';
 import 'package:Slydo/data/state_notifiers/shared_cart_bloc.dart';
 import 'package:Slydo/data/state_notifiers/user_bloc.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/models/shared_cart_model.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/tiles/all_active_cart.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/dialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -78,9 +80,6 @@ class _ExploreSingleProductState extends State<ExploreSingleProduct> {
                   width: 15,
                 ),
                 buildProductDetails(),
-                const SizedBox(
-                  width: 10,
-                ),
               ],
             ),
             buildPriceAndCart(),
@@ -128,7 +127,7 @@ class _ExploreSingleProductState extends State<ExploreSingleProduct> {
           messageDecoderWithEmoji(
                 truncateString(
                   str: widget.product.shortDescription!,
-                  lengthToTruncateAt: 15,
+                  lengthToTruncateAt: 20,
                   showEllipsis: true,
                 ),
               ) ??
@@ -169,7 +168,6 @@ class _ExploreSingleProductState extends State<ExploreSingleProduct> {
 
   Widget buildPriceAndCart() {
     return Column(
-      mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         Column(
@@ -237,8 +235,116 @@ class _ExploreSingleProductState extends State<ExploreSingleProduct> {
               const SizedBox(),
           ],
         ),
-        displayShoppingAddingToCartControl(),
+        SizedBox(
+          height: 5,
+        ),
+        isInCart() == false
+            ? displayShoppingAddingToCartControl()
+            : displayShoppingCartControls(),
       ],
+    );
+  }
+
+  Widget displayShoppingCartControls() {
+    if (isInCart() == true) {
+      return Positioned(
+          right: 10,
+          bottom: 5,
+          child: Center(
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    if (widget.product.addOnsModels?.isNotEmpty ?? false) {
+                      confirmAddOnsDialog();
+                    } else {
+                      basketBloc.increaseQty(
+                        currentProduct: widget.product,
+                        currentUser: userBloc.user.convertToUser(),
+                      );
+                    }
+                  },
+                  child: Card(
+                    color: greyBackground,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Icon(
+                      Icons.add,
+                      size: 18,
+                      color: black,
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  width: 5,
+                ),
+                Text(
+                  '${basketBloc.getProductOrServiceQuantityInCart(widget.product.id!)}',
+                  style: TextStyle(
+                    fontFamily: "Inter",
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                    color: yarnBlack,
+                  ),
+                ),
+                const SizedBox(
+                  width: 5,
+                ),
+                GestureDetector(
+                  onTap: () {
+                    basketBloc.decreaseQty(
+                      currentProduct: widget.product,
+                      currentUser: userBloc.user.convertToUser(),
+                    );
+                  },
+                  child: Card(
+                    color: greyBackground,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Icon(
+                      Icons.remove,
+                      size: 18,
+                      color: black,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ));
+    } else {
+      return Positioned(
+        right: 10,
+        bottom: 5,
+        child: Container(),
+      );
+    }
+  }
+
+  Future<void> confirmAddOnsDialog() async {
+    await showDialogBox(
+      context: context,
+      actionOneBgColor: greyBorderColor,
+      actionOneTextColor: blackFont,
+      actionTwoBgColor: naturalGreen,
+      actionTwoTextColor: Colors.white,
+      title: "Repeat last used Add-ons?",
+      actionOneText: "I'll choose",
+      actionTwoText: "Repeat last",
+      leftButtonOnPressed: () {
+        Navigator.pushNamed(context, Routes.PRODUCT,
+            arguments: {"product": widget.product, "type": "changeAddons"});
+      },
+      rightButtonOnPressed: () {
+        basketBloc.increaseQty(
+          currentProduct: widget.product,
+          currentUser: userBloc.user.convertToUser(),
+        );
+      },
     );
   }
 
@@ -318,13 +424,12 @@ class _ExploreSingleProductState extends State<ExploreSingleProduct> {
       child: Card(
         color: greyBackground,
         elevation: 0,
-        margin: EdgeInsets.only(top: 10),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(6),
         ),
         child: Icon(
           Icons.add,
-          size: 26,
+          size: 24,
           color: black,
         ),
       ),

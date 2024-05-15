@@ -12,6 +12,7 @@ GlobalKey paymentLinkKey = GlobalKey();
 GlobalKey creditCardKey = GlobalKey();
 GlobalKey tutorialSearchItemsKey = GlobalKey();
 GlobalKey tutorialShoppingCartKey = GlobalKey();
+GlobalKey tutorialProfileCartKey = GlobalKey();
 GlobalKey tutorialScanQrCodeKey = GlobalKey();
 GlobalKey tutorialChatMessageKey = GlobalKey();
 GlobalKey tutorialSuperStoreKey = GlobalKey();
@@ -24,7 +25,6 @@ GlobalKey tutorialInboxKey = GlobalKey();
 GlobalKey tutorialBlogsKey = GlobalKey();
 GlobalKey tutorialServicesKey = GlobalKey();
 GlobalKey tutorialSettingsKey = GlobalKey();
-
 
 class AppTutorialController {
   static final AppTutorialController _instance =
@@ -48,26 +48,25 @@ class AppTutorialController {
     _fillTargets();
 
     tutorial = TutorialCoachMark(
-        targets: _targets, // List<TargetFocus>
-        colorShadow: Colors.black12, // DEFAULT Colors.black
-        // alignSkip: Alignment.bottomRight,
-        // textSkip: "SKIP",
-        // paddingFocus: 10,
-        // focusAnimationDuration: Duration(milliseconds: 500),
-        // pulseAnimationDuration: Duration(milliseconds: 500),
-        // pulseVariation: Tween(begin: 1.0, end: 0.99),
-        onFinish: () {
-          print("finish");
-        },
-        onClickTarget: (target) {
-          print(target);
-        },
+      targets: _targets, // List<TargetFocus>
+      colorShadow: Colors.black12, // DEFAULT Colors.black
+      // alignSkip: Alignment.bottomRight,
+      // textSkip: "SKIP",
+      // paddingFocus: 10,
+      // focusAnimationDuration: Duration(milliseconds: 500),
+      // pulseAnimationDuration: Duration(milliseconds: 500),
+      // pulseVariation: Tween(begin: 1.0, end: 0.99),
+      onFinish: () {
+        print("finish");
+      },
+      onClickTarget: (target) {
+        print(target);
+      },
       onSkip: () {
         print("skip");
         return true;
       },
-        )
-      ..show(context: context);
+    )..show(context: context);
 
     // tutorial.skip();
     // tutorial.finish();

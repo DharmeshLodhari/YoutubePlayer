@@ -2438,6 +2438,60 @@ class ShoppingAuthService extends AuthService {
     }
   }
 
+  // List Discounts
+  Future<Map<String, dynamic>?> listOfMerchantDiscounts(
+      String? next, String? previous, CustomerProfile? user) async {
+    String url = "";
+    if (next == null) {
+      return null;
+    }
+    if (next == "") {
+      url = AppConfig.baseUrl +
+          "/api/v1/business/discounts/merchant-discounts/${user?.userName}/";
+    } else {
+      url = getSecureUrl(url: next);
+    }
+    debugPrint(url);
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      if (!response.body.contains('results')) {
+        Map<String, dynamic> result = {
+          "count": '',
+          "next": '',
+          "previous": '',
+          "results": []
+        };
+
+        debugPrint('CALLING OTHER check 2 ---> ${result}');
+
+        return result;
+      }
+      List<DiscountModel> discountList = [];
+      var jsonData = json.decode(response.body);
+
+      for (var item in jsonData["results"]) {
+        DiscountModel discount = DiscountModel.fromJson(item);
+        discountList.add(discount);
+      }
+
+      Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": discountList
+      };
+
+      // debugPrint('CALLING OTHER check ---> ${result}');
+      return result;
+    } else if (response.statusCode == 500) {
+      return null;
+    } else {
+      return null;
+    }
+  }
+
   // delete address
   Future<bool> deleteAddress(String id) async {
     String url = AppConfig.baseUrl + "/api/v1/shipping/addresses/" + id + "/";
