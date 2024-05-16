@@ -1290,7 +1290,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                                 child: Center(
                                     child: ClipRRect(
                                   borderRadius:
-                                      BorderRadius.all(Radius.circular(0)),
+                                      BorderRadius.all(Radius.circular(10)),
                                   child: Stack(
                                     children: [
                                       CachedNetworkImage(
@@ -1305,42 +1305,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                                             productAndServiceBigErrorWidget,
                                       ),
                                       productStockAndDetailTag(),
-                                      // if (checkDiscount(
-                                      //     product!.discountIsActive!,
-                                      //     product!.discountedPrice!,
-                                      //     product!.price!))
-                                      //   Positioned(
-                                      //     top: 20,
-                                      //     right: 10,
-                                      //     child: showDiscountValue(
-                                      //         product!.discountType!,
-                                      //         product!.discountValue!,
-                                      //         product!.currency),
-                                      //   ),
-                                      // if (product!.pricePercentageChange != 0.0) ...[
-                                      //   Positioned(
-                                      //     top: 8,
-                                      //     right: 100,
-                                      //     child: Container(
-                                      //       padding: EdgeInsets.only(
-                                      //           left: 6.0,
-                                      //           right: 6.0,
-                                      //           top: 4.0,
-                                      //           bottom: 4.0),
-                                      //       decoration: BoxDecoration(
-                                      //         color: naturalGreen,
-                                      //         borderRadius: BorderRadius.all(
-                                      //             Radius.circular(8)),
-                                      //       ),
-                                      //       child: Text(
-                                      //         "${product!.pricePercentageChange!.toInt()}% off",
-                                      //         style: TextStyle(
-                                      //           color: Colors.white,
-                                      //         ),
-                                      //       ),
-                                      //     ),
-                                      //   ),
-                                      // ]
                                     ],
                                   ),
                                 )),
@@ -1378,61 +1342,32 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                                           children: [
                                             Container(
                                               child: Center(
-                                                  child: ClipRRect(
-                                                borderRadius: BorderRadius.all(
-                                                    Radius.circular(10)),
-                                                child: Stack(
-                                                  children: [
-                                                    CachedNetworkImage(
-                                                      placeholder: (context,
-                                                              url) =>
-                                                          Center(
-                                                              child:
-                                                                  CircularLoadingIndicator()),
-                                                      imageUrl: item!,
-                                                      fit: BoxFit.cover,
-                                                      height: double.infinity,
-                                                      width: double.infinity,
-                                                      errorWidget:
-                                                          productAndServiceBigErrorWidget,
-                                                    ),
-                                                    if (product!
-                                                            .pricePercentageChange !=
-                                                        0.0) ...[
-                                                      Positioned(
-                                                        top: 8,
-                                                        right: 100,
-                                                        child: Container(
-                                                          padding:
-                                                              EdgeInsets.only(
-                                                                  left: 6.0,
-                                                                  right: 6.0,
-                                                                  top: 4.0,
-                                                                  bottom: 4.0),
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            color: naturalGreen,
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .all(Radius
-                                                                        .circular(
-                                                                            8)),
-                                                          ),
-                                                          child: Text(
-                                                            "${product!.pricePercentageChange!.toInt()}% off",
-                                                            style: TextStyle(
-                                                              color:
-                                                                  Colors.white,
-                                                            ),
-                                                          ),
-                                                        ),
+                                                child: ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.all(
+                                                          Radius.circular(10)),
+                                                  child: Stack(
+                                                    children: [
+                                                      CachedNetworkImage(
+                                                        placeholder: (context,
+                                                                url) =>
+                                                            Center(
+                                                                child:
+                                                                    CircularLoadingIndicator()),
+                                                        imageUrl: item!,
+                                                        fit: BoxFit.cover,
+                                                        height: double.infinity,
+                                                        width: double.infinity,
+                                                        errorWidget:
+                                                            productAndServiceBigErrorWidget,
                                                       ),
-                                                    ]
-                                                  ],
+                                                      productStockAndDetailTag(),
+                                                    ],
+                                                  ),
                                                 ),
-                                              )),
+                                              ),
                                             ),
-                                            getOutOfStockTag(),
+                                            // getOutOfStockTag(),
                                           ],
                                         ),
                                       ),
@@ -1510,6 +1445,50 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       } else {
         return SizedBox();
       }
+
+      //   if (product!.pricePercentageChange != 0.0) ...[
+      // Positioned(
+      // top: 8,
+      // right: 100,
+      // child: Container(
+      // padding: EdgeInsets.only(
+      // left: 6.0,
+      // right: 6.0,
+      // top: 4.0,
+      // bottom: 4.0),
+      // decoration: BoxDecoration(
+      // color: naturalGreen,
+      // borderRadius: BorderRadius.all(
+      // Radius.circular(8)),
+      // ),
+      // child: Text(
+      // "${product!.pricePercentageChange!.toInt()}% off",
+      // style: TextStyle(
+      // color: Colors.white,
+      // ),
+      // ),
+      // ),
+      // ),
+      // ]
+    } else if (product!.pricePercentageChange != 0.0) {
+      return Positioned(
+        top: 8,
+        right: 100,
+        child: Container(
+          padding:
+              EdgeInsets.only(left: 6.0, right: 6.0, top: 4.0, bottom: 4.0),
+          decoration: BoxDecoration(
+            color: naturalGreen,
+            borderRadius: BorderRadius.all(Radius.circular(8)),
+          ),
+          child: Text(
+            "${product!.pricePercentageChange!.toInt()}% off",
+            style: TextStyle(
+              color: Colors.white,
+            ),
+          ),
+        ),
+      );
     } else {
       return SizedBox();
     }
@@ -2040,6 +2019,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
               height: 20.0,
               child: Container(
                 // height: 20.0,
+                margin: EdgeInsets.symmetric(vertical: 1),
                 decoration: BoxDecoration(
                   color: selectedVariant?.value == size ? black : white,
                   borderRadius: BorderRadius.all(Radius.circular(3)),
@@ -2309,7 +2289,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
   Widget _buildSellersOtherProducts() {
     return Container(
-      height: 310,
+      height: 290,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[

@@ -131,143 +131,220 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
             horizontal: 16, vertical: isScreenIsSmall ? 8 : 16),
         child: Column(
           children: [
-            Card(
-              elevation: 2,
-              margin: EdgeInsets.zero,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              shadowColor: iconBtnGrey,
-              child: Container(
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: iconBtnGrey, width: 1)),
-                child: Form(
-                  key: _formKey,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Column(
-                      children: <Widget>[
-                        const SizedBox(
-                          height: 30,
-                        ),
-                        InkWell(
-                          onTap: () {
-                            FocusScope.of(context).unfocus();
+            _buildTransferForm(),
+            _buildFormFields(),
+            _buildSendPayment(),
+          ],
+        ),
+      ),
+    );
+  }
 
-                            clearSearchedListItems();
-                            showSearchBankBottomSheet();
-                          },
-                          child: TextFormField(
-                            controller: bankController,
-                            enabled: false,
-                            style: TextStyle(
-                                fontSize: 18,
-                                color: blackFont,
-                                fontWeight: FontWeight.w600),
-                            decoration: InputDecoration(
-                              filled: true,
-                              fillColor: greyBorderColor,
-                              contentPadding: const EdgeInsets.only(
-                                  left: 8, bottom: 0, top: 0, right: 15),
-                              hintText: 'Select Bank',
-                              hintStyle: TextStyle(
-                                  fontSize: 18,
-                                  color: blackFont,
-                                  fontWeight: FontWeight.w600),
-                              suffixIcon: Icon(
-                                Icons.arrow_drop_down_outlined,
-                                color: blackFont,
-                              ),
-                              border: const OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  width: 0,
-                                  style: BorderStyle.none,
-                                ),
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(8.0),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        getAccountNumber(),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        getAccountName(),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        displayAmountField(),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        getDescription(),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        noteForUser(),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                      ],
+  Widget _buildTransferForm() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "Transfer From",
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w400,
+            color: darkGrey,
+            fontFamily: "Inter",
+          ),
+        ),
+        SizedBox(
+          height: 8,
+        ),
+        Container(
+          width: MediaQuery.of(context).size.width,
+          child: Card(
+            elevation: 0,
+            margin: EdgeInsets.zero,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(7),
+            ),
+            shadowColor: iconBtnGrey,
+            color: greyDarkBackground,
+            child: Container(
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(7),
+                  border: Border.all(color: iconBtnGrey, width: 1)),
+              child: Padding(
+                padding: const EdgeInsets.all(15.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "@${userBloc.user.userName}",
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w400,
+                        color: blackFont,
+                        fontFamily: "Inter",
+                      ),
                     ),
-                  ),
+                    SizedBox(
+                      height: 5,
+                    ),
+                    Text(
+                      "Transferable Balance : ${worldCurrencies[userBloc.user.currency]}${moneyDisplayNormalizer(accountBalance)}",
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w400,
+                        color: navyBlue,
+                        fontFamily: "Inter",
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
-            Container(
-              child: Column(
-                children: [
-                  const SizedBox(
-                    height: 40,
-                  ),
-                  canCashOut(amount!, accountBalance!)
-                      ? getSubmitButton()
-                      : Container(
-                          child: Center(
-                              child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 16.0),
-                                  child: Text.rich(TextSpan(
-                                      text: AppLocalization.of(context)!
-                                          .minimumTransfer,
-                                      style: TextStyle(
-                                          fontSize: 12,
-                                          color: blackFont,
-                                          fontWeight: FontWeight.w600),
-                                      children: <InlineSpan>[
-                                        TextSpan(
-                                          text: double.parse(moneyDisplayNormalizer(
-                                                      displayPossibleCashOutAmount(
-                                                          accountBalance!))) >=
-                                                  35.00
-                                              ? worldCurrencies[userBloc
-                                                      .user.currency!]! +
-                                                  moneyDisplayNormalizer(
-                                                      displayPossibleCashOutAmount(
-                                                          accountBalance!))
-                                              : '${worldCurrencies[userBloc.user.currency!]!}0.00',
-                                          style: TextStyle(
-                                              fontSize: 12,
-                                              color: blackFont,
-                                              fontFamily: "Inter",
-                                              fontWeight: FontWeight.w600),
-                                        )
-                                      ])))),
-                        ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                ],
-              ),
-            ),
-          ],
+          ),
         ),
+        SizedBox(
+          height: 15,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildFormFields() {
+    return Card(
+      elevation: 2,
+      margin: EdgeInsets.zero,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      shadowColor: iconBtnGrey,
+      child: Container(
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: iconBtnGrey, width: 1)),
+        child: Form(
+          key: _formKey,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Column(
+              children: <Widget>[
+                const SizedBox(
+                  height: 30,
+                ),
+                InkWell(
+                  onTap: () {
+                    FocusScope.of(context).unfocus();
+
+                    clearSearchedListItems();
+                    showSearchBankBottomSheet();
+                  },
+                  child: TextFormField(
+                    controller: bankController,
+                    enabled: false,
+                    style: TextStyle(
+                        fontSize: 18,
+                        color: blackFont,
+                        fontWeight: FontWeight.w600),
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: greyBorderColor,
+                      contentPadding: const EdgeInsets.only(
+                          left: 8, bottom: 0, top: 0, right: 15),
+                      hintText: 'Select Bank',
+                      hintStyle: TextStyle(
+                          fontSize: 18,
+                          color: blackFont,
+                          fontWeight: FontWeight.w600),
+                      suffixIcon: Icon(
+                        Icons.arrow_drop_down_outlined,
+                        color: blackFont,
+                      ),
+                      border: const OutlineInputBorder(
+                        borderSide: BorderSide(
+                          width: 0,
+                          style: BorderStyle.none,
+                        ),
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(8.0),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                getAccountNumber(),
+                const SizedBox(
+                  height: 20,
+                ),
+                getAccountName(),
+                const SizedBox(
+                  height: 20,
+                ),
+                displayAmountField(),
+                const SizedBox(
+                  height: 20,
+                ),
+                getDescription(),
+                const SizedBox(
+                  height: 20,
+                ),
+                noteForUser(),
+                const SizedBox(
+                  height: 20,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSendPayment() {
+    return Container(
+      child: Column(
+        children: [
+          const SizedBox(
+            height: 40,
+          ),
+          canCashOut(amount!, accountBalance!)
+              ? getSubmitButton()
+              : Container(
+                  child: Center(
+                      child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 16.0),
+                          child: Text.rich(TextSpan(
+                              text:
+                                  AppLocalization.of(context)!.minimumTransfer,
+                              style: TextStyle(
+                                  fontSize: 12,
+                                  color: blackFont,
+                                  fontWeight: FontWeight.w600),
+                              children: <InlineSpan>[
+                                TextSpan(
+                                  text: double.parse(moneyDisplayNormalizer(
+                                              displayPossibleCashOutAmount(
+                                                  accountBalance!))) >=
+                                          35.00
+                                      ? worldCurrencies[
+                                              userBloc.user.currency!]! +
+                                          moneyDisplayNormalizer(
+                                              displayPossibleCashOutAmount(
+                                                  accountBalance!))
+                                      : '${worldCurrencies[userBloc.user.currency!]!}0.00',
+                                  style: TextStyle(
+                                      fontSize: 12,
+                                      color: blackFont,
+                                      fontFamily: "Inter",
+                                      fontWeight: FontWeight.w600),
+                                )
+                              ])))),
+                ),
+          const SizedBox(
+            height: 20,
+          ),
+        ],
       ),
     );
   }

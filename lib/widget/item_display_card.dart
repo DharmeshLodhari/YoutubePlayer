@@ -78,7 +78,7 @@ class _DisplayProductState extends State<DisplayProduct> {
             arguments: {"product": widget.product});
       },
       child: SizedBox(
-        width: 250,
+        width: 230,
         child: Card(
           semanticContainer: true,
           clipBehavior: Clip.antiAliasWithSaveLayer,
@@ -757,19 +757,19 @@ class _DisplayServiceState extends State<DisplayService> {
             arguments: {"service": currentService});
       },
       child: SizedBox(
-        width: 180,
-        height: 500,
+        width: 230,
         child: Card(
+          semanticContainer: true,
+          clipBehavior: Clip.antiAliasWithSaveLayer,
           color: Colors.white,
           margin: EdgeInsets.only(
-              right: widget.giveRightPadding ? 10 : 0.0, bottom: 8.0),
+              right: widget.giveRightPadding ? 10 : 0.0, bottom: 2),
           elevation: 3,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           shadowColor: boxShadow,
           child: Padding(
-            padding:
-                const EdgeInsets.symmetric(vertical: 12.0, horizontal: 6.0),
+            padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 6.0),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
@@ -799,6 +799,7 @@ class _DisplayServiceState extends State<DisplayService> {
                         numberOfRating: widget.service.rating?.toInt(),
                       ),
                     ),
+                    serviceStockAndDetailTag(),
                     displayShoppingCartControls(),
                     //TODO: to be implemented later in future
                     // Positioned(right: 10, top: 10, child: favouriteIcon())
@@ -831,23 +832,20 @@ class _DisplayServiceState extends State<DisplayService> {
                       const SizedBox(
                         height: 4,
                       ),
-                      SizedBox(
-                        width: 140,
-                        height: 14,
-                        child: Text(
-                          messageDecoderWithEmoji(
-                                  widget.service.shortDescription) ??
-                              "",
-                          overflow: widget.service.shortDescription!.length > 21
-                              ? TextOverflow.ellipsis
-                              : TextOverflow.visible,
-                          maxLines: 1,
-                          style: TextStyle(
-                            fontFamily: "Inter",
-                            fontWeight: FontWeight.w300,
-                            fontSize: 9,
-                            color: yarnBlack,
-                          ),
+                      Text(
+                        messageDecoderWithEmoji(
+                              truncateString(
+                                str: widget.service.shortDescription!,
+                                lengthToTruncateAt: 45,
+                                showEllipsis: true,
+                              ),
+                            ) ??
+                            "",
+                        style: TextStyle(
+                          fontFamily: "Inter",
+                          fontWeight: FontWeight.w300,
+                          fontSize: 10,
+                          color: yarnBlack,
                         ),
                       ),
                       Row(
@@ -883,6 +881,26 @@ class _DisplayServiceState extends State<DisplayService> {
         ),
       ),
     );
+  }
+
+  Widget serviceStockAndDetailTag() {
+    if (widget.service.availableFrom?.isAfter(DateTime.now()) ?? false) {
+      return Positioned(
+        top: 10,
+        right: 10,
+        child: showColoredLabeledWidget(
+            text: AppLocalization.of(context)!.comingSoon, color: starYellow),
+      );
+    } else if (widget.service.isAvailable == false) {
+      return Positioned(
+        top: 10,
+        right: 10,
+        child: showColoredLabeledWidget(
+            text: AppLocalization.of(context)!.outOfStock, color: red),
+      );
+    } else {
+      return SizedBox();
+    }
   }
 
   Widget favouriteIcon() {

@@ -111,7 +111,7 @@ class _ExploreSingleProductState extends State<ExploreSingleProduct> {
         Text(
           truncateString(
             str: messageDecoderWithEmoji(widget.product.name) ?? "",
-            lengthToTruncateAt: 15,
+            lengthToTruncateAt: 13,
             showEllipsis: false,
           ),
           style: TextStyle(
@@ -127,7 +127,7 @@ class _ExploreSingleProductState extends State<ExploreSingleProduct> {
           messageDecoderWithEmoji(
                 truncateString(
                   str: widget.product.shortDescription!,
-                  lengthToTruncateAt: 20,
+                  lengthToTruncateAt: 15,
                   showEllipsis: true,
                 ),
               ) ??
@@ -247,81 +247,74 @@ class _ExploreSingleProductState extends State<ExploreSingleProduct> {
 
   Widget displayShoppingCartControls() {
     if (isInCart() == true) {
-      return Positioned(
-          right: 10,
-          bottom: 5,
-          child: Center(
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    if (widget.product.addOnsModels?.isNotEmpty ?? false) {
-                      confirmAddOnsDialog();
-                    } else {
-                      basketBloc.increaseQty(
-                        currentProduct: widget.product,
-                        currentUser: userBloc.user.convertToUser(),
-                      );
-                    }
-                  },
-                  child: Card(
-                    color: greyBackground,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: Icon(
-                      Icons.add,
-                      size: 18,
-                      color: black,
-                    ),
-                  ),
+      return Center(
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            GestureDetector(
+              onTap: () {
+                if (widget.product.addOnsModels?.isNotEmpty ?? false) {
+                  confirmAddOnsDialog();
+                } else {
+                  basketBloc.increaseQty(
+                    currentProduct: widget.product,
+                    currentUser: userBloc.user.convertToUser(),
+                  );
+                }
+              },
+              child: Card(
+                color: greyBackground,
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(6),
                 ),
-                const SizedBox(
-                  width: 5,
+                child: Icon(
+                  Icons.add,
+                  size: 18,
+                  color: black,
                 ),
-                Text(
-                  '${basketBloc.getProductOrServiceQuantityInCart(widget.product.id!)}',
-                  style: TextStyle(
-                    fontFamily: "Inter",
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                    color: yarnBlack,
-                  ),
-                ),
-                const SizedBox(
-                  width: 5,
-                ),
-                GestureDetector(
-                  onTap: () {
-                    basketBloc.decreaseQty(
-                      currentProduct: widget.product,
-                      currentUser: userBloc.user.convertToUser(),
-                    );
-                  },
-                  child: Card(
-                    color: greyBackground,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: Icon(
-                      Icons.remove,
-                      size: 18,
-                      color: black,
-                    ),
-                  ),
-                ),
-              ],
+              ),
             ),
-          ));
-    } else {
-      return Positioned(
-        right: 10,
-        bottom: 5,
-        child: Container(),
+            const SizedBox(
+              width: 5,
+            ),
+            Text(
+              '${basketBloc.getProductOrServiceQuantityInCart(widget.product.id!)}',
+              style: TextStyle(
+                fontFamily: "Inter",
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
+                color: yarnBlack,
+              ),
+            ),
+            const SizedBox(
+              width: 5,
+            ),
+            GestureDetector(
+              onTap: () {
+                basketBloc.decreaseQty(
+                  currentProduct: widget.product,
+                  currentUser: userBloc.user.convertToUser(),
+                );
+              },
+              child: Card(
+                color: greyBackground,
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Icon(
+                  Icons.remove,
+                  size: 18,
+                  color: black,
+                ),
+              ),
+            ),
+          ],
+        ),
       );
+    } else {
+      return const SizedBox();
     }
   }
 

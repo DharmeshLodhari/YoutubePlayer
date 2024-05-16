@@ -1451,7 +1451,10 @@ class ShoppingAuthService extends AuthService {
           filterOptions!.searchedUser!.userName! +
           "/?";
       if (filterOptions.category != "All categories") {
-        url = url + "category=${filterOptions.category}";
+        url = url + "category=${filterOptions.categoryId}";
+      }
+      if (filterOptions.subCategory != "All sub categories") {
+        url = url + "sub_category=${filterOptions.subCategoryId}";
       }
       if (filterOptions.searchedText!.trim() != "") {
         url = url + "&name__icontains=${filterOptions.searchedText}";
@@ -1513,7 +1516,10 @@ class ShoppingAuthService extends AuthService {
       url = AppConfig.baseUrl + "/api/v1/products/by-seller/" + userName + "/?";
 
       if (filterOptions.category != "All categories") {
-        url = url + "category=${filterOptions.category}";
+        url = url + "category=${filterOptions.categoryId}";
+      }
+      if (filterOptions.subCategory != "All sub categories") {
+        url = url + "&sub_category=${filterOptions.subCategoryId}";
       }
       if (filterOptions.searchedText!.trim() != "") {
         // url = url + "&name__icontains=${filterOptions.searchedText}";
@@ -1792,6 +1798,58 @@ class ShoppingAuthService extends AuthService {
       debugPrint(
           "URL FOR CATEGORIES $url STATUS CODE:- ${response.statusCode} Body:- ${response.body}");
       return Future.value(<ProductCategory>[]);
+    }
+  }
+
+  Future<Map<String, dynamic>> getMerchantProductCategories(
+      String? industryId, String? next, String? previous) async {
+    String url =
+        AppConfig.baseUrl + "/api/v1/products/merchant-categories/$industryId/";
+
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+
+    debugPrint('Merchant Category BODY ---> ${response.body}');
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      var jsonData = json.decode(response.body);
+
+      Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": jsonData["results"]
+      };
+      return result;
+    } else {
+      var jsonData = json.decode(response.body);
+      throw jsonData;
+    }
+  }
+
+  Future<Map<String, dynamic>> getMerchantSubProductCategories(
+      int? categoryId, String? next, String? previous) async {
+    String url =
+        AppConfig.baseUrl + "/api/v1/products/sub-categories/$categoryId/";
+
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+
+    debugPrint('Merchant Category BODY ---> ${response.body}');
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      var jsonData = json.decode(response.body);
+
+      Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": jsonData["results"]
+      };
+      return result;
+    } else {
+      var jsonData = json.decode(response.body);
+      throw jsonData;
     }
   }
 

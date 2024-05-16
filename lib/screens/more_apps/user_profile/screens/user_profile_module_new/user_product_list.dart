@@ -48,12 +48,10 @@ class _UserProductListState extends State<UserProductList> {
   String? productPrevious = "";
   List<Product> productList = [];
   List sectionProductList = [];
-  ScrollController _productScrollController = new ScrollController();
-  final GlobalKey<ScaffoldState> _productScaffoldKey =
-      new GlobalKey<ScaffoldState>();
+  final ScrollController _productScrollController = ScrollController();
   final GlobalKey<ScaffoldMessengerState> _productMessengerScaffoldKey =
-      new GlobalKey<ScaffoldMessengerState>();
-  RefreshController _productsRefreshController =
+      GlobalKey<ScaffoldMessengerState>();
+  final RefreshController _productsRefreshController =
       RefreshController(initialRefresh: false);
   bool isProductLoading = false;
   bool noProductInList = false;
@@ -65,7 +63,7 @@ class _UserProductListState extends State<UserProductList> {
   List<DiscountModel> itemList = [];
   bool noItemInList = false;
   int? itemCount = 0;
-  CarouselController _controller = CarouselController();
+  final CarouselController _controller = CarouselController();
 
   String selectedFilter = "all";
   List<Filter> filterList = [
@@ -78,16 +76,6 @@ class _UserProductListState extends State<UserProductList> {
     Filter(title: "Coming soon", value: 'coming_soon'),
     Filter(title: "Out of stock", value: 'out_of_stock'),
   ];
-  // List<String> filterList = [
-  //   "All",
-  //   "Newest",
-  //   "Oldest",
-  //   "Highest Price",
-  //   "Lowest Price",
-  //   "In stock",
-  //   "Coming soon",
-  //   "Out of stock"
-  // ];
 
   @override
   void initState() {
@@ -116,7 +104,7 @@ class _UserProductListState extends State<UserProductList> {
           isLoading = true;
         });
       }
-      Map<String, dynamic>? result = await ShoppingAuthService()
+      final Map<String, dynamic>? result = await ShoppingAuthService()
           .listOfMerchantDiscounts(next, previous, widget.user);
       if (result == null) {
         isLoading = false;
@@ -127,7 +115,7 @@ class _UserProductListState extends State<UserProductList> {
       itemCount = result['count'];
       next = result['next'];
       previous = result['previous'];
-      var tempList = result['results'];
+      final tempList = result['results'];
 
       itemList.addAll(tempList);
 
@@ -148,13 +136,13 @@ class _UserProductListState extends State<UserProductList> {
         _productMessengerScaffoldKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 500),
         ));
       }
     }
   }
 
-  getNextUrl() {
+  void getNextUrl() {
     setState(() {
       if (widget.next != null) {
         if (widget.next?.contains("custom_category") ?? false) {
@@ -169,7 +157,7 @@ class _UserProductListState extends State<UserProductList> {
 
   void _onProductRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         productCount = 0;
@@ -198,7 +186,7 @@ class _UserProductListState extends State<UserProductList> {
         debugPrint('CALLING PRODUCT channel::: ${widget.channel!}');
 
         if (selectedFilter == "all") selectedFilter = "";
-        Map<String, dynamic>? result =
+        final Map<String, dynamic>? result =
             await ShoppingAuthService().listOfProduct(
           productNext,
           productPrevious,
@@ -222,7 +210,7 @@ class _UserProductListState extends State<UserProductList> {
         productCount = result['count'];
         productNext = result['next'];
         productPrevious = result['previous'];
-        var tempList = result['results'];
+        final tempList = result['results'];
         if (mounted) {
           setState(() {
             noProductInList = false;
@@ -245,7 +233,7 @@ class _UserProductListState extends State<UserProductList> {
             ?.showSnackBar(SnackBar(
               content: Text(
                   AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-              duration: Duration(milliseconds: 500),
+              duration: const Duration(milliseconds: 500),
             ))
             .closed
             .then((_) {
@@ -262,10 +250,8 @@ class _UserProductListState extends State<UserProductList> {
         if (mounted) setState(() {});
 
         debugPrint('CALLING PRODUCT channel::: ${widget.channel!}');
-        print("_______________________________________________$productNext");
-        print("++++++++++++++++++++++++++++++++++++++++$productNext");
 
-        Map<String, dynamic>? result = await ShoppingAuthService()
+        final Map<String, dynamic>? result = await ShoppingAuthService()
             .listOfUsersProduct(
                 sectionUrl: productNext, name: widget.user!.userName);
 
@@ -278,7 +264,7 @@ class _UserProductListState extends State<UserProductList> {
           return;
         }
 
-        var tempList = result['sectionProducts'];
+        final tempList = result['sectionProducts'];
         if (mounted) {
           setState(() {
             noProductInList = false;
@@ -301,7 +287,7 @@ class _UserProductListState extends State<UserProductList> {
             ?.showSnackBar(SnackBar(
               content: Text(
                   AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-              duration: Duration(milliseconds: 500),
+              duration: const Duration(milliseconds: 500),
             ))
             .closed
             .then((_) {
@@ -313,24 +299,6 @@ class _UserProductListState extends State<UserProductList> {
 
   @override
   Widget build(BuildContext context) {
-    // menu = CustomizedPopUpMenu(
-    //   buttonKey: _key,
-    //   context: context,
-    //   childList: [
-    //     CustomizedPopUpMenuItem(title: "All", value: "all"),
-    //     CustomizedPopUpMenuItem(title: "Newest", value: "newest"),
-    //     CustomizedPopUpMenuItem(title: "Oldest", value: "oldest"),
-    //     CustomizedPopUpMenuItem(title: "Highest Price", value: 'highest_price'),
-    //     CustomizedPopUpMenuItem(title: "Lowest Price", value: 'lowest_price'),
-    //     CustomizedPopUpMenuItem(title: "In stock", value: 'in_stock'),
-    //     CustomizedPopUpMenuItem(title: "Coming soon", value: 'coming_soon'),
-    //     CustomizedPopUpMenuItem(title: "Out of stock", value: 'out_of_stock'),
-    //   ],
-    //   selectedIndex: selectedMenuItemIndex,
-    //   right: 16,
-    // );
-    // menu.onChange = menuItemSelectionChange;
-    // menu.menuState = menuStateChange;
     return widget.type != null
         ? _buildProductView()
         : CustomPagination(
@@ -404,42 +372,20 @@ class _UserProductListState extends State<UserProductList> {
   Widget _buildProductView() {
     return ScaffoldMessenger(
       key: _productMessengerScaffoldKey,
-      child:
-          // Scaffold(
-          //   key: _productScaffoldKey,
-          //   floatingActionButton: widget.type == null
-          //       ? FloatingActionButton.small(
-          //           onPressed: () async {
-          //             await Future.delayed(Duration(milliseconds: 100))
-          //                 .then((value) => showFilterProductSheet());
-          //           },
-          //           backgroundColor: navyBlue,
-          //           child: Icon(
-          //             Icons.filter_alt_rounded,
-          //             size: 20,
-          //             color: Colors.white,
-          //             // size: 20,
-          //           ),
-          //         )
-          //       : SizedBox(),
-          //   body:
-          Container(
+      child: Container(
         color: lightGrey,
-        padding: EdgeInsets.only(left: 16, right: 16, bottom: 16),
-        child: Expanded(
-          child: SmartRefresher(
-            enablePullDown: true,
-            header: WaterDropHeader(
-              complete: Container(),
-              waterDropColor: navyBlue,
-            ),
-            controller: _productsRefreshController,
-            onRefresh: _onProductRefresh,
-            child: _buildList(),
+        padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
+        child: SmartRefresher(
+          enablePullDown: true,
+          header: WaterDropHeader(
+            complete: Container(),
+            waterDropColor: navyBlue,
           ),
+          controller: _productsRefreshController,
+          onRefresh: _onProductRefresh,
+          child: _buildList(),
         ),
       ),
-      // ),
     );
   }
 
@@ -453,7 +399,7 @@ class _UserProductListState extends State<UserProductList> {
           return StatefulBuilder(
             builder: (BuildContext context, StateSetter bottomSheetSetState) =>
                 Card(
-              shape: RoundedRectangleBorder(
+              shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(20),
                     topRight: Radius.circular(20)),
@@ -461,7 +407,8 @@ class _UserProductListState extends State<UserProductList> {
               color: Colors.white,
               margin: EdgeInsets.zero,
               child: Container(
-                padding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
@@ -473,7 +420,7 @@ class _UserProductListState extends State<UserProductList> {
                           fontWeight: FontWeight.w700,
                           color: blackFont),
                     ),
-                    SizedBox(height: 40),
+                    const SizedBox(height: 40),
                     SingleChildScrollView(
                       child: Column(
                         children: filterList.map<Widget>((filter) {
@@ -523,7 +470,7 @@ class _UserProductListState extends State<UserProductList> {
                         }).toList(),
                       ),
                     ),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                   ],
                 ),
               ),
@@ -534,40 +481,31 @@ class _UserProductListState extends State<UserProductList> {
 
   Widget _buildList() {
     return SingleChildScrollView(
-      child: noProductInList
-          ? Container(
-              constraints: BoxConstraints(
-                  maxHeight: MediaQuery.of(context).size.height / 2),
-              child:
-                  NoItemInList(msg: AppLocalization.of(context)!.noResultFound
-                      // msg: AppLocalization.of(context)!.noProducts,
-                      ),
-            )
-          : isProductLoading && productList.isEmpty
-              ? Shimmer.fromColors(
-                  baseColor: Colors.white,
-                  highlightColor: greyBorderColor,
-                  child: GridView.builder(
-                    shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                      mainAxisExtent: 180,
-                      mainAxisSpacing: 16,
-                      crossAxisSpacing: 15,
-                      maxCrossAxisExtent: 200,
+      child: isProductLoading && productList.isEmpty
+          ? Shimmer.fromColors(
+              baseColor: Colors.white,
+              highlightColor: greyBorderColor,
+              child: GridView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                  mainAxisExtent: 180,
+                  mainAxisSpacing: 16,
+                  crossAxisSpacing: 15,
+                  maxCrossAxisExtent: 200,
+                ),
+                itemCount: 2,
+                itemBuilder: (context, index) {
+                  return Card(
+                    color: Colors.grey,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                    itemCount: 2,
-                    itemBuilder: (context, index) {
-                      return Card(
-                        color: Colors.grey,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      );
-                    },
-                  ),
-                )
-              : _buildProductList(),
+                  );
+                },
+              ),
+            )
+          : _buildProductList(),
     );
   }
 
@@ -576,17 +514,13 @@ class _UserProductListState extends State<UserProductList> {
       children: [
         if (itemList.isNotEmpty) _buildMerchantDiscount(),
         ...sectionProductList
-            .map((headers) => Column(
-                  children: [
-                    ExploreProducts(headers: headers),
-                  ],
-                ))
+            .map((headers) => ExploreProducts(headers: headers))
             .toList()
       ],
     );
   }
 
-  onPageFunction(int index, CarouselPageChangedReason reason) {
+  void onPageFunction(int index, CarouselPageChangedReason reason) {
     currentIndex = index;
     setState(() {});
   }
@@ -605,22 +539,12 @@ class _UserProductListState extends State<UserProductList> {
                   enlargeCenterPage: true,
                   viewportFraction: 1,
                   aspectRatio: 16 / 9,
-                  // onPageChanged: (index, reason) {
-                  //   setState(() {
-                  //     _current = index;
-                  //   });
-                  // }),
-                  // enableInfiniteScroll: false,
-                  // viewportFraction: 1.0,
-                  // enlargeCenterPage: true,
-                  // autoPlay: true,
-                  // aspectRatio: 1.7,
                   onPageChanged: onPageFunction),
               items: itemList
                   .map(
                     (e) => InkWell(
                       onTap: () {
-                        String url = AppConfig.baseUrl +
+                        final String url = AppConfig.baseUrl +
                             "/api/v1/products/products-by-discount/${e.id}";
                         NavigationUtil.push(context,
                             screen: SuperStoreIndustry(
@@ -635,38 +559,15 @@ class _UserProductListState extends State<UserProductList> {
                           borderRadius: BorderRadius.circular(10.0),
                           child: getImage(e),
                         ),
-                        // decoration: BoxDecoration(
-                        //   borderRadius: BorderRadius.circular(10),
-                        //   image: DecorationImage(
-                        //     fit: BoxFit.fill,
-                        //     image: getImage(e),
-                        //   ),
-                        // ),
                       ),
                     ),
                   )
                   .toList(),
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
-          // Row(
-          //   crossAxisAlignment: CrossAxisAlignment.end,
-          //   mainAxisAlignment: MainAxisAlignment.center,
-          //   children: itemList.map((url) {
-          //     int index = itemList.indexOf(url);
-          //     return Container(
-          //       width: 5.0,
-          //       height: 5.0,
-          //       margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 2.0),
-          //       decoration: BoxDecoration(
-          //         shape: BoxShape.circle,
-          //         color: currentIndex == index ? navyBlue : navyBlueLight,
-          //       ),
-          //     );
-          //   }).toList(),
-          // )
         ],
       ),
     );
@@ -686,7 +587,7 @@ class _UserProductListState extends State<UserProductList> {
 
   Widget _buildProductList() {
     return productNext == "" && isProductLoading
-        ? SizedBox.shrink()
+        ? const SizedBox.shrink()
         : Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -694,22 +595,30 @@ class _UserProductListState extends State<UserProductList> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Expanded(
-                      child: Text(
-                        "Found ${productCount} products",
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 16,
-                          fontFamily: "Inter",
-                          color: blackFont,
-                        ),
+                    Text(
+                      "Found ${productCount} products",
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                        fontFamily: "Inter",
+                        color: blackFont,
                       ),
                     ),
                     popUpMenuButton(),
                   ],
                 ),
-              SizedBox(height: 10),
-              (widget.type != null) ? sectionProducts() : _buildGridView(),
+              const SizedBox(height: 10),
+              if (noProductInList)
+                Container(
+                  constraints: BoxConstraints(
+                      maxHeight: MediaQuery.of(context).size.height / 2),
+                  child: NoItemInList(
+                      msg: AppLocalization.of(context)!.noResultFound
+                      // msg: AppLocalization.of(context)!.noProducts,
+                      ),
+                )
+              else
+                widget.type != null ? sectionProducts() : _buildGridView(),
             ],
           );
   }
@@ -718,23 +627,21 @@ class _UserProductListState extends State<UserProductList> {
     return isProductLoading && productList.isEmpty
         ? buildLoadingIndicator(isLoading: isProductLoading)
         : CustomScrollView(
-            physics: ScrollPhysics(),
+            physics: const ScrollPhysics(),
             controller: _productScrollController,
             shrinkWrap: true,
             slivers: <Widget>[
               SliverGrid(
                 delegate: SliverChildBuilderDelegate(
-                  (c, i) => SizedBox(
-                    child: DisplayProduct(
-                      product: productList[i],
-                      onProductRefresh: () {
-                        _onProductRefresh();
-                      },
-                    ),
+                  (c, i) => DisplayProduct(
+                    product: productList[i],
+                    onProductRefresh: () {
+                      _onProductRefresh();
+                    },
                   ),
                   childCount: productList.length,
                 ),
-                gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
                   mainAxisSpacing: 8,
                   mainAxisExtent: 260,
                   crossAxisSpacing: 15,
@@ -747,34 +654,12 @@ class _UserProductListState extends State<UserProductList> {
               ),
             ],
           );
-    // return GridView.builder(
-    //   shrinkWrap: true,
-    //   padding: EdgeInsets.symmetric(horizontal: 4),
-    //   controller: _productScrollController,
-    //   physics: NeverScrollableScrollPhysics(),
-    //   gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-    //     mainAxisSpacing: 8,
-    //     mainAxisExtent: 274,
-    //     crossAxisSpacing: 15,
-    //     maxCrossAxisExtent: 200,
-    //   ),
-    //   itemCount: productList.length + 1,
-    //   itemBuilder: SizedBox(
-    //         child: DisplayProduct(
-    //           product: productList[index],
-    //           onProductRefresh: () {
-    //             _onProductRefresh();
-    //           },
-    //         ),
-    //       );
-    //   },
-    // );
   }
 
   Widget popUpMenuButton() {
     return GestureDetector(
       onTap: () async {
-        await Future.delayed(Duration(milliseconds: 100))
+        await Future.delayed(const Duration(milliseconds: 100))
             .then((value) => showFilterProductSheet());
       },
       child: Icon(
@@ -818,7 +703,7 @@ class _UserProductListState extends State<UserProductList> {
         );
       }
     }
-    return SizedBox.shrink();
+    return const SizedBox.shrink();
   }
 }
 

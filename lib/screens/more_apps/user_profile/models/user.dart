@@ -659,6 +659,7 @@ class CustomerProfile {
   int? following;
   String? chatWallpaper;
   String defaultCurrency;
+  String accountType;
   bool? isVerified;
   UserAbout? userAbout;
   UserStatus status;
@@ -684,6 +685,7 @@ class CustomerProfile {
       this.type = "user",
       this.conversationId = "",
       this.defaultCurrency = "NGN",
+      this.accountType = "",
       this.isVerified = false,
       this.uuid = "",
       this.dateJoined = '',
@@ -706,6 +708,7 @@ class CustomerProfile {
         nickName: json['nickname'] ?? json['name'] ?? "",
         type: json['type'] ?? json['account_type'] ?? "user",
         conversationId: json['conversation_id'] ?? "",
+        accountType: json['account_type'] ?? "",
         status: UserStatus.UNKNOWN,
         rating: json['rating'] ?? 0.0);
     if (json['profile'] != null) {
@@ -794,6 +797,7 @@ class CustomerProfile {
     data['status'] = status.name;
     data['uuid'] = uuid;
     data['default_currency'] = defaultCurrency;
+    data['account_type'] = accountType;
     data['is_verified'] = isVerified;
     // if (data['profile'] != null) {
     //   data['profile'] = this.userAbout!.toJson();

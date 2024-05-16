@@ -82,7 +82,7 @@ class _UserServiceListState extends State<UserServiceList> {
         key: _serviceScaffoldKey,
         body: Container(
           color: lightGrey,
-          padding: EdgeInsets.all(16),
+          padding: EdgeInsets.only(left: 16, right: 16, bottom: 16),
           child: SmartRefresher(
             enablePullDown: true,
             header: WaterDropHeader(
@@ -99,49 +99,42 @@ class _UserServiceListState extends State<UserServiceList> {
   }
 
   Widget _buildList() {
-    return Column(
-      children: [
-        noServiceInList
-            ? Expanded(
-                child: NoItemInList(
-                  msg: AppLocalization.of(context)!.noProducts,
+    if (noServiceInList)
+      return NoItemInList(
+        msg: AppLocalization.of(context)!.noProducts,
+      );
+    else
+      return ListView(
+        children: [
+          Container(child: _buildServiceList()),
+          if (isServiceLoading)
+            Shimmer.fromColors(
+              baseColor: Colors.white,
+              highlightColor: greyBorderColor,
+              child: GridView.builder(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                  mainAxisExtent: 180,
+                  mainAxisSpacing: 16,
+                  crossAxisSpacing: 15,
+                  maxCrossAxisExtent: 200,
                 ),
-              )
-            : Expanded(
-                child: ListView(
-                  children: [
-                    _buildServiceList(),
-                    isServiceLoading
-                        ? Shimmer.fromColors(
-                            baseColor: Colors.white,
-                            highlightColor: greyBorderColor,
-                            child: GridView.builder(
-                              shrinkWrap: true,
-                              physics: NeverScrollableScrollPhysics(),
-                              gridDelegate:
-                                  SliverGridDelegateWithMaxCrossAxisExtent(
-                                mainAxisExtent: 180,
-                                mainAxisSpacing: 16,
-                                crossAxisSpacing: 15,
-                                maxCrossAxisExtent: 200,
-                              ),
-                              itemCount: 2,
-                              itemBuilder: (context, index) {
-                                return Card(
-                                  color: Colors.grey,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                );
-                              },
-                            ),
-                          )
-                        : SizedBox.shrink(),
-                  ],
-                ),
+                itemCount: 2,
+                itemBuilder: (context, index) {
+                  return Card(
+                    color: Colors.grey,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  );
+                },
               ),
-      ],
-    );
+            )
+          else
+            SizedBox.shrink(),
+        ],
+      );
   }
 
   Widget _buildServiceList() {

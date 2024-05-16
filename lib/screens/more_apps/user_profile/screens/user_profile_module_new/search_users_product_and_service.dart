@@ -27,7 +27,7 @@ import 'package:provider/provider.dart';
 import '../../../../../routes/route_constants.dart';
 
 class SearchUsersProductAndService extends StatefulWidget {
-  final arguments;
+  final dynamic arguments;
   SearchUsersProductAndService({required this.arguments});
 
   @override
@@ -44,7 +44,7 @@ class _SearchUsersProductAndServiceState
   List<dynamic>? searchedResult;
 
   late UserBloc userBloc;
-  static var filterValue = "Products";
+  static String filterValue = "Products";
 
   SlidableController? slidableController1;
   SlidableController? slidableController2;
@@ -53,28 +53,45 @@ class _SearchUsersProductAndServiceState
 
   GlobalKey textFormField = GlobalKey();
   TextEditingController searchItemTextController = TextEditingController();
-
-  GlobalKey<ScaffoldState> _scaffoldSearchKey = GlobalKey<ScaffoldState>();
-  GlobalKey<ScaffoldMessengerState> _scaffoldMessengerSearchKey =
+  final GlobalKey<ScaffoldMessengerState> _messengerScaffoldKey =
       GlobalKey<ScaffoldMessengerState>();
-  GlobalKey<FormState> _formFieldKey = GlobalKey<FormState>();
+
+  final GlobalKey<ScaffoldState> _scaffoldSearchKey =
+      GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerSearchKey =
+      GlobalKey<ScaffoldMessengerState>();
+  final GlobalKey<FormState> _formFieldKey = GlobalKey<FormState>();
 
   //pagination variables
   int? count = 0;
   String? next = "";
   String? previous = "";
-  ScrollController _scrollController = new ScrollController();
+  final ScrollController _scrollController = ScrollController();
   bool isLoading = false;
   bool noItemInList = false;
 
-  GlobalKey _key = LabeledGlobalKey("searchTypeSelectionKey");
+  bool isCategoryLoading = false;
+  int? categoryCount = 0;
+  String? categoryNext = "";
+  String? categoryPrevious = "";
+  bool noCategoryInList = false;
+  List<String> categoryList = [];
+  List<ProductCategory> productCategoryList = [];
+
+  bool isSubCategoryLoading = false;
+  int? subCategoryCount = 0;
+  String? subCategoryNext = "";
+  String? subCategoryPrevious = "";
+  bool noSubCategoryInList = false;
+  List<String> subCategoryList = [];
+  List<ProductCategory> productSubCategoryList = [];
+
+  final GlobalKey _key = LabeledGlobalKey("searchTypeSelectionKey");
   late CustomizedPopUpMenu searchTypeSelectionMenu;
   int selectedMenuItemIndex = 0;
   bool isPopMenuOpen = false;
 
-  List<String> categoryList = [];
-
-  var hint = "Search here";
+  String hint = "Search here";
 
   CustomerProfile? searchedUser;
 
@@ -102,6 +119,7 @@ class _SearchUsersProductAndServiceState
       if (mounted) setState(() {});
     }
 
+    getMerchantCategory();
     updateCategoryList();
 
     slidableController1 = SlidableController(
@@ -154,6 +172,111 @@ class _SearchUsersProductAndServiceState
     super.initState();
   }
 
+  void getMerchantCategory() async {
+    await merchantProductCategoryList();
+  }
+
+  Future<void> merchantProductCategoryList() async {
+    if (!isCategoryLoading) {
+      if (categoryNext != null && !isCategoryLoading) {
+        isCategoryLoading = true;
+        if (mounted) setState(() {});
+
+        final Map<String, dynamic>? result = await ShoppingAuthService()
+            .getMerchantProductCategories(searchedUser?.userAbout?.industry?.id,
+                categoryNext, categoryPrevious);
+
+        if (result == null) {
+          isCategoryLoading = false;
+          noCategoryInList = true;
+          if (mounted) {
+            setState(() {});
+          }
+          return;
+        }
+
+        categoryCount = result['count'];
+        categoryNext = result['next'];
+        categoryPrevious = result['previous'];
+        final tempList = result['results'];
+
+        noCategoryInList = false;
+        isCategoryLoading = false;
+
+        for (int i = 0; i < tempList.length; i++) {
+          productCategoryList.add(
+              ProductCategory(tempList[i]['name']!, id: tempList[i]['id']));
+        }
+      }
+      if (productCategoryList.isEmpty) {
+        if (mounted) {
+          setState(() {
+            noCategoryInList = true;
+          });
+        }
+      } else if (categoryNext == null && productCategoryList.length > 6) {
+        _messengerScaffoldKey.currentState?.showSnackBar(SnackBar(
+          content:
+              Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
+          duration: const Duration(milliseconds: 500),
+        ));
+      }
+    }
+  }
+
+  Future<void> merchantProductSubCategoryList(int? categoryId) async {
+    if (!isSubCategoryLoading) {
+      if (subCategoryNext != null && !isSubCategoryLoading) {
+        isSubCategoryLoading = true;
+        if (mounted) setState(() {});
+
+        final Map<String, dynamic>? result = await ShoppingAuthService()
+            .getMerchantSubProductCategories(
+                categoryId, subCategoryNext, subCategoryPrevious);
+
+        if (result == null) {
+          isSubCategoryLoading = false;
+          noSubCategoryInList = true;
+          if (mounted) {
+            setState(() {});
+          }
+          return;
+        }
+
+        subCategoryCount = result['count'];
+        subCategoryNext = result['next'];
+        subCategoryPrevious = result['previous'];
+        final tempList = result['results'];
+
+        noSubCategoryInList = false;
+        isSubCategoryLoading = false;
+
+        for (int i = 0; i < tempList.length; i++) {
+          productSubCategoryList.add(
+              ProductCategory(tempList[i]['name']!, id: tempList[i]['id']));
+        }
+
+        filterModel.subCategory = "All sub categories";
+        if (selectedMenuItemIndex == 0) {
+          subCategoryList = productSubCategoryList.map((e) => e.name).toList();
+        }
+      }
+      if (productSubCategoryList.isEmpty) {
+        if (mounted) {
+          setState(() {
+            noSubCategoryInList = true;
+          });
+        }
+      } else if (subCategoryNext == null && productSubCategoryList.length > 6) {
+        _messengerScaffoldKey.currentState?.showSnackBar(SnackBar(
+          content:
+              Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
+          duration: const Duration(milliseconds: 500),
+        ));
+      }
+    }
+  }
+
   void menuItemSelectionChange(String value, int index) {
     selectedMenuItemIndex = index;
 
@@ -178,7 +301,7 @@ class _SearchUsersProductAndServiceState
   void updateCategoryList() {
     filterModel.category = "All categories";
     if (selectedMenuItemIndex == 0) {
-      categoryList = productCategoryList;
+      categoryList = productCategoryList.map((e) => e.name).toList();
     } else if (selectedMenuItemIndex == 1) {
       categoryList = serviceCategoryList;
     }
@@ -218,10 +341,10 @@ class _SearchUsersProductAndServiceState
           key: _formFieldKey,
           child: Column(
             children: [
-              SizedBox(height: 6),
+              const SizedBox(height: 6),
               searchBox(),
-              showFilterOptions ? getFilterOptions() : Container(),
-              SizedBox(
+              if (showFilterOptions) getFilterOptions() else Container(),
+              const SizedBox(
                 height: 16,
               ),
               Expanded(
@@ -236,14 +359,18 @@ class _SearchUsersProductAndServiceState
 
   Widget getFilterOptions() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         children: [
-          SizedBox(
+          const SizedBox(
             height: 16,
           ),
           getCategoryField(),
-          SizedBox(
+          const SizedBox(
+            height: 8,
+          ),
+          getSubCategoryField(),
+          const SizedBox(
             height: 8,
           ),
           getPriceRange()
@@ -259,7 +386,7 @@ class _SearchUsersProductAndServiceState
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
           side: BorderSide(color: greyBorderColor)),
-      margin: EdgeInsets.all(0),
+      margin: const EdgeInsets.all(0),
       borderOnForeground: true,
       child: DropdownButtonHideUnderline(
         child: ButtonTheme(
@@ -285,79 +412,211 @@ class _SearchUsersProductAndServiceState
     );
   }
 
+  Widget getSubCategoryField() {
+    return Card(
+      elevation: 0,
+      color: Colors.white,
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+          side: BorderSide(color: greyBorderColor)),
+      margin: const EdgeInsets.all(0),
+      borderOnForeground: true,
+      child: DropdownButtonHideUnderline(
+        child: ButtonTheme(
+            alignedDropdown: true,
+            child: ListTile(
+              dense: true,
+              title: Text(
+                filterModel.subCategory,
+                style: TextStyle(
+                    color: blackFont,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600),
+              ),
+              trailing: Icon(
+                Icons.keyboard_arrow_down,
+                color: darkGrey,
+              ),
+              onTap: () {
+                selectItemSubCategory();
+              },
+            )),
+      ),
+    );
+  }
+
   void selectItemCategory() async {
-    final pressedCategory = await showDialog<String>(
-        barrierDismissible: false,
-        context: context,
-        builder: (context) => AlertDialog(
-              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
-              contentPadding: EdgeInsets.zero,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
-              content: Container(
-                width: MediaQuery.of(context).size.width - 40,
-                child: Card(
-                  elevation: 2,
-                  shadowColor: Colors.transparent,
-                  margin: EdgeInsets.zero,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: categoryList.map<Widget>((category) {
-                          if (filterModel.category == category) {
-                            return Container(
-                              color: selectedListItemBackgroundBlue,
-                              child: ListTile(
-                                dense: true,
-                                title: Text(
-                                  category,
-                                  overflow: TextOverflow.fade,
-                                  softWrap: false,
-                                  style: TextStyle(
-                                      color: navyBlue,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600),
+    if (categoryList.isNotEmpty) {
+      final pressedCategory = await showDialog<String>(
+          barrierDismissible: false,
+          context: context,
+          builder: (context) => AlertDialog(
+                insetPadding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+                contentPadding: EdgeInsets.zero,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)),
+                content: Container(
+                  width: MediaQuery.of(context).size.width - 40,
+                  child: Card(
+                    elevation: 2,
+                    shadowColor: Colors.transparent,
+                    margin: EdgeInsets.zero,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: categoryList.map<Widget>((category) {
+                            if (filterModel.category == category) {
+                              return Container(
+                                color: selectedListItemBackgroundBlue,
+                                child: ListTile(
+                                  dense: true,
+                                  title: Text(
+                                    category,
+                                    overflow: TextOverflow.fade,
+                                    softWrap: false,
+                                    style: TextStyle(
+                                        color: navyBlue,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600),
+                                  ),
+                                  trailing: Icon(
+                                    SlydoAppIcon.checked,
+                                    color: navyBlue,
+                                    size: 12,
+                                  ),
+                                  onTap: () {
+                                    Navigator.pop(context, category);
+                                  },
                                 ),
-                                trailing: Icon(
-                                  SlydoAppIcon.checked,
-                                  color: navyBlue,
-                                  size: 12,
-                                ),
-                                onTap: () {
-                                  Navigator.pop(context, category);
-                                },
+                              );
+                            }
+                            return ListTile(
+                              title: Text(
+                                category,
+                                softWrap: false,
+                                overflow: TextOverflow.fade,
+                                style: TextStyle(
+                                    color: blackFont,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w400),
                               ),
+                              dense: true,
+                              onTap: () {
+                                Navigator.pop(context, category);
+                              },
                             );
-                          }
-                          return ListTile(
-                            title: Text(
-                              category,
-                              softWrap: false,
-                              overflow: TextOverflow.fade,
-                              style: TextStyle(
-                                  color: blackFont,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w400),
-                            ),
-                            dense: true,
-                            onTap: () {
-                              Navigator.pop(context, category);
-                            },
-                          );
-                        }).toList(),
+                          }).toList(),
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            ));
-    if (pressedCategory != null) {
-      filterModel.category = pressedCategory;
-      setState(() {});
+              ));
+      if (pressedCategory != null) {
+        setState(() async {
+          filterModel.category = pressedCategory;
+          ProductCategory category = productCategoryList
+              .where((element) => element.name == pressedCategory)
+              .toList()
+              .first;
+          filterModel.categoryId = category.id;
+          await merchantProductSubCategoryList(category.id);
+        });
+      }
+    } else {
+      showToast(message: "No category Found..");
+    }
+  }
+
+  void selectItemSubCategory() async {
+    if (subCategoryList.isNotEmpty) {
+      final pressedSubCategory = await showDialog<String>(
+          barrierDismissible: false,
+          context: context,
+          builder: (context) => AlertDialog(
+                insetPadding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+                contentPadding: EdgeInsets.zero,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)),
+                content: Container(
+                  width: MediaQuery.of(context).size.width - 40,
+                  child: Card(
+                    elevation: 2,
+                    shadowColor: Colors.transparent,
+                    margin: EdgeInsets.zero,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: subCategoryList.map<Widget>((category) {
+                            if (filterModel.subCategory == category) {
+                              return Container(
+                                color: selectedListItemBackgroundBlue,
+                                child: ListTile(
+                                  dense: true,
+                                  title: Text(
+                                    category,
+                                    overflow: TextOverflow.fade,
+                                    softWrap: false,
+                                    style: TextStyle(
+                                        color: navyBlue,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600),
+                                  ),
+                                  trailing: Icon(
+                                    SlydoAppIcon.checked,
+                                    color: navyBlue,
+                                    size: 12,
+                                  ),
+                                  onTap: () {
+                                    Navigator.pop(context, category);
+                                  },
+                                ),
+                              );
+                            }
+                            return ListTile(
+                              title: Text(
+                                category,
+                                softWrap: false,
+                                overflow: TextOverflow.fade,
+                                style: TextStyle(
+                                    color: blackFont,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w400),
+                              ),
+                              dense: true,
+                              onTap: () {
+                                Navigator.pop(context, category);
+                              },
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ));
+      if (pressedSubCategory != null) {
+        setState(() {
+          filterModel.subCategory = pressedSubCategory;
+          ProductCategory category = productSubCategoryList
+              .where((element) => element.name == pressedSubCategory)
+              .toList()
+              .first;
+          filterModel.subCategoryId = category.id;
+        });
+      }
+    } else {
+      showToast(message: "No sub category Found..");
     }
   }
 
@@ -366,7 +625,7 @@ class _SearchUsersProductAndServiceState
       child: Row(
         children: <Widget>[
           Expanded(child: displayMinAmount()),
-          SizedBox(
+          const SizedBox(
             width: 16,
           ),
           Expanded(child: displayMaxAmount()),
@@ -381,7 +640,7 @@ class _SearchUsersProductAndServiceState
       isAmountField: true,
       controller: minAmountTextController,
       keyboardType: Platform.isIOS
-          ? TextInputType.numberWithOptions(decimal: true)
+          ? const TextInputType.numberWithOptions(decimal: true)
           : TextInputType.number,
       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
       onChanged: (val) {
@@ -390,7 +649,7 @@ class _SearchUsersProductAndServiceState
           return;
         }
         try {
-          int minAmount =
+          final int minAmount =
               int.parse(val.replaceAll(',', '').replaceAll('.', ''));
           filterModel.minAmount = minAmount;
         } catch (e) {}
@@ -400,7 +659,8 @@ class _SearchUsersProductAndServiceState
           return null;
         }
         try {
-          int amount = int.parse(val.replaceAll(',', '').replaceAll('.', ''));
+          final int amount =
+              int.parse(val.replaceAll(',', '').replaceAll('.', ''));
           if (amount > 0) {
             return null;
           } else {
@@ -419,7 +679,7 @@ class _SearchUsersProductAndServiceState
       controller: maxAmountTextController,
       isAmountField: true,
       keyboardType: Platform.isIOS
-          ? TextInputType.numberWithOptions(decimal: true)
+          ? const TextInputType.numberWithOptions(decimal: true)
           : TextInputType.number,
       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
       onChanged: (val) {
@@ -428,7 +688,7 @@ class _SearchUsersProductAndServiceState
           return;
         }
         try {
-          int maxAmount =
+          final int maxAmount =
               int.parse(val.replaceAll(',', '').replaceAll('.', ''));
           filterModel.maxAmount = maxAmount;
         } catch (e) {}
@@ -438,7 +698,8 @@ class _SearchUsersProductAndServiceState
           return null;
         }
         try {
-          int amount = int.parse(val.replaceAll(',', '').replaceAll('.', ''));
+          final int amount =
+              int.parse(val.replaceAll(',', '').replaceAll('.', ''));
           if (amount > 0) {
             return null;
           } else {
@@ -454,7 +715,7 @@ class _SearchUsersProductAndServiceState
   Widget searchBox() {
     try {
       return Container(
-        padding: EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Stack(
           alignment: Alignment.centerRight,
           children: [
@@ -506,14 +767,14 @@ class _SearchUsersProductAndServiceState
                       : "Search service",
                   fillColor: Colors.white,
                   filled: true,
-                  contentPadding: EdgeInsets.symmetric(vertical: 10),
+                  contentPadding: const EdgeInsets.symmetric(vertical: 10),
                   prefixIcon: widget.arguments["hidePreIcon"] == true
                       ? null
                       : searchTypeSelection(),
-                  prefix: Padding(
+                  prefix: const Padding(
                     padding: EdgeInsets.only(left: 12),
                   ),
-                  suffix: Padding(
+                  suffix: const Padding(
                     padding: EdgeInsets.only(right: 36),
                   ),
                   enabledBorder: OutlineInputBorder(
@@ -556,8 +817,8 @@ class _SearchUsersProductAndServiceState
               ),
             ),
             Positioned(
-              child: searchIcon(),
               right: 0,
+              child: searchIcon(),
             )
           ],
         ),
@@ -570,7 +831,7 @@ class _SearchUsersProductAndServiceState
   Widget searchTypeSelection() {
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.only(
+        borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(10), bottomLeft: Radius.circular(10)),
         color: navyBlue,
       ),
@@ -646,14 +907,14 @@ class _SearchUsersProductAndServiceState
           style: TextStyle(
               color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
         ),
-        actions: [filterItemBtn(), SizedBox(width: 8)]);
+        actions: [filterItemBtn(), const SizedBox(width: 8)]);
   }
 
   Widget filterItemBtn() {
     return Stack(
       children: [
         Container(
-          padding: EdgeInsets.only(right: 8),
+          padding: const EdgeInsets.only(right: 8),
           child: Column(
             children: [
               Expanded(
@@ -668,6 +929,7 @@ class _SearchUsersProductAndServiceState
                   onTap: () {
                     showFilterOptions = !showFilterOptions;
                     if (mounted) setState(() {});
+                    updateCategoryList();
                     checkForFilterAppliedOrNot();
                   },
                   backgroundColor: iconBtnGrey,
@@ -677,25 +939,31 @@ class _SearchUsersProductAndServiceState
             ],
           ),
         ),
-        isFilterApplied
-            ? Positioned(
-                top: 10,
-                right: 6,
-                child: ClipOval(
-                  child: Container(
-                    height: 8,
-                    width: 8,
-                    color: naturalGreen,
-                  ),
-                ),
-              )
-            : Container()
+        if (isFilterApplied)
+          Positioned(
+            top: 10,
+            right: 6,
+            child: ClipOval(
+              child: Container(
+                height: 8,
+                width: 8,
+                color: naturalGreen,
+              ),
+            ),
+          )
+        else
+          Container()
       ],
     );
   }
 
   void checkForFilterAppliedOrNot() {
     if (filterModel.category != "All categories") {
+      isFilterApplied = true;
+      if (mounted) setState(() {});
+      return;
+    }
+    if (filterModel.subCategory != "All sub categories") {
       isFilterApplied = true;
       if (mounted) setState(() {});
       return;
@@ -779,7 +1047,7 @@ class _SearchUsersProductAndServiceState
           isLoading = true;
           setState(() {});
         }
-        Map<String, dynamic>? result = await getSearchApi();
+        final Map<String, dynamic>? result = await getSearchApi();
         if (result == null) {
           isLoading = false;
           return;
@@ -787,7 +1055,7 @@ class _SearchUsersProductAndServiceState
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
-        List? tempList = result['results'];
+        final List? tempList = result['results'];
         if (mounted) {
           isLoading = false;
           try {
@@ -812,14 +1080,14 @@ class _SearchUsersProductAndServiceState
         _scaffoldMessengerSearchKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 500),
         ));
       }
     }
   }
 
   // ignore: missing_return
-  Widget getResultTile(var result) {
+  Widget getResultTile(dynamic result) {
     switch (filterValue) {
       case "Products":
         return getProductTile(result);
@@ -852,7 +1120,7 @@ class _SearchUsersProductAndServiceState
 
   Widget productCard(Product product) {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 4, horizontal: 16),
+      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         margin: EdgeInsets.zero,
@@ -863,7 +1131,7 @@ class _SearchUsersProductAndServiceState
           child: Column(
             children: <Widget>[
               Padding(
-                padding: EdgeInsets.symmetric(vertical: 8),
+                padding: const EdgeInsets.symmetric(vertical: 8),
                 child: ListTile(
                   dense: true,
                   leading: getLeading(product),
@@ -904,8 +1172,9 @@ class _SearchUsersProductAndServiceState
         colorBlendMode: BlendMode.darken,
         fit: BoxFit.fill,
         filterQuality: FilterQuality.high,
-        placeholder: (context, url) =>
-            imageUrl == "" ? Icon(Icons.person) : CircularLoadingIndicator(),
+        placeholder: (context, url) => imageUrl == ""
+            ? const Icon(Icons.person)
+            : CircularLoadingIndicator(),
       ),
     );
   }
@@ -944,7 +1213,7 @@ class _SearchUsersProductAndServiceState
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        SizedBox(
+        const SizedBox(
           height: 2,
         ),
         Text(
@@ -952,12 +1221,13 @@ class _SearchUsersProductAndServiceState
           maxLines: 1,
           style: TextStyle(color: darkGrey, fontSize: 12),
         ),
-        SizedBox(
+        const SizedBox(
           height: 2,
         ),
-        product.price.toString().length > 6
-            ? getTrailingProduct(product)
-            : Container(),
+        if (product.price.toString().length > 6)
+          getTrailingProduct(product)
+        else
+          Container(),
         getSellerNameProduct(product)
       ],
     );
@@ -981,7 +1251,7 @@ class _SearchUsersProductAndServiceState
 
   Widget getServiceCard(Service service) {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 4, horizontal: 16),
+      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         margin: EdgeInsets.zero,
@@ -992,7 +1262,7 @@ class _SearchUsersProductAndServiceState
           child: Column(
             children: <Widget>[
               Padding(
-                padding: EdgeInsets.symmetric(vertical: 8),
+                padding: const EdgeInsets.symmetric(vertical: 8),
                 child: ListTile(
                   dense: true,
                   leading: getLeadingService(service),
@@ -1040,8 +1310,9 @@ class _SearchUsersProductAndServiceState
           colorBlendMode: BlendMode.darken,
           fit: BoxFit.fill,
           filterQuality: FilterQuality.high,
-          placeholder: (context, url) =>
-              imageUrl == "" ? Icon(Icons.person) : CircularLoadingIndicator()),
+          placeholder: (context, url) => imageUrl == ""
+              ? const Icon(Icons.person)
+              : CircularLoadingIndicator()),
     );
   }
 
@@ -1049,7 +1320,7 @@ class _SearchUsersProductAndServiceState
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        SizedBox(
+        const SizedBox(
           height: 2,
         ),
         Text(
@@ -1057,12 +1328,13 @@ class _SearchUsersProductAndServiceState
           maxLines: 1,
           style: TextStyle(color: darkGrey, fontSize: 12),
         ),
-        SizedBox(
+        const SizedBox(
           height: 2,
         ),
-        service.price.toString().length > 6
-            ? getTrailingService(service)
-            : Container(),
+        if (service.price.toString().length > 6)
+          getTrailingService(service)
+        else
+          Container(),
         getProviderNameService(service)
       ],
     );
@@ -1106,11 +1378,11 @@ class _SearchUsersProductAndServiceState
     return Slidable(
       controller: slidableController1,
       direction: Axis.horizontal,
-      actionPane: SlidableBehindActionPane(),
+      actionPane: const SlidableBehindActionPane(),
       actionExtentRatio: 0.25,
-      child: VerticalListItem1(searchCard, product),
       actions: listActionSlideActions1(product),
       secondaryActions: listSecondaryActions1(product),
+      child: VerticalListItem1(searchCard, product),
     );
   }
 
@@ -1122,7 +1394,7 @@ class _SearchUsersProductAndServiceState
       SlideActionButton(
         icon: SlydoAppIcon.cart,
         onTap: () async {
-          CustomerProfileBloc customerProfileBloc =
+          final CustomerProfileBloc customerProfileBloc =
               Provider.of<CustomerProfileBloc>(context, listen: false);
 
           customerProfileBloc.customer =
@@ -1163,11 +1435,11 @@ class _SearchUsersProductAndServiceState
     return Slidable(
       controller: slidableController2,
       direction: Axis.horizontal,
-      actionPane: SlidableBehindActionPane(),
+      actionPane: const SlidableBehindActionPane(),
       actionExtentRatio: 0.25,
-      child: VerticalListItem2(searchCard, service),
       actions: listActionSlideActions2(service),
       secondaryActions: listSecondaryActions2(service),
+      child: VerticalListItem2(searchCard, service),
     );
   }
 
@@ -1182,7 +1454,7 @@ class _SearchUsersProductAndServiceState
           slideController: slidableController2,
           icon: SlydoAppIcon.cart,
           onTap: () async {
-            CustomerProfileBloc customerProfileBloc =
+            final CustomerProfileBloc customerProfileBloc =
                 Provider.of<CustomerProfileBloc>(context, listen: false);
             customerProfileBloc.customer =
                 await UserAuth().fetchCustomerProfile(service.provider);
@@ -1248,7 +1520,7 @@ class VerticalListItem extends StatelessWidget {
             arguments: {"searchedUserName": user.userName});
       },
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 2),
+        padding: const EdgeInsets.symmetric(vertical: 2),
         child: child,
       ),
     );
@@ -1271,7 +1543,7 @@ class VerticalListItem1 extends StatelessWidget {
             arguments: {"product": product});
       },
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 2),
+        padding: const EdgeInsets.symmetric(vertical: 2),
         child: child,
       ),
     );
@@ -1294,7 +1566,7 @@ class VerticalListItem2 extends StatelessWidget {
             arguments: {"service": service});
       },
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 2),
+        padding: const EdgeInsets.symmetric(vertical: 2),
         child: child,
       ),
     );

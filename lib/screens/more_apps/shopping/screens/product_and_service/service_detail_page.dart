@@ -14,6 +14,7 @@ import 'package:Slydo/screens/more_apps/review/tiles/review_tile.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/product_and_service/checkout_product_service.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/bottom_sheet_item.dart';
@@ -673,7 +674,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
           children: [
             _buildServiceImagesWidgets(),
             Container(
-              padding: EdgeInsets.only(right: 20, left: 20, top: 24),
+              padding: EdgeInsets.only(right: 16, left: 16, top: 24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
@@ -961,21 +962,23 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                       aspectRatio: 1.7,
                       child: Container(
                         child: Center(
-                            child: ClipRRect(
-                          borderRadius: BorderRadius.all(Radius.circular(10)),
-                          child: CachedNetworkImage(
-                            placeholder: (context, url) =>
-                                Center(child: CircularLoadingIndicator()),
-                            imageUrl: imgList![0]!,
-                            fit: BoxFit.fitHeight,
-                            height: double.infinity,
-                            width: double.infinity,
-                            errorWidget: productAndServiceBigErrorWidget,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.all(Radius.circular(10)),
+                            child: CachedNetworkImage(
+                              placeholder: (context, url) =>
+                                  Center(child: CircularLoadingIndicator()),
+                              imageUrl: imgList![0]!,
+                              fit: BoxFit.cover,
+                              height: double.infinity,
+                              width: double.infinity,
+                              errorWidget: productAndServiceBigErrorWidget,
+                            ),
                           ),
-                        )),
+                        ),
                       ),
                     ),
-                    getOutOfStockTag(),
+                    serviceStockAndDetailTag(),
+                    // getOutOfStockTag(),
                   ],
                 )
               : Column(
@@ -999,25 +1002,27 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                           items: imgList!
                               .map((item) => Stack(
                                     children: [
-                                      getOutOfStockTag(),
                                       Container(
                                         child: Center(
-                                            child: ClipRRect(
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(10)),
-                                          child: CachedNetworkImage(
-                                            placeholder: (context, url) => Center(
-                                                child:
-                                                    CircularLoadingIndicator()),
-                                            imageUrl: item!,
-                                            errorWidget:
-                                                productAndServiceBigErrorWidget,
-                                            fit: BoxFit.fitHeight,
-                                            height: double.infinity,
-                                            width: double.infinity,
+                                          child: ClipRRect(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(10)),
+                                            child: CachedNetworkImage(
+                                              placeholder: (context, url) => Center(
+                                                  child:
+                                                      CircularLoadingIndicator()),
+                                              imageUrl: item!,
+                                              errorWidget:
+                                                  productAndServiceBigErrorWidget,
+                                              fit: BoxFit.cover,
+                                              height: double.infinity,
+                                              width: double.infinity,
+                                            ),
                                           ),
-                                        )),
+                                        ),
                                       ),
+                                      serviceStockAndDetailTag(),
+                                      // getOutOfStockTag(),
                                     ],
                                   ))
                               .toList(),
@@ -1051,6 +1056,26 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                   ],
                 ),
     );
+  }
+
+  Widget serviceStockAndDetailTag() {
+    if (service?.availableFrom?.isAfter(DateTime.now()) ?? false) {
+      return Positioned(
+        top: 20,
+        right: 10,
+        child: showColoredLabeledWidget(
+            text: AppLocalization.of(context)!.comingSoon, color: starYellow),
+      );
+    } else if (service?.isAvailable == false) {
+      return Positioned(
+        top: 20,
+        right: 10,
+        child: showColoredLabeledWidget(
+            text: AppLocalization.of(context)!.outOfStock, color: red),
+      );
+    } else {
+      return SizedBox();
+    }
   }
 
   Widget getOutOfStockTag() {
@@ -1230,7 +1255,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
 
   Widget _buildProviderOtherServices() {
     return Container(
-      height: 310,
+      height: 290,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
