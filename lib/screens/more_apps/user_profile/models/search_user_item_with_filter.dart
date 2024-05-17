@@ -14,7 +14,7 @@ class SearchItemWithFilterModel {
 
   SearchItemWithFilterModel({
     this.category = "All categories",
-    this.subCategory = "All sub categories",
+    this.subCategory = "",
     this.categoryId,
     this.subCategoryId,
     this.minAmount,

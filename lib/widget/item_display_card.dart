@@ -139,6 +139,7 @@ class _DisplayProductState extends State<DisplayProduct> {
                           lengthToTruncateAt: 16,
                           showEllipsis: false,
                         ),
+                        maxLines: 1,
                         style: TextStyle(
                           color: blackFont,
                           fontSize: 14,
@@ -151,7 +152,9 @@ class _DisplayProductState extends State<DisplayProduct> {
                       Text(
                         messageDecoderWithEmoji(
                               truncateString(
-                                str: widget.product.shortDescription!,
+                                str: messageDecoderWithEmoji(
+                                        widget.product.shortDescription) ??
+                                    "",
                                 lengthToTruncateAt: 45,
                                 showEllipsis: true,
                               ),
@@ -823,6 +826,7 @@ class _DisplayServiceState extends State<DisplayService> {
                               ),
                             ) ??
                             "",
+                        maxLines: 1,
                         style: TextStyle(
                           color: blackFont,
                           fontSize: 14,
@@ -835,7 +839,9 @@ class _DisplayServiceState extends State<DisplayService> {
                       Text(
                         messageDecoderWithEmoji(
                               truncateString(
-                                str: widget.service.shortDescription!,
+                                str: messageDecoderWithEmoji(
+                                        widget.service.shortDescription) ??
+                                    "",
                                 lengthToTruncateAt: 45,
                                 showEllipsis: true,
                               ),

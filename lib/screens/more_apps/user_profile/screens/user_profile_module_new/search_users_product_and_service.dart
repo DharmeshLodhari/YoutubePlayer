@@ -119,8 +119,11 @@ class _SearchUsersProductAndServiceState
       if (mounted) setState(() {});
     }
 
-    getMerchantCategory();
-    updateCategoryList();
+    if (selectedMenuItemIndex == 1) {
+      updateCategoryList();
+    } else {
+      getMerchantCategory();
+    }
 
     slidableController1 = SlidableController(
       onSlideAnimationChanged: handleSlideAnimationChanged1,
@@ -207,6 +210,8 @@ class _SearchUsersProductAndServiceState
           productCategoryList.add(
               ProductCategory(tempList[i]['name']!, id: tempList[i]['id']));
         }
+
+        updateCategoryList();
       }
       if (productCategoryList.isEmpty) {
         if (mounted) {
@@ -256,7 +261,7 @@ class _SearchUsersProductAndServiceState
               ProductCategory(tempList[i]['name']!, id: tempList[i]['id']));
         }
 
-        filterModel.subCategory = "All sub categories";
+        filterModel.subCategory = "";
         if (selectedMenuItemIndex == 0) {
           subCategoryList = productSubCategoryList.map((e) => e.name).toList();
         }
@@ -369,10 +374,7 @@ class _SearchUsersProductAndServiceState
           const SizedBox(
             height: 8,
           ),
-          getSubCategoryField(),
-          const SizedBox(
-            height: 8,
-          ),
+          if (selectedMenuItemIndex == 0) getSubCategoryField(),
           getPriceRange()
         ],
       ),
@@ -413,35 +415,42 @@ class _SearchUsersProductAndServiceState
   }
 
   Widget getSubCategoryField() {
-    return Card(
-      elevation: 0,
-      color: Colors.white,
-      shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-          side: BorderSide(color: greyBorderColor)),
-      margin: const EdgeInsets.all(0),
-      borderOnForeground: true,
-      child: DropdownButtonHideUnderline(
-        child: ButtonTheme(
-            alignedDropdown: true,
-            child: ListTile(
-              dense: true,
-              title: Text(
-                filterModel.subCategory,
-                style: TextStyle(
-                    color: blackFont,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600),
-              ),
-              trailing: Icon(
-                Icons.keyboard_arrow_down,
-                color: darkGrey,
-              ),
-              onTap: () {
-                selectItemSubCategory();
-              },
-            )),
-      ),
+    return Column(
+      children: [
+        Card(
+          elevation: 0,
+          color: Colors.white,
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+              side: BorderSide(color: greyBorderColor)),
+          margin: const EdgeInsets.all(0),
+          borderOnForeground: true,
+          child: DropdownButtonHideUnderline(
+            child: ButtonTheme(
+                alignedDropdown: true,
+                child: ListTile(
+                  dense: true,
+                  title: Text(
+                    filterModel.subCategory,
+                    style: TextStyle(
+                        color: blackFont,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600),
+                  ),
+                  trailing: Icon(
+                    Icons.keyboard_arrow_down,
+                    color: darkGrey,
+                  ),
+                  onTap: () {
+                    selectItemSubCategory();
+                  },
+                )),
+          ),
+        ),
+        const SizedBox(
+          height: 8,
+        ),
+      ],
     );
   }
 
@@ -519,6 +528,12 @@ class _SearchUsersProductAndServiceState
               ));
       if (pressedCategory != null) {
         setState(() async {
+          subCategoryList = [];
+          productSubCategoryList = [];
+          filterModel.subCategoryId = 0;
+          filterModel.subCategory = "";
+          subCategoryNext = "";
+
           filterModel.category = pressedCategory;
           ProductCategory category = productCategoryList
               .where((element) => element.name == pressedCategory)
@@ -963,7 +978,7 @@ class _SearchUsersProductAndServiceState
       if (mounted) setState(() {});
       return;
     }
-    if (filterModel.subCategory != "All sub categories") {
+    if (filterModel.subCategory != "") {
       isFilterApplied = true;
       if (mounted) setState(() {});
       return;

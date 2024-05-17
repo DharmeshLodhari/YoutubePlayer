@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:ui';
 
@@ -18,6 +19,7 @@ import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/tiles/add_on_tile.dart';
 import 'package:Slydo/screens/more_apps/shopping/tiles/all_active_cart.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/screens/more_apps/yarn/widgets/overlay_yarn_photo.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -34,6 +36,7 @@ import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:share/share.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:swipe_image_gallery/swipe_image_gallery.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../../routes/route_constants.dart';
@@ -102,8 +105,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   Map<String, List<Variant>> colorGroups = {};
   Map<String, List<Variant>> sizeGroups = {};
 
-  final GlobalKey<ScaffoldMessengerState> _cartScaffoldMessengerKey =
-      new GlobalKey<ScaffoldMessengerState>();
+  StreamController<Widget> overlayController =
+      StreamController<Widget>.broadcast();
 
   @override
   void initState() {
@@ -1269,7 +1272,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
             padding: EdgeInsets.symmetric(horizontal: 4.0),
             child: displayProductImages?.length == 0
                 ? AspectRatio(
-                    aspectRatio: 1.7,
+                    aspectRatio: 1.5,
                     child: Center(
                       child: CircularLoadingIndicator(),
                     ),
@@ -1278,14 +1281,15 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                     ? GestureDetector(
                         onTap: () {
                           if (displayProductImages?[0] != null) {
-                            Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
-                                arguments: displayProductImages?[0]);
+                            // Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
+                            //     arguments: displayProductImages?[0]);
+                            showSliderGallery(displayProductImages);
                           }
                         },
                         child: Stack(
                           children: [
                             AspectRatio(
-                              aspectRatio: 1.7,
+                              aspectRatio: 1.5,
                               child: Container(
                                 child: Center(
                                     child: ClipRRect(
@@ -1315,16 +1319,16 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                         ),
                       )
                     : Column(
-                        children: <Widget>[
+                        children: [
                           Stack(
-                            children: <Widget>[
+                            children: [
                               CarouselSlider(
                                 options: CarouselOptions(
                                     enableInfiniteScroll: false,
                                     viewportFraction: 1.0,
                                     enlargeCenterPage: true,
                                     autoPlay: false,
-                                    aspectRatio: 1.7,
+                                    aspectRatio: 1.5,
                                     onPageChanged: (index, _) {
                                       sliderIndex.sink.add(index);
                                     }),
@@ -1333,9 +1337,12 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                                       (item) => GestureDetector(
                                         onTap: () {
                                           if (item != null) {
-                                            Navigator.of(context).pushNamed(
-                                                Routes.PHOTO_VIEWER,
-                                                arguments: item);
+                                            // Navigator.of(context).pushNamed(
+                                            //     Routes.PHOTO_VIEWER,
+                                            //     arguments: item);
+
+                                            showSliderGallery(
+                                                displayProductImages);
                                           }
                                         },
                                         child: Stack(
@@ -1405,6 +1412,27 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                       ),
           );
         });
+  }
+
+  Future<void> showSliderGallery(List<String?>? displayProductImages) {
+    List<Widget> imageList = [];
+
+    for (var item in displayProductImages ?? []) {
+      imageList.add(Image.network(item));
+    }
+    return SwipeImageGallery(
+      context: context,
+      children: imageList,
+      onSwipe: (index) {
+        overlayController.add(OverlayYarnPhoto(
+          title: '${index + 1}/${imageList.length}',
+        ));
+      },
+      overlayController: overlayController,
+      initialOverlay: OverlayYarnPhoto(
+        title: '1/${imageList.length}',
+      ),
+    ).show();
   }
 
   Widget productStockAndDetailTag() {

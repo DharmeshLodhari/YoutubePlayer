@@ -950,7 +950,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
       padding: EdgeInsets.symmetric(horizontal: 4.0),
       child: imgList?.length == 0
           ? AspectRatio(
-              aspectRatio: 1.7,
+              aspectRatio: 1.5,
               child: Center(
                 child: CircularLoadingIndicator(),
               ),
@@ -959,7 +959,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
               ? Stack(
                   children: [
                     AspectRatio(
-                      aspectRatio: 1.7,
+                      aspectRatio: 1.5,
                       child: Container(
                         child: Center(
                           child: ClipRRect(
@@ -991,7 +991,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                               viewportFraction: 1.0,
                               enlargeCenterPage: true,
                               autoPlay: false,
-                              aspectRatio: 1.7,
+                              aspectRatio: 1.5,
                               onPageChanged: (index, _) {
                                 if (mounted) {
                                   setState(() {

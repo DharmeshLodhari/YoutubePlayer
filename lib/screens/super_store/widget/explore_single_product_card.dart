@@ -253,14 +253,10 @@ class _ExploreSingleProductState extends State<ExploreSingleProduct> {
           children: [
             GestureDetector(
               onTap: () {
-                if (widget.product.addOnsModels?.isNotEmpty ?? false) {
-                  confirmAddOnsDialog();
-                } else {
-                  basketBloc.increaseQty(
-                    currentProduct: widget.product,
-                    currentUser: userBloc.user.convertToUser(),
-                  );
-                }
+                basketBloc.decreaseQty(
+                  currentProduct: widget.product,
+                  currentUser: userBloc.user.convertToUser(),
+                );
               },
               child: Card(
                 color: greyBackground,
@@ -269,8 +265,8 @@ class _ExploreSingleProductState extends State<ExploreSingleProduct> {
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: Icon(
-                  Icons.add,
-                  size: 18,
+                  Icons.remove_rounded,
+                  size: 22,
                   color: black,
                 ),
               ),
@@ -292,10 +288,14 @@ class _ExploreSingleProductState extends State<ExploreSingleProduct> {
             ),
             GestureDetector(
               onTap: () {
-                basketBloc.decreaseQty(
-                  currentProduct: widget.product,
-                  currentUser: userBloc.user.convertToUser(),
-                );
+                if (widget.product.addOnsModels?.isNotEmpty ?? false) {
+                  confirmAddOnsDialog();
+                } else {
+                  basketBloc.increaseQty(
+                    currentProduct: widget.product,
+                    currentUser: userBloc.user.convertToUser(),
+                  );
+                }
               },
               child: Card(
                 color: greyBackground,
@@ -304,8 +304,8 @@ class _ExploreSingleProductState extends State<ExploreSingleProduct> {
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: Icon(
-                  Icons.remove,
-                  size: 18,
+                  Icons.add_rounded,
+                  size: 22,
                   color: black,
                 ),
               ),
@@ -421,8 +421,8 @@ class _ExploreSingleProductState extends State<ExploreSingleProduct> {
           borderRadius: BorderRadius.circular(6),
         ),
         child: Icon(
-          Icons.add,
-          size: 24,
+          Icons.add_rounded,
+          size: 22,
           color: black,
         ),
       ),

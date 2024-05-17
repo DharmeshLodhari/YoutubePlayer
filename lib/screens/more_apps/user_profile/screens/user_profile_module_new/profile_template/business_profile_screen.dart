@@ -147,7 +147,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
     // Add a listener to the tab controller that updates the current index
     _tabController!.addListener(tabController);
 
-    Future.delayed(Duration(seconds: 1), () {
+    Future.delayed(const Duration(seconds: 1), () {
       obtainCustomCategory(widget.searchedUser!.userName!);
     });
 
@@ -218,8 +218,8 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
       context: context,
       builder: (context) {
         return AlertDialog(
-          insetPadding: EdgeInsets.symmetric(horizontal: 16),
-          contentPadding: EdgeInsets.symmetric(horizontal: 10),
+          insetPadding: const EdgeInsets.symmetric(horizontal: 16),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 10),
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           content: SizedBox(
@@ -248,7 +248,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
                     ),
                   ),
                   Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -260,7 +260,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
                               fontSize: 16,
                               fontFamily: "Inter"),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 24,
                         ),
                         Text(
@@ -272,7 +272,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
                               height: 1.5,
                               letterSpacing: 0.6),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 48,
                         ),
                       ],
@@ -292,8 +292,8 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
       List<ProductCategory> result =
           await ShoppingAuthService().obtainCustomCategory(user!);
       List<ProductCategory> initial = [];
-      initial.add(ProductCategory("Explore", id: "main"));
-      initial.add(ProductCategory("All", id: "all"));
+      initial.add(const ProductCategory("Explore", id: "main"));
+      initial.add(const ProductCategory("All", id: "all"));
 
       initial.addAll(result);
       customCategories = initial;
@@ -392,7 +392,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_pageController!.hasClients) {
         _pageController!.animateToPage(_currentIndex,
-            duration: Duration(milliseconds: 1), curve: Curves.easeInOut);
+            duration: const Duration(milliseconds: 1), curve: Curves.easeInOut);
       }
     });
     if (mounted) setState(() {});
@@ -432,7 +432,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
               TabBar(
                 controller: _tabController,
                 isScrollable: true,
-                indicator: BoxDecoration(),
+                indicator: const BoxDecoration(),
                 onTap: (int index) {
                   changeIndex(index);
                 },
@@ -488,10 +488,11 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
       color: white,
       child: Column(
         children: [
-          SizedBox(height: 15),
+          const SizedBox(height: 15),
           Container(
-            height: 20,
-            margin: EdgeInsets.only(right: 16),
+            height: 32,
+            padding: const EdgeInsets.only(left: 12),
+            margin: const EdgeInsets.only(right: 16),
             alignment: Alignment.centerLeft,
             child: ListView(
               shrinkWrap: true,
@@ -504,26 +505,30 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
                               selectedCategory = e.id;
                             });
                           },
-                          child: Padding(
-                            padding: const EdgeInsets.only(
-                              left: 24,
-                            ),
-                            child: Container(
-                              padding: EdgeInsets.only(
-                                bottom:
-                                    3, // This can be the space you need between text and underline
-                              ),
-                              decoration: selectedCategory == e.id
-                                  ? BoxDecoration(
-                                      border: Border(
-                                        bottom: BorderSide(
-                                          color: navyBlue,
-                                          width:
-                                              2.0, // This would be the width of the underline
-                                        ),
+                          child: Container(
+                            decoration: selectedCategory == e.id
+                                ? BoxDecoration(
+                                    border: Border(
+                                      bottom: BorderSide(
+                                        color: navyBlue,
+                                        width:
+                                            2.5, // This would be the width of the underline
                                       ),
-                                    )
-                                  : BoxDecoration(),
+                                    ),
+                                  )
+                                : BoxDecoration(
+                                    border: Border(
+                                      bottom: BorderSide(
+                                        color:
+                                            greySecondaryYarn.withOpacity(0.5),
+                                        width:
+                                            1, // This would be the width of the underline
+                                      ),
+                                    ),
+                                  ),
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 12.0),
                               child: Text(
                                 e.name.toTitleCase(),
                                 style: TextStyle(
@@ -545,10 +550,11 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
             ),
           ),
           // Container(
-          //     margin: EdgeInsets.only(left: 30),
-          //     child: Divider(
-          //       color: greySecondaryYarn.withOpacity(.6),
-          //     )),
+          //   margin: EdgeInsets.only(left: 30),
+          //   child: Divider(
+          //     color: greySecondaryYarn,
+          //   ),
+          // ),
         ],
       ),
     );
@@ -580,7 +586,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
         if (customCategories.isNotEmpty &&
             _currentUser.tabs[_currentIndex].name == "product")
           customCategoryWidget(),
-        SizedBox(
+        const SizedBox(
           height: 20,
         ),
         Expanded(
@@ -625,7 +631,8 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
                           if (snapshot.hasData) {
                             return tab.child!;
                           } else {
-                            return Center(child: CircularProgressIndicator());
+                            return const Center(
+                                child: CircularProgressIndicator());
                           }
                         },
                       ),
@@ -667,7 +674,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
         },
       ),
       title: widget.isLoading
-          ? SizedBox.shrink()
+          ? const SizedBox.shrink()
           : userNameWithVerifiedIcon(
               name: searchedUser?.displayName()!,
               isVerified: searchedUser?.isVerified),
@@ -772,7 +779,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
     if (flashTagString != "") {
       return Container(
         color: Colors.black,
-        padding: EdgeInsets.symmetric(vertical: 14),
+        padding: const EdgeInsets.symmetric(vertical: 14),
         child: TextScroll(
           flashTagString.length <= 90
               ? "$flashTagString".padRight(90, " ")
@@ -782,6 +789,6 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
         ),
       );
     }
-    return SizedBox.shrink();
+    return const SizedBox.shrink();
   }
 }

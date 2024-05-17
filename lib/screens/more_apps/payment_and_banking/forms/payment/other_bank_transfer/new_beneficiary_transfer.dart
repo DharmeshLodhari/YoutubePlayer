@@ -9,6 +9,7 @@ import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/permission_protection_widget.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -85,6 +86,8 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
   VirtualAccount? virtualAccount;
   bool isAccountFound = false;
   int? accountBalance = 0;
+  bool isBalanceHidden = true;
+  bool isBalanceLoading = true;
 
   @override
   void initState() {
@@ -93,7 +96,7 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
   }
 
   void getBankAccountDetail() async {
-    isLoading = true;
+    isBalanceLoading = true;
     setState(() {});
     await getAccountBalance();
     virtualAccount = await DatabaseHelper().getVirtualAccount();
@@ -103,7 +106,7 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
     if (virtualAccount != null) {
       isAccountFound = true;
     }
-    isLoading = false;
+    isBalanceLoading = false;
     setState(() {});
   }
 
@@ -187,14 +190,67 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
                     SizedBox(
                       height: 5,
                     ),
-                    Text(
-                      "Transferable Balance : ${worldCurrencies[userBloc.user.currency]}${moneyDisplayNormalizer(accountBalance)}",
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w400,
-                        color: navyBlue,
-                        fontFamily: "Inter",
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        if (isBalanceLoading == true)
+                          SizedBox(
+                            width: 20,
+                            height: 20,
+                            child:
+                                CircularLoadingIndicator(color: naturalGreen),
+                          )
+                        else
+                          Row(
+                            children: [
+                              Text(
+                                "Transferable Balance : ",
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w400,
+                                  color: navyBlue,
+                                  fontFamily: "Inter",
+                                ),
+                              ),
+                              if (isBalanceHidden)
+                                Container()
+                              else
+                                Text(
+                                  worldCurrencies[userBloc.user.currency] ?? "",
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w400,
+                                    color: navyBlue,
+                                    fontFamily: "Inter",
+                                  ),
+                                ),
+                              Text(
+                                isBalanceHidden
+                                    ? generateAsteriskMask(
+                                        moneyDisplayNormalizer(accountBalance))
+                                    : moneyDisplayNormalizer(accountBalance),
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w400,
+                                  color: navyBlue,
+                                  fontFamily: "Inter",
+                                ),
+                              ),
+                            ],
+                          ),
+                        InkWell(
+                          onTap: () {
+                            toggleBalanceVisibility();
+                          },
+                          child: Icon(
+                            isBalanceHidden
+                                ? SlydoAppIcon.eye
+                                : SlydoAppIcon.eye_close,
+                            color: navyBlue,
+                            size: 12,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -207,6 +263,42 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
         ),
       ],
     );
+  }
+
+  String generateAsteriskMask(String amount) {
+    // Determine the length of the amount
+    int amountLength = amount.length;
+
+    // Generate a string of asterisks of the same length as the amount
+    String asteriskMask = '*' * amountLength;
+
+    // Trim the trailing space and return the asterisk mask
+    return asteriskMask.trim();
+  }
+
+  void toggleBalanceVisibility() {
+    if (isBalanceHidden) {
+      if (userBloc.chatMessageSettings.accountBalanceVisibility == false) {
+        BottomSheetPassCode(
+          context: context,
+          isValidCallback: () {
+            getAccountBalance();
+            isBalanceHidden = false;
+            setState(() {});
+          },
+          cancelCallBack: () {
+            Navigator.pop(context);
+          },
+        );
+      } else {
+        getAccountBalance();
+        isBalanceHidden = false;
+        setState(() {});
+      }
+    } else {
+      isBalanceHidden = !isBalanceHidden;
+      setState(() {});
+    }
   }
 
   Widget _buildFormFields() {

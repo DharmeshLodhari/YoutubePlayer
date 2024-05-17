@@ -443,8 +443,15 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
                           image = currentMoment!.avatar;
                         }
 
+                        widget.controller!.pause();
+                        _renderMomentStateKey.currentState?.controller?.stop();
                         Navigator.of(context)
-                            .pushNamed(Routes.PHOTO_VIEWER, arguments: image);
+                            .pushNamed(Routes.PHOTO_VIEWER, arguments: image)
+                            .whenComplete(() {
+                          widget.controller!.play();
+                          _renderMomentStateKey.currentState?.controller
+                              ?.forward();
+                        });
                       },
                       child: Padding(
                         padding: const EdgeInsets.only(top: 6.0),
@@ -460,13 +467,20 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
                         children: [
                           InkWell(
                             onTap: () {
+                              widget.controller!.pause();
+                              _renderMomentStateKey.currentState?.controller
+                                  ?.stop();
                               Navigator.pushNamed(
                                 context,
                                 Routes.USER_PROFILE,
                                 arguments: {
                                   "searchedUserName": currentMoment!.owner,
                                 },
-                              );
+                              ).whenComplete(() {
+                                widget.controller!.play();
+                                _renderMomentStateKey.currentState?.controller
+                                    ?.forward();
+                              });
                             },
                             child: Text(
                               messageDecoderWithEmoji(

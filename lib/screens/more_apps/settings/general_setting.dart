@@ -99,7 +99,7 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
       children: [
         Expanded(
             child: Container(
-          padding: EdgeInsets.symmetric(vertical: 10),
+          padding: const EdgeInsets.symmetric(vertical: 10),
           child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -107,6 +107,7 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
                 getReferralCodeTile(),
                 getIncomingSoundTile(),
                 getOutGoingSoundTile(),
+                getAccountBalanceVisibilityTile(),
                 getCurrencyTile(),
                 getLanguageTile(),
                 getSettingsTile(
@@ -180,7 +181,7 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
                       }
                     }),
                 Center(child: _infoTile()),
-                SizedBox(
+                const SizedBox(
                   height: 120,
                 ),
                 // getLogoutTile(),
@@ -207,7 +208,7 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
         enableMargin: false,
         width: 90,
         height: 90,
-        image: Icon(SlydoAppIcon.delete),
+        image: const Icon(SlydoAppIcon.delete),
       ),
     );
     if (result != null && result) {
@@ -226,7 +227,7 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
           enableMargin: false,
           width: 90,
           height: 90,
-          image: Icon(SlydoAppIcon.delete),
+          image: const Icon(SlydoAppIcon.delete),
         ),
       );
 
@@ -302,7 +303,7 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
   Widget getSettingsTile({String title = "", Function()? onTap}) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       shadowColor: boxShadowTwo,
       elevation: 0,
       child: Container(
@@ -333,7 +334,7 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
   Widget getIncomingSoundTile() {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       shadowColor: boxShadowTwo,
       elevation: 0,
       child: Container(
@@ -378,7 +379,7 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
   Widget getCurrencyTile() {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       shadowColor: boxShadowTwo,
       elevation: 0,
       child: Container(
@@ -417,7 +418,7 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
   Widget getReferralCodeTile() {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       shadowColor: boxShadowTwo,
       elevation: 0,
       child: Container(
@@ -456,7 +457,7 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
   Widget getLanguageTile() {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       shadowColor: boxShadowTwo,
       elevation: 0,
       child: Container(
@@ -500,7 +501,7 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
         context: context,
         builder: (BuildContext context) {
           return Card(
-              shape: RoundedRectangleBorder(
+              shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(20),
                     topRight: Radius.circular(20)),
@@ -508,7 +509,8 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
               color: Colors.white,
               margin: EdgeInsets.zero,
               child: Container(
-                padding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: languages.map((data) {
@@ -543,7 +545,7 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
   Widget getOutGoingSoundTile() {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       shadowColor: boxShadowTwo,
       elevation: 0,
       child: Container(
@@ -585,10 +587,55 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
     );
   }
 
+  Widget getAccountBalanceVisibilityTile() {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      shadowColor: boxShadowTwo,
+      elevation: 0,
+      child: Container(
+        decoration: decorateBox(),
+        child: ListTile(
+          title: Text(
+            "Account Balance Visibility",
+            maxLines: 1,
+            style: TextStyle(
+              color: blackFont,
+              fontWeight: FontWeight.w600,
+              fontSize: 14,
+              fontFamily: "Inter",
+            ),
+            overflow: TextOverflow.fade,
+            softWrap: false,
+          ),
+          trailing: Container(
+            width: 60,
+            child: Switch(
+              value: userBloc.chatMessageSettings.accountBalanceVisibility!,
+              onChanged: (value) {
+                ChatMessageSettings chatMessageSettings = ChatMessageSettings();
+                chatMessageSettings.accountBalanceVisibility =
+                    userBloc.chatMessageSettings.accountBalanceVisibility;
+                chatMessageSettings.accountBalanceVisibility = value;
+                userBloc.chatMessageSettings = chatMessageSettings;
+                DatabaseHelper()
+                    .updateGeneralSettings(chatMessageSettings.toDBJson());
+              },
+              activeTrackColor: navyBlueLight,
+              activeColor: navyBlue,
+              inactiveTrackColor: navyBlueLight,
+            ),
+          ),
+          onTap: () {},
+        ),
+      ),
+    );
+  }
+
   Widget getLogoutTile() {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       shadowColor: boxShadowTwo,
       elevation: 0,
       child: Container(

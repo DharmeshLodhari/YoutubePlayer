@@ -1453,7 +1453,7 @@ class ShoppingAuthService extends AuthService {
       if (filterOptions.category != "All categories") {
         url = url + "category=${filterOptions.categoryId}";
       }
-      if (filterOptions.subCategory != "All sub categories") {
+      if (filterOptions.subCategory != "") {
         url = url + "sub_category=${filterOptions.subCategoryId}";
       }
       if (filterOptions.searchedText!.trim() != "") {
@@ -1518,7 +1518,7 @@ class ShoppingAuthService extends AuthService {
       if (filterOptions.category != "All categories") {
         url = url + "category=${filterOptions.categoryId}";
       }
-      if (filterOptions.subCategory != "All sub categories") {
+      if (filterOptions.subCategory != "") {
         url = url + "&sub_category=${filterOptions.subCategoryId}";
       }
       if (filterOptions.searchedText!.trim() != "") {

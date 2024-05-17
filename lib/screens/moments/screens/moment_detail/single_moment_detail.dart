@@ -244,87 +244,85 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
                 const SizedBox(height: 16),
-                isMyMoment()
-                    ? CustomMomentDetailButton(
-                        iconEnabled: true,
-                        iconData: Icons.more_horiz_outlined,
-                        text: '',
-                        onPressed: () {
-                          androidBottomSheet(
-                            context: context,
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                momentVisibilityOption(widget.currentMoment),
-                                momentPermanentOption(widget.currentMoment),
-                                enablePayment(widget.currentMoment),
-                                momentCommentingOption(widget.currentMoment),
-                                momentLikeOption(widget.currentMoment),
-                                bottomSheetItem(
-                                    title: 'Share in chat',
-                                    iconData: Icons.send_outlined,
-                                    onTap: () async {
-                                      await sendMomentToUserInChat(
-                                          momentsModel: widget.currentMoment);
-                                    }),
-                                bottomSheetItem(
-                                  title: 'Delete',
-                                  iconData: Icons.delete,
-                                  onTap: () {
-                                    Navigator.pop(context);
+                if (isMyMoment())
+                  CustomMomentDetailButton(
+                    iconEnabled: true,
+                    iconData: Icons.more_horiz_outlined,
+                    text: '',
+                    onPressed: () {
+                      androidBottomSheet(
+                        context: context,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            momentVisibilityOption(widget.currentMoment),
+                            momentPermanentOption(widget.currentMoment),
+                            enablePayment(widget.currentMoment),
+                            momentCommentingOption(widget.currentMoment),
+                            momentLikeOption(widget.currentMoment),
+                            bottomSheetItem(
+                                title: 'Share in chat',
+                                iconData: Icons.send_outlined,
+                                onTap: () async {
+                                  await sendMomentToUserInChat(
+                                      momentsModel: widget.currentMoment);
+                                }),
+                            bottomSheetItem(
+                              title: 'Delete',
+                              iconData: Icons.delete,
+                              onTap: () {
+                                Navigator.pop(context);
 
-                                    showDialogBox(
-                                      context: context,
-                                      actionOneTextColor: blackFont,
-                                      actionOneBgColor: greyBorderColor,
-                                      actionTwoTextColor: white,
-                                      actionTwoBgColor: mateRed,
-                                      title: 'Delete Moment',
-                                      actionOneText:
-                                          AppLocalization.of(context)!.discard,
-                                      actionTwoText:
-                                          AppLocalization.of(context)!
-                                              .continueMsg,
-                                      description:
-                                          'Are you sure you want to delete this moment?',
-                                      roundedBackgroundIcon:
-                                          RoundedBackgroundIcon(
-                                        enableMargin: false,
-                                        width: 90,
-                                        height: 90,
-                                        image: Image.asset(
-                                            'assets/images/delete_dialog_icon.png'),
-                                      ),
-                                      rightButtonOnPressed: () {
-                                        showDialog(
-                                            context: context,
-                                            builder: (dialogLoadingContext) =>
-                                                LoadingIndicator());
-                                        MomentsService()
-                                            .deleteMoment(
-                                                widget.currentMoment.id!, "")
-                                            .then(
-                                          (value) {
-                                            Navigator.pop(
-                                                context); // Dismiss loading indicator
-                                            Navigator.pop(context);
-                                            showToast(
-                                                message: 'Moment deleted');
-                                          },
-                                        ).catchError((e) {
-                                          Navigator.pop(context);
-                                          showToast(message: e.toString());
-                                        });
+                                showDialogBox(
+                                  context: context,
+                                  actionOneTextColor: blackFont,
+                                  actionOneBgColor: greyBorderColor,
+                                  actionTwoTextColor: white,
+                                  actionTwoBgColor: mateRed,
+                                  title: 'Delete Moment',
+                                  actionOneText:
+                                      AppLocalization.of(context)!.discard,
+                                  actionTwoText:
+                                      AppLocalization.of(context)!.continueMsg,
+                                  description:
+                                      'Are you sure you want to delete this moment?',
+                                  roundedBackgroundIcon: RoundedBackgroundIcon(
+                                    enableMargin: false,
+                                    width: 90,
+                                    height: 90,
+                                    image: Image.asset(
+                                        'assets/images/delete_dialog_icon.png'),
+                                  ),
+                                  rightButtonOnPressed: () {
+                                    showDialog(
+                                        context: context,
+                                        builder: (dialogLoadingContext) =>
+                                            LoadingIndicator());
+                                    MomentsService()
+                                        .deleteMoment(
+                                            widget.currentMoment.id!, "")
+                                        .then(
+                                      (value) {
+                                        Navigator.pop(
+                                            context); // Dismiss loading indicator
+                                        Navigator.pop(context);
+                                        showToast(message: 'Moment deleted');
                                       },
-                                    );
+                                    ).catchError((e) {
+                                      Navigator.pop(context);
+                                      showToast(message: e.toString());
+                                    });
                                   },
-                                ),
-                              ],
+                                );
+                              },
                             ),
-                          );
-                        },
-                      )
-                    : const SizedBox.shrink(),
+                          ],
+                        ),
+                      );
+                    },
+                  )
+                else
+                  const SizedBox.shrink(),
                 _buildShareMomentOption(),
                 // CustomMomentDetailButton(
                 //   iconEnabled: likeEnabled(),
@@ -558,7 +556,7 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     InkWell(
-                      onTap: () {
+                      onTap: () async {
                         String? image = '';
                         if (widget.currentMoment.avatar == "" ||
                             widget.currentMoment.avatar ==
@@ -569,8 +567,17 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
                           image = widget.currentMoment.avatar;
                         }
 
+                        await widget.videoPlayerControllers[widget.index]
+                            .pause();
+                        _renderMomentStateKey.currentState?.controller?.stop();
                         Navigator.of(context)
-                            .pushNamed(Routes.PHOTO_VIEWER, arguments: image);
+                            .pushNamed(Routes.PHOTO_VIEWER, arguments: image)
+                            .whenComplete(() async {
+                          await widget.videoPlayerControllers[widget.index]
+                              .play();
+                          _renderMomentStateKey.currentState?.controller
+                              ?.forward();
+                        });
                       },
                       child: Padding(
                         padding: const EdgeInsets.only(top: 6.0),
@@ -586,7 +593,11 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           InkWell(
-                            onTap: () {
+                            onTap: () async {
+                              await widget.videoPlayerControllers[widget.index]
+                                  .pause();
+                              _renderMomentStateKey.currentState?.controller
+                                  ?.stop();
                               Navigator.pushNamed(
                                 context,
                                 Routes.USER_PROFILE,
@@ -594,7 +605,13 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
                                   "searchedUserName":
                                       widget.currentMoment.owner,
                                 },
-                              );
+                              ).whenComplete(() async {
+                                await widget
+                                    .videoPlayerControllers[widget.index]
+                                    .play();
+                                _renderMomentStateKey.currentState?.controller
+                                    ?.forward();
+                              });
                             },
                             child: Text(
                               messageDecoderWithEmoji(

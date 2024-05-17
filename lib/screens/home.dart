@@ -1470,18 +1470,25 @@ class _HomeState extends State<Home> {
 
   void toggleBalanceVisibility() {
     if (isBalanceHidden) {
-      BottomSheetPassCode(
-        context: context,
-        isValidCallback: () {
-          isLoading = true;
-          getAccountBalance();
-          isBalanceHidden = false;
-          setState(() {});
-        },
-        cancelCallBack: () {
-          Navigator.pop(context);
-        },
-      );
+      if (userBloc.chatMessageSettings.accountBalanceVisibility == false) {
+        BottomSheetPassCode(
+          context: context,
+          isValidCallback: () {
+            isLoading = true;
+            getAccountBalance();
+            isBalanceHidden = false;
+            setState(() {});
+          },
+          cancelCallBack: () {
+            Navigator.pop(context);
+          },
+        );
+      } else {
+        isLoading = true;
+        getAccountBalance();
+        isBalanceHidden = false;
+        setState(() {});
+      }
     } else {
       isBalanceHidden = !isBalanceHidden;
       setState(() {});
