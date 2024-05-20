@@ -203,13 +203,6 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
 
   @override
   Widget build(BuildContext context) {
-    if (serviceIsLoading) {
-      return Scaffold(
-        body: Center(
-          child: CircularLoadingIndicator(),
-        ),
-      );
-    }
     customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
     _dashboardBloc = Provider.of<DashboardBloc>(context);
     basketBloc = Provider.of<BasketBloc>(context);
@@ -667,6 +660,9 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   }
 
   Widget _buildServiceDetailsPage(BuildContext context) {
+    if (serviceIsLoading) {
+      return buildProductShimmerLoadingIndicator(isLoading: serviceIsLoading);
+    }
     return ListView(
       controller: _scrollController,
       children: <Widget>[

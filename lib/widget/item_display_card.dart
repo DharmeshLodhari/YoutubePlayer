@@ -150,16 +150,13 @@ class _DisplayProductState extends State<DisplayProduct> {
                         height: 4,
                       ),
                       Text(
-                        messageDecoderWithEmoji(
-                              truncateString(
-                                str: messageDecoderWithEmoji(
-                                        widget.product.shortDescription) ??
-                                    "",
-                                lengthToTruncateAt: 45,
-                                showEllipsis: true,
-                              ),
-                            ) ??
-                            "",
+                        truncateString(
+                          str: messageDecoderWithEmoji(
+                                  widget.product.shortDescription) ??
+                              "",
+                          lengthToTruncateAt: 45,
+                          showEllipsis: true,
+                        ),
                         style: TextStyle(
                           fontFamily: "Inter",
                           fontWeight: FontWeight.w400,

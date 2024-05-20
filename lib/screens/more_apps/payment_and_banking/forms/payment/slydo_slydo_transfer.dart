@@ -361,9 +361,6 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
                         fontFamily: "Inter",
                       ),
                     ),
-                    const SizedBox(
-                      height: 5,
-                    ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -416,12 +413,16 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
                           onTap: () {
                             toggleBalanceVisibility();
                           },
-                          child: Icon(
-                            isBalanceHidden
-                                ? SlydoAppIcon.eye
-                                : SlydoAppIcon.eye_close,
-                            color: navyBlue,
-                            size: 12,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10.0, vertical: 5.0),
+                            child: Icon(
+                              isBalanceHidden
+                                  ? SlydoAppIcon.eye
+                                  : SlydoAppIcon.eye_close,
+                              color: navyBlue,
+                              size: 12,
+                            ),
                           ),
                         ),
                       ],

@@ -16,6 +16,7 @@ import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/bottom_sheet_item_with_check.dart';
+import 'package:Slydo/widget/customized_passcode_sheet/bottomsheet_passcode.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
@@ -613,13 +614,22 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
             child: Switch(
               value: userBloc.chatMessageSettings.accountBalanceVisibility!,
               onChanged: (value) {
-                ChatMessageSettings chatMessageSettings = ChatMessageSettings();
-                chatMessageSettings.accountBalanceVisibility =
-                    userBloc.chatMessageSettings.accountBalanceVisibility;
-                chatMessageSettings.accountBalanceVisibility = value;
-                userBloc.chatMessageSettings = chatMessageSettings;
-                DatabaseHelper()
-                    .updateGeneralSettings(chatMessageSettings.toDBJson());
+                BottomSheetPassCode(
+                  context: context,
+                  isValidCallback: () {
+                    ChatMessageSettings chatMessageSettings =
+                        ChatMessageSettings();
+                    chatMessageSettings.accountBalanceVisibility =
+                        userBloc.chatMessageSettings.accountBalanceVisibility;
+                    chatMessageSettings.accountBalanceVisibility = value;
+                    userBloc.chatMessageSettings = chatMessageSettings;
+                    DatabaseHelper()
+                        .updateGeneralSettings(chatMessageSettings.toDBJson());
+                  },
+                  cancelCallBack: () {
+                    Navigator.pop(context);
+                  },
+                );
               },
               activeTrackColor: navyBlueLight,
               activeColor: navyBlue,

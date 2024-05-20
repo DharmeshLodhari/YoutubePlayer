@@ -1150,7 +1150,7 @@ class Variant {
 
   String getSize() {
     if (value != null && value != "") {
-      return value ?? "";
+      return messageDecoderWithEmoji(value) ?? "";
     }
     return "";
   }

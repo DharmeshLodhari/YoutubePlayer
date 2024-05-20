@@ -9,9 +9,12 @@ import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/search_user_item_with_filter.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/curved_btn.dart';
+import 'package:Slydo/widget/customized_dropdown_field.dart';
 import 'package:Slydo/widget/customized_popup_menu.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
@@ -78,6 +81,14 @@ class _SearchUsersProductAndServiceState
   List<String> categoryList = [];
   List<ProductCategory> productCategoryList = [];
 
+  bool isManufacturerLoading = false;
+  int? manufacturerCount = 0;
+  String? manufacturerNext = "";
+  String? manufacturerPrevious = "";
+  bool noManufacturerInList = false;
+  List<String> manufacturerList = [];
+  // List<ProductCategory> manufacturerList = [];
+
   bool isSubCategoryLoading = false;
   int? subCategoryCount = 0;
   String? subCategoryNext = "";
@@ -85,6 +96,10 @@ class _SearchUsersProductAndServiceState
   bool noSubCategoryInList = false;
   List<String> subCategoryList = [];
   List<ProductCategory> productSubCategoryList = [];
+  List<String> customCategoryList = [];
+  List<ProductCategory> productCustomCategoryList = [];
+  ProductCondition? selectedProductCondition;
+  String? selectedRating;
 
   final GlobalKey _key = LabeledGlobalKey("searchTypeSelectionKey");
   late CustomizedPopUpMenu searchTypeSelectionMenu;
@@ -122,7 +137,7 @@ class _SearchUsersProductAndServiceState
     if (selectedMenuItemIndex == 1) {
       updateCategoryList();
     } else {
-      getMerchantCategory();
+      getProductAPI();
     }
 
     slidableController1 = SlidableController(
@@ -175,8 +190,27 @@ class _SearchUsersProductAndServiceState
     super.initState();
   }
 
-  void getMerchantCategory() async {
+  Future<void> obtainCustomCategory() async {
+    try {
+      productCustomCategoryList = await ShoppingAuthService()
+          .obtainCustomCategory(userBloc.user.userName!);
+
+      if (productCustomCategoryList.isNotEmpty) {
+        customCategoryList =
+            productCustomCategoryList.map((e) => e.name).toList();
+      }
+    } catch (e) {
+      productCustomCategoryList = [];
+    }
+
+    isLoading = false;
+    if (mounted) setState(() {});
+  }
+
+  void getProductAPI() async {
     await merchantProductCategoryList();
+    await obtainCustomCategory();
+    await getManufacturerList();
   }
 
   Future<void> merchantProductCategoryList() async {
@@ -229,6 +263,55 @@ class _SearchUsersProductAndServiceState
     }
   }
 
+  Future<void> getManufacturerList() async {
+    if (!isManufacturerLoading) {
+      if (manufacturerNext != null && !isManufacturerLoading) {
+        isManufacturerLoading = true;
+        if (mounted) setState(() {});
+
+        final Map<String, dynamic>? result = await ShoppingAuthService()
+            .getManufacturerList(
+                searchedUser?.userName, manufacturerNext, manufacturerPrevious);
+
+        if (result == null) {
+          isManufacturerLoading = false;
+          noManufacturerInList = true;
+          if (mounted) {
+            setState(() {});
+          }
+          return;
+        }
+
+        manufacturerCount = result['count'];
+        manufacturerNext = result['next'];
+        manufacturerPrevious = result['previous'];
+        final tempList = result['results'];
+
+        noManufacturerInList = false;
+        isManufacturerLoading = false;
+
+        for (int i = 0; i < tempList.length; i++) {
+          manufacturerList.add(tempList[i]['manufacturer']);
+        }
+
+        updateCategoryList();
+      }
+      if (manufacturerList.isEmpty) {
+        if (mounted) {
+          setState(() {
+            noManufacturerInList = true;
+          });
+        }
+      } else if (manufacturerNext == null && manufacturerList.length > 6) {
+        _messengerScaffoldKey.currentState?.showSnackBar(SnackBar(
+          content:
+              Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
+          duration: const Duration(milliseconds: 500),
+        ));
+      }
+    }
+  }
+
   Future<void> merchantProductSubCategoryList(int? categoryId) async {
     if (!isSubCategoryLoading) {
       if (subCategoryNext != null && !isSubCategoryLoading) {
@@ -262,9 +345,7 @@ class _SearchUsersProductAndServiceState
         }
 
         filterModel.subCategory = "";
-        if (selectedMenuItemIndex == 0) {
-          subCategoryList = productSubCategoryList.map((e) => e.name).toList();
-        }
+        subCategoryList = productSubCategoryList.map((e) => e.name).toList();
       }
       if (productSubCategoryList.isEmpty) {
         if (mounted) {
@@ -306,6 +387,12 @@ class _SearchUsersProductAndServiceState
   void updateCategoryList() {
     filterModel.category = "All categories";
     if (selectedMenuItemIndex == 0) {
+      filterModel.customCategory = "";
+      filterModel.condition = "";
+      selectedProductCondition = null;
+      filterModel.rating = "";
+      filterModel.manufacturer = "";
+      selectedRating = null;
       categoryList = productCategoryList.map((e) => e.name).toList();
     } else if (selectedMenuItemIndex == 1) {
       categoryList = serviceCategoryList;
@@ -348,7 +435,10 @@ class _SearchUsersProductAndServiceState
             children: [
               const SizedBox(height: 6),
               searchBox(),
-              if (showFilterOptions) getFilterOptions() else Container(),
+              if (selectedMenuItemIndex == 1 && showFilterOptions)
+                getFilterOptions()
+              else
+                Container(),
               const SizedBox(
                 height: 16,
               ),
@@ -374,7 +464,6 @@ class _SearchUsersProductAndServiceState
           const SizedBox(
             height: 8,
           ),
-          if (selectedMenuItemIndex == 0) getSubCategoryField(),
           getPriceRange()
         ],
       ),
@@ -382,79 +471,159 @@ class _SearchUsersProductAndServiceState
   }
 
   Widget getCategoryField() {
-    return Card(
-      elevation: 0,
-      color: Colors.white,
-      shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-          side: BorderSide(color: greyBorderColor)),
-      margin: const EdgeInsets.all(0),
-      borderOnForeground: true,
-      child: DropdownButtonHideUnderline(
-        child: ButtonTheme(
-            alignedDropdown: true,
-            child: ListTile(
-              dense: true,
-              title: Text(
-                filterModel.category,
-                style: TextStyle(
-                    color: blackFont,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600),
-              ),
-              trailing: Icon(
-                Icons.keyboard_arrow_down,
-                color: darkGrey,
-              ),
-              onTap: () {
-                selectItemCategory();
-              },
-            )),
-      ),
-    );
+    return StatefulBuilder(builder: (context, changeState) {
+      return CustomizedDropDownField(
+        title: AppLocalization.of(context)!.category,
+        child: ListTile(
+          dense: true,
+          title: Text(
+            filterModel.category,
+            style: TextStyle(
+                color: blackFont,
+                fontSize: 16,
+                fontFamily: "Inter",
+                fontWeight: FontWeight.w600),
+          ),
+          trailing: Icon(
+            Icons.keyboard_arrow_down,
+            color: darkGrey,
+          ),
+          onTap: () {
+            selectItemCategory(changeState);
+          },
+        ),
+      );
+    });
   }
 
   Widget getSubCategoryField() {
-    return Column(
-      children: [
-        Card(
-          elevation: 0,
-          color: Colors.white,
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-              side: BorderSide(color: greyBorderColor)),
-          margin: const EdgeInsets.all(0),
-          borderOnForeground: true,
-          child: DropdownButtonHideUnderline(
-            child: ButtonTheme(
-                alignedDropdown: true,
-                child: ListTile(
-                  dense: true,
-                  title: Text(
-                    filterModel.subCategory,
-                    style: TextStyle(
-                        color: blackFont,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600),
-                  ),
-                  trailing: Icon(
-                    Icons.keyboard_arrow_down,
-                    color: darkGrey,
-                  ),
-                  onTap: () {
-                    selectItemSubCategory();
-                  },
-                )),
+    return StatefulBuilder(builder: (context, changeState) {
+      return CustomizedDropDownField(
+        title: 'Sub-category',
+        child: ListTile(
+          dense: true,
+          title: Text(
+            filterModel.subCategory,
+            maxLines: 1,
+            style: TextStyle(
+                color: blackFont,
+                fontSize: 16,
+                fontFamily: "Inter",
+                fontWeight: FontWeight.w600),
           ),
+          trailing: Icon(
+            Icons.keyboard_arrow_down,
+            color: darkGrey,
+          ),
+          onTap: () {
+            selectItemSubCategory(changeState);
+          },
         ),
-        const SizedBox(
-          height: 8,
-        ),
-      ],
-    );
+      );
+    });
   }
 
-  void selectItemCategory() async {
+  Widget getCustomCategoryField() {
+    return StatefulBuilder(builder: (context, changeState) {
+      return CustomizedDropDownField(
+        title: 'Custom category',
+        child: ListTile(
+          dense: true,
+          title: Text(
+            filterModel.customCategory,
+            maxLines: 1,
+            style: TextStyle(
+                color: blackFont,
+                fontSize: 16,
+                fontFamily: "Inter",
+                fontWeight: FontWeight.w600),
+          ),
+          trailing: Icon(
+            Icons.keyboard_arrow_down,
+            color: darkGrey,
+          ),
+          onTap: () {
+            selectItemCustomCategory(changeState);
+          },
+        ),
+      );
+    });
+  }
+
+  Widget getConditionField() {
+    return StatefulBuilder(builder: (context, changeState) {
+      return CustomizedDropDownField(
+        title: 'Condition',
+        child: ListTile(
+          dense: true,
+          title: Row(
+            children: [
+              Text(
+                selectedProductCondition != null
+                    ? selectedProductCondition!.name
+                    : "",
+                style: TextStyle(
+                    color: blackFont,
+                    fontSize: 16,
+                    fontFamily: "Inter",
+                    fontWeight: FontWeight.w600),
+              ),
+              Expanded(
+                child: Text(
+                  selectedProductCondition != null
+                      ? " (" + selectedProductCondition!.description + ")"
+                      : "",
+                  maxLines: 1,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontFamily: "Inter",
+                  ),
+                  softWrap: false,
+                  overflow: TextOverflow.fade,
+                ),
+              ),
+            ],
+          ),
+          trailing: Icon(
+            Icons.keyboard_arrow_down,
+            color: darkGrey,
+          ),
+          onTap: () {
+            selectItemCondition(changeState);
+          },
+        ),
+      );
+    });
+  }
+
+  Widget getManufacturerField() {
+    return StatefulBuilder(builder: (context, changeState) {
+      return CustomizedDropDownField(
+        title: 'Manufacturer',
+        child: ListTile(
+          dense: true,
+          title: Text(
+            filterModel.manufacturer,
+            maxLines: 1,
+            style: TextStyle(
+                color: blackFont,
+                fontSize: 16,
+                fontFamily: "Inter",
+                fontWeight: FontWeight.w600),
+          ),
+          trailing: Icon(
+            Icons.keyboard_arrow_down,
+            color: darkGrey,
+          ),
+          onTap: () {
+            selectItemManufacturer(changeState);
+          },
+        ),
+      );
+    });
+  }
+
+  void selectItemCategory(StateSetter changeState) async {
     if (categoryList.isNotEmpty) {
       final pressedCategory = await showDialog<String>(
           barrierDismissible: false,
@@ -541,6 +710,7 @@ class _SearchUsersProductAndServiceState
               .first;
           filterModel.categoryId = category.id;
           await merchantProductSubCategoryList(category.id);
+          changeState(() {});
         });
       }
     } else {
@@ -548,7 +718,7 @@ class _SearchUsersProductAndServiceState
     }
   }
 
-  void selectItemSubCategory() async {
+  void selectItemSubCategory(StateSetter changeState) async {
     if (subCategoryList.isNotEmpty) {
       final pressedSubCategory = await showDialog<String>(
           barrierDismissible: false,
@@ -628,6 +798,7 @@ class _SearchUsersProductAndServiceState
               .toList()
               .first;
           filterModel.subCategoryId = category.id;
+          changeState(() {});
         });
       }
     } else {
@@ -635,17 +806,299 @@ class _SearchUsersProductAndServiceState
     }
   }
 
-  Widget getPriceRange() {
-    return Container(
-      child: Row(
-        children: <Widget>[
-          Expanded(child: displayMinAmount()),
-          const SizedBox(
-            width: 16,
+  void selectItemCustomCategory(StateSetter changeState) async {
+    if (customCategoryList.isNotEmpty) {
+      final pressedCustomCategory = await showDialog<String>(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) => AlertDialog(
+          insetPadding:
+              const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+          contentPadding: EdgeInsets.zero,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          content: Container(
+            width: MediaQuery.of(context).size.width - 40,
+            child: Card(
+              elevation: 2,
+              shadowColor: Colors.transparent,
+              margin: EdgeInsets.zero,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: customCategoryList.map<Widget>((category) {
+                      if (filterModel.customCategory == category) {
+                        return Container(
+                          color: selectedListItemBackgroundBlue,
+                          child: ListTile(
+                            dense: true,
+                            title: Text(
+                              category,
+                              overflow: TextOverflow.fade,
+                              softWrap: false,
+                              style: TextStyle(
+                                  color: navyBlue,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600),
+                            ),
+                            trailing: Icon(
+                              SlydoAppIcon.checked,
+                              color: navyBlue,
+                              size: 12,
+                            ),
+                            onTap: () {
+                              Navigator.pop(context, category);
+                            },
+                          ),
+                        );
+                      }
+                      return ListTile(
+                        title: Text(
+                          category,
+                          softWrap: false,
+                          overflow: TextOverflow.fade,
+                          style: TextStyle(
+                              color: blackFont,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400),
+                        ),
+                        dense: true,
+                        onTap: () {
+                          Navigator.pop(context, category);
+                        },
+                      );
+                    }).toList(),
+                  ),
+                ),
+              ),
+            ),
           ),
-          Expanded(child: displayMaxAmount()),
-        ],
-      ),
+        ),
+      );
+      if (pressedCustomCategory != null) {
+        setState(() {
+          filterModel.customCategory = pressedCustomCategory;
+          ProductCategory category = productCustomCategoryList
+              .where((element) => element.name == pressedCustomCategory)
+              .toList()
+              .first;
+          filterModel.customCategoryId = category.id;
+          changeState(() {});
+        });
+      }
+    } else {
+      showToast(message: "No custom category Found..");
+    }
+  }
+
+  void selectItemCondition(StateSetter changeState) async {
+    final pressedCondition = await showDialog<ProductCondition>(
+        context: context,
+        builder: (context) => AlertDialog(
+              insetPadding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              contentPadding: EdgeInsets.zero,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+              content: Container(
+                width: MediaQuery.of(context).size.width - 40,
+                child: Card(
+                  margin: EdgeInsets.zero,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: conditions.map<Widget>((condition) {
+                          if (filterModel.condition == condition) {
+                            return Container(
+                              color: selectedListItemBackgroundBlue,
+                              child: ListTile(
+                                dense: true,
+                                title: Row(
+                                  children: [
+                                    Text(
+                                      condition.name,
+                                      style: TextStyle(
+                                          color: navyBlue,
+                                          fontSize: 16,
+                                          fontFamily: "Inter",
+                                          fontWeight: FontWeight.w600),
+                                    ),
+                                    Expanded(
+                                      child: Text(
+                                        selectedProductCondition != null
+                                            ? " (" +
+                                                selectedProductCondition!
+                                                    .description +
+                                                ")"
+                                            : "",
+                                        maxLines: 1,
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            fontFamily: "Inter",
+                                            color: navyBlue),
+                                        softWrap: false,
+                                        overflow: TextOverflow.fade,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                trailing: Icon(
+                                  SlydoAppIcon.checked,
+                                  color: navyBlue,
+                                  size: 12,
+                                ),
+                                onTap: () {
+                                  Navigator.pop(context, condition);
+                                },
+                              ),
+                            );
+                          }
+                          return ListTile(
+                            title: Row(
+                              children: [
+                                Text(
+                                  condition.name,
+                                  style: TextStyle(
+                                      color: blackFont,
+                                      fontSize: 16,
+                                      fontFamily: "Inter",
+                                      fontWeight: FontWeight.w400),
+                                ),
+                                Expanded(
+                                  child: Text(
+                                    " (" + condition.description + ")",
+                                    maxLines: 1,
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: blackFont,
+                                      fontFamily: "Inter",
+                                    ),
+                                    softWrap: false,
+                                    overflow: TextOverflow.fade,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            dense: true,
+                            onTap: () {
+                              Navigator.pop(context, condition);
+                            },
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ));
+    if (pressedCondition != null) {
+      selectedProductCondition = pressedCondition;
+      filterModel.condition = selectedProductCondition!.name;
+      changeState(() {});
+    }
+  }
+
+  void selectItemManufacturer(StateSetter changeState) async {
+    if (manufacturerList.isNotEmpty) {
+      final pressedManufecturer = await showDialog<String>(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) => AlertDialog(
+          insetPadding:
+              const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+          contentPadding: EdgeInsets.zero,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          content: Container(
+            width: MediaQuery.of(context).size.width - 40,
+            child: Card(
+              elevation: 2,
+              shadowColor: Colors.transparent,
+              margin: EdgeInsets.zero,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: manufacturerList.map<Widget>((category) {
+                      if (filterModel.manufacturer == category) {
+                        return Container(
+                          color: selectedListItemBackgroundBlue,
+                          child: ListTile(
+                            dense: true,
+                            title: Text(
+                              category,
+                              overflow: TextOverflow.fade,
+                              softWrap: false,
+                              style: TextStyle(
+                                  color: navyBlue,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600),
+                            ),
+                            trailing: Icon(
+                              SlydoAppIcon.checked,
+                              color: navyBlue,
+                              size: 12,
+                            ),
+                            onTap: () {
+                              Navigator.pop(context, category);
+                            },
+                          ),
+                        );
+                      }
+                      return ListTile(
+                        title: Text(
+                          category,
+                          softWrap: false,
+                          overflow: TextOverflow.fade,
+                          style: TextStyle(
+                              color: blackFont,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400),
+                        ),
+                        dense: true,
+                        onTap: () {
+                          Navigator.pop(context, category);
+                        },
+                      );
+                    }).toList(),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      if (pressedManufecturer != null) {
+        setState(() {
+          filterModel.manufacturer = pressedManufecturer;
+          changeState(() {});
+        });
+      }
+    } else {
+      showToast(message: "No manufacturer Found..");
+    }
+  }
+
+  Widget getPriceRange() {
+    return Row(
+      children: <Widget>[
+        Expanded(child: displayMinAmount()),
+        const SizedBox(
+          width: 16,
+        ),
+        Expanded(child: displayMaxAmount()),
+      ],
     );
   }
 
@@ -941,11 +1394,15 @@ class _SearchUsersProductAndServiceState
                     size: 16,
                     color: blackFont,
                   ),
-                  onTap: () {
+                  onTap: () async {
                     showFilterOptions = !showFilterOptions;
                     if (mounted) setState(() {});
                     updateCategoryList();
                     checkForFilterAppliedOrNot();
+                    if (selectedMenuItemIndex == 0) {
+                      await Future.delayed(const Duration(milliseconds: 100))
+                          .then((value) => showFilterProductSheet());
+                    }
                   },
                   backgroundColor: iconBtnGrey,
                   enableMargin: true,
@@ -969,6 +1426,209 @@ class _SearchUsersProductAndServiceState
         else
           Container()
       ],
+    );
+  }
+
+  void showFilterProductSheet() {
+    showModalBottomSheet<void>(
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        context: context,
+        enableDrag: true,
+        builder: (BuildContext context) {
+          return StatefulBuilder(
+            builder: (BuildContext context, StateSetter bottomSheetSetState) =>
+                Card(
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20)),
+              ),
+              color: Colors.white,
+              margin: EdgeInsets.zero,
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Text(
+                      "Filter",
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontFamily: "Inter",
+                          fontWeight: FontWeight.w700,
+                          color: blackFont),
+                    ),
+                    const SizedBox(height: 40),
+                    getCategoryField(),
+                    const SizedBox(
+                      height: 15,
+                    ),
+                    Row(
+                      children: <Widget>[
+                        Expanded(
+                          child: getSubCategoryField(),
+                        ),
+                        const SizedBox(
+                          width: 16,
+                        ),
+                        Expanded(child: getCustomCategoryField()),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 15,
+                    ),
+                    Row(
+                      children: <Widget>[
+                        Expanded(
+                          child: getConditionField(),
+                        ),
+                        const SizedBox(
+                          width: 16,
+                        ),
+                        Expanded(child: getManufacturerField()),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 15,
+                    ),
+                    getPriceRange(),
+                    const SizedBox(
+                      height: 15,
+                    ),
+                    getProductRatingSelection(bottomSheetSetState),
+                    const SizedBox(height: 25),
+                    Row(
+                      children: [
+                        Expanded(child: getClearAllBtn()),
+                        const SizedBox(width: 20),
+                        Expanded(child: getFilterSubmitBtn()),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        });
+  }
+
+  Widget getClearAllBtn() {
+    return CurvedButton(
+      backgroundColor: Colors.grey,
+      onPressed: () {
+        Navigator.pop(context);
+
+        filterModel.category = "All categories";
+        filterModel.categoryId = 0;
+        filterModel.subCategoryId = 0;
+        filterModel.subCategory = "";
+        subCategoryNext = "";
+        filterModel.customCategory = "";
+        filterModel.condition = "";
+        selectedProductCondition = null;
+        filterModel.manufacturer = "";
+        filterModel.rating = "";
+        selectedRating = null;
+        filterModel.maxAmount = null;
+        filterModel.minAmount = null;
+        searchItems();
+      },
+      text: "Clear All",
+      textColor: Colors.white,
+    );
+  }
+
+  Widget getFilterSubmitBtn() {
+    return CurvedButton(
+      backgroundColor: navyBlue,
+      onPressed: () {
+        Navigator.pop(context);
+        searchItems();
+      },
+      text: "Apply",
+      textColor: Colors.white,
+    );
+  }
+
+  Widget getProductRatingSelection(StateSetter bottomSheetSetState) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "Rating",
+          style: TextStyle(
+            fontSize: 16,
+            fontFamily: "Inter",
+          ),
+        ),
+        const SizedBox(height: 10),
+        Row(
+          children: List.generate(5, (index) {
+            if (selectedRating != null) {
+              return Expanded(
+                child: Row(
+                  children: [
+                    productRatingButton(
+                      bottomSheetSetState,
+                      index: index,
+                      isSelected: int.parse(selectedRating!) == index,
+                    ),
+                  ],
+                ),
+              );
+            }
+            return Expanded(
+              child: Row(
+                children: [
+                  productRatingButton(
+                    bottomSheetSetState,
+                    index: index,
+                  ),
+                ],
+              ),
+            );
+          }),
+        ),
+      ],
+    );
+  }
+
+  Widget productRatingButton(StateSetter bottomSheetSetState,
+      {bool isSelected = false, required int index}) {
+    return GestureDetector(
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 14),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8),
+          color:
+              isSelected ? selectedListItemBackgroundBlue : HexColor("F8F9FA"),
+        ),
+        child: Row(
+          children: [
+            Text(
+              (index + 1).toString(),
+              style: TextStyle(
+                  color: isSelected ? navyBlue : blackFont,
+                  fontSize: 14,
+                  fontFamily: "Inter",
+                  fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(width: 2),
+            Icon(
+              SlydoAppIcon.star,
+              size: 10,
+              color: isSelected ? navyBlue : blackFont,
+            )
+          ],
+        ),
+      ),
+      onTap: () {
+        selectedRating = index.toString();
+        filterModel.rating = (index + 1).toString();
+        bottomSheetSetState(() {});
+      },
     );
   }
 
@@ -1216,7 +1876,12 @@ class _SearchUsersProductAndServiceState
               fontSize: 14),
         ),
         Text(
-          moneyDisplayNormalizer(int.parse(product.price.toString())),
+          moneyDisplayNormalizer(product.discountedPrice != null
+              ? ((checkDiscount(product.discountIsActive ?? false,
+                      product.discountedPrice ?? 0, product.price ?? 0))
+                  ? product.discountedPrice
+                  : product.price!)
+              : product.price!),
           style: TextStyle(
               color: blackFont, fontWeight: FontWeight.bold, fontSize: 14),
         ),

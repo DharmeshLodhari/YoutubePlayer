@@ -177,7 +177,7 @@ class _SearchProductState extends State<SearchProduct> {
           SnackBar(
             content: Text(
                 AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-            duration: Duration(milliseconds: 500),
+            duration: const Duration(milliseconds: 500),
           ),
         );
       }
@@ -245,25 +245,26 @@ class _SearchProductState extends State<SearchProduct> {
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
       actions: <Widget>[
-        products.isNotEmpty
-            ? RoundedBackgroundIcon(
-                height: 34,
-                width: 34,
-                icon: Icon(
-                  SlydoAppIcon.filter,
-                  size: 16,
-                  color: blackFont,
-                ),
-                onTap: () {
-                  setState(() {
-                    showSortByBox = !showSortByBox;
-                  });
-                },
-                backgroundColor: iconBtnGrey,
-                enableMargin: true,
-              )
-            : SizedBox.shrink(),
-        SizedBox(width: 16),
+        if (products.isNotEmpty)
+          RoundedBackgroundIcon(
+            height: 34,
+            width: 34,
+            icon: Icon(
+              SlydoAppIcon.filter,
+              size: 16,
+              color: blackFont,
+            ),
+            onTap: () {
+              setState(() {
+                showSortByBox = !showSortByBox;
+              });
+            },
+            backgroundColor: iconBtnGrey,
+            enableMargin: true,
+          )
+        else
+          const SizedBox.shrink(),
+        const SizedBox(width: 16),
       ],
     );
   }
@@ -272,39 +273,43 @@ class _SearchProductState extends State<SearchProduct> {
     return Container(
       child: Column(
         children: [
-          showSortByBox ? sortByDropDown() : SizedBox.shrink(),
-          SizedBox(height: 6),
+          if (showSortByBox) sortByDropDown() else const SizedBox.shrink(),
+          const SizedBox(height: 6),
           searchBox(),
-          SizedBox(height: 12),
-          isLoading ? CircularProgressIndicator() : SizedBox.shrink(),
-          isSearchIsEmpty
-              ? Expanded(
-                  child: NoItemInList(
-                    msg: AppLocalization.of(context)!
-                        .pleaseTypeSomethingToGetResult,
-                    isResult: false,
-                  ),
-                )
-              : noItemInList
-                  ? Expanded(
-                      child: NoItemInList(
-                        msg: AppLocalization.of(context)!.noResultFound,
-                      ),
-                    )
-                  : Expanded(
-                      child: ListView(
-                          children: products
-                              .map(
-                                (product) => Container(
-                                  padding: EdgeInsets.symmetric(
-                                      vertical: 8, horizontal: 16),
-                                  child: ShoppingTileWithHeartWithProduct(
-                                    product: product,
-                                  ),
-                                ),
-                              )
-                              .toList()),
+          const SizedBox(height: 12),
+          if (isLoading)
+            const CircularProgressIndicator()
+          else
+            const SizedBox.shrink(),
+          if (isSearchIsEmpty)
+            Expanded(
+              child: NoItemInList(
+                msg:
+                    AppLocalization.of(context)!.pleaseTypeSomethingToGetResult,
+                isResult: false,
+              ),
+            )
+          else
+            noItemInList
+                ? Expanded(
+                    child: NoItemInList(
+                      msg: AppLocalization.of(context)!.noResultFound,
                     ),
+                  )
+                : Expanded(
+                    child: ListView(
+                        children: products
+                            .map(
+                              (product) => Container(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 8, horizontal: 16),
+                                child: ShoppingTileWithHeartWithProduct(
+                                  product: product,
+                                ),
+                              ),
+                            )
+                            .toList()),
+                  ),
         ],
       ),
     );
@@ -323,7 +328,7 @@ class _SearchProductState extends State<SearchProduct> {
           ),
           child: DropdownButton2(
             isExpanded: true,
-            underline: SizedBox.shrink(),
+            underline: const SizedBox.shrink(),
             dropdownDecoration: BoxDecoration(
               borderRadius: BorderRadius.circular(14),
             ),
@@ -360,7 +365,7 @@ class _SearchProductState extends State<SearchProduct> {
 
   Widget searchBox() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Theme(
         data: Theme.of(context).copyWith(
           textSelectionTheme: TextSelectionThemeData(
@@ -408,8 +413,8 @@ class _SearchProductState extends State<SearchProduct> {
             hintText: "Search name, manufacturer, categories",
             fillColor: Colors.white,
             filled: true,
-            contentPadding: EdgeInsets.symmetric(vertical: 10),
-            prefix: Padding(
+            contentPadding: const EdgeInsets.symmetric(vertical: 10),
+            prefix: const Padding(
               padding: EdgeInsets.only(left: 16),
             ),
             enabledBorder: OutlineInputBorder(
@@ -456,7 +461,7 @@ class _SearchProductState extends State<SearchProduct> {
           return StatefulBuilder(
             builder: (BuildContext context, StateSetter bottomSheetSetState) =>
                 Card(
-              shape: RoundedRectangleBorder(
+              shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(20),
                     topRight: Radius.circular(20)),
@@ -464,7 +469,8 @@ class _SearchProductState extends State<SearchProduct> {
               color: Colors.white,
               margin: EdgeInsets.zero,
               child: Container(
-                padding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
@@ -475,28 +481,28 @@ class _SearchProductState extends State<SearchProduct> {
                           fontWeight: FontWeight.w700,
                           color: blackFont),
                     ),
-                    SizedBox(height: 40),
+                    const SizedBox(height: 40),
                     getCategoryField(bottomSheetSetState),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     getPikedCategoryNames(),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     getProductRatingSelection(bottomSheetSetState),
-                    SizedBox(height: 24),
+                    const SizedBox(height: 24),
                     Padding(
                       padding: EdgeInsets.only(
                           bottom: MediaQuery.of(context).viewInsets.bottom),
                       child: getPriceRange(bottomSheetSetState),
                     ),
-                    SizedBox(height: 20),
-                    SizedBox(height: 50),
+                    const SizedBox(height: 20),
+                    const SizedBox(height: 50),
                     Row(
                       children: [
                         Expanded(child: getClearAllBtn()),
-                        SizedBox(width: 20),
+                        const SizedBox(width: 20),
                         Expanded(child: getFilterSubmitBtn()),
                       ],
                     ),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                   ],
                 ),
               ),
@@ -536,8 +542,8 @@ class _SearchProductState extends State<SearchProduct> {
         children: pickedCategoryList
             .map(
               (e) => Container(
-                margin: EdgeInsets.all(6),
-                padding: EdgeInsets.all(12),
+                margin: const EdgeInsets.all(6),
+                padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                     color: greyBorderColor,
                     borderRadius: BorderRadius.circular(12)),
@@ -582,10 +588,10 @@ class _SearchProductState extends State<SearchProduct> {
                     }
                   },
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 InkWell(
                   onTap: () {},
-                  child: Text(
+                  child: const Text(
                     '',
                     textAlign: TextAlign.right,
                     style: TextStyle(color: Colors.red),
@@ -740,10 +746,10 @@ class _SearchProductState extends State<SearchProduct> {
                     }
                   },
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 InkWell(
                   onTap: () {},
-                  child: Text(
+                  child: const Text(
                     '',
                     textAlign: TextAlign.right,
                     style: TextStyle(color: Colors.red),
@@ -804,7 +810,7 @@ class _SearchProductState extends State<SearchProduct> {
           style: TextStyle(
               color: blackFont, fontSize: 14, fontWeight: FontWeight.w600),
         ),
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
         Row(
           children: List.generate(5, (index) {
             if (selectedRating != null) {
@@ -840,7 +846,7 @@ class _SearchProductState extends State<SearchProduct> {
       {bool isSelected = false, required int index}) {
     return GestureDetector(
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 6, horizontal: 14),
+        padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 14),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8),
           color:
@@ -855,7 +861,7 @@ class _SearchProductState extends State<SearchProduct> {
                   fontSize: 14,
                   fontWeight: FontWeight.w600),
             ),
-            SizedBox(width: 2),
+            const SizedBox(width: 2),
             Icon(
               SlydoAppIcon.star,
               size: 10,
@@ -880,7 +886,7 @@ class _SearchProductState extends State<SearchProduct> {
           style: TextStyle(
               color: blackFont, fontSize: 14, fontWeight: FontWeight.w600),
         ),
-        SizedBox(height: 12),
+        const SizedBox(height: 12),
         Row(
           children: [
             Expanded(
@@ -894,7 +900,7 @@ class _SearchProductState extends State<SearchProduct> {
                 isNumberOnlyInput: true,
               ),
             ),
-            SizedBox(width: 12),
+            const SizedBox(width: 12),
             Expanded(
               child: CustomizedTextFormField(
                 labelText: 'To',
@@ -908,7 +914,7 @@ class _SearchProductState extends State<SearchProduct> {
             ),
           ],
         ),
-        SizedBox(height: 12),
+        const SizedBox(height: 12),
       ],
     );
   }

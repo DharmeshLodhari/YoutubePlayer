@@ -6,6 +6,11 @@ class SearchItemWithFilterModel {
   int? categoryId;
   String subCategory;
   int? subCategoryId;
+  String customCategory;
+  int? customCategoryId;
+  String manufacturer;
+  String condition;
+  String? rating;
   int? minAmount;
   int? maxAmount;
   String?
@@ -14,9 +19,14 @@ class SearchItemWithFilterModel {
 
   SearchItemWithFilterModel({
     this.category = "All categories",
-    this.subCategory = "",
     this.categoryId,
+    this.subCategory = "",
     this.subCategoryId,
+    this.customCategory = "",
+    this.customCategoryId,
+    this.condition = "",
+    this.manufacturer = "",
+    this.rating,
     this.minAmount,
     this.searchedText,
     this.maxAmount,
@@ -28,9 +38,6 @@ class SearchItemWithFilterModel {
 class SearchItemWithFilterModelForSuperStore {
   String? searchedText;
   List<String> categories;
-  List<String> subCategory;
-  int? categoryId;
-  int? subCategoryId;
   int? minPrice;
   int? maxPrice;
   List<String> state;
@@ -41,9 +48,6 @@ class SearchItemWithFilterModelForSuperStore {
   SearchItemWithFilterModelForSuperStore({
     this.sortBy,
     this.categories = const [],
-    this.subCategory = const [],
-    this.categoryId,
-    this.subCategoryId,
     this.minPrice,
     required this.searchedText,
     this.state = const [],

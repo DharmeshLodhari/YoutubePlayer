@@ -1387,9 +1387,6 @@ class _HomeState extends State<Home> {
             ),
           ),
         ),
-        const SizedBox(
-          height: 5.0,
-        ),
         Row(
           children: [
             if (label == 'Total Balance') ...[
@@ -1398,17 +1395,12 @@ class _HomeState extends State<Home> {
                     toggleBalanceVisibility();
                   },
                   child: actualBalance(balance)),
-              const SizedBox(
-                width: 10.0,
-              ),
               InkWell(
                 onTap: () {
                   toggleBalanceVisibility();
                 },
-                child: Padding(
-                  padding: isBalanceHidden
-                      ? const EdgeInsets.only(bottom: 5.0)
-                      : const EdgeInsets.only(bottom: 0.0),
+                child: Container(
+                  padding: const EdgeInsets.all(10.0),
                   child: Icon(
                     isBalanceHidden ? SlydoAppIcon.eye : SlydoAppIcon.eye_close,
                     color: white,

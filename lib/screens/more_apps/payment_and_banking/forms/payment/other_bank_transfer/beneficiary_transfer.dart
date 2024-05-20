@@ -64,7 +64,7 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
   StateSetter? bottomSheetStateSetterGlobal;
   bool bottomSheetMounted = false;
   int bottomSheetSearchIndex = 0;
-  final ScrollController _scrollController = new ScrollController();
+  final ScrollController _scrollController = ScrollController();
   String? next = "", previous = "";
   int count = 0;
   bool noList = false;
@@ -284,12 +284,16 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
                           onTap: () {
                             toggleBalanceVisibility();
                           },
-                          child: Icon(
-                            isBalanceHidden
-                                ? SlydoAppIcon.eye
-                                : SlydoAppIcon.eye_close,
-                            color: navyBlue,
-                            size: 12,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10.0, vertical: 5.0),
+                            child: Icon(
+                              isBalanceHidden
+                                  ? SlydoAppIcon.eye
+                                  : SlydoAppIcon.eye_close,
+                              color: navyBlue,
+                              size: 12,
+                            ),
                           ),
                         ),
                       ],
@@ -309,10 +313,10 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
 
   String generateAsteriskMask(String amount) {
     // Determine the length of the amount
-    int amountLength = amount.length;
+    final int amountLength = amount.length;
 
     // Generate a string of asterisks of the same length as the amount
-    String asteriskMask = '*' * amountLength;
+    final String asteriskMask = '*' * amountLength;
 
     // Trim the trailing space and return the asterisk mask
     return asteriskMask.trim();
@@ -395,39 +399,38 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
           const SizedBox(
             height: 40,
           ),
-          canCashOut(amount!, accountBalance!)
-              ? getSubmitButton()
-              : Container(
-                  child: Center(
-                      child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 16.0),
-                          child: Text.rich(TextSpan(
-                              text:
-                                  AppLocalization.of(context)!.minimumTransfer,
+          if (canCashOut(amount!, accountBalance!))
+            getSubmitButton()
+          else
+            Container(
+              child: Center(
+                  child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      child: Text.rich(TextSpan(
+                          text: AppLocalization.of(context)!.minimumTransfer,
+                          style: TextStyle(
+                              fontSize: 12,
+                              color: blackFont,
+                              fontWeight: FontWeight.w600),
+                          children: <InlineSpan>[
+                            TextSpan(
+                              text: double.parse(moneyDisplayNormalizer(
+                                          displayPossibleCashOutAmount(
+                                              accountBalance!))) >=
+                                      35.00
+                                  ? worldCurrencies[userBloc.user.currency!]! +
+                                      moneyDisplayNormalizer(
+                                          displayPossibleCashOutAmount(
+                                              accountBalance!))
+                                  : '${worldCurrencies[userBloc.user.currency!]!}0.00',
                               style: TextStyle(
                                   fontSize: 12,
                                   color: blackFont,
+                                  fontFamily: "Inter",
                                   fontWeight: FontWeight.w600),
-                              children: <InlineSpan>[
-                                TextSpan(
-                                  text: double.parse(moneyDisplayNormalizer(
-                                              displayPossibleCashOutAmount(
-                                                  accountBalance!))) >=
-                                          35.00
-                                      ? worldCurrencies[
-                                              userBloc.user.currency!]! +
-                                          moneyDisplayNormalizer(
-                                              displayPossibleCashOutAmount(
-                                                  accountBalance!))
-                                      : '${worldCurrencies[userBloc.user.currency!]!}0.00',
-                                  style: TextStyle(
-                                      fontSize: 12,
-                                      color: blackFont,
-                                      fontFamily: "Inter",
-                                      fontWeight: FontWeight.w600),
-                                )
-                              ])))),
-                ),
+                            )
+                          ])))),
+            ),
           const SizedBox(
             height: 20,
           ),

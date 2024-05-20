@@ -1451,10 +1451,22 @@ class ShoppingAuthService extends AuthService {
           filterOptions!.searchedUser!.userName! +
           "/?";
       if (filterOptions.category != "All categories") {
-        url = url + "category=${filterOptions.categoryId}";
+        url = url + "&category=${filterOptions.categoryId}";
       }
       if (filterOptions.subCategory != "") {
-        url = url + "sub_category=${filterOptions.subCategoryId}";
+        url = url + "&sub_category=${filterOptions.subCategoryId}";
+      }
+      if (filterOptions.customCategory != "") {
+        url = url + "&custom_category=${filterOptions.customCategoryId}";
+      }
+      if (filterOptions.condition != "") {
+        url = url + "&condition=${filterOptions.condition}";
+      }
+      if (filterOptions.manufacturer != "") {
+        url = url + "&manufacturer=${filterOptions.manufacturer}";
+      }
+      if (filterOptions.rating != "") {
+        url = url + "&rating=${filterOptions.rating}";
       }
       if (filterOptions.searchedText!.trim() != "") {
         url = url + "&name__icontains=${filterOptions.searchedText}";
@@ -1520,6 +1532,18 @@ class ShoppingAuthService extends AuthService {
       }
       if (filterOptions.subCategory != "") {
         url = url + "&sub_category=${filterOptions.subCategoryId}";
+      }
+      if (filterOptions.customCategory != "") {
+        url = url + "&custom_category=${filterOptions.customCategoryId}";
+      }
+      if (filterOptions.condition != "") {
+        url = url + "&condition=${filterOptions.condition}";
+      }
+      if (filterOptions.manufacturer != "") {
+        url = url + "&manufacturer=${filterOptions.manufacturer}";
+      }
+      if (filterOptions.rating != "") {
+        url = url + "&rating=${filterOptions.rating}";
       }
       if (filterOptions.searchedText!.trim() != "") {
         // url = url + "&name__icontains=${filterOptions.searchedText}";
@@ -1805,6 +1829,32 @@ class ShoppingAuthService extends AuthService {
       String? industryId, String? next, String? previous) async {
     String url =
         AppConfig.baseUrl + "/api/v1/products/merchant-categories/$industryId/";
+
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+
+    debugPrint('Merchant Category BODY ---> ${response.body}');
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      var jsonData = json.decode(response.body);
+
+      Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": jsonData["results"]
+      };
+      return result;
+    } else {
+      var jsonData = json.decode(response.body);
+      throw jsonData;
+    }
+  }
+
+  Future<Map<String, dynamic>> getManufacturerList(
+      String? username, String? next, String? previous) async {
+    String url = AppConfig.baseUrl +
+        "/api/v1/products/merchant-products-manufacturers/$username/";
 
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);

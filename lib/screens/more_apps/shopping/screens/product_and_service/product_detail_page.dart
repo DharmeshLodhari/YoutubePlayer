@@ -227,14 +227,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
     shippingProcessBloc = Provider.of<ShippingProcessBloc>(context);
 
-    if (productIsLoading) {
-      return Scaffold(
-        body: Center(
-          child: CircularLoadingIndicator(),
-        ),
-      );
-    }
-
     isValidCustomer = userBloc.user.userName != product?.seller;
     return WillPopScope(
       onWillPop: () async {
@@ -1020,6 +1012,10 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   Widget _buildProductDetailsPage(BuildContext context) {
+    if (productIsLoading) {
+      return buildProductShimmerLoadingIndicator(isLoading: productIsLoading);
+    }
+
     return ListView(
       controller: _scrollController,
       children: <Widget>[
@@ -1059,21 +1055,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                     color: dividerColor,
                     thickness: 1,
                   ),
-                  SizedBox(
-                    height: 12,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: _buildAvailableFromAndShareWidgets(),
-                  ),
-                  SizedBox(
-                    height: 16,
-                  ),
-                  Divider(
-                    height: 0,
-                    color: dividerColor,
-                    thickness: 1,
-                  ),
+                  if (product?.availableFrom?.isAfter(DateTime.now()) ?? false)
+                    _showAvailableDate(),
                   SizedBox(
                     height: 12,
                   ),
@@ -1152,6 +1135,29 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                     : _buildSellersOtherProducts(),
             SizedBox(height: isValidCustomer ? 60.0 : 20),
           ],
+        ),
+      ],
+    );
+  }
+
+  Widget _showAvailableDate() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          height: 12,
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: _buildAvailableFromAndShareWidgets(),
+        ),
+        SizedBox(
+          height: 16,
+        ),
+        Divider(
+          height: 0,
+          color: dividerColor,
+          thickness: 1,
         ),
       ],
     );
@@ -2058,7 +2064,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 ),
                 child: Center(
                   child: Text(
-                    size,
+                    messageDecoderWithEmoji(size) ?? "",
                     style: TextStyle(
                         fontSize: 14,
                         color: selectedVariant?.value == size
