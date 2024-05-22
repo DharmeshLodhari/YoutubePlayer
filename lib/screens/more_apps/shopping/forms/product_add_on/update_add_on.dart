@@ -494,14 +494,15 @@ class _UpdateAddOnState extends State<UpdateAddOn> {
             ),
           ],
         ),
-        SizedBox(height: 5.0),
+        const SizedBox(height: 5.0),
         _buildAddOnOptionList(),
-        SizedBox(height: 5.0),
+        const SizedBox(height: 5.0),
         GestureDetector(
           onTap: () async {
             //disable click if add-on option is not empty
             final result = await Navigator.of(context)
                 .pushNamed(Routes.ADD_ON_OPTION_LIST, arguments: {
+              'options': productAddOnOptionList,
               'productId': widget.arguments['productId'],
             });
 

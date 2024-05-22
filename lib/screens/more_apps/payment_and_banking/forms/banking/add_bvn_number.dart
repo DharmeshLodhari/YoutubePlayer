@@ -111,7 +111,7 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
   Widget scaffoldBody() {
     return SingleChildScrollView(
       child: Container(
-        padding: EdgeInsets.only(left: 16, right: 16, top: 16),
+        padding: const EdgeInsets.only(left: 16, right: 16, top: 16),
         child: Form(
           key: _formKeyTwo,
           child: Column(
@@ -123,9 +123,9 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
               buildGetIdType(),
               buildBusinessRegistrationLicense(),
               getVerificationWarning(),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               getSubmitButton(),
-              SizedBox(height: 12),
+              const SizedBox(height: 12),
             ],
           ),
         ),
@@ -137,7 +137,7 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
     return Column(
       children: [
         getDOBField(),
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
       ],
     );
   }
@@ -185,7 +185,7 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
   bool validateDOB() {
     DateTime dateTime = DateTime.now();
 
-    if (dob.add(Duration(days: 4745)).isBefore(dateTime)) {
+    if (dob.add(const Duration(days: 4745)).isBefore(dateTime)) {
       isValidAge = true;
       return true;
     } else {
@@ -216,7 +216,7 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
             },
           ),
         ),
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
       ],
     );
   }
@@ -226,7 +226,8 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
         barrierDismissible: false,
         context: context,
         builder: (context) => AlertDialog(
-              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              insetPadding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
@@ -301,7 +302,7 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
       return Column(
         children: [
           addBvnNumberTextField(),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
         ],
       );
     }
@@ -316,7 +317,7 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           getIdTypeDropDown(),
-          SizedBox(
+          const SizedBox(
             height: 16,
           ),
           Text(
@@ -324,7 +325,7 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
             style: TextStyle(color: darkGrey, fontSize: 14),
           ),
           getIdPhoto(),
-          SizedBox(
+          const SizedBox(
             height: 16,
           ),
         ],
@@ -347,7 +348,7 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
             style: TextStyle(color: darkGrey, fontSize: 14),
           ),
           getBusinessRegistrationLicense(),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
         ],
       );
     }
@@ -356,7 +357,7 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
 
   Widget showBackArrow() {
     return IconButton(
-      icon: Icon(Icons.arrow_back_ios),
+      icon: const Icon(Icons.arrow_back_ios),
       onPressed: () {
         Navigator.pop(context);
       },
@@ -367,7 +368,7 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
     if ((selectedTier == "3" || selectedTier == "2") &&
         (virtualAccount!.accountTier!.tierType! == "2" ||
             virtualAccount!.accountTier!.tierType! == "1")) {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     }
 
     return Text(
@@ -389,7 +390,7 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
         text: "SUBMIT",
       );
     }
-    return SizedBox.shrink();
+    return const SizedBox.shrink();
   }
 
   void onSubmit() async {
@@ -460,7 +461,7 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
         elevation: 3,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         shadowColor: boxShadowTwo,
-        margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+        margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
         child: Container(
           width: MediaQuery.of(context).size.width - 32,
           // height: MediaQuery.of(context).size.width - 32,
@@ -486,7 +487,7 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
                           color: darkGrey,
                           size: 55,
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 16,
                         ),
                         Text(
@@ -544,7 +545,7 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
         elevation: 3,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         shadowColor: boxShadowTwo,
-        margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+        margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
         child: Container(
           width: MediaQuery.of(context).size.width - 32,
           // height: MediaQuery.of(context).size.width - 32,
@@ -566,7 +567,7 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         Icon(SlydoAppIcon.add_image, color: darkGrey, size: 55),
-                        SizedBox(height: 16),
+                        const SizedBox(height: 16),
                         Text(
                           "Upload license",
                           style: TextStyle(color: darkGrey, fontSize: 14),
@@ -624,7 +625,7 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
           "Government Id type",
           style: TextStyle(color: darkGrey, fontSize: 14),
         ),
-        SizedBox(
+        const SizedBox(
           height: 6,
         ),
         Card(
@@ -633,7 +634,7 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
               side: BorderSide(color: greyBorderColor)),
-          margin: EdgeInsets.all(0),
+          margin: const EdgeInsets.all(0),
           borderOnForeground: true,
           child: ListTile(
             dense: true,
@@ -662,7 +663,8 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
         barrierDismissible: false,
         context: context,
         builder: (context) => AlertDialog(
-              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              insetPadding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),

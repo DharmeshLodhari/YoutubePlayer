@@ -95,7 +95,7 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
     debugPrint("envelope ${envelope!.toJson()}");
     await getSearchedUser();
     if (envelope!.type != "empty-envelop") {
-      Envelope envelopeFromServer = await MessageAuth()
+      final Envelope envelopeFromServer = await MessageAuth()
           .getEnvelope(envelope: envelope!, id: data!['id'])
           .catchError((error) {
         deleteChatMessage();
@@ -114,7 +114,7 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
     isLoading = false;
 
     if (!isEmptyEnvelope) {
-      Future.delayed(Duration(seconds: 1), () async {
+      Future.delayed(const Duration(seconds: 1), () async {
         _controller.forward();
 
         // Play audio
@@ -126,7 +126,7 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
         showing = true;
         if (mounted) setState(() {});
       });
-      Future.delayed(Duration(seconds: 14), () async {
+      Future.delayed(const Duration(seconds: 14), () async {
         // Stop audio
         await myAudioPlayer.stopAudio();
         repeat = false;
@@ -139,7 +139,7 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
   }
 
   Future<void> getSearchedUser() async {
-    CustomerProfile user = await UserAuth()
+    final CustomerProfile user = await UserAuth()
         .fetchCustomerProfileWithAuth(envelope!.fromCustomer)
         .catchError((error) {
       debugPrint("ERROR2:- $error");
@@ -179,7 +179,7 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
         child: Scaffold(
           backgroundColor: Colors.white,
           body: NestedScrollView(
-              physics: NeverScrollableScrollPhysics(),
+              physics: const NeverScrollableScrollPhysics(),
               headerSliverBuilder: (BuildContext context, bool boxIsScrolled) {
                 return <Widget>[
                   getAppbar(context),
@@ -194,16 +194,16 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
   Widget scaffoldBody() {
     return SingleChildScrollView(
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         color: Colors.white,
         child: Column(
           children: [
             getTitle(),
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
             getEnvelopeDetail(),
-            SizedBox(
+            const SizedBox(
               height: 60,
             ),
             getEnvelopeActions(),
@@ -228,88 +228,89 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
   Widget getEnvelopeDetail() {
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.symmetric(vertical: 30),
+      padding: const EdgeInsets.symmetric(vertical: 30),
       decoration: BoxDecoration(
         color: lightGrey,
-        borderRadius: BorderRadius.all(Radius.circular(12)),
+        borderRadius: const BorderRadius.all(Radius.circular(12)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          isEmptyEnvelope
-              ? Container()
-              : Stack(
-                  children: [
-                    Visibility(
-                      visible: showing,
-                      child: Container(
-                        margin: EdgeInsets.only(top: 30.0),
-                        child: Align(
-                          alignment: Alignment.center,
-                          child: Lottie.asset(
-                            'assets/lottie/coin splash.json',
-                            width: 200,
-                            height: 200,
-                            repeat: repeat,
-                            fit: BoxFit.fill,
-                          ),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.only(top: 70.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            "₦ ",
-                            style: TextStyle(
-                                fontFamily: "Inter",
-                                fontSize: 32,
-                                fontWeight: FontWeight.w700,
-                                color: navyBlue),
-                          ),
-
-                          AnimatedBuilder(
-                            animation: _controller,
-                            builder: (BuildContext context, Widget? child) {
-                              final formattedMoney = moneyDisplayNormalizer(
-                                  _animation.value.toInt());
-
-                              return Text(
-                                formattedMoney,
-                                style: TextStyle(
-                                  fontSize: 34.0,
-                                  fontWeight: FontWeight.w700,
-                                  color: navyBlue,
-                                ),
-                              );
-                            },
-                          ),
-                          // Text(
-                          //   // "${moneyDisplayNormalizer(int.parse(envelope!.amount!))}",
-                          //   "${moneyDisplayNormalizer(int.parse('400000'))}",
-                          //   style: TextStyle(
-                          //       fontSize: 32,
-                          //       fontWeight: FontWeight.w700,
-                          //       color: navyBlue),
-                          // ),
-                        ],
-                      ),
-                    ),
-                    Align(
+          if (isEmptyEnvelope)
+            Container()
+          else
+            Stack(
+              children: [
+                Visibility(
+                  visible: showing,
+                  child: Container(
+                    margin: const EdgeInsets.only(top: 30.0),
+                    child: Align(
                       alignment: Alignment.center,
                       child: Lottie.asset(
-                        'assets/lottie/open_box.json',
-                        width: 250,
+                        'assets/lottie/coin splash.json',
+                        width: 200,
                         height: 200,
-                        repeat: false,
+                        repeat: repeat,
                         fit: BoxFit.fill,
                       ),
                     ),
-                  ],
+                  ),
                 ),
-          SizedBox(
+                Container(
+                  margin: const EdgeInsets.only(top: 70.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "₦ ",
+                        style: TextStyle(
+                            fontFamily: "Inter",
+                            fontSize: 32,
+                            fontWeight: FontWeight.w700,
+                            color: navyBlue),
+                      ),
+
+                      AnimatedBuilder(
+                        animation: _controller,
+                        builder: (BuildContext context, Widget? child) {
+                          final formattedMoney =
+                              moneyDisplayNormalizer(_animation.value.toInt());
+
+                          return Text(
+                            formattedMoney,
+                            style: TextStyle(
+                              fontSize: 34.0,
+                              fontWeight: FontWeight.w700,
+                              color: navyBlue,
+                            ),
+                          );
+                        },
+                      ),
+                      // Text(
+                      //   // "${moneyDisplayNormalizer(int.parse(envelope!.amount!))}",
+                      //   "${moneyDisplayNormalizer(int.parse('400000'))}",
+                      //   style: TextStyle(
+                      //       fontSize: 32,
+                      //       fontWeight: FontWeight.w700,
+                      //       color: navyBlue),
+                      // ),
+                    ],
+                  ),
+                ),
+                Align(
+                  alignment: Alignment.center,
+                  child: Lottie.asset(
+                    'assets/lottie/open_box.json',
+                    width: 250,
+                    height: 200,
+                    repeat: false,
+                    fit: BoxFit.fill,
+                  ),
+                ),
+              ],
+            ),
+          const SizedBox(
             height: 12,
           ),
           Text(
@@ -317,7 +318,7 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
             style: TextStyle(
                 fontSize: 16, fontWeight: FontWeight.w700, color: blackFont),
           ),
-          SizedBox(
+          const SizedBox(
             height: 12,
           ),
           Text(
@@ -373,7 +374,7 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
         barrierDismissible: false,
         builder: (context) => Center(child: CircularLoadingIndicator()));
 
-    var result = await MessageAuth()
+    final result = await MessageAuth()
         .cancelEnvelope(envelope: envelope!, data: data!)
         .catchError((error) {});
 
@@ -406,7 +407,7 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
           snap: false,
           floating: true,
           leading: IconButton(
-            icon: Icon(
+            icon: const Icon(
               Icons.keyboard_arrow_left,
               color: Colors.white,
               size: 26,
@@ -417,7 +418,7 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
             },
           ),
           title: Container(
-            child: Text(
+            child: const Text(
               "Details",
               style: TextStyle(
                 color: Colors.white,
@@ -436,7 +437,7 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
               StretchMode.blurBackground
             ],
             background: isLoading
-                ? SizedBox.shrink()
+                ? const SizedBox.shrink()
                 : Stack(
                     alignment: Alignment.topCenter,
                     children: <Widget>[
@@ -467,7 +468,7 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
     return Container(
       height: 206,
       child: isLoading
-          ? Center(
+          ? const Center(
               child: CircularProgressIndicator(
                 strokeWidth: 2.5,
                 valueColor: AlwaysStoppedAnimation(Colors.white),
@@ -475,7 +476,7 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
               ),
             )
           : senderCustomer == null
-              ? Center(
+              ? const Center(
                   child: CircularProgressIndicator(
                     strokeWidth: 2.5,
                     valueColor: AlwaysStoppedAnimation(Colors.white),
@@ -483,7 +484,7 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
                   ),
                 )
               : senderCustomer!.userAbout == null
-                  ? Center(
+                  ? const Center(
                       child: CircularProgressIndicator(
                         strokeWidth: 2.5,
                         valueColor: AlwaysStoppedAnimation(Colors.white),
@@ -520,7 +521,7 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
 
   Widget getProfilePhoto() {
     if (senderCustomer != null) {
-      Color borderColor = getUserTypeColor(user: senderCustomer!);
+      final Color borderColor = getUserTypeColor(user: senderCustomer!);
 
       return Container(
         alignment: Alignment.bottomLeft,
@@ -528,7 +529,7 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             AnimatedContainer(
-              duration: Duration(milliseconds: 500),
+              duration: const Duration(milliseconds: 500),
               decoration: BoxDecoration(
                   border: Border.all(color: borderColor, width: 3),
                   shape: BoxShape.circle),
@@ -592,9 +593,9 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
   }
 
   void deleteChatMessage() async {
-    ChatMessage chatMessage = ChatMessage.fromJson(data!);
+    final ChatMessage chatMessage = ChatMessage.fromJson(data!);
 
-    Map<String, dynamic> deleteMessage = Map<String, dynamic>();
+    final Map<String, dynamic> deleteMessage = Map<String, dynamic>();
 
     deleteMessage["check_id"] = chatMessage.checkId;
     deleteMessage["conversation_id"] = chatMessage.conversationId;

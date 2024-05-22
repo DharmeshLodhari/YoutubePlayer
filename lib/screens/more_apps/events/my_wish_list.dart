@@ -73,12 +73,12 @@ class _MyWishListState extends State<MyWishList> {
               onRefresh: _onRefresh,
               child: SingleChildScrollView(
                 child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Column(
                     children: eventList
                         .map(
                           (element) => Container(
-                              padding: EdgeInsets.symmetric(vertical: 8),
+                              padding: const EdgeInsets.symmetric(vertical: 8),
                               child: EventTileWithHeart(
                                 partialEvent: element,
                               )),

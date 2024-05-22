@@ -378,13 +378,13 @@ class _PaymentLinkCashOutState extends State<PaymentLinkCashOut> {
     loading = true;
     if (mounted) setState(() {});
 
-    Map data = {
+    final Map data = {
       "bank_code": selectedBank!.providerCode,
       "account_number": accountNumber,
     };
 
     try {
-      Map<String, dynamic>? result = await _auth.verifyBankAccount(data);
+      final Map<String, dynamic>? result = await _auth.verifyBankAccount(data);
 
       loading = false;
       if (mounted) setState(() {});
@@ -394,7 +394,7 @@ class _PaymentLinkCashOutState extends State<PaymentLinkCashOut> {
         return;
       }
 
-      var tempList = result['results'];
+      final tempList = result['results'];
       // debugPrint('Fola verify::: ${tempList}');
 
       showDialogBox(
@@ -479,7 +479,7 @@ class _PaymentLinkCashOutState extends State<PaymentLinkCashOut> {
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         count = 0;
@@ -500,7 +500,7 @@ class _PaymentLinkCashOutState extends State<PaymentLinkCashOut> {
   }
 
   void getBankListSearched() async {
-    String url =
+    final String url =
         "${AppConfig.baseUrl}/api/v1/transactions/get-bank-info/?search=${searchItemTextController.text}";
 
     if (!isItemLoading) {
@@ -512,7 +512,7 @@ class _PaymentLinkCashOutState extends State<PaymentLinkCashOut> {
         }
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result =
+        final Map<String, dynamic>? result =
             await _auth.searchBankList(url, next, previous);
         if (result == null) {
           isItemLoading = false;
@@ -521,7 +521,7 @@ class _PaymentLinkCashOutState extends State<PaymentLinkCashOut> {
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
-        List tempList = result['results'];
+        final List tempList = result['results'];
 
         isItemLoading = false;
         if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted) {
@@ -550,7 +550,7 @@ class _PaymentLinkCashOutState extends State<PaymentLinkCashOut> {
   }
 
   void showSearchBankBottomSheet() async {
-    var result = await showModalBottomSheet<String>(
+    final result = await showModalBottomSheet<String>(
         backgroundColor: Colors.transparent,
         context: context,
         useRootNavigator: true,
@@ -816,7 +816,7 @@ class _PaymentLinkCashOutState extends State<PaymentLinkCashOut> {
   }
 
   Widget getBankLogoLeading(BankModel bankModel) {
-    String? bankUrl = bankModel.logoUrl == ""
+    final String? bankUrl = bankModel.logoUrl == ""
         ? getInitials(bankModel.name!).toUpperCase()
         : bankModel.logoUrl;
 
@@ -890,10 +890,10 @@ class _PaymentLinkCashOutState extends State<PaymentLinkCashOut> {
   }
 
   Widget passwordPinFiled() {
-    BoxDecoration pinPutDecoration = BoxDecoration(
+    final BoxDecoration pinPutDecoration = BoxDecoration(
         borderRadius: BorderRadius.circular(10),
         border: Border.all(color: greyBorderColor));
-    BoxDecoration selectedDecoration = BoxDecoration(
+    final BoxDecoration selectedDecoration = BoxDecoration(
         borderRadius: BorderRadius.circular(10),
         border: Border.all(color: navyBlue));
     return Container(
@@ -934,7 +934,7 @@ class _PaymentLinkCashOutState extends State<PaymentLinkCashOut> {
   void getPaymentLinkData() async {
     try {
       loading = true;
-      var res = await _auth.getSinglePaymentLinkDetails(widget.id);
+      final res = await _auth.getSinglePaymentLinkDetails(widget.id);
       _paymentLinkModel = PaymentLinkModel.fromJson(res);
       loading = false;
       setState(() {});
@@ -946,7 +946,7 @@ class _PaymentLinkCashOutState extends State<PaymentLinkCashOut> {
 
   cashOut() {
     if (_formKey.currentState!.validate()) {
-      dynamic data = {
+      final dynamic data = {
         "bank": bankPaymentLinkSlug,
         "pin": pinController.text,
         "recipient_account_name": accountNameController.text,

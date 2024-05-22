@@ -48,7 +48,6 @@ class _TrimmerViewState extends State<TrimmerView> {
     _trimmer.loadVideo(
       videoFile: widget.file,
     );
-    
   }
 
   @override
@@ -62,7 +61,7 @@ class _TrimmerViewState extends State<TrimmerView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           "Video Trimmer",
         ),
         actions: [
@@ -72,7 +71,7 @@ class _TrimmerViewState extends State<TrimmerView> {
                 : () async {
                     await _saveVideo();
                   },
-            icon: Icon(
+            icon: const Icon(
               Icons.check_rounded,
               size: 32,
             ),
@@ -82,7 +81,7 @@ class _TrimmerViewState extends State<TrimmerView> {
       body: Builder(
         builder: (context) => Center(
           child: Container(
-            padding: EdgeInsets.only(bottom: 30.0),
+            padding: const EdgeInsets.only(bottom: 30.0),
             color: Colors.black,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -90,7 +89,7 @@ class _TrimmerViewState extends State<TrimmerView> {
               children: <Widget>[
                 Visibility(
                   visible: _progressVisibility,
-                  child: LinearProgressIndicator(
+                  child: const LinearProgressIndicator(
                     backgroundColor: Colors.red,
                   ),
                 ),
@@ -106,7 +105,7 @@ class _TrimmerViewState extends State<TrimmerView> {
                     trimmer: _trimmer,
                     viewerHeight: 50.0,
                     viewerWidth: MediaQuery.of(context).size.width,
-                    maxVideoLength: Duration(seconds: 30),
+                    maxVideoLength: const Duration(seconds: 30),
                     onChangeStart: (value) {
                       _startValue = value;
                     },
@@ -122,12 +121,12 @@ class _TrimmerViewState extends State<TrimmerView> {
                 ),
                 TextButton(
                   child: _isPlaying
-                      ? Icon(
+                      ? const Icon(
                           Icons.pause,
                           size: 80.0,
                           color: Colors.white,
                         )
-                      : Icon(
+                      : const Icon(
                           Icons.play_arrow,
                           size: 80.0,
                           color: Colors.white,

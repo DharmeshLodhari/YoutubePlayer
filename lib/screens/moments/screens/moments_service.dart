@@ -37,18 +37,18 @@ class MomentsService extends AuthService {
     }
     final headers = await getAuthHeaders();
 
-    Response response = await httpGet(url, headers: headers);
+    final Response response = await httpGet(url, headers: headers);
     if (response.statusCode == 200 || response.statusCode == 201) {
-      var jsonData = jsonDecode(response.body);
+      final jsonData = jsonDecode(response.body);
 
-      List<ExploreMomentsModel> momentsList = [];
-      List jsonResult = jsonData['results'];
+      final List<ExploreMomentsModel> momentsList = [];
+      final List jsonResult = jsonData['results'];
 
       jsonResult.forEach((json) {
         momentsList.add(ExploreMomentsModel.fromJson(json));
       });
 
-      Map<String, dynamic> result = {
+      final Map<String, dynamic> result = {
         "count": jsonData["count"],
         "next": jsonData["next"],
         "previous": jsonData["previous"],
@@ -76,23 +76,23 @@ class MomentsService extends AuthService {
     debugPrint('URL MOMENTS getContactMoments:: $url');
     final headers = await getAuthHeaders();
 
-    Response response = await httpGet(url, headers: headers);
+    final Response response = await httpGet(url, headers: headers);
 
     debugPrint('CONTACT MOMENT ::: ${response.body}');
     debugPrint('CONTACT MOMENT ::: ${response.statusCode}');
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      var jsonData = jsonDecode(response.body);
+      final jsonData = jsonDecode(response.body);
       debugPrint('GET CONTACT LIST :::: $jsonData');
 
-      List<MomentsModel> momentsList = [];
-      List jsonResult = jsonData['results'];
+      final List<MomentsModel> momentsList = [];
+      final List jsonResult = jsonData['results'];
 
       jsonResult.forEach((json) {
         momentsList.add(MomentsModel.fromJson(json));
       });
 
-      Map<String, dynamic> result = {
+      final Map<String, dynamic> result = {
         "count": jsonData["count"],
         "next": jsonData["next"],
         "previous": jsonData["previous"],
@@ -125,7 +125,7 @@ class MomentsService extends AuthService {
 
     final headers = await getAuthHeaders();
 
-    Response response = await httpGet(url, headers: headers);
+    final Response response = await httpGet(url, headers: headers);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       List jsonData = [];
@@ -143,15 +143,15 @@ class MomentsService extends AuthService {
   }
 
   Future<List<MomentsModel>> getSingleMoment({required String momentId}) async {
-    String url = "${AppConfig.baseUrl}/api/v1/social/moments/$momentId/";
+    final String url = "${AppConfig.baseUrl}/api/v1/social/moments/$momentId/";
 
     final headers = await getAuthHeaders();
 
-    Response response = await httpGet(url, headers: headers);
+    final Response response = await httpGet(url, headers: headers);
 
     debugPrint('SINGLE MOMENT ::: ${response.body}');
     if (response.statusCode == 200 || response.statusCode == 201) {
-      var jsonData = jsonDecode(response.body);
+      final jsonData = jsonDecode(response.body);
 
       return [MomentsModel.fromJson(jsonData)];
     } else {
@@ -169,9 +169,9 @@ class MomentsService extends AuthService {
 
     final headers = await getAuthHeaders();
 
-    Response response = await httpGet(url, headers: headers);
+    final Response response = await httpGet(url, headers: headers);
 
-    Map<String, dynamic>? pinnedYarn = await getPinnedComment(momentID);
+    final Map<String, dynamic>? pinnedYarn = await getPinnedComment(momentID);
 
     debugPrint('COMMENTS MOMENTS ::: ${response.statusCode}');
     debugPrint('COMMENTS MOMENTS ::: ${response.body}');
@@ -185,20 +185,20 @@ class MomentsService extends AuthService {
         if (pinnedYarn.isNotEmpty) {
           pinnedYarn['pinned'] = true;
 
-          List<dynamic> pinnedYarnList = [pinnedYarn];
+          final List<dynamic> pinnedYarnList = [pinnedYarn];
           // debugPrint('COMMENTS MOMENTS PINNED ::: ${pinnedYarnList}');
 
           results = pinnedYarnList + results;
         }
       }
 
-      List<YarnComment> commentDetails = [];
+      final List<YarnComment> commentDetails = [];
       for (var item in results) {
-        YarnComment replyCommentDetail = YarnComment.fromJson(item);
+        final YarnComment replyCommentDetail = YarnComment.fromJson(item);
         commentDetails.add(replyCommentDetail);
       }
 
-      Map<String, dynamic> result = {
+      final Map<String, dynamic> result = {
         "count": jsonData["count"],
         "next": jsonData["next"],
         "results": commentDetails
@@ -217,14 +217,14 @@ class MomentsService extends AuthService {
     url = "${AppConfig.baseUrl}/api/v1/social/moments/add-comments/$commentId/";
     debugPrint(url);
 
-    var headers = await getAuthHeaders();
+    final headers = await getAuthHeaders();
 
-    var request = http.MultipartRequest("POST", Uri.parse(url));
+    final request = http.MultipartRequest("POST", Uri.parse(url));
 
     // debugPrint(
     //     "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
-    Map<String, String> payload = {
+    final Map<String, String> payload = {
       "comment": messageDecoderWithEmoji(body['comment']) ?? "",
       "is_reply": jsonEncode(body['is_reply']),
       "author_username": body['author_username'] ?? "",
@@ -243,8 +243,8 @@ class MomentsService extends AuthService {
     }
 
     request.fields.addAll(payload);
-    List<MultipartFile> newList = [];
-    List<MultipartFile> thumbnailList = [];
+    final List<MultipartFile> newList = [];
+    final List<MultipartFile> thumbnailList = [];
     if (body['media_count'].isNotEmpty) {
       debugPrint("MEDIA LENGTH::: ${body['media_count'].length}");
       for (int i = 0; i < body['media_count'].length; i++) {
@@ -289,16 +289,17 @@ class MomentsService extends AuthService {
     }
 
     headers.forEach((k, v) => request.headers[k] = v);
-    var response = await request.send();
+    final response = await request.send();
     if (response.statusCode == 413) {
       return Future.error(
           "Please upload smaller images, One or all of your images are too large.");
     }
 
-    var responseBody = await response.stream.bytesToString();
+    final responseBody = await response.stream.bytesToString();
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      YarnComment yarnComment = YarnComment.fromJson(json.decode(responseBody));
+      final YarnComment yarnComment =
+          YarnComment.fromJson(json.decode(responseBody));
 
       return yarnComment;
     } else if (response.statusCode == 500) {
@@ -316,14 +317,14 @@ class MomentsService extends AuthService {
         "${AppConfig.baseUrl}/api/v1/social/moments/reply-comments/$commentId/";
     debugPrint(url);
 
-    var headers = await getAuthHeaders();
+    final headers = await getAuthHeaders();
 
-    var request = http.MultipartRequest("POST", Uri.parse(url));
+    final request = http.MultipartRequest("POST", Uri.parse(url));
 
     // debugPrint(
     //     "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
-    Map<String, String> payload = {
+    final Map<String, String> payload = {
       "comment": messageDecoderWithEmoji(body['comment']) ?? "",
       "is_reply": jsonEncode(body['is_reply']),
       "author_username": body['author_username'] ?? "",
@@ -342,8 +343,8 @@ class MomentsService extends AuthService {
     }
 
     request.fields.addAll(payload);
-    List<MultipartFile> newList = [];
-    List<MultipartFile> thumbnailList = [];
+    final List<MultipartFile> newList = [];
+    final List<MultipartFile> thumbnailList = [];
     if (body['media_count'].isNotEmpty) {
       debugPrint("MEDIA LENGTH::: ${body['media_count'].length}");
       for (int i = 0; i < body['media_count'].length; i++) {
@@ -382,16 +383,17 @@ class MomentsService extends AuthService {
     }
 
     headers.forEach((k, v) => request.headers[k] = v);
-    var response = await request.send();
+    final response = await request.send();
     if (response.statusCode == 413) {
       return Future.error(
           "Please upload smaller images, One or all of your images are too large.");
     }
 
-    var responseBody = await response.stream.bytesToString();
+    final responseBody = await response.stream.bytesToString();
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      YarnComment yarnComment = YarnComment.fromJson(json.decode(responseBody));
+      final YarnComment yarnComment =
+          YarnComment.fromJson(json.decode(responseBody));
 
       return yarnComment;
     } else if (response.statusCode == 500) {
@@ -409,16 +411,16 @@ class MomentsService extends AuthService {
 
     debugPrint(url);
 
-    var headers = await getAuthHeaders();
-    var response = await httpGet(url, headers: headers);
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers);
 
-    Map<String, dynamic>? pinnedYarn = await getPinnedComment(commentId);
+    final Map<String, dynamic>? pinnedYarn = await getPinnedComment(commentId);
 
     debugPrint(
         "COMMENTS RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body.toString()}");
     if (response.statusCode == 200 || response.statusCode == 201) {
-      List<YarnComment> commentsDetails = [];
-      var jsonData = json.decode(response.body);
+      final List<YarnComment> commentsDetails = [];
+      final jsonData = json.decode(response.body);
 
       debugPrint('COMMENTS RESPONSE CODE::: $jsonData');
 
@@ -430,20 +432,20 @@ class MomentsService extends AuthService {
         if (pinnedYarn.isNotEmpty) {
           pinnedYarn['pinned'] = true;
 
-          List<dynamic> pinnedYarnList = [pinnedYarn];
+          final List<dynamic> pinnedYarnList = [pinnedYarn];
 
           results = pinnedYarnList + results;
         }
       }
 
       for (var item in results) {
-        YarnComment commentsDetail = YarnComment.fromJson(item);
+        final YarnComment commentsDetail = YarnComment.fromJson(item);
         debugPrint('Fola test getAllComments::: ${item}');
 
         commentsDetails.add(commentsDetail);
       }
 
-      Map<String, dynamic> result = {
+      final Map<String, dynamic> result = {
         "count": jsonData["count"],
         "next": jsonData["next"],
         "previous": jsonData["previous"],
@@ -465,14 +467,14 @@ class MomentsService extends AuthService {
     url = "${AppConfig.baseUrl}/api/v1/social/moments/pinned-comment/$yarnId/";
     debugPrint(url);
 
-    var headers = await getAuthHeaders();
-    var response = await httpGet(url, headers: headers);
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers);
 
     debugPrint(
         "RESPONSE PINNED GET CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      var data = json.decode(response.body);
+      final data = json.decode(response.body);
       return data;
     } else if (response.statusCode == 500) {
       return null;
@@ -495,9 +497,9 @@ class MomentsService extends AuthService {
 
     final headers = await getAuthHeaders();
 
-    var request = MultipartRequest("POST", Uri.parse(url));
+    final request = MultipartRequest("POST", Uri.parse(url));
 
-    MultipartFile mediaMultipartFile =
+    final MultipartFile mediaMultipartFile =
         await MultipartFile.fromPath("media", createMomentModel.filePath);
 
     request.files.add(mediaMultipartFile);
@@ -530,7 +532,7 @@ class MomentsService extends AuthService {
 
     debugPrint('REQUEST FIELDS :: ${request.fields}');
     if (createMomentModel.mediaPoster != null) {
-      MultipartFile thumbnailMultipartFile = await MultipartFile.fromPath(
+      final MultipartFile thumbnailMultipartFile = await MultipartFile.fromPath(
           "media_poster", createMomentModel.mediaPoster!);
       request.files.add(thumbnailMultipartFile);
     }
@@ -538,14 +540,14 @@ class MomentsService extends AuthService {
     debugPrint('FIELDS ::: ${request.fields}');
     headers.forEach((k, v) => request.headers[k] = v);
 
-    var response = await request.send();
+    final response = await request.send();
 
     if (response.statusCode == 413) {
       return Future.error(
           "Please upload smaller video, This video is too large.");
     }
 
-    var responseBody = await response.stream.bytesToString();
+    final responseBody = await response.stream.bytesToString();
     debugPrint(
         "URL FOR CREATE MOMENT $url STATUS CODE:- ${response.statusCode} BODY:- $responseBody");
 
@@ -568,8 +570,8 @@ class MomentsService extends AuthService {
           "${AppConfig.baseUrl}/api/v1/social/moments/channel/$channelUsername/$momentId/";
     }
 
-    Map<String, String> headers = await getAuthHeaders();
-    var response = await httpPatch(
+    final Map<String, String> headers = await getAuthHeaders();
+    final response = await httpPatch(
       url,
       headers: headers,
       body: jsonEncode(data),
@@ -579,13 +581,13 @@ class MomentsService extends AuthService {
         "URL $url REQUEST FIELD: $data STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      MomentsModel momentsModel =
+      final MomentsModel momentsModel =
           MomentsModel.fromJson(jsonDecode(response.body));
 
       return momentsModel;
     } else {
       if (response.statusCode != 500) {
-        var jsonData = jsonDecode(response.body);
+        final jsonData = jsonDecode(response.body);
         debugPrint(
             "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
         return Future.error(jsonData is Map
@@ -599,22 +601,23 @@ class MomentsService extends AuthService {
   }
 
   Future<MomentsModel> likeMoment(String momentId) async {
-    String url = "${AppConfig.baseUrl}/api/v1/social/moments/like/$momentId/";
-    Map<String, String> headers = await getAuthHeaders();
-    var response = await httpPost(url, headers: headers);
+    final String url =
+        "${AppConfig.baseUrl}/api/v1/social/moments/like/$momentId/";
+    final Map<String, String> headers = await getAuthHeaders();
+    final response = await httpPost(url, headers: headers);
 
     debugPrint(
         "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
 
     debugPrint('LIKE URL :: $url');
     if (response.statusCode == 200 || response.statusCode == 201) {
-      MomentsModel momentsModel =
+      final MomentsModel momentsModel =
           MomentsModel.fromJson(jsonDecode(response.body));
 
       return momentsModel;
     } else {
       if (response.statusCode != 500) {
-        var jsonData = jsonDecode(response.body);
+        final jsonData = jsonDecode(response.body);
         debugPrint(
             "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
         return Future.error(jsonData is Map
@@ -628,10 +631,10 @@ class MomentsService extends AuthService {
   }
 
   Future<bool> updateMomentView(String momentId) async {
-    String url =
+    final String url =
         "${AppConfig.baseUrl}/api/v1/social/moments/update-moment-view/$momentId/";
-    Map<String, String> headers = await getAuthHeaders();
-    var response = await httpGet(url, headers: headers);
+    final Map<String, String> headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers);
 
     debugPrint(
         "UPDATE MOMENT VIEW URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
@@ -640,7 +643,7 @@ class MomentsService extends AuthService {
       return true;
     } else {
       if (response.statusCode != 500) {
-        var jsonData = jsonDecode(response.body);
+        final jsonData = jsonDecode(response.body);
         debugPrint(
             "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
         return Future.error(jsonData is Map
@@ -654,23 +657,23 @@ class MomentsService extends AuthService {
   }
 
   Future<MomentsModel> dislikeMoment(String momentId) async {
-    String url =
+    final String url =
         "${AppConfig.baseUrl}/api/v1/social/moments/dislike/$momentId/";
-    Map<String, String> headers = await getAuthHeaders();
-    var response = await httpPost(url, headers: headers);
+    final Map<String, String> headers = await getAuthHeaders();
+    final response = await httpPost(url, headers: headers);
 
     debugPrint(
         "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
 
     debugPrint('LIKE URL :: $url');
     if (response.statusCode == 200 || response.statusCode == 201) {
-      MomentsModel momentsModel =
+      final MomentsModel momentsModel =
           MomentsModel.fromJson(jsonDecode(response.body));
 
       return momentsModel;
     } else {
       if (response.statusCode != 500) {
-        var jsonData = jsonDecode(response.body);
+        final jsonData = jsonDecode(response.body);
         debugPrint(
             "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
         return Future.error(jsonData is Map
@@ -691,8 +694,8 @@ class MomentsService extends AuthService {
           "${AppConfig.baseUrl}/api/v1/social/moments/channel/$channelUsername/$momentId/";
     }
 
-    Map<String, String> headers = await getAuthHeaders();
-    var response = await httpDelete(url, headers: headers);
+    final Map<String, String> headers = await getAuthHeaders();
+    final response = await httpDelete(url, headers: headers);
 
     debugPrint(
         "URL TO DELETE $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
@@ -715,15 +718,15 @@ class MomentsService extends AuthService {
       url =
           "${AppConfig.baseUrl}/api/v1/social/moments/search/?q=$searchText&page_size=10";
     }
-    Map<String, String> headers = await getAuthHeaders();
-    var response = await httpGet(url, headers: headers);
+    final Map<String, String> headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers);
 
     debugPrint(
         "SEARCH MOMENT $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       final jsonData = jsonDecode(response.body);
-      List results = jsonData['results'];
+      final List results = jsonData['results'];
 
       debugPrint('RESULT LENGTH -> ${results.length}');
 

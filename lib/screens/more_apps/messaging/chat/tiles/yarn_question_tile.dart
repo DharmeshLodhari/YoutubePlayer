@@ -73,11 +73,11 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
     _yarnSettings = Provider.of<YarnDashboardBloc>(context, listen: false);
     try {
       yarnQuestionForChatModel = YarnQuestionForChatModel();
-      var meta = widget.message!['meta_data'];
+      final meta = widget.message!['meta_data'];
 
       yarn = Yarn.fromJson(jsonDecode(meta));
       if (yarn != null) {
-        Map<String, dynamic> linkData =
+        final Map<String, dynamic> linkData =
             detectLinkInText(messageDecoderWithEmoji(yarn.body)!);
 
         if (linkData["hasLink"]) {
@@ -123,7 +123,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
 
-    bool isSend = widget.message!["author"] == userBloc.user.userName;
+    final bool isSend = widget.message!["author"] == userBloc.user.userName;
 
     return GestureDetector(
       onTap: () async {
@@ -175,8 +175,8 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
                   borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(!isSend ? 0 : 20),
                     bottomRight: Radius.circular(isSend ? 0 : 20),
-                    topLeft: Radius.circular(20),
-                    topRight: Radius.circular(20),
+                    topLeft: const Radius.circular(20),
+                    topRight: const Radius.circular(20),
                   ),
                 ),
                 padding: EdgeInsets.symmetric(
@@ -206,7 +206,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
                                         fontSize: 12,
                                         fontWeight: FontWeight.w700),
                                   ),
-                                  SizedBox(
+                                  const SizedBox(
                                     height: 4,
                                   ),
                                 ],
@@ -226,7 +226,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
                           borderRadius: BorderRadius.circular(20)),
                       child: Container(
                         decoration: decorateBox(color: Colors.white),
-                        padding: EdgeInsets.only(
+                        padding: const EdgeInsets.only(
                             right: 10, top: 10, left: 10, bottom: 4),
                         child: _buildMainCard(),
                       ),
@@ -246,7 +246,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
                   : Container(),
             ],
           ),
-          SizedBox(
+          const SizedBox(
             height: 2,
           ),
           Row(
@@ -255,7 +255,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
             children: [
               isSend
                   ? Container()
-                  : SizedBox(
+                  : const SizedBox(
                       width: 20,
                     ),
               Text(
@@ -264,7 +264,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
                     color: darkGrey, fontSize: 10, fontWeight: FontWeight.w500),
               ),
               isSend
-                  ? SizedBox(
+                  ? const SizedBox(
                       width: 20,
                     )
                   : Container(),
@@ -293,22 +293,22 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildUserInfoRow(),
-        SizedBox(
+        const SizedBox(
           height: 10,
         ),
         if (yarnQuestionForChatModel.isQuestion ?? false) ...[
           _buildPostTitle(),
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
         ],
         _buildPostDescription(),
-        SizedBox(
+        const SizedBox(
           height: 10,
         ),
         if (yarnQuestionForChatModel.media != null) ...[
           _buildImagesRow(context: context),
-          SizedBox(
+          const SizedBox(
             height: 6,
           ),
         ]
@@ -324,7 +324,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
             Container(
               height: 24,
               width: 24,
-              decoration: BoxDecoration(shape: BoxShape.circle),
+              decoration: const BoxDecoration(shape: BoxShape.circle),
               child: ClipOval(
                 child: CachedNetworkImage(
                   imageUrl: yarnQuestionForChatModel.authorAvatar != null
@@ -335,7 +335,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
                 ),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               width: 10,
             ),
           ],
@@ -387,7 +387,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
+          const SizedBox(
             height: 5,
           ),
           YarnSmartText(
@@ -407,7 +407,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
               });
             },
           ),
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           Container(
@@ -428,8 +428,8 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
                       launchUrl(Uri.parse(linkToBePreview!));
                     },
                     child: Container(
-                      margin:
-                          EdgeInsets.only(left: 10.0, top: 10.0, bottom: 10.0),
+                      margin: const EdgeInsets.only(
+                          left: 10.0, top: 10.0, bottom: 10.0),
                       child: Text(
                         linkToBePreview!,
                         maxLines: 1,
@@ -458,7 +458,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
                     color: Colors.white,
                   ),
                   padding: const EdgeInsets.all(10),
-                  margin: EdgeInsets.only(bottom: 4, top: 8),
+                  margin: const EdgeInsets.only(bottom: 4, top: 8),
                   child: Column(
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -499,7 +499,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
     } else if (yarnQuestionForChatModel.media!.length >= 4) {
       return _buildFourImageRow(context: context);
     }
-    return SizedBox();
+    return const SizedBox();
   }
 
   Widget _buildSingleImage({required BuildContext context}) {
@@ -528,7 +528,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
                 child: Container(
                   height: (MediaQuery.of(context).size.width - 40) / 2,
                   width: (MediaQuery.of(context).size.width - 40) / 2,
-                  padding: EdgeInsets.symmetric(horizontal: 5),
+                  padding: const EdgeInsets.symmetric(horizontal: 5),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -559,7 +559,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
             child: Container(
               height: (MediaQuery.of(context).size.width - 40) / 2,
               width: (MediaQuery.of(context).size.width - 40) / 2,
-              padding: EdgeInsets.symmetric(horizontal: 5),
+              padding: const EdgeInsets.symmetric(horizontal: 5),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
               ),
@@ -579,7 +579,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
             child: Container(
               height: (MediaQuery.of(context).size.width - 40) / 2,
               width: (MediaQuery.of(context).size.width - 40) / 2,
-              padding: EdgeInsets.symmetric(horizontal: 5),
+              padding: const EdgeInsets.symmetric(horizontal: 5),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
               ),
@@ -599,7 +599,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
             child: Container(
               height: (MediaQuery.of(context).size.width - 40) / 2,
               width: (MediaQuery.of(context).size.width - 40) / 2,
-              padding: EdgeInsets.symmetric(horizontal: 5),
+              padding: const EdgeInsets.symmetric(horizontal: 5),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
               ),
@@ -630,7 +630,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
                 child: Container(
                   height: (MediaQuery.of(context).size.width - 40) / 2,
                   width: (MediaQuery.of(context).size.width - 40) / 2,
-                  padding: EdgeInsets.symmetric(horizontal: 5),
+                  padding: const EdgeInsets.symmetric(horizontal: 5),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -650,7 +650,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
                 child: Container(
                   height: (MediaQuery.of(context).size.width - 40) / 2,
                   width: (MediaQuery.of(context).size.width - 40) / 2,
-                  padding: EdgeInsets.symmetric(horizontal: 5),
+                  padding: const EdgeInsets.symmetric(horizontal: 5),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -668,7 +668,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
               )
             ],
           ),
-          SizedBox(
+          const SizedBox(
             height: 8,
           ),
           Row(
@@ -677,7 +677,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
                 child: Container(
                   height: (MediaQuery.of(context).size.width - 40) / 2,
                   width: (MediaQuery.of(context).size.width - 40) / 2,
-                  padding: EdgeInsets.symmetric(horizontal: 5),
+                  padding: const EdgeInsets.symmetric(horizontal: 5),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -697,7 +697,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
                 child: Container(
                   height: (MediaQuery.of(context).size.width - 40) / 2,
                   width: (MediaQuery.of(context).size.width - 40) / 2,
-                  padding: EdgeInsets.symmetric(horizontal: 5),
+                  padding: const EdgeInsets.symmetric(horizontal: 5),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -725,20 +725,20 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildUserInfoRowNew(),
-        SizedBox(
+        const SizedBox(
           height: 10,
         ),
         if (yarn.isQuestion) ...[
           _buildPostTitleNew(),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
         ],
         _buildPostDescriptionNew(),
-        SizedBox(
+        const SizedBox(
           height: 10,
         ),
         if (isReYarnPresent && yarn.reYarn != null) ...[
           getDisplayWidget(_buildReYarnTile),
-          SizedBox(
+          const SizedBox(
             height: 8,
           ),
         ],
@@ -746,18 +746,20 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
             yarn.attachment != null &&
             yarn.attachment?.isEmpty != true) ...[
           getDisplayWidget(_buildAttachment),
-          SizedBox(
+          const SizedBox(
             height: 8,
           ),
         ],
         if (isMediaPresent) ...[
           _buildImagesRowNew(),
-          SizedBox(
+          const SizedBox(
             height: 8,
           ),
         ],
-        yarn.factChecked == true ? _buildFactCheckWidget() : SizedBox.shrink(),
-        SizedBox(height: 6),
+        yarn.factChecked == true
+            ? _buildFactCheckWidget()
+            : const SizedBox.shrink(),
+        const SizedBox(height: 6),
       ],
     );
   }
@@ -766,14 +768,14 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(
+        const SizedBox(
           height: 4,
         ),
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildUserAvatar(),
-            SizedBox(
+            const SizedBox(
               width: 10,
             ),
             Expanded(
@@ -796,7 +798,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
                             style: TextStyle(fontSize: 12, color: yarnBlack),
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 4,
                         ),
                         Text(
@@ -838,7 +840,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
       child: Container(
         height: 36,
         width: 36,
-        decoration: BoxDecoration(shape: BoxShape.circle),
+        decoration: const BoxDecoration(shape: BoxShape.circle),
         child: ClipOval(
           child: CachedNetworkImage(
             imageUrl: yarn.authorAvatar!,
@@ -858,7 +860,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
 
   Widget _buildPostDescriptionNew() {
     var newString = '';
-    var list = [];
+    final list = [];
 
     yarn.body.toString().split(' ').forEach((ch) {
       list.add(ch);
@@ -885,7 +887,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
+          const SizedBox(
             height: 5,
           ),
           YarnSmartText(
@@ -905,7 +907,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
               });
             },
           ),
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           Container(
@@ -945,7 +947,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
                     color: Colors.white,
                   ),
                   padding: const EdgeInsets.all(10),
-                  margin: EdgeInsets.only(bottom: 4, top: 8),
+                  margin: const EdgeInsets.only(bottom: 4, top: 8),
                   child: Column(
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -979,17 +981,17 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
   Widget _buildAttachment() {
     Widget childWidget;
     if (yarn.attachmentType == 'service') {
-      Service service = Service.fromJson(yarn.attachment);
+      final Service service = Service.fromJson(yarn.attachment);
       childWidget = YarnServiceTile(
         service: service,
       );
     } else if (yarn.attachmentType == 'product') {
-      Product product = Product.fromJson(yarn.attachment);
+      final Product product = Product.fromJson(yarn.attachment);
       childWidget = YarnProductTile(
         product: product,
       );
     } else if (yarn.attachmentType == 'blog') {
-      UserPost post = UserPost.fromJson(yarn.attachment);
+      final UserPost post = UserPost.fromJson(yarn.attachment);
       childWidget = YarnBlogPostTile(
         post: post,
         showAuthorDetails: true,
@@ -998,7 +1000,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
     } else if (yarn.attachmentType == 'profile') {
       // logger.d("profile yarn.attachment: ${yarn.attachment}, ${yarn.id}");
       // logger.d("profile yarn.createdAt: ${yarn.createdAt}");
-      CustomerProfile customerProfile =
+      final CustomerProfile customerProfile =
           CustomerProfile.fromJson(yarn.attachment ?? {});
       childWidget = YarnCustomerPostTile(
         customerProfile: customerProfile,
@@ -1006,7 +1008,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
         onDeleteBlog: () {},
       );
     } else {
-      childWidget = SizedBox();
+      childWidget = const SizedBox();
     }
     return childWidget;
   }
@@ -1026,7 +1028,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
 
   Widget _buildFactCheckWidget() {
     return Container(
-      padding: EdgeInsets.all(5),
+      padding: const EdgeInsets.all(5),
       //margin: EdgeInsets.only(right: 64),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16.5),
@@ -1037,10 +1039,10 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           SvgPicture.asset('assets/images/yarn/yell_icon.svg'),
-          SizedBox(
+          const SizedBox(
             width: 2,
           ),
-          Text(
+          const Text(
             'We doubt the information in the Yarn is correct.',
             style: TextStyle(
                 color: Color.fromARGB(255, 187, 118, 27), fontSize: 10),
@@ -1053,7 +1055,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
   Widget _buildSensitiveContentWidget() {
     return Container(
       width: MediaQuery.of(context).size.width,
-      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 18),
+      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 18),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(15),
           border: Border.all(color: deepPink),
@@ -1066,7 +1068,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
             style: TextStyle(
                 color: blackFont, fontSize: 13, fontWeight: FontWeight.w600),
           ),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
           Text(
@@ -1074,7 +1076,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
             style: TextStyle(
                 color: blackFont, fontSize: 12, fontWeight: FontWeight.w400),
           ),
-          SizedBox(
+          const SizedBox(
             height: 15,
           ),
           Row(
@@ -1087,7 +1089,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
                   });
                 },
               ),
-              SizedBox(
+              const SizedBox(
                 width: 10,
               ),
               clickWidget(
@@ -1106,11 +1108,11 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
   Widget _buildAdultContentWidget() {
     return Container(
       width: MediaQuery.of(context).size.width,
-      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 18),
+      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 18),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(15),
-          border: Border.all(color: Color.fromARGB(255, 187, 118, 27)),
-          color: Color.fromARGB(255, 249, 242, 222)),
+          border: Border.all(color: const Color.fromARGB(255, 187, 118, 27)),
+          color: const Color.fromARGB(255, 249, 242, 222)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -1119,7 +1121,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
             style: TextStyle(
                 color: blackFont, fontSize: 13, fontWeight: FontWeight.w600),
           ),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
           Text(
@@ -1127,7 +1129,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
             style: TextStyle(
                 color: blackFont, fontSize: 12, fontWeight: FontWeight.w400),
           ),
-          SizedBox(
+          const SizedBox(
             height: 15,
           ),
           Row(
@@ -1140,7 +1142,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
                   });
                 },
               ),
-              SizedBox(
+              const SizedBox(
                 width: 10,
               ),
               clickWidget(
@@ -1171,7 +1173,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
   Widget clickWidget({String? text, Function()? onClick}) => GestureDetector(
         onTap: onClick,
         child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 14, vertical: 5),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(15), color: blackFont),
           child: Text(

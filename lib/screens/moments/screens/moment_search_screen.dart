@@ -139,7 +139,7 @@ class _MomentSearchScreenState extends State<MomentSearchScreen> {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 500),
         ));
       }
 
@@ -159,14 +159,14 @@ class _MomentSearchScreenState extends State<MomentSearchScreen> {
             child: Column(
               children: [
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: CustomizedTextFormField(
                     hintText: 'Search',
                     autoFocus: true,
                     onChanged: _onChanged,
                   ),
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 Expanded(child: _buildResultList()),
               ],
             ),
@@ -187,14 +187,14 @@ class _MomentSearchScreenState extends State<MomentSearchScreen> {
                 shrinkWrap: true,
                 padding: EdgeInsets.zero,
                 controller: _scrollController,
-                gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
                   mainAxisExtent: 300,
                   maxCrossAxisExtent: 200,
                 ),
                 itemCount: searchMomentModelList.length,
                 itemBuilder: (context, index) {
                   if (searchMomentModelList.isEmpty) {
-                    return Text(
+                    return const Text(
                       'Search for a moment',
                       style: TextStyle(
                         fontSize: 18,
@@ -300,7 +300,7 @@ class _SearchMomentSingleWidgetState extends State<SearchMomentSingleWidget> {
                           child: CircularLoadingIndicator(),
                         )),
                   )
-                : SizedBox.shrink(),
+                : const SizedBox.shrink(),
             Align(
               alignment: Alignment.bottomLeft,
               child: Padding(
@@ -319,14 +319,14 @@ class _SearchMomentSingleWidgetState extends State<SearchMomentSingleWidget> {
                           Shadow(
                             blurRadius: 4.0,
                             color: blackFont,
-                            offset: Offset(0.0, 0),
+                            offset: const Offset(0.0, 0),
                           ),
                         ],
                         color: Colors.white,
                         fontWeight: FontWeight.w800,
                       ),
                     ),
-                    SizedBox(height: 3),
+                    const SizedBox(height: 3),
                     SizedBox(
                       width: 100,
                       child: Text(
@@ -341,7 +341,7 @@ class _SearchMomentSingleWidgetState extends State<SearchMomentSingleWidget> {
                               Shadow(
                                 blurRadius: 4.0,
                                 color: blackFont,
-                                offset: Offset(0.0, 0),
+                                offset: const Offset(0.0, 0),
                               ),
                             ],
                             overflow: TextOverflow.ellipsis),
@@ -510,8 +510,8 @@ Widget shimmerGridview() {
     highlightColor: greyBorderColor,
     child: GridView.builder(
       shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
-      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
         maxCrossAxisExtent: 200,
         mainAxisExtent: 300,
       ),

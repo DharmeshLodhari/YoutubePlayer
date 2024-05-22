@@ -25,24 +25,24 @@ class DebitCardAuth extends AuthService {
     }
     debugPrint(url);
 
-    var headers = await getAuthHeaders();
-    var response = await httpGet(url, headers: headers);
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers);
 
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      List<AllCards> cards = [];
-      var jsonData = json.decode(response.body);
+      final List<AllCards> cards = [];
+      final jsonData = json.decode(response.body);
 
       for (var item in jsonData["results"]) {
-        AllCards allCards = AllCards.fromJson(item);
+        final AllCards allCards = AllCards.fromJson(item);
         cards.add(allCards);
         // debugPrint("JSON CARDS::- $item");
 
       }
 
-      Map<String, dynamic> result = {
+      final Map<String, dynamic> result = {
         "count": jsonData["count"],
         "next": jsonData["next"],
         "previous": jsonData["previous"],
@@ -73,23 +73,24 @@ class DebitCardAuth extends AuthService {
     }
     debugPrint(url);
 
-    var headers = await getAuthHeaders();
-    var response = await httpGet(url, headers: headers);
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers);
 
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      List<CardTransactions> cardTransaction = [];
-      var jsonData = json.decode(response.body);
+      final List<CardTransactions> cardTransaction = [];
+      final jsonData = json.decode(response.body);
 
       for (var item in jsonData["results"]) {
-        CardTransactions cardTransactions = CardTransactions.fromJson(item);
+        final CardTransactions cardTransactions =
+            CardTransactions.fromJson(item);
         cardTransaction.add(cardTransactions);
         // debugPrint("JSON CARDS TRANSACTIONS::- $item");
       }
 
-      Map<String, dynamic> result = {
+      final Map<String, dynamic> result = {
         "count": jsonData["count"],
         "next": jsonData["next"],
         "previous": jsonData["previous"],
@@ -120,23 +121,24 @@ class DebitCardAuth extends AuthService {
     }
     debugPrint(url);
 
-    var headers = await getAuthHeaders();
-    var response = await httpGet(url, headers: headers);
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers);
 
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      List<CardTransactions> cardTransaction = [];
-      var jsonData = json.decode(response.body);
+      final List<CardTransactions> cardTransaction = [];
+      final jsonData = json.decode(response.body);
 
       for (var item in jsonData["results"]) {
-        CardTransactions cardTransactions = CardTransactions.fromJson(item);
+        final CardTransactions cardTransactions =
+            CardTransactions.fromJson(item);
         cardTransaction.add(cardTransactions);
         // debugPrint("JSON CARDS TRANSACTIONS::- $item");
       }
 
-      Map<String, dynamic> result = {
+      final Map<String, dynamic> result = {
         "count": jsonData["count"],
         "next": jsonData["next"],
         "previous": jsonData["previous"],
@@ -155,21 +157,22 @@ class DebitCardAuth extends AuthService {
   Future<ExchangeRate?> getExchangeRate() async {
     debugPrint("CALLING EXCHANGE RATE");
 
-    String url = "${AppConfig.baseUrl}/api/v1/virtual-cards/exchange-rate/";
+    final String url =
+        "${AppConfig.baseUrl}/api/v1/virtual-cards/exchange-rate/";
     debugPrint(url);
 
-    var headers = await getAuthHeaders();
-    var response = await httpGet(url, headers: headers);
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers);
 
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      var jsonData = json.decode(response.body);
+      final jsonData = json.decode(response.body);
 
       // debugPrint("JSON EXCHANGE RATE::- $jsonData");
 
-      ExchangeRate exchangeRate = ExchangeRate.fromJson(jsonData);
+      final ExchangeRate exchangeRate = ExchangeRate.fromJson(jsonData);
       return exchangeRate;
     } else if (response.statusCode == 500) {
       return null;
@@ -182,12 +185,12 @@ class DebitCardAuth extends AuthService {
   Future<bool?> createDebitCard(Map<String, dynamic> body) async {
     debugPrint("CALLING CREATE DEBIT CARD");
 
-    String url = "${AppConfig.baseUrl}/api/v1/virtual-cards/cards/";
+    final String url = "${AppConfig.baseUrl}/api/v1/virtual-cards/cards/";
     debugPrint('url:: $url');
     debugPrint('report body::: ${body}');
 
-    var headers = await getAuthHeaders();
-    var response =
+    final headers = await getAuthHeaders();
+    final response =
         await httpPost(url, headers: headers, body: jsonEncode(body));
 
     debugPrint(
@@ -206,12 +209,12 @@ class DebitCardAuth extends AuthService {
   Future<bool?> freezeCard(Map<String, dynamic> data, String cardId) async {
     debugPrint("FREEZE CARD");
 
-    String url =
+    final String url =
         "${AppConfig.baseUrl}/api/v1/virtual-cards/cards/$cardId/activate-deactivate/";
 
-    var headers = await getAuthHeaders();
-    var _data = jsonEncode(data);
-    var response = await httpPatch(url, headers: headers, body: _data);
+    final headers = await getAuthHeaders();
+    final _data = jsonEncode(data);
+    final response = await httpPatch(url, headers: headers, body: _data);
 
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
@@ -229,11 +232,11 @@ class DebitCardAuth extends AuthService {
   Future<bool?> terminateCard(String cardId) async {
     debugPrint("TERMINATE CARD");
 
-    String url =
+    final String url =
         "${AppConfig.baseUrl}/api/v1/virtual-cards/cards/$cardId/terminate/";
 
-    var headers = await getAuthHeaders();
-    var response = await httpPatch(url, headers: headers);
+    final headers = await getAuthHeaders();
+    final response = await httpPatch(url, headers: headers);
 
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
@@ -252,12 +255,12 @@ class DebitCardAuth extends AuthService {
     debugPrint("FUND CARD");
     debugPrint("FUND CARD :::: ${data}");
 
-    String url =
+    final String url =
         "${AppConfig.baseUrl}/api/v1/virtual-cards/cards/$cardId/top-up/";
 
-    var headers = await getAuthHeaders();
-    var _data = jsonEncode(data);
-    var response = await httpPatch(url, headers: headers, body: _data);
+    final headers = await getAuthHeaders();
+    final _data = jsonEncode(data);
+    final response = await httpPatch(url, headers: headers, body: _data);
 
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
@@ -275,12 +278,12 @@ class DebitCardAuth extends AuthService {
   Future<bool?> withdrawCard(Map<String, dynamic> data, String cardId) async {
     debugPrint("WITHDRAW CARD");
 
-    String url =
+    final String url =
         "${AppConfig.baseUrl}/api/v1/virtual-cards/cards/$cardId/withdraw/";
 
-    var headers = await getAuthHeaders();
-    var _data = jsonEncode(data);
-    var response = await httpPatch(url,
+    final headers = await getAuthHeaders();
+    final _data = jsonEncode(data);
+    final response = await httpPatch(url,
         headers: headers,
         body: _data,
         newTimeOutDuration: Duration(seconds: 45));
@@ -302,11 +305,12 @@ class DebitCardAuth extends AuthService {
       Map<String, dynamic> data, String cardId) async {
     debugPrint("Update Card Label");
 
-    String url = "${AppConfig.baseUrl}/api/v1/virtual-cards/cards/$cardId/";
+    final String url =
+        "${AppConfig.baseUrl}/api/v1/virtual-cards/cards/$cardId/";
 
-    var headers = await getAuthHeaders();
-    var _data = jsonEncode(data);
-    var response = await httpPatch(url, headers: headers, body: _data);
+    final headers = await getAuthHeaders();
+    final _data = jsonEncode(data);
+    final response = await httpPatch(url, headers: headers, body: _data);
 
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");

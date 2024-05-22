@@ -77,7 +77,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
   late bool isValidCustomer;
 
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
 
   List<dynamic> sellersOtherItems = [];
 
@@ -149,14 +149,14 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     if (mounted) setState(() {});
 
     await ReviewAuth().fetchProductReviews(productId: productId).then((value) {
-      List? tempList =
+      final List? tempList =
           value.containsKey('results') ? value['results'] as List : [];
       value.containsKey('count') ? reviewCount = value["count"] : 0;
       debugPrint('RESULTS :: ${value['results']}');
 
       reviewList = [];
 
-      tempList.forEach((element) {
+      tempList?.forEach((element) {
         reviewList.add(Review.fromJson(element));
       });
 
@@ -174,7 +174,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   Future canReviewProduct() async {
-    Map<String, String> data = {};
+    final Map<String, String> data = {};
     data['provider'] = product?.seller?.toString() ?? "";
     data['buyer'] = userBloc.user.userName!;
     data['type'] = 'products';
@@ -267,13 +267,14 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       ),
       actions: <Widget>[
         menuBtn(),
-        isValidCustomer
-            ? SizedBox(
-                width: 8,
-              )
-            : Container(),
-        isValidCustomer ? goToCartWidget() : Container(),
-        SizedBox(width: 16),
+        if (isValidCustomer)
+          const SizedBox(
+            width: 8,
+          )
+        else
+          Container(),
+        if (isValidCustomer) goToCartWidget() else Container(),
+        const SizedBox(width: 16),
       ],
     );
   }
@@ -284,7 +285,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         context: context,
         builder: (BuildContext context) {
           return Card(
-              shape: RoundedRectangleBorder(
+              shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(20),
                     topRight: Radius.circular(20)),
@@ -292,7 +293,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
               color: Colors.white,
               margin: EdgeInsets.zero,
               child: Container(
-                padding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: generateBottomSheetItem(),
@@ -324,7 +326,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         context: context,
         builder: (BuildContext context) {
           return Card(
-              shape: RoundedRectangleBorder(
+              shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(20),
                     topRight: Radius.circular(20)),
@@ -332,7 +334,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
               color: Colors.white,
               margin: EdgeInsets.zero,
               child: Container(
-                padding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: generateBottomSheetItem(),
@@ -342,9 +345,9 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   List<Widget> generateBottomSheetItem() {
-    List<Widget> list = [];
+    final List<Widget> list = [];
 
-    PermissionType? hasPermission =
+    final PermissionType? hasPermission =
         userBloc.user.hasWritePermission(ProtectionPermission.product);
 
     if (!isValidCustomer) {
@@ -355,7 +358,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           onTap: () async {
             if (hasPermission == PermissionType.WRITE) {
               Navigator.pop(context);
-              var result = await Navigator.of(context).pushNamed(
+              final result = await Navigator.of(context).pushNamed(
                 '/edit-product',
                 arguments: {
                   "productId": productId,
@@ -385,7 +388,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       onTap: () async {
         Navigator.pop(context);
 
-        var shareBody = "http://slydo.co/store/${product?.seller}/products/" +
+        final shareBody = "http://slydo.co/store/${product?.seller}/products/" +
             (product?.id.toString() ?? "");
         Share.share(shareBody,
             subject: "${messageDecoderWithEmoji(product?.name) ?? ""}");
@@ -429,7 +432,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 ..attachment = {
                   "product": product?.toJson().cast<String, dynamic>() ?? {}
                 };
-              bool data = await YarnAuth().addYarnAndQuestion(params, '', '');
+              final bool data =
+                  await YarnAuth().addYarnAndQuestion(params, '', '');
               if (data) {
                 showToast(message: "Shared in Yarn successfully");
               }
@@ -437,16 +441,16 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   void sendItemToUsersInChat() async {
-    List<ChatConversation?> listOfRecipient =
+    final List<ChatConversation?> listOfRecipient =
         await ShareInChat().selectShareCustomer(context);
     debugPrint("Selected users = ${listOfRecipient.length}");
 
-    String url = AppConfig.baseUrl +
+    final String url = AppConfig.baseUrl +
         "/api/v1/${product is Product ? "products" : "services"}/" +
         (product?.id ?? "") +
         "/";
 
-    Map<String, dynamic>? itemData =
+    final Map<String, dynamic>? itemData =
         await ShoppingAuthService().getProductOrService(url);
 
     listOfRecipient.forEach((recipient) {
@@ -463,9 +467,9 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       required ChatConversation recipientUser,
       String? url,
       dynamic item}) async {
-    Map<String, dynamic> data = {
+    final Map<String, dynamic> data = {
       "meta_data": jsonEncode(itemData),
-      "check_id": Uuid().v4(),
+      "check_id": const Uuid().v4(),
       "conversation_id": recipientUser.conversationId,
       "author": userBloc.user.userName,
       "message": url,
@@ -494,8 +498,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
             shape: badges.BadgeShape.circle,
             badgeColor: naturalGreen,
             padding: basketBloc.basketItems.length == 0
-                ? EdgeInsets.all(0)
-                : EdgeInsets.all(4)),
+                ? const EdgeInsets.all(0)
+                : const EdgeInsets.all(4)),
         child: Center(
           child: Icon(
             SlydoAppIcon.cart,
@@ -591,7 +595,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 }
               }
             } else if (product?.addOnsModels?.isNotEmpty ?? false) {
-              bool isRequired =
+              final bool isRequired =
                   product?.isAllRequiredProductSelected() ?? false;
               if (isRequired == true) {
                 showBottomSheetDialog();
@@ -646,7 +650,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                   }
                 }
               } else if (product?.addOnsModels?.isNotEmpty ?? false) {
-                bool isRequired =
+                final bool isRequired =
                     product?.isAllRequiredProductSelected() ?? false;
                 if (isRequired == true) {
                   addToCart();
@@ -683,10 +687,10 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     );
   }
 
-  showBottomSheetDialog() async {
-    var result = await androidBottomSheet(
+  void showBottomSheetDialog() async {
+    final result = await androidBottomSheet(
       context: context,
-      child: AllActiveCart(),
+      child: const AllActiveCart(),
     );
     if (result != null && result is SharedCartModel) {
       if (result.id == 'my-cart') {
@@ -699,10 +703,11 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   Future<void> addToCart() async {
-    String type = "product";
+    final String type = "product";
 
     print("BASKETBLOC:- ${basketBloc.basketItems}");
-    Product products = product!.copyWith(quantity: 1, withSelectedAddOn: true);
+    final Product products =
+        product!.copyWith(quantity: 1, withSelectedAddOn: true);
 
     basketBloc.addItemToCart(
       item: products,
@@ -714,9 +719,10 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   Future<void> addToSharedCart(SharedCartModel result) async {
-    String type = "product";
+    final String type = "product";
 
-    Product products = product!.copyWith(quantity: 1, withSelectedAddOn: true);
+    final Product products =
+        product!.copyWith(quantity: 1, withSelectedAddOn: true);
 
     sharedCartBloc.addItemToSharedCart(
       cart: result,
@@ -873,7 +879,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       if (element["variants"] != null &&
           element.containsKey("variants") &&
           productId == item.id) {
-        List<Variant> variantsList =
+        final List<Variant> variantsList =
             (element['item'] as Product).variantModels ?? [];
 
         // debugPrint('fola chat one fourrrr::: ${variantsList.length}');
@@ -886,13 +892,13 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
         // Check if variantsList is not empty
         if (variantsList.isNotEmpty) {
-          List<Map<String, dynamic>> variantDataList = [];
+          final List<Map<String, dynamic>> variantDataList = [];
 
           // Iterate through the variants and add each variant to the variantDataList
           for (var variant in variantsList) {
             if (variant.id != null) {
-              int variantId = int.parse(variant.id.toString());
-              int? variantQuantity = variant.quantity;
+              final int variantId = int.parse(variant.id.toString());
+              final int? variantQuantity = variant.quantity;
 
               // debugPrint("Data From Product Page v-id 5 : ${variant}");
 
@@ -935,7 +941,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       // Iterate through the productView and add them to dataInfo
       for (var variant in variantsList) {
         if (variant.containsKey("id") && variant["id"] != null) {
-          int variantQuantity = int.parse(variant['quantity'].toString());
+          final int variantQuantity = int.parse(variant['quantity'].toString());
           totalQuantity += variantQuantity;
         }
       }
@@ -950,7 +956,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     }
     return Text(
       getBadgeCount().toString(),
-      style: TextStyle(
+      style: const TextStyle(
           fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold),
     );
   }
@@ -984,7 +990,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
             margin: EdgeInsets.zero,
             shadowColor: boxShadowTwo,
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 8.0),
               child: _buildOkButtonWidget(),
             ),
           )
@@ -993,15 +1000,16 @@ class _ProductDetailPageState extends State<ProductDetailPage>
             margin: EdgeInsets.zero,
             shadowColor: boxShadowTwo,
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 8.0),
               child: Row(
                 children: <Widget>[
                   messageSellerWidget(),
-                  SizedBox(
+                  const SizedBox(
                     width: 8,
                   ),
                   addToCartWidget(),
-                  SizedBox(
+                  const SizedBox(
                     width: 8,
                   ),
                   _buildBuyButtonWidget(),
@@ -1024,7 +1032,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           children: <Widget>[
             _buildProductImagesWidgets(),
             Container(
-              padding: EdgeInsets.only(top: 24),
+              padding: const EdgeInsets.only(top: 24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -1032,7 +1040,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: _buildProductTitleAndPriceWidget(),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 24,
                   ),
                   Divider(
@@ -1040,14 +1048,14 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                     color: dividerColor,
                     thickness: 1,
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 12,
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: _buildShortInfoWidget(),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 16,
                   ),
                   Divider(
@@ -1057,14 +1065,14 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                   ),
                   if (product?.availableFrom?.isAfter(DateTime.now()) ?? false)
                     _showAvailableDate(),
-                  SizedBox(
+                  const SizedBox(
                     height: 12,
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: _buildDescriptionWidget(),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 16,
                   ),
                   Divider(
@@ -1072,12 +1080,12 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                     color: dividerColor,
                     thickness: 1,
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 10,
                   ),
                   if (product?.addOnsModels?.isNotEmpty == true) ...[
                     _buildAddonWidget(),
-                    SizedBox(
+                    const SizedBox(
                       height: 16,
                     ),
                   ],
@@ -1085,12 +1093,12 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: _buildSellerInfoWidget(),
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: _buildReviewList(),
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: _buildWriteReview(),
@@ -1103,36 +1111,37 @@ class _ProductDetailPageState extends State<ProductDetailPage>
               color: dividerColor,
               thickness: 1,
             ),
-            SizedBox(
+            const SizedBox(
               height: 16,
             ),
-            isOtherItemIsEmpty
-                ? Shimmer.fromColors(
-                    baseColor: Colors.white,
-                    highlightColor: greyBorderColor,
-                    child: GridView.builder(
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                        mainAxisExtent: 180,
-                        mainAxisSpacing: 16,
-                        crossAxisSpacing: 15,
-                        maxCrossAxisExtent: 200,
+            if (isOtherItemIsEmpty)
+              Shimmer.fromColors(
+                baseColor: Colors.white,
+                highlightColor: greyBorderColor,
+                child: GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                    mainAxisExtent: 180,
+                    mainAxisSpacing: 16,
+                    crossAxisSpacing: 15,
+                    maxCrossAxisExtent: 200,
+                  ),
+                  itemCount: 2,
+                  itemBuilder: (context, index) {
+                    return Card(
+                      color: Colors.grey,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                      itemCount: 2,
-                      itemBuilder: (context, index) {
-                        return Card(
-                          color: Colors.grey,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        );
-                      },
-                    ),
-                  )
-                : sellersOtherItems.isEmpty
-                    ? Container()
-                    : _buildSellersOtherProducts(),
+                    );
+                  },
+                ),
+              )
+            else
+              sellersOtherItems.isEmpty
+                  ? Container()
+                  : _buildSellersOtherProducts(),
             SizedBox(height: isValidCustomer ? 60.0 : 20),
           ],
         ),
@@ -1144,14 +1153,14 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(
+        const SizedBox(
           height: 12,
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: _buildAvailableFromAndShareWidgets(),
         ),
-        SizedBox(
+        const SizedBox(
           height: 16,
         ),
         Divider(
@@ -1208,7 +1217,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                   ),
                 ],
               ),
-              SizedBox(height: 12),
+              const SizedBox(height: 12),
               Column(
                 children: reviewList
                     .map(
@@ -1240,7 +1249,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       children: [
         GestureDetector(
           onTap: () async {
-            var result = await Navigator.of(context).pushNamed(
+            final result = await Navigator.of(context).pushNamed(
               Routes.ADD_REVIEW,
               arguments: {
                 "product": product,
@@ -1264,7 +1273,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
             ),
           ),
         ),
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
       ],
     );
   }
@@ -1275,7 +1284,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         stream: sliderIndex.stream,
         builder: (context, snapshot) {
           return Container(
-            padding: EdgeInsets.symmetric(horizontal: 4.0),
+            padding: const EdgeInsets.symmetric(horizontal: 4.0),
             child: displayProductImages?.length == 0
                 ? AspectRatio(
                     aspectRatio: 1.5,
@@ -1299,8 +1308,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                               child: Container(
                                 child: Center(
                                     child: ClipRRect(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(10)),
+                                  borderRadius: const BorderRadius.all(
+                                      Radius.circular(10)),
                                   child: Stack(
                                     children: [
                                       CachedNetworkImage(
@@ -1357,7 +1366,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                                               child: Center(
                                                 child: ClipRRect(
                                                   borderRadius:
-                                                      BorderRadius.all(
+                                                      const BorderRadius.all(
                                                           Radius.circular(10)),
                                                   child: Stack(
                                                     children: [
@@ -1395,12 +1404,12 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                                   crossAxisAlignment: CrossAxisAlignment.end,
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: displayProductImages!.map((url) {
-                                    int index =
+                                    final int index =
                                         displayProductImages!.indexOf(url);
                                     return Container(
                                       width: 5.0,
                                       height: 5.0,
-                                      margin: EdgeInsets.symmetric(
+                                      margin: const EdgeInsets.symmetric(
                                           vertical: 10.0, horizontal: 2.0),
                                       decoration: BoxDecoration(
                                         shape: BoxShape.circle,
@@ -1421,7 +1430,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   Future<void> showSliderGallery(List<String?>? displayProductImages) {
-    List<Widget> imageList = [];
+    final List<Widget> imageList = [];
 
     for (var item in displayProductImages ?? []) {
       imageList.add(Image.network(item));
@@ -1463,7 +1472,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
             product?.pricePercentageChange != 0.0)) {
       return buildDiscountPrice();
     } else {
-      return SizedBox();
+      return const SizedBox();
     }
   }
 
@@ -1477,7 +1486,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
             child: showDiscountValue(product?.discountType ?? "",
                 product?.discountValue ?? 0, product?.currency));
       } else {
-        return SizedBox();
+        return const SizedBox();
       }
 
       //   if (product!.pricePercentageChange != 0.0) ...[
@@ -1509,22 +1518,22 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         top: 8,
         right: 100,
         child: Container(
-          padding:
-              EdgeInsets.only(left: 6.0, right: 6.0, top: 4.0, bottom: 4.0),
+          padding: const EdgeInsets.only(
+              left: 6.0, right: 6.0, top: 4.0, bottom: 4.0),
           decoration: BoxDecoration(
             color: naturalGreen,
-            borderRadius: BorderRadius.all(Radius.circular(8)),
+            borderRadius: const BorderRadius.all(Radius.circular(8)),
           ),
           child: Text(
             "${product!.pricePercentageChange!.toInt()}% off",
-            style: TextStyle(
+            style: const TextStyle(
               color: Colors.white,
             ),
           ),
         ),
       );
     } else {
-      return SizedBox();
+      return const SizedBox();
     }
   }
 
@@ -1537,7 +1546,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
             text: AppLocalization.of(context)!.outOfStock, color: starYellow),
       );
     }
-    return SizedBox.shrink();
+    return const SizedBox.shrink();
   }
 
   void fetchProduct(String productId) async {
@@ -1650,8 +1659,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   Widget _buildProductTitleAndPriceWidget() {
-    bool allKeysAreNullOrEmpty = areAllKeysNullOrEmpty(sizeGroups);
-    bool allKeysAreNullOrEmptyColor = areAllKeysNullOrEmpty(colorGroups);
+    final bool allKeysAreNullOrEmpty = areAllKeysNullOrEmpty(sizeGroups);
+    final bool allKeysAreNullOrEmptyColor = areAllKeysNullOrEmpty(colorGroups);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1729,13 +1738,13 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                         ),
                     ],
                   ),
-                  SizedBox(height: 5),
+                  const SizedBox(height: 5),
                   getRating(numberOfRating: product?.rating!.toInt()),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       if (stockLeft >= 10) ...[
-                        SizedBox(
+                        const SizedBox(
                           height: 10.0,
                         ),
                         Text(
@@ -1746,9 +1755,9 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                               fontWeight: FontWeight.bold),
                         ),
                       ] else if (stockLeft == 0) ...[
-                        SizedBox.shrink()
+                        const SizedBox.shrink()
                       ] else if (stockLeft <= 9) ...[
-                        SizedBox(
+                        const SizedBox(
                           height: 10.0,
                         ),
                         Text(
@@ -1773,7 +1782,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           ],
         ),
         if (!allKeysAreNullOrEmptyColor) ...[
-          SizedBox(
+          const SizedBox(
             height: 10.0,
           ),
           Row(
@@ -1786,7 +1795,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                     color: darkGrey,
                     fontWeight: FontWeight.bold),
               ),
-              SizedBox(
+              const SizedBox(
                 width: 5.0,
               ),
               Text(
@@ -1798,13 +1807,13 @@ class _ProductDetailPageState extends State<ProductDetailPage>
               ),
             ],
           ),
-          SizedBox(
+          const SizedBox(
             height: 10.0,
           ),
           showVariantColorSelection(),
         ],
         if (!allKeysAreNullOrEmpty) ...[
-          SizedBox(
+          const SizedBox(
             height: 10.0,
           ),
           Row(
@@ -1817,7 +1826,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                     color: darkGrey,
                     fontWeight: FontWeight.bold),
               ),
-              SizedBox(
+              const SizedBox(
                 width: 5.0,
               ),
               Text(
@@ -1829,7 +1838,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
               ),
             ],
           ),
-          SizedBox(
+          const SizedBox(
             height: 10.0,
           ),
           showVariantSizes(),
@@ -1849,9 +1858,9 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       ),
       onTap: () async {
         //get the account detail of clicked user
-        Map<String, dynamic> financial = {};
+        final Map<String, dynamic> financial = {};
 
-        VirtualAccount virtualAccount = VirtualAccount(
+        final VirtualAccount virtualAccount = VirtualAccount(
           accountName: product!.shortDescription,
           accountNumber: product!.name,
           financialInstitution: FinancialInstitution.fromJson(financial),
@@ -1887,15 +1896,16 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   Widget showVariantColorSelection() {
-    int itemCount = colorGroups.length; // Replace with your actual item count
-    int maxItemsPerRow = 5;
-    int totalColumns = calculateColumnCount(itemCount, maxItemsPerRow);
+    final int itemCount =
+        colorGroups.length; // Replace with your actual item count
+    final int maxItemsPerRow = 5;
+    final int totalColumns = calculateColumnCount(itemCount, maxItemsPerRow);
 
     return SizedBox(
       height: 82.0 * totalColumns,
       child: GridView.builder(
-        physics: NeverScrollableScrollPhysics(),
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        physics: const NeverScrollableScrollPhysics(),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 5,
           crossAxisSpacing: 5.0,
           mainAxisSpacing: 5.0,
@@ -1905,12 +1915,12 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         itemCount: colorGroups.length,
         shrinkWrap: true,
         itemBuilder: (context, index) {
-          String color = colorGroups.keys.elementAt(index);
-          List<Variant> variantsWithSize = colorGroups[color]!;
+          final String color = colorGroups.keys.elementAt(index);
+          final List<Variant> variantsWithSize = colorGroups[color]!;
 
           // Get the first variant with this size (assuming at least one variant exists)
 
-          Variant availableVariant = getVariantImage(variantsWithSize);
+          final Variant availableVariant = getVariantImage(variantsWithSize);
 
           return Padding(
             padding: const EdgeInsets.only(right: 2.0),
@@ -1920,25 +1930,26 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 displayProductImages = [];
 
                 // Get the ID of the selected image
-                String? selectedImageId = availableVariant.id;
+                final String? selectedImageId = availableVariant.id;
 
                 // Find the variant in the original list by ID
-                Variant selectedVariant = (product?.variantModels ?? [])
+                final Variant selectedVariant = (product?.variantModels ?? [])
                     .firstWhere((variant) => variant.id == selectedImageId);
 
                 this.selectedVariant = variantsWithSize.first;
 
                 // Retrieve all images associated with the selected variant
-                List<String?>? allImages = selectedVariant.serverImages;
+                final List<String?>? allImages = selectedVariant.serverImages;
                 // Now you have all the images for the selected variant
                 displayProductImages = allImages;
-                bool allKeysAreNullOrEmpty = areAllKeysNullOrEmpty(sizeGroups);
+                final bool allKeysAreNullOrEmpty =
+                    areAllKeysNullOrEmpty(sizeGroups);
 
                 if (allKeysAreNullOrEmpty) {
                   // for (int index = 0;
                   //     index < variantsWithSize.length;
                   //     index++) {
-                  Variant variant = availableVariant;
+                  final Variant variant = availableVariant;
                   // Update price or any other state based on the selected variant
                   price = variant.price!;
                   stockLeft = variant.getQuantity();
@@ -1967,7 +1978,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 height: 80.0,
                 width: 80.0,
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(5)),
+                  borderRadius: const BorderRadius.all(Radius.circular(5)),
                   border: Border.all(
                     color: selectedVariant?.colour == availableVariant.colour
                         ? black
@@ -1989,7 +2000,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                           strokeWidth: 2.0,
                         ),
                       )),
-                      errorWidget: (context, url, error) => Icon(Icons.error),
+                      errorWidget: (context, url, error) =>
+                          const Icon(Icons.error),
                     ),
                   ),
                 ),
@@ -2006,16 +2018,17 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   Widget showVariantSizes() {
-    int itemCount = sizeGroups.length; // Replace with your actual item count
-    int maxItemsPerRow = 3;
-    int totalColumns = calculateColumnCount(itemCount, maxItemsPerRow);
+    final int itemCount =
+        sizeGroups.length; // Replace with your actual item count
+    final int maxItemsPerRow = 3;
+    final int totalColumns = calculateColumnCount(itemCount, maxItemsPerRow);
 
     return SizedBox(
       height: 35.0 * totalColumns,
       child: GridView.builder(
         // gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-        physics: NeverScrollableScrollPhysics(),
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        physics: const NeverScrollableScrollPhysics(),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           // maxCrossAxisExtent: maxTextLengthWithSpace, // Maximum width for each item
           crossAxisCount: 4,
           crossAxisSpacing: 8.0,
@@ -2025,20 +2038,20 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         itemCount: sizeGroups.length,
         shrinkWrap: true,
         itemBuilder: (context, index) {
-          String size = sizeGroups.keys.elementAt(index);
-          List<Variant> variantsWithSize = sizeGroups[size]!;
+          final String size = sizeGroups.keys.elementAt(index);
+          final List<Variant> variantsWithSize = sizeGroups[size]!;
 
           for (int index = 0; index < variantsWithSize.length; index++) {
-            Variant variant = variantsWithSize[index];
+            final Variant variant = variantsWithSize[index];
             if (variant.value == null) {
-              return SizedBox.shrink();
+              return const SizedBox.shrink();
             }
           }
 
           return GestureDetector(
             onTap: () {
               for (int index = 0; index < variantsWithSize.length; index++) {
-                Variant variant = variantsWithSize[index];
+                final Variant variant = variantsWithSize[index];
 
                 // Update price or any other state based on the selected variant
                 price = variant.price!;
@@ -2053,10 +2066,10 @@ class _ProductDetailPageState extends State<ProductDetailPage>
               height: 20.0,
               child: Container(
                 // height: 20.0,
-                margin: EdgeInsets.symmetric(vertical: 1),
+                margin: const EdgeInsets.symmetric(vertical: 1),
                 decoration: BoxDecoration(
                   color: selectedVariant?.value == size ? black : white,
-                  borderRadius: BorderRadius.all(Radius.circular(3)),
+                  borderRadius: const BorderRadius.all(Radius.circular(3)),
                   border: Border.all(
                     color: black,
                     width: 1.0,
@@ -2091,7 +2104,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: dividerColor)),
-        padding: EdgeInsets.all(10),
+        padding: const EdgeInsets.all(10),
         child: InkWell(
           child: product!.qrCode == ""
               ? Center(child: CircularLoadingIndicator())
@@ -2129,7 +2142,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           style: TextStyle(
               color: blackFont, fontSize: 12, fontWeight: FontWeight.bold),
         ),
-        SizedBox(
+        const SizedBox(
           height: 8,
         ),
         Row(
@@ -2159,22 +2172,22 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           style: TextStyle(
               color: blackFont, fontSize: 12, fontWeight: FontWeight.bold),
         ),
-        SizedBox(
+        const SizedBox(
           height: 8,
         ),
         Container(
-          padding: EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10), color: lightGrey),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              Icon(
+              const Icon(
                 SlydoAppIcon.date,
                 color: Colors.black,
                 size: 16,
               ),
-              SizedBox(
+              const SizedBox(
                 width: 8.0,
               ),
               Text(
@@ -2200,7 +2213,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           style: TextStyle(
               color: blackFont, fontSize: 12, fontWeight: FontWeight.bold),
         ),
-        SizedBox(
+        const SizedBox(
           height: 8,
         ),
         Text(
@@ -2227,7 +2240,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 color: blackFont, fontSize: 16, fontWeight: FontWeight.bold),
           ),
         ),
-        SizedBox(
+        const SizedBox(
           height: 8,
         ),
         Padding(
@@ -2241,7 +2254,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
             textAlign: TextAlign.justify,
           ),
         ),
-        SizedBox(
+        const SizedBox(
           height: 8,
         ),
         // Divider(
@@ -2272,12 +2285,12 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                     fontSize: 12,
                     fontWeight: FontWeight.bold),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 8,
               ),
               ListTile(
                 contentPadding:
-                    EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+                    const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
                 leading: GestureDetector(
                   onTap: () {
                     String? image = '';
@@ -2328,7 +2341,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 20),
+            padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
@@ -2359,10 +2372,10 @@ class _ProductDetailPageState extends State<ProductDetailPage>
               ],
             ),
           ),
-          SizedBox(height: 12),
+          const SizedBox(height: 12),
           Expanded(
             child: ListView.builder(
-              padding: EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               itemCount: sellersOtherItems.length,
               scrollDirection: Axis.horizontal,
               itemBuilder: (context, index) => Padding(
@@ -2425,7 +2438,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
               }
               //check if product has add-ons
               else if (product?.addOnsModels?.isNotEmpty ?? false) {
-                bool isRequired =
+                final bool isRequired =
                     product?.isAllRequiredProductSelected() ?? false;
                 if (isRequired == true) {
                   processCartBuyNow(context);
@@ -2459,7 +2472,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         text: "Ok",
         onPressed: () async {
           if (product?.addOnsModels?.isNotEmpty ?? false) {
-            bool isRequired = product?.isAllRequiredProductSelected() ?? false;
+            final bool isRequired =
+                product?.isAllRequiredProductSelected() ?? false;
             if (isRequired == true) {
               addToCart();
               Navigator.pop(context);
@@ -2474,15 +2488,16 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   Future<void> processCartBuyNow(BuildContext context) async {
-    Product products = product!.copyWith(quantity: 1, withSelectedAddOn: true);
+    final Product products =
+        product!.copyWith(quantity: 1, withSelectedAddOn: true);
 
-    Variant? variant = selectedVariant?.copyWith(quantity: 1);
-    List<AddOns> addOns = products.addOnsModels ?? [];
+    final Variant? variant = selectedVariant?.copyWith(quantity: 1);
+    final List<AddOns> addOns = products.addOnsModels ?? [];
 
-    ShippingProcessBloc shippingProcessBloc =
+    final ShippingProcessBloc shippingProcessBloc =
         Provider.of<ShippingProcessBloc>(context, listen: false);
     shippingProcessBloc.isUseCartProcess(false);
-    List<ShippingAddress> addresses =
+    final List<ShippingAddress> addresses =
         await getAddressListing([product?.addressId]);
     if (addresses.isNotEmpty) {
       shippingProcessBloc.updateBuyNowProduct(

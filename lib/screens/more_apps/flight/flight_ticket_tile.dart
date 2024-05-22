@@ -1,4 +1,3 @@
-import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 
@@ -16,7 +15,7 @@ class FlightTicketTile extends StatelessWidget {
       margin: EdgeInsets.zero,
       elevation: 0,
       child: Container(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         decoration: decorateBox(),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -31,7 +30,7 @@ class FlightTicketTile extends StatelessWidget {
                     width: double.infinity,
                   ),
                 )),
-            SizedBox(
+            const SizedBox(
               width: 8,
             ),
             Expanded(
@@ -64,7 +63,7 @@ class FlightTicketTile extends StatelessWidget {
                     )
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 4,
                 ),
                 Row(
@@ -80,7 +79,7 @@ class FlightTicketTile extends StatelessWidget {
                     ),
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 2,
                 ),
                 Row(
@@ -104,7 +103,7 @@ class FlightTicketTile extends StatelessWidget {
                     ),
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 2,
                 ),
                 Row(
@@ -120,7 +119,7 @@ class FlightTicketTile extends StatelessWidget {
                             color: darkGrey,
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 4,
                         ),
                         Text(
@@ -143,7 +142,7 @@ class FlightTicketTile extends StatelessWidget {
                             color: darkGrey,
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 4,
                         ),
                         Text(

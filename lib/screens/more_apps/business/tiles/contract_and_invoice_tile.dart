@@ -36,13 +36,13 @@ class _ContractTileState extends State<ContractTile> {
           Card(
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-            margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
             shadowColor: boxShadowTwo,
             elevation: 0,
             child: Container(
               decoration: decorateBox(),
               child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 8),
+                padding: const EdgeInsets.symmetric(vertical: 8),
                 child: ListTile(
                   dense: true,
                   title: getContractTitle(),
@@ -52,7 +52,7 @@ class _ContractTileState extends State<ContractTile> {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       getAmount(),
-                      SizedBox(
+                      const SizedBox(
                         height: 4,
                       ),
                       getPaymentDuration()
@@ -76,11 +76,11 @@ class _ContractTileState extends State<ContractTile> {
 
   Widget getPaymentDuration() {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 2, horizontal: 4),
+      padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 4),
       decoration: BoxDecoration(
           color: getStatusColor(), borderRadius: BorderRadius.circular(4)),
       child: Text(getPaymentDurationText(),
-          style: TextStyle(
+          style: const TextStyle(
               color: Colors.white, fontWeight: FontWeight.w600, fontSize: 12)),
     );
   }
@@ -128,7 +128,7 @@ class _ContractTileState extends State<ContractTile> {
 
   Widget getContractTitle() {
     return Padding(
-      padding: EdgeInsets.only(bottom: 2),
+      padding: const EdgeInsets.only(bottom: 2),
       child: Text(
         getName(),
         maxLines: 1,
@@ -164,7 +164,7 @@ class _ContractTileState extends State<ContractTile> {
         filterQuality: FilterQuality.high,
         errorWidget: imageErrorWidget,
         placeholder: (context, url) => widget.contract.contractorAvatar == ""
-            ? Icon(Icons.person)
+            ? const Icon(Icons.person)
             : CircularLoadingIndicator(),
       ),
     );
@@ -214,7 +214,7 @@ class _ContractTileState extends State<ContractTile> {
         Row(
           children: [
             getDateTime(),
-            SizedBox(width: 10),
+            const SizedBox(width: 10),
             getAcceptOrPendingLabel(),
           ],
         ),
@@ -224,15 +224,16 @@ class _ContractTileState extends State<ContractTile> {
 
   Widget getAcceptOrPendingLabel() {
     if (!widget.contract.isAccepted) {
-      bool isContractor = userBloc!.user.userName == widget.contract.contractor;
-      String labelName = isContractor ? 'New' : 'Pending';
-      Color labelColor = isContractor ? naturalGreen : starYellow;
-      Color labelBgColor = labelName == 'New'
+      final bool isContractor =
+          userBloc!.user.userName == widget.contract.contractor;
+      final String labelName = isContractor ? 'New' : 'Pending';
+      final Color labelColor = isContractor ? naturalGreen : starYellow;
+      final Color labelBgColor = labelName == 'New'
           ? naturalGreen.withOpacity(0.1)
           : starYellow.withOpacity(0.1);
 
       return Container(
-        padding: EdgeInsets.symmetric(vertical: 2, horizontal: 4),
+        padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 4),
         decoration: BoxDecoration(
             color: labelBgColor, borderRadius: BorderRadius.circular(4)),
         child: Text(
@@ -244,12 +245,12 @@ class _ContractTileState extends State<ContractTile> {
         ),
       );
     }
-    return SizedBox.shrink();
+    return const SizedBox.shrink();
   }
 
   Widget getDateTime() {
-    DateTime transactionTime = DateTime.parse(widget.contract.createdAt!);
-    String date = DateFormat("dd/MM/yyyy").format(transactionTime);
+    final DateTime transactionTime = DateTime.parse(widget.contract.createdAt!);
+    final String date = DateFormat("dd/MM/yyyy").format(transactionTime);
     // String time = DateFormat("hh:mm a").format(transactionTime);
     return Text(
       "$date",
@@ -276,7 +277,7 @@ class _InvoiceTileState extends State<InvoiceTile> {
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
-    bool isReceiver = widget.invoice.fromCustomer !=
+    final bool isReceiver = widget.invoice.fromCustomer !=
         userBloc!.user.userName; //The person who receives the invoice.
 
     return Stack(
@@ -284,13 +285,13 @@ class _InvoiceTileState extends State<InvoiceTile> {
         Card(
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
           shadowColor: boxShadowTwo,
           elevation: 0,
           child: Container(
             decoration: decorateBox(),
             child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 8),
+              padding: const EdgeInsets.symmetric(vertical: 8),
               child: ListTile(
                 dense: true,
                 title: getInvoiceTitle(),
@@ -300,7 +301,7 @@ class _InvoiceTileState extends State<InvoiceTile> {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     getAmount(),
-                    SizedBox(height: 4),
+                    const SizedBox(height: 4),
                     invoiceStatus(),
                   ],
                 ),
@@ -324,11 +325,11 @@ class _InvoiceTileState extends State<InvoiceTile> {
 
   Widget invoiceStatus() {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 2, horizontal: 4),
+      padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 4),
       decoration: BoxDecoration(
           color: getStatusColor(), borderRadius: BorderRadius.circular(4)),
       child: Text(widget.invoice.status!,
-          style: TextStyle(
+          style: const TextStyle(
               color: Colors.white, fontWeight: FontWeight.w600, fontSize: 12)),
     );
   }
@@ -354,7 +355,7 @@ class _InvoiceTileState extends State<InvoiceTile> {
 
   Widget getInvoiceTitle() {
     return Padding(
-      padding: EdgeInsets.only(bottom: 2),
+      padding: const EdgeInsets.only(bottom: 2),
       child: Text(
         "${widget.invoice.toCustomerDisplayName}",
         maxLines: 1,
@@ -376,7 +377,7 @@ class _InvoiceTileState extends State<InvoiceTile> {
         fit: BoxFit.cover,
         filterQuality: FilterQuality.high,
         placeholder: (context, url) => widget.invoice.toCustomerAvatar == ""
-            ? Icon(Icons.person)
+            ? const Icon(Icons.person)
             : CircularLoadingIndicator(),
       ),
     );
@@ -416,11 +417,11 @@ class _InvoiceTileState extends State<InvoiceTile> {
   Color getInvoiceCurrencyColor() => getInvoiceAmountColor();
 
   Widget getSubTitle() {
-    DateTime dateAndTime = DateTime.parse(widget.invoice.dueDate!);
-    String date = DateFormat("dd/MM/yyyy").format(dateAndTime);
-    String time = DateFormat("hh:mm a").format(dateAndTime);
+    final DateTime dateAndTime = DateTime.parse(widget.invoice.dueDate!);
+    final String date = DateFormat("dd/MM/yyyy").format(dateAndTime);
+    final String time = DateFormat("hh:mm a").format(dateAndTime);
 
-    bool paymentIsDue = dateAndTime.isBefore(DateTime.now());
+    final bool paymentIsDue = dateAndTime.isBefore(DateTime.now());
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -436,9 +437,9 @@ class _InvoiceTileState extends State<InvoiceTile> {
   }
 
   Widget getDateTime(BuildContext context) {
-    DateTime dateAndTime = DateTime.parse(widget.invoice.createdAt!);
-    String date = DateFormat("dd/MM/yyyy").format(dateAndTime);
-    String time = DateFormat("hh:mm a").format(dateAndTime);
+    final DateTime dateAndTime = DateTime.parse(widget.invoice.createdAt!);
+    final String date = DateFormat("dd/MM/yyyy").format(dateAndTime);
+    final String time = DateFormat("hh:mm a").format(dateAndTime);
     return Text(
       "$date • $time",
       softWrap: false,

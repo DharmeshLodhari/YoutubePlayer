@@ -17,7 +17,7 @@ class BusTicketTile extends StatelessWidget {
       margin: EdgeInsets.zero,
       elevation: 0,
       child: Container(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         decoration: decorateBox(),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -32,7 +32,7 @@ class BusTicketTile extends StatelessWidget {
                     width: double.infinity,
                   ),
                 )),
-            SizedBox(
+            const SizedBox(
               width: 8,
             ),
             Expanded(
@@ -72,7 +72,7 @@ class BusTicketTile extends StatelessWidget {
                     )
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 4,
                 ),
                 Row(
@@ -88,7 +88,7 @@ class BusTicketTile extends StatelessWidget {
                     ),
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 2,
                 ),
                 Row(
@@ -112,7 +112,7 @@ class BusTicketTile extends StatelessWidget {
                     ),
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 2,
                 ),
                 Row(
@@ -128,7 +128,7 @@ class BusTicketTile extends StatelessWidget {
                             color: darkGrey,
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 4,
                         ),
                         Text(
@@ -151,7 +151,7 @@ class BusTicketTile extends StatelessWidget {
                             color: darkGrey,
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 4,
                         ),
                         Text(

@@ -24,7 +24,7 @@ class ChatGroupActionManager {
 
   //perform action according to action type
   void handleMessageAction() {
-    String? action = message!['meta_data']['action'];
+    final String? action = message!['meta_data']['action'];
 
     switch (action) {
       case "add_admin_user":
@@ -74,9 +74,10 @@ class ChatGroupActionManager {
 
   /// Adding the admin user to Group
   void addAdminUser() {
-    ConnectionListBloc connectionListBloc = Provider.of<ConnectionListBloc>(
-        MyGlobals().navigationKey.currentContext!,
-        listen: false);
+    final ConnectionListBloc connectionListBloc =
+        Provider.of<ConnectionListBloc>(
+            MyGlobals().navigationKey.currentContext!,
+            listen: false);
 
     ChatConversation? chatConversation;
     for (int i = 0; i < connectionListBloc.connectionUsers.length; i++) {
@@ -87,10 +88,10 @@ class ChatGroupActionManager {
       }
     }
     if (chatConversation != null) {
-      List users = message!['meta_data']['users'];
+      final List users = message!['meta_data']['users'];
       if (users.isEmpty) return;
       if (users.first == null || users.first == "") return;
-      String user = users.first.toString();
+      final String user = users.first.toString();
 
       if (!chatConversation.adminUsers.contains(user)) {
         chatConversation.adminUsers.add(user);
@@ -102,9 +103,10 @@ class ChatGroupActionManager {
 
   /// Removing the admin user to Group
   void removeAdminUser() {
-    ConnectionListBloc connectionListBloc = Provider.of<ConnectionListBloc>(
-        MyGlobals().navigationKey.currentContext!,
-        listen: false);
+    final ConnectionListBloc connectionListBloc =
+        Provider.of<ConnectionListBloc>(
+            MyGlobals().navigationKey.currentContext!,
+            listen: false);
 
     ChatConversation? chatConversation;
     for (int i = 0; i < connectionListBloc.connectionUsers.length; i++) {
@@ -115,10 +117,10 @@ class ChatGroupActionManager {
       }
     }
     if (chatConversation != null) {
-      List users = message!['meta_data']['users'];
+      final List users = message!['meta_data']['users'];
       if (users.isEmpty) return;
       if (users.first == null || users.first == "") return;
-      String user = users.first.toString();
+      final String user = users.first.toString();
 
       if (chatConversation.adminUsers.contains(user)) {
         chatConversation.adminUsers.remove(user);
@@ -130,9 +132,10 @@ class ChatGroupActionManager {
 
   /// Mute the participant in Group
   void muteParticipant() {
-    ConnectionListBloc connectionListBloc = Provider.of<ConnectionListBloc>(
-        MyGlobals().navigationKey.currentContext!,
-        listen: false);
+    final ConnectionListBloc connectionListBloc =
+        Provider.of<ConnectionListBloc>(
+            MyGlobals().navigationKey.currentContext!,
+            listen: false);
 
     ChatConversation? chatConversation;
     for (int i = 0; i < connectionListBloc.connectionUsers.length; i++) {
@@ -143,10 +146,10 @@ class ChatGroupActionManager {
       }
     }
     if (chatConversation != null) {
-      List users = message!['meta_data']['users'];
+      final List users = message!['meta_data']['users'];
       if (users.isEmpty) return;
       if (users.first == null || users.first == "") return;
-      String user = users.first.toString();
+      final String user = users.first.toString();
 
       if (!chatConversation.mutedParticipants.contains(user)) {
         chatConversation.mutedParticipants.add(user);
@@ -158,9 +161,10 @@ class ChatGroupActionManager {
 
   /// UnMute the participant in Group
   void unMuteParticipant() {
-    ConnectionListBloc connectionListBloc = Provider.of<ConnectionListBloc>(
-        MyGlobals().navigationKey.currentContext!,
-        listen: false);
+    final ConnectionListBloc connectionListBloc =
+        Provider.of<ConnectionListBloc>(
+            MyGlobals().navigationKey.currentContext!,
+            listen: false);
 
     ChatConversation? chatConversation;
     for (int i = 0; i < connectionListBloc.connectionUsers.length; i++) {
@@ -171,10 +175,10 @@ class ChatGroupActionManager {
       }
     }
     if (chatConversation != null) {
-      List users = message!['meta_data']['users'];
+      final List users = message!['meta_data']['users'];
       if (users.isEmpty) return;
       if (users.first == null || users.first == "") return;
-      String user = users.first.toString();
+      final String user = users.first.toString();
 
       if (chatConversation.mutedParticipants.contains(user)) {
         chatConversation.mutedParticipants.remove(user);
@@ -186,9 +190,10 @@ class ChatGroupActionManager {
 
   /// Block the participant in Group
   void blockParticipant() {
-    ConnectionListBloc connectionListBloc = Provider.of<ConnectionListBloc>(
-        MyGlobals().navigationKey.currentContext!,
-        listen: false);
+    final ConnectionListBloc connectionListBloc =
+        Provider.of<ConnectionListBloc>(
+            MyGlobals().navigationKey.currentContext!,
+            listen: false);
 
     ChatConversation? chatConversation;
     for (int i = 0; i < connectionListBloc.connectionUsers.length; i++) {
@@ -199,10 +204,10 @@ class ChatGroupActionManager {
       }
     }
     if (chatConversation != null) {
-      List users = message!['meta_data']['users'];
+      final List users = message!['meta_data']['users'];
       if (users.isEmpty) return;
       if (users.first == null || users.first == "") return;
-      String user = users.first.toString();
+      final String user = users.first.toString();
 
       if (!chatConversation.blockedParticipants.contains(user)) {
         chatConversation.blockedParticipants.add(user);
@@ -214,9 +219,10 @@ class ChatGroupActionManager {
 
   /// unblock the participant in Group
   void unblockParticipant() {
-    ConnectionListBloc connectionListBloc = Provider.of<ConnectionListBloc>(
-        MyGlobals().navigationKey.currentContext!,
-        listen: false);
+    final ConnectionListBloc connectionListBloc =
+        Provider.of<ConnectionListBloc>(
+            MyGlobals().navigationKey.currentContext!,
+            listen: false);
 
     ChatConversation? chatConversation;
     for (int i = 0; i < connectionListBloc.connectionUsers.length; i++) {
@@ -227,10 +233,10 @@ class ChatGroupActionManager {
       }
     }
     if (chatConversation != null) {
-      List users = message!['meta_data']['users'];
+      final List users = message!['meta_data']['users'];
       if (users.isEmpty) return;
       if (users.first == null || users.first == "") return;
-      String user = users.first.toString();
+      final String user = users.first.toString();
 
       if (chatConversation.blockedParticipants.contains(user)) {
         chatConversation.blockedParticipants.remove(user);
@@ -242,9 +248,10 @@ class ChatGroupActionManager {
 
   /// add the participant in Group
   void addParticipant() {
-    ConnectionListBloc connectionListBloc = Provider.of<ConnectionListBloc>(
-        MyGlobals().navigationKey.currentContext!,
-        listen: false);
+    final ConnectionListBloc connectionListBloc =
+        Provider.of<ConnectionListBloc>(
+            MyGlobals().navigationKey.currentContext!,
+            listen: false);
 
     ChatConversation? chatConversation;
     for (int i = 0; i < connectionListBloc.connectionUsers.length; i++) {
@@ -255,10 +262,10 @@ class ChatGroupActionManager {
       }
     }
 
-    List users = message!['meta_data']['users'];
+    final List users = message!['meta_data']['users'];
     if (users.isEmpty) return;
     if (users.first == null || users.first == {}) return;
-    Participant user = Participant.fromJson(users.first);
+    final Participant user = Participant.fromJson(users.first);
 
     if (chatConversation != null) {
       if (!chatConversation.participants.contains(user)) {
@@ -267,12 +274,12 @@ class ChatGroupActionManager {
             chatConversation: chatConversation);
       }
     }
-    UserBloc userBloc = Provider.of<UserBloc>(
+    final UserBloc userBloc = Provider.of<UserBloc>(
         MyGlobals().navigationKey.currentContext!,
         listen: false);
 
     if (userBloc.user.userName == user.userName) {
-      ChatConversation chatConversation =
+      final ChatConversation chatConversation =
           ChatConversation.fromJson(users.first['conversation']);
       connectionListBloc.addConnectionUser(chatConversation: chatConversation);
     }
@@ -280,9 +287,10 @@ class ChatGroupActionManager {
 
   /// remove the participant in Group
   void removeParticipant() {
-    ConnectionListBloc connectionListBloc = Provider.of<ConnectionListBloc>(
-        MyGlobals().navigationKey.currentContext!,
-        listen: false);
+    final ConnectionListBloc connectionListBloc =
+        Provider.of<ConnectionListBloc>(
+            MyGlobals().navigationKey.currentContext!,
+            listen: false);
 
     ChatConversation? chatConversation;
     for (int i = 0; i < connectionListBloc.connectionUsers.length; i++) {
@@ -294,10 +302,10 @@ class ChatGroupActionManager {
     }
     if (chatConversation != null) {
       debugPrint("chatConversation:- ${chatConversation.toJson()}");
-      List users = message!['meta_data']['users'];
+      final List users = message!['meta_data']['users'];
       if (users.isEmpty) return;
       if (users.first == null || users.first == "") return;
-      String user = users.first.toString();
+      final String user = users.first.toString();
 
       if (chatConversation.participants.contains(user)) {
         chatConversation.participants.remove(user);
@@ -312,7 +320,7 @@ class ChatGroupActionManager {
             chatConversation: chatConversation);
       }
 
-      UserBloc userBloc = Provider.of<UserBloc>(
+      final UserBloc userBloc = Provider.of<UserBloc>(
           MyGlobals().navigationKey.currentContext!,
           listen: false);
       if (userBloc.user.userName == user) {
@@ -324,9 +332,10 @@ class ChatGroupActionManager {
 
   /// exit from the Group
   void exitConversation() {
-    ConnectionListBloc connectionListBloc = Provider.of<ConnectionListBloc>(
-        MyGlobals().navigationKey.currentContext!,
-        listen: false);
+    final ConnectionListBloc connectionListBloc =
+        Provider.of<ConnectionListBloc>(
+            MyGlobals().navigationKey.currentContext!,
+            listen: false);
 
     ChatConversation? chatConversation;
     for (int i = 0; i < connectionListBloc.connectionUsers.length; i++) {
@@ -337,10 +346,10 @@ class ChatGroupActionManager {
       }
     }
     if (chatConversation != null) {
-      List users = message!['meta_data']['users'];
+      final List users = message!['meta_data']['users'];
       if (users.isEmpty) return;
       if (users.first == null || users.first == "") return;
-      String user = users.first.toString();
+      final String user = users.first.toString();
 
       if (chatConversation.participants.contains(user)) {
         chatConversation.participants.remove(user);
@@ -348,7 +357,7 @@ class ChatGroupActionManager {
             chatConversation: chatConversation);
       }
 
-      UserBloc userBloc = Provider.of<UserBloc>(
+      final UserBloc userBloc = Provider.of<UserBloc>(
           MyGlobals().navigationKey.currentContext!,
           listen: false);
       if (userBloc.user.userName == user) {
@@ -360,9 +369,10 @@ class ChatGroupActionManager {
 
   /// delete the group
   void deleteGroup() {
-    ConnectionListBloc connectionListBloc = Provider.of<ConnectionListBloc>(
-        MyGlobals().navigationKey.currentContext!,
-        listen: false);
+    final ConnectionListBloc connectionListBloc =
+        Provider.of<ConnectionListBloc>(
+            MyGlobals().navigationKey.currentContext!,
+            listen: false);
 
     ChatConversation? chatConversation;
     for (int i = 0; i < connectionListBloc.connectionUsers.length; i++) {
@@ -391,7 +401,7 @@ class ChatGroupActionManagerForLiveConversation {
   dynamic handleMessageAction(
       {ChatConversation? chatConversation,
       GroupDetailModel? groupDetailModel}) {
-    String? action = message!['meta_data']['action'];
+    final String? action = message!['meta_data']['action'];
 
     if (chatConversation != null) {
       isChatConversation = true;
@@ -437,10 +447,10 @@ class ChatGroupActionManagerForLiveConversation {
   }
 
   dynamic addAdminUser() {
-    List users = message!['meta_data']['users'];
+    final List users = message!['meta_data']['users'];
     if (users.isEmpty) return null;
     if (users.first == null || users.first == "") return null;
-    String user = users.first.toString();
+    final String user = users.first.toString();
 
     if (isChatConversation) {
       if (!chatConversationToUpdate!.adminUsers.contains(user)) {
@@ -459,10 +469,10 @@ class ChatGroupActionManagerForLiveConversation {
   }
 
   dynamic removeAdminUser() {
-    List users = message!['meta_data']['users'];
+    final List users = message!['meta_data']['users'];
     if (users.isEmpty) return null;
     if (users.first == null || users.first == "") return null;
-    String user = users.first.toString();
+    final String user = users.first.toString();
 
     if (isChatConversation) {
       if (chatConversationToUpdate!.adminUsers.contains(user)) {
@@ -481,10 +491,10 @@ class ChatGroupActionManagerForLiveConversation {
   }
 
   dynamic muteParticipant() {
-    List users = message!['meta_data']['users'];
+    final List users = message!['meta_data']['users'];
     if (users.isEmpty) return null;
     if (users.first == null || users.first == "") return null;
-    String user = users.first.toString();
+    final String user = users.first.toString();
 
     if (isChatConversation) {
       if (!chatConversationToUpdate!.mutedParticipants.contains(user)) {
@@ -503,10 +513,10 @@ class ChatGroupActionManagerForLiveConversation {
   }
 
   dynamic unMuteParticipant() {
-    List users = message!['meta_data']['users'];
+    final List users = message!['meta_data']['users'];
     if (users.isEmpty) return null;
     if (users.first == null || users.first == "") return null;
-    String user = users.first.toString();
+    final String user = users.first.toString();
 
     if (isChatConversation) {
       if (chatConversationToUpdate!.mutedParticipants.contains(user)) {
@@ -525,10 +535,10 @@ class ChatGroupActionManagerForLiveConversation {
   }
 
   dynamic blockParticipant() {
-    List users = message!['meta_data']['users'];
+    final List users = message!['meta_data']['users'];
     if (users.isEmpty) return null;
     if (users.first == null || users.first == "") return null;
-    String user = users.first.toString();
+    final String user = users.first.toString();
 
     if (isChatConversation) {
       if (!chatConversationToUpdate!.blockedParticipants.contains(user)) {
@@ -547,10 +557,10 @@ class ChatGroupActionManagerForLiveConversation {
   }
 
   dynamic unBlockParticipant() {
-    List users = message!['meta_data']['users'];
+    final List users = message!['meta_data']['users'];
     if (users.isEmpty) return null;
     if (users.first == null || users.first == "") return null;
-    String user = users.first.toString();
+    final String user = users.first.toString();
 
     if (isChatConversation) {
       if (chatConversationToUpdate!.blockedParticipants.contains(user)) {
@@ -569,10 +579,10 @@ class ChatGroupActionManagerForLiveConversation {
   }
 
   dynamic addParticipant() {
-    List users = message!['meta_data']['users'];
+    final List users = message!['meta_data']['users'];
     if (users.isEmpty) return null;
     if (users.first == null || users.first == {}) return null;
-    Participant participant = Participant.fromJson(users.first);
+    final Participant participant = Participant.fromJson(users.first);
 
     if (isChatConversation) {
       if (!chatConversationToUpdate!.participants
@@ -594,10 +604,10 @@ class ChatGroupActionManagerForLiveConversation {
   }
 
   dynamic removeParticipant() {
-    List users = message!['meta_data']['users'];
+    final List users = message!['meta_data']['users'];
     if (users.isEmpty) return null;
     if (users.first == null || users.first == "") return null;
-    String user = users.first.toString();
+    final String user = users.first.toString();
 
     if (isChatConversation) {
       if (chatConversationToUpdate!.participants.contains(user)) {
@@ -637,10 +647,10 @@ class ChatGroupActionManagerForLiveConversation {
   }
 
   dynamic exitGroup() {
-    List users = message!['meta_data']['users'];
+    final List users = message!['meta_data']['users'];
     if (users.isEmpty) return null;
     if (users.first == null || users.first == "") return null;
-    String user = users.first.toString();
+    final String user = users.first.toString();
 
     if (isChatConversation) {
       if (chatConversationToUpdate!.participants.contains(user)) {

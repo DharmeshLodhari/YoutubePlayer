@@ -198,6 +198,7 @@ class _SearchUsersProductAndServiceState
       if (productCustomCategoryList.isNotEmpty) {
         customCategoryList =
             productCustomCategoryList.map((e) => e.name).toList();
+        customCategoryList.insert(0, 'All');
       }
     } catch (e) {
       productCustomCategoryList = [];
@@ -293,6 +294,10 @@ class _SearchUsersProductAndServiceState
         for (int i = 0; i < tempList.length; i++) {
           manufacturerList.add(tempList[i]['manufacturer']);
         }
+        manufacturerList.insert(
+          0,
+          'All',
+        );
 
         updateCategoryList();
       }
@@ -346,6 +351,7 @@ class _SearchUsersProductAndServiceState
 
         filterModel.subCategory = "";
         subCategoryList = productSubCategoryList.map((e) => e.name).toList();
+        subCategoryList.insert(0, 'All');
       }
       if (productSubCategoryList.isEmpty) {
         if (mounted) {
@@ -388,12 +394,14 @@ class _SearchUsersProductAndServiceState
     filterModel.category = "All categories";
     if (selectedMenuItemIndex == 0) {
       filterModel.customCategory = "";
+      filterModel.subCategory = "";
       filterModel.condition = "";
       selectedProductCondition = null;
       filterModel.rating = "";
       filterModel.manufacturer = "";
       selectedRating = null;
       categoryList = productCategoryList.map((e) => e.name).toList();
+      categoryList.insert(0, 'All categories');
     } else if (selectedMenuItemIndex == 1) {
       categoryList = serviceCategoryList;
     }
@@ -623,78 +631,115 @@ class _SearchUsersProductAndServiceState
     });
   }
 
-  void selectItemCategory(StateSetter changeState) async {
-    if (categoryList.isNotEmpty) {
-      final pressedCategory = await showDialog<String>(
-          barrierDismissible: false,
-          context: context,
-          builder: (context) => AlertDialog(
-                insetPadding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
-                contentPadding: EdgeInsets.zero,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10)),
-                content: Container(
-                  width: MediaQuery.of(context).size.width - 40,
-                  child: Card(
-                    elevation: 2,
-                    shadowColor: Colors.transparent,
-                    margin: EdgeInsets.zero,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: SingleChildScrollView(
-                        child: Column(
-                          children: categoryList.map<Widget>((category) {
-                            if (filterModel.category == category) {
-                              return Container(
-                                color: selectedListItemBackgroundBlue,
-                                child: ListTile(
-                                  dense: true,
-                                  title: Text(
-                                    category,
-                                    overflow: TextOverflow.fade,
-                                    softWrap: false,
-                                    style: TextStyle(
-                                        color: navyBlue,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600),
-                                  ),
-                                  trailing: Icon(
-                                    SlydoAppIcon.checked,
-                                    color: navyBlue,
-                                    size: 12,
-                                  ),
-                                  onTap: () {
-                                    Navigator.pop(context, category);
-                                  },
-                                ),
-                              );
-                            }
-                            return ListTile(
-                              title: Text(
-                                category,
-                                softWrap: false,
-                                overflow: TextOverflow.fade,
-                                style: TextStyle(
-                                    color: blackFont,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w400),
-                              ),
-                              dense: true,
-                              onTap: () {
-                                Navigator.pop(context, category);
-                              },
-                            );
-                          }).toList(),
+  Future<String?> buildCardListWidget(List<String> list, String category) {
+    return showDialog<String>(
+      barrierDismissible: false,
+      context: context,
+      builder: (context) => AlertDialog(
+        insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+        contentPadding: EdgeInsets.zero,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        content: Container(
+          width: MediaQuery.of(context).size.width - 40,
+          child: Card(
+            elevation: 2,
+            shadowColor: Colors.transparent,
+            margin: EdgeInsets.zero,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                      child: Align(
+                        alignment: Alignment.topRight,
+                        child: Container(
+                          height: 25,
+                          width: 25,
+                          margin: const EdgeInsets.only(right: 10, top: 10),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(35)),
+                            border: Border.all(
+                              width: 1,
+                              color: black,
+                              style: BorderStyle.solid,
+                            ),
+                          ),
+                          child: Icon(
+                            Icons.close_outlined,
+                            color: black,
+                            size: 16,
+                          ),
                         ),
                       ),
                     ),
-                  ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Column(
+                      children: list.map<Widget>((item) {
+                        if (category == item) {
+                          return Container(
+                            color: selectedListItemBackgroundBlue,
+                            child: ListTile(
+                              dense: true,
+                              title: Text(
+                                item == 'All' ? 'All' : item,
+                                overflow: TextOverflow.fade,
+                                softWrap: false,
+                                style: TextStyle(
+                                    color: navyBlue,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600),
+                              ),
+                              trailing: Icon(
+                                SlydoAppIcon.checked,
+                                color: navyBlue,
+                                size: 12,
+                              ),
+                              onTap: () {
+                                Navigator.pop(context, item);
+                              },
+                            ),
+                          );
+                        }
+                        return ListTile(
+                          title: Text(
+                            item,
+                            softWrap: false,
+                            overflow: TextOverflow.fade,
+                            style: TextStyle(
+                                color: blackFont,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w400),
+                          ),
+                          dense: true,
+                          onTap: () {
+                            Navigator.pop(context, item);
+                          },
+                        );
+                      }).toList(),
+                    ),
+                  ],
                 ),
-              ));
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void selectItemCategory(StateSetter changeState) async {
+    if (categoryList.isNotEmpty) {
+      final pressedCategory =
+          await buildCardListWidget(categoryList, filterModel.category);
       if (pressedCategory != null) {
         setState(() async {
           subCategoryList = [];
@@ -720,84 +765,20 @@ class _SearchUsersProductAndServiceState
 
   void selectItemSubCategory(StateSetter changeState) async {
     if (subCategoryList.isNotEmpty) {
-      final pressedSubCategory = await showDialog<String>(
-          barrierDismissible: false,
-          context: context,
-          builder: (context) => AlertDialog(
-                insetPadding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
-                contentPadding: EdgeInsets.zero,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10)),
-                content: Container(
-                  width: MediaQuery.of(context).size.width - 40,
-                  child: Card(
-                    elevation: 2,
-                    shadowColor: Colors.transparent,
-                    margin: EdgeInsets.zero,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: SingleChildScrollView(
-                        child: Column(
-                          children: subCategoryList.map<Widget>((category) {
-                            if (filterModel.subCategory == category) {
-                              return Container(
-                                color: selectedListItemBackgroundBlue,
-                                child: ListTile(
-                                  dense: true,
-                                  title: Text(
-                                    category,
-                                    overflow: TextOverflow.fade,
-                                    softWrap: false,
-                                    style: TextStyle(
-                                        color: navyBlue,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600),
-                                  ),
-                                  trailing: Icon(
-                                    SlydoAppIcon.checked,
-                                    color: navyBlue,
-                                    size: 12,
-                                  ),
-                                  onTap: () {
-                                    Navigator.pop(context, category);
-                                  },
-                                ),
-                              );
-                            }
-                            return ListTile(
-                              title: Text(
-                                category,
-                                softWrap: false,
-                                overflow: TextOverflow.fade,
-                                style: TextStyle(
-                                    color: blackFont,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w400),
-                              ),
-                              dense: true,
-                              onTap: () {
-                                Navigator.pop(context, category);
-                              },
-                            );
-                          }).toList(),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ));
+      final pressedSubCategory =
+          await buildCardListWidget(subCategoryList, filterModel.subCategory);
       if (pressedSubCategory != null) {
         setState(() {
           filterModel.subCategory = pressedSubCategory;
-          ProductCategory category = productSubCategoryList
-              .where((element) => element.name == pressedSubCategory)
-              .toList()
-              .first;
-          filterModel.subCategoryId = category.id;
+          if (filterModel.subCategory != "All") {
+            ProductCategory category = productSubCategoryList
+                .where((element) => element.name == pressedSubCategory)
+                .toList()
+                .first;
+            filterModel.subCategoryId = category.id;
+          } else {
+            filterModel.subCategoryId = null;
+          }
           changeState(() {});
         });
       }
@@ -808,85 +789,20 @@ class _SearchUsersProductAndServiceState
 
   void selectItemCustomCategory(StateSetter changeState) async {
     if (customCategoryList.isNotEmpty) {
-      final pressedCustomCategory = await showDialog<String>(
-        barrierDismissible: false,
-        context: context,
-        builder: (context) => AlertDialog(
-          insetPadding:
-              const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
-          contentPadding: EdgeInsets.zero,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          content: Container(
-            width: MediaQuery.of(context).size.width - 40,
-            child: Card(
-              elevation: 2,
-              shadowColor: Colors.transparent,
-              margin: EdgeInsets.zero,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: customCategoryList.map<Widget>((category) {
-                      if (filterModel.customCategory == category) {
-                        return Container(
-                          color: selectedListItemBackgroundBlue,
-                          child: ListTile(
-                            dense: true,
-                            title: Text(
-                              category,
-                              overflow: TextOverflow.fade,
-                              softWrap: false,
-                              style: TextStyle(
-                                  color: navyBlue,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600),
-                            ),
-                            trailing: Icon(
-                              SlydoAppIcon.checked,
-                              color: navyBlue,
-                              size: 12,
-                            ),
-                            onTap: () {
-                              Navigator.pop(context, category);
-                            },
-                          ),
-                        );
-                      }
-                      return ListTile(
-                        title: Text(
-                          category,
-                          softWrap: false,
-                          overflow: TextOverflow.fade,
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w400),
-                        ),
-                        dense: true,
-                        onTap: () {
-                          Navigator.pop(context, category);
-                        },
-                      );
-                    }).toList(),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      );
+      final pressedCustomCategory = await buildCardListWidget(
+          customCategoryList, filterModel.customCategory);
       if (pressedCustomCategory != null) {
         setState(() {
           filterModel.customCategory = pressedCustomCategory;
-          ProductCategory category = productCustomCategoryList
-              .where((element) => element.name == pressedCustomCategory)
-              .toList()
-              .first;
-          filterModel.customCategoryId = category.id;
+          if (filterModel.customCategory != "All") {
+            ProductCategory category = productCustomCategoryList
+                .where((element) => element.name == pressedCustomCategory)
+                .toList()
+                .first;
+            filterModel.customCategoryId = category.id;
+          } else {
+            filterModel.customCategoryId = null;
+          }
           changeState(() {});
         });
       }
@@ -915,84 +831,119 @@ class _SearchUsersProductAndServiceState
                     borderRadius: BorderRadius.circular(10),
                     child: SingleChildScrollView(
                       child: Column(
-                        children: conditions.map<Widget>((condition) {
-                          if (filterModel.condition == condition) {
-                            return Container(
-                              color: selectedListItemBackgroundBlue,
-                              child: ListTile(
-                                dense: true,
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Align(
+                              alignment: Alignment.topRight,
+                              child: Container(
+                                height: 25,
+                                width: 25,
+                                margin:
+                                    const EdgeInsets.only(right: 10, top: 10),
+                                decoration: BoxDecoration(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(35)),
+                                  border: Border.all(
+                                    width: 1,
+                                    color: black,
+                                    style: BorderStyle.solid,
+                                  ),
+                                ),
+                                child: Icon(
+                                  Icons.close_outlined,
+                                  color: black,
+                                  size: 16,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          Column(
+                            children: conditions.map<Widget>((condition) {
+                              if (filterModel.condition == condition) {
+                                return Container(
+                                  color: selectedListItemBackgroundBlue,
+                                  child: ListTile(
+                                    dense: true,
+                                    title: Row(
+                                      children: [
+                                        Text(
+                                          condition.name,
+                                          style: TextStyle(
+                                              color: navyBlue,
+                                              fontSize: 16,
+                                              fontFamily: "Inter",
+                                              fontWeight: FontWeight.w600),
+                                        ),
+                                        Expanded(
+                                          child: Text(
+                                            selectedProductCondition != null
+                                                ? " (" +
+                                                    selectedProductCondition!
+                                                        .description +
+                                                    ")"
+                                                : "",
+                                            maxLines: 1,
+                                            style: TextStyle(
+                                                fontSize: 16,
+                                                fontFamily: "Inter",
+                                                color: navyBlue),
+                                            softWrap: false,
+                                            overflow: TextOverflow.fade,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    trailing: Icon(
+                                      SlydoAppIcon.checked,
+                                      color: navyBlue,
+                                      size: 12,
+                                    ),
+                                    onTap: () {
+                                      Navigator.pop(context, condition);
+                                    },
+                                  ),
+                                );
+                              }
+                              return ListTile(
                                 title: Row(
                                   children: [
                                     Text(
                                       condition.name,
                                       style: TextStyle(
-                                          color: navyBlue,
+                                          color: blackFont,
                                           fontSize: 16,
                                           fontFamily: "Inter",
-                                          fontWeight: FontWeight.w600),
+                                          fontWeight: FontWeight.w400),
                                     ),
                                     Expanded(
                                       child: Text(
-                                        selectedProductCondition != null
-                                            ? " (" +
-                                                selectedProductCondition!
-                                                    .description +
-                                                ")"
-                                            : "",
+                                        " (" + condition.description + ")",
                                         maxLines: 1,
                                         style: TextStyle(
-                                            fontSize: 16,
-                                            fontFamily: "Inter",
-                                            color: navyBlue),
+                                          fontSize: 16,
+                                          color: blackFont,
+                                          fontFamily: "Inter",
+                                        ),
                                         softWrap: false,
                                         overflow: TextOverflow.fade,
                                       ),
                                     ),
                                   ],
                                 ),
-                                trailing: Icon(
-                                  SlydoAppIcon.checked,
-                                  color: navyBlue,
-                                  size: 12,
-                                ),
+                                dense: true,
                                 onTap: () {
                                   Navigator.pop(context, condition);
                                 },
-                              ),
-                            );
-                          }
-                          return ListTile(
-                            title: Row(
-                              children: [
-                                Text(
-                                  condition.name,
-                                  style: TextStyle(
-                                      color: blackFont,
-                                      fontSize: 16,
-                                      fontFamily: "Inter",
-                                      fontWeight: FontWeight.w400),
-                                ),
-                                Expanded(
-                                  child: Text(
-                                    " (" + condition.description + ")",
-                                    maxLines: 1,
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: blackFont,
-                                      fontFamily: "Inter",
-                                    ),
-                                    softWrap: false,
-                                    overflow: TextOverflow.fade,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            dense: true,
-                            onTap: () {
-                              Navigator.pop(context, condition);
-                            },
-                          );
-                        }).toList(),
+                              );
+                            }).toList(),
+                          ),
+                        ],
                       ),
                     ),
                   ),
@@ -1001,84 +952,15 @@ class _SearchUsersProductAndServiceState
             ));
     if (pressedCondition != null) {
       selectedProductCondition = pressedCondition;
-      filterModel.condition = selectedProductCondition!.name;
+      filterModel.condition = selectedProductCondition?.name ?? "";
       changeState(() {});
     }
   }
 
   void selectItemManufacturer(StateSetter changeState) async {
     if (manufacturerList.isNotEmpty) {
-      final pressedManufecturer = await showDialog<String>(
-        barrierDismissible: false,
-        context: context,
-        builder: (context) => AlertDialog(
-          insetPadding:
-              const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
-          contentPadding: EdgeInsets.zero,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          content: Container(
-            width: MediaQuery.of(context).size.width - 40,
-            child: Card(
-              elevation: 2,
-              shadowColor: Colors.transparent,
-              margin: EdgeInsets.zero,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: manufacturerList.map<Widget>((category) {
-                      if (filterModel.manufacturer == category) {
-                        return Container(
-                          color: selectedListItemBackgroundBlue,
-                          child: ListTile(
-                            dense: true,
-                            title: Text(
-                              category,
-                              overflow: TextOverflow.fade,
-                              softWrap: false,
-                              style: TextStyle(
-                                  color: navyBlue,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600),
-                            ),
-                            trailing: Icon(
-                              SlydoAppIcon.checked,
-                              color: navyBlue,
-                              size: 12,
-                            ),
-                            onTap: () {
-                              Navigator.pop(context, category);
-                            },
-                          ),
-                        );
-                      }
-                      return ListTile(
-                        title: Text(
-                          category,
-                          softWrap: false,
-                          overflow: TextOverflow.fade,
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w400),
-                        ),
-                        dense: true,
-                        onTap: () {
-                          Navigator.pop(context, category);
-                        },
-                      );
-                    }).toList(),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      );
+      final pressedManufecturer =
+          await buildCardListWidget(manufacturerList, filterModel.manufacturer);
       if (pressedManufecturer != null) {
         setState(() {
           filterModel.manufacturer = pressedManufecturer;
@@ -1521,8 +1403,8 @@ class _SearchUsersProductAndServiceState
         Navigator.pop(context);
 
         filterModel.category = "All categories";
-        filterModel.categoryId = 0;
-        filterModel.subCategoryId = 0;
+        filterModel.categoryId = null;
+        filterModel.subCategoryId = null;
         filterModel.subCategory = "";
         subCategoryNext = "";
         filterModel.customCategory = "";
@@ -1556,7 +1438,7 @@ class _SearchUsersProductAndServiceState
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           "Rating",
           style: TextStyle(
             fontSize: 16,

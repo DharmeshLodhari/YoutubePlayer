@@ -12,9 +12,9 @@ class ProductDetailShimmer extends StatelessWidget {
         child: Shimmer.fromColors(
           baseColor: Colors.grey.shade300,
           highlightColor: Colors.white,
-          period: Duration(seconds: 2),
+          period: const Duration(seconds: 1),
           child: Container(
-            padding: EdgeInsets.all(10),
+            padding: const EdgeInsets.all(10),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -33,7 +33,7 @@ class ProductDetailShimmer extends StatelessWidget {
                             color: greyBackground,
                             borderRadius: BorderRadius.circular(10)),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 10,
                       ),
                       Column(
@@ -46,7 +46,7 @@ class ProductDetailShimmer extends StatelessWidget {
                                 color: greyBackground,
                                 borderRadius: BorderRadius.circular(4)),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 5,
                           ),
                           Container(
@@ -70,19 +70,15 @@ class ProductDetailShimmer extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Column(
-                        children: [
-                          Container(
-                            width: 100,
-                            height: 15,
-                            decoration: BoxDecoration(
-                                color: greyBackground,
-                                borderRadius: BorderRadius.circular(4)),
-                          ),
-                          SizedBox(
-                            height: 5,
-                          ),
-                        ],
+                      Container(
+                        width: 100,
+                        height: 15,
+                        decoration: BoxDecoration(
+                            color: greyBackground,
+                            borderRadius: BorderRadius.circular(4)),
+                      ),
+                      const SizedBox(
+                        height: 5,
                       ),
                       Container(
                         width: 150,
@@ -110,7 +106,7 @@ class ProductDetailShimmer extends StatelessWidget {
                             color: greyBackground,
                             borderRadius: BorderRadius.circular(4)),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 5,
                       ),
                       Container(
@@ -135,10 +131,10 @@ class ProductDetailShimmer extends StatelessWidget {
                       Container(
                         height: 24,
                         width: 24,
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                             color: Colors.grey, shape: BoxShape.circle),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 10,
                       ),
                       Column(
@@ -151,7 +147,7 @@ class ProductDetailShimmer extends StatelessWidget {
                                 color: greyBackground,
                                 borderRadius: BorderRadius.circular(4)),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 5,
                           ),
                           Container(
@@ -180,13 +176,14 @@ class ProductDetailShimmer extends StatelessWidget {
                           color: greyBackground,
                           borderRadius: BorderRadius.circular(4)),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 10,
                     ),
                     GridView.builder(
                       shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                      physics: const NeverScrollableScrollPhysics(),
+                      gridDelegate:
+                          const SliverGridDelegateWithMaxCrossAxisExtent(
                         mainAxisExtent: 150,
                         mainAxisSpacing: 5,
                         crossAxisSpacing: 5,

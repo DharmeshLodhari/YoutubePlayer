@@ -164,12 +164,12 @@ class _PutMoneyInEnvelopeState extends State<PutMoneyInEnvelope> {
     return Column(
       children: [
         Container(
-          padding: EdgeInsets.symmetric(horizontal: 20),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
           child: ListTile(
             contentPadding: EdgeInsets.zero,
             title: Text(
               customerProfile!.displayName()!,
-              style: TextStyle(
+              style: const TextStyle(
                   color: Colors.black,
                   fontWeight: FontWeight.bold,
                   fontSize: 16),
@@ -230,26 +230,27 @@ class _PutMoneyInEnvelopeState extends State<PutMoneyInEnvelope> {
                             children: <Widget>[
                               getDisplayCard(),
                               Container(
-                                padding: EdgeInsets.symmetric(horizontal: 20),
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 20),
                                 child: Column(
                                   children: [
-                                    SizedBox(
+                                    const SizedBox(
                                       height: 20,
                                     ),
                                     getEnvelopeTitleAndMessage(),
-                                    SizedBox(
+                                    const SizedBox(
                                       height: 20,
                                     ),
                                     displayAmountField(),
-                                    SizedBox(
+                                    const SizedBox(
                                       height: 20,
                                     ),
                                     getTitleField(),
-                                    SizedBox(
+                                    const SizedBox(
                                       height: 20,
                                     ),
                                     getMessageField(),
-                                    SizedBox(
+                                    const SizedBox(
                                       height: 20,
                                     ),
                                     errorMessage == ""
@@ -263,7 +264,7 @@ class _PutMoneyInEnvelopeState extends State<PutMoneyInEnvelope> {
                                           ),
                                     errorMessage == ""
                                         ? Container()
-                                        : SizedBox(
+                                        : const SizedBox(
                                             height: 20,
                                           ),
                                   ],
@@ -278,11 +279,11 @@ class _PutMoneyInEnvelopeState extends State<PutMoneyInEnvelope> {
                   Container(
                     child: Column(
                       children: [
-                        SizedBox(
+                        const SizedBox(
                           height: 20,
                         ),
                         getSubmitButton(),
-                        SizedBox(
+                        const SizedBox(
                           height: 20,
                         ),
                         getConditionText(),
@@ -297,7 +298,7 @@ class _PutMoneyInEnvelopeState extends State<PutMoneyInEnvelope> {
 
   Widget showBackArrow() {
     return IconButton(
-      icon: Icon(Icons.arrow_back_ios),
+      icon: const Icon(Icons.arrow_back_ios),
       onPressed: () {
         Navigator.pop(context);
       },
@@ -311,7 +312,7 @@ class _PutMoneyInEnvelopeState extends State<PutMoneyInEnvelope> {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
+              const Expanded(
                   flex: 1,
                   child: Text(
                     "Title",
@@ -320,13 +321,13 @@ class _PutMoneyInEnvelopeState extends State<PutMoneyInEnvelope> {
               Expanded(flex: 4, child: Text("${envelope!.title}")),
             ],
           ),
-          SizedBox(
+          const SizedBox(
             height: 8,
           ),
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
+              const Expanded(
                   child: Text(
                 "Message",
                 style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
@@ -344,7 +345,7 @@ class _PutMoneyInEnvelopeState extends State<PutMoneyInEnvelope> {
       labelText: "Amount",
       isAmountField: true,
       keyboardType: Platform.isIOS
-          ? TextInputType.numberWithOptions(decimal: true)
+          ? const TextInputType.numberWithOptions(decimal: true)
           : TextInputType.number,
       controller: _amountController,
       onChanged: (val) {
@@ -421,7 +422,7 @@ class _PutMoneyInEnvelopeState extends State<PutMoneyInEnvelope> {
     }
 
     if (_formKey.currentState!.validate()) {
-      await Future.delayed(Duration(milliseconds: 300));
+      await Future.delayed(const Duration(milliseconds: 300));
       BottomSheetPassCode(
           context: context,
           isValidCallback: () async {
@@ -456,7 +457,8 @@ class _PutMoneyInEnvelopeState extends State<PutMoneyInEnvelope> {
             Navigator.popUntil(context, ModalRoute.withName("/chat-screen"));
           },
           cancelCallBack: () {
-            _putMoneyInEnvelopeScaffoldMessenger.currentState?.showSnackBar(SnackBar(
+            _putMoneyInEnvelopeScaffoldMessenger.currentState
+                ?.showSnackBar(SnackBar(
               content: Text(AppLocalization.of(context)!.invalidPassword),
             ));
           });

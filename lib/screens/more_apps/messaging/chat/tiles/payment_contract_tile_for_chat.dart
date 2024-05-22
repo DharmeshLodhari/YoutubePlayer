@@ -82,21 +82,21 @@ class _PostTileForPaymentContractState
                 : Container(),
           ],
         ),
-        SizedBox(
+        const SizedBox(
           height: 1,
         ),
         Row(
           mainAxisAlignment:
               isSender ? MainAxisAlignment.end : MainAxisAlignment.start,
           children: [
-            isSender ? Container() : SizedBox(width: 20),
+            isSender ? Container() : const SizedBox(width: 20),
             Text(
               formatTime(widget.message!['created_at']),
               style: TextStyle(
                   color: darkGrey, fontSize: 10, fontWeight: FontWeight.w500),
             ),
             isSender
-                ? SizedBox(
+                ? const SizedBox(
                     width: 20,
                   )
                 : Container(),
@@ -136,13 +136,13 @@ class _PostTileForPaymentContractState
               Row(
                 children: [
                   getAvatar(),
-                  SizedBox(width: 20),
+                  const SizedBox(width: 20),
                   SizedBox(
                     width: 100,
                     child: Text(
                       contract.contractor!,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
@@ -155,7 +155,7 @@ class _PostTileForPaymentContractState
           ),
         ),
         getContractDuration(),
-        SizedBox(height: 30),
+        const SizedBox(height: 30),
       ],
     );
   }
@@ -226,7 +226,7 @@ class _PostTileForPaymentContractState
                 color: blackFont,
               ),
             ),
-            SizedBox(height: 4),
+            const SizedBox(height: 4),
             Text(
               startYear,
               style: TextStyle(
@@ -237,7 +237,7 @@ class _PostTileForPaymentContractState
             ),
           ],
         ),
-        SizedBox(width: 12),
+        const SizedBox(width: 12),
         Container(
           width: 70,
           height: 40,
@@ -270,7 +270,7 @@ class _PostTileForPaymentContractState
             ],
           ),
         ),
-        SizedBox(
+        const SizedBox(
           width: 12,
         ),
         Column(
@@ -284,7 +284,7 @@ class _PostTileForPaymentContractState
                 color: blackFont,
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 4,
             ),
             Text(
@@ -325,7 +325,7 @@ class _PostTileForPaymentContractState
             ),
           ),
         ),
-        Positioned(
+        const Positioned(
           right: 0,
           child: CircleAvatar(
             radius: 10,

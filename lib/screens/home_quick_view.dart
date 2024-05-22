@@ -284,7 +284,7 @@ class _HomeQuickViewState extends State<HomeQuickView> {
       appBar: appBar() as PreferredSizeWidget?,
       body: Column(
         children: [
-          SizedBox(height: 6),
+          const SizedBox(height: 6),
           // searchBox(),
           // SizedBox(height: 16),
           Expanded(
@@ -299,7 +299,7 @@ class _HomeQuickViewState extends State<HomeQuickView> {
   Widget searchBox() {
     try {
       return Container(
-        padding: EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Theme(
           data: Theme.of(context).copyWith(
             textSelectionTheme: TextSelectionThemeData(
@@ -320,8 +320,8 @@ class _HomeQuickViewState extends State<HomeQuickView> {
               hintText: AppLocalization.of(context)!.searchHomeQuickViewHint,
               fillColor: Colors.white,
               filled: true,
-              contentPadding: EdgeInsets.symmetric(vertical: 10),
-              prefix: Padding(
+              contentPadding: const EdgeInsets.symmetric(vertical: 10),
+              prefix: const Padding(
                 padding: EdgeInsets.only(left: 12),
               ),
               suffixIcon: searchIcon(),
@@ -432,7 +432,7 @@ class _HomeQuickViewState extends State<HomeQuickView> {
                 children: pairShortcuts.map((shortcut) {
                   if (shortcut.isEmpty) {
                     // Return an empty space (SizedBox)
-                    return Expanded(
+                    return const Expanded(
                       child: SizedBox(),
                     );
                   } else {
@@ -586,7 +586,7 @@ class _HomeQuickViewState extends State<HomeQuickView> {
         NavigationUtil.push(context, screen: YarnDashboard());
         break;
       case ProtectionPermission.moment:
-        NavigationUtil.push(context, screen: MomentsScreen());
+        NavigationUtil.push(context, screen: const MomentsScreen());
         break;
       case ProtectionPermission.blog:
         // if (appConfigurationModel?.enableSuperBlog == true) {
@@ -608,7 +608,7 @@ class _HomeQuickViewState extends State<HomeQuickView> {
         Navigator.pushNamed(context, Routes.ORDERS_LIST);
         break;
       case ProtectionPermission.superStore:
-        NavigationUtil.push(context, screen: SuperStoreHome());
+        NavigationUtil.push(context, screen: const SuperStoreHome());
         break;
       case ProtectionPermission.servicesHub:
         Navigator.pushNamed(context, Routes.SUPER_HUB, arguments: {'page': 0});

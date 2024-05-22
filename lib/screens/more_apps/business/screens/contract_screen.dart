@@ -100,19 +100,19 @@ class _ContractScreenState extends State<ContractScreen> {
       ),
       actions: [
         appBarSwitch(),
-        SizedBox(width: 10.0),
+        const SizedBox(width: 10.0),
         popUpMenuButton(),
-        SizedBox(width: 10.0),
+        const SizedBox(width: 10.0),
         addContractButton(),
-        SizedBox(width: 16)
+        const SizedBox(width: 16)
       ],
     );
   }
 
   Widget appBarSwitch() {
     return Switch(
-      activeThumbImage: AssetImage('assets/images/incoming_arrow.png'),
-      inactiveThumbImage: AssetImage('assets/images/outgoing_arrow.png'),
+      activeThumbImage: const AssetImage('assets/images/incoming_arrow.png'),
+      inactiveThumbImage: const AssetImage('assets/images/outgoing_arrow.png'),
       activeColor: Colors.grey.withOpacity(0.9),
       value: isContractor,
       onChanged: (value) {
@@ -143,7 +143,7 @@ class _ContractScreenState extends State<ContractScreen> {
       child: Card(
         color: isPopMenuOpen ? navyBlue : iconBtnGrey,
         elevation: 0,
-        margin: EdgeInsets.symmetric(vertical: 10),
+        margin: const EdgeInsets.symmetric(vertical: 10),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
         ),
@@ -186,7 +186,7 @@ class _ContractScreenState extends State<ContractScreen> {
         color: blackFont,
       ),
       onTap: () async {
-        var contractAdded =
+        final contractAdded =
             await Navigator.of(context).pushNamed(Routes.ADD_CONTRACT);
 
         if (contractAdded == true) {
@@ -259,7 +259,7 @@ class _ContractScreenState extends State<ContractScreen> {
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         contractBloc.isRefreshing = true;
@@ -298,7 +298,7 @@ class _ContractScreenState extends State<ContractScreen> {
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     content: Text(AppLocalization.of(context)!
                         .youHaveReachedBottomOfTheList),
-                    duration: Duration(milliseconds: 500),
+                    duration: const Duration(milliseconds: 500),
                   ));
                 },
               );
@@ -320,27 +320,29 @@ class _ContractScreenState extends State<ContractScreen> {
             controller: _refreshController,
             onRefresh: _onRefresh,
             child: ListView.builder(
-              padding: EdgeInsets.symmetric(vertical: 4),
+              padding: const EdgeInsets.symmetric(vertical: 4),
               itemCount: contractBloc.contractList.length + 1,
               itemBuilder: (BuildContext context, int index) {
                 if (index == contractBloc.contractList.length) {
                   return buildJumpingLoadingIndicator(
                       isLoading: contractBloc.isLoading);
                 } else {
-                  ContractModel contract = contractBloc.contractList[index];
-                  bool userIsContractor =
+                  final ContractModel contract =
+                      contractBloc.contractList[index];
+                  final bool userIsContractor =
                       userBloc.user.userName == contract.contractor;
 
-                  bool isNotSlidable = contract.status == "Ended" ||
+                  final bool isNotSlidable = contract.status == "Ended" ||
                       contract.status == "Stopped" ||
                       (!contract.isAccepted && !userIsContractor);
 
                   if (!contract.isAccepted) {
-                    String actionText = userIsContractor ? ' Reject' : 'Cancel';
+                    final String actionText =
+                        userIsContractor ? ' Reject' : 'Cancel';
                     return Slidable(
                       controller: _slideController,
                       direction: Axis.horizontal,
-                      actionPane: SlidableBehindActionPane(),
+                      actionPane: const SlidableBehindActionPane(),
                       actionExtentRatio: 0.25,
                       child: ContractTile(contract: contract),
                       actions: [
@@ -363,7 +365,7 @@ class _ContractScreenState extends State<ContractScreen> {
                                   enableMargin: false,
                                   width: 90,
                                   height: 90,
-                                  image: Icon(SlydoAppIcon.remove),
+                                  image: const Icon(SlydoAppIcon.remove),
                                 ),
                                 rightButtonOnPressed: () {
                                   cancelOrRejectContract(id: contract.id!);
@@ -397,7 +399,7 @@ class _ContractScreenState extends State<ContractScreen> {
                                         enableMargin: false,
                                         width: 90,
                                         height: 90,
-                                        image: Icon(SlydoAppIcon.remove),
+                                        image: const Icon(SlydoAppIcon.remove),
                                       ),
                                       rightButtonOnPressed: () {
                                         acceptContract(id: contract.id!);
@@ -428,7 +430,7 @@ class _ContractScreenState extends State<ContractScreen> {
     return Slidable(
       controller: _slideController,
       direction: Axis.horizontal,
-      actionPane: SlidableBehindActionPane(),
+      actionPane: const SlidableBehindActionPane(),
       actionExtentRatio: 0.25,
       child: VerticalListItem(contractTile, contract),
       actions: listActionSlideActions(contract),
@@ -503,7 +505,7 @@ class _ContractScreenState extends State<ContractScreen> {
   }
 
   void updateContractStatus(ContractModel contract, String action) {
-    Map<String, String> data = {"status": action};
+    final Map<String, String> data = {"status": action};
 
     BusinessAuth()
         .updateContract(id: contract.id.toString(), data: data)
@@ -536,7 +538,7 @@ class _ContractScreenState extends State<ContractScreen> {
                 enableMargin: false,
                 width: 90,
                 height: 90,
-                image: Icon(SlydoAppIcon.remove),
+                image: const Icon(SlydoAppIcon.remove),
               ),
               rightButtonOnPressed: () {
                 updateContractStatus(contract, 'Ended');
@@ -556,7 +558,7 @@ class _ContractScreenState extends State<ContractScreen> {
     showDialog(
         context: context,
         builder: (dialogLoadingContext) => LoadingIndicator());
-    bool accepted = await BusinessAuth().acceptContract(contractId: id);
+    final bool accepted = await BusinessAuth().acceptContract(contractId: id);
     Navigator.pop(context);
     if (accepted) {
       contractBloc.getContractList();
@@ -569,7 +571,8 @@ class _ContractScreenState extends State<ContractScreen> {
     showDialog(
         context: context,
         builder: (dialogLoadingContext) => LoadingIndicator());
-    bool accepted = await BusinessAuth().cancelOrRejectContract(contractId: id);
+    final bool accepted =
+        await BusinessAuth().cancelOrRejectContract(contractId: id);
     Navigator.pop(context);
     if (accepted) {
       contractBloc.isRefreshing = true;
@@ -596,7 +599,7 @@ class VerticalListItem extends StatelessWidget {
       },
       child: Container(
         color: Colors.white,
-        padding: EdgeInsets.symmetric(vertical: 2),
+        padding: const EdgeInsets.symmetric(vertical: 2),
         child: child,
       ),
     );

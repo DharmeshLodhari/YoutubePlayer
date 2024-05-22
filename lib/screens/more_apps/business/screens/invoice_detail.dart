@@ -106,7 +106,7 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
 
   Widget showBackArrow() {
     return IconButton(
-      icon: Icon(Icons.arrow_back_ios),
+      icon: const Icon(Icons.arrow_back_ios),
       onPressed: () {
         Navigator.pop(context);
       },
@@ -153,22 +153,23 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
       actions: <Widget>[
-        isLoading
-            ? SizedBox.shrink()
-            : invoice.status != 'Draft'
-                ? IconButton(
-                    icon: getDownloadIconWidget(),
-                    onPressed: () {
-                      _downloadInvoice();
-                    },
-                  )
-                : IconButton(
-                    icon: Icon(Icons.delete, color: mateRed),
-                    onPressed: () {
-                      showDeleteDialogForInvoice();
-                    },
-                  ),
-        SizedBox(width: 16),
+        if (isLoading)
+          const SizedBox.shrink()
+        else
+          invoice.status != 'Draft'
+              ? IconButton(
+                  icon: getDownloadIconWidget(),
+                  onPressed: () {
+                    _downloadInvoice();
+                  },
+                )
+              : IconButton(
+                  icon: Icon(Icons.delete, color: mateRed),
+                  onPressed: () {
+                    showDeleteDialogForInvoice();
+                  },
+                ),
+        const SizedBox(width: 16),
       ],
     );
   }
@@ -233,9 +234,10 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
   }
 
   Widget scaffoldBody() {
-    bool canPayForInvoice = invoice.fromCustomer != userBloc.user.userName &&
-        invoice.status == "Unpaid";
-    bool canAddInvoiceItem = invoice.status == 'Draft';
+    final bool canPayForInvoice =
+        invoice.fromCustomer != userBloc.user.userName &&
+            invoice.status == "Unpaid";
+    final bool canAddInvoiceItem = invoice.status == 'Draft';
 
     return SingleChildScrollView(
       child: Container(
@@ -243,55 +245,58 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
             (AppBar().preferredSize.height +
                 MediaQuery.of(context).padding.top),
         width: MediaQuery.of(context).size.width,
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            isDownloading
-                ? Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        CircularLoadingIndicator(),
-                        SizedBox(width: 12),
-                        Text(
-                          'Downloading...',
-                          style: TextStyle(color: darkGrey, fontSize: 14),
-                        ),
-                      ],
+            if (isDownloading)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CircularLoadingIndicator(),
+                    const SizedBox(width: 12),
+                    Text(
+                      'Downloading...',
+                      style: TextStyle(color: darkGrey, fontSize: 14),
                     ),
-                  )
-                : SizedBox.shrink(),
+                  ],
+                ),
+              )
+            else
+              const SizedBox.shrink(),
             displayContractInfo(),
-            SizedBox(height: 14),
-            canPayForInvoice
-                ? CurvedButton(
-                    text: "Pay Now",
-                    onPressed: () {
-                      _payInvoice();
-                    })
-                : SizedBox.shrink(),
-            SizedBox(height: 10),
-            canAddInvoiceItem
-                ? CurvedButton(
-                    width: 150,
-                    text: 'Add  item',
-                    onPressed: () async {
-                      bool? updated = await NavigationUtil.push(
-                        context,
-                        screen: AddOrUpdateInvoiceItem(
-                          invoiceId: invoice.id,
-                          // invoiceItem: item,
-                        ),
-                      );
+            const SizedBox(height: 14),
+            if (canPayForInvoice)
+              CurvedButton(
+                  text: "Pay Now",
+                  onPressed: () {
+                    _payInvoice();
+                  })
+            else
+              const SizedBox.shrink(),
+            const SizedBox(height: 10),
+            if (canAddInvoiceItem)
+              CurvedButton(
+                width: 150,
+                text: 'Add  item',
+                onPressed: () async {
+                  final bool? updated = await NavigationUtil.push(
+                    context,
+                    screen: AddOrUpdateInvoiceItem(
+                      invoiceId: invoice.id,
+                      // invoiceItem: item,
+                    ),
+                  );
 
-                      if (updated == true) {
-                        fetchInvoice();
-                      }
-                    },
-                  )
-                : SizedBox.shrink()
+                  if (updated == true) {
+                    fetchInvoice();
+                  }
+                },
+              )
+            else
+              const SizedBox.shrink()
           ],
         ),
       ),
@@ -324,16 +329,16 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
   }
 
   Widget getDescriptionWidget() {
-    return Text(
+    return const Text(
       "",
       maxLines: 1,
     );
   }
 
   Widget getSubtitle() {
-    DateTime dateAndTime = DateTime.parse(invoice.createdAt!);
-    String date = DateFormat("dd/MM/yyyy").format(dateAndTime);
-    String time = DateFormat("hh:mm a").format(dateAndTime);
+    final DateTime dateAndTime = DateTime.parse(invoice.createdAt!);
+    final String date = DateFormat("dd/MM/yyyy").format(dateAndTime);
+    final String time = DateFormat("hh:mm a").format(dateAndTime);
 
     return Text(
       "$date • $time",
@@ -344,9 +349,9 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
   }
 
   String formatDate(String datetime) {
-    DateTime dateAndTime = DateTime.parse(datetime);
-    String date = DateFormat("dd/MM/yyyy").format(dateAndTime);
-    String time = DateFormat("hh:mm a").format(dateAndTime);
+    final DateTime dateAndTime = DateTime.parse(datetime);
+    final String date = DateFormat("dd/MM/yyyy").format(dateAndTime);
+    final String time = DateFormat("hh:mm a").format(dateAndTime);
     return "$date • $time ";
   }
 
@@ -360,7 +365,7 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
         fit: BoxFit.cover,
         filterQuality: FilterQuality.high,
         placeholder: (context, url) => invoice.toCustomerAvatar == ""
-            ? Icon(Icons.person)
+            ? const Icon(Icons.person)
             : CircularLoadingIndicator(),
       ),
     );
@@ -424,7 +429,7 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
   }
 
   Widget displayBodyOfTransaction() {
-    bool canEditDate = invoice.status == 'Draft';
+    final bool canEditDate = invoice.status == 'Draft';
     return Container(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -461,14 +466,14 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
   }
 
   Widget getInvoiceItems() {
-    bool canDeleteInvoiceItem =
+    final bool canDeleteInvoiceItem =
         invoice.fromCustomer == userBloc.user.userName &&
             invoice.status == "Draft" &&
             invoice.items!.length > 1;
-    bool canEditInvoiceItem = invoice.status == "Draft";
-    bool canShowActionsText = canDeleteInvoiceItem || canEditInvoiceItem;
+    final bool canEditInvoiceItem = invoice.status == "Draft";
+    final bool canShowActionsText = canDeleteInvoiceItem || canEditInvoiceItem;
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -477,13 +482,13 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
             style: TextStyle(
                 fontSize: 14, color: blackFont, fontWeight: FontWeight.w600),
           ),
-          SizedBox(height: 12),
+          const SizedBox(height: 12),
           Divider(
             height: 0,
             color: dividerColor,
             thickness: 1,
           ),
-          SizedBox(height: 4),
+          const SizedBox(height: 4),
           Column(
             children: [
               Row(
@@ -504,7 +509,7 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
                       ],
                     ),
                   ),
-                  SizedBox(width: 8),
+                  const SizedBox(width: 8),
                   Expanded(
                     flex: 7,
                     child: Row(
@@ -532,43 +537,45 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
                               fontSize: 12,
                               fontWeight: FontWeight.w600),
                         ),
-                        canShowActionsText
-                            ? flexibleSpace()
-                            : SizedBox.shrink(),
-                        canShowActionsText
-                            ? Text(
-                                "Actions",
-                                style: TextStyle(
-                                    color: blackFont,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w600),
-                              )
-                            : SizedBox.shrink(),
+                        if (canShowActionsText)
+                          flexibleSpace()
+                        else
+                          const SizedBox.shrink(),
+                        if (canShowActionsText)
+                          Text(
+                            "Actions",
+                            style: TextStyle(
+                                color: blackFont,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600),
+                          )
+                        else
+                          const SizedBox.shrink(),
                       ],
                     ),
                   ),
                 ],
               ),
-              SizedBox(height: 4),
+              const SizedBox(height: 4),
               Divider(
                 height: 0,
                 color: dividerColor,
                 thickness: 1,
               ),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               Column(
                 children: invoice.items!
                     .map((e) => getItemTile(
                         invoiceItemLength: invoice.items!.length, item: e))
                     .toList(),
               ),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               Divider(
                 height: 0,
                 color: dividerColor,
                 thickness: 1,
               ),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: <Widget>[
@@ -579,7 +586,7 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
                         fontSize: 14,
                         fontWeight: FontWeight.w700),
                   ),
-                  SizedBox(width: 8),
+                  const SizedBox(width: 8),
                   Text(
                     worldCurrencies[invoice.currency!]!,
                     style: TextStyle(
@@ -590,11 +597,11 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
                   ),
                   Text(
                     moneyDisplayNormalizer(invoice.amount),
-                    style: TextStyle(fontWeight: FontWeight.w600),
+                    style: const TextStyle(fontWeight: FontWeight.w600),
                   ),
                 ],
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
             ],
           )
         ],
@@ -604,19 +611,19 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
 
   Widget getItemTile(
       {required int invoiceItemLength, required InvoiceItem item}) {
-    bool canDeleteInvoiceItem =
+    final bool canDeleteInvoiceItem =
         invoice.fromCustomer == userBloc.user.userName &&
             invoice.status == "Draft" &&
             invoiceItemLength > 1;
-    bool canEditInvoiceItem = invoice.status == "Draft";
+    final bool canEditInvoiceItem = invoice.status == "Draft";
 
-    String subtotalAmount =
+    final String subtotalAmount =
         moneyDisplayNormalizer(item.quantity! * item.amount!);
 
-    String itemAmount = moneyDisplayNormalizer(item.amount!);
+    final String itemAmount = moneyDisplayNormalizer(item.amount!);
 
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 2),
+      padding: const EdgeInsets.symmetric(vertical: 2),
       child: Row(
         children: [
           Expanded(
@@ -632,7 +639,7 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
               ],
             ),
           ),
-          SizedBox(width: 12),
+          const SizedBox(width: 12),
           Expanded(
             flex: 7,
             child: Row(
@@ -676,42 +683,45 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
                         : subtotalAmount),
                   ],
                 ),
-                canDeleteInvoiceItem || canEditInvoiceItem
-                    ? flexibleSpace()
-                    : SizedBox.shrink(),
-                canDeleteInvoiceItem
-                    ? InkWell(
-                        child: Icon(
-                          Icons.delete,
-                          size: 20,
-                          color: mateRed,
+                if (canDeleteInvoiceItem || canEditInvoiceItem)
+                  flexibleSpace()
+                else
+                  const SizedBox.shrink(),
+                if (canDeleteInvoiceItem)
+                  InkWell(
+                    child: Icon(
+                      Icons.delete,
+                      size: 20,
+                      color: mateRed,
+                    ),
+                    onTap: () {
+                      showDeleteDialogForInvoiceItem(item);
+                    },
+                  )
+                else
+                  const SizedBox.shrink(),
+                const SizedBox(width: 5),
+                if (canEditInvoiceItem)
+                  InkWell(
+                    child: const Icon(
+                      Icons.edit,
+                      size: 20,
+                    ),
+                    onTap: () async {
+                      final bool? updated = await NavigationUtil.push(
+                        context,
+                        screen: AddOrUpdateInvoiceItem(
+                          invoiceItem: item,
                         ),
-                        onTap: () {
-                          showDeleteDialogForInvoiceItem(item);
-                        },
-                      )
-                    : SizedBox.shrink(),
-                SizedBox(width: 5),
-                canEditInvoiceItem
-                    ? InkWell(
-                        child: Icon(
-                          Icons.edit,
-                          size: 20,
-                        ),
-                        onTap: () async {
-                          bool? updated = await NavigationUtil.push(
-                            context,
-                            screen: AddOrUpdateInvoiceItem(
-                              invoiceItem: item,
-                            ),
-                          );
+                      );
 
-                          if (updated == true) {
-                            fetchInvoice();
-                          }
-                        },
-                      )
-                    : SizedBox.shrink(),
+                      if (updated == true) {
+                        fetchInvoice();
+                      }
+                    },
+                  )
+                else
+                  const SizedBox.shrink(),
               ],
             ),
           ),
@@ -743,36 +753,36 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
                 fontSize: 14,
               ),
             ),
-            SizedBox(width: 5),
-            editDate
-                ? InkWell(
-                    onTap: () {
-                      showDatePicker(
-                        builder: customThemeBuilder,
-                        context: context,
-                        initialDate: DateTime(DateTime.now().year,
-                            DateTime.now().month, DateTime.now().day),
-                        firstDate: DateTime(DateTime.now().year,
-                            DateTime.now().month, DateTime.now().day),
-                        lastDate: DateTime(2101),
-                      ).then((value) {
-                        invoiceDate =
-                            DateTime(value!.year, value.month, value.day);
+            const SizedBox(width: 5),
+            if (editDate)
+              InkWell(
+                onTap: () {
+                  showDatePicker(
+                    builder: customThemeBuilder,
+                    context: context,
+                    initialDate: DateTime(DateTime.now().year,
+                        DateTime.now().month, DateTime.now().day),
+                    firstDate: DateTime(DateTime.now().year,
+                        DateTime.now().month, DateTime.now().day),
+                    lastDate: DateTime(2101),
+                  ).then((value) {
+                    invoiceDate = DateTime(value!.year, value.month, value.day);
 
-                        _updateInvoiceDate(isDueDate: isDueDate);
+                    _updateInvoiceDate(isDueDate: isDueDate);
 
-                        // setState(() {});
-                      }).catchError((error) {});
-                    },
-                    child: Text(
-                      'Edit',
-                      style: TextStyle(
-                        color: navyBlue,
-                        fontSize: 12,
-                      ),
-                    ),
-                  )
-                : SizedBox.shrink(),
+                    // setState(() {});
+                  }).catchError((error) {});
+                },
+                child: Text(
+                  'Edit',
+                  style: TextStyle(
+                    color: navyBlue,
+                    fontSize: 12,
+                  ),
+                ),
+              )
+            else
+              const SizedBox.shrink(),
           ],
         ),
         subtitle: Text(
@@ -823,10 +833,10 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
   }
 
   _downloadInvoice() async {
-    String fileName = 'Invoice_${invoice.id}.pdf';
-    PermissionStatus status = await Permission.storage.request();
+    final String fileName = 'Invoice_${invoice.id}.pdf';
+    final PermissionStatus status = await Permission.storage.request();
 
-    var downloadsDirectoryPath =
+    final downloadsDirectoryPath =
         await ExternalPath.getExternalStoragePublicDirectory(
             ExternalPath.DIRECTORY_DOWNLOADS);
 
@@ -834,7 +844,7 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
       setState(() {
         isDownloading = true;
       });
-      String formattedFileName =
+      final String formattedFileName =
           await makeFileName(downloadsDirectoryPath, fileName);
 
       await FlutterDownloader.enqueue(

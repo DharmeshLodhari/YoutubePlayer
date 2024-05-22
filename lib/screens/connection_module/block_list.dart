@@ -58,7 +58,7 @@ class _BlockedListState extends State<BlockedList> {
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         count = 0;
@@ -137,7 +137,7 @@ class _BlockedListState extends State<BlockedList> {
             isLoading = true;
           });
         }
-        Map<String, dynamic>? result =
+        final Map<String, dynamic>? result =
             await UserAuth().listBlockUsers(next, previous).catchError((error) {
           debugPrint("ERROR:- $error");
           //  return;
@@ -147,9 +147,9 @@ class _BlockedListState extends State<BlockedList> {
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
-        List tempList = result['results'];
+        final List tempList = result['results'];
 
-        List<CustomerProfile> users = [];
+        final List<CustomerProfile> users = [];
 
         tempList
             .forEach((element) => users.add(CustomerProfile.fromJson(element)));
@@ -201,7 +201,7 @@ class _BlockedListState extends State<BlockedList> {
   }
 
   void unBlockUserAlert(CustomerProfile user, int index) async {
-    bool? result = await showDialogBox(
+    final bool? result = await showDialogBox(
       context: context,
       roundedBackgroundIcon: RoundedBackgroundIcon(
         backgroundColor: naturalGreen.withOpacity(0.08),

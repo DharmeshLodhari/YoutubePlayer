@@ -77,21 +77,21 @@ class _PostTileForInvoiceState extends State<PostTileForInvoice> {
                 : Container(),
           ],
         ),
-        SizedBox(
+        const SizedBox(
           height: 1,
         ),
         Row(
           mainAxisAlignment:
               isSender ? MainAxisAlignment.end : MainAxisAlignment.start,
           children: [
-            isSender ? Container() : SizedBox(width: 20),
+            isSender ? Container() : const SizedBox(width: 20),
             Text(
               formatTime(widget.message!['created_at']),
               style: TextStyle(
                   color: darkGrey, fontSize: 10, fontWeight: FontWeight.w500),
             ),
             isSender
-                ? SizedBox(
+                ? const SizedBox(
                     width: 20,
                   )
                 : Container(),
@@ -128,8 +128,8 @@ class _PostTileForInvoiceState extends State<PostTileForInvoice> {
           Row(
             children: [
               getAvatar(),
-              SizedBox(width: 20),
-              Text(
+              const SizedBox(width: 20),
+              const Text(
                 'Invoice',
                 style: TextStyle(
                   fontSize: 18,
@@ -140,9 +140,9 @@ class _PostTileForInvoiceState extends State<PostTileForInvoice> {
           ),
           Row(
             children: [
-              SizedBox(width: 70),
-              Text('Total:'),
-              SizedBox(width: 20),
+              const SizedBox(width: 70),
+              const Text('Total:'),
+              const SizedBox(width: 20),
               getAmount(),
             ],
           ),
@@ -201,7 +201,7 @@ class _PostTileForInvoiceState extends State<PostTileForInvoice> {
             ),
           ),
         ),
-        Positioned(
+        const Positioned(
           right: 0,
           child: CircleAvatar(
             radius: 10,

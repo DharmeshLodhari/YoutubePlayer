@@ -5,7 +5,6 @@ import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/default_user_profile_screen.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
@@ -148,7 +147,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       return Scaffold(
         appBar: appBar() as PreferredSizeWidget?,
         body: Center(
-          child: CircularLoadingIndicator(),
+          child: buildProfileShimmerLoadingIndicator(isLoading: isLoading),
         ),
       );
     }

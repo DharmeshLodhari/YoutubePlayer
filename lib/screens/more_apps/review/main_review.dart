@@ -40,12 +40,12 @@ class MainReview extends StatelessWidget {
   Widget scaffoldBody() {
     return SingleChildScrollView(
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         child: Column(
           children: List.generate(
               10,
               (index) => Container(
-                    margin: EdgeInsets.only(bottom: 12),
+                    margin: const EdgeInsets.only(bottom: 12),
                     child: ReviewTile(),
                   )),
         ),
@@ -79,7 +79,7 @@ class ReviewTile extends StatelessWidget {
                       ),
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 12,
                   ),
                   Text(
@@ -98,7 +98,7 @@ class ReviewTile extends StatelessWidget {
               )
             ],
           ),
-          SizedBox(
+          const SizedBox(
             height: 16,
           ),
           Row(
@@ -108,7 +108,7 @@ class ReviewTile extends StatelessWidget {
                 color: starYellow,
                 size: 11,
               ),
-              SizedBox(
+              const SizedBox(
                 width: 4,
               ),
               Icon(
@@ -116,7 +116,7 @@ class ReviewTile extends StatelessWidget {
                 color: starYellow,
                 size: 11,
               ),
-              SizedBox(
+              const SizedBox(
                 width: 4,
               ),
               Icon(
@@ -124,7 +124,7 @@ class ReviewTile extends StatelessWidget {
                 color: starYellow,
                 size: 11,
               ),
-              SizedBox(
+              const SizedBox(
                 width: 4,
               ),
               Icon(
@@ -132,7 +132,7 @@ class ReviewTile extends StatelessWidget {
                 color: starYellow,
                 size: 11,
               ),
-              SizedBox(
+              const SizedBox(
                 width: 4,
               ),
               Icon(
@@ -140,12 +140,12 @@ class ReviewTile extends StatelessWidget {
                 color: greyBorderColor,
                 size: 11,
               ),
-              SizedBox(
+              const SizedBox(
                 width: 4,
               ),
             ],
           ),
-          SizedBox(
+          const SizedBox(
             height: 8,
           ),
           Text(
@@ -154,7 +154,7 @@ class ReviewTile extends StatelessWidget {
                 fontSize: 14, fontWeight: FontWeight.w400, color: blackFont),
             textAlign: TextAlign.justify,
           ),
-          SizedBox(
+          const SizedBox(
             height: 8,
           ),
           Divider(

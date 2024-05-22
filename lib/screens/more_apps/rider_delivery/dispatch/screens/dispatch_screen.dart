@@ -75,7 +75,7 @@ class _DispatchScreenState extends State<DispatchScreen> {
             width: 34,
           ),
         ),
-        SizedBox(width: 10.0),
+        const SizedBox(width: 10.0),
       ],
     );
   }
@@ -85,7 +85,7 @@ class _DispatchScreenState extends State<DispatchScreen> {
       height: 34,
       width: 34,
       child: IconButton(
-        icon: Icon(
+        icon: const Icon(
           Icons.history,
           color: Colors.black,
           size: 20,
@@ -100,7 +100,7 @@ class _DispatchScreenState extends State<DispatchScreen> {
       height: 34,
       width: 34,
       child: IconButton(
-        icon: Icon(
+        icon: const Icon(
           Icons.info_outlined,
           color: Colors.black,
           size: 20,
@@ -121,7 +121,7 @@ class _DispatchScreenState extends State<DispatchScreen> {
           fit: BoxFit.fill,
         ),
         Padding(
-          padding: EdgeInsets.all(50.0),
+          padding: const EdgeInsets.all(50.0),
           child: Image.asset(
             "assets/images/taxi/route_map_image.png",
             fit: BoxFit.fill,
@@ -151,7 +151,7 @@ class _DispatchScreenState extends State<DispatchScreen> {
       maxChildSize: _initialSheetChildSize,
       minChildSize: _initialSheetChildSize,
       builder: (context, scrollController) => ClipRRect(
-        borderRadius: BorderRadius.only(
+        borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(20),
           topRight: Radius.circular(20),
         ),
@@ -165,7 +165,7 @@ class _DispatchScreenState extends State<DispatchScreen> {
 
   Widget getPackageReviewDetails() {
     return Container(
-      padding: EdgeInsets.only(left: 16, right: 16, top: 8),
+      padding: const EdgeInsets.only(left: 16, right: 16, top: 8),
       child: Column(
         children: [
           Container(
@@ -176,14 +176,14 @@ class _DispatchScreenState extends State<DispatchScreen> {
               color: greyBorderColor,
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildPackageLogo(),
                 _buildPackageReviewText(),
-                SizedBox(height: 15),
+                const SizedBox(height: 15),
                 _buildContent(),
               ],
             ),
@@ -263,7 +263,7 @@ class _DispatchScreenState extends State<DispatchScreen> {
                   fontFamily: "Inter",
                 ),
               ),
-              SizedBox(width: 10),
+              const SizedBox(width: 10),
               Text(
                 "20kg or less",
                 style: TextStyle(
@@ -289,7 +289,7 @@ class _DispatchScreenState extends State<DispatchScreen> {
                   fontFamily: "Inter",
                 ),
               ),
-              SizedBox(width: 10),
+              const SizedBox(width: 10),
               Text(
                 "Securely sealed and ready for pickup.",
                 style: TextStyle(
@@ -302,7 +302,7 @@ class _DispatchScreenState extends State<DispatchScreen> {
             ],
           ),
         ),
-        SizedBox(height: 15),
+        const SizedBox(height: 15),
         Text(
           "Note : We don't deliver goods prohibited by law.",
           style: TextStyle(
@@ -322,7 +322,7 @@ class _DispatchScreenState extends State<DispatchScreen> {
       maxChildSize: _initialSheetChildSize,
       minChildSize: _initialSheetChildSize,
       builder: (context, scrollController) => ClipRRect(
-        borderRadius: BorderRadius.only(
+        borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(20),
           topRight: Radius.circular(20),
         ),
@@ -336,7 +336,7 @@ class _DispatchScreenState extends State<DispatchScreen> {
 
   Widget getSelectDestinationDetails() {
     return Container(
-      padding: EdgeInsets.only(left: 16, right: 16, top: 8),
+      padding: const EdgeInsets.only(left: 16, right: 16, top: 8),
       child: Column(
         children: [
           Container(
@@ -347,16 +347,16 @@ class _DispatchScreenState extends State<DispatchScreen> {
               color: greyBorderColor,
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildSelectDestinationText(),
                 _buildSearchBar(),
-                SizedBox(height: 15),
+                const SizedBox(height: 15),
                 _buildShowOnMapTextAndIcon(),
-                SizedBox(height: 15),
+                const SizedBox(height: 15),
                 _buildRecent(),
                 _buildLocationData(),
               ],
@@ -382,7 +382,7 @@ class _DispatchScreenState extends State<DispatchScreen> {
   Widget _buildSearchBar() {
     return CustomizedTextFormField(
       hintText: 'Search...',
-      suffixIcon: Icon(
+      suffixIcon: const Icon(
         Icons.search,
       ),
       onChanged: (value) {},
@@ -463,7 +463,7 @@ class _DispatchScreenState extends State<DispatchScreen> {
       maxChildSize: _initialSheetChildSize,
       minChildSize: _initialSheetChildSize,
       builder: (context, scrollController) => ClipRRect(
-        borderRadius: BorderRadius.only(
+        borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(20),
           topRight: Radius.circular(20),
         ),
@@ -477,7 +477,7 @@ class _DispatchScreenState extends State<DispatchScreen> {
 
   Widget getVehiclesDetails() {
     return Container(
-      padding: EdgeInsets.only(left: 16, right: 16, top: 8),
+      padding: const EdgeInsets.only(left: 16, right: 16, top: 8),
       child: Column(
         children: [
           Container(
@@ -488,14 +488,14 @@ class _DispatchScreenState extends State<DispatchScreen> {
               color: greyBorderColor,
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Expanded(
             child: Column(
               children: [
                 _buildWarningLogo(),
-                SizedBox(height: 25),
+                const SizedBox(height: 25),
                 _buildNoVehiclesText(),
-                SizedBox(height: 40),
+                const SizedBox(height: 40),
                 _buildChooseAnotherLocation(),
               ],
             ),
@@ -556,7 +556,7 @@ class _DispatchScreenState extends State<DispatchScreen> {
       maxChildSize: _initialSheetChildSize,
       minChildSize: _initialSheetChildSize,
       builder: (context, scrollController) => ClipRRect(
-        borderRadius: BorderRadius.only(
+        borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(20),
           topRight: Radius.circular(20),
         ),
@@ -570,7 +570,7 @@ class _DispatchScreenState extends State<DispatchScreen> {
 
   Widget getSelectOption() {
     return Container(
-      padding: EdgeInsets.only(left: 16, right: 16, top: 8),
+      padding: const EdgeInsets.only(left: 16, right: 16, top: 8),
       child: Column(
         children: [
           Container(
@@ -581,15 +581,15 @@ class _DispatchScreenState extends State<DispatchScreen> {
               color: greyBorderColor,
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildSelectOptionText(),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 _buildSelectOptionList(),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 _buildSelectPackageButton(),
               ],
             ),
@@ -615,7 +615,7 @@ class _DispatchScreenState extends State<DispatchScreen> {
     return ListView.builder(
       itemCount: 1,
       shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
+      physics: const NeverScrollableScrollPhysics(),
       itemBuilder: (context, index) {
         return Card(
           child: Row(
@@ -626,7 +626,7 @@ class _DispatchScreenState extends State<DispatchScreen> {
                 child: Column(
                   children: [
                     Image.asset("assets/images/bike_icon.png"),
-                    SizedBox(height: 5),
+                    const SizedBox(height: 5),
                     Text(
                       "Bike",
                       style: TextStyle(
@@ -652,7 +652,7 @@ class _DispatchScreenState extends State<DispatchScreen> {
                         fontFamily: "Inter",
                       ),
                     ),
-                    SizedBox(height: 15),
+                    const SizedBox(height: 15),
                     Text(
                       "22 mins",
                       style: TextStyle(
@@ -687,7 +687,7 @@ class _DispatchScreenState extends State<DispatchScreen> {
       maxChildSize: _initialSheetChildSize,
       minChildSize: _initialSheetChildSize,
       builder: (context, scrollController) => ClipRRect(
-        borderRadius: BorderRadius.only(
+        borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(20),
           topRight: Radius.circular(20),
         ),
@@ -701,7 +701,7 @@ class _DispatchScreenState extends State<DispatchScreen> {
 
   Widget getDestinationLocation() {
     return Container(
-      padding: EdgeInsets.only(left: 16, right: 16, top: 8),
+      padding: const EdgeInsets.only(left: 16, right: 16, top: 8),
       child: Column(
         children: [
           Container(
@@ -712,15 +712,15 @@ class _DispatchScreenState extends State<DispatchScreen> {
               color: greyBorderColor,
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildDestinationLocationText(),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 _buildDestinationLocationData(),
-                SizedBox(height: 30),
+                const SizedBox(height: 30),
                 _buildConfirmDestinationButton(),
               ],
             ),
@@ -760,7 +760,7 @@ class _DispatchScreenState extends State<DispatchScreen> {
               fontFamily: "Inter",
             ),
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -804,7 +804,7 @@ class _DispatchScreenState extends State<DispatchScreen> {
       maxChildSize: _initialSheetChildSize,
       minChildSize: _initialSheetChildSize,
       builder: (context, scrollController) => ClipRRect(
-        borderRadius: BorderRadius.only(
+        borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(20),
           topRight: Radius.circular(20),
         ),
@@ -818,7 +818,7 @@ class _DispatchScreenState extends State<DispatchScreen> {
 
   Widget getRiderOptionDetails() {
     return Container(
-      padding: EdgeInsets.only(left: 16, right: 16, top: 8),
+      padding: const EdgeInsets.only(left: 16, right: 16, top: 8),
       child: Column(
         children: [
           Container(
@@ -829,19 +829,19 @@ class _DispatchScreenState extends State<DispatchScreen> {
               color: greyBorderColor,
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Expanded(
             child: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildTextFiled(),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   _buildMobileTextFiled(),
                   _buildItemDescription(),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   _buildSelectOptionList(),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   _buildProceedToPayment(),
                 ],
               ),
@@ -860,7 +860,7 @@ class _DispatchScreenState extends State<DispatchScreen> {
           height: 24,
           width: 24,
         ),
-        SizedBox(width: 10),
+        const SizedBox(width: 10),
         Expanded(
           child: TextFormField(
             decoration: InputDecoration(
@@ -873,7 +873,7 @@ class _DispatchScreenState extends State<DispatchScreen> {
             ),
           ),
         ),
-        SizedBox(width: 10),
+        const SizedBox(width: 10),
         Expanded(
           child: TextFormField(
             decoration: InputDecoration(
@@ -886,7 +886,7 @@ class _DispatchScreenState extends State<DispatchScreen> {
             ),
           ),
         ),
-        SizedBox(width: 10),
+        const SizedBox(width: 10),
         Expanded(
           child: TextFormField(
             decoration: InputDecoration(
@@ -907,7 +907,7 @@ class _DispatchScreenState extends State<DispatchScreen> {
     return Row(
       children: [
         Image.asset("assets/images/phone_icon.png"),
-        SizedBox(width: 10),
+        const SizedBox(width: 10),
         Expanded(
           child: TextFormField(
             decoration: InputDecoration(
@@ -928,7 +928,7 @@ class _DispatchScreenState extends State<DispatchScreen> {
     return Row(
       children: [
         Image.asset("assets/images/item_icon.png"),
-        SizedBox(width: 10),
+        const SizedBox(width: 10),
         Expanded(
           child: CustomizedTextFormField(
             hintText: 'Item Description / Delivery Note',
@@ -955,7 +955,7 @@ class _DispatchScreenState extends State<DispatchScreen> {
       maxChildSize: _initialSheetChildSize,
       minChildSize: _initialSheetChildSize,
       builder: (context, scrollController) => ClipRRect(
-        borderRadius: BorderRadius.only(
+        borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(20),
           topRight: Radius.circular(20),
         ),
@@ -969,7 +969,7 @@ class _DispatchScreenState extends State<DispatchScreen> {
 
   Widget getYouFareDetails() {
     return Container(
-      padding: EdgeInsets.only(left: 16, right: 16, top: 8),
+      padding: const EdgeInsets.only(left: 16, right: 16, top: 8),
       child: Column(
         children: [
           Container(
@@ -980,13 +980,13 @@ class _DispatchScreenState extends State<DispatchScreen> {
               color: greyBorderColor,
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Expanded(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 _buildYouFareText(),
-                SizedBox(height: 45),
+                const SizedBox(height: 45),
                 _buildPay(),
               ],
             ),
@@ -1008,7 +1008,7 @@ class _DispatchScreenState extends State<DispatchScreen> {
             fontFamily: "Inter",
           ),
         ),
-        SizedBox(height: 17),
+        const SizedBox(height: 17),
         Text(
           "₦ 1000",
           style: TextStyle(
@@ -1037,7 +1037,7 @@ class _DispatchScreenState extends State<DispatchScreen> {
       maxChildSize: _initialSheetChildSize,
       minChildSize: _initialSheetChildSize,
       builder: (context, scrollController) => ClipRRect(
-        borderRadius: BorderRadius.only(
+        borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(20),
           topRight: Radius.circular(20),
         ),
@@ -1051,7 +1051,7 @@ class _DispatchScreenState extends State<DispatchScreen> {
 
   Widget getPaymentFailedDetails() {
     return Container(
-      padding: EdgeInsets.only(left: 16, right: 16, top: 8),
+      padding: const EdgeInsets.only(left: 16, right: 16, top: 8),
       child: Column(
         children: [
           Container(
@@ -1062,13 +1062,13 @@ class _DispatchScreenState extends State<DispatchScreen> {
               color: greyBorderColor,
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Expanded(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 _buildPaymentFailedText(),
-                SizedBox(height: 17),
+                const SizedBox(height: 17),
                 _buildPaymentRetry(),
               ],
             ),
@@ -1090,7 +1090,7 @@ class _DispatchScreenState extends State<DispatchScreen> {
             fontFamily: "Inter",
           ),
         ),
-        SizedBox(height: 17),
+        const SizedBox(height: 17),
         Text(
           "₦ 1000",
           style: TextStyle(
@@ -1119,7 +1119,7 @@ class _DispatchScreenState extends State<DispatchScreen> {
       maxChildSize: _initialSheetChildSize,
       minChildSize: _initialSheetChildSize,
       builder: (context, scrollController) => ClipRRect(
-        borderRadius: BorderRadius.only(
+        borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(20),
           topRight: Radius.circular(20),
         ),
@@ -1133,7 +1133,7 @@ class _DispatchScreenState extends State<DispatchScreen> {
 
   Widget getPaymentRetryProcessDetails() {
     return Container(
-      padding: EdgeInsets.only(left: 16, right: 16, top: 8),
+      padding: const EdgeInsets.only(left: 16, right: 16, top: 8),
       child: Column(
         children: [
           Container(
@@ -1144,7 +1144,7 @@ class _DispatchScreenState extends State<DispatchScreen> {
               color: greyBorderColor,
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Expanded(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -1163,8 +1163,8 @@ class _DispatchScreenState extends State<DispatchScreen> {
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        CircularProgressIndicator(),
-        SizedBox(height: 24),
+        const CircularProgressIndicator(),
+        const SizedBox(height: 24),
         Text(
           "Retrying payment.",
           style: TextStyle(
@@ -1173,7 +1173,7 @@ class _DispatchScreenState extends State<DispatchScreen> {
             fontSize: 13,
           ),
         ),
-        SizedBox(height: 5),
+        const SizedBox(height: 5),
         Text(
           "It may take a few seconds...",
           style: TextStyle(
@@ -1192,7 +1192,7 @@ class _DispatchScreenState extends State<DispatchScreen> {
       maxChildSize: _initialSheetChildSize,
       minChildSize: _initialSheetChildSize,
       builder: (context, scrollController) => ClipRRect(
-        borderRadius: BorderRadius.only(
+        borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(20),
           topRight: Radius.circular(20),
         ),
@@ -1206,7 +1206,7 @@ class _DispatchScreenState extends State<DispatchScreen> {
 
   Widget getArrivingDetails() {
     return Container(
-      padding: EdgeInsets.only(left: 16, right: 16, top: 8),
+      padding: const EdgeInsets.only(left: 16, right: 16, top: 8),
       child: Column(
         children: [
           Container(
@@ -1217,13 +1217,13 @@ class _DispatchScreenState extends State<DispatchScreen> {
               color: greyBorderColor,
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Expanded(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 _buildArrivingPartner(),
-                SizedBox(height: 30),
+                const SizedBox(height: 30),
                 _buildPartnerContactIcon(),
               ],
             ),
@@ -1242,7 +1242,7 @@ class _DispatchScreenState extends State<DispatchScreen> {
             "assets/images/avatar.png",
           ),
         ),
-        SizedBox(width: 20),
+        const SizedBox(width: 20),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -1255,7 +1255,7 @@ class _DispatchScreenState extends State<DispatchScreen> {
                 fontFamily: "Inter",
               ),
             ),
-            SizedBox(height: 5),
+            const SizedBox(height: 5),
             Text(
               "Volkswagen Jetta",
               style: TextStyle(
@@ -1362,7 +1362,7 @@ class _DispatchScreenState extends State<DispatchScreen> {
       maxChildSize: _initialSheetChildSize,
       minChildSize: _initialSheetChildSize,
       builder: (context, scrollController) => ClipRRect(
-        borderRadius: BorderRadius.only(
+        borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(20),
           topRight: Radius.circular(20),
         ),
@@ -1376,7 +1376,7 @@ class _DispatchScreenState extends State<DispatchScreen> {
 
   Widget getArrivingDetailsData() {
     return Container(
-      padding: EdgeInsets.only(left: 16, right: 16, top: 8),
+      padding: const EdgeInsets.only(left: 16, right: 16, top: 8),
       child: Column(
         children: [
           Container(
@@ -1387,7 +1387,7 @@ class _DispatchScreenState extends State<DispatchScreen> {
               color: greyBorderColor,
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Expanded(
             child: SingleChildScrollView(
               child: Column(
@@ -1395,7 +1395,7 @@ class _DispatchScreenState extends State<DispatchScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   _buildArrivingPartner(),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   Text(
                     "₦ 1000",
                     style: TextStyle(
@@ -1406,7 +1406,7 @@ class _DispatchScreenState extends State<DispatchScreen> {
                     ),
                   ),
                   _buildAddressDetails(),
-                  SizedBox(height: 26),
+                  const SizedBox(height: 26),
                   _buildPartnerContactIcon(),
                 ],
               ),
@@ -1441,7 +1441,7 @@ class _DispatchScreenState extends State<DispatchScreen> {
                   fontSize: 13,
                 ),
               ),
-              SizedBox(height: 25),
+              const SizedBox(height: 25),
               Text(
                 "20, Pedro Street, Alausa, Ikeja",
                 style: TextStyle(
@@ -1464,7 +1464,7 @@ class _DispatchScreenState extends State<DispatchScreen> {
       maxChildSize: _initialSheetChildSize,
       minChildSize: _initialSheetChildSize,
       builder: (context, scrollController) => ClipRRect(
-        borderRadius: BorderRadius.only(
+        borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(20),
           topRight: Radius.circular(20),
         ),
@@ -1478,7 +1478,7 @@ class _DispatchScreenState extends State<DispatchScreen> {
 
   Widget getArrivedRiderDetails() {
     return Container(
-      padding: EdgeInsets.only(left: 16, right: 16, top: 8),
+      padding: const EdgeInsets.only(left: 16, right: 16, top: 8),
       child: Column(
         children: [
           Container(
@@ -1489,7 +1489,7 @@ class _DispatchScreenState extends State<DispatchScreen> {
               color: greyBorderColor,
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -1510,7 +1510,7 @@ class _DispatchScreenState extends State<DispatchScreen> {
       maxChildSize: _initialSheetChildSize,
       minChildSize: _initialSheetChildSize,
       builder: (context, scrollController) => ClipRRect(
-        borderRadius: BorderRadius.only(
+        borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(20),
           topRight: Radius.circular(20),
         ),
@@ -1524,7 +1524,7 @@ class _DispatchScreenState extends State<DispatchScreen> {
 
   Widget getOnTripDetails() {
     return Container(
-      padding: EdgeInsets.only(left: 16, right: 16, top: 8),
+      padding: const EdgeInsets.only(left: 16, right: 16, top: 8),
       child: Column(
         children: [
           Container(
@@ -1535,7 +1535,7 @@ class _DispatchScreenState extends State<DispatchScreen> {
               color: greyBorderColor,
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -1556,7 +1556,7 @@ class _DispatchScreenState extends State<DispatchScreen> {
       maxChildSize: 0.20,
       minChildSize: 0.20,
       builder: (context, scrollController) => ClipRRect(
-        borderRadius: BorderRadius.only(
+        borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(20),
           topRight: Radius.circular(20),
         ),
@@ -1570,7 +1570,7 @@ class _DispatchScreenState extends State<DispatchScreen> {
 
   Widget getRiderMiles() {
     return Container(
-      padding: EdgeInsets.only(left: 16, right: 16, top: 8),
+      padding: const EdgeInsets.only(left: 16, right: 16, top: 8),
       child: Column(
         children: [
           Container(
@@ -1581,14 +1581,14 @@ class _DispatchScreenState extends State<DispatchScreen> {
               color: greyBorderColor,
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 _buildMilesText(),
-                SizedBox(height: 12),
+                const SizedBox(height: 12),
                 _buildAddressText(),
               ],
             ),

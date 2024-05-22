@@ -258,17 +258,17 @@ class _QrCodePageState extends State<QrCodePage> {
           const SizedBox(
             height: 10.0,
           ),
-          virtualAccount!.financialInstitution!.name != null
-              ? Text(
-                  appendStringDot(
-                      virtualAccount!.financialInstitution!.name!, 25),
-                  maxLines: 1,
-                  style: TextStyle(
-                      fontSize: 16,
-                      color: HexColor("#151515"),
-                      fontWeight: FontWeight.w600),
-                )
-              : SizedBox.shrink(),
+          if (virtualAccount!.financialInstitution!.name != null)
+            Text(
+              appendStringDot(virtualAccount!.financialInstitution!.name!, 25),
+              maxLines: 1,
+              style: TextStyle(
+                  fontSize: 16,
+                  color: HexColor("#151515"),
+                  fontWeight: FontWeight.w600),
+            )
+          else
+            SizedBox.shrink(),
           Text(
             appendStringDot(virtualAccount!.accountNumber!, 15),
             maxLines: 1,
@@ -334,7 +334,7 @@ class _QrCodePageState extends State<QrCodePage> {
     } else {
       path = 'store';
     }
-    String url = "https://slydo.co/$path/${userObject.userName}";
+    final String url = "https://slydo.co/$path/${userObject.userName}";
     return url;
   }
 
@@ -349,15 +349,15 @@ class _QrCodePageState extends State<QrCodePage> {
           const SizedBox(
             height: 10.0,
           ),
-          virtualAccount!.financialInstitution!.name != null
-              ? Text(
-                  appendStringDot(
-                      virtualAccount!.financialInstitution!.name!, 25),
-                  maxLines: 1,
-                  style: TextStyle(
-                      fontSize: 16, color: white, fontWeight: FontWeight.w600),
-                )
-              : SizedBox.shrink(),
+          if (virtualAccount!.financialInstitution!.name != null)
+            Text(
+              appendStringDot(virtualAccount!.financialInstitution!.name!, 25),
+              maxLines: 1,
+              style: TextStyle(
+                  fontSize: 16, color: white, fontWeight: FontWeight.w600),
+            )
+          else
+            SizedBox.shrink(),
           Text(
             appendStringDot(virtualAccount!.accountNumber!, 15),
             maxLines: 1,
@@ -519,7 +519,7 @@ class _QrCodePageState extends State<QrCodePage> {
   }
 
   List<Widget> generateBottomSheetItem() {
-    List<Widget> list = [];
+    final List<Widget> list = [];
 
     list.add(
       bottomSheetItem(
@@ -570,12 +570,12 @@ class _QrCodePageState extends State<QrCodePage> {
 
   void downloadQrCode() async {
     // Request external storage permission
-    var status = await Permission.storage.request();
+    final status = await Permission.storage.request();
 
     if (status.isGranted) {
       showToast(message: 'Downloading QR Code');
 
-      var freeSpace = await DiskSpace.getFreeDiskSpace;
+      final freeSpace = await DiskSpace.getFreeDiskSpace;
 
       if (freeSpace != null && freeSpace > 10.00) {
         await screenshotController
@@ -583,7 +583,7 @@ class _QrCodePageState extends State<QrCodePage> {
             .then((Uint8List? image) async {
           if (image != null) {
             //download image
-            var path = await ExternalPath.getExternalStoragePublicDirectory(
+            final path = await ExternalPath.getExternalStoragePublicDirectory(
                 ExternalPath.DIRECTORY_DOWNLOADS);
 
             final imagePath = searchedUser == null

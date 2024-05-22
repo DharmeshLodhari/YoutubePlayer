@@ -8,6 +8,8 @@ class DiscountModel {
   String? merchant;
   bool isActive = true;
   int? value;
+  int? productCount;
+  int? serviceCount;
   DateTime? startDate;
   DateTime? endDate;
   DateTime? onlyFrom;
@@ -24,6 +26,8 @@ class DiscountModel {
     this.merchant,
     this.isActive = true,
     this.value,
+    this.productCount,
+    this.serviceCount,
     this.startDate,
     this.endDate,
     this.onlyFrom,
@@ -43,6 +47,8 @@ class DiscountModel {
     merchant = json['merchant'];
     isActive = json['is_active'] != null ? json['is_active'] as bool : true;
     value = json['value'];
+    productCount = json['product_count'];
+    serviceCount = json['service_count'];
     if (json['start_date'] != null) {
       List<int> parse = json['start_date']
           .toString()
@@ -113,6 +119,8 @@ class DiscountModel {
     data['merchant'] = this.merchant;
     data['is_active'] = this.isActive;
     data['value'] = this.value;
+    data['product_count'] = this.productCount;
+    data['service_count'] = this.serviceCount;
     if (startDate != null) {
       map['start_date'] = startDate?.toString();
     }
@@ -144,6 +152,7 @@ class DiscountModel {
     map['type'] = type?.toValue();
     map['value'] = value;
     map['name'] = name;
+    map['is_active'] = isActive;
     if (startDate != null) {
       map['start_date'] =
           startDate?.toDateFormatString(dateFormat: "yyyy-MM-dd").toString();
@@ -161,32 +170,41 @@ class DiscountModel {
     if (consumables != null) {
       map['consumables'] = consumables?.toJson() ?? {};
     }
-    map['poster'] = poster;
+    // map['poster'] = poster;
 
     return map;
   }
 
-  DiscountModel copyWith(
-      {DiscountTagCategory? type,
-      int? value,
-      String? name,
-      String? id,
-      DateTime? startDate,
-      DateTime? endDate,
-      DateTime? onlyFrom,
-      DateTime? onlyTo,
-      Consumables? consumables}) {
+  DiscountModel copyWith({
+    DiscountTagCategory? type,
+    int? value,
+    int? productCount,
+    int? serviceCount,
+    bool? isActive,
+    String? name,
+    String? id,
+    DateTime? startDate,
+    DateTime? endDate,
+    DateTime? onlyFrom,
+    DateTime? onlyTo,
+    Consumables? consumables,
+    String? poster,
+  }) {
     return DiscountModel(
-        id: id ?? this.id,
-        type: type ?? this.type,
-        value: value ?? this.value,
-        name: name ?? this.name,
-        startDate: startDate ?? this.startDate,
-        endDate: endDate ?? this.endDate,
-        onlyFrom: onlyFrom ?? this.onlyFrom,
-        onlyTo: onlyTo ?? this.onlyTo,
-        consumables: consumables ?? this.consumables,
-        poster: poster ?? this.poster);
+      id: id ?? this.id,
+      type: type ?? this.type,
+      value: value ?? this.value,
+      productCount: productCount ?? this.productCount,
+      serviceCount: serviceCount ?? this.serviceCount,
+      name: name ?? this.name,
+      isActive: isActive ?? this.isActive,
+      startDate: startDate ?? this.startDate,
+      endDate: endDate ?? this.endDate,
+      onlyFrom: onlyFrom ?? this.onlyFrom,
+      onlyTo: onlyTo ?? this.onlyTo,
+      consumables: consumables ?? this.consumables,
+      poster: poster ?? this.poster,
+    );
   }
 
   void addProductsToDiscount(List<String?> products) {

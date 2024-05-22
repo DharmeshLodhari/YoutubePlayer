@@ -146,12 +146,12 @@ class _SendEnvelopeState extends State<SendEnvelope> {
     return Column(
       children: [
         Container(
-          padding: EdgeInsets.symmetric(horizontal: 20),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
           child: ListTile(
             contentPadding: EdgeInsets.zero,
             title: Text(
               chatConversation!.fullName!,
-              style: TextStyle(
+              style: const TextStyle(
                   color: Colors.black,
                   fontWeight: FontWeight.bold,
                   fontSize: 16),
@@ -212,28 +212,29 @@ class _SendEnvelopeState extends State<SendEnvelope> {
                             children: <Widget>[
                               getDisplayCard(),
                               Container(
-                                padding: EdgeInsets.symmetric(horizontal: 20),
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 20),
                                 child: Column(
                                   children: [
                                     isEmptyEnvelope!
                                         ? Container()
                                         : Column(
                                             children: [
-                                              SizedBox(
+                                              const SizedBox(
                                                 height: 20,
                                               ),
                                               displayAmountField(),
                                             ],
                                           ),
-                                    SizedBox(
+                                    const SizedBox(
                                       height: 20,
                                     ),
                                     getTitleField(),
-                                    SizedBox(
+                                    const SizedBox(
                                       height: 20,
                                     ),
                                     getMessageField(),
-                                    SizedBox(
+                                    const SizedBox(
                                       height: 20,
                                     ),
                                     errorMessage == ""
@@ -247,7 +248,7 @@ class _SendEnvelopeState extends State<SendEnvelope> {
                                           ),
                                     errorMessage == ""
                                         ? Container()
-                                        : SizedBox(
+                                        : const SizedBox(
                                             height: 20,
                                           ),
                                   ],
@@ -262,11 +263,11 @@ class _SendEnvelopeState extends State<SendEnvelope> {
                   Container(
                     child: Column(
                       children: [
-                        SizedBox(
+                        const SizedBox(
                           height: 20,
                         ),
                         getSubmitButton(),
-                        SizedBox(
+                        const SizedBox(
                           height: 20,
                         ),
                         getConditionText(),
@@ -281,7 +282,7 @@ class _SendEnvelopeState extends State<SendEnvelope> {
 
   Widget showBackArrow() {
     return IconButton(
-      icon: Icon(Icons.arrow_back_ios),
+      icon: const Icon(Icons.arrow_back_ios),
       onPressed: () {
         Navigator.pop(context);
       },
@@ -293,7 +294,7 @@ class _SendEnvelopeState extends State<SendEnvelope> {
       labelText: "Amount",
       isAmountField: true,
       keyboardType: Platform.isIOS
-          ? TextInputType.numberWithOptions(decimal: true)
+          ? const TextInputType.numberWithOptions(decimal: true)
           : TextInputType.number,
       controller: _amountController,
       onChanged: (val) {
@@ -370,7 +371,7 @@ class _SendEnvelopeState extends State<SendEnvelope> {
     }
 
     if (_formKey.currentState!.validate()) {
-      await Future.delayed(Duration(milliseconds: 300));
+      await Future.delayed(const Duration(milliseconds: 300));
       BottomSheetPassCode(
           context: context,
           isValidCallback: () async {

@@ -48,7 +48,7 @@ class FeeStructure {
   }
 
   Map<String, dynamic> toJson() {
-    var map = <String, dynamic>{};
+    final map = <String, dynamic>{};
     map['customer_api_transaction_fee'] = customerApiTransactionFee;
     map['business_transaction_fee'] = businessTransactionFee;
     map['magic_envelope_fee'] = magicEnvelopeFee;
@@ -83,7 +83,7 @@ class FeeStructure {
   }
 
   String calculatePrice(int price) {
-    double total = price + (price * taxRate!);
+    final double total = price + (price * taxRate!);
     return (total / 100).toString();
   }
 }

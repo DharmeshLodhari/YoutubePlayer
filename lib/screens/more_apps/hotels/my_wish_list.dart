@@ -73,12 +73,12 @@ class _MyWishListState extends State<MyWishList> {
               )
             : SingleChildScrollView(
                 child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Column(
                     children: hotelRooms
                         .map(
                           (element) => Container(
-                              padding: EdgeInsets.symmetric(vertical: 8),
+                              padding: const EdgeInsets.symmetric(vertical: 8),
                               child: HotelTileWithHeart(
                                 hotelRoom: element,
                               )),

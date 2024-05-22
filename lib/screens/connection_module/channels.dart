@@ -110,7 +110,7 @@ class _ChatChannelsState extends State<ChatChannels> {
         child: Column(
           children: [
             searchBox(),
-            SizedBox(height: 6),
+            const SizedBox(height: 6),
             noItemInList
                 ? Expanded(
                     child: NoItemInList(
@@ -119,7 +119,7 @@ class _ChatChannelsState extends State<ChatChannels> {
                     child: _isLoading && channelModelList.isEmpty
                         ? buildLoadingIndicator(isLoading: _isLoading)
                         : ListView.builder(
-                            physics: ClampingScrollPhysics(),
+                            physics: const ClampingScrollPhysics(),
                             controller: _scrollCtrl,
                             itemCount: channelModelList.length + 1,
                             itemBuilder: (BuildContext context, int index) {
@@ -156,7 +156,7 @@ class _ChatChannelsState extends State<ChatChannels> {
   Widget searchBox() {
     try {
       return Container(
-        padding: EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Theme(
           data: Theme.of(context).copyWith(
             textSelectionTheme: TextSelectionThemeData(
@@ -187,8 +187,8 @@ class _ChatChannelsState extends State<ChatChannels> {
               hintText: 'Search...',
               fillColor: Colors.white,
               filled: true,
-              contentPadding: EdgeInsets.symmetric(vertical: 10),
-              prefix: Padding(
+              contentPadding: const EdgeInsets.symmetric(vertical: 10),
+              prefix: const Padding(
                 padding: EdgeInsets.only(left: 12),
               ),
               suffixIcon: searchIcon(),

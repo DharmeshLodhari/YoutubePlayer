@@ -80,7 +80,7 @@ class _ComposeMessageState extends State<ComposeMessage> {
 
   void fetchCustomer() async {
     print('recipient:::: $recipient');
-    var customerProfile = await UserAuth().fetchCustomerProfile(recipient);
+    final customerProfile = await UserAuth().fetchCustomerProfile(recipient);
 
     messageReceiver = customerProfile;
     isValidRecipient = messageReceiver!.userName != userBloc.user.userName;
@@ -258,7 +258,7 @@ class _ComposeMessageState extends State<ComposeMessage> {
               context: context,
               builder: (context) => Center(child: CircularLoadingIndicator()));
           try {
-            var data = {
+            final data = {
               "sender": userBloc.user.userName,
               "recipient": _recipientController.text.trim(),
               "body": message.trim(),
@@ -278,7 +278,7 @@ class _ComposeMessageState extends State<ComposeMessage> {
                 }
               } else {
                 Navigator.pop(context);
-                var msg = AppLocalization.of(context)!.error;
+                final msg = AppLocalization.of(context)!.error;
                 showToast(message: msg);
               }
             });
@@ -288,12 +288,12 @@ class _ComposeMessageState extends State<ComposeMessage> {
           }
         } else {
           showToast(message: '1');
-          var msg = AppLocalization.of(context)!.invalidRecipient;
+          final msg = AppLocalization.of(context)!.invalidRecipient;
           showToast(message: msg);
         }
       }
     } else {
-      var msg = AppLocalization.of(context)!.invalidRecipient;
+      final msg = AppLocalization.of(context)!.invalidRecipient;
       showToast(message: msg);
     }
   }
@@ -325,7 +325,7 @@ class _ComposeMessageState extends State<ComposeMessage> {
                     context: context,
                     builder: (context) => CircularLoadingIndicator());
                 try {
-                  var data = {
+                  final data = {
                     "sender": userBloc.user.userName,
                     "recipient": _recipientController.text.trim(),
                     "body": message.trim(),
@@ -340,7 +340,7 @@ class _ComposeMessageState extends State<ComposeMessage> {
                       );
                     } else {
                       Navigator.pop(context);
-                      var msg = AppLocalization.of(context)!.error;
+                      final msg = AppLocalization.of(context)!.error;
                       showToast(message: msg);
                     }
                   });
@@ -349,12 +349,12 @@ class _ComposeMessageState extends State<ComposeMessage> {
                   showToast(message: e.toString());
                 }
               } else {
-                var msg = AppLocalization.of(context)!.invalidRecipient;
+                final msg = AppLocalization.of(context)!.invalidRecipient;
                 showToast(message: msg);
               }
             }
           } else {
-            var msg = AppLocalization.of(context)!.invalidRecipient;
+            final msg = AppLocalization.of(context)!.invalidRecipient;
             showToast(message: msg);
           }
         });
@@ -373,7 +373,7 @@ class _ComposeMessageState extends State<ComposeMessage> {
     var avatarImage;
     var qrCodeImage;
     if (messageReceiver != null) {
-      Color borderColor = getUserTypeColor(user: messageReceiver!);
+      final Color borderColor = getUserTypeColor(user: messageReceiver!);
 
       avatarImage = Container(
         height: 48,
@@ -472,7 +472,7 @@ class _ComposeMessageState extends State<ComposeMessage> {
         });
       },
       onTap: () async {
-        CustomerProfile? userFound =
+        final CustomerProfile? userFound =
             await NavigationUtil.push(context, screen: SearchUser());
 
         if (userFound != null) {

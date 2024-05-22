@@ -107,7 +107,7 @@ class WithdrawVirtualCardState extends State<WithdrawVirtualCard> {
   }
 
   Widget scaffoldBody() {
-    bool isScreenIsSmall = MediaQuery.of(context).size.height < 600;
+    final bool isScreenIsSmall = MediaQuery.of(context).size.height < 600;
 
     return isLoading
         ? Center(
@@ -214,7 +214,7 @@ class WithdrawVirtualCardState extends State<WithdrawVirtualCard> {
       cardColors = [navyBlue, richPink, black, orange];
       cardColor = navyBlue;
     } else {
-      String? color = cardData.color;
+      final String? color = cardData.color;
       switch (color) {
         case 'Slydo Blue':
           cardColor = navyBlue;
@@ -581,7 +581,7 @@ class WithdrawVirtualCardState extends State<WithdrawVirtualCard> {
             isAPILoading = true;
             if (mounted) setState(() {});
 
-            Map<String, dynamic> result = {
+            final Map<String, dynamic> result = {
               "amount": usdAmount,
               "exchange_rate_id": exchangeRate.id,
               "reason": reason,
@@ -612,8 +612,8 @@ class WithdrawVirtualCardState extends State<WithdrawVirtualCard> {
 
   Future<void> getAccountBalance() async {
     await PaymentAndBankingAuth().getAccountBalance().then((value) {
-      var data = value!;
-      var spendableBalance = data["spendable_balance"];
+      final data = value!;
+      final spendableBalance = data["spendable_balance"];
 
       balance = spendableBalance;
       if (mounted) {

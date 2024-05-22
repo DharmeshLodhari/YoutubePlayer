@@ -121,7 +121,7 @@ class FormVariantsTile extends StatelessWidget {
           image: DecorationImage(
               image: localUrl != null && localUrl.isNotEmpty
                   ? FileImage(
-                      File(localUrl ?? ""),
+                      File(localUrl),
                     )
                   : NetworkImage(
                       sercerUrl,

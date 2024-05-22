@@ -74,9 +74,9 @@ class _MomentDashViewState extends State<MomentDashView>
 
   List<Widget> dashes(int lengthOfMoment, int currentIndex) {
     // debugPrint('DASHES ---> ');
-    List<Widget> widgets = [];
+    final List<Widget> widgets = [];
     for (int i = 0; i < lengthOfMoment; i++) {
-      Widget widget = Expanded(
+      final Widget widget = Expanded(
         child: Container(
           margin: const EdgeInsets.symmetric(horizontal: 4),
           child: LinearProgressIndicator(

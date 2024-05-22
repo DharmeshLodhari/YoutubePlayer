@@ -12,15 +12,15 @@ class NetworkUtil {
   ///
   Future<List<PolylineResult>> getRouteBetweenCoordinates(
       {required PolylineRequest request}) async {
-    List<PolylineResult> results = [];
+    final List<PolylineResult> results = [];
 
-    var response = await http.get(request.toUri());
+    final response = await http.get(request.toUri());
     if (response.statusCode == 200 || response.statusCode == 201) {
-      var parsedJson = json.decode(response.body);
+      final parsedJson = json.decode(response.body);
       if (parsedJson["status"]?.toLowerCase() == STATUS_OK &&
           parsedJson["routes"] != null &&
           parsedJson["routes"].isNotEmpty) {
-        List<dynamic> routeList = parsedJson["routes"];
+        final List<dynamic> routeList = parsedJson["routes"];
         for (var route in routeList) {
           results.add(PolylineResult(
               points: PolylineDecoder.run(route["overview_polyline"]["points"]),

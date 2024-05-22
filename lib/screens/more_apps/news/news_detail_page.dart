@@ -168,7 +168,7 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
       ),
       actions: <Widget>[
         shareBtn(),
-        SizedBox(
+        const SizedBox(
           width: 16,
         ),
       ],
@@ -206,67 +206,67 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
             child: SingleChildScrollView(
               child: Column(
                 children: [
-                  SizedBox(
+                  const SizedBox(
                     height: 6,
                   ),
                   videoPlayer(),
-                  SizedBox(
+                  const SizedBox(
                     height: 20,
                   ),
                   Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         newsTitle(),
-                        SizedBox(
+                        const SizedBox(
                           height: 20,
                         ),
                         bloggerDetail(),
-                        SizedBox(
+                        const SizedBox(
                           height: 20,
                         ),
                         newsShortDescription(),
-                        SizedBox(
+                        const SizedBox(
                           height: 20,
                         ),
                         newsSubTitle(),
-                        SizedBox(
+                        const SizedBox(
                           height: 20,
                         ),
                         newsFullDescription(),
-                        SizedBox(
+                        const SizedBox(
                           height: 20,
                         ),
                         subVideoPlayer(),
-                        SizedBox(
+                        const SizedBox(
                           height: 20,
                         ),
                         newsSubTitle(),
-                        SizedBox(
+                        const SizedBox(
                           height: 20,
                         ),
                         newsFullDescription(),
-                        SizedBox(
+                        const SizedBox(
                           height: 20,
                         ),
                         Divider(
                           thickness: 1,
                           color: dividerColor,
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 20,
                         ),
                         newsChips(),
-                        SizedBox(
+                        const SizedBox(
                           height: 50,
                         ),
                         relatedPostTitle(),
-                        SizedBox(
+                        const SizedBox(
                           height: 20,
                         ),
                         relatedPost(),
-                        SizedBox(
+                        const SizedBox(
                           height: 20,
                         ),
                       ],
@@ -414,7 +414,7 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
                       NewsTile(
                         newsListItem: news,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 16,
                       )
                     ],

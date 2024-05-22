@@ -128,7 +128,7 @@ class _AddVirtualCardState extends State<AddVirtualCard> {
   }
 
   Widget scaffoldBody() {
-    bool isScreenIsSmall = MediaQuery.of(context).size.height < 600;
+    final bool isScreenIsSmall = MediaQuery.of(context).size.height < 600;
 
     return isLoading
         ? Center(
@@ -418,7 +418,7 @@ class _AddVirtualCardState extends State<AddVirtualCard> {
                     shrinkWrap: true,
                     itemCount: stateList.length,
                     itemBuilder: (context, index) {
-                      String category = stateList[index];
+                      final String category = stateList[index];
 
                       return ListTile(
                         title: Text(
@@ -465,7 +465,7 @@ class _AddVirtualCardState extends State<AddVirtualCard> {
                     shrinkWrap: true,
                     itemCount: idTypeList.length,
                     itemBuilder: (context, index) {
-                      String category = idTypeList[index];
+                      final String category = idTypeList[index];
 
                       return ListTile(
                         title: Text(
@@ -529,7 +529,7 @@ class _AddVirtualCardState extends State<AddVirtualCard> {
   Future<void> gotoGenerateVirtualCard() async {
     if (_formKey.currentState!.validate()) {
       if (validateDropdown()) {
-        Map<String, dynamic> result = {
+        final Map<String, dynamic> result = {
           "first_name": firstName,
           "last_name": lastName,
           "address1": address,

@@ -104,7 +104,7 @@ class _MomentsScreenState extends State<MomentsScreen> {
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         _refreshPage();
@@ -144,7 +144,8 @@ class _MomentsScreenState extends State<MomentsScreen> {
             isContactMomentsLoading = true;
           });
         }
-        Map<String, dynamic>? result = await MomentsService().getContactMoments(
+        final Map<String, dynamic>? result =
+            await MomentsService().getContactMoments(
           next: nextContactMoments,
           previous: previousContactMoments,
         );
@@ -155,7 +156,7 @@ class _MomentsScreenState extends State<MomentsScreen> {
         nextContactMoments = result['next'];
         countContactMoments = result['count'];
         previousContactMoments = result['previous'];
-        var tempList = result['results'];
+        final tempList = result['results'];
 
         isContactMomentsLoading = false;
         contactMomentsList.addAll(tempList);
@@ -180,7 +181,8 @@ class _MomentsScreenState extends State<MomentsScreen> {
             isExploreMomentsLoading = true;
           });
         }
-        Map<String, dynamic>? result = await MomentsService().getExploreMoments(
+        final Map<String, dynamic>? result =
+            await MomentsService().getExploreMoments(
           nextExploreMoments,
           previousExploreMoments,
         );
@@ -191,7 +193,7 @@ class _MomentsScreenState extends State<MomentsScreen> {
         nextExploreMoments = result['next'];
         countExploreMoments = result['count'];
         previousExploreMoments = result['previous'];
-        var tempList = result['results'];
+        final tempList = result['results'];
 
         isExploreMomentsLoading = false;
 
@@ -306,7 +308,7 @@ class _MomentsScreenState extends State<MomentsScreen> {
   }
 
   Widget addMomentsBtn() {
-    PermissionType? hasPermission =
+    final PermissionType? hasPermission =
         userBloc.user.hasWritePermission(ProtectionPermission.moment);
     return InkWell(
       onTap: () async {
@@ -639,13 +641,13 @@ class _ContactMomentsCardState extends State<ContactMomentsCard> {
   final List<List<MomentsModel>> listOfMomentsModelList = [];
 
   Future getListOfMomentsModelList(String owner) async {
-    List<MomentsModel> momentsModelList = await MomentsService()
+    final List<MomentsModel> momentsModelList = await MomentsService()
         .getMomentsWithOwnerName(ownerName: owner, channelUsername: '');
     listOfMomentsModelList.add(momentsModelList);
   }
 
   Future getLengthOfOwnerMoments(String owner) async {
-    List<MomentsModel> momentsModelList = await MomentsService()
+    final List<MomentsModel> momentsModelList = await MomentsService()
         .getMomentsWithOwnerName(ownerName: owner, channelUsername: '');
     lengthOfOwnerMoments = momentsModelList.length;
   }

@@ -125,7 +125,7 @@ class _HomeState extends State<Home> {
       }
 
       if (!isAppTutorialDone) {
-        bool result =
+        final bool result =
             await _sharedPreferences?.setBool("isAppTutorialDone", true) ??
                 false;
         debugPrint("result:- $result");
@@ -148,9 +148,9 @@ class _HomeState extends State<Home> {
         isLoading = true;
         if (mounted) setState(() {});
 
-        String latestTrending = 'latest';
+        final String latestTrending = 'latest';
 
-        Map<String, dynamic>? result = await YarnAuth().getAllYarn(
+        final Map<String, dynamic>? result = await YarnAuth().getAllYarn(
             next, previous ?? '',
             type: type,
             isType: isType,
@@ -171,21 +171,21 @@ class _HomeState extends State<Home> {
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
-        var tempList = result['results'];
+        final tempList = result['results'];
 
         if (tempList.isNotEmpty) {
           noList = false;
           isLoading = false;
 
-          List<Yarn> createYarnTopicList =
+          final List<Yarn> createYarnTopicList =
               List.from(yarnDashboardBloc.createYarnTopicList);
-          List<Yarn> deleteYarnTopicList =
+          final List<Yarn> deleteYarnTopicList =
               List.from(yarnDashboardBloc.deleteYarnTopicList);
-          List<Yarn> reYarnTopicList =
+          final List<Yarn> reYarnTopicList =
               List.from(yarnDashboardBloc.reYarnTopicList);
 
           /// Get the common CreateYarnTopicList objects in both lists
-          List<Yarn> commonCreateYarnTopicList = tempList
+          final List<Yarn> commonCreateYarnTopicList = tempList
               .where((o1) => createYarnTopicList.any((o2) => o2.id == o1.id))
               .toList();
 
@@ -194,7 +194,7 @@ class _HomeState extends State<Home> {
               (o1) => commonCreateYarnTopicList.any((o2) => o2.id == o1.id));
 
           /// Get the common reYarnTopicList objects in both lists
-          List<Yarn> commonReYarnTopicList = tempList
+          final List<Yarn> commonReYarnTopicList = tempList
               .where((o1) => reYarnTopicList.any((o2) => o2.id == o1.id))
               .toList();
 
@@ -265,9 +265,9 @@ class _HomeState extends State<Home> {
             isExploreMomentsLoading = true;
           });
         }
-        Map<String, dynamic>? result = await MomentsService().getExploreMoments(
-            nextExploreMoments, previousExploreMoments,
-            page_size: 10);
+        final Map<String, dynamic>? result = await MomentsService()
+            .getExploreMoments(nextExploreMoments, previousExploreMoments,
+                page_size: 10);
         if (result == null) {
           isExploreMomentsLoading = false;
           return;
@@ -275,7 +275,7 @@ class _HomeState extends State<Home> {
         nextExploreMoments = result['next'];
         countExploreMoments = result['count'];
         previousExploreMoments = result['previous'];
-        var tempList = result['results'];
+        final tempList = result['results'];
 
         isExploreMomentsLoading = false;
 
@@ -437,19 +437,19 @@ class _HomeState extends State<Home> {
           if (momentsList.isNotEmpty)
             Container(
               color: Colors.white,
-              padding: EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   GestureDetector(
-                    onTap: () =>
-                        NavigationUtil.push(context, screen: MomentsScreen()),
+                    onTap: () => NavigationUtil.push(context,
+                        screen: const MomentsScreen()),
                     child: sectionHeader(
                       "Share your moment",
                       "View Moment",
                     ),
                   ),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   if (nextContactMoments == '' && isExploreMomentsLoading)
                     Shimmer.fromColors(
                       baseColor: Colors.white,
@@ -459,7 +459,7 @@ class _HomeState extends State<Home> {
                         child: ListView.builder(
                           shrinkWrap: true,
                           scrollDirection: Axis.horizontal,
-                          physics: NeverScrollableScrollPhysics(),
+                          physics: const NeverScrollableScrollPhysics(),
                           itemCount: 4,
                           itemBuilder: (context, index) {
                             return SizedBox(
@@ -481,7 +481,7 @@ class _HomeState extends State<Home> {
                         shrinkWrap: true,
                         controller: _myConnectionsScrollController,
                         scrollDirection: Axis.horizontal,
-                        padding: EdgeInsets.symmetric(vertical: 4),
+                        padding: const EdgeInsets.symmetric(vertical: 4),
                         itemCount: momentsList.length,
                         itemBuilder: (BuildContext context, int index) {
                           if (index == momentsList.length) {
@@ -503,7 +503,7 @@ class _HomeState extends State<Home> {
                 ],
               ),
             ),
-          SizedBox(height: 25),
+          const SizedBox(height: 25),
 
           InkWell(
             onTap: () {
@@ -520,7 +520,7 @@ class _HomeState extends State<Home> {
               }
             },
             child: Container(
-              margin: EdgeInsets.symmetric(horizontal: 16),
+              margin: const EdgeInsets.symmetric(horizontal: 16),
               child: Image.asset(
                 "assets/images/bike_home.jpg",
                 width: double.infinity,
@@ -528,17 +528,17 @@ class _HomeState extends State<Home> {
               ),
             ),
           ),
-          SizedBox(height: 32),
+          const SizedBox(height: 32),
           Container(
             color: Colors.white,
-            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
             child: Column(
               children: [
                 GestureDetector(
                     onTap: () =>
                         NavigationUtil.push(context, screen: YarnDashboard()),
                     child: sectionHeader("Join the conversation", "View Yarn")),
-                SizedBox(height: 24),
+                const SizedBox(height: 24),
                 _buildListView()
               ],
             ),
@@ -726,7 +726,7 @@ class _HomeState extends State<Home> {
         break;
       case ProtectionPermission.moment:
         hideBalance();
-        NavigationUtil.push(context, screen: MomentsScreen());
+        NavigationUtil.push(context, screen: const MomentsScreen());
         break;
       case ProtectionPermission.services:
         hideBalance();
@@ -809,9 +809,9 @@ class _HomeState extends State<Home> {
 
   Widget _buildListView() {
     return ListView.builder(
-      physics: ScrollPhysics(),
+      physics: const ScrollPhysics(),
       shrinkWrap: true,
-      padding: EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.only(bottom: 16),
       // scrollDirection: Axis.horizontal,
       // controller: _scrollController,
       itemCount: yarnTopicList.length + 1,
@@ -878,7 +878,7 @@ class _HomeState extends State<Home> {
 
   Widget shortcutViewExtra(String imagePath, String title, String subTitle,
       String color, double dynamicHeight) {
-    double opacity = 0.8;
+    final double opacity = 0.8;
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
       padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
@@ -933,7 +933,7 @@ class _HomeState extends State<Home> {
     // Calculate the dynamic height based on the longest subtitle
     final textSpan = TextSpan(
       text: longestSubTitle,
-      style: TextStyle(fontSize: maxFontSize),
+      style: const TextStyle(fontSize: maxFontSize),
     );
 
     final textPainter = TextPainter(
@@ -1009,7 +1009,8 @@ class _HomeState extends State<Home> {
   }
 
   Widget _appBar() {
-    Color borderColor = getUserTypeColorByType(type: userBloc.user.type ?? "");
+    final Color borderColor =
+        getUserTypeColorByType(type: userBloc.user.type ?? "");
     return AppBar(
       backgroundColor: Colors.transparent,
       automaticallyImplyLeading: false,
@@ -1047,7 +1048,7 @@ class _HomeState extends State<Home> {
                       color: black,
                       fontWeight: FontWeight.w400),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 3,
                 ),
                 userNameWithVerifiedIcon(
@@ -1064,15 +1065,15 @@ class _HomeState extends State<Home> {
               ],
             ),
           ),
-          SizedBox(height: 5.0),
+          const SizedBox(height: 5.0),
           _buildCurrentLocation(),
         ],
       ),
       actions: <Widget>[
         _searchBtn(),
-        SizedBox(width: 15),
+        const SizedBox(width: 15),
         _cartBtn(),
-        SizedBox(width: 5),
+        const SizedBox(width: 5),
       ],
     );
   }
@@ -1117,19 +1118,19 @@ class _HomeState extends State<Home> {
           badgeColor: naturalGreen,
           padding: basketBloc.basketItems.length == 0
               ? const EdgeInsets.all(0)
-              : EdgeInsets.all(4),
+              : const EdgeInsets.all(4),
           elevation: 0,
         ),
         child: SizedBox(
           child: Card(
             color: Colors.white,
             elevation: 0,
-            margin: EdgeInsets.symmetric(vertical: 10),
+            margin: const EdgeInsets.symmetric(vertical: 10),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
             ),
             child: IconButton(
-              icon: Icon(
+              icon: const Icon(
                 SlydoAppIconNew.cart,
                 color: Colors.black,
                 size: 17,
@@ -1201,7 +1202,7 @@ class _HomeState extends State<Home> {
   }
 
   Widget _buildCurrentLocation() {
-    bool getLocationStatus =
+    final bool getLocationStatus =
         _sharedPreferences?.getBool('isCurrentLocation') ?? false;
     return InkWell(
       onTap: () {
@@ -1213,13 +1214,13 @@ class _HomeState extends State<Home> {
       },
       child: Row(
         children: [
-          Icon(
+          const Icon(
             Icons.location_pin,
             color: Colors.black,
             size: 15.0,
           ),
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 3.0),
+            padding: const EdgeInsets.symmetric(horizontal: 3.0),
             child: Text(
               _buildLocationText(),
               style: TextStyle(
@@ -1231,7 +1232,7 @@ class _HomeState extends State<Home> {
             ),
           ),
           if (defaultAddress?.city != null && getLocationStatus != true)
-            Icon(
+            const Icon(
               Icons.keyboard_arrow_down,
               color: Colors.black,
               size: 15.0,
@@ -1242,7 +1243,7 @@ class _HomeState extends State<Home> {
   }
 
   String _buildLocationText() {
-    bool getLocationStatus =
+    final bool getLocationStatus =
         _sharedPreferences?.getBool('isCurrentLocation') ?? false;
     if (getLocationStatus == true) {
       return 'Using your current location';
@@ -1260,11 +1261,11 @@ class _HomeState extends State<Home> {
   }
 
   Future<void> getAddressList() async {
-    bool getLocationStatus =
+    final bool getLocationStatus =
         _sharedPreferences?.getBool('isCurrentLocation') ?? false;
     if (mounted) setState(() {});
 
-    Map<String, dynamic>? result =
+    final Map<String, dynamic>? result =
         await ShoppingAuthService().listOfDispatchAddress("", null);
 
     if (result == null) {
@@ -1274,7 +1275,7 @@ class _HomeState extends State<Home> {
       return;
     }
 
-    List<ShippingAddress> tempList = result['results'];
+    final List<ShippingAddress> tempList = result['results'];
 
     isEmpty = tempList.isEmpty;
     if (isEmpty && getLocationStatus == false) {
@@ -1371,21 +1372,45 @@ class _HomeState extends State<Home> {
         const SizedBox(
           height: 15.0,
         ),
-        InkWell(
-          onTap: () {
-            if (label == 'Total Balance') {
-              toggleBalanceVisibility();
-            }
-          },
-          child: Text(
-            label,
-            style: TextStyle(
-              fontSize: 14,
-              color: white,
-              fontFamily: 'Inter',
-              fontWeight: FontWeight.w500,
+        Row(
+          children: [
+            InkWell(
+              onTap: () {
+                if (label == 'Total Balance') {
+                  toggleBalanceVisibility();
+                }
+              },
+              child: Text(
+                label,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: white,
+                  fontFamily: 'Inter',
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
             ),
-          ),
+            SizedBox(
+              width: 5,
+            ),
+            if (label == 'Total Balance')
+              InkWell(
+                onTap: () {
+                  isLoading = true;
+                  getAccountBalance();
+                  setState(() {});
+                },
+                child: SvgPicture.asset(
+                  "refresh".toSVG(),
+                  color: white,
+                  height: 20,
+                  width: 20,
+                ),
+              ),
+          ],
+        ),
+        SizedBox(
+          height: 5,
         ),
         Row(
           children: [
@@ -1400,7 +1425,7 @@ class _HomeState extends State<Home> {
                   toggleBalanceVisibility();
                 },
                 child: Container(
-                  padding: const EdgeInsets.all(10.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
                   child: Icon(
                     isBalanceHidden ? SlydoAppIcon.eye : SlydoAppIcon.eye_close,
                     color: white,
@@ -1515,7 +1540,7 @@ class _HomeState extends State<Home> {
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              SizedBox(width: 5),
+              const SizedBox(width: 5),
               GestureDetector(
                 onTap: copyAccountNumber,
                 child: SvgPicture.asset(
@@ -1538,7 +1563,7 @@ class _HomeState extends State<Home> {
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  SizedBox(width: 5),
+                  const SizedBox(width: 5),
                   GestureDetector(
                     onTap: copyAccountDetails,
                     child: SvgPicture.asset(
@@ -1586,7 +1611,7 @@ class _HomeState extends State<Home> {
       child: Container(
         padding: const EdgeInsets.all(5.0),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(5.0)),
+          borderRadius: const BorderRadius.all(Radius.circular(5.0)),
           color: lightGrey.withOpacity(0.1),
           border: Border.all(
             color: Colors.white,
@@ -1600,8 +1625,8 @@ class _HomeState extends State<Home> {
               size: 15,
               color: Colors.white,
             ),
-            SizedBox(width: 7),
-            Text(
+            const SizedBox(width: 7),
+            const Text(
               'QR',
               style: TextStyle(
                 fontSize: 15,
@@ -1626,9 +1651,9 @@ class _HomeState extends State<Home> {
 
   Future<void> getAccountBalance() async {
     await PaymentAndBankingAuth().getAccountBalance().then((value) {
-      var data = value!;
-      var spendableBalance = data["spendable_balance"];
-      var actualBalance = data["balance"];
+      final data = value!;
+      final spendableBalance = data["spendable_balance"];
+      final actualBalance = data["balance"];
 
       accountBalance = spendableBalance;
       actualAccountBalance = actualBalance;
@@ -1966,7 +1991,7 @@ class _HomeState extends State<Home> {
   }
 
   String getGreetingMessage() {
-    TimeOfDay currentTime = TimeOfDay.now();
+    final TimeOfDay currentTime = TimeOfDay.now();
 
     if (currentTime.hour >= 6 &&
         (currentTime.hour <= 11 && currentTime.minute <= 59)) {
@@ -2031,23 +2056,24 @@ class _HomeState extends State<Home> {
   }
 
   void pickImage() async {
-    String? croppedImage = await getCroppedImage(context);
+    final String? croppedImage = await getCroppedImage(context);
 
     if (croppedImage != null) {
       try {
         isLoading = true;
         if (mounted) setState(() {});
 
-        User? _user = await DatabaseHelper().getUser();
+        final User? _user = await DatabaseHelper().getUser();
 
-        SharedPreferences sharedPreferences =
+        final SharedPreferences sharedPreferences =
             await SharedPreferences.getInstance();
-        String countryFromPref = sharedPreferences.getString('country') ?? "NG";
+        final String countryFromPref =
+            sharedPreferences.getString('country') ?? "NG";
 
-        Country country =
+        final Country country =
             CountryPickerUtils.getCountryByIsoCode(countryFromPref);
 
-        SecureUser secureUser = await SecureStorage().getUser();
+        final SecureUser secureUser = await SecureStorage().getUser();
         String phoneNumber = secureUser.phoneNumber ?? "";
         String password = secureUser.password ?? "";
         String company = secureUser.company ?? "";
@@ -2096,10 +2122,10 @@ class _HomeState extends State<Home> {
 
   String generateAsteriskMask(String amount) {
     // Determine the length of the amount
-    int amountLength = amount.length;
+    final int amountLength = amount.length;
 
     // Generate a string of asterisks of the same length as the amount
-    String asteriskMask = '*' * amountLength;
+    final String asteriskMask = '*' * amountLength;
 
     // Trim the trailing space and return the asterisk mask
     return asteriskMask.trim();

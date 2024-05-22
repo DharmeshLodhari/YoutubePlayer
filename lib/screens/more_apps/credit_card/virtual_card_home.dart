@@ -99,7 +99,7 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
             isLoading = true;
           });
         }
-        Map<String, dynamic>? result = await _auth.getAllCards(
+        final Map<String, dynamic>? result = await _auth.getAllCards(
           next,
           previous,
         );
@@ -110,7 +110,7 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
         next = result['next'];
         count = result['count'];
         previous = result['previous'];
-        var tempList = result['results'];
+        final tempList = result['results'];
 
         isLoading = false;
         cardList.addAll(tempList);
@@ -146,8 +146,9 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
             isLoadingTransaction = true;
           });
         }
-        AllCards currentCard = cardList[_currentIndex];
-        Map<String, dynamic>? result = await _auth.getSingleCardsTransactions(
+        final AllCards currentCard = cardList[_currentIndex];
+        final Map<String, dynamic>? result =
+            await _auth.getSingleCardsTransactions(
           nextTransaction,
           previousTransaction,
           currentCard.cardId,
@@ -159,7 +160,7 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
         nextTransaction = result['next'];
         countTransaction = result['count'];
         previousTransaction = result['previous'];
-        var tempList = result['results'];
+        final tempList = result['results'];
 
         isLoadingTransaction = false;
         transactionList.addAll(tempList);
@@ -331,8 +332,8 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
             },
           ),
           items: cardsData.asMap().entries.map((entry) {
-            int index = entry.key;
-            AllCards cardData = entry.value;
+            final int index = entry.key;
+            final AllCards cardData = entry.value;
             return creditCard(cardData, index);
           }).toList(),
         ),
@@ -340,7 +341,7 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: cardList.asMap().entries.map((entry) {
-            int index = entry.key;
+            final int index = entry.key;
             return Container(
               width: 8.0,
               height: 8.0,
@@ -365,7 +366,7 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
       cardColors = [navyBlue, richPink, black, orange];
       cardColor = cardColors[index % cardColors.length];
     } else {
-      String? color = cardList[_currentIndex].color;
+      final String? color = cardList[_currentIndex].color;
       switch (color) {
         case 'Slydo Blue':
           cardColor = navyBlue;
@@ -387,7 +388,7 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
     }
     _focusNodes.putIfAbsent(index, () => FocusNode());
 
-    bool? card = cardList[_currentIndex].activated;
+    final bool? card = cardList[_currentIndex].activated;
 
     return Card(
       elevation: 0,
@@ -731,7 +732,7 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
   }
 
   Widget _displayCardQuickActionButtons() {
-    double opacity = 0.07;
+    final double opacity = 0.07;
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Row(
@@ -1039,7 +1040,7 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         _refresh();
@@ -1238,7 +1239,7 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
     } else {
       cardStatus = true;
     }
-    Map<String, dynamic> result = {
+    final Map<String, dynamic> result = {
       "activated": cardStatus,
     };
 
@@ -1292,7 +1293,7 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
   }
 
   Future<void> editCard(AllCards allCards, String label) async {
-    Map<String, dynamic> result = {
+    final Map<String, dynamic> result = {
       "label": label,
     };
 

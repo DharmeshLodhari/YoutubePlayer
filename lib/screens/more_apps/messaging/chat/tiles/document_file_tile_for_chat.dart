@@ -35,9 +35,9 @@ class DocumentFileTileForChat extends StatefulWidget {
 class _DocumentFileTileForChatState extends State<DocumentFileTileForChat> {
   @override
   Widget build(BuildContext context) {
-    UserBloc userBloc = Provider.of<UserBloc>(context);
+    final UserBloc userBloc = Provider.of<UserBloc>(context);
 
-    bool isSend = widget.message["author"] == userBloc.user.userName;
+    final bool isSend = widget.message["author"] == userBloc.user.userName;
     String? messageText = widget.message['text'] ?? "";
     messageText = messageDecoderWithEmoji(messageText);
 
@@ -53,27 +53,28 @@ class _DocumentFileTileForChatState extends State<DocumentFileTileForChat> {
               crossAxisAlignment: CrossAxisAlignment.end,
               mainAxisSize: MainAxisSize.min,
               children: [
-                isSend ? Container() : Container(width: 20),
+                if (isSend) Container() else Container(width: 20),
                 FileTileForChat(
                   message: widget.message,
                   chatConversation: widget.chatConversation!,
                 ),
-                isSend
-                    ? Container(
-                        width: 20,
-                        child: getMessageTick(message: widget.message))
-                    : Container(),
+                if (isSend)
+                  Container(
+                      width: 20, child: getMessageTick(message: widget.message))
+                else
+                  Container(),
               ],
             ),
-            SizedBox(height: 1),
+            const SizedBox(height: 1),
             Row(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                isSend
-                    ? Container()
-                    : SizedBox(
-                        width: 20,
-                      ),
+                if (isSend)
+                  Container()
+                else
+                  const SizedBox(
+                    width: 20,
+                  ),
                 Text(
                   formatTime(widget.message["created_at"]),
                   style: TextStyle(
@@ -81,11 +82,12 @@ class _DocumentFileTileForChatState extends State<DocumentFileTileForChat> {
                       fontSize: 10,
                       fontWeight: FontWeight.w500),
                 ),
-                isSend
-                    ? SizedBox(
-                        width: 20,
-                      )
-                    : Container(),
+                if (isSend)
+                  const SizedBox(
+                    width: 20,
+                  )
+                else
+                  Container(),
               ],
             ),
           ],
@@ -179,25 +181,25 @@ class _FileTileForChatState extends State<FileTileForChat> {
 
   @pragma(
       'vm:entry-point') // To avoid tree shaking in release mode for Android.
-  static void downloadCallback(
-      String id, int status, int progress) {
+  static void downloadCallback(String id, int status, int progress) {
     final SendPort send =
         IsolateNameServer.lookupPortByName('downloader_send_port')!;
     send.send([id, status, progress]);
   }
 
   getIfFileIsDownloadable() async {
-    DocumentFileInChatDownloadModel model = DocumentFileInChatDownloadModel(
+    final DocumentFileInChatDownloadModel model =
+        DocumentFileInChatDownloadModel(
       checkID: checkID,
       conversationID: conversationID!,
     );
-    String? filePathInOs =
+    final String? filePathInOs =
         await DatabaseHelper().checkIfFileExistsInDB(model: model);
 
     debugPrint('file path ::: $filePathInOs');
 
     if (filePathInOs != null) {
-      bool fileExistsOnFileSystemOS = await doesFileExist(filePathInOs);
+      final bool fileExistsOnFileSystemOS = await doesFileExist(filePathInOs);
 
       debugPrint('file path exists in os :: $fileExistsOnFileSystemOS');
 
@@ -222,8 +224,8 @@ class _FileTileForChatState extends State<FileTileForChat> {
 
   @override
   Widget build(BuildContext context) {
-    UserBloc userBloc = Provider.of<UserBloc>(context);
-    bool isSend = widget.message["author"] == userBloc.user.userName;
+    final UserBloc userBloc = Provider.of<UserBloc>(context);
+    final bool isSend = widget.message["author"] == userBloc.user.userName;
 
     return Align(
       alignment: isSend ? Alignment.centerRight : Alignment.centerLeft,
@@ -232,10 +234,10 @@ class _FileTileForChatState extends State<FileTileForChat> {
           maxWidth: MediaQuery.of(context).size.width / 1.8,
           minWidth: MediaQuery.of(context).size.width / 1.8,
         ),
-        padding: EdgeInsets.symmetric(vertical: 4),
+        padding: const EdgeInsets.symmetric(vertical: 4),
         decoration: BoxDecoration(
           color: isSend ? navyBlue : Colors.white,
-          borderRadius: BorderRadius.only(
+          borderRadius: const BorderRadius.only(
             bottomLeft: Radius.circular(10),
             topLeft: Radius.circular(10),
             topRight: Radius.circular(10),
@@ -244,19 +246,20 @@ class _FileTileForChatState extends State<FileTileForChat> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            widget.chatConversation.isGroupConversation!
-                ? Padding(
-                    padding: EdgeInsets.only(left: 16),
-                    child: Text(
-                      getAuthorName(
-                          message: widget.message, currentUser: userBloc.user)!,
-                      style: TextStyle(
-                          color: isSend ? Colors.white : navyBlue,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w700),
-                    ),
-                  )
-                : SizedBox.shrink(),
+            if (widget.chatConversation.isGroupConversation!)
+              Padding(
+                padding: const EdgeInsets.only(left: 16),
+                child: Text(
+                  getAuthorName(
+                      message: widget.message, currentUser: userBloc.user)!,
+                  style: TextStyle(
+                      color: isSend ? Colors.white : navyBlue,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700),
+                ),
+              )
+            else
+              const SizedBox.shrink(),
             ListTile(
               leading: CircleAvatar(
                 radius: 18,
@@ -283,18 +286,19 @@ class _FileTileForChatState extends State<FileTileForChat> {
               ),
               onTap: openFile,
             ),
-            messageText != null && messageText!.isNotEmpty
-                ? Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Text(
-                      messageText ?? '',
-                      style: TextStyle(
-                          color: isSend ? Colors.white : blackFont,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400),
-                    ),
-                  )
-                : SizedBox.shrink(),
+            if (messageText != null && messageText!.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Text(
+                  messageText ?? '',
+                  style: TextStyle(
+                      color: isSend ? Colors.white : blackFont,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400),
+                ),
+              )
+            else
+              const SizedBox.shrink(),
           ],
         ),
       ),
@@ -304,17 +308,18 @@ class _FileTileForChatState extends State<FileTileForChat> {
   void openFile() async {
     if (isDownloading) return;
 
-    DocumentFileInChatDownloadModel model = DocumentFileInChatDownloadModel(
+    final DocumentFileInChatDownloadModel model =
+        DocumentFileInChatDownloadModel(
       checkID: checkID,
       conversationID: conversationID!,
     );
-    String? filePathInOs =
+    final String? filePathInOs =
         await DatabaseHelper().checkIfFileExistsInDB(model: model);
 
     if (filePathInOs != null && filePathInOs != "") {
       log("FILE PATH:- $filePathInOs");
       try {
-        OpenResult openResult = await OpenFilex.open(filePathInOs);
+        final OpenResult openResult = await OpenFilex.open(filePathInOs);
       } catch (error) {
         log("ERROR WHILE OPENING FILE:- $filePathInOs");
       }
@@ -322,12 +327,12 @@ class _FileTileForChatState extends State<FileTileForChat> {
   }
 
   _downloadAndSaveFileNameToDb() async {
-    PermissionStatus status = await Permission.storage.request();
+    final PermissionStatus status = await Permission.storage.request();
 
     var downloadsDirectoryPath;
 
     if (Platform.isIOS) {
-      Directory directory = await getApplicationDocumentsDirectory();
+      final Directory directory = await getApplicationDocumentsDirectory();
       downloadsDirectoryPath = directory.path;
     } else {
       downloadsDirectoryPath =
@@ -340,7 +345,7 @@ class _FileTileForChatState extends State<FileTileForChat> {
       setState(() {
         isDownloading = true;
       });
-      String formattedFileName =
+      final String formattedFileName =
           await makeFileName(downloadsDirectoryPath, fileName);
 
       await FlutterDownloader.enqueue(
@@ -349,7 +354,8 @@ class _FileTileForChatState extends State<FileTileForChat> {
         savedDir: downloadsDirectoryPath,
       );
 
-      DocumentFileInChatDownloadModel model = DocumentFileInChatDownloadModel(
+      final DocumentFileInChatDownloadModel model =
+          DocumentFileInChatDownloadModel(
         checkID: checkID,
         conversationID: conversationID!,
         filePathInOs: '$downloadsDirectoryPath/$formattedFileName',
@@ -383,7 +389,7 @@ class _FileTileForChatState extends State<FileTileForChat> {
   }
 
   truncateFileName(String fileName) {
-    String actualFileName = fileName.split('.').first;
+    final String actualFileName = fileName.split('.').first;
     if (actualFileName.length >= 13) {
       return '...${fileName.substring(fileName.length - 13)}';
     }

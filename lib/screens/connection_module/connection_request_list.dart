@@ -63,7 +63,7 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         count = 0;
@@ -149,7 +149,7 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
             isLoading = true;
           });
         }
-        Map<String, dynamic>? result = await UserAuth()
+        final Map<String, dynamic>? result = await UserAuth()
             .listContactRequests(next, previous)
             .catchError((error) {
           debugPrint("ERROR:- $error");
@@ -159,7 +159,7 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
-        List tempList = result['results'];
+        final List tempList = result['results'];
 
         isLoading = false;
         connectionRequestList.addAll(tempList);
@@ -195,10 +195,11 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
   }
 
   List<Widget> listSecondaryActions(Map data, int index) {
-    CustomerProfile fromUser = CustomerProfile.fromJson(data["from_user"]);
-    CustomerProfile toUser = CustomerProfile.fromJson(data["to_user"]);
+    final CustomerProfile fromUser =
+        CustomerProfile.fromJson(data["from_user"]);
+    final CustomerProfile toUser = CustomerProfile.fromJson(data["to_user"]);
 
-    bool isRequestSent = fromUser.userName == userBloc.user.userName;
+    final bool isRequestSent = fromUser.userName == userBloc.user.userName;
     return isRequestSent
         ? []
         : [
@@ -216,10 +217,11 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
   }
 
   List<Widget> listActionSlideActions(Map data, int index) {
-    CustomerProfile fromUser = CustomerProfile.fromJson(data["from_user"]);
-    CustomerProfile toUser = CustomerProfile.fromJson(data["to_user"]);
+    final CustomerProfile fromUser =
+        CustomerProfile.fromJson(data["from_user"]);
+    final CustomerProfile toUser = CustomerProfile.fromJson(data["to_user"]);
 
-    bool isRequestSent = fromUser.userName == userBloc.user.userName;
+    final bool isRequestSent = fromUser.userName == userBloc.user.userName;
 
     return [
       SlideActionButton(
@@ -239,7 +241,7 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
 
   void rejectRequestAlert(CustomerProfile user, int index,
       {required bool isRequestSent}) async {
-    bool? result = await showDialogBox(
+    final bool? result = await showDialogBox(
       context: context,
       roundedBackgroundIcon: RoundedBackgroundIcon(
         backgroundColor: mateRed.withOpacity(0.08),
@@ -289,7 +291,7 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
   }
 
   Future<void> acceptFriendRequestAlert(CustomerProfile user, int index) async {
-    bool? result = await showDialogBox(
+    final bool? result = await showDialogBox(
       context: context,
       roundedBackgroundIcon: RoundedBackgroundIcon(
         backgroundColor: navyBlue.withOpacity(0.08),
@@ -316,7 +318,7 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
       actionTwoText: AppLocalization.of(context)!.accept,
     );
     if (result != null && result) {
-      bool done = await UserAuth().acceptContactRequest(user);
+      final bool done = await UserAuth().acceptContactRequest(user);
       if (done) {
         _showSnackBar(
             context,
@@ -325,7 +327,7 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
 
         connectionRequestList.removeAt(index);
 
-        RefreshBlocForConnectionDashboard refreshBloc =
+        final RefreshBlocForConnectionDashboard refreshBloc =
             Provider.of<RefreshBlocForConnectionDashboard>(context,
                 listen: false);
 
@@ -384,7 +386,8 @@ class VerticalListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
 
-    CustomerProfile user = CustomerProfile.fromJson(cleanDisplayData(data)!);
+    final CustomerProfile user =
+        CustomerProfile.fromJson(cleanDisplayData(data)!);
 
     return GestureDetector(
       onTap: () {

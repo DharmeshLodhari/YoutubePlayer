@@ -127,7 +127,7 @@ class _RequestPaymentState extends State<RequestPayment> {
       if (!isFromProfile!) {
         if (customerProfileBloc.customer != null) {
           if (mounted) {
-            bool isAConnection = await DatabaseHelper()
+            final bool isAConnection = await DatabaseHelper()
                 .checkUserNameInDB(customerProfileBloc.customer!.userName!);
 
             if (isAConnection) {
@@ -151,7 +151,7 @@ class _RequestPaymentState extends State<RequestPayment> {
     _auth.getPaymentCategory().then((result) {
       if (mounted) {
         setState(() {
-          List categoriesList = result["results"]["data"];
+          final List categoriesList = result["results"]["data"];
           categoriesList.forEach((data) {
             paymentCategoriesTest.add(data["name"]);
           });
@@ -172,7 +172,7 @@ class _RequestPaymentState extends State<RequestPayment> {
       onWillPop: () async {
         if (FocusScope.of(context).hasFocus) {
           FocusScope.of(context).unfocus();
-          await Future.delayed(Duration(milliseconds: 300));
+          await Future.delayed(const Duration(milliseconds: 300));
         }
         _payee = null;
         customerProfileBloc.customer = null;
@@ -219,7 +219,7 @@ class _RequestPaymentState extends State<RequestPayment> {
       ),
       actions: <Widget>[
         scanQRCodeBtn(),
-        SizedBox(
+        const SizedBox(
           width: 16,
         ),
       ],
@@ -251,7 +251,7 @@ class _RequestPaymentState extends State<RequestPayment> {
           )
         : SingleChildScrollView(
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
               child: Column(
                 children: [
                   Card(
@@ -272,35 +272,38 @@ class _RequestPaymentState extends State<RequestPayment> {
                             children: <Widget>[
                               getDisplayCard(),
                               Container(
-                                padding: EdgeInsets.symmetric(horizontal: 20),
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 20),
                                 child: Column(
                                   children: [
-                                    SizedBox(height: 20),
+                                    const SizedBox(height: 20),
                                     getRecipientField(),
-                                    SizedBox(height: 20),
+                                    const SizedBox(height: 20),
                                     Visibility(
                                       visible: isConnection,
                                       child: Column(
                                         children: [
                                           displayAmountField(),
-                                          SizedBox(height: 20),
-                                          showMoreOption
-                                              ? getMoreOption()
-                                              : Container(),
+                                          const SizedBox(height: 20),
+                                          if (showMoreOption)
+                                            getMoreOption()
+                                          else
+                                            Container(),
                                           getMoreOptionTrigger(),
-                                          errorMessage == ""
-                                              ? Container()
-                                              : Text(
-                                                  errorMessage,
-                                                  style: TextStyle(
-                                                      color: mateRed,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      fontSize: 16),
-                                                ),
-                                          errorMessage == ""
-                                              ? Container()
-                                              : SizedBox(height: 20),
+                                          if (errorMessage == "")
+                                            Container()
+                                          else
+                                            Text(
+                                              errorMessage,
+                                              style: TextStyle(
+                                                  color: mateRed,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 16),
+                                            ),
+                                          if (errorMessage == "")
+                                            Container()
+                                          else
+                                            const SizedBox(height: 20),
                                         ],
                                       ),
                                     ),
@@ -316,11 +319,11 @@ class _RequestPaymentState extends State<RequestPayment> {
                   Container(
                     child: Column(
                       children: [
-                        SizedBox(
+                        const SizedBox(
                           height: 20,
                         ),
                         getSubmitButton(),
-                        SizedBox(
+                        const SizedBox(
                           height: 20,
                         ),
                       ],
@@ -336,7 +339,7 @@ class _RequestPaymentState extends State<RequestPayment> {
     return Column(
       children: [
         getCategoryDropDown(),
-        SizedBox(
+        const SizedBox(
           height: 20,
         ),
         getReferenceField(),
@@ -351,7 +354,7 @@ class _RequestPaymentState extends State<RequestPayment> {
         if (mounted) setState(() {});
       },
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 8),
+        padding: const EdgeInsets.symmetric(vertical: 8),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
@@ -361,7 +364,7 @@ class _RequestPaymentState extends State<RequestPayment> {
                   : Icons.keyboard_arrow_down_rounded,
               color: darkGrey,
             ),
-            SizedBox(
+            const SizedBox(
               width: 4,
             ),
             Text(
@@ -380,7 +383,7 @@ class _RequestPaymentState extends State<RequestPayment> {
     var avatarImage;
     var qrCodeImage;
     if (_payee != null) {
-      Color borderColor = getUserTypeColor(user: _payee!);
+      final Color borderColor = getUserTypeColor(user: _payee!);
 
       avatarImage = Container(
         height: 48,
@@ -429,14 +432,14 @@ class _RequestPaymentState extends State<RequestPayment> {
         : Column(
             children: [
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 20),
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: ListTile(
                   contentPadding: EdgeInsets.zero,
                   title: userNameWithVerifiedIcon(
                     name: _payee!.displayName()!,
                     isVerified: true,
                     lengthToTruncateAt: 20,
-                    textStyle: TextStyle(
+                    textStyle: const TextStyle(
                         color: Colors.black,
                         fontWeight: FontWeight.bold,
                         fontSize: 16),
@@ -478,13 +481,13 @@ class _RequestPaymentState extends State<RequestPayment> {
         return null;
       },
       onTap: () async {
-        CustomerProfile? userFound = await NavigationUtil.push(
+        final CustomerProfile? userFound = await NavigationUtil.push(
           context,
-          screen: SearchUser(),
+          screen: const SearchUser(),
         );
 
         if (userFound != null) {
-          bool isAConnection =
+          final bool isAConnection =
               await DatabaseHelper().checkUserNameInDB(userFound.userName!);
 
           if (isAConnection) {
@@ -518,7 +521,7 @@ class _RequestPaymentState extends State<RequestPayment> {
       validator: (val) {
         if (val.isNotEmpty) {
           try {
-            double amount = double.parse(val.replaceAll(',', ''));
+            final double amount = double.parse(val.replaceAll(',', ''));
             if (amount > 0.0) {
               return null;
             } else {
@@ -538,13 +541,13 @@ class _RequestPaymentState extends State<RequestPayment> {
 
   Widget getCategoryField() {
     return Card(
-      margin: EdgeInsets.all(0),
+      margin: const EdgeInsets.all(0),
       child: Container(
-        padding: EdgeInsets.all(8),
+        padding: const EdgeInsets.all(8),
         width: double.infinity,
         child: DropdownButton<String>(
           isExpanded: true,
-          underline: Divider(
+          underline: const Divider(
             color: Colors.transparent,
           ),
           hint: Row(
@@ -577,7 +580,7 @@ class _RequestPaymentState extends State<RequestPayment> {
                 padding: const EdgeInsets.fromLTRB(8.0, 0, 0, 0),
                 child: Text(
                   category!,
-                  style: TextStyle(color: Colors.black),
+                  style: const TextStyle(color: Colors.black),
                 ),
               ),
             );
@@ -595,14 +598,14 @@ class _RequestPaymentState extends State<RequestPayment> {
           AppLocalization.of(context)!.category,
           style: TextStyle(color: darkGrey, fontSize: 14),
         ),
-        SizedBox(height: 6),
+        const SizedBox(height: 6),
         Card(
           elevation: 0,
           color: Colors.white,
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
               side: BorderSide(color: greyBorderColor)),
-          margin: EdgeInsets.all(0),
+          margin: const EdgeInsets.all(0),
           borderOnForeground: true,
           child: ListTile(
             dense: true,
@@ -634,7 +637,8 @@ class _RequestPaymentState extends State<RequestPayment> {
         barrierDismissible: false,
         context: context,
         builder: (context) => AlertDialog(
-              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              insetPadding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
@@ -729,7 +733,7 @@ class _RequestPaymentState extends State<RequestPayment> {
       );
     }
 
-    return Text(
+    return const Text(
       'You cannot send payment request to this user because they are not part of your connections list',
       textAlign: TextAlign.center,
       style: TextStyle(
@@ -743,7 +747,7 @@ class _RequestPaymentState extends State<RequestPayment> {
   void onSubmit() async {
     FocusScope.of(context).unfocus();
 
-    await Future.delayed(Duration(milliseconds: 500));
+    await Future.delayed(const Duration(milliseconds: 500));
 
     isValidPayee = _payee!.userName != userBloc.user.userName;
 
@@ -794,7 +798,7 @@ class _RequestPaymentState extends State<RequestPayment> {
                       }
                     }
 
-                    var data = {
+                    final data = {
                       "from_customer": userBloc.user.userName!.trim(),
                       "to_customer": _recipientController.text.trim(),
                       "currency": userBloc.user.currency,
@@ -828,7 +832,7 @@ class _RequestPaymentState extends State<RequestPayment> {
                         if (!isFromChat!) {
                           _dashboardBloc.index = 0;
                           showToast(message: 'Payment request sent');
-                          RefreshBlocForRequestPayment
+                          final RefreshBlocForRequestPayment
                               refreshBlocForRequestPayment =
                               Provider.of<RefreshBlocForRequestPayment>(context,
                                   listen: false);
@@ -885,12 +889,12 @@ class _RequestPaymentState extends State<RequestPayment> {
             showToast(message: e.toString());
           }
         } else {
-          var msg = AppLocalization.of(context)!.invalidRecipient;
+          final msg = AppLocalization.of(context)!.invalidRecipient;
           showToast(message: msg);
         }
       }
     } else {
-      var msg = AppLocalization.of(context)!.invalidRecipient;
+      final msg = AppLocalization.of(context)!.invalidRecipient;
       showToast(message: msg);
     }
   }

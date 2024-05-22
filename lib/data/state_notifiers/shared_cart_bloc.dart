@@ -104,7 +104,7 @@ class SharedCartBloc extends ChangeNotifier {
       required double val,
       required int index,
       required BuildContext context}) {
-    ShippingProcessBloc shippingProcessBloc =
+    final ShippingProcessBloc shippingProcessBloc =
         Provider.of<ShippingProcessBloc>(context, listen: false);
     shippingProcessBloc.currentSelectedIndex = null;
 
@@ -122,7 +122,7 @@ class SharedCartBloc extends ChangeNotifier {
   }
 
   bool isUserCartOwner(BuildContext context) {
-    UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
+    final UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
 
     if (getSharedCartModel().customerUsername == userBloc.user.userName) {
       return true;
@@ -144,13 +144,14 @@ class SharedCartBloc extends ChangeNotifier {
   }
 
   Future<void> getSharedCartListing(BuildContext context) async {
-    Map<String, dynamic>? result =
+    final Map<String, dynamic>? result =
         await SharedCartAuthService().getSharedCartList("", "");
 
-    var tempList = result?['results'];
+    final tempList = result?['results'];
 
     if (tempList != null && (tempList as List).isNotEmpty) {
-      List<SharedCartModel> sharedCartList = tempList as List<SharedCartModel>;
+      final List<SharedCartModel> sharedCartList =
+          tempList as List<SharedCartModel>;
 
       cartList = sharedCartList;
 
@@ -164,27 +165,27 @@ class SharedCartBloc extends ChangeNotifier {
 
   Future<void> getSharedCartProductDetail(
       BuildContext context, SharedCartModel cart) async {
-    Map<String, dynamic>? result =
+    final Map<String, dynamic>? result =
         await SharedCartAuthService().getCartItemDetails(cart.id, "", "");
 
-    var tempList = result?['results'];
+    final tempList = result?['results'];
 
-    UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
+    final UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
 
-    SharedCartMemberModel? currentUser = userBloc.user.convertToUser();
+    final SharedCartMemberModel? currentUser = userBloc.user.convertToUser();
 
     if (tempList != null && (tempList as List).isNotEmpty) {
-      List items = tempList;
+      final List items = tempList;
 
       for (var element in items) {
-        String type = element is Product ? "product" : "service";
+        final String type = element is Product ? "product" : "service";
 
         if (element is Product) {
           /// varient
-          List<Variant>? variantList = element.variantModels;
+          final List<Variant>? variantList = element.variantModels;
 
           /// adds on
-          List<AddOns>? convertedList = element.addOnsModels;
+          final List<AddOns>? convertedList = element.addOnsModels;
 
           if (variantList != null && variantList.isNotEmpty) {
             for (var variant in variantList) {
@@ -235,7 +236,8 @@ class SharedCartBloc extends ChangeNotifier {
 
   Future<SharedCartModel> refreshCartDetail(String? cartId,
       {required bool isUpdate}) async {
-    SharedCartModel sharedCartModel = await getCartDetails(cartId, isUpdate);
+    final SharedCartModel sharedCartModel =
+        await getCartDetails(cartId, isUpdate);
     notifyListeners();
     return sharedCartModel;
   }

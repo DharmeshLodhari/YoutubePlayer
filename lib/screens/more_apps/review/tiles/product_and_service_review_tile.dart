@@ -43,7 +43,7 @@ class _ProductAndServiceReviewTileState
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildAuthorReviewAvatar(),
-                SizedBox(
+                const SizedBox(
                   width: 10,
                 ),
                 _buildReviewDetail(),
@@ -79,19 +79,19 @@ class _ProductAndServiceReviewTileState
               _buildReviewDate(),
             ],
           ),
-          SizedBox(
+          const SizedBox(
             height: 6,
           ),
           _buildRateReview(),
-          SizedBox(
+          const SizedBox(
             height: 6,
           ),
           _buildReviewFirstValue(),
-          SizedBox(
+          const SizedBox(
             height: 2,
           ),
           _buildReviewSecondValue(),
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           _buildLikeUnLikeReportTile(),
@@ -133,7 +133,7 @@ class _ProductAndServiceReviewTileState
           direction: Axis.horizontal,
           allowHalfRating: true,
           itemCount: 5,
-          itemPadding: EdgeInsets.symmetric(horizontal: 1),
+          itemPadding: const EdgeInsets.symmetric(horizontal: 1),
           itemBuilder: (context, _) => Icon(
             SlydoAppIcon.star,
             color: starYellow,
@@ -186,7 +186,7 @@ class _ProductAndServiceReviewTileState
             ],
           ),
         ),
-        SizedBox(
+        const SizedBox(
           width: 5,
         ),
         _buildReviewReport(),
@@ -198,7 +198,7 @@ class _ProductAndServiceReviewTileState
     return GestureDetector(
       onTap: () {},
       child: Container(
-        padding: EdgeInsets.symmetric(
+        padding: const EdgeInsets.symmetric(
           horizontal: 12,
           vertical: 6,
         ),
@@ -210,11 +210,11 @@ class _ProductAndServiceReviewTileState
         ),
         child: Row(
           children: [
-            Icon(
+            const Icon(
               Icons.thumb_up_alt_outlined,
               size: 16,
             ),
-            SizedBox(
+            const SizedBox(
               width: 4,
             ),
             Text(
@@ -235,7 +235,7 @@ class _ProductAndServiceReviewTileState
     return GestureDetector(
       onTap: () {},
       child: Container(
-        padding: EdgeInsets.symmetric(
+        padding: const EdgeInsets.symmetric(
           horizontal: 12,
           vertical: 6,
         ),
@@ -247,11 +247,11 @@ class _ProductAndServiceReviewTileState
         ),
         child: Row(
           children: [
-            Icon(
+            const Icon(
               Icons.thumb_down_alt_outlined,
               size: 16,
             ),
-            SizedBox(
+            const SizedBox(
               width: 4,
             ),
             Text(
@@ -272,7 +272,7 @@ class _ProductAndServiceReviewTileState
     return GestureDetector(
       onTap: () {},
       child: Container(
-        padding: EdgeInsets.symmetric(
+        padding: const EdgeInsets.symmetric(
           horizontal: 12,
           vertical: 6,
         ),
@@ -284,11 +284,11 @@ class _ProductAndServiceReviewTileState
         ),
         child: Row(
           children: [
-            Icon(
+            const Icon(
               Icons.flag_outlined,
               size: 16,
             ),
-            SizedBox(
+            const SizedBox(
               width: 4,
             ),
             Text(

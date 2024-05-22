@@ -73,7 +73,7 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
   }
 
   Future<bool> addLikeToMoment() async {
-    MomentsModel data =
+    final MomentsModel data =
         await MomentsService().likeMoment(currentMoment?.id ?? "");
     if (data != null) {
       setState(() {
@@ -86,7 +86,7 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
   }
 
   Future<bool> addDisLikeToMoment() async {
-    MomentsModel data =
+    final MomentsModel data =
         await MomentsService().dislikeMoment(currentMoment?.id ?? "");
 
     if (data != null) {
@@ -156,87 +156,84 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
                 const SizedBox(height: 16),
-                isMyMoment()
-                    ? CustomMomentDetailButton(
-                        iconEnabled: true,
-                        iconData: Icons.more_horiz_outlined,
-                        text: '',
-                        onPressed: () {
-                          androidBottomSheet(
-                            context: context,
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                momentVisibilityOption(currentMoment!),
-                                momentPermanentOption(currentMoment!),
-                                enablePayment(currentMoment!),
-                                momentCommentingOption(currentMoment!),
-                                momentLikeOption(currentMoment!),
-                                bottomSheetItem(
-                                    title: 'Share in chat',
-                                    iconData: Icons.send_outlined,
-                                    onTap: () async {
-                                      await sendMomentToUserInChat(
-                                          momentsModel: currentMoment!);
-                                    }),
-                                bottomSheetItem(
-                                  title: 'Delete',
-                                  iconData: Icons.delete,
-                                  onTap: () {
-                                    Navigator.pop(context);
+                if (isMyMoment())
+                  CustomMomentDetailButton(
+                    iconEnabled: true,
+                    iconData: Icons.more_horiz_outlined,
+                    text: '',
+                    onPressed: () {
+                      androidBottomSheet(
+                        context: context,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            momentVisibilityOption(currentMoment!),
+                            momentPermanentOption(currentMoment!),
+                            enablePayment(currentMoment!),
+                            momentCommentingOption(currentMoment!),
+                            momentLikeOption(currentMoment!),
+                            bottomSheetItem(
+                                title: 'Share in chat',
+                                iconData: Icons.send_outlined,
+                                onTap: () async {
+                                  await sendMomentToUserInChat(
+                                      momentsModel: currentMoment!);
+                                }),
+                            bottomSheetItem(
+                              title: 'Delete',
+                              iconData: Icons.delete,
+                              onTap: () {
+                                Navigator.pop(context);
 
-                                    showDialogBox(
-                                      context: context,
-                                      actionOneTextColor: blackFont,
-                                      actionOneBgColor: greyBorderColor,
-                                      actionTwoTextColor: white,
-                                      actionTwoBgColor: mateRed,
-                                      title: 'Delete Moment',
-                                      actionOneText:
-                                          AppLocalization.of(context)!.discard,
-                                      actionTwoText:
-                                          AppLocalization.of(context)!
-                                              .continueMsg,
-                                      description:
-                                          'Are you sure you want to delete this moment?',
-                                      roundedBackgroundIcon:
-                                          RoundedBackgroundIcon(
-                                        enableMargin: false,
-                                        width: 90,
-                                        height: 90,
-                                        image: Image.asset(
-                                            'assets/images/delete_dialog_icon.png'),
-                                      ),
-                                      rightButtonOnPressed: () {
-                                        showDialog(
-                                            context: context,
-                                            builder: (dialogLoadingContext) =>
-                                                LoadingIndicator());
-                                        MomentsService()
-                                            .deleteMoment(
-                                                currentMoment!.id!, "")
-                                            .then(
-                                          (value) {
-                                            Navigator.pop(
-                                                context); // Dismiss loading indicator
-                                            Navigator.pop(context);
-                                            showToast(
-                                                message: 'Moment deleted');
-                                          },
-                                        ).catchError((e) {
-                                          Navigator.pop(context);
-                                          showToast(message: e.toString());
-                                        });
+                                showDialogBox(
+                                  context: context,
+                                  actionOneTextColor: blackFont,
+                                  actionOneBgColor: greyBorderColor,
+                                  actionTwoTextColor: white,
+                                  actionTwoBgColor: mateRed,
+                                  title: 'Delete Moment',
+                                  actionOneText:
+                                      AppLocalization.of(context)!.discard,
+                                  actionTwoText:
+                                      AppLocalization.of(context)!.continueMsg,
+                                  description:
+                                      'Are you sure you want to delete this moment?',
+                                  roundedBackgroundIcon: RoundedBackgroundIcon(
+                                    enableMargin: false,
+                                    width: 90,
+                                    height: 90,
+                                    image: Image.asset(
+                                        'assets/images/delete_dialog_icon.png'),
+                                  ),
+                                  rightButtonOnPressed: () {
+                                    showDialog(
+                                        context: context,
+                                        builder: (dialogLoadingContext) =>
+                                            LoadingIndicator());
+                                    MomentsService()
+                                        .deleteMoment(currentMoment!.id!, "")
+                                        .then(
+                                      (value) {
+                                        Navigator.pop(
+                                            context); // Dismiss loading indicator
+                                        Navigator.pop(context);
+                                        showToast(message: 'Moment deleted');
                                       },
-                                    );
+                                    ).catchError((e) {
+                                      Navigator.pop(context);
+                                      showToast(message: e.toString());
+                                    });
                                   },
-                                ),
-                              ],
+                                );
+                              },
                             ),
-                          );
-                        },
-                      )
-                    : const SizedBox.shrink(),
+                          ],
+                        ),
+                      );
+                    },
+                  )
+                else
+                  const SizedBox.shrink(),
                 _buildShareMomentOption(),
                 Column(
                   children: [
@@ -681,13 +678,13 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
                   iconData: Icons.block,
                   onTap: () async {
                     toggleMediaPlayingState();
-                    var user = CustomerProfile();
+                    final user = CustomerProfile();
                     user.userName = currentMoment!.owner;
                     user.fullName = currentMoment!.ownerName;
                     user.type = "";
                     user.nickName = "";
 
-                    Future<bool?> check = blockUserAlert(context, user);
+                    final Future<bool?> check = blockUserAlert(context, user);
                     if (check == true) {
                       Navigator.pop(context);
                       Navigator.pop(context);
@@ -702,7 +699,7 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
 
   Future<void> sendMomentToUserInChat(
       {required MomentsModel momentsModel}) async {
-    List<ChatConversation?> listOfRecipient =
+    final List<ChatConversation?> listOfRecipient =
         await ShareInChat().selectShareCustomer(context);
     debugPrint("Selected users = ${listOfRecipient.length}");
 
@@ -717,9 +714,9 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
     required MomentsModel momentsModel,
     String? url,
   }) async {
-    UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
+    final UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
 
-    Map<String, dynamic> metaData = {
+    final Map<String, dynamic> metaData = {
       "id": momentsModel.id,
       "title": messageDecoderWithEmoji(momentsModel.text),
       "author_avatar": momentsModel.avatar,
@@ -735,7 +732,7 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
         break;
     }
 
-    Map<String, dynamic> data = {
+    final Map<String, dynamic> data = {
       "meta_data": jsonEncode(metaData),
       "check_id": const Uuid().v4(),
       "conversation_id": recipientUser.conversationId,
@@ -972,7 +969,7 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
   }
 
   Widget getTags() {
-    List<String> formattedTagList = [];
+    final List<String> formattedTagList = [];
 
     if (currentMoment!.tags != null) {
       currentMoment!.tags!.join(', ');
@@ -1033,7 +1030,7 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
               color: white,
               size: 18,
             ),
-            SizedBox(width: 5),
+            const SizedBox(width: 5),
             Text(
               "Product",
               style: TextStyle(
@@ -1074,7 +1071,7 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
               color: white,
               size: 18,
             ),
-            SizedBox(width: 5),
+            const SizedBox(width: 5),
             Text(
               "Service",
               style: TextStyle(

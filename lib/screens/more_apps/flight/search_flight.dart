@@ -108,7 +108,7 @@ class _SearchFlightState extends State<SearchFlight> {
             )
           : SingleChildScrollView(
               child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Column(
                   children: transports
                       .map(
@@ -117,7 +117,7 @@ class _SearchFlightState extends State<SearchFlight> {
                             Navigator.of(context).pushNamed("/ticket-detail");
                           },
                           child: Container(
-                              padding: EdgeInsets.symmetric(vertical: 8),
+                              padding: const EdgeInsets.symmetric(vertical: 8),
                               child: FlightTicketTile(
                                 transport: element,
                               )),
@@ -132,7 +132,7 @@ class _SearchFlightState extends State<SearchFlight> {
 
   Widget swapPlace() {
     return PreferredSize(
-      preferredSize: Size.fromHeight(50),
+      preferredSize: const Size.fromHeight(50),
       child: Container(
         width: double.infinity,
         child: Column(
@@ -150,7 +150,7 @@ class _SearchFlightState extends State<SearchFlight> {
                         color: darkGrey,
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 4,
                     ),
                     Text(
@@ -177,7 +177,7 @@ class _SearchFlightState extends State<SearchFlight> {
                               color: navyBlueLight,
                             ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 4,
                           ),
                           ClipOval(
@@ -187,7 +187,7 @@ class _SearchFlightState extends State<SearchFlight> {
                               color: navyBlueLight,
                             ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 4,
                           ),
                           ClipOval(
@@ -197,7 +197,7 @@ class _SearchFlightState extends State<SearchFlight> {
                               color: navyBlueLight,
                             ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 4,
                           ),
                           InkWell(
@@ -209,7 +209,7 @@ class _SearchFlightState extends State<SearchFlight> {
                             child: ClipOval(
                               child: Card(
                                 elevation: 4,
-                                margin: EdgeInsets.symmetric(
+                                margin: const EdgeInsets.symmetric(
                                     horizontal: 2, vertical: 2),
                                 shadowColor: boxShadow,
                                 color: Colors.white,
@@ -218,7 +218,7 @@ class _SearchFlightState extends State<SearchFlight> {
                                   borderRadius: BorderRadius.circular(25),
                                 ),
                                 child: Container(
-                                  padding: EdgeInsets.all(14),
+                                  padding: const EdgeInsets.all(14),
                                   decoration: BoxDecoration(
                                     color: Colors.white,
                                     borderRadius: BorderRadius.circular(25),
@@ -236,7 +236,7 @@ class _SearchFlightState extends State<SearchFlight> {
                               ),
                             ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 4,
                           ),
                           ClipOval(
@@ -246,7 +246,7 @@ class _SearchFlightState extends State<SearchFlight> {
                               color: navyBlueLight,
                             ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 4,
                           ),
                           ClipOval(
@@ -256,7 +256,7 @@ class _SearchFlightState extends State<SearchFlight> {
                               color: navyBlueLight,
                             ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 4,
                           ),
                           ClipOval(
@@ -282,7 +282,7 @@ class _SearchFlightState extends State<SearchFlight> {
                         color: darkGrey,
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 4,
                     ),
                     Text(
@@ -298,7 +298,7 @@ class _SearchFlightState extends State<SearchFlight> {
                 flexibleSpace(flex: 1),
               ],
             ),
-            SizedBox(
+            const SizedBox(
               height: 20,
             )
           ],

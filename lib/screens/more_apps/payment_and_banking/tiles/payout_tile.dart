@@ -25,13 +25,13 @@ class PayoutTile extends StatelessWidget {
       },
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
         shadowColor: boxShadowTwo,
         elevation: 0,
         child: Container(
           decoration: decorateBox(),
           child: Padding(
-            padding: EdgeInsets.symmetric(vertical: 1),
+            padding: const EdgeInsets.symmetric(vertical: 1),
             child: ListTile(
               dense: true,
               leading: getLeading(),
@@ -39,7 +39,7 @@ class PayoutTile extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   getBankName(),
-                  SizedBox(
+                  const SizedBox(
                     height: 2.0,
                   ),
                   getAccountName(),
@@ -70,11 +70,11 @@ class PayoutTile extends StatelessWidget {
                         )
                       ],
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 2.0,
                     ),
                     getPayoutStatus(),
-                    SizedBox(
+                    const SizedBox(
                       height: 2.0,
                     ),
                     getDateTime(context),
@@ -114,9 +114,9 @@ class PayoutTile extends StatelessWidget {
   }
 
   Widget getDateTime(BuildContext context) {
-    DateTime dateTime = DateTime.parse(payout!.timeStamp!).toLocal();
-    String date = DateFormat("dd/MM/yyyy").format(dateTime);
-    String time = DateFormat("hh:mm a").format(dateTime);
+    final DateTime dateTime = DateTime.parse(payout!.timeStamp!).toLocal();
+    final String date = DateFormat("dd/MM/yyyy").format(dateTime);
+    final String time = DateFormat("hh:mm a").format(dateTime);
     return Text(
       "$date • $time",
       softWrap: false,
@@ -126,9 +126,9 @@ class PayoutTile extends StatelessWidget {
   }
 
   Widget checkBankImage() {
-    String? url = payout!.bankLogo;
+    final String? url = payout!.bankLogo;
 
-    String imageUrl = url!.replaceAll('https//', 'https://');
+    final String imageUrl = url!.replaceAll('https//', 'https://');
     if (payout!.bankLogo! == "") {
       return GestureDetector(
         onTap: () {
@@ -161,7 +161,7 @@ class PayoutTile extends StatelessWidget {
             errorWidget: imageErrorWidget,
             filterQuality: FilterQuality.high,
             placeholder: (context, url) => payout!.bankLogo == ""
-                ? Icon(Icons.account_balance)
+                ? const Icon(Icons.account_balance)
                 : CircularLoadingIndicator(),
           ),
         ),

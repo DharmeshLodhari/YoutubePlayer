@@ -141,79 +141,76 @@ class _PayoutScreenState extends State<PayoutScreen> {
           )
         : SingleChildScrollView(
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
               child: Column(
                 children: [
-                  isAccountFound
-                      ? Form(
-                          key: _formKey,
-                          child: Column(
-                            children: <Widget>[
-                              getUserBankAccount(),
-                              SizedBox(
-                                height: 20,
-                              ),
-                              displayAmountField(),
-                              SizedBox(
-                                height: 20,
-                              ),
-                              noteForUser(),
-                              SizedBox(
-                                height: 40,
-                              ),
-                              canCashOut(amount!, accountBalance!)
-                                  ? getSubmitButton()
-                                  : Container(
-                                      child: Center(
-                                          child: Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      vertical: 16.0),
-                                              child: Text.rich(TextSpan(
-                                                  text: AppLocalization.of(
-                                                          context)!
-                                                      .minimumTransfer,
+                  if (isAccountFound)
+                    Form(
+                      key: _formKey,
+                      child: Column(
+                        children: <Widget>[
+                          getUserBankAccount(),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          displayAmountField(),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          noteForUser(),
+                          const SizedBox(
+                            height: 40,
+                          ),
+                          canCashOut(amount!, accountBalance!)
+                              ? getSubmitButton()
+                              : Container(
+                                  child: Center(
+                                      child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 16.0),
+                                          child: Text.rich(TextSpan(
+                                              text: AppLocalization.of(context)!
+                                                  .minimumTransfer,
+                                              style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: blackFont,
+                                                  fontWeight: FontWeight.w600),
+                                              children: <InlineSpan>[
+                                                TextSpan(
+                                                  text: worldCurrencies[userBloc
+                                                          .user.currency!]! +
+                                                      moneyDisplayNormalizer(
+                                                          displayPossibleCashOutAmount(
+                                                              accountBalance!)),
                                                   style: TextStyle(
                                                       fontSize: 12,
                                                       color: blackFont,
+                                                      fontFamily: "Inter",
                                                       fontWeight:
                                                           FontWeight.w600),
-                                                  children: <InlineSpan>[
-                                                    TextSpan(
-                                                      text: worldCurrencies[
-                                                              userBloc.user
-                                                                  .currency!]! +
-                                                          moneyDisplayNormalizer(
-                                                              displayPossibleCashOutAmount(
-                                                                  accountBalance!)),
-                                                      style: TextStyle(
-                                                          fontSize: 12,
-                                                          color: blackFont,
-                                                          fontFamily: "Inter",
-                                                          fontWeight:
-                                                              FontWeight.w600),
-                                                    )
-                                                  ])))),
-                                    ),
-                              SizedBox(
-                                height: 20,
-                              ),
-                            ],
+                                                )
+                                              ])))),
+                                ),
+                          const SizedBox(
+                            height: 20,
                           ),
-                        )
-                      : Container(
-                          child: Center(
-                              child: Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 16.0),
-                            child: Text(
-                              "Please add Bank Account for cashout.",
-                              style: TextStyle(
-                                  fontSize: 14,
-                                  color: blackFont,
-                                  fontWeight: FontWeight.w600),
-                            ),
-                          )),
+                        ],
+                      ),
+                    )
+                  else
+                    Container(
+                      child: Center(
+                          child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 16.0),
+                        child: Text(
+                          "Please add Bank Account for cashout.",
+                          style: TextStyle(
+                              fontSize: 14,
+                              color: blackFont,
+                              fontWeight: FontWeight.w600),
                         ),
+                      )),
+                    ),
                 ],
               ),
             ),
@@ -222,7 +219,7 @@ class _PayoutScreenState extends State<PayoutScreen> {
 
   Widget showBackArrow() {
     return IconButton(
-      icon: Icon(Icons.arrow_back_ios),
+      icon: const Icon(Icons.arrow_back_ios),
       onPressed: () {
         Navigator.pop(context);
       },
@@ -271,7 +268,7 @@ class _PayoutScreenState extends State<PayoutScreen> {
       labelText: "Amount",
       isAmountField: true,
       keyboardType: Platform.isIOS
-          ? TextInputType.numberWithOptions(decimal: true)
+          ? const TextInputType.numberWithOptions(decimal: true)
           : TextInputType.number,
       onChanged: (val) {
         if (mounted) {
@@ -306,14 +303,14 @@ class _PayoutScreenState extends State<PayoutScreen> {
   }
 
   void onSubmit() async {
-    PermissionType? hasPermission =
+    final PermissionType? hasPermission =
         userBloc.user.hasWritePermission(ProtectionPermission.transaction);
     if (hasPermission == PermissionType.WRITE) {
       //for closing the keypad if it is open
       FocusScope.of(context).unfocus();
 
       // duration for close keyboard and open passcode bottomsheet
-      await Future.delayed(Duration(milliseconds: 500));
+      await Future.delayed(const Duration(milliseconds: 500));
 
       if (_formKey.currentState!.validate()) {
         debugPrint(
@@ -324,7 +321,7 @@ class _PayoutScreenState extends State<PayoutScreen> {
                 virtualAccount?.accountTier?.dailyCumulativeTransactionLimit! ??
                     "0")) {
           try {
-            var data = {
+            final data = {
               "amount": moneyInputNormalizer(amount.toString()),
               "currency": userBloc.user.currency,
               "customer_bank_account":
@@ -337,7 +334,7 @@ class _PayoutScreenState extends State<PayoutScreen> {
                       context: context,
                       builder: (context) =>
                           // Center(child: CircularLoadingIndicator()));
-                          Center(child: SizedBox()));
+                          const Center(child: SizedBox()));
                   //show loading screen
                   Navigator.pop(context);
                   Navigator.push(
@@ -428,8 +425,8 @@ class _PayoutScreenState extends State<PayoutScreen> {
 
   Future<void> getAccountBalance() async {
     await _auth.getAccountBalance().then((value) {
-      var data = value!;
-      var spendableBalance = data["spendable_balance"];
+      final data = value!;
+      final spendableBalance = data["spendable_balance"];
       if (mounted) {
         setState(() {
           accountBalance = spendableBalance;
@@ -439,7 +436,7 @@ class _PayoutScreenState extends State<PayoutScreen> {
   }
 
   Future<void> showAllBankAccount(BuildContext context) async {
-    var result = await showModalBottomSheet<String>(
+    final result = await showModalBottomSheet<String>(
         backgroundColor: Colors.transparent,
         context: context,
         useRootNavigator: true,
@@ -452,7 +449,7 @@ class _PayoutScreenState extends State<PayoutScreen> {
             bottomSheetMounted = true;
 
             return Card(
-                shape: RoundedRectangleBorder(
+                shape: const RoundedRectangleBorder(
                   borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(20),
                       topRight: Radius.circular(20)),
@@ -461,12 +458,12 @@ class _PayoutScreenState extends State<PayoutScreen> {
                 margin: EdgeInsets.zero,
                 child: Container(
                   height: MediaQuery.of(context).size.height * 0.88,
-                  padding: EdgeInsets.symmetric(vertical: 16),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Container(
-                        padding: EdgeInsets.symmetric(horizontal: 20),
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: Text(
                           'Change Bank Account',
                           style: TextStyle(
@@ -475,7 +472,7 @@ class _PayoutScreenState extends State<PayoutScreen> {
                               fontSize: 15),
                         ),
                       ),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       Expanded(child: bottomSheetTabBar())
                     ],
                   ),
@@ -493,7 +490,7 @@ class _PayoutScreenState extends State<PayoutScreen> {
   Widget bottomSheetTabBar() {
     return Column(
       children: [
-        SizedBox(
+        const SizedBox(
           height: 8,
         ),
         Expanded(child: bottomSheetTabViews())
@@ -503,7 +500,7 @@ class _PayoutScreenState extends State<PayoutScreen> {
 
   Widget bottomSheetTabBars() {
     return PreferredSize(
-        preferredSize: Size.fromHeight(50.0),
+        preferredSize: const Size.fromHeight(50.0),
         child: Row(
           children: [
             GestureDetector(
@@ -516,7 +513,8 @@ class _PayoutScreenState extends State<PayoutScreen> {
                 getList();
               },
               child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 40, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 40, vertical: 8),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
                   shape: BoxShape.rectangle,
@@ -545,7 +543,8 @@ class _PayoutScreenState extends State<PayoutScreen> {
                 getList();
               },
               child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 40, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 40, vertical: 8),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
                   shape: BoxShape.rectangle,
@@ -575,7 +574,7 @@ class _PayoutScreenState extends State<PayoutScreen> {
   }
 
   void getList() async {
-    Map<String, dynamic>? result =
+    final Map<String, dynamic>? result =
         await _auth.getBankAccountsPagination(next, previous, "");
     if (result == null) {
       isLoading = false;
@@ -584,7 +583,7 @@ class _PayoutScreenState extends State<PayoutScreen> {
     count = result['count'];
     next = result['next'];
     previous = result['previous'];
-    var tempList = result['results'];
+    final tempList = result['results'];
 
     if (mounted) {
       setState(() {
@@ -614,7 +613,7 @@ class _PayoutScreenState extends State<PayoutScreen> {
             isResult: true,
           )
         : ListView.builder(
-            padding: EdgeInsets.symmetric(vertical: 4),
+            padding: const EdgeInsets.symmetric(vertical: 4),
             //+1 for progressbar
             shrinkWrap: true,
             itemCount: bankAccountList.length + 1,
@@ -659,14 +658,14 @@ class _PayoutScreenState extends State<PayoutScreen> {
     if (account.bankAvatar == "") {
       imageUrl = getInitials(account.bankName.toString()).toUpperCase();
     } else {
-      String? url = account.bankAvatar;
+      final String? url = account.bankAvatar;
 
       imageUrl = url!.replaceAll('https//', 'https://');
     }
 
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       shadowColor: boxShadowTwo,
       elevation: 0,
       child: Container(
@@ -718,7 +717,7 @@ class _PayoutScreenState extends State<PayoutScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        SizedBox(
+        const SizedBox(
           height: 8,
         ),
         Text(
@@ -736,7 +735,7 @@ class _PayoutScreenState extends State<PayoutScreen> {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          SizedBox(
+          const SizedBox(
             height: 4,
           ),
           Row(
@@ -762,7 +761,7 @@ class _PayoutScreenState extends State<PayoutScreen> {
     }
     return Column(
       children: [
-        SizedBox(
+        const SizedBox(
           height: 8,
         ),
         Text(
@@ -775,9 +774,9 @@ class _PayoutScreenState extends State<PayoutScreen> {
   }
 
   Widget checkBankImage(BankAccount account) {
-    String? url = account.bankAvatar;
+    final String? url = account.bankAvatar;
 
-    String imageUrl = url!.replaceAll('https//', 'https://');
+    final String imageUrl = url!.replaceAll('https//', 'https://');
     if (account.bankAvatar == "") {
       return CircleAvatar(
         backgroundColor: navyBlue,

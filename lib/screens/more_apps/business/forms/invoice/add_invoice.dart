@@ -35,10 +35,11 @@ class AddInvoice extends StatefulWidget {
 }
 
 class _AddInvoiceState extends State<AddInvoice> {
-  TextEditingController _recipientController = TextEditingController();
-  TextEditingController _invoiceController = TextEditingController(text: "021");
-  TextEditingController _amountController = TextEditingController();
-  FocusNode _recipientFocus = FocusNode();
+  final TextEditingController _recipientController = TextEditingController();
+  final TextEditingController _invoiceController =
+      TextEditingController(text: "021");
+  final TextEditingController _amountController = TextEditingController();
+  final FocusNode _recipientFocus = FocusNode();
   http.Response? response;
 
   final _formKey = GlobalKey<FormState>();
@@ -114,7 +115,7 @@ class _AddInvoiceState extends State<AddInvoice> {
         onPressed: () async {
           if (FocusScope.of(context).hasFocus) {
             FocusScope.of(context).unfocus();
-            await Future.delayed(Duration(milliseconds: 300));
+            await Future.delayed(const Duration(milliseconds: 300));
           }
           _payee = null;
           _addInvoiceBloc.clearItems();
@@ -128,7 +129,7 @@ class _AddInvoiceState extends State<AddInvoice> {
       ),
       actions: <Widget>[
         userProfileIcon(),
-        SizedBox(
+        const SizedBox(
           width: 16,
         ),
       ],
@@ -162,7 +163,7 @@ class _AddInvoiceState extends State<AddInvoice> {
   Widget scaffoldBody() {
     return SingleChildScrollView(
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -185,26 +186,26 @@ class _AddInvoiceState extends State<AddInvoice> {
                       children: <Widget>[
                         getDisplayCard(),
                         Container(
-                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              SizedBox(height: 16),
+                              const SizedBox(height: 16),
                               getRecipientField(),
-                              SizedBox(height: 8),
+                              const SizedBox(height: 8),
                               Text("Invoice detail",
                                   style: TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w600,
                                       color: blackFont)),
-                              SizedBox(height: 16),
+                              const SizedBox(height: 16),
                               getInvoiceNumber(),
                               // SizedBox(height: 8),
                               // displayAmountField(),
 
-                              SizedBox(height: 8),
+                              const SizedBox(height: 8),
                               getDateField(),
-                              SizedBox(height: 16),
+                              const SizedBox(height: 16),
                               Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
@@ -219,18 +220,18 @@ class _AddInvoiceState extends State<AddInvoice> {
                                       Navigator.of(context)
                                           .pushNamed(Routes.ADD_INVOICE_ITEM);
                                     },
-                                    child: Icon(Icons.add, size: 18),
+                                    child: const Icon(Icons.add, size: 18),
                                   )
                                 ],
                               ),
-                              SizedBox(height: 8),
+                              const SizedBox(height: 8),
                               getInvoiceItems(),
 
-                              SizedBox(height: 8),
+                              const SizedBox(height: 8),
                               getInvoiceTotal(),
                               // SizedBox(height: 16),
                               // getPaymentPeriodDropDown(),
-                              SizedBox(height: 8),
+                              const SizedBox(height: 8),
                               errorMessage == ""
                                   ? Container()
                                   : Text(
@@ -240,7 +241,7 @@ class _AddInvoiceState extends State<AddInvoice> {
                                           fontWeight: FontWeight.bold,
                                           fontSize: 16),
                                     ),
-                              SizedBox(height: 8),
+                              const SizedBox(height: 8),
                             ],
                           ),
                         ),
@@ -253,9 +254,9 @@ class _AddInvoiceState extends State<AddInvoice> {
             Container(
               child: Column(
                 children: [
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   getSubmitButton(),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                 ],
               ),
             ),
@@ -268,7 +269,7 @@ class _AddInvoiceState extends State<AddInvoice> {
   Widget getUserProfileIcon() {
     if (_payee != null || isValidPayee) {
       return IconButton(
-        icon: Icon(Icons.person),
+        icon: const Icon(Icons.person),
         onPressed: () {
           Navigator.pushNamed(context, '/profile',
               arguments: {"searchedUserName": _payee!.userName});
@@ -317,7 +318,7 @@ class _AddInvoiceState extends State<AddInvoice> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 8,
                     ),
                     Text(
@@ -375,7 +376,7 @@ class _AddInvoiceState extends State<AddInvoice> {
       );
     } else {
       return Container(
-        child: Center(child: Text("No item")),
+        child: const Center(child: Text("No item")),
         height: 100,
       );
     }
@@ -414,7 +415,7 @@ class _AddInvoiceState extends State<AddInvoice> {
 
   Widget showBackArrow() {
     return IconButton(
-      icon: Icon(Icons.arrow_back_ios),
+      icon: const Icon(Icons.arrow_back_ios),
       onPressed: () {
         _payee = null;
         Navigator.pop(context);
@@ -459,12 +460,12 @@ class _AddInvoiceState extends State<AddInvoice> {
         : Column(
             children: [
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 20),
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: ListTile(
                   contentPadding: EdgeInsets.zero,
                   title: Text(
                     _payee!.fullName!,
-                    style: TextStyle(
+                    style: const TextStyle(
                         color: Colors.black,
                         fontWeight: FontWeight.bold,
                         fontSize: 16),
@@ -515,7 +516,7 @@ class _AddInvoiceState extends State<AddInvoice> {
       },
       onTap: () async {
         CustomerProfile? userFound =
-            await NavigationUtil.push(context, screen: SearchUser());
+            await NavigationUtil.push(context, screen: const SearchUser());
 
         if (userFound != null) {
           _payee = userFound;
@@ -651,7 +652,7 @@ class _AddInvoiceState extends State<AddInvoice> {
             ),
           ),
         ),
-        SizedBox(width: 10),
+        const SizedBox(width: 10),
         Expanded(
           child: GestureDetector(
             onTap: () {
@@ -706,7 +707,7 @@ class _AddInvoiceState extends State<AddInvoice> {
           "Currency",
           style: TextStyle(color: darkGrey, fontSize: 14),
         ),
-        SizedBox(
+        const SizedBox(
           height: 6,
         ),
         Card(
@@ -715,7 +716,7 @@ class _AddInvoiceState extends State<AddInvoice> {
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
               side: BorderSide(color: greyBorderColor)),
-          margin: EdgeInsets.all(0),
+          margin: const EdgeInsets.all(0),
           borderOnForeground: true,
           child: ListTile(
             dense: true,
@@ -744,7 +745,8 @@ class _AddInvoiceState extends State<AddInvoice> {
         barrierDismissible: false,
         context: context,
         builder: (context) => AlertDialog(
-              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              insetPadding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),

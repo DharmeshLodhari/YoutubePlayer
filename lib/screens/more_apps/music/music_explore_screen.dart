@@ -164,24 +164,24 @@ class _MusicExploreScreenState extends State<MusicExploreScreen> {
       child: SingleChildScrollView(
         child: Column(
           children: [
-            SizedBox(
+            const SizedBox(
               height: 6,
             ),
             searchBox(),
-            SizedBox(
+            const SizedBox(
               height: 32,
             ),
             musicSlider(),
-            SizedBox(
+            const SizedBox(
               height: 40,
             ),
             mostRecentDiscovery(),
             mostPopularAlbum(),
-            SizedBox(
+            const SizedBox(
               height: 16,
             ),
             topCelebrity(),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
           ],
@@ -192,7 +192,7 @@ class _MusicExploreScreenState extends State<MusicExploreScreen> {
 
   Widget searchBox() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Theme(
         data: Theme.of(context).copyWith(
           textSelectionTheme: TextSelectionThemeData(
@@ -231,8 +231,8 @@ class _MusicExploreScreenState extends State<MusicExploreScreen> {
                 hintText: "Search",
                 fillColor: Colors.white,
                 filled: true,
-                contentPadding: EdgeInsets.symmetric(vertical: 10),
-                prefix: Padding(
+                contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                prefix: const Padding(
                   padding: EdgeInsets.only(left: 16),
                 ),
                 enabledBorder: OutlineInputBorder(
@@ -297,10 +297,11 @@ class _MusicExploreScreenState extends State<MusicExploreScreen> {
                             arguments: {"musicPlayer": widget.musicPlayer});
                       },
                       child: Container(
-                        padding: EdgeInsets.symmetric(horizontal: 5),
+                        padding: const EdgeInsets.symmetric(horizontal: 5),
                         child: Center(
                             child: ClipRRect(
-                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(10)),
                           child: CachedNetworkImage(
                             imageUrl: item.poster!,
                             fit: BoxFit.fill,
@@ -324,7 +325,7 @@ class _MusicExploreScreenState extends State<MusicExploreScreen> {
       child: Column(
         children: [
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
@@ -363,12 +364,12 @@ class _MusicExploreScreenState extends State<MusicExploreScreen> {
                 : SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Container(
-                      padding: EdgeInsets.only(left: 16),
+                      padding: const EdgeInsets.only(left: 16),
                       child: Row(
                         children: mostRecentDiscoveryList
                             .map(
                               (partialMusicItem) => Container(
-                                margin: EdgeInsets.only(
+                                margin: const EdgeInsets.only(
                                     right: 12, top: 16, bottom: 16),
                                 child: musicCard(
                                     partialMusicItem: partialMusicItem),
@@ -397,7 +398,8 @@ class _MusicExploreScreenState extends State<MusicExploreScreen> {
           width: 160,
           decoration: decorateBox(borderColor: selectedListItemBackgroundBlue),
           child: Container(
-            padding: EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 12),
+            padding:
+                const EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 12),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -412,7 +414,7 @@ class _MusicExploreScreenState extends State<MusicExploreScreen> {
                     errorWidget: imageErrorWidget,
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 12,
                 ),
                 Column(
@@ -467,7 +469,7 @@ class _MusicExploreScreenState extends State<MusicExploreScreen> {
       child: Column(
         children: [
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
@@ -506,11 +508,11 @@ class _MusicExploreScreenState extends State<MusicExploreScreen> {
                   : SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: Container(
-                        padding: EdgeInsets.only(left: 16),
+                        padding: const EdgeInsets.only(left: 16),
                         child: Row(
                           children: topCelebrityList
                               .map((element) => Container(
-                                  margin: EdgeInsets.only(right: 12),
+                                  margin: const EdgeInsets.only(right: 12),
                                   child: celebrityCard(celebrityItem: element)))
                               .toList(),
                         ),
@@ -534,7 +536,8 @@ class _MusicExploreScreenState extends State<MusicExploreScreen> {
           width: 160,
           decoration: decorateBox(borderColor: selectedListItemBackgroundBlue),
           child: Container(
-            padding: EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 12),
+            padding:
+                const EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 12),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -549,7 +552,7 @@ class _MusicExploreScreenState extends State<MusicExploreScreen> {
                     color: blackFont,
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 12,
                 ),
                 ClipRRect(
@@ -575,7 +578,7 @@ class _MusicExploreScreenState extends State<MusicExploreScreen> {
       child: Column(
         children: [
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
@@ -604,7 +607,7 @@ class _MusicExploreScreenState extends State<MusicExploreScreen> {
           ),
           Container(
             color: Colors.white,
-            padding: EdgeInsets.symmetric(vertical: 16),
+            padding: const EdgeInsets.symmetric(vertical: 16),
             child: isMostPopularAlbumLoading
                 ? Container(
                     height: 100,
@@ -615,12 +618,12 @@ class _MusicExploreScreenState extends State<MusicExploreScreen> {
                 : SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Container(
-                      padding: EdgeInsets.only(left: 16),
+                      padding: const EdgeInsets.only(left: 16),
                       child: Row(
                         children: mostPopularAlbumList
                             .map(
                               (partialAlbum) => Container(
-                                margin: EdgeInsets.only(right: 12),
+                                margin: const EdgeInsets.only(right: 12),
                                 child: InkWell(
                                     onTap: () {
                                       Navigator.of(context).pushNamed(
@@ -684,7 +687,7 @@ class _MusicExploreScreenState extends State<MusicExploreScreen> {
               alignment: Alignment.center,
               child: Text(
                 temp ? "Beach event" : "Mongola",
-                style: TextStyle(
+                style: const TextStyle(
                     fontWeight: FontWeight.w700,
                     fontSize: 18,
                     color: Colors.white),

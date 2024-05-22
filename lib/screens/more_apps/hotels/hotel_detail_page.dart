@@ -87,11 +87,11 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
       ),
       actions: <Widget>[
         shareBtn(),
-        SizedBox(
+        const SizedBox(
           width: 8,
         ),
         addToCartBtn(),
-        SizedBox(
+        const SizedBox(
           width: 16,
         ),
       ],
@@ -141,29 +141,29 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
                 eventPoster(),
                 Column(
                   children: [
-                    SizedBox(
+                    const SizedBox(
                       height: 24,
                     ),
                     Container(
-                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: eventNameAndHostInformation(),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 8,
                     ),
                     Container(
-                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: Column(
                         children: [
                           Divider(
                             thickness: 1,
                             color: dividerColor,
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 12,
                           ),
                           features(),
-                          SizedBox(
+                          const SizedBox(
                             height: 16,
                           ),
                           Divider(
@@ -172,7 +172,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
                             height: 0,
                           ),
                           selectDate(),
-                          SizedBox(
+                          const SizedBox(
                             height: 8,
                           ),
                           Divider(
@@ -180,11 +180,11 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
                             color: dividerColor,
                             height: 0,
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 12,
                           ),
                           availabilitySection(),
-                          SizedBox(
+                          const SizedBox(
                             height: 16,
                           ),
                           Divider(
@@ -197,12 +197,12 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
                     ),
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 12,
                 ),
                 propertyFeature(),
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 20),
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Column(
                     children: [
                       Divider(
@@ -210,22 +210,22 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
                         color: dividerColor,
                         height: 16,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 8,
                       ),
                       aboutEvent(),
-                      SizedBox(
+                      const SizedBox(
                         height: 12,
                       ),
                       Divider(
                         thickness: 1,
                         color: dividerColor,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 12,
                       ),
                       eventLocation(),
-                      SizedBox(
+                      const SizedBox(
                         height: 16,
                       ),
                       Divider(
@@ -233,16 +233,16 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
                         color: dividerColor,
                         height: 0,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 12,
                       ),
                       reviewsList(),
                       aboutPartnerList(),
-                      SizedBox(
+                      const SizedBox(
                         height: 12,
                       ),
                       askQuestionBtn(),
-                      SizedBox(
+                      const SizedBox(
                         height: 40,
                       ),
                     ],
@@ -254,7 +254,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
                       "https://m.media-amazon.com/images/I/A1o+mUmviOL._SS500_.jpg",
                   movieName: "The Cloud Of Northland Thunder",
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 60,
                 ),
               ],
@@ -316,7 +316,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
                   color: starYellow,
                   size: 11,
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 4,
                 ),
                 Text(
@@ -327,7 +327,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
             )
           ],
         ),
-        SizedBox(
+        const SizedBox(
           height: 4,
         ),
         Text(
@@ -335,7 +335,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
           style: TextStyle(
               fontSize: 14, fontWeight: FontWeight.w400, color: darkGrey),
         ),
-        SizedBox(
+        const SizedBox(
           height: 12,
         ),
         Row(
@@ -353,7 +353,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
                 ),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               width: 12,
             ),
             Text(
@@ -376,7 +376,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
           style: TextStyle(
               fontSize: 16, fontWeight: FontWeight.w700, color: blackFont),
         ),
-        SizedBox(
+        const SizedBox(
           height: 8,
         ),
         Column(
@@ -397,7 +397,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
                           color: starYellow,
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 12,
                       ),
                       Expanded(
@@ -414,7 +414,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
                 ),
               ],
             ),
-            SizedBox(
+            const SizedBox(
               height: 8,
             ),
             Row(
@@ -433,7 +433,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
                           color: naturalGreen,
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 12,
                       ),
                       Expanded(
@@ -450,7 +450,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
                 ),
               ],
             ),
-            SizedBox(
+            const SizedBox(
               height: 8,
             ),
             Row(
@@ -469,7 +469,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
                           color: mateRed,
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 12,
                       ),
                       Text(
@@ -484,7 +484,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
                 ),
               ],
             ),
-            SizedBox(
+            const SizedBox(
               height: 8,
             ),
           ],
@@ -495,7 +495,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
 
   Widget propertyFeature() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -504,7 +504,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
             style: TextStyle(
                 fontSize: 16, fontWeight: FontWeight.w700, color: blackFont),
           ),
-          SizedBox(
+          const SizedBox(
             height: 16,
           ),
           Row(
@@ -523,7 +523,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
                         color: blackFont,
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 12,
                     ),
                     Text(
@@ -550,7 +550,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
                         color: blackFont,
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 12,
                     ),
                     Text(
@@ -565,7 +565,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
               ),
             ],
           ),
-          SizedBox(
+          const SizedBox(
             height: 4,
           ),
           Row(
@@ -584,7 +584,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
                         color: blackFont,
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 12,
                     ),
                     Text(
@@ -611,7 +611,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
                         color: blackFont,
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 12,
                     ),
                     Text(
@@ -626,7 +626,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
               ),
             ],
           ),
-          SizedBox(
+          const SizedBox(
             height: 4,
           ),
           Row(
@@ -645,7 +645,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
                         color: blackFont,
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 12,
                     ),
                     Text(
@@ -672,7 +672,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
                         color: blackFont,
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 12,
                     ),
                     Text(
@@ -698,7 +698,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
       child: Column(
         children: [
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
@@ -731,12 +731,12 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Container(
-                padding: EdgeInsets.only(left: 16, top: 16, bottom: 16),
+                padding: const EdgeInsets.only(left: 16, top: 16, bottom: 16),
                 child: Row(
                   children: hotelRoomDetailItem.recommendedItem!
                       .map(
                         (partialHotelRoom) => Container(
-                          margin: EdgeInsets.only(right: 12),
+                          margin: const EdgeInsets.only(right: 12),
                           child: PartialHotelRoomItemTile(
                             hotelRoom: partialHotelRoom,
                           ),
@@ -760,20 +760,20 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
         boxShadow: <BoxShadow>[
           BoxShadow(
             color: boxShadowTwo,
-            offset: Offset(0.0, 0.0),
+            offset: const Offset(0.0, 0.0),
             blurRadius: 20.0,
           ),
         ],
         color: isSelected ? navyBlue : Colors.white,
-        borderRadius: BorderRadius.all(
-          const Radius.circular(10.0),
+        borderRadius: const BorderRadius.all(
+          Radius.circular(10.0),
         ),
         border: new Border.all(
             color: isSelected ? navyBlue : lightGrey,
             width: 1.0,
             style: BorderStyle.solid),
       ),
-      padding: EdgeInsets.symmetric(vertical: 16, horizontal: 32),
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
       child: Column(
         children: [
           Text(
@@ -783,7 +783,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
                 fontWeight: FontWeight.w400,
                 color: isSelected ? Colors.white : blackFont),
           ),
-          SizedBox(
+          const SizedBox(
             height: 8,
           ),
           Text(
@@ -807,7 +807,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
           style: TextStyle(
               fontSize: 16, fontWeight: FontWeight.w700, color: blackFont),
         ),
-        SizedBox(
+        const SizedBox(
           height: 12,
         ),
         Text(
@@ -842,7 +842,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
             ),
           ],
         ),
-        SizedBox(
+        const SizedBox(
           height: 12,
         ),
         Container(
@@ -874,13 +874,13 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
               color: blackFont,
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 16,
           ),
           Column(
             children: hotelRoomDetailItem.reviews!
                 .map((review) => Container(
-                      margin: EdgeInsets.only(bottom: 12),
+                      margin: const EdgeInsets.only(bottom: 12),
                       child: ReviewTile(),
                     ))
                 .toList(),
@@ -903,13 +903,13 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
               color: blackFont,
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 16,
           ),
           Column(
             children: hotelRoomDetailItem.partners!
                 .map((partner) => Container(
-                      margin: EdgeInsets.only(bottom: 12),
+                      margin: const EdgeInsets.only(bottom: 12),
                       child: InkWell(
                           onTap: () {
                             Navigator.of(context).pushNamed("/partner-detail");
@@ -936,7 +936,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
               color: blackFont,
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 8,
           ),
           OutlineCurvedButton(
@@ -951,7 +951,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
 
   Widget selectDate() {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 16),
+      padding: const EdgeInsets.symmetric(vertical: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -963,13 +963,13 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
               color: blackFont,
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 12,
           ),
           Row(
             children: [
               Expanded(child: dateAndTimeTile("Check in", "Oct 25")),
-              SizedBox(
+              const SizedBox(
                 width: 20,
               ),
               Expanded(child: dateAndTimeTile("Check out", "Nov 25")),
@@ -999,7 +999,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
       margin: EdgeInsets.zero,
       shadowColor: boxShadowTwo,
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8.0),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8.0),
         child: _buildBuyButtonWidget(),
       ),
     );

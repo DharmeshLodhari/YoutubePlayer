@@ -47,18 +47,19 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
     userBloc = Provider.of<UserBloc>(context);
     onReplyMessageTap = widget.onReplyMessageTap;
 
-    Map<String, dynamic> message = widget.message!;
+    final Map<String, dynamic> message = widget.message!;
 
-    bool isSend = message["author"] == userBloc.user.userName;
+    final bool isSend = message["author"] == userBloc.user.userName;
 
-    bool isEdited = message["was_edited"] ?? false;
+    final bool isEdited = message["was_edited"] ?? false;
     // bool isEdited = true;
 
     bool isReplyMessage = false;
 
-    Widget renderedMessage = renderMessage(message: message, isSend: isSend);
+    final Widget renderedMessage =
+        renderMessage(message: message, isSend: isSend);
 
-    Map<String, dynamic> isReplyTo = message["replied_to"] is String
+    final Map<String, dynamic> isReplyTo = message["replied_to"] is String
         ? jsonDecode(message["replied_to"])
         : message["replied_to"] ?? {};
 
@@ -78,29 +79,31 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
               crossAxisAlignment: CrossAxisAlignment.end,
               mainAxisSize: MainAxisSize.min,
               children: [
-                isSend
-                    ? Container()
-                    : Container(
-                        width: 20,
-                      ),
+                if (isSend)
+                  Container()
+                else
+                  Container(
+                    width: 20,
+                  ),
                 Row(
                   children: [
-                    isSend
-                        ? isEdited
-                            ? Row(
-                                children: [
-                                  Icon(
-                                    Icons.edit_outlined,
-                                    size: 16,
-                                    color: navyBlue,
-                                  ),
-                                  SizedBox(
-                                    width: 4,
-                                  )
-                                ],
-                              )
-                            : Container()
-                        : Container(),
+                    if (isSend)
+                      isEdited
+                          ? Row(
+                              children: [
+                                Icon(
+                                  Icons.edit_outlined,
+                                  size: 16,
+                                  color: navyBlue,
+                                ),
+                                const SizedBox(
+                                  width: 4,
+                                )
+                              ],
+                            )
+                          : Container()
+                    else
+                      Container(),
                     Container(
                       constraints: BoxConstraints(
                         maxWidth: MediaQuery.of(context).size.width * 0.8,
@@ -112,8 +115,8 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
                         borderRadius: BorderRadius.only(
                           bottomLeft: Radius.circular(!isSend ? 0 : 10),
                           bottomRight: Radius.circular(isSend ? 0 : 10),
-                          topLeft: Radius.circular(10),
-                          topRight: Radius.circular(10),
+                          topLeft: const Radius.circular(10),
+                          topRight: const Radius.circular(10),
                         ),
                       ),
                       child: Row(
@@ -126,46 +129,49 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
                         ],
                       ),
                     ),
-                    isSend
-                        ? Container()
-                        : isEdited
-                            ? Row(
-                                children: [
-                                  SizedBox(
-                                    width: 4,
-                                  ),
-                                  Icon(
-                                    Icons.edit_outlined,
-                                    size: 16,
-                                    color: darkGrey,
-                                  ),
-                                ],
-                              )
-                            : Container(),
+                    if (isSend)
+                      Container()
+                    else
+                      isEdited
+                          ? Row(
+                              children: [
+                                const SizedBox(
+                                  width: 4,
+                                ),
+                                Icon(
+                                  Icons.edit_outlined,
+                                  size: 16,
+                                  color: darkGrey,
+                                ),
+                              ],
+                            )
+                          : Container(),
                   ],
                 ),
-                isSend
-                    ? Container(
-                        width: 20,
-                        child: isSend
-                            ? Center(
-                                child: getMessageTick(message: message),
-                              )
-                            : Container(),
-                      )
-                    : Container(),
+                if (isSend)
+                  Container(
+                    width: 20,
+                    child: isSend
+                        ? Center(
+                            child: getMessageTick(message: message),
+                          )
+                        : Container(),
+                  )
+                else
+                  Container(),
               ],
             ),
-            SizedBox(
+            const SizedBox(
               height: 1,
             ),
             Row(
               children: [
-                isSend
-                    ? Container()
-                    : SizedBox(
-                        width: 20,
-                      ),
+                if (isSend)
+                  Container()
+                else
+                  const SizedBox(
+                    width: 20,
+                  ),
                 Text(
                   formatTime(message["created_at"]),
                   style: TextStyle(
@@ -173,11 +179,12 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
                       fontSize: 10,
                       fontWeight: FontWeight.w500),
                 ),
-                isSend
-                    ? SizedBox(
-                        width: 20,
-                      )
-                    : Container(),
+                if (isSend)
+                  const SizedBox(
+                    width: 20,
+                  )
+                else
+                  Container(),
               ],
             )
           ],
@@ -190,7 +197,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
     /// check if message is reply message then render reply UI of message
     /// {id: 58fb1dce-d430-4074-9b4c-6f06e856dd15, check_id: f42e6f87-891a-415a-ab57-0fcfd83fe1f1, conversation: {id: 9ae68069-b342-4e04-b568-602bde6fe901, group_name: null, banner: null, participants: [black, brijesh.sakariya], blocked_participants: null, is_group_conversation: false, updated_at: 2021-03-09T08:14:18.467461+01:00, created_at: 2021-03-09T08:14:18.467517+01:00}, author: black, text: teset123, read_by_author: true, read_by_recipient: false, was_edited: false, media: null, poster: null, updated_at: 2021-04-13T09:21:24.922145+01:00, created_at: 2021-04-13T09:21:24.922169+01:00, kind: text, deleted_for_recipient: false, deleted_for_author: false, delivered: true, meta_data: {}, replied_to: {id: 736ab0e9-1c57-4452-98b4-13664a262b81, check_id: 5da0bcd7-831d-4d02-97bd-dd9e1f78ebef, author: black, text: test, media: null, poster: null, kind: text, read_by_author: true, read_by_recipient: false, deleted_for_recipient: false, deleted_for_author: false, delivered: true, was_edited
 
-    Map<String, dynamic> isReplyTo = message["replied_to"] is String
+    final Map<String, dynamic> isReplyTo = message["replied_to"] is String
         ? jsonDecode(message["replied_to"])
         : message["replied_to"] ?? {};
 
@@ -199,7 +206,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
           newMessage: message, isSend: isSend!, repliedTo: isReplyTo);
     }
 
-    Map<String, dynamic> linkData =
+    final Map<String, dynamic> linkData =
         detectLinkInText(messageDecoderWithEmoji(message['text'].toString())!);
 
     if (linkData["hasLink"]) {
@@ -212,30 +219,31 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          widget.chatConversation!.isGroupConversation!
-              ? message['author'] != userBloc.user.userName
-                  ? Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          widget.message!['author_full_name'] ??
-                              widget.message!['author'],
-                          style: TextStyle(
-                              color: isSend! ? Colors.white : navyBlue,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w700),
-                        ),
-                        SizedBox(
-                          height: 2,
-                        ),
-                      ],
-                    )
-                  : Container(
-                      width: 0,
-                    )
-              : Container(
-                  width: 0,
-                ),
+          if (widget.chatConversation!.isGroupConversation!)
+            message['author'] != userBloc.user.userName
+                ? Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        widget.message!['author_full_name'] ??
+                            widget.message!['author'],
+                        style: TextStyle(
+                            color: isSend! ? Colors.white : navyBlue,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700),
+                      ),
+                      const SizedBox(
+                        height: 2,
+                      ),
+                    ],
+                  )
+                : Container(
+                    width: 0,
+                  )
+          else
+            Container(
+              width: 0,
+            ),
           FlutterLinkPreview(
             key: ValueKey("${linkToBePreview}233"),
             url: linkToBePreview,
@@ -246,8 +254,8 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
                     launchUrl(Uri.parse(linkToBePreview));
                   },
                   child: Container(
-                    margin:
-                        EdgeInsets.only(left: 10.0, top: 10.0, bottom: 10.0),
+                    margin: const EdgeInsets.only(
+                        left: 10.0, top: 10.0, bottom: 10.0),
                     child: Text(
                       linkToBePreview,
                       maxLines: 1,
@@ -276,7 +284,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
                   color: Colors.white,
                 ),
                 padding: const EdgeInsets.all(10),
-                margin: EdgeInsets.only(bottom: 4, top: 8),
+                margin: const EdgeInsets.only(bottom: 4, top: 8),
                 child: Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -319,30 +327,32 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
   }
 
   List<Widget> getPreview(WebInfo webInfo) {
-    List<Widget> children = [
+    final List<Widget> children = [
       Center(
         child: Row(
           children: <Widget>[
-            getPreviewIcon(webInfo.icon).isEmpty
-                ? SizedBox.shrink()
-                : CachedNetworkImage(
-                    imageUrl: getPreviewIcon(webInfo.icon),
-                    errorWidget: imageErrorWidget,
-                    imageBuilder: (context, imageProvider) {
-                      return Image(
-                        image: imageProvider,
-                        fit: BoxFit.contain,
-                        width: 30,
-                        height: 30,
-                        errorBuilder: (context, error, stackTrace) {
-                          return const Icon(Icons.link);
-                        },
-                      );
+            if (getPreviewIcon(webInfo.icon).isEmpty)
+              const SizedBox.shrink()
+            else
+              CachedNetworkImage(
+                imageUrl: getPreviewIcon(webInfo.icon),
+                errorWidget: imageErrorWidget,
+                imageBuilder: (context, imageProvider) {
+                  return Image(
+                    image: imageProvider,
+                    fit: BoxFit.contain,
+                    width: 30,
+                    height: 30,
+                    errorBuilder: (context, error, stackTrace) {
+                      return const Icon(Icons.link);
                     },
-                  ),
-            getPreviewIcon(webInfo.icon).isEmpty
-                ? SizedBox.shrink()
-                : const SizedBox(width: 8),
+                  );
+                },
+              ),
+            if (getPreviewIcon(webInfo.icon).isEmpty)
+              const SizedBox.shrink()
+            else
+              const SizedBox(width: 8),
             Expanded(
               child: Text(
                 webInfo.title!,
@@ -393,28 +403,29 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        widget.chatConversation!.isGroupConversation!
-            ? message['author'] != userBloc.user.userName
-                ? Column(
-                    children: [
-                      Text(
-                        message['author_full_name'] ?? message['author'],
-                        style: TextStyle(
-                            color: isSend ? Colors.white : navyBlue,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w700),
-                      ),
-                      SizedBox(
-                        height: 2,
-                      ),
-                    ],
-                  )
-                : Container(
-                    width: 0,
-                  )
-            : Container(
-                width: 0,
-              ),
+        if (widget.chatConversation!.isGroupConversation!)
+          message['author'] != userBloc.user.userName
+              ? Column(
+                  children: [
+                    Text(
+                      message['author_full_name'] ?? message['author'],
+                      style: TextStyle(
+                          color: isSend ? Colors.white : navyBlue,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700),
+                    ),
+                    const SizedBox(
+                      height: 2,
+                    ),
+                  ],
+                )
+              : Container(
+                  width: 0,
+                )
+        else
+          Container(
+            width: 0,
+          ),
         Text(
           messageDecoderWithEmoji(message['text'].toString())!,
           style:
@@ -428,7 +439,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
       {required Map<String, dynamic> newMessage,
       required bool isSend,
       required Map<String, dynamic> repliedTo}) {
-    bool isRepliedSend = repliedTo["author"] == userBloc.user.userName;
+    final bool isRepliedSend = repliedTo["author"] == userBloc.user.userName;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -439,37 +450,38 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
             minWidth: MediaQuery.of(context).size.width * 0.2,
             maxHeight: MediaQuery.of(context).size.width / 2.2,
           ),
-          padding: EdgeInsets.symmetric(
+          padding: const EdgeInsets.symmetric(
             horizontal: 2,
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              widget.chatConversation!.isGroupConversation!
-                  ? newMessage['author'] != userBloc.user.userName
-                      ? Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              newMessage['author_full_name'] ??
-                                  newMessage['author'],
-                              style: TextStyle(
-                                  color: isSend ? Colors.white : navyBlue,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w700),
-                            ),
-                            SizedBox(
-                              height: 4,
-                            ),
-                          ],
-                        )
-                      : Container(
-                          width: 0,
-                        )
-                  : Container(
-                      width: 0,
-                    ),
+              if (widget.chatConversation!.isGroupConversation!)
+                newMessage['author'] != userBloc.user.userName
+                    ? Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            newMessage['author_full_name'] ??
+                                newMessage['author'],
+                            style: TextStyle(
+                                color: isSend ? Colors.white : navyBlue,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w700),
+                          ),
+                          const SizedBox(
+                            height: 4,
+                          ),
+                        ],
+                      )
+                    : Container(
+                        width: 0,
+                      )
+              else
+                Container(
+                  width: 0,
+                ),
               GestureDetector(
                 onTap: onReplyMessageTap as void Function()? ?? null,
                 child: getRepliedMessageUI(
@@ -480,7 +492,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
             ],
           ),
         ),
-        SizedBox(
+        const SizedBox(
           height: 2,
         ),
         Text(
@@ -496,80 +508,80 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
       {required Map<String, dynamic> messageData,
       bool? isSend,
       bool? isRepliedSend}) {
-    String? messageType = messageData["kind"];
+    final String? messageType = messageData["kind"];
     switch (messageType) {
       case "text":
-        Widget getMessageUi = renderReplyMessage(
+        final Widget getMessageUi = renderReplyMessage(
             message: messageData,
             isSend: isSend!,
             isRepliedSend: isRepliedSend);
         return getMessageUi;
 
       case "image":
-        Widget getMessageUi = renderImageMedia(
+        final Widget getMessageUi = renderImageMedia(
             message: messageData,
             isSend: isSend!,
             isRepliedSend: isRepliedSend);
         return getMessageUi;
 
       case "video":
-        Widget getMessageUi = renderVideoMedia(
+        final Widget getMessageUi = renderVideoMedia(
             message: messageData,
             isSend: isSend!,
             isRepliedSend: isRepliedSend);
         return getMessageUi;
 
       case "audio":
-        Widget getMessageUi = renderAudioMedia(
+        final Widget getMessageUi = renderAudioMedia(
             message: messageData,
             isSend: isSend!,
             isRepliedSend: isRepliedSend);
         return getMessageUi;
 
       case "transaction":
-        Widget getPaymentUI = renderSendPayment(
+        final Widget getPaymentUI = renderSendPayment(
             message: messageData,
             isSend: isSend!,
             isRepliedSend: isRepliedSend);
         return getPaymentUI;
 
       case "payment-request":
-        Widget getPaymentUI = renderPaymentRequest(
+        final Widget getPaymentUI = renderPaymentRequest(
             message: messageData,
             isSend: isSend!,
             isRepliedSend: isRepliedSend);
         return getPaymentUI;
 
       case "product":
-        Widget getProductUI = renderProduct(
+        final Widget getProductUI = renderProduct(
             message: messageData,
             isSend: isSend!,
             isRepliedSend: isRepliedSend);
         return getProductUI;
 
       case "service":
-        Widget getServiceUI = renderService(
+        final Widget getServiceUI = renderService(
             message: messageData,
             isSend: isSend!,
             isRepliedSend: isRepliedSend);
         return getServiceUI;
 
       case "job":
-        Widget getServiceUI = renderJobService(
+        final Widget getServiceUI = renderJobService(
             message: messageData,
             isSend: isSend!,
             isRepliedSend: isRepliedSend);
         return getServiceUI;
 
       case "user-profile":
-        Widget getUserProfileUI = renderUserProfile(
+        final Widget getUserProfileUI = renderUserProfile(
             message: messageData,
             isSend: isSend!,
             isRepliedSend: isRepliedSend);
         return getUserProfileUI;
 
       case "user_location":
-        Widget getUserLocationUI = renderUserLocation(
+        final Widget getUserLocationUI = renderUserLocation(
             message: messageData,
             isSend: isSend!,
             isRepliedSend: isRepliedSend);
@@ -581,21 +593,21 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
           gifController!.value = 0;
         }
 
-        Widget getGIFImageUI = renderGIFImage(
+        final Widget getGIFImageUI = renderGIFImage(
             message: messageData,
             isSend: isSend!,
             isRepliedSend: isRepliedSend);
         return getGIFImageUI;
 
       case "envelope":
-        Widget getEnvelopeUI = renderEnvelope(
+        final Widget getEnvelopeUI = renderEnvelope(
             message: messageData,
             isSend: isSend!,
             isRepliedSend: isRepliedSend);
         return getEnvelopeUI;
 
       case "blog_post":
-        Widget getPostUI = renderPost(
+        final Widget getPostUI = renderPost(
             message: messageData,
             isSend: isSend!,
             isRepliedSend: isRepliedSend);
@@ -604,7 +616,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
       default:
         debugPrint(
             "Unknown Message Kind 4: $messageType Message:- $messageData");
-        Widget getErrorRenderTypeUI = unKnownMessageType();
+        final Widget getErrorRenderTypeUI = unKnownMessageType();
         return getErrorRenderTypeUI;
     }
   }
@@ -622,7 +634,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
                   isSend: isSend, isRepliedSend: isRepliedSend)),
         ),
       ),
-      padding: EdgeInsets.symmetric(horizontal: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -638,7 +650,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
             maxLines: 1,
             softWrap: false,
           ),
-          SizedBox(
+          const SizedBox(
             height: 4,
           ),
           Text(
@@ -669,7 +681,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
                   isSend: isSend, isRepliedSend: isRepliedSend)),
         ),
       ),
-      padding: EdgeInsets.symmetric(horizontal: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Row(
         children: [
           ClipRRect(
@@ -682,7 +694,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
               imageUrl: message["media"],
             ),
           ),
-          SizedBox(
+          const SizedBox(
             width: 12,
           ),
           Expanded(
@@ -701,7 +713,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
                   maxLines: 1,
                   softWrap: false,
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 4,
                 ),
                 Text(
@@ -735,7 +747,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
                   isSend: isSend, isRepliedSend: isRepliedSend)),
         ),
       ),
-      padding: EdgeInsets.symmetric(horizontal: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Row(
         children: [
           ClipRRect(
@@ -749,7 +761,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
                   fit: BoxFit.cover,
                   imageUrl: message["poster"],
                 ),
-                Positioned(
+                const Positioned(
                   top: 16,
                   left: 16,
                   child: Icon(
@@ -761,7 +773,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
               ],
             ),
           ),
-          SizedBox(
+          const SizedBox(
             width: 12,
           ),
           Expanded(
@@ -780,7 +792,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
                   maxLines: 1,
                   softWrap: false,
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 4,
                 ),
                 Text(
@@ -814,7 +826,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
                   isSend: isSend, isRepliedSend: isRepliedSend)),
         ),
       ),
-      padding: EdgeInsets.symmetric(horizontal: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -830,7 +842,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
             maxLines: 1,
             softWrap: false,
           ),
-          SizedBox(
+          const SizedBox(
             height: 4,
           ),
           Text(
@@ -869,7 +881,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
                   isSend: isSend, isRepliedSend: isRepliedSend)),
         ),
       ),
-      padding: EdgeInsets.symmetric(horizontal: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
@@ -889,7 +901,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
             maxLines: 1,
             softWrap: false,
           ),
-          SizedBox(
+          const SizedBox(
             height: 4,
           ),
           Row(
@@ -944,7 +956,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
                   isSend: isSend, isRepliedSend: isRepliedSend)),
         ),
       ),
-      padding: EdgeInsets.symmetric(horizontal: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
@@ -964,7 +976,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
             maxLines: 1,
             softWrap: false,
           ),
-          SizedBox(
+          const SizedBox(
             height: 4,
           ),
           Row(
@@ -1018,7 +1030,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
                   isSend: isSend, isRepliedSend: isRepliedSend)),
         ),
       ),
-      padding: EdgeInsets.symmetric(horizontal: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Row(
         children: [
           ClipRRect(
@@ -1031,7 +1043,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
               imageUrl: product.cover!,
             ),
           ),
-          SizedBox(
+          const SizedBox(
             width: 12,
           ),
           Expanded(
@@ -1050,7 +1062,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
                   maxLines: 1,
                   softWrap: false,
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 4,
                 ),
                 Row(
@@ -1104,7 +1116,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
                   isSend: isSend, isRepliedSend: isRepliedSend)),
         ),
       ),
-      padding: EdgeInsets.symmetric(horizontal: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Row(
         children: [
           ClipRRect(
@@ -1117,7 +1129,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
               imageUrl: post.image!,
             ),
           ),
-          SizedBox(
+          const SizedBox(
             width: 12,
           ),
           Expanded(
@@ -1136,7 +1148,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
                   maxLines: 1,
                   softWrap: false,
                 ),
-                SizedBox(height: 4),
+                const SizedBox(height: 4),
                 Text(
                   post.authorUsername!,
                   style: TextStyle(
@@ -1175,7 +1187,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
                   isSend: isSend, isRepliedSend: isRepliedSend)),
         ),
       ),
-      padding: EdgeInsets.symmetric(horizontal: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Row(
         children: [
           ClipRRect(
@@ -1188,7 +1200,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
               imageUrl: service.cover!,
             ),
           ),
-          SizedBox(
+          const SizedBox(
             width: 12,
           ),
           Expanded(
@@ -1207,7 +1219,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
                   maxLines: 1,
                   softWrap: false,
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 4,
                 ),
                 Row(
@@ -1262,7 +1274,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
                   isSend: isSend, isRepliedSend: isRepliedSend)),
         ),
       ),
-      padding: EdgeInsets.symmetric(horizontal: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Row(
         children: [
           ClipRRect(
@@ -1275,7 +1287,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
               imageUrl: jobModel.ownerAvatar!,
             ),
           ),
-          SizedBox(
+          const SizedBox(
             width: 12,
           ),
           Expanded(
@@ -1294,7 +1306,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
                   maxLines: 1,
                   softWrap: false,
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 4,
                 ),
                 Row(
@@ -1342,7 +1354,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
       customerProfile = CustomerProfile.fromJson(message['meta_data']);
     }
 
-    Color borderColor = getUserTypeColor(user: customerProfile);
+    final Color borderColor = getUserTypeColor(user: customerProfile);
 
     return Container(
       decoration: BoxDecoration(
@@ -1353,7 +1365,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
                   isSend: isSend, isRepliedSend: isRepliedSend)),
         ),
       ),
-      padding: EdgeInsets.symmetric(horizontal: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Row(
         children: [
           Container(
@@ -1375,7 +1387,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
                   filterQuality: FilterQuality.high,
                 ),
               )),
-          SizedBox(
+          const SizedBox(
             width: 12,
           ),
           Expanded(
@@ -1394,7 +1406,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
                   maxLines: 1,
                   softWrap: false,
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 4,
                 ),
                 Text(
@@ -1442,7 +1454,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
                   isSend: isSend, isRepliedSend: isRepliedSend)),
         ),
       ),
-      padding: EdgeInsets.symmetric(horizontal: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Row(
         children: <Widget>[
           ClipRRect(
@@ -1457,7 +1469,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
                 width: MediaQuery.of(context).size.width / 8,
                 fit: BoxFit.fill,
               )),
-          SizedBox(
+          const SizedBox(
             width: 12,
           ),
           Expanded(
@@ -1475,7 +1487,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 4,
                 ),
                 Text(
@@ -1497,57 +1509,58 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
               ],
             ),
           ),
-          widget.chatConversation!.isGroupConversation!
-              ? Container(
-                  height: 50,
-                  width: 80,
-                  child: Stack(
-                    clipBehavior: Clip.none,
-                    children: [
-                      Positioned(
-                        left: 30,
-                        child: Container(
+          if (widget.chatConversation!.isGroupConversation!)
+            Container(
+              height: 50,
+              width: 80,
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Positioned(
+                    left: 30,
+                    child: Container(
+                      height: 40,
+                      width: 40,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(100),
+                          border: Border.all(color: navyBlue, width: 2)),
+                      child: ClipOval(
+                        child: CachedNetworkImage(
                           height: 40,
                           width: 40,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(100),
-                              border: Border.all(color: navyBlue, width: 2)),
-                          child: ClipOval(
-                            child: CachedNetworkImage(
-                              height: 40,
-                              width: 40,
-                              fit: BoxFit.fill,
-                              errorWidget: imageErrorWidget,
-                              imageUrl:
-                                  message['to_customer_avatar'] ?? defaultImage,
-                            ),
-                          ),
+                          fit: BoxFit.fill,
+                          errorWidget: imageErrorWidget,
+                          imageUrl:
+                              message['to_customer_avatar'] ?? defaultImage,
                         ),
                       ),
-                      Container(
+                    ),
+                  ),
+                  Container(
+                    height: 40,
+                    width: 40,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(100),
+                        border: Border.all(color: naturalGreen, width: 2)),
+                    child: ClipOval(
+                      child: CachedNetworkImage(
+                        errorWidget: imageErrorWidget,
                         height: 40,
                         width: 40,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(100),
-                            border: Border.all(color: naturalGreen, width: 2)),
-                        child: ClipOval(
-                          child: CachedNetworkImage(
-                            errorWidget: imageErrorWidget,
-                            height: 40,
-                            width: 40,
-                            fit: BoxFit.fill,
-                            imageUrl:
-                                message['from_customer_avatar'] ?? defaultImage,
-                          ),
-                        ),
+                        fit: BoxFit.fill,
+                        imageUrl:
+                            message['from_customer_avatar'] ?? defaultImage,
                       ),
-                    ],
+                    ),
                   ),
-                )
-              : Container(
-                  width: 1,
-                  height: 1,
-                ),
+                ],
+              ),
+            )
+          else
+            Container(
+              width: 1,
+              height: 1,
+            ),
         ],
       ),
     );
@@ -1566,7 +1579,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
                   isSend: isSend, isRepliedSend: isRepliedSend)),
         ),
       ),
-      padding: EdgeInsets.symmetric(horizontal: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Row(
         children: [
           ClipRRect(
@@ -1581,7 +1594,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
               colorBlendMode: BlendMode.color,
             ),
           ),
-          SizedBox(
+          const SizedBox(
             width: 12,
           ),
           Expanded(
@@ -1600,7 +1613,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
                   maxLines: 1,
                   softWrap: false,
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 4,
                 ),
                 Text(
@@ -1634,7 +1647,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
                   isSend: isSend, isRepliedSend: isRepliedSend)),
         ),
       ),
-      padding: EdgeInsets.symmetric(horizontal: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Row(
         children: [
           ClipRRect(
@@ -1647,7 +1660,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
               image: NetworkImage(message["text"]),
             ),
           ),
-          SizedBox(
+          const SizedBox(
             width: 12,
           ),
           Expanded(
@@ -1666,7 +1679,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
                   maxLines: 1,
                   softWrap: false,
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 4,
                 ),
                 Text(

@@ -21,7 +21,7 @@ class _YourTripEndScreenState extends State<YourTripEndScreen> {
         body: Column(
           children: [
             _buildYourTripEndImageAndText(),
-            SizedBox(height: 40),
+            const SizedBox(height: 40),
             _buildOkButton(),
           ],
         ),
@@ -80,7 +80,7 @@ class _YourTripEndScreenState extends State<YourTripEndScreen> {
                 ),
               ),
             ),
-            SizedBox(height: 36),
+            const SizedBox(height: 36),
             Text(
               "Your trip has ended",
               style: TextStyle(
@@ -97,7 +97,7 @@ class _YourTripEndScreenState extends State<YourTripEndScreen> {
                   color: Colors.grey.shade200,
                 ),
               ),
-              margin: EdgeInsets.only(left: 50, right: 50, top: 20),
+              margin: const EdgeInsets.only(left: 50, right: 50, top: 20),
               elevation: 0,
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -115,7 +115,7 @@ class _YourTripEndScreenState extends State<YourTripEndScreen> {
                             fontSize: 13,
                           ),
                         ),
-                        SizedBox(height: 25),
+                        const SizedBox(height: 25),
                         Text(
                           "11:38",
                           style: TextStyle(
@@ -147,7 +147,7 @@ class _YourTripEndScreenState extends State<YourTripEndScreen> {
                             fontSize: 13,
                           ),
                         ),
-                        SizedBox(height: 25),
+                        const SizedBox(height: 25),
                         Text(
                           "20, Pedro Street, Alausa, Ikeja",
                           style: TextStyle(

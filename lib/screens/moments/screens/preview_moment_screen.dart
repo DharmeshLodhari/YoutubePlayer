@@ -104,7 +104,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
     focusNode = FocusNode();
     super.initState();
 
-    String? fType = getFileTypeByPath(path: widget.filePath);
+    final String? fType = getFileTypeByPath(path: widget.filePath);
     if (fType == null) return;
     fileType = fType;
     /*If the media to be previewed is a video, generate a thumbnail from it (the video)*/
@@ -482,7 +482,8 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
                                     focusNode.unfocus();
                                     await Future.delayed(
                                         const Duration(milliseconds: 200));
-                                    bool? _pickedColor = await showDialog<bool>(
+                                    final bool? _pickedColor =
+                                        await showDialog<bool>(
                                       context: context,
                                       builder: (context) => AlertDialog(
                                         title: const Text('Pick your color'),
@@ -906,7 +907,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
   }
 
   void postMoment() {
-    List<String> newUserTags =
+    final List<String> newUserTags =
         []; // For replacing the # in a tag with an empty string.
 
     userTags.forEach((tag) {
@@ -997,7 +998,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
   }
 
   pickAttachmentWidget() async {
-    String? pickedAttachmentOption = await showPickItemDialog<String>(
+    final String? pickedAttachmentOption = await showPickItemDialog<String>(
       context: context,
       items: attachmentList,
       selectedItem: pickedAttachmentType,
@@ -1009,7 +1010,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
 
       switch (pickedAttachmentOption) {
         case 'Blog':
-          var attachmentItemModelResult = await NavigationUtil.push(context,
+          final attachmentItemModelResult = await NavigationUtil.push(context,
               screen: const PickAttachmentScreen(
                   attachmentType: AttachmentType.Blog));
           if (attachmentItemModelResult != null) {
@@ -1022,7 +1023,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
           }
           break;
         case 'Product':
-          var attachmentItemModelResult = await NavigationUtil.push(context,
+          final attachmentItemModelResult = await NavigationUtil.push(context,
               screen: const PickAttachmentScreen(
                   attachmentType: AttachmentType.Product));
           if (attachmentItemModelResult != null) {
@@ -1036,7 +1037,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
 
           break;
         case 'Service':
-          var attachmentItemModelResult = await NavigationUtil.push(context,
+          final attachmentItemModelResult = await NavigationUtil.push(context,
               screen: const PickAttachmentScreen(
                   attachmentType: AttachmentType.Service));
           if (attachmentItemModelResult != null) {
@@ -1060,7 +1061,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
   }
 
   pickAttachmentItemWidget() async {
-    AttachmentItemModel? pickedItemAttachment =
+    final AttachmentItemModel? pickedItemAttachment =
         await showDialog<AttachmentItemModel>(
       context: context,
       builder: (context) => AlertDialog(

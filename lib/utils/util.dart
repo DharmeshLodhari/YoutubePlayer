@@ -5,6 +5,7 @@ import 'dart:ui';
 
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
 import 'package:Slydo/screens/more_apps/shopping/widget/product_detail_shimmer.dart';
+import 'package:Slydo/screens/more_apps/user_profile/widgets/user_profile_shimmer.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_shimmer.dart';
 import 'package:Slydo/utils/date_time_and_money_converter.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
@@ -640,6 +641,13 @@ Widget buildProductShimmerLoadingIndicator({required bool isLoading}) {
   return Opacity(
     opacity: isLoading ? 1.0 : 00,
     child: isLoading ? ProductDetailShimmer() : Container(),
+  );
+}
+
+Widget buildProfileShimmerLoadingIndicator({required bool isLoading}) {
+  return Opacity(
+    opacity: isLoading ? 1.0 : 00,
+    child: isLoading ? UserProfileShimmer() : Container(),
   );
 }
 

@@ -49,6 +49,7 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
   bool noItemInList = false;
   final _auth = ShoppingAuthService();
   bool isAPILoading = false;
+  List<AddOnOption> selectedOptions = [];
 
   //slidable tile
   SlidableController? _slideController;
@@ -56,6 +57,7 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
   @override
   void initState() {
     productId = widget.arguments["productId"];
+    selectedOptions = widget.arguments["options"];
 
     getAddOnOptionList();
 

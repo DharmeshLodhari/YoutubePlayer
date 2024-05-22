@@ -109,8 +109,8 @@ class _MomentTileForChatState extends State<MomentTileForChat> {
                   borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(!isSend ? 0 : 10),
                     bottomRight: Radius.circular(isSend ? 0 : 10),
-                    topLeft: Radius.circular(10),
-                    topRight: Radius.circular(10),
+                    topLeft: const Radius.circular(10),
+                    topRight: const Radius.circular(10),
                   ),
                 ),
                 padding: EdgeInsets.symmetric(
@@ -140,7 +140,7 @@ class _MomentTileForChatState extends State<MomentTileForChat> {
                                         fontSize: 12,
                                         fontWeight: FontWeight.w700),
                                   ),
-                                  SizedBox(
+                                  const SizedBox(
                                     height: 4,
                                   ),
                                 ],
@@ -169,15 +169,15 @@ class _MomentTileForChatState extends State<MomentTileForChat> {
                                   alignment: Alignment.center,
                                   children: [
                                     ClipRRect(
-                                      borderRadius:
-                                          BorderRadius.all(Radius.circular(10)),
+                                      borderRadius: const BorderRadius.all(
+                                          Radius.circular(10)),
                                       // child: momentForChatModel.video != null
                                       //     ? _buildVideoPlayer()
                                       //     : _buildImage(),
                                       child: _buildImage(),
                                     ),
                                     if (isLoading)
-                                      Align(
+                                      const Align(
                                         alignment: Alignment.center,
                                         child: CircularProgressIndicator(),
                                       ),
@@ -210,7 +210,7 @@ class _MomentTileForChatState extends State<MomentTileForChat> {
                                                     ),
                                                   ),
                                                 ),
-                                                SizedBox(width: 10),
+                                                const SizedBox(width: 10),
                                                 Expanded(
                                                   child: Text(
                                                     messageDecoderWithEmoji(
@@ -229,7 +229,7 @@ class _MomentTileForChatState extends State<MomentTileForChat> {
                                                 ),
                                               ],
                                             ),
-                                            SizedBox(height: 4),
+                                            const SizedBox(height: 4),
                                             Text(
                                               messageDecoderWithEmoji(
                                                       momentForChatModel
@@ -268,7 +268,7 @@ class _MomentTileForChatState extends State<MomentTileForChat> {
                   : Container(),
             ],
           ),
-          SizedBox(
+          const SizedBox(
             height: 2,
           ),
           Row(
@@ -277,7 +277,7 @@ class _MomentTileForChatState extends State<MomentTileForChat> {
             children: [
               isSend
                   ? Container()
-                  : SizedBox(
+                  : const SizedBox(
                       width: 20,
                     ),
               Text(
@@ -286,7 +286,7 @@ class _MomentTileForChatState extends State<MomentTileForChat> {
                     color: darkGrey, fontSize: 10, fontWeight: FontWeight.w500),
               ),
               isSend
-                  ? SizedBox(
+                  ? const SizedBox(
                       width: 20,
                     )
                   : Container(),

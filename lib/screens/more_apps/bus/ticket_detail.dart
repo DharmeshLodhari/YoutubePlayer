@@ -91,26 +91,26 @@ class _TicketDetailState extends State<TicketDetail> {
           ),
           Container(
             height: 470,
-            padding: EdgeInsets.symmetric(horizontal: 36),
+            padding: const EdgeInsets.symmetric(horizontal: 36),
             child: Column(
               children: [
-                SizedBox(
+                const SizedBox(
                   height: 40,
                 ),
                 bookingInfo(),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
                 MySeparator(color: dividerColor),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
                 boardingInfo(),
-                SizedBox(
+                const SizedBox(
                   height: 24,
                 ),
                 MySeparator(color: dividerColor),
-                SizedBox(
+                const SizedBox(
                   height: 40,
                 ),
                 Center(
@@ -130,7 +130,7 @@ class _TicketDetailState extends State<TicketDetail> {
 
   Widget ticketWithOutImage() {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
       child: Card(
         elevation: 0,
         margin: EdgeInsets.zero,
@@ -141,22 +141,22 @@ class _TicketDetailState extends State<TicketDetail> {
         child: Container(
           decoration: decorateBox(),
           child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 20),
+            padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
               children: [
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
                 bookingInfo(),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
                 MySeparator(color: dividerColor),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
                 boardingInfo(),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
                 Stack(
@@ -190,7 +190,7 @@ class _TicketDetailState extends State<TicketDetail> {
                   ],
                 ),
                 Container(
-                  padding: EdgeInsets.all(40),
+                  padding: const EdgeInsets.all(40),
                   child: CachedNetworkImage(
                       imageUrl:
                           "https://www.pixavi.com/wp-content/uploads/2015/10/apb-qr-code.png"),
@@ -219,7 +219,7 @@ class _TicketDetailState extends State<TicketDetail> {
                 color: blackFont,
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 4,
             ),
             Text(
@@ -232,7 +232,7 @@ class _TicketDetailState extends State<TicketDetail> {
             ),
           ],
         ),
-        SizedBox(
+        const SizedBox(
           width: 12,
         ),
         Container(
@@ -267,7 +267,7 @@ class _TicketDetailState extends State<TicketDetail> {
             ],
           ),
         ),
-        SizedBox(
+        const SizedBox(
           width: 12,
         ),
         Column(
@@ -281,7 +281,7 @@ class _TicketDetailState extends State<TicketDetail> {
                 color: blackFont,
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 4,
             ),
             Text(
@@ -316,7 +316,7 @@ class _TicketDetailState extends State<TicketDetail> {
                   size: 14,
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 width: 12,
               ),
               Row(
@@ -329,7 +329,7 @@ class _TicketDetailState extends State<TicketDetail> {
                       color: blackFont,
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 4,
                   ),
                   Text(
@@ -359,7 +359,7 @@ class _TicketDetailState extends State<TicketDetail> {
                   size: 14,
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 width: 12,
               ),
               Row(
@@ -372,7 +372,7 @@ class _TicketDetailState extends State<TicketDetail> {
                       color: blackFont,
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 4,
                   ),
                   Text(

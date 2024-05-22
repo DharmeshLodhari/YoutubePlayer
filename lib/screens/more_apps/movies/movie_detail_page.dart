@@ -126,10 +126,11 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
       ),
       actions: <Widget>[
         shareBtn(),
-        SizedBox(
+        const SizedBox(
           width: 8,
         ),
         addToCartBtn(),
+        // ignore: prefer_const_constructors
         SizedBox(
           width: 16,
         ),
@@ -177,14 +178,14 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
             titleName: movieDetailItem.name,
           ),
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 20),
+            padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
               children: [
-                SizedBox(
+                const SizedBox(
                   height: 24,
                 ),
                 movieNameAndRating(),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
                 Divider(
@@ -192,29 +193,29 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
                   color: dividerColor,
                 ),
                 movieReleaseDetail(),
-                SizedBox(
+                const SizedBox(
                   height: 16,
                 ),
                 Divider(
                   thickness: 1,
                   color: dividerColor,
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 12,
                 ),
                 movieStarringDetail(),
-                SizedBox(
+                const SizedBox(
                   height: 12,
                 ),
                 Divider(
                   thickness: 1,
                   color: dividerColor,
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 12,
                 ),
                 movieDescriptionDetail(),
-                SizedBox(
+                const SizedBox(
                   height: 80,
                 ),
               ],
@@ -250,7 +251,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
             )
           ],
         ),
-        SizedBox(
+        const SizedBox(
           height: 12,
         ),
         Row(
@@ -260,7 +261,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
               color: starYellow,
               size: 11,
             ),
-            SizedBox(
+            const SizedBox(
               width: 4,
             ),
             Text(
@@ -282,7 +283,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
           style: TextStyle(
               fontSize: 12, fontWeight: FontWeight.w700, color: blackFont),
         ),
-        SizedBox(
+        const SizedBox(
           height: 8,
         ),
         Row(
@@ -300,7 +301,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
                       color: blackFont,
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 12,
                   ),
                   Text(
@@ -324,7 +325,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
             )
           ],
         ),
-        SizedBox(
+        const SizedBox(
           height: 8,
         ),
         Row(
@@ -342,7 +343,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
                       color: blackFont,
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 12,
                   ),
                   Text(
@@ -366,7 +367,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
             )
           ],
         ),
-        SizedBox(
+        const SizedBox(
           height: 8,
         ),
         Row(
@@ -384,7 +385,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
                       color: blackFont,
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 12,
                   ),
                   Text(
@@ -408,7 +409,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
             )
           ],
         ),
-        SizedBox(
+        const SizedBox(
           height: 8,
         ),
         Row(
@@ -426,7 +427,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
                       color: blackFont,
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 12,
                   ),
                   Text(
@@ -443,7 +444,8 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
               child: Row(
                 children: [
                   Container(
-                    padding: EdgeInsets.symmetric(vertical: 2, horizontal: 8),
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 2, horizontal: 8),
                     decoration: BoxDecoration(
                       color: HexColor("F8F9FA"),
                       borderRadius: BorderRadius.circular(8),
@@ -456,7 +458,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
                           color: blackFont),
                     ),
                   ),
-                  Expanded(child: SizedBox())
+                  const Expanded(child: SizedBox())
                 ],
               ),
             )
@@ -475,7 +477,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
           style: TextStyle(
               fontSize: 12, fontWeight: FontWeight.w700, color: blackFont),
         ),
-        SizedBox(
+        const SizedBox(
           height: 12,
         ),
         Text(
@@ -496,7 +498,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
           style: TextStyle(
               fontSize: 12, fontWeight: FontWeight.w700, color: blackFont),
         ),
-        SizedBox(
+        const SizedBox(
           height: 12,
         ),
         Text(
@@ -518,11 +520,11 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
       margin: EdgeInsets.zero,
       shadowColor: boxShadowTwo,
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8.0),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8.0),
         child: Row(
           children: <Widget>[
             addToCartWidget(),
-            SizedBox(
+            const SizedBox(
               width: 8,
             ),
             _buildBuyButtonWidget(),

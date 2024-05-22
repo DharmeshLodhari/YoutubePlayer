@@ -25,7 +25,7 @@ List<String> fileExtensions = ['txt', 'pdf', 'apk', 'zip', 'xls'];
 List<String> audioExtensions = ["m4a", "mp3", "ogg", "aac"];
 
 Future<String?> getVideoThumbnail(File file) async {
-  String? path = await VideoThumbnail.thumbnailFile(
+  final String? path = await VideoThumbnail.thumbnailFile(
     video: file.path,
     imageFormat: ImageFormat.JPEG,
     maxWidth:
@@ -39,10 +39,10 @@ Future<String?> getVideoThumbnail(File file) async {
 String? getFileTypeByPath({required String path}) {
   if (path.isEmpty) return null;
 
-  List<String> splitName = path.split(".");
+  final List<String> splitName = path.split(".");
 
   if (splitName.isNotEmpty) {
-    String extension = splitName.last.toLowerCase();
+    final String extension = splitName.last.toLowerCase();
 
     if (fileExtensions.contains(extension)) return "file";
     if (imageExtensions.contains(extension)) return "image";
@@ -56,7 +56,7 @@ String getFileType(FilePickerResult pickedMedia) {
   debugPrint("File path :- ${pickedMedia.files.single.path}");
   debugPrint("File name :- ${pickedMedia.files.single.name}");
   debugPrint("File extension :- ${pickedMedia.files.single.extension}");
-  String? extension = pickedMedia.files.single.extension;
+  final String? extension = pickedMedia.files.single.extension;
   debugPrint(
       " pickedMedia.files.single.path => ${pickedMedia.files.single.path}");
 
@@ -71,7 +71,7 @@ String getFileExtension(FilePickerResult pickedMedia) {
   debugPrint("File path :- ${pickedMedia.files.single.path}");
   debugPrint("File name :- ${pickedMedia.files.single.name}");
   debugPrint("File extension :- ${pickedMedia.files.single.extension}");
-  String? extension = pickedMedia.files.single.extension;
+  final String? extension = pickedMedia.files.single.extension;
 
   if (imageExtensions.contains(extension)) return "image";
   if (videoExtensions.contains(extension)) return "video";
@@ -89,7 +89,7 @@ Color getMessageTickColor({required Map<String, dynamic> message}) {
 
 Widget getUserCurrencySymbol(BuildContext context,
     {Color? color, double? fontSize}) {
-  UserBloc userBloc = Provider.of<UserBloc>(context);
+  final UserBloc userBloc = Provider.of<UserBloc>(context);
 
   return Text(
     worldCurrencies[userBloc.user.currency!]!,
@@ -114,7 +114,7 @@ Widget getMessageTick({required Map<String, dynamic> message}) {
 
 String? getAuthorName(
     {required Map<String, dynamic> message, required User currentUser}) {
-  bool isSend = currentUser.userName == message["author"];
+  final bool isSend = currentUser.userName == message["author"];
 
   if (isSend) {
     return "You";

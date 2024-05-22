@@ -56,13 +56,13 @@ class MainSocketProvider extends ChangeNotifier {
   static Timer? _timerForRetryConnection;
   static int _numberOfRetry = 30;
   static int _countRetry = 0;
-  static final Duration _connectionRetryDuration = Duration(seconds: 3);
+  static final Duration _connectionRetryDuration = const Duration(seconds: 3);
 
   User? get currentUser => _currentUser;
 
   /// ping server variables
   static Timer? _timerForPingServer;
-  static final Duration _pingInterval = Duration(seconds: 2);
+  static final Duration _pingInterval = const Duration(seconds: 2);
   static DateTime _lastSent = DateTime.now();
   static DateTime _lastReceive = DateTime.now();
   static final Duration _socketTimeout =

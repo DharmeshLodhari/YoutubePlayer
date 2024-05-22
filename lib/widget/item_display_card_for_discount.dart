@@ -72,7 +72,7 @@ class DisplayProductForDiscount extends StatelessWidget {
                     children: [
                       Text(
                         truncateString(
-                          str: product.name!,
+                          str: messageDecoderWithEmoji(product.name) ?? "",
                           lengthToTruncateAt: 16,
                           showEllipsis: false,
                         ),
@@ -86,14 +86,13 @@ class DisplayProductForDiscount extends StatelessWidget {
                         height: 4,
                       ),
                       Text(
-                        messageDecoderWithEmoji(
-                              truncateString(
-                                str: product.shortDescription!,
-                                lengthToTruncateAt: 45,
-                                showEllipsis: true,
-                              ),
-                            ) ??
-                            "",
+                        truncateString(
+                          str: messageDecoderWithEmoji(
+                                  product.shortDescription) ??
+                              "",
+                          lengthToTruncateAt: 45,
+                          showEllipsis: true,
+                        ),
                         style: TextStyle(
                           fontFamily: "Inter",
                           fontWeight: FontWeight.w400,

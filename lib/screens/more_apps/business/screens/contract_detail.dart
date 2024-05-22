@@ -78,8 +78,7 @@ class _ContractDetailState extends State<ContractDetail> {
 
   @pragma(
       'vm:entry-point') // To avoid tree shaking in release mode for Android.
-  static void downloadCallback(
-      String id, int status, int progress) {
+  static void downloadCallback(String id, int status, int progress) {
     final SendPort send =
         IsolateNameServer.lookupPortByName('contract_downloader_send_port')!;
     send.send([id, status, progress]);
@@ -173,10 +172,10 @@ class _ContractDetailState extends State<ContractDetail> {
   }
 
   _downloadContract() async {
-    String fileName = 'Contract_${contract.id}.pdf';
-    PermissionStatus status = await Permission.storage.request();
+    final String fileName = 'Contract_${contract.id}.pdf';
+    final PermissionStatus status = await Permission.storage.request();
 
-    var downloadsDirectoryPath =
+    final downloadsDirectoryPath =
         await ExternalPath.getExternalStoragePublicDirectory(
             ExternalPath.DIRECTORY_DOWNLOADS);
 
@@ -184,7 +183,7 @@ class _ContractDetailState extends State<ContractDetail> {
       setState(() {
         isDownloading = true;
       });
-      String formattedFileName =
+      final String formattedFileName =
           await makeFileName(downloadsDirectoryPath, fileName);
 
       await FlutterDownloader.enqueue(
@@ -258,9 +257,9 @@ class _ContractDetailState extends State<ContractDetail> {
   }
 
   Widget getSubtitle() {
-    DateTime dateAndTime = DateTime.parse(contract.createdAt!);
-    String date = DateFormat("dd/MM/yyyy").format(dateAndTime);
-    String time = DateFormat("hh:mm a").format(dateAndTime);
+    final DateTime dateAndTime = DateTime.parse(contract.createdAt!);
+    final String date = DateFormat("dd/MM/yyyy").format(dateAndTime);
+    final String time = DateFormat("hh:mm a").format(dateAndTime);
 
     return Text(
       "$date • $time",
@@ -274,9 +273,9 @@ class _ContractDetailState extends State<ContractDetail> {
     if (datetime == null) {
       return "";
     }
-    DateTime dateAndTime = DateTime.parse(datetime);
-    String date = DateFormat("dd/MM/yyyy").format(dateAndTime);
-    String time = DateFormat("hh:mm a").format(dateAndTime);
+    final DateTime dateAndTime = DateTime.parse(datetime);
+    final String date = DateFormat("dd/MM/yyyy").format(dateAndTime);
+    final String time = DateFormat("hh:mm a").format(dateAndTime);
     return "$date • $time";
   }
 

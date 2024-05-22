@@ -53,9 +53,9 @@ class _AddReviewState extends State<AddReview> {
         foregroundColor: Colors.black,
         actions: [
           Padding(
-            padding: EdgeInsets.only(right: 10),
+            padding: const EdgeInsets.only(right: 10),
             child: IconButton(
-              icon: Icon(Icons.close),
+              icon: const Icon(Icons.close),
               color: Colors.black,
               onPressed: () {
                 Navigator.pop(context);
@@ -68,7 +68,7 @@ class _AddReviewState extends State<AddReview> {
         child: Stack(
           children: [
             Container(
-              padding: EdgeInsets.fromLTRB(10, 15, 10, 0),
+              padding: const EdgeInsets.fromLTRB(10, 15, 10, 0),
               child: SingleChildScrollView(
                 child: Column(
                   children: [
@@ -76,7 +76,7 @@ class _AddReviewState extends State<AddReview> {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          SizedBox(
+                          const SizedBox(
                             height: 20,
                           ),
                           ClipRRect(
@@ -88,7 +88,7 @@ class _AddReviewState extends State<AddReview> {
                             ),
                             borderRadius: BorderRadius.circular(16),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 20,
                           ),
                           Text(
@@ -99,7 +99,7 @@ class _AddReviewState extends State<AddReview> {
                               fontWeight: FontWeight.w800,
                             ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 8,
                           ),
                           Text(
@@ -113,17 +113,17 @@ class _AddReviewState extends State<AddReview> {
                         ],
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 20,
                     ),
                     _buildWriteUserReview(),
-                    SizedBox(height: 5),
+                    const SizedBox(height: 5),
                   ],
                 ),
               ),
             ),
             isLoading
-                ? Center(
+                ? const Center(
                     child: CircularProgressIndicator(),
                   )
                 : Container()
@@ -179,17 +179,17 @@ class _AddReviewState extends State<AddReview> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     _buildRatingBar(),
-                    SizedBox(height: 32),
+                    const SizedBox(height: 32),
                     _buildWriteReviewTextField(),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
                   ],
                 ),
               ),
             ),
           ),
-          SizedBox(height: 30),
+          const SizedBox(height: 30),
           CurvedButton(
             onPressed: onButtonTap,
             text: "Submit",
@@ -224,7 +224,7 @@ class _AddReviewState extends State<AddReview> {
             ),
           ),
         ),
-        SizedBox(
+        const SizedBox(
           height: 5,
         ),
         TextFormField(
@@ -232,20 +232,20 @@ class _AddReviewState extends State<AddReview> {
           maxLines: maxLines,
           onChanged: (value) {},
           decoration: InputDecoration(
-            border: OutlineInputBorder(
+            border: const OutlineInputBorder(
               borderRadius: BorderRadius.all(
                 Radius.circular(10.0),
               ),
             ),
             enabledBorder: OutlineInputBorder(
               borderSide: BorderSide(color: greyBorderColor, width: 1.0),
-              borderRadius: BorderRadius.all(
+              borderRadius: const BorderRadius.all(
                 Radius.circular(10.0),
               ),
             ),
             focusedBorder: OutlineInputBorder(
               borderSide: BorderSide(color: greyBorderColor, width: 2.0),
-              borderRadius: BorderRadius.all(
+              borderRadius: const BorderRadius.all(
                 Radius.circular(10.0),
               ),
             ),

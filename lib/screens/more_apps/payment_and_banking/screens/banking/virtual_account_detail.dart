@@ -133,13 +133,13 @@ class _VirtualAccountDetailState extends State<VirtualAccountDetail> {
                   (AppBar().preferredSize.height +
                       MediaQuery.of(context).padding.top),
               width: MediaQuery.of(context).size.width,
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
               child: Form(
                 key: _formKeyTwo,
                 child: Column(
                   children: <Widget>[
                     getUserBankAccountSlydo(),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                   ],
                 ),
               ),
@@ -149,7 +149,7 @@ class _VirtualAccountDetailState extends State<VirtualAccountDetail> {
 
   Widget showBackArrow() {
     return IconButton(
-      icon: Icon(Icons.arrow_back_ios),
+      icon: const Icon(Icons.arrow_back_ios),
       onPressed: () {
         Navigator.pop(context);
       },
@@ -203,7 +203,7 @@ class _VirtualAccountDetailState extends State<VirtualAccountDetail> {
 
   Widget noteForUser() {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 40),
+      padding: const EdgeInsets.symmetric(horizontal: 40),
       child: Text(
         "You are about to transfer money into your Slydo wallet",
         textAlign: TextAlign.center,
@@ -227,7 +227,7 @@ class _VirtualAccountDetailState extends State<VirtualAccountDetail> {
         child: !isAccountExist
             ? ListTile(
                 contentPadding:
-                    EdgeInsets.symmetric(vertical: 5, horizontal: 16),
+                    const EdgeInsets.symmetric(vertical: 5, horizontal: 16),
                 title: Text(
                   isKYCInProcess
                       ? "Your KYC is in Process.\nCheck back later."
@@ -250,20 +250,21 @@ class _VirtualAccountDetailState extends State<VirtualAccountDetail> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
-                        padding: EdgeInsets.only(left: 16, right: 16, top: 16),
+                        padding:
+                            const EdgeInsets.only(left: 16, right: 16, top: 16),
                         child: Column(
                           children: [
                             getAccountName(),
-                            SizedBox(height: 8),
+                            const SizedBox(height: 8),
                             getAccountNumber(),
-                            SizedBox(height: 8),
+                            const SizedBox(height: 8),
                             getTierInstruction(),
-                            SizedBox(height: 24),
+                            const SizedBox(height: 24),
                             getSlydoBankAccountDetail(),
                           ],
                         ),
                       ),
-                      SizedBox(height: 32),
+                      const SizedBox(height: 32),
                     ],
                   ),
                 ],
@@ -278,7 +279,7 @@ class _VirtualAccountDetailState extends State<VirtualAccountDetail> {
       children: [
         Row(
           children: [
-            Expanded(
+            const Expanded(
               child: Text("Tier "),
             ),
             Expanded(
@@ -287,17 +288,17 @@ class _VirtualAccountDetailState extends State<VirtualAccountDetail> {
               style: TextStyle(
                   color: blackFont, fontWeight: FontWeight.w600, fontSize: 14),
             )),
-            SizedBox(
+            const SizedBox(
               width: 20,
             )
           ],
         ),
-        SizedBox(
+        const SizedBox(
           height: 8,
         ),
         Row(
           children: [
-            Expanded(
+            const Expanded(
               child: Text("Account limit"),
             ),
             Expanded(
@@ -310,17 +311,17 @@ class _VirtualAccountDetailState extends State<VirtualAccountDetail> {
                     fontSize: 14),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               width: 20,
             )
           ],
         ),
-        SizedBox(
+        const SizedBox(
           height: 8,
         ),
         Row(
           children: [
-            Expanded(
+            const Expanded(
               child: Text("Maximum pay limit"),
             ),
             Expanded(
@@ -334,7 +335,7 @@ class _VirtualAccountDetailState extends State<VirtualAccountDetail> {
                     fontSize: 14),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               width: 20,
             )
           ],

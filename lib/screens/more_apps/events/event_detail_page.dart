@@ -88,11 +88,11 @@ class _EventDetailPageState extends State<EventDetailPage> {
       ),
       actions: <Widget>[
         shareBtn(),
-        SizedBox(
+        const SizedBox(
           width: 8,
         ),
         addToCartBtn(),
-        SizedBox(
+        const SizedBox(
           width: 16,
         ),
       ],
@@ -140,14 +140,14 @@ class _EventDetailPageState extends State<EventDetailPage> {
                 eventPoster(),
                 Column(
                   children: [
-                    SizedBox(
+                    const SizedBox(
                       height: 24,
                     ),
                     Container(
-                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: eventNameAndHostInformation(),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 8,
                     ),
                     InkWell(
@@ -157,7 +157,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
                         },
                         child: Image.asset("assets/images/TICKET.png")),
                     Container(
-                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: Column(
                         children: [
                           Divider(
@@ -165,11 +165,11 @@ class _EventDetailPageState extends State<EventDetailPage> {
                             height: 0,
                             color: dividerColor,
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 12,
                           ),
                           eventTimeAndPlaceDetail(),
-                          SizedBox(
+                          const SizedBox(
                             height: 16,
                           ),
                           Divider(
@@ -181,12 +181,12 @@ class _EventDetailPageState extends State<EventDetailPage> {
                     ),
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 12,
                 ),
                 dateAndTime(),
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 20),
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Column(
                     children: [
                       Divider(
@@ -194,26 +194,26 @@ class _EventDetailPageState extends State<EventDetailPage> {
                         color: dividerColor,
                         height: 16,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 8,
                       ),
                       aboutEvent(),
-                      SizedBox(
+                      const SizedBox(
                         height: 12,
                       ),
                       Divider(
                         thickness: 1,
                         color: dividerColor,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 12,
                       ),
                       eventLocation(),
-                      SizedBox(
+                      const SizedBox(
                         height: 40,
                       ),
                       moreLikeThis(),
-                      SizedBox(
+                      const SizedBox(
                         height: 80,
                       ),
                     ],
@@ -275,7 +275,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
             ),
           ],
         ),
-        SizedBox(
+        const SizedBox(
           height: 12,
         ),
         Row(
@@ -293,7 +293,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
                 ),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               width: 12,
             ),
             Text(
@@ -318,7 +318,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
           style: TextStyle(
               fontSize: 12, fontWeight: FontWeight.w700, color: blackFont),
         ),
-        SizedBox(
+        const SizedBox(
           height: 8,
         ),
         Row(
@@ -342,7 +342,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
                                 color: blackFont,
                               ),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               width: 12,
                             ),
                             Expanded(
@@ -359,7 +359,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
                       ),
                     ],
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 8,
                   ),
                   Row(
@@ -378,7 +378,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
                                 color: blackFont,
                               ),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               width: 12,
                             ),
                             Expanded(
@@ -395,7 +395,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
                       ),
                     ],
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 8,
                   ),
                   Row(
@@ -414,7 +414,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
                                 color: blackFont,
                               ),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               width: 12,
                             ),
                             Row(
@@ -441,7 +441,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
                       ),
                     ],
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 8,
                   ),
                 ],
@@ -479,11 +479,11 @@ class _EventDetailPageState extends State<EventDetailPage> {
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: Container(
-            padding: EdgeInsets.symmetric(vertical: 16),
+            padding: const EdgeInsets.symmetric(vertical: 16),
             child: Row(
               children: List.generate(availableDates.length, (index) {
                 return Container(
-                    padding: EdgeInsets.only(left: 16),
+                    padding: const EdgeInsets.only(left: 16),
                     child: dateAndTimeTile(
                         availableDates[index], selectedDate == index, index));
               }),
@@ -506,20 +506,20 @@ class _EventDetailPageState extends State<EventDetailPage> {
           boxShadow: <BoxShadow>[
             BoxShadow(
               color: boxShadowTwo,
-              offset: Offset(0.0, 0.0),
+              offset: const Offset(0.0, 0.0),
               blurRadius: 20.0,
             ),
           ],
           color: isSelected ? navyBlue : Colors.white,
-          borderRadius: BorderRadius.all(
-            const Radius.circular(10.0),
+          borderRadius: const BorderRadius.all(
+            Radius.circular(10.0),
           ),
           border: new Border.all(
               color: isSelected ? navyBlue : lightGrey,
               width: 1.0,
               style: BorderStyle.solid),
         ),
-        padding: EdgeInsets.symmetric(vertical: 16, horizontal: 32),
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
         child: Column(
           children: [
             Text(
@@ -529,7 +529,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
                   fontWeight: FontWeight.w700,
                   color: isSelected ? Colors.white : blackFont),
             ),
-            SizedBox(
+            const SizedBox(
               height: 8,
             ),
             Text(
@@ -554,7 +554,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
           style: TextStyle(
               fontSize: 12, fontWeight: FontWeight.w700, color: blackFont),
         ),
-        SizedBox(
+        const SizedBox(
           height: 12,
         ),
         Text(
@@ -589,7 +589,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
             ),
           ],
         ),
-        SizedBox(
+        const SizedBox(
           height: 12,
         ),
         Container(
@@ -621,13 +621,13 @@ class _EventDetailPageState extends State<EventDetailPage> {
               color: blackFont,
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 12,
           ),
           Column(
             children: event.similarEvent!
                 .map((element) => Container(
-                      margin: EdgeInsets.only(bottom: 12),
+                      margin: const EdgeInsets.only(bottom: 12),
                       child: EventTileWithHeart(partialEvent: element),
                     ))
                 .toList(),
@@ -643,11 +643,11 @@ class _EventDetailPageState extends State<EventDetailPage> {
       margin: EdgeInsets.zero,
       shadowColor: boxShadowTwo,
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8.0),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8.0),
         child: Row(
           children: <Widget>[
             addToCartWidget(),
-            SizedBox(
+            const SizedBox(
               width: 8,
             ),
             _buildBuyButtonWidget(),

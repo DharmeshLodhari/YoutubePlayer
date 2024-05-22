@@ -193,11 +193,12 @@ class _SelectVideoCoverPageState extends State<SelectVideoCoverPage> {
   Widget _buildButton() {
     return CurvedButton(
       onPressed: () async {
-        bool isPermissionGranted = await requestGalleryPermission();
+        final bool isPermissionGranted = await requestGalleryPermission();
         if (isPermissionGranted) {
           pickImage();
         } else {
-          bool isPermissionIsDenied = await isPermanentlyDeniedPermission();
+          final bool isPermissionIsDenied =
+              await isPermanentlyDeniedPermission();
           if (isPermissionIsDenied) {
             await openAppSettings();
           } else {
@@ -215,7 +216,7 @@ class _SelectVideoCoverPageState extends State<SelectVideoCoverPage> {
     ImagePicker().pickImage(source: ImageSource.gallery).then((value) async {
       if (value != null) {
         /// for cropping the image
-        String? croppedImage = await ImageCrop().cropImage(value.path);
+        final String? croppedImage = await ImageCrop().cropImage(value.path);
         if (croppedImage == null) {
           return;
         }
@@ -238,7 +239,7 @@ class _SelectVideoCoverPageState extends State<SelectVideoCoverPage> {
     setState(() {
       isLoading = true;
     });
-    var tempDir = Directory.systemTemp;
+    final tempDir = Directory.systemTemp;
     frames = await VideoFrameExtractor.fromNetwork(
         videoUrl: url,
         imagesCount: 8,
@@ -257,13 +258,13 @@ class _SelectVideoCoverPageState extends State<SelectVideoCoverPage> {
       // Directory? downloadDirectory = await getDownloadsDirectory();
       // String? downloadPath = downloadDirectory?.path;
       // Path to the directory
-      String downloadPath = '/storage/emulated/0/Download';
+      final String downloadPath = '/storage/emulated/0/Download';
 
       // Create a Directory object from the path
-      Directory downloadDirectory = Directory(downloadPath);
+      final Directory downloadDirectory = Directory(downloadPath);
 
       // List all files in the download directory
-      List<FileSystemEntity>? fileList = downloadDirectory.listSync();
+      final List<FileSystemEntity>? fileList = downloadDirectory.listSync();
 
       // Iterate through each file and delete if it starts with "extracted_"
       for (FileSystemEntity file in fileList ?? []) {

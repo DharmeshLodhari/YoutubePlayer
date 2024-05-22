@@ -145,7 +145,8 @@ class _MomentsDetailsScreenState extends State<MomentsDetailsScreen> {
 
   Future<List<String>?> getNextPageListOfConnectionNames(
       {required String nextPageUrl}) async {
-    Map<String, dynamic>? result = await MomentsService().getContactMoments(
+    final Map<String, dynamic>? result =
+        await MomentsService().getContactMoments(
       next: widget.nextPageUrl,
     );
 
@@ -153,7 +154,7 @@ class _MomentsDetailsScreenState extends State<MomentsDetailsScreen> {
       return null;
     }
     widget.nextPageUrl = result['next'];
-    var resultList = result['results'] as List<MomentsModel>;
+    final resultList = result['results'] as List<MomentsModel>;
 
     return resultList.map((e) => e.owner!).toList();
   }
@@ -162,14 +163,15 @@ class _MomentsDetailsScreenState extends State<MomentsDetailsScreen> {
     showLoadingIndicator(loadingNextPageUrl: loadingNextPageUrl, show: true);
 
     try {
-      int startIndex = getLoopStartingPoint(
+      final int startIndex = getLoopStartingPoint(
           mList: widget.listOfConnectionNames,
           loadingNextPageUrl: loadingNextPageUrl);
 
-      int endIndex = getLoopEndingPoint(mList: widget.listOfConnectionNames);
+      final int endIndex =
+          getLoopEndingPoint(mList: widget.listOfConnectionNames);
 
       for (int i = startIndex; i <= endIndex; i++) {
-        List<MomentsModel> momentsModelList = await MomentsService()
+        final List<MomentsModel> momentsModelList = await MomentsService()
             .getMomentsWithOwnerName(
                 ownerName: widget.listOfConnectionNames[i],
                 channelUsername: '');
@@ -210,22 +212,22 @@ class _MomentsDetailsScreenState extends State<MomentsDetailsScreen> {
     int count = getNextList ? 1 : 4;
 
     do {
-      int nextIndex = widget.listOfConnectionNames.indexOf(widget
+      final int nextIndex = widget.listOfConnectionNames.indexOf(widget
               .momentsModelList[verticalScrollIndex][0]
               .owner!) + // We can use position 0 here so we can just get the owner's name(we can also use 1 or 2 or whatever cos it is still that  particular user's moment)
           count;
-      int previousIndex = widget.listOfConnectionNames
+      final int previousIndex = widget.listOfConnectionNames
               .indexOf(widget.momentsModelList[verticalScrollIndex][0].owner!) -
           count;
 
       // Whether previous or next index depending on if the user has gotten to the top or end of the vertical list respectively.
-      int indexToWorkWith = getNextList ? nextIndex : previousIndex;
+      final int indexToWorkWith = getNextList ? nextIndex : previousIndex;
 
       debugPrint('ERROR FETCHING MOMENT :: ${indexToWorkWith}');
 
       if (widget.listOfConnectionNames.indices.contains(indexToWorkWith)) {
         try {
-          List<MomentsModel> momentsModelList = await MomentsService()
+          final List<MomentsModel> momentsModelList = await MomentsService()
               .getMomentsWithOwnerName(
                   ownerName: widget.listOfConnectionNames[indexToWorkWith],
                   channelUsername: '');
@@ -320,7 +322,7 @@ class _MomentsDetailsScreenState extends State<MomentsDetailsScreen> {
                             getNextList: true);
                       } else {
                         if (widget.nextPageUrl != null) {
-                          List<String>? newListOfConnectionNames =
+                          final List<String>? newListOfConnectionNames =
                               await getNextPageListOfConnectionNames(
                                   nextPageUrl: widget.nextPageUrl!);
 

@@ -34,7 +34,7 @@ class _SearchMusicState extends State<SearchMusic> {
   String? selectedMovieCategory;
   String? selectedMovieYear;
   int? selectedRating;
-  RangeValues selectedPriceValue = RangeValues(5, 56);
+  RangeValues selectedPriceValue = const RangeValues(5, 56);
 
   List<PartialMusicItem> musicList = [];
   RefreshController _refreshController =
@@ -105,7 +105,7 @@ class _SearchMusicState extends State<SearchMusic> {
       ),
       actions: <Widget>[
         filterMovieBtn(),
-        SizedBox(
+        const SizedBox(
           width: 16,
         ),
       ],
@@ -140,11 +140,11 @@ class _SearchMusicState extends State<SearchMusic> {
     return Container(
       child: Column(
         children: [
-          SizedBox(
+          const SizedBox(
             height: 6,
           ),
           searchBox(),
-          SizedBox(
+          const SizedBox(
             height: 12,
           ),
           isLoading
@@ -169,7 +169,7 @@ class _SearchMusicState extends State<SearchMusic> {
                             children: musicList
                                 .map(
                                   (musicItem) => Container(
-                                      padding: EdgeInsets.symmetric(
+                                      padding: const EdgeInsets.symmetric(
                                           vertical: 8, horizontal: 16),
                                       child: MusicTileWithHeart(
                                         musicItem: musicItem,
@@ -187,7 +187,7 @@ class _SearchMusicState extends State<SearchMusic> {
 
   Widget searchBox() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Theme(
         data: Theme.of(context).copyWith(
           textSelectionTheme: TextSelectionThemeData(
@@ -223,8 +223,8 @@ class _SearchMusicState extends State<SearchMusic> {
             hintText: "Search",
             fillColor: Colors.white,
             filled: true,
-            contentPadding: EdgeInsets.symmetric(vertical: 10),
-            prefix: Padding(
+            contentPadding: const EdgeInsets.symmetric(vertical: 10),
+            prefix: const Padding(
               padding: EdgeInsets.only(left: 16),
             ),
             enabledBorder: OutlineInputBorder(
@@ -270,7 +270,7 @@ class _SearchMusicState extends State<SearchMusic> {
           return StatefulBuilder(
             builder: (BuildContext context, StateSetter bottomSheetSetState) =>
                 Card(
-                    shape: RoundedRectangleBorder(
+                    shape: const RoundedRectangleBorder(
                       borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(20),
                           topRight: Radius.circular(20)),
@@ -278,8 +278,8 @@ class _SearchMusicState extends State<SearchMusic> {
                     color: Colors.white,
                     margin: EdgeInsets.zero,
                     child: Container(
-                      padding:
-                          EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 18, horizontal: 20),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: <Widget>[
@@ -290,27 +290,27 @@ class _SearchMusicState extends State<SearchMusic> {
                                 fontWeight: FontWeight.w700,
                                 color: blackFont),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 40,
                           ),
                           getMovieCategoryDropDown(bottomSheetSetState),
-                          SizedBox(
+                          const SizedBox(
                             height: 20,
                           ),
                           getMovieYearDropDown(bottomSheetSetState),
-                          SizedBox(
+                          const SizedBox(
                             height: 20,
                           ),
                           getMovieRatingSelection(bottomSheetSetState),
-                          SizedBox(
+                          const SizedBox(
                             height: 20,
                           ),
                           getPriceSelection(bottomSheetSetState),
-                          SizedBox(
+                          const SizedBox(
                             height: 50,
                           ),
                           getFilerSubmitButton(),
-                          SizedBox(
+                          const SizedBox(
                             height: 10,
                           ),
                         ],
@@ -328,7 +328,7 @@ class _SearchMusicState extends State<SearchMusic> {
           AppLocalization.of(context)!.category,
           style: TextStyle(color: blackFont, fontSize: 14),
         ),
-        SizedBox(
+        const SizedBox(
           height: 6,
         ),
         Card(
@@ -337,7 +337,7 @@ class _SearchMusicState extends State<SearchMusic> {
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
               side: BorderSide(color: greyBorderColor)),
-          margin: EdgeInsets.all(0),
+          margin: const EdgeInsets.all(0),
           borderOnForeground: true,
           child: ListTile(
             dense: true,
@@ -369,7 +369,8 @@ class _SearchMusicState extends State<SearchMusic> {
         barrierDismissible: false,
         context: context,
         builder: (context) => AlertDialog(
-              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              insetPadding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
@@ -448,7 +449,7 @@ class _SearchMusicState extends State<SearchMusic> {
           "Year",
           style: TextStyle(color: blackFont, fontSize: 14),
         ),
-        SizedBox(
+        const SizedBox(
           height: 6,
         ),
         Card(
@@ -457,7 +458,7 @@ class _SearchMusicState extends State<SearchMusic> {
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
               side: BorderSide(color: greyBorderColor)),
-          margin: EdgeInsets.all(0),
+          margin: const EdgeInsets.all(0),
           borderOnForeground: true,
           child: ListTile(
             dense: true,
@@ -489,7 +490,8 @@ class _SearchMusicState extends State<SearchMusic> {
         barrierDismissible: false,
         context: context,
         builder: (context) => AlertDialog(
-              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              insetPadding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
@@ -569,7 +571,7 @@ class _SearchMusicState extends State<SearchMusic> {
           style: TextStyle(
               color: blackFont, fontSize: 14, fontWeight: FontWeight.w600),
         ),
-        SizedBox(
+        const SizedBox(
           height: 16,
         ),
         Row(
@@ -607,7 +609,7 @@ class _SearchMusicState extends State<SearchMusic> {
       {bool isSelected = false, required int index}) {
     return GestureDetector(
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 6, horizontal: 14),
+        padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 14),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8),
           color:
@@ -622,7 +624,7 @@ class _SearchMusicState extends State<SearchMusic> {
                   fontSize: 14,
                   fontWeight: FontWeight.w600),
             ),
-            SizedBox(
+            const SizedBox(
               width: 2,
             ),
             Icon(
@@ -647,7 +649,7 @@ class _SearchMusicState extends State<SearchMusic> {
         style: TextStyle(
             color: blackFont, fontSize: 14, fontWeight: FontWeight.w600),
       ),
-      SizedBox(
+      const SizedBox(
         height: 16,
       ),
       SliderTheme(
@@ -655,7 +657,7 @@ class _SearchMusicState extends State<SearchMusic> {
           trackHeight: 1,
           rangeThumbShape: CustomRangeThumbShapeForMovie(
               selectedPriceValue.start.toInt(), selectedPriceValue.end.toInt()),
-          overlayShape: RoundSliderOverlayShape(overlayRadius: 12.0),
+          overlayShape: const RoundSliderOverlayShape(overlayRadius: 12.0),
           minThumbSeparation: 30,
         ),
         child: RangeSlider(

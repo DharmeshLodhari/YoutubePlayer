@@ -4,6 +4,7 @@ import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import 'get_connection_list_for_sharing.dart';
 
 /// For sharing items in the chat
@@ -21,7 +22,7 @@ class ShareInChat {
               Provider.of<ShareMessageToChatBloc>(context);
 
           return Card(
-              shape: RoundedRectangleBorder(
+              shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(20),
                     topRight: Radius.circular(20)),
@@ -29,11 +30,11 @@ class ShareInChat {
               color: Colors.white,
               margin: EdgeInsets.zero,
               child: Container(
-                padding: EdgeInsets.only(bottom: 18),
+                padding: const EdgeInsets.only(bottom: 18),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    SizedBox(
+                    const SizedBox(
                       height: 8,
                     ),
                     Row(
@@ -84,12 +85,12 @@ class ShareInChat {
                         //   ),
                         //   color: navyBlue,
                         // ),
-                        SizedBox(
+                        const SizedBox(
                           width: 20,
                         ),
                       ],
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 8,
                     ),
                     Expanded(child: GetUserConnectionList())

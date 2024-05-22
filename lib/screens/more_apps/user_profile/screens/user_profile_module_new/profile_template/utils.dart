@@ -56,7 +56,7 @@ double getBgHeightOfAppBar(String bio, bool hasAddress, bool hasContact) {
     if (Platform.isAndroid) {
       height = 360;
     } else {
-      height = 40;
+      height = 340;
     }
   } else if (bioLength <= 100) {
     // if (hasAddress && hasContact) {

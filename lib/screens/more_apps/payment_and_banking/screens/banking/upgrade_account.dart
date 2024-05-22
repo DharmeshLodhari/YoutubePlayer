@@ -61,22 +61,22 @@ class _UpgradeAccountState extends State<UpgradeAccount> {
       appBar: appBar() as PreferredSizeWidget?,
       body: Column(
         children: [
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           Container(
-            padding: EdgeInsets.only(left: 16, right: 16, bottom: 16),
+            padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(height: 16),
-                Text(
+                const SizedBox(height: 16),
+                const Text(
                     'You are seeing this page because your KYC is not done yet'),
-                SizedBox(height: 12),
+                const SizedBox(height: 12),
 
                 // getTierSelection(),
                 getTierDropDown(),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 getUpdateTierButton(),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
               ],
             ),
           ),
@@ -122,7 +122,8 @@ class _UpgradeAccountState extends State<UpgradeAccount> {
         barrierDismissible: false,
         context: context,
         builder: (context) => AlertDialog(
-              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              insetPadding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),

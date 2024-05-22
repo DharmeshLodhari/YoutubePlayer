@@ -68,17 +68,22 @@ class _EnterAddressOrPinPinPageState extends State<EnterAddressOrPinPinPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    !widget.isAddress ? enterPinTitle() : enterAddressTitle(),
+                    if (!widget.isAddress)
+                      enterPinTitle()
+                    else
+                      enterAddressTitle(),
                     flexibleSpace(flex: 1),
-                    !widget.isAddress
-                        ? enterPinDescription()
-                        : enterAddressDescription(),
+                    if (!widget.isAddress)
+                      enterPinDescription()
+                    else
+                      enterAddressDescription(),
                     flexibleSpace(flex: 3),
-                    !widget.isAddress
-                        ? pinFillUpField()
-                        : CustomizedTextFormField(
-                            hintText: 'Enter your address',
-                          ),
+                    if (!widget.isAddress)
+                      pinFillUpField()
+                    else
+                      CustomizedTextFormField(
+                        hintText: 'Enter your address',
+                      ),
                     flexibleSpace(flex: 2),
                     submitBtn(),
                     flexibleSpace(flex: 1),

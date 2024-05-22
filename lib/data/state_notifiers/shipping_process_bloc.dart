@@ -63,8 +63,8 @@ class ShippingProcessBloc extends ChangeNotifier {
   }
 
   int? getTotalOrder() {
-    int? totalItemCost = getTotalItemCost();
-    int? totalShipping = getTotalShipping();
+    final int? totalItemCost = getTotalItemCost();
+    final int? totalShipping = getTotalShipping();
     return (totalItemCost ?? 0) + (totalShipping ?? 0);
   }
 
@@ -124,7 +124,7 @@ class ShippingProcessBloc extends ChangeNotifier {
   }
 
   Map<String, dynamic> toPlaceOrder(String? userName) {
-    Map<String, dynamic> data = {
+    final Map<String, dynamic> data = {
       "payment_type": "Slydo",
       "shipping_details": packagesList.map((e) => e.toCartPlaceOrder()).toList()
     };

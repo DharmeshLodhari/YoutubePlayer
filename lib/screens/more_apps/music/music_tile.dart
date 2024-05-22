@@ -26,7 +26,7 @@ class MusicTile extends StatelessWidget {
         child: Container(
           decoration: decorateBox(),
           child: Container(
-            padding: EdgeInsets.all(12),
+            padding: const EdgeInsets.all(12),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -40,7 +40,7 @@ class MusicTile extends StatelessWidget {
                     errorWidget: imageErrorWidget,
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 16,
                 ),
                 Expanded(
@@ -113,7 +113,8 @@ class _MusicTileWithHeartState extends State<MusicTileWithHeart> {
         child: Container(
           decoration: decorateBox(),
           child: ListTile(
-            contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
             leading: Container(
               height: 68,
               width: 68,
@@ -207,7 +208,8 @@ class _MusicTileGeneralState extends State<MusicTileGeneral> {
         child: Container(
           decoration: decorateBox(),
           child: ListTile(
-            contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
             leading: Container(
               height: 68,
               width: 68,
@@ -292,7 +294,7 @@ class _AlbumSongTileState extends State<AlbumSongTile> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 8),
+      padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         children: [
           StreamBuilder<RealtimePlayingInfos>(
@@ -329,7 +331,7 @@ class _AlbumSongTileState extends State<AlbumSongTile> {
                               widget.musicPlayer!.audioPlayer.stop();
                             },
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 10,
                           ),
                         ],
@@ -373,7 +375,7 @@ class _AlbumSongTileState extends State<AlbumSongTile> {
                   overflow: TextOverflow.fade,
                   maxLines: 1,
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 4,
                 ),
                 Text(
@@ -397,11 +399,11 @@ class _AlbumSongTileState extends State<AlbumSongTile> {
               color: blackFont,
             ),
           ),
-          SizedBox(
+          const SizedBox(
             width: 20,
           ),
           Container(
-            padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
               color: navyBlue.withOpacity(0.08),
@@ -421,7 +423,7 @@ class _AlbumSongTileState extends State<AlbumSongTile> {
               ],
             ),
           ),
-          SizedBox(
+          const SizedBox(
             width: 20,
           ),
           Column(

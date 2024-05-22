@@ -34,7 +34,7 @@ class _NewsTileState extends State<NewsTile> {
                 Stack(
                   children: [
                     ClipRRect(
-                      borderRadius: BorderRadius.only(
+                      borderRadius: const BorderRadius.only(
                           topLeft: Radius.circular(10),
                           topRight: Radius.circular(10)),
                       child: CachedNetworkImage(
@@ -65,7 +65,8 @@ class _NewsTileState extends State<NewsTile> {
                   ],
                 ),
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -79,7 +80,7 @@ class _NewsTileState extends State<NewsTile> {
                         softWrap: true,
                         overflow: TextOverflow.clip,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 4,
                       ),
                       Text(
@@ -124,13 +125,14 @@ class SubscriptionTile extends StatelessWidget {
 
     Widget tile = Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       shadowColor: boxShadowTwo,
       elevation: 0,
       child: Container(
         decoration: decorateBox(),
         child: ListTile(
-          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           title: Text(
             subscriptionItem?.name ?? "",
             maxLines: 1,

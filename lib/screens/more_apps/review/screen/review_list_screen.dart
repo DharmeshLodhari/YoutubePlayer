@@ -30,7 +30,7 @@ class _ReviewListScreenState extends State<ReviewListScreen> {
 
   bool isLoading = false;
   bool noReviewInList = false;
-  ScrollController _scrollController = new ScrollController();
+  final ScrollController _scrollController = ScrollController();
 
   CustomerProfile? reviewedUser;
   Product? product;
@@ -38,7 +38,7 @@ class _ReviewListScreenState extends State<ReviewListScreen> {
   double rating = 0.0;
 
   final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey =
-      new GlobalKey<ScaffoldMessengerState>();
+      GlobalKey<ScaffoldMessengerState>();
 
   @override
   void initState() {
@@ -98,10 +98,11 @@ class _ReviewListScreenState extends State<ReviewListScreen> {
         reviewCount = result['count'];
         reviewNext = result['next'];
         reviewPrevious = result['previous'];
-        List? tempList = result['results'];
+        final List? tempList = result['results'];
 
         if (tempList != null) {
-          List<Review> list = tempList.map((e) => Review.fromJson(e)).toList();
+          final List<Review> list =
+              tempList.map((e) => Review.fromJson(e)).toList();
 
           if (mounted) {
             setState(() {
@@ -127,7 +128,7 @@ class _ReviewListScreenState extends State<ReviewListScreen> {
         _scaffoldMessengerKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 500),
         ));
       }
     }
@@ -168,7 +169,7 @@ class _ReviewListScreenState extends State<ReviewListScreen> {
         ),
         body: SafeArea(
           child: Container(
-            padding: EdgeInsets.fromLTRB(10, 15, 10, 0),
+            padding: const EdgeInsets.fromLTRB(10, 15, 10, 0),
             child: Column(
               children: [
                 Align(
@@ -201,26 +202,27 @@ class _ReviewListScreenState extends State<ReviewListScreen> {
                     ],
                   ),
                 ),
-                SizedBox(height: 20),
-                isLoading
-                    ? Expanded(
-                        child: Center(
-                          child: CircularLoadingIndicator(),
-                        ),
-                      )
-                    : noReviewInList
-                        ? Expanded(child: NoItemInList(msg: "No Review yet"))
-                        : Expanded(
-                            child: ListView.builder(
-                              itemBuilder: (context, index) => ReviewTile(
-                                review: reviewList[index],
-                                product: product,
-                                reviewedUser: reviewedUser,
-                                service: service,
-                              ),
-                              itemCount: reviewList.length,
+                const SizedBox(height: 20),
+                if (isLoading)
+                  Expanded(
+                    child: Center(
+                      child: CircularLoadingIndicator(),
+                    ),
+                  )
+                else
+                  noReviewInList
+                      ? Expanded(child: NoItemInList(msg: "No Review yet"))
+                      : Expanded(
+                          child: ListView.builder(
+                            itemBuilder: (context, index) => ReviewTile(
+                              review: reviewList[index],
+                              product: product,
+                              reviewedUser: reviewedUser,
+                              service: service,
                             ),
+                            itemCount: reviewList.length,
                           ),
+                        ),
               ],
             ),
           ),
@@ -239,7 +241,7 @@ class _ReviewListScreenState extends State<ReviewListScreen> {
         itemSize: 15,
         allowHalfRating: true,
         itemCount: 5,
-        itemPadding: EdgeInsets.symmetric(horizontal: 2),
+        itemPadding: const EdgeInsets.symmetric(horizontal: 2),
         itemBuilder: (context, _) => Icon(
           SlydoAppIcon.star,
           color: starYellow,

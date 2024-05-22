@@ -93,7 +93,7 @@ class _PropertyTileWithHeartState extends State<PropertyTileWithHeart> {
                                 return Container(
                                   width: 5.0,
                                   height: 5.0,
-                                  margin: EdgeInsets.symmetric(
+                                  margin: const EdgeInsets.symmetric(
                                       vertical: 10.0, horizontal: 2.0),
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
@@ -108,8 +108,8 @@ class _PropertyTileWithHeartState extends State<PropertyTileWithHeart> {
                         ],
                       ),
                       Container(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 16),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -166,7 +166,7 @@ class _PropertyTileWithHeartState extends State<PropertyTileWithHeart> {
                                 ),
                               ],
                             ),
-                            SizedBox(
+                            const SizedBox(
                               height: 4,
                             ),
                             Row(
@@ -189,7 +189,7 @@ class _PropertyTileWithHeartState extends State<PropertyTileWithHeart> {
                                       color: starYellow,
                                       size: 11,
                                     ),
-                                    SizedBox(
+                                    const SizedBox(
                                       width: 4,
                                     ),
                                     Text(
@@ -299,7 +299,7 @@ class _PropertyImagesTileState extends State<PropertyImagesTile> {
                             return Container(
                               width: 5.0,
                               height: 5.0,
-                              margin: EdgeInsets.symmetric(
+                              margin: const EdgeInsets.symmetric(
                                   vertical: 10.0, horizontal: 2.0),
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
@@ -314,7 +314,8 @@ class _PropertyImagesTileState extends State<PropertyImagesTile> {
                     ],
                   ),
                   Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 16),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -361,7 +362,7 @@ class _PropertyImagesTileState extends State<PropertyImagesTile> {
                             ),
                           ],
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 4,
                         ),
                         Row(
@@ -386,7 +387,7 @@ class _PropertyImagesTileState extends State<PropertyImagesTile> {
                                   color: starYellow,
                                   size: 11,
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   width: 4,
                                 ),
                                 Text(
@@ -484,7 +485,7 @@ class _RentPropertyTileState extends State<RentPropertyTile> {
                                   return Container(
                                     width: 5.0,
                                     height: 5.0,
-                                    margin: EdgeInsets.symmetric(
+                                    margin: const EdgeInsets.symmetric(
                                         vertical: 10.0, horizontal: 2.0),
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
@@ -500,7 +501,7 @@ class _RentPropertyTileState extends State<RentPropertyTile> {
                               left: 16,
                               top: 8,
                               child: Container(
-                                padding: EdgeInsets.symmetric(
+                                padding: const EdgeInsets.symmetric(
                                     horizontal: 8, vertical: 4),
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(4),
@@ -512,7 +513,7 @@ class _RentPropertyTileState extends State<RentPropertyTile> {
                                     )),
                                 child: Text(
                                   isAvailable ? "Just added" : "Featured",
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                       color: Colors.white,
                                       fontWeight: FontWeight.w600),
                                 ),
@@ -521,7 +522,7 @@ class _RentPropertyTileState extends State<RentPropertyTile> {
                           ],
                         ),
                         Container(
-                          padding: EdgeInsets.symmetric(
+                          padding: const EdgeInsets.symmetric(
                               horizontal: 16, vertical: 16),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -569,7 +570,7 @@ class _RentPropertyTileState extends State<RentPropertyTile> {
                                   ),
                                 ],
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 4,
                               ),
                               Text(
@@ -583,7 +584,7 @@ class _RentPropertyTileState extends State<RentPropertyTile> {
                                   color: blackFont,
                                 ),
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 4,
                               ),
                               Row(
@@ -609,7 +610,7 @@ class _RentPropertyTileState extends State<RentPropertyTile> {
                                         color: starYellow,
                                         size: 11,
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 4,
                                       ),
                                       Text(
@@ -621,7 +622,7 @@ class _RentPropertyTileState extends State<RentPropertyTile> {
                                   )
                                 ],
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 12,
                               ),
                               Divider(
@@ -629,7 +630,7 @@ class _RentPropertyTileState extends State<RentPropertyTile> {
                                 height: 0,
                                 thickness: 1,
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 12,
                               ),
                               Row(
@@ -650,7 +651,7 @@ class _RentPropertyTileState extends State<RentPropertyTile> {
                                           color: blackFont,
                                         ),
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 8,
                                       ),
                                       Text(
@@ -676,7 +677,7 @@ class _RentPropertyTileState extends State<RentPropertyTile> {
                                           color: blackFont,
                                         ),
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 8,
                                       ),
                                       Text(
@@ -702,7 +703,7 @@ class _RentPropertyTileState extends State<RentPropertyTile> {
                                           color: blackFont,
                                         ),
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 8,
                                       ),
                                       Text(
@@ -755,7 +756,7 @@ class _RentPropertyTileState extends State<RentPropertyTile> {
                                           color: blackFont,
                                         ),
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 8,
                                       ),
                                       Text(
@@ -795,7 +796,7 @@ class _RentPropertyTileState extends State<RentPropertyTile> {
                                   // ),
                                 ],
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 12,
                               ),
                               Divider(
@@ -803,7 +804,7 @@ class _RentPropertyTileState extends State<RentPropertyTile> {
                                 height: 0,
                                 thickness: 1,
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 12,
                               ),
                               Row(
@@ -820,7 +821,7 @@ class _RentPropertyTileState extends State<RentPropertyTile> {
                                       color: blackFont,
                                     ),
                                   ),
-                                  SizedBox(
+                                  const SizedBox(
                                     width: 8,
                                   ),
                                   Text(
@@ -939,7 +940,7 @@ class _RentPropertyTileWithoutHeartState
                                   return Container(
                                     width: 5.0,
                                     height: 5.0,
-                                    margin: EdgeInsets.symmetric(
+                                    margin: const EdgeInsets.symmetric(
                                         vertical: 10.0, horizontal: 2.0),
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
@@ -955,7 +956,7 @@ class _RentPropertyTileWithoutHeartState
                               left: 16,
                               top: 8,
                               child: Container(
-                                padding: EdgeInsets.symmetric(
+                                padding: const EdgeInsets.symmetric(
                                     horizontal: 8, vertical: 4),
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(4),
@@ -967,7 +968,7 @@ class _RentPropertyTileWithoutHeartState
                                     )),
                                 child: Text(
                                   isAvailable ? "Just added" : "Featured",
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                       color: Colors.white,
                                       fontWeight: FontWeight.w600),
                                 ),
@@ -976,7 +977,7 @@ class _RentPropertyTileWithoutHeartState
                           ],
                         ),
                         Container(
-                          padding: EdgeInsets.symmetric(
+                          padding: const EdgeInsets.symmetric(
                               horizontal: 16, vertical: 16),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -1024,7 +1025,7 @@ class _RentPropertyTileWithoutHeartState
                                   ),
                                 ],
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 4,
                               ),
                               Text(
@@ -1038,7 +1039,7 @@ class _RentPropertyTileWithoutHeartState
                                   color: blackFont,
                                 ),
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 4,
                               ),
                               Row(
@@ -1064,7 +1065,7 @@ class _RentPropertyTileWithoutHeartState
                                         color: starYellow,
                                         size: 11,
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 4,
                                       ),
                                       Text(
@@ -1076,7 +1077,7 @@ class _RentPropertyTileWithoutHeartState
                                   )
                                 ],
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 12,
                               ),
                               Divider(
@@ -1084,7 +1085,7 @@ class _RentPropertyTileWithoutHeartState
                                 height: 0,
                                 thickness: 1,
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 12,
                               ),
                               Row(
@@ -1105,7 +1106,7 @@ class _RentPropertyTileWithoutHeartState
                                           color: blackFont,
                                         ),
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 8,
                                       ),
                                       Text(
@@ -1131,7 +1132,7 @@ class _RentPropertyTileWithoutHeartState
                                           color: blackFont,
                                         ),
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 8,
                                       ),
                                       Text(
@@ -1157,7 +1158,7 @@ class _RentPropertyTileWithoutHeartState
                                           color: blackFont,
                                         ),
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 8,
                                       ),
                                       Text(
@@ -1183,7 +1184,7 @@ class _RentPropertyTileWithoutHeartState
                                           color: blackFont,
                                         ),
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 8,
                                       ),
                                       Text(
@@ -1197,7 +1198,7 @@ class _RentPropertyTileWithoutHeartState
                                   ),
                                 ],
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 12,
                               ),
                               Divider(
@@ -1205,7 +1206,7 @@ class _RentPropertyTileWithoutHeartState
                                 height: 0,
                                 thickness: 1,
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 12,
                               ),
                               Row(
@@ -1222,7 +1223,7 @@ class _RentPropertyTileWithoutHeartState
                                       color: blackFont,
                                     ),
                                   ),
-                                  SizedBox(
+                                  const SizedBox(
                                     width: 8,
                                   ),
                                   Text(
@@ -1286,7 +1287,8 @@ class PartialPropertyItemTile extends StatelessWidget {
           width: 160,
           decoration: decorateBox(borderColor: selectedListItemBackgroundBlue),
           child: Container(
-            padding: EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 12),
+            padding:
+                const EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 12),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -1300,7 +1302,7 @@ class PartialPropertyItemTile extends StatelessWidget {
                     fit: BoxFit.fill,
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 12,
                 ),
                 Column(
@@ -1385,7 +1387,8 @@ class CityItemCard extends StatelessWidget {
           width: 160,
           decoration: decorateBox(borderColor: selectedListItemBackgroundBlue),
           child: Container(
-            padding: EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 12),
+            padding:
+                const EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 12),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -1400,7 +1403,7 @@ class CityItemCard extends StatelessWidget {
                     color: blackFont,
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 12,
                 ),
                 ClipRRect(
@@ -1445,7 +1448,7 @@ class ReviewTile extends StatelessWidget {
                       ),
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 12,
                   ),
                   Text(
@@ -1464,7 +1467,7 @@ class ReviewTile extends StatelessWidget {
               )
             ],
           ),
-          SizedBox(
+          const SizedBox(
             height: 16,
           ),
           Row(
@@ -1474,7 +1477,7 @@ class ReviewTile extends StatelessWidget {
                 color: starYellow,
                 size: 11,
               ),
-              SizedBox(
+              const SizedBox(
                 width: 4,
               ),
               Icon(
@@ -1482,7 +1485,7 @@ class ReviewTile extends StatelessWidget {
                 color: starYellow,
                 size: 11,
               ),
-              SizedBox(
+              const SizedBox(
                 width: 4,
               ),
               Icon(
@@ -1490,7 +1493,7 @@ class ReviewTile extends StatelessWidget {
                 color: starYellow,
                 size: 11,
               ),
-              SizedBox(
+              const SizedBox(
                 width: 4,
               ),
               Icon(
@@ -1498,7 +1501,7 @@ class ReviewTile extends StatelessWidget {
                 color: starYellow,
                 size: 11,
               ),
-              SizedBox(
+              const SizedBox(
                 width: 4,
               ),
               Icon(
@@ -1506,12 +1509,12 @@ class ReviewTile extends StatelessWidget {
                 color: greyBorderColor,
                 size: 11,
               ),
-              SizedBox(
+              const SizedBox(
                 width: 4,
               ),
             ],
           ),
-          SizedBox(
+          const SizedBox(
             height: 8,
           ),
           Text(
@@ -1520,7 +1523,7 @@ class ReviewTile extends StatelessWidget {
                 fontSize: 14, fontWeight: FontWeight.w400, color: blackFont),
             textAlign: TextAlign.justify,
           ),
-          SizedBox(
+          const SizedBox(
             height: 8,
           ),
           Divider(
@@ -1553,7 +1556,7 @@ class PartnerTile extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(
+          const SizedBox(
             width: 16,
           ),
           Expanded(
@@ -1567,7 +1570,7 @@ class PartnerTile extends StatelessWidget {
                       fontWeight: FontWeight.w600,
                       color: blackFont),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 8,
                 ),
                 Row(
@@ -1577,7 +1580,7 @@ class PartnerTile extends StatelessWidget {
                       color: starYellow,
                       size: 11,
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 4,
                     ),
                     Text(
@@ -1592,7 +1595,7 @@ class PartnerTile extends StatelessWidget {
               ],
             ),
           ),
-          SizedBox(
+          const SizedBox(
             width: 16,
           ),
           Column(
