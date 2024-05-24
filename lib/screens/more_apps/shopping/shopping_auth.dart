@@ -416,6 +416,97 @@ class ShoppingAuthService extends AuthService {
   }
 
   // List Products
+  Future<Map<String, dynamic>?> searchListOfProduct(
+      String? next, String? previous, String? userName,
+      {SearchItemWithFilterModel? filterOptions}) async {
+    String url = "";
+    if (next == null) {
+      return null;
+    }
+    if (next == "") {
+      url = AppConfig.baseUrl + "/api/v1/products/by-seller/$userName/?";
+
+      if (filterOptions!.category != "All categories") {
+        url = url + "category=${filterOptions.categoryId}";
+      }
+      if (filterOptions.subCategory != "" &&
+          filterOptions.subCategory != "All" &&
+          filterOptions.subCategoryId != null) {
+        url = url + "&sub_category=${filterOptions.subCategoryId}";
+      }
+      if (filterOptions.customCategory != "" &&
+          filterOptions.customCategory != "All" &&
+          filterOptions.customCategoryId != null) {
+        url = url + "&custom_category=${filterOptions.customCategoryId}";
+      }
+      if (filterOptions.condition != "") {
+        url = url + "&condition=${filterOptions.condition}";
+      }
+      if (filterOptions.manufacturer != "" &&
+          filterOptions.manufacturer != "All") {
+        url = url + "&manufacturer=${filterOptions.manufacturer}";
+      }
+      if (filterOptions.rating != "") {
+        url = url + "&rating=${filterOptions.rating}";
+      }
+      if (filterOptions.searchedText!.trim() != "") {
+        // url = url + "&name__icontains=${filterOptions.searchedText}";
+        url = url + "&search=${filterOptions.searchedText}";
+      }
+      if (filterOptions.minAmount != null) {
+        url = url + "&price__gte=${filterOptions.minAmount}";
+      }
+      if (filterOptions.maxAmount != null) {
+        url = url + "&price__lte=${filterOptions.maxAmount}";
+      }
+
+      debugPrint('SEARCH FILTER URL ---> $url');
+      url = Uri.encodeFull(url);
+    } else {
+      url = getSecureUrl(url: next);
+    }
+
+    debugPrint("product list url _______________________" + url);
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers);
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      if (!response.body.contains('results')) {
+        final Map<String, dynamic> result = {
+          "count": '',
+          "next": '',
+          "previous": '',
+          "results": []
+        };
+
+        debugPrint('CALLING OTHER check 2 ---> ${result}');
+
+        return result;
+      }
+      final List<Product> productList = [];
+      final jsonData = json.decode(response.body);
+
+      for (var item in jsonData["results"]) {
+        final Product product = createProduct(item);
+        productList.add(product);
+      }
+
+      final Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": productList
+      };
+
+      return result;
+    } else if (response.statusCode == 500) {
+      return null;
+    } else {
+      return null;
+    }
+  }
+
+  // List Discounted Products
   Future<Map<String, dynamic>?> listOfDiscountedProduct(
     String? next,
     String? previous,
@@ -472,13 +563,229 @@ class ShoppingAuthService extends AuthService {
     }
   }
 
+  Future<Map<String, dynamic>?> searchOfDiscountedProduct(
+      String? next, String? previous, String? discountedId,
+      {SearchItemWithFilterModel? filterOptions}) async {
+    String url = "";
+    if (next == null) {
+      return null;
+    }
+    if (next == "") {
+      url = AppConfig.baseUrl +
+          "/api/v1/business/discounts/$discountedId/merchant-discounted-consumables/product/?";
+
+      if (filterOptions!.category != "All categories") {
+        url = url + "category=${filterOptions.categoryId}";
+      }
+      if (filterOptions.subCategory != "" &&
+          filterOptions.subCategory != "All" &&
+          filterOptions.subCategoryId != null) {
+        url = url + "&sub_category=${filterOptions.subCategoryId}";
+      }
+      if (filterOptions.customCategory != "" &&
+          filterOptions.customCategory != "All" &&
+          filterOptions.customCategoryId != null) {
+        url = url + "&custom_category=${filterOptions.customCategoryId}";
+      }
+      if (filterOptions.condition != "") {
+        url = url + "&condition=${filterOptions.condition}";
+      }
+      if (filterOptions.manufacturer != "" &&
+          filterOptions.manufacturer != "All") {
+        url = url + "&manufacturer=${filterOptions.manufacturer}";
+      }
+      if (filterOptions.rating != "") {
+        url = url + "&rating=${filterOptions.rating}";
+      }
+      if (filterOptions.searchedText!.trim() != "") {
+        // url = url + "&name__icontains=${filterOptions.searchedText}";
+        url = url + "&search=${filterOptions.searchedText}";
+      }
+      if (filterOptions.minAmount != null) {
+        url = url + "&price__gte=${filterOptions.minAmount}";
+      }
+      if (filterOptions.maxAmount != null) {
+        url = url + "&price__lte=${filterOptions.maxAmount}";
+      }
+
+      debugPrint('SEARCH FILTER URL ---> $url');
+      url = Uri.encodeFull(url);
+    } else {
+      url = getSecureUrl(url: next);
+    }
+
+    debugPrint("product list url _______________________" + url);
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers);
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      if (!response.body.contains('results')) {
+        final Map<String, dynamic> result = {
+          "count": '',
+          "next": '',
+          "previous": '',
+          "results": []
+        };
+
+        debugPrint('CALLING OTHER check 2 ---> ${result}');
+
+        return result;
+      }
+      final List<Product> productList = [];
+      final jsonData = json.decode(response.body);
+
+      for (var item in jsonData["results"]) {
+        final Product product = createProduct(item);
+        productList.add(product);
+      }
+
+      final Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": productList
+      };
+
+      return result;
+    } else if (response.statusCode == 500) {
+      return null;
+    } else {
+      return null;
+    }
+  }
+
+  // List Products
+  Future<Map<String, dynamic>?> listOfDiscountedServices(
+    String? next,
+    String? previous,
+    String? discountedId,
+  ) async {
+    String url = "";
+    if (next == null) {
+      return null;
+    }
+    if (next == "") {
+      url = AppConfig.baseUrl +
+          "/api/v1/business/discounts/$discountedId/merchant-discounted-consumables/service/";
+    } else {
+      url = getSecureUrl(url: next);
+    }
+
+    debugPrint("service list url _______________________" + url);
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers);
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      if (!response.body.contains('results')) {
+        final Map<String, dynamic> result = {
+          "count": '',
+          "next": '',
+          "previous": '',
+          "results": []
+        };
+
+        debugPrint('CALLING OTHER check 2 ---> ${result}');
+
+        return result;
+      }
+      final List<Service> serviceList = [];
+      final jsonData = json.decode(response.body);
+
+      for (var item in jsonData["results"]) {
+        final Service service = createService(item);
+        serviceList.add(service);
+      }
+
+      final Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": serviceList
+      };
+
+      return result;
+    } else if (response.statusCode == 500) {
+      return null;
+    } else {
+      return null;
+    }
+  }
+
+  Future<Map<String, dynamic>?> searchOfDiscountedServices(
+      String? next, String? previous, String? discountedId,
+      {SearchItemWithFilterModel? filterOptions}) async {
+    String url = "";
+    if (next == null) {
+      return null;
+    }
+    if (next == "") {
+      url = AppConfig.baseUrl +
+          "/api/v1/business/discounts/$discountedId/merchant-discounted-consumables/service/?";
+
+      if (filterOptions!.category != "All categories") {
+        url = url + "&category=${filterOptions.category}";
+      }
+      if (filterOptions.searchedText!.trim() != "") {
+        url = url + "&name__icontains=${filterOptions.searchedText}";
+      }
+      if (filterOptions.minAmount != null) {
+        url = url + "&price__gte=${filterOptions.minAmount}";
+      }
+      if (filterOptions.maxAmount != null) {
+        url = url + "&price__lte=${filterOptions.maxAmount}";
+      }
+      url = Uri.encodeFull(url);
+    } else {
+      url = getSecureUrl(url: next);
+    }
+
+    debugPrint("service list url _______________________" + url);
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers);
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      if (!response.body.contains('results')) {
+        final Map<String, dynamic> result = {
+          "count": '',
+          "next": '',
+          "previous": '',
+          "results": []
+        };
+
+        debugPrint('CALLING OTHER check 2 ---> ${result}');
+
+        return result;
+      }
+      final List<Service> serviceList = [];
+      final jsonData = json.decode(response.body);
+
+      for (var item in jsonData["results"]) {
+        final Service service = createService(item);
+        serviceList.add(service);
+      }
+
+      final Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": serviceList
+      };
+
+      return result;
+    } else if (response.statusCode == 500) {
+      return null;
+    } else {
+      return null;
+    }
+  }
+
   // List of users Product
   Future<Map<String, dynamic>?> listOfUsersProduct(
       {String? sectionUrl, String? name}) async {
     final String url = sectionUrl != null
         ? sectionUrl
         : AppConfig.baseUrl +
-            "/api/v1/products/seller-products-by-custom-category/$name/";
+            "/api/v1/products/seller-products-by-custom-category/$name/?";
 
     debugPrint(url);
     final headers = await getAuthHeaders();
@@ -1094,6 +1401,70 @@ class ShoppingAuthService extends AuthService {
     }
   }
 
+  Future<Map<String, dynamic>?> searchListOfService(
+      String? next, String? previous, String? userName,
+      {SearchItemWithFilterModel? filterOptions}) async {
+    String url = "";
+    if (next == null) {
+      return null;
+    }
+    if (next == "") {
+      url = AppConfig.baseUrl +
+          "/api/v1/services/by-provider/" +
+          userName! +
+          "/?";
+
+      if (filterOptions!.category != "All categories") {
+        url = url + "&category=${filterOptions.category}";
+      }
+      if (filterOptions.searchedText!.trim() != "") {
+        url = url + "&name__icontains=${filterOptions.searchedText}";
+      }
+      if (filterOptions.minAmount != null) {
+        url = url + "&price__gte=${filterOptions.minAmount}";
+      }
+      if (filterOptions.maxAmount != null) {
+        url = url + "&price__lte=${filterOptions.maxAmount}";
+      }
+      url = Uri.encodeFull(url);
+    } else {
+      url = getSecureUrl(url: next);
+    }
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers);
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      final List<Service> serviceList = [];
+      final jsonData = json.decode(response.body);
+      for (var item in jsonData["results"]) {
+        final Service service = createService(item);
+        serviceList.add(service);
+      }
+
+      final Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": serviceList
+      };
+      return result;
+    } else if (response.statusCode == 404) {
+      return jsonDecode(response.body);
+    } else if (response.statusCode == 500) {
+      throw "Server Error";
+    } else {
+      final List<Service> serviceList = [];
+
+      final Map<String, dynamic> result = {
+        "count": 0,
+        "next": "test",
+        "previous": "test",
+        "results": serviceList
+      };
+      return result;
+    }
+  }
+
   // addService
   Future<bool> addService(Service service) async {
     final headers = await getAuthHeaders();
@@ -1516,27 +1887,7 @@ class ShoppingAuthService extends AuthService {
           filterOptions!.searchedUser!.userName! +
           "/?";
       if (filterOptions.category != "All categories") {
-        url = url + "&category=${filterOptions.categoryId}";
-      }
-      if (filterOptions.subCategory != "" &&
-          filterOptions.subCategory != "All" &&
-          filterOptions.subCategoryId != null) {
-        url = url + "&sub_category=${filterOptions.subCategoryId}";
-      }
-      if (filterOptions.customCategory != "" &&
-          filterOptions.customCategory != "All" &&
-          filterOptions.customCategoryId != null) {
-        url = url + "&custom_category=${filterOptions.customCategoryId}";
-      }
-      if (filterOptions.condition != "") {
-        url = url + "&condition=${filterOptions.condition}";
-      }
-      if (filterOptions.manufacturer != "" &&
-          filterOptions.manufacturer != "All") {
-        url = url + "&manufacturer=${filterOptions.manufacturer}";
-      }
-      if (filterOptions.rating != "") {
-        url = url + "&rating=${filterOptions.rating}";
+        url = url + "&category=${filterOptions.category}";
       }
       if (filterOptions.searchedText!.trim() != "") {
         url = url + "&name__icontains=${filterOptions.searchedText}";
@@ -2743,30 +3094,21 @@ class ShoppingAuthService extends AuthService {
       url = AppConfig.baseUrl + "/api/v1/business/discounts/${itemModel.id}/";
     }
 
-    final request = http.MultipartRequest("PATCH", Uri.parse(url));
-
-    // final _data = jsonEncode(itemModel.toAddUpdate());
-    //
-    // final headers = await getAuthHeaders();
-    // Response? response;
-    //
-    // if (isEdit == false) {
-    //   response = await httpPost(url, headers: headers, body: _data);
-    // } else {
-    //   response = await httpPatch(url, headers: headers, body: _data);
-    // }
-    //
-    // try {
-    //   debugPrint("Response : $response");
-    //   handleServerErrors(response);
-    // } catch (e) {
-    //   return Future.error(response.body);
-    // }
+    final request;
+    if (isEdit == false) {
+      request = http.MultipartRequest("POST", Uri.parse(url));
+    } else {
+      request = http.MultipartRequest("PATCH", Uri.parse(url));
+    }
 
     final Map<dynamic, dynamic> _data = itemModel.toAddUpdate();
 
     _data.forEach((k, v) {
-      request.fields[k] = v.toString();
+      if (k == 'consumables') {
+        request.fields[k] = jsonEncode(v);
+      } else {
+        request.fields[k] = v.toString();
+      }
     });
 
     if (itemModel.poster != null && !itemModel.poster!.contains("http")) {

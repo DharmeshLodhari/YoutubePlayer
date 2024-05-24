@@ -36,6 +36,7 @@ List<String> serviceCategoryList = [
   "Alarms – Security & Fire",
   "Appliance Repairs",
   "Architect",
+  "Barber",
   "Block laye",
   "Brick layer",
   "Builder - General",
@@ -77,6 +78,7 @@ List<String> serviceCategoryList = [
   "Removal & Storage",
   "Roofer",
   "Slabbing Contractor",
+  "Software Development",
   "Solar Panels",
   "Steel Erector",
   "Stone Mason",
@@ -1639,6 +1641,7 @@ class Service extends PurchasableItem {
   double? rating;
   bool? canRate = false;
   List<String>? searchKeywords;
+  bool isChecked = false;
 
   Service({
     super.id,
@@ -1661,6 +1664,7 @@ class Service extends PurchasableItem {
     this.rating = 0.0,
     this.canRate,
     this.searchKeywords,
+    this.isChecked = false,
   });
 
   String? getMerchantUserName() {
@@ -1713,6 +1717,7 @@ class Service extends PurchasableItem {
       "provider_avatar": providerAvatar,
       "provider_fullname": providerFullName,
       "search_keywords": searchKeywords,
+      "is_checked": isChecked,
     };
   }
 
@@ -1736,6 +1741,7 @@ class Service extends PurchasableItem {
       "search_keywords": searchKeywords == null
           ? []
           : List<String>.from(searchKeywords!.map((x) => x)),
+      "is_checked": isChecked,
     };
   }
 
@@ -1764,6 +1770,16 @@ class Service extends PurchasableItem {
     object["search_keywords"] == null
         ? <String>[]
         : List<String>.from(object["search_keywords"].map((x) => x));
+    isChecked = object["is_checked"] ?? false;
+  }
+
+  bool isServiceAvailableNow() {
+    if ((isAvailable ?? false) &&
+        ((availableFrom?.isBefore(DateTime.now()) ?? false) ||
+            (availableFrom?.isAtSameMomentAs(DateTime.now()) ?? false))) {
+      return true;
+    }
+    return false;
   }
 
   List<String> getServiceImages(List? data) {

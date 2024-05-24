@@ -65,7 +65,9 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile>
 
     checkConnection();
 
-    getSearchedUser();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      getSearchedUser();
+    });
   }
 
   Future<void> checkConnection() async {

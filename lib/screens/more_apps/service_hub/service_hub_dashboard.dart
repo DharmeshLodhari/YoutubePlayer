@@ -94,11 +94,11 @@ class _ServiceHubDashboardState extends State<ServiceHubDashboard> {
         ],
         if (currentIndex == 1) ...[
           const SizedBox(
-            width: 10,
+            width: 20,
           ),
           _buildRiderOption(),
           const SizedBox(
-            width: 10,
+            width: 20,
           ),
         ],
       ],

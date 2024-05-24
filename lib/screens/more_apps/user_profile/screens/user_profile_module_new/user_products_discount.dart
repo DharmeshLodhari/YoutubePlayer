@@ -3,7 +3,6 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/discount/discount_model.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/flash_tags/flash_tag_alert_model.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/custom_box_shadow.dart';
@@ -16,22 +15,19 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shimmer/shimmer.dart';
 
 // ignore: must_be_immutable
-class UserProductListForDiscount extends StatefulWidget {
+class UserProductDiscount extends StatefulWidget {
   DiscountModel item;
 
-  UserProductListForDiscount({
+  UserProductDiscount({
     required this.item,
     Key? key,
   }) : super(key: key);
 
   @override
-  _UserProductListForDiscountState createState() =>
-      _UserProductListForDiscountState();
+  _UserProductsDiscountState createState() => _UserProductsDiscountState();
 }
 
-class _UserProductListForDiscountState
-    extends State<UserProductListForDiscount> {
-  // this variable responsible for product pagination
+class _UserProductsDiscountState extends State<UserProductDiscount> {
   int? productCount = 0;
   String? productNext = "";
   String? productPrevious = "";
@@ -45,15 +41,6 @@ class _UserProductListForDiscountState
       RefreshController(initialRefresh: false);
   bool isProductLoading = false;
   bool noProductInList = false;
-
-  String? flashTagString;
-  List<FlashTagAlertModel> flashTagAlerts = [];
-  String? flashTagNext = "";
-  String? flashTagPrevious = "";
-  int? flashTagCount = 0;
-  bool isFlashTagLoading = false;
-
-  FlashTagAlertModel? flashTagAlertModel;
 
   late UserBloc userBloc;
 
@@ -108,54 +95,58 @@ class _UserProductListForDiscountState
   }
 
   void getProductList() async {
-    if (productNext != null && !isProductLoading) {
-      isProductLoading = true;
-      if (mounted) setState(() {});
-
-      final Map<String, dynamic>? result;
-      if (widget.item.id != null) {
-        result = await ShoppingAuthService().listOfDiscountedProduct(
-            productNext, productPrevious, widget.item.id);
-      } else {
-        result = await ShoppingAuthService().listOfProduct(
-            productNext, productPrevious, "", false,
-            userName: userBloc.user.userName);
-      }
-
-      if (result == null) {
-        isProductLoading = false;
-        noProductInList = true;
+    if (!isProductLoading) {
+      if (productNext != null && !isProductLoading) {
         if (mounted) {
-          setState(() {});
+          setState(() {
+            isProductLoading = true;
+          });
         }
-        return;
-      }
 
-      productCount = result['count'];
-      productNext = result['next'];
-      productPrevious = result['previous'];
-      final tempList = result['results'];
-      if (mounted) {
-        setState(() {
-          productList.addAll(tempList);
+        final Map<String, dynamic>? result;
+        if (widget.item.id != null) {
+          result = await ShoppingAuthService().listOfDiscountedProduct(
+              productNext, productPrevious, widget.item.id);
+        } else {
+          result = await ShoppingAuthService().listOfProduct(
+              productNext, productPrevious, "", false,
+              userName: userBloc.user.userName);
+        }
 
-          noProductInList = false;
+        if (result == null) {
           isProductLoading = false;
-        });
-      }
-    }
-    if (productList.isEmpty) {
-      if (mounted) {
-        setState(() {
           noProductInList = true;
-        });
+          if (mounted) {
+            setState(() {});
+          }
+          return;
+        }
+
+        productCount = result['count'];
+        productNext = result['next'];
+        productPrevious = result['previous'];
+        final tempList = result['results'];
+        if (mounted) {
+          setState(() {
+            noProductInList = false;
+            isProductLoading = false;
+            productList.addAll(tempList);
+          });
+        }
       }
-    } else if (productNext == null && productList.length > 6) {
-      _productMessengerScaffoldKey.currentState?.showSnackBar(SnackBar(
-        content:
-            Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-        duration: const Duration(milliseconds: 500),
-      ));
+      if (productList.isEmpty) {
+        if (mounted) {
+          setState(() {
+            noProductInList = true;
+          });
+        }
+      } else if (productNext == null && productList.length > 6) {
+        _productMessengerScaffoldKey.currentState?.showSnackBar(SnackBar(
+          content:
+              Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
+          duration: const Duration(milliseconds: 500),
+        ));
+      }
     }
   }
 
@@ -166,19 +157,80 @@ class _UserProductListForDiscountState
       child: Scaffold(
         backgroundColor: lightGrey,
         key: _productScaffoldKey,
-        appBar: appBar() as PreferredSizeWidget,
-        body: SmartRefresher(
-          enablePullDown: true,
-          header: WaterDropHeader(
-            complete: Container(),
-            waterDropColor: navyBlue,
-          ),
-          controller: _productsRefreshController,
-          onRefresh: _onProductRefresh,
-          child: _buildBody(),
-        ),
+        body: _buildBody(),
         floatingActionButton: floatingActionBar(),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      ),
+    );
+  }
+
+  Widget _buildBody() {
+    return Column(
+      children: [
+        if (!noProductInList && !isProductLoading && productList.isNotEmpty)
+          _buildSelectedData(),
+        const SizedBox(
+          height: 5,
+        ),
+        Expanded(
+          child: SmartRefresher(
+            enablePullDown: true,
+            header: WaterDropHeader(
+              complete: Container(),
+              waterDropColor: navyBlue,
+            ),
+            controller: _productsRefreshController,
+            onRefresh: _onProductRefresh,
+            child: noProductInList
+                ? NoItemInList(msg: AppLocalization.of(context)!.noResultFound)
+                : _buildProductList(),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSelectedData() {
+    return Padding(
+      padding: const EdgeInsets.only(left: 5.0, right: 16.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              Checkbox(
+                value: isSelectAll,
+                onChanged: (bool? value) {
+                  setState(() {
+                    // isSelectAll = value ?? false;
+                    toggleSelectAll();
+                  });
+                },
+                activeColor: navyBlue,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(4)),
+              ),
+              Text(
+                'Select All',
+                style: TextStyle(
+                  color: black,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  fontFamily: "Inter",
+                ),
+              )
+            ],
+          ),
+          Text(
+            "${productList.where((e) => e.isChecked == true).toList().length} products selected",
+            style: TextStyle(
+              color: deepPink,
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              fontFamily: "Inter",
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -195,14 +247,6 @@ class _UserProductListForDiscountState
     );
   }
 
-  Widget _buildBody() {
-    return noProductInList
-        ? NoItemInList(msg: AppLocalization.of(context)!.noResultFound
-            // msg: AppLocalization.of(context)!.noProducts,
-            )
-        : _buildProductList();
-  }
-
   Widget getSubmitButton() {
     return CurvedButton(
       onPressed: () async {
@@ -212,7 +256,7 @@ class _UserProductListForDiscountState
         final Map<String, dynamic> items = {
           "products": selectedProducts,
           "ids": selectedProducts.map((e) => e.id).toList(),
-          "isSelectAll": isSelectAll
+          "isAllProductSelected": isSelectAll
         };
         Navigator.pop(context, items);
       },
@@ -222,70 +266,13 @@ class _UserProductListForDiscountState
     );
   }
 
-  Widget appBar() {
-    return AppBar(
-      elevation: 0.5,
-      backgroundColor: Colors.white,
-      titleSpacing: 0,
-      automaticallyImplyLeading: false,
-      leading: IconButton(
-        icon: Icon(
-          Icons.keyboard_arrow_left,
-          color: blackFont,
-          size: 24,
-        ),
-        onPressed: () {
-          Navigator.pop(context);
-        },
-      ),
-      title: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "Product",
-            style: TextStyle(
-                color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
-          ),
-          Text(
-            "${productList.where((e) => e.isChecked == true).toList().length} Selected",
-            style: TextStyle(
-                color: blackFont, fontSize: 14, fontWeight: FontWeight.w500),
-          ),
-        ],
-      ),
-      shadowColor: greySecondaryYarn,
-      actions: [
-        InkWell(
-          onTap: () {
-            toggleSelectAll();
-          },
-          child: Center(
-            child: Text(
-              "Select All",
-              style: TextStyle(
-                  color: isSelectAll ? navyBlue : blackFont,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600),
-            ),
-          ),
-        ),
-        IconButton(
-            onPressed: () {},
-            icon: Icon(
-              Icons.filter_list,
-              color: blackFont,
-            ))
-      ],
-    );
-  }
-
   Widget _buildProductList() {
     return isProductLoading && productList.isEmpty
         ? Shimmer.fromColors(
             baseColor: Colors.white,
             highlightColor: greyBorderColor,
             child: ListView.builder(
-              // shrinkWrap: true,
+              shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               padding:
                   const EdgeInsets.symmetric(horizontal: 8.0, vertical: 20.0),
@@ -347,7 +334,9 @@ class _UserProductListForDiscountState
             ),
           )
         : ListView.builder(
+            physics: AlwaysScrollableScrollPhysics(),
             controller: _productScrollController,
+            shrinkWrap: true,
             itemCount: productList.length + 1,
             itemBuilder: (context, index) {
               if (index == productList.length) {
@@ -365,21 +354,5 @@ class _UserProductListForDiscountState
               }
             },
           );
-  }
-
-  Widget getOutOfStockTag(int index) {
-    if (!productList[index].isProductAvailableNow()) {
-      return Positioned(
-        left: 38,
-        top: 14,
-        child: getColoredLabeledWidget(
-            text: AppLocalization.of(context)!.outOfStock, color: starYellow),
-      );
-    }
-    return const SizedBox.shrink();
-  }
-
-  String? getDisplayImage(int index, List<Product> productList) {
-    return productList[index].serverImages![0];
   }
 }

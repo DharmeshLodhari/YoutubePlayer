@@ -162,6 +162,7 @@ import 'package:Slydo/screens/more_apps/user_profile/screens/shipping_options/ad
 import 'package:Slydo/screens/more_apps/user_profile/screens/shipping_options/edit_shipping_options.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/shipping_options/shipping_options_list.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/subscriptions/choose_subscription.dart';
+import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/search_discount_product_and_service.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/search_users_product_and_service.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_profile_screen.dart';
 import 'package:Slydo/screens/more_apps/utility/cable/forms/select_plan_and_decoder_number.dart';
@@ -2115,6 +2116,15 @@ class RouteGenerator {
       case Routes.YOU_TRIP_END:
         return PageTransition(
           child: const YourTripEndScreen(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+      case Routes.DISCOUNT_PRODUCT_AND_SERVICE_SEARCH:
+        return PageTransition(
+          child: SearchDiscountProductAndService(
+            arguments: settings.arguments,
+          ),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,

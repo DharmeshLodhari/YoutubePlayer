@@ -161,12 +161,12 @@ class DiscountModel {
       map['end_date'] =
           endDate?.toDateFormatString(dateFormat: "yyyy-MM-dd").toString();
     }
-    if (onlyFrom != null) {
-      map['only_from'] = onlyFrom?.toDateFormatString(dateFormat: "hh:mm");
-    }
-    if (onlyTo != null) {
-      map['only_to'] = onlyTo?.toDateFormatString(dateFormat: "hh:mm");
-    }
+    // if (onlyFrom != null) {
+    //   map['only_from'] = onlyFrom?.toDateFormatString(dateFormat: "hh:mm");
+    // }
+    // if (onlyTo != null) {
+    //   map['only_to'] = onlyTo?.toDateFormatString(dateFormat: "hh:mm");
+    // }
     if (consumables != null) {
       map['consumables'] = consumables?.toJson() ?? {};
     }
@@ -219,6 +219,20 @@ class DiscountModel {
     }
 
     consumables?.product = data;
+  }
+
+  void addServicesToDiscount(List<String?> services) {
+    consumables ??= Consumables(service: []);
+
+    List<String> data = [];
+
+    for (String? id in services) {
+      if (id != null) {
+        data.add(id);
+      }
+    }
+
+    consumables?.service = data;
   }
 }
 
@@ -273,16 +287,22 @@ class DiscountTagCategory {
 
 class Consumables {
   List<String>? product;
+  List<String>? service;
 
-  Consumables({this.product});
+  Consumables({
+    this.product,
+    this.service,
+  });
 
   Consumables.fromJson(Map<String, dynamic> json) {
     product = json['Product'].cast<String>();
+    service = json['Service'].cast<String>();
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['Product'] = this.product;
+    data['Service'] = this.service;
     return data;
   }
 }

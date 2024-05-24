@@ -1,4 +1,5 @@
 import 'package:Slydo/data/currency.dart';
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -21,11 +22,11 @@ class DisplayProductForDiscount extends StatelessWidget {
     print("${DateTime.now().toString()}");
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(context, '/product',
+        Navigator.pushNamed(context, Routes.PRODUCT,
             arguments: {"product": product});
       },
       child: Container(
-        margin: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+        margin: EdgeInsets.symmetric(vertical: 7, horizontal: 16),
         child: Card(
           semanticContainer: true,
           clipBehavior: Clip.antiAliasWithSaveLayer,
@@ -37,7 +38,7 @@ class DisplayProductForDiscount extends StatelessWidget {
               side: BorderSide(color: Color(0xFFDCE0E8)),
               borderRadius: BorderRadius.circular(8)),
           child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 18, vertical: 13),
+            padding: EdgeInsets.symmetric(horizontal: 15, vertical: 13),
             child: Row(
               children: <Widget>[
                 Checkbox(

@@ -374,6 +374,8 @@ class AuthService {
 
     String? expirationTime = jwt?.expiration ?? null;
 
+    final startTime = DateTime.now();
+
     if ((jwt?.access ?? null) != null && (jwt?.access ?? "") != "") {
       isNewTokenNeeded = true;
     }
@@ -417,11 +419,16 @@ class AuthService {
     if (locationHeader.isNotEmpty) {
       headers.addAll(locationHeader);
     }
+    final endTime = DateTime.now();
+    debugPrint(
+        'Parallel Time in hader: ${endTime.difference(startTime).inMilliseconds}ms');
     return headers;
   }
 
   Future<Map<String, String>> getUserLocationHeader() async {
     Map<String, String> data = {};
+
+    final startTime = DateTime.now();
 
     SharedPreferences _sharedPreferences =
         await SharedPreferences.getInstance();
@@ -449,6 +456,9 @@ class AuthService {
               "${userBloc.user.defaultAddress?.longitude}, ${userBloc.user.defaultAddress?.latitude}"
         });
       }
+      final endTime = DateTime.now();
+      debugPrint(
+          'Parallel Time in location: ${endTime.difference(startTime).inMilliseconds}ms');
     } catch (error) {
       debugPrint("Error $error");
     }

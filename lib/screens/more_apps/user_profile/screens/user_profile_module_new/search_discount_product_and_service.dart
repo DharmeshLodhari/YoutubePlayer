@@ -7,39 +7,36 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/discount/discount_model.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/search_user_item_with_filter.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
-import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_dropdown_field.dart';
 import 'package:Slydo/widget/customized_popup_menu.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
+import 'package:Slydo/widget/item_display_product_for_discount.dart';
+import 'package:Slydo/widget/item_display_service_for_discount.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
-import 'package:Slydo/widget/slide_action_button.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../../routes/route_constants.dart';
-
-class SearchUsersProductAndService extends StatefulWidget {
+class SearchDiscountProductAndService extends StatefulWidget {
   final dynamic arguments;
-  SearchUsersProductAndService({required this.arguments});
+  SearchDiscountProductAndService({required this.arguments});
 
   @override
-  _SearchUsersProductAndServiceState createState() =>
-      _SearchUsersProductAndServiceState();
+  _SearchDiscountProductAndServiceState createState() =>
+      _SearchDiscountProductAndServiceState();
 }
 
-class _SearchUsersProductAndServiceState
-    extends State<SearchUsersProductAndService> {
+class _SearchDiscountProductAndServiceState
+    extends State<SearchDiscountProductAndService> {
   bool isValidSearch = false;
   bool isSearchIsEmpty = true;
   String autoCompleteSearchText = "";
@@ -48,11 +45,6 @@ class _SearchUsersProductAndServiceState
 
   late UserBloc userBloc;
   static String filterValue = "Products";
-
-  SlidableController? slidableController1;
-  SlidableController? slidableController2;
-
-  List<Widget> results = [];
 
   GlobalKey textFormField = GlobalKey();
   TextEditingController searchItemTextController = TextEditingController();
@@ -65,13 +57,13 @@ class _SearchUsersProductAndServiceState
       GlobalKey<ScaffoldMessengerState>();
   final GlobalKey<FormState> _formFieldKey = GlobalKey<FormState>();
 
-  //pagination variables
   int? count = 0;
   String? next = "";
   String? previous = "";
   final ScrollController _scrollController = ScrollController();
   bool isLoading = false;
   bool noItemInList = false;
+  List itemList = [];
 
   bool isCategoryLoading = false;
   int? categoryCount = 0;
@@ -108,7 +100,7 @@ class _SearchUsersProductAndServiceState
 
   String hint = "Search here";
 
-  CustomerProfile? searchedUser;
+  DiscountModel? items;
 
   SearchItemWithFilterModel filterModel = SearchItemWithFilterModel();
 
@@ -121,8 +113,7 @@ class _SearchUsersProductAndServiceState
 
   @override
   void initState() {
-    searchedUser = widget.arguments["searchedUser"];
-    filterModel.searchedUser = searchedUser;
+    items = widget.arguments["item"];
 
     if (widget.arguments["filter"] != null) {
       filterValue = widget.arguments["filter"];
@@ -134,58 +125,24 @@ class _SearchUsersProductAndServiceState
       if (mounted) setState(() {});
     }
 
-    if (selectedMenuItemIndex == 1) {
-      updateCategoryList();
-    } else {
-      getProductAPI();
-    }
-
-    slidableController1 = SlidableController(
-      onSlideAnimationChanged: handleSlideAnimationChanged1,
-      onSlideIsOpenChanged: handleSlideIsOpenChanged1,
-    );
-    slidableController2 = SlidableController(
-      onSlideAnimationChanged: handleSlideAnimationChanged2,
-      onSlideIsOpenChanged: handleSlideIsOpenChanged2,
-    );
-    getList();
-    _scrollController.addListener(() {
-      if (_scrollController.position.pixels ==
-              _scrollController.position.maxScrollExtent &&
-          _scrollController.position.pixels != 0) {
-        if (next != null) {
-          getList();
-        }
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      if (selectedMenuItemIndex == 1) {
+        updateCategoryList();
+      } else {
+        getProductAPI();
       }
-    });
 
-    // searchItemTextController.addListener(() {
-    //   if (searchItemTextController.text.length >= 5) {
-    //     autoCompleteSearchText = searchItemTextController.text;
-    //
-    //     setState(() {
-    //       count = 0;
-    //       next = "";
-    //       previous = "";
-    //       results.clear();
-    //       noItemInList = false;
-    //       getList();
-    //     });
-    //   }
-    //   if (results.isNotEmpty || searchItemTextController.text.length != 0) {
-    //     if (mounted) {
-    //       setState(() {
-    //         isSearchIsEmpty = false;
-    //       });
-    //     }
-    //   } else {
-    //     if (mounted) {
-    //       setState(() {
-    //         isSearchIsEmpty = true;
-    //       });
-    //     }
-    //   }
-    // });
+      getList();
+      _scrollController.addListener(() {
+        if (_scrollController.position.pixels ==
+                _scrollController.position.maxScrollExtent &&
+            _scrollController.position.pixels != 0) {
+          if (next != null) {
+            getList();
+          }
+        }
+      });
+    });
 
     super.initState();
   }
@@ -221,7 +178,7 @@ class _SearchUsersProductAndServiceState
         if (mounted) setState(() {});
 
         final Map<String, dynamic>? result = await ShoppingAuthService()
-            .getMerchantProductCategories(searchedUser?.userAbout?.industry?.id,
+            .getMerchantProductCategories(userBloc.user.userAbout?.industry?.id,
                 categoryNext, categoryPrevious);
 
         if (result == null) {
@@ -272,7 +229,7 @@ class _SearchUsersProductAndServiceState
 
         final Map<String, dynamic>? result = await ShoppingAuthService()
             .getManufacturerList(
-                searchedUser?.userName, manufacturerNext, manufacturerPrevious);
+                userBloc.user.userName, manufacturerNext, manufacturerPrevious);
 
         if (result == null) {
           isManufacturerLoading = false;
@@ -378,7 +335,7 @@ class _SearchUsersProductAndServiceState
     count = 0;
     next = "";
     previous = "";
-    results.clear();
+    itemList.clear();
     noItemInList = false;
     filterValue = value;
 
@@ -399,7 +356,7 @@ class _SearchUsersProductAndServiceState
       selectedProductCondition = null;
       filterModel.rating = "";
       filterModel.manufacturer = "";
-      selectedRating = null;
+      selectedRating = "";
       categoryList = productCategoryList.map((e) => e.name).toList();
       categoryList.insert(0, 'All categories');
     } else if (selectedMenuItemIndex == 1) {
@@ -411,20 +368,21 @@ class _SearchUsersProductAndServiceState
   @override
   Widget build(BuildContext context) {
     searchTypeSelectionMenu = CustomizedPopUpMenu(
-        buttonKey: _key,
-        context: context,
-        hasIcon: true,
-        childList: [
-          CustomizedPopUpMenuItemWithIcon(
-              title: "Product", value: "Products", icon: SlydoAppIcon.product),
-          CustomizedPopUpMenuItemWithIcon(
-              title: "Service", value: "Services", icon: SlydoAppIcon.note_2),
-        ],
-        selectedIndex: selectedMenuItemIndex,
-        left: 16,
-        arrowPosition: Alignment.topLeft,
-        arrowLeftPadding: 16,
-        top: 14);
+      buttonKey: _key,
+      context: context,
+      hasIcon: true,
+      childList: [
+        CustomizedPopUpMenuItemWithIcon(
+            title: "Product", value: "Products", icon: SlydoAppIcon.product),
+        CustomizedPopUpMenuItemWithIcon(
+            title: "Service", value: "Services", icon: SlydoAppIcon.note_2),
+      ],
+      selectedIndex: selectedMenuItemIndex,
+      left: 16,
+      arrowPosition: Alignment.topLeft,
+      arrowLeftPadding: 16,
+      top: 14,
+    );
     searchTypeSelectionMenu.onChange = menuItemSelectionChange;
     searchTypeSelectionMenu.menuState = menuStateChange;
 
@@ -457,6 +415,9 @@ class _SearchUsersProductAndServiceState
               ],
             ),
           ),
+          floatingActionButton: floatingActionBar(),
+          floatingActionButtonLocation:
+              FloatingActionButtonLocation.centerDocked,
         ),
       ),
     );
@@ -648,7 +609,8 @@ class _SearchUsersProductAndServiceState
                           width: 25,
                           margin: const EdgeInsets.only(right: 10, top: 10),
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(35)),
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(35)),
                             border: Border.all(
                               width: 1,
                               color: black,
@@ -830,8 +792,8 @@ class _SearchUsersProductAndServiceState
                                 margin:
                                     const EdgeInsets.only(right: 10, top: 10),
                                 decoration: BoxDecoration(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(35)),
+                                  borderRadius: const BorderRadius.all(
+                                      Radius.circular(35)),
                                   border: Border.all(
                                     width: 1,
                                     color: black,
@@ -1075,7 +1037,7 @@ class _SearchUsersProductAndServiceState
                   if (value.length >= 3) {
                     searchItems();
 
-                    if (results.isNotEmpty ||
+                    if (itemList.isNotEmpty ||
                         searchItemTextController.text.length != 0) {
                       if (mounted) {
                         setState(() {
@@ -1092,7 +1054,7 @@ class _SearchUsersProductAndServiceState
                   } else if (value.length == 0) {
                     setState(() {
                       isSearchIsEmpty = true;
-                      results.clear();
+                      itemList.clear();
                       autoCompleteSearchText = value;
                     });
                   }
@@ -1212,7 +1174,7 @@ class _SearchUsersProductAndServiceState
       count = 0;
       next = "";
       previous = "";
-      results.clear();
+      itemList.clear();
       noItemInList = false;
       isLoading = false;
 
@@ -1267,7 +1229,6 @@ class _SearchUsersProductAndServiceState
                     if (mounted) setState(() {});
                     updateCategoryList();
                     checkForFilterAppliedOrNot();
-
                     await Future.delayed(const Duration(milliseconds: 100))
                         .then((value) => showFilterProductSheet());
                   },
@@ -1342,6 +1303,7 @@ class _SearchUsersProductAndServiceState
                               Expanded(child: getFilterSubmitBtn()),
                             ],
                           ),
+                          const SizedBox(height: 15),
                         ],
                       )
                     : Column(
@@ -1401,6 +1363,7 @@ class _SearchUsersProductAndServiceState
                               Expanded(child: getFilterSubmitBtn()),
                             ],
                           ),
+                          const SizedBox(height: 15),
                         ],
                       ),
               ),
@@ -1425,7 +1388,7 @@ class _SearchUsersProductAndServiceState
         selectedProductCondition = null;
         filterModel.manufacturer = "";
         filterModel.rating = "";
-        selectedRating = null;
+        selectedRating = "";
         filterModel.maxAmount = null;
         filterModel.minAmount = null;
         searchItems();
@@ -1461,7 +1424,7 @@ class _SearchUsersProductAndServiceState
         const SizedBox(height: 10),
         Row(
           children: List.generate(5, (index) {
-            if (selectedRating != null) {
+            if (selectedRating != "" && selectedRating != null) {
               return Expanded(
                 child: Row(
                   children: [
@@ -1563,19 +1526,37 @@ class _SearchUsersProductAndServiceState
             ? NoItemInList(
                 msg: AppLocalization.of(context)!.noResultFound,
               )
-            : isLoading && results.isEmpty
+            : isLoading && itemList.isEmpty
                 ? buildLoadingIndicator(isLoading: isLoading)
                 : Container(
                     child: ListView.builder(
                       //+1 for progressbar
-                      itemCount: results.length + 1,
+                      itemCount: itemList.length + 1,
                       // ignore: missing_return
                       itemBuilder: (BuildContext context, int index) {
-                        if (index == results.length) {
+                        if (index == itemList.length) {
                           return buildJumpingLoadingIndicator(
                               isLoading: isLoading);
                         } else {
-                          return results[index];
+                          if (filterValue == "Services") {
+                            return DisplayServiceForDiscount(
+                              service: itemList[index],
+                              onChange: (bool value) {
+                                itemList[index].isChecked = value;
+                                if (mounted) setState(() {});
+                              },
+                              isSelected: itemList[index].isChecked,
+                            );
+                          } else {
+                            return DisplayProductForDiscount(
+                              product: itemList[index],
+                              onChange: (bool value) {
+                                itemList[index].isChecked = value;
+                                if (mounted) setState(() {});
+                              },
+                              isSelected: itemList[index].isChecked,
+                            );
+                          }
                         }
                       },
                       controller: _scrollController,
@@ -1587,14 +1568,35 @@ class _SearchUsersProductAndServiceState
     filterModel.searchedText = searchItemTextController.text;
     switch (filterValue) {
       case "Products":
-        return await ShoppingAuthService()
-            .searchUsersProducts(next, previous, filterOptions: filterModel);
+        if (items?.id != null) {
+          return await ShoppingAuthService().searchOfDiscountedProduct(
+              next, previous, items?.id,
+              filterOptions: filterModel);
+        } else {
+          return await ShoppingAuthService().searchListOfProduct(
+              next, previous, userBloc.user.userName,
+              filterOptions: filterModel);
+        }
       case "Services":
-        return await ShoppingAuthService()
-            .searchUsersServices(next, previous, filterOptions: filterModel);
+        if (items?.id != null) {
+          return await ShoppingAuthService().searchOfDiscountedServices(
+              next, previous, items?.id,
+              filterOptions: filterModel);
+        } else {
+          return await ShoppingAuthService().searchListOfService(
+              next, previous, userBloc.user.userName,
+              filterOptions: filterModel);
+        }
       default:
-        return await ShoppingAuthService()
-            .searchUsersProducts(next, previous, filterOptions: filterModel);
+        if (items?.id != null) {
+          return await ShoppingAuthService().searchOfDiscountedProduct(
+              next, previous, items?.id,
+              filterOptions: filterModel);
+        } else {
+          return await ShoppingAuthService().searchListOfProduct(
+              next, previous, userBloc.user.userName,
+              filterOptions: filterModel);
+        }
     }
   }
 
@@ -1622,32 +1624,28 @@ class _SearchUsersProductAndServiceState
           isLoading = false;
           return;
         }
-        results.clear();
+        itemList.clear();
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
-        final List? tempList = result['results'];
+        final tempList = result['results'];
         if (mounted) {
           isLoading = false;
-          try {
-            tempList!.forEach((result) {
-              results.add(getResultTile(result));
-            });
-          } catch (e) {}
+          itemList.addAll(tempList);
           setState(() {});
         }
       }
 
-      if (results.isNotEmpty) {
+      if (itemList.isNotEmpty) {
         isSearchIsEmpty = false;
         if (mounted) setState(() {});
       }
-      if (results.isEmpty) {
+      if (itemList.isEmpty) {
         if (mounted) {
           noItemInList = true;
           setState(() {});
         }
-      } else if (next == null && results.length > 6) {
+      } else if (next == null && itemList.length > 6) {
         _scaffoldMessengerSearchKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
@@ -1655,17 +1653,6 @@ class _SearchUsersProductAndServiceState
         ));
       }
     }
-  }
-
-  // ignore: missing_return
-  Widget getResultTile(dynamic result) {
-    switch (filterValue) {
-      case "Products":
-        return getProductTile(result);
-      case "Services":
-        return getServiceTile(result);
-    }
-    return getProductTile(result);
   }
 
   String getSearchUrl(String searchedText) {
@@ -1683,10 +1670,6 @@ class _SearchUsersProductAndServiceState
             "/api/v1/search/products/?search=" +
             searchedText;
     }
-  }
-
-  Widget getProductTile(Product product) {
-    return _getSlidableWithLists1(context, productCard(product), product);
   }
 
   Widget productCard(Product product) {
@@ -1821,9 +1804,16 @@ class _SearchUsersProductAndServiceState
     );
   }
 
-  Widget getServiceTile(Service service) {
-    return _getSlidableWithLists2(context, getServiceCard(service), service);
-  }
+  // Widget getServiceTile(Service service) {
+  //   return DisplayServiceForDiscount(
+  //     service: service,
+  //     onChange: (bool value) {
+  //       service.isChecked = value;
+  //       if (mounted) setState(() {});
+  //     },
+  //     isSelected: service.isChecked,
+  //   );
+  // }
 
   Widget getServiceCard(Service service) {
     return Container(
@@ -1949,128 +1939,59 @@ class _SearchUsersProductAndServiceState
     );
   }
 
-  Widget _getSlidableWithLists1(
-      BuildContext context, Widget searchCard, Product product) {
-    return Slidable(
-      controller: slidableController1,
-      direction: Axis.horizontal,
-      actionPane: const SlidableBehindActionPane(),
-      actionExtentRatio: 0.25,
-      actions: listActionSlideActions1(product),
-      secondaryActions: listSecondaryActions1(product),
-      child: VerticalListItem1(searchCard, product),
+  Widget floatingActionBar() {
+    return Card(
+      elevation: 50,
+      margin: EdgeInsets.zero,
+      shadowColor: boxShadowTwo,
+      child: Padding(
+        padding: const EdgeInsets.only(left: 25.0, right: 25.0, bottom: 15.0),
+        child: getSubmitButton(),
+      ),
     );
   }
 
-  List<Widget> listSecondaryActions1(Product product) {
-    if (product.seller == userBloc.user.userName) {
-      return [];
-    }
-    return [
-      SlideActionButton(
-        icon: SlydoAppIcon.cart,
-        onTap: () async {
-          final CustomerProfileBloc customerProfileBloc =
-              Provider.of<CustomerProfileBloc>(context, listen: false);
+  Widget getSubmitButton() {
+    return CurvedButton(
+      onPressed: () async {
+        Map<String, dynamic>? items;
+        List<Product> productList = [];
+        List<Service> serviceList = [];
 
-          customerProfileBloc.customer =
-              await UserAuth().fetchCustomerProfile(product.seller);
-          Navigator.of(context).pushNamed('/send-payment',
-              arguments: {'isFromProfile': false, 'product': product});
-        },
-        title: AppLocalization.of(context)!.buy,
-        backgroundColor: naturalGreen,
-        slideController: slidableController1,
-      ),
-    ];
-  }
+        for (var item in itemList) {
+          if (item is Product && item.isChecked) {
+            productList.add(item);
+          } else if (item is Service && item.isChecked) {
+            serviceList.add(item);
+          }
+        }
 
-  List<Widget> listActionSlideActions1(Product product) {
-    if (product.seller == userBloc.user.userName) {
-      return [];
-    }
+        if (filterValue == "Services") {
+          // final List<Service> selectedServices =
+          //     (itemList as List<Service>).where((e) => e.isChecked).toList();
 
-    return [
-      SlideActionButton(
-        icon: SlydoAppIcon.text_message,
-        onTap: () async {
-          Navigator.of(context).pushNamed('/compose_message', arguments: {
-            'recipient': product.seller,
-            'subject': product.name,
-          });
-        },
-        title: "Message",
-        backgroundColor: navyBlue,
-        slideController: slidableController1,
-      ),
-    ];
-  }
+          items = {
+            "services": serviceList,
+            "ids": serviceList.map((e) => e.id).toList(),
+            "isAllServiceSelected": false,
+          };
+        } else {
+          // final List<Product> selectedProducts =
+          //     (itemList as List<Product>).where((e) => e.isChecked).toList();
 
-  Widget _getSlidableWithLists2(
-      BuildContext context, Widget searchCard, Service service) {
-    return Slidable(
-      controller: slidableController2,
-      direction: Axis.horizontal,
-      actionPane: const SlidableBehindActionPane(),
-      actionExtentRatio: 0.25,
-      actions: listActionSlideActions2(service),
-      secondaryActions: listSecondaryActions2(service),
-      child: VerticalListItem2(searchCard, service),
+          items = {
+            "products": productList,
+            "ids": productList.map((e) => e.id).toList(),
+            "isAllProductSelected": false
+          };
+        }
+        Navigator.pop(context, items);
+      },
+      backgroundColor: navyBlue,
+      textColor: Colors.white,
+      text: "Save",
     );
   }
-
-  List<Widget> listSecondaryActions2(Service service) {
-    if (service.provider == userBloc.user.userName) {
-      return [];
-    }
-    return [
-      SlideActionButton(
-          title: AppLocalization.of(context)!.pay,
-          backgroundColor: naturalGreen,
-          slideController: slidableController2,
-          icon: SlydoAppIcon.cart,
-          onTap: () async {
-            final CustomerProfileBloc customerProfileBloc =
-                Provider.of<CustomerProfileBloc>(context, listen: false);
-            customerProfileBloc.customer =
-                await UserAuth().fetchCustomerProfile(service.provider);
-            Navigator.of(context).pushNamed(Routes.SEND_PAYMENT,
-                arguments: {'isFromProfile': false, 'service': service});
-          }),
-    ];
-  }
-
-  List<Widget> listActionSlideActions2(Service service) {
-    if (service.provider == userBloc.user.userName) {
-      return [];
-    }
-    return [
-      SlideActionButton(
-        title: AppLocalization.of(context)!.message,
-        backgroundColor: navyBlue,
-        slideController: slidableController2,
-        icon: SlydoAppIcon.text_message,
-        onTap: () async {
-          Navigator.of(context).pushNamed('/compose_message', arguments: {
-            'recipient': service.provider,
-            'subject': service.name,
-          });
-        },
-      ),
-    ];
-  }
-
-  void handleSlideAnimationChanged(Animation<double> slideAnimation) {}
-
-  void handleSlideIsOpenChanged(bool isOpen) {}
-
-  void handleSlideAnimationChanged1(Animation<double>? slideAnimation) {}
-
-  void handleSlideIsOpenChanged1(bool? isOpen) {}
-
-  void handleSlideAnimationChanged2(Animation<double>? slideAnimation) {}
-
-  void handleSlideIsOpenChanged2(bool? isOpen) {}
 
   @override
   void dispose() {
@@ -2078,74 +1999,5 @@ class _SearchUsersProductAndServiceState
     _scrollController.dispose();
     filterValue = "Products";
     super.dispose();
-  }
-}
-
-// ignore: must_be_immutable
-class VerticalListItem extends StatelessWidget {
-  VerticalListItem(this.child, this.user);
-
-  final Widget child;
-  CustomerProfile user;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        FocusScope.of(context).unfocus();
-        Navigator.pushNamed(context, '/profile',
-            arguments: {"searchedUserName": user.userName});
-      },
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 2),
-        child: child,
-      ),
-    );
-  }
-}
-
-// ignore: must_be_immutable
-class VerticalListItem1 extends StatelessWidget {
-  VerticalListItem1(this.child, this.product);
-
-  final Widget child;
-  Product product;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        FocusScope.of(context).unfocus();
-        Navigator.pushNamed(context, '/product',
-            arguments: {"product": product});
-      },
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 2),
-        child: child,
-      ),
-    );
-  }
-}
-
-// ignore: must_be_immutable
-class VerticalListItem2 extends StatelessWidget {
-  VerticalListItem2(this.child, this.service);
-
-  final Widget child;
-  Service service;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        FocusScope.of(context).unfocus();
-        Navigator.pushNamed(context, '/service-detail',
-            arguments: {"service": service});
-      },
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 2),
-        child: child,
-      ),
-    );
   }
 }
