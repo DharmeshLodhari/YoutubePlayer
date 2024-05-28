@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/routes/route_constants.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/gif_model/GIFModel.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/gif_model/gif_model.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/product_and_service_tile_for_search.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';

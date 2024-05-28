@@ -1,9 +1,32 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:Slydo/data/state_notifiers/user_bloc.dart';
+import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/routes/route_constants.dart';
+import 'package:Slydo/screens/moments/models/moments_model.dart';
+import 'package:Slydo/screens/moments/moments_bloc.dart';
+import 'package:Slydo/screens/moments/screens/create_moment_screen.dart';
 import 'package:Slydo/screens/moments/screens/moment_detail/render_moment_screen.dart';
+import 'package:Slydo/screens/moments/screens/moments_service.dart';
+import 'package:Slydo/screens/moments/utils.dart';
+import 'package:Slydo/screens/moments/widgets/attachment_widget.dart';
+import 'package:Slydo/screens/moments/widgets/custom_moment_detail_button.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_conversation.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/share_in_chat/ShareInChat.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
+import 'package:Slydo/screens/more_apps/yarn/yarn_report_screen.dart';
+import 'package:Slydo/screens/post_detail_page.dart';
+import 'package:Slydo/utils/enums.dart';
 import 'package:Slydo/utils/extensions.dart';
+import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/bottom_sheet_item.dart';
+import 'package:Slydo/widget/dialog.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
+import 'package:Slydo/widget/read_more_widget.dart';
+import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -14,29 +37,6 @@ import 'package:story_view/utils.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
 
-import '../../../../data/state_notifier.dart';
-import '../../../../locale/app_localization.dart';
-import '../../../../routes/route_constants.dart';
-import '../../../../utils/enums.dart';
-import '../../../../utils/navigation_util.dart';
-import '../../../../widget/bottom_sheet_item.dart';
-import '../../../../widget/dialog.dart';
-import '../../../../widget/loading_indicator.dart';
-import '../../../../widget/read_more_widget.dart';
-import '../../../../widget/rounded_background_icon.dart';
-import '../../../more_apps/messaging/chat/models/ChatConversation.dart';
-import '../../../more_apps/messaging/chat/share_in_chat/ShareInChat.dart';
-import '../../../more_apps/user_profile/models/user.dart';
-import '../../../more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
-import '../../../more_apps/yarn/yarn_report_screen.dart';
-import '../../../post_detail_page.dart';
-import '../../models/moments_model.dart';
-import '../../moments_bloc.dart';
-import '../../utils.dart';
-import '../../widgets/attachment_widget.dart';
-import '../../widgets/custom_moment_detail_button.dart';
-import '../create_moment_screen.dart';
-import '../moments_service.dart';
 import 'custom_story_view.dart' as custom;
 import 'custom_story_view.dart';
 import 'moment_comment_list.dart';
@@ -665,7 +665,7 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
 
                     await NavigationUtil.push(context,
                         screen: AddReportScreen(
-                          object: currentMoment!.toJson(),
+                          object: currentMoment?.toJson(),
                           type: "moment",
                           isCommentMoment: true,
                         ));
@@ -679,8 +679,8 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
                   onTap: () async {
                     toggleMediaPlayingState();
                     final user = CustomerProfile();
-                    user.userName = currentMoment!.owner;
-                    user.fullName = currentMoment!.ownerName;
+                    user.userName = currentMoment?.owner;
+                    user.fullName = currentMoment?.ownerName;
                     user.type = "";
                     user.nickName = "";
 

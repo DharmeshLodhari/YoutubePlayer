@@ -7,7 +7,7 @@ import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_sync
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_user_manager.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/connection_list_manager.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/connection_list_synchronizer.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_conversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/tiles/user_tile_for_connection.dart';

@@ -1,5 +1,5 @@
 import 'package:Slydo/data/state_notifier.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_conversation.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:flutter/material.dart';
@@ -52,7 +52,7 @@ class ShareInChat {
                         ),
                         IconButton(
                           icon: Icon(
-                            SlydoAppIcon.send_message_2,
+                            SlydoAppIcon.sendMessage2,
                             color: shareMessageToChatBloc.recipientsLength() > 0
                                 ? navyBlue
                                 : dividerColor,

@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:Slydo/screens/blog/quill/custom_quill_embed.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_conversation.dart';
+import 'package:Slydo/screens/more_apps/news/models/news_detail_item.dart';
 import 'package:Slydo/screens/more_apps/news/news_auth.dart';
 import 'package:Slydo/screens/more_apps/user_post/user_post_utils.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -28,10 +30,8 @@ import '../widget/bottom_sheet_item.dart';
 import '../widget/dialog.dart';
 import '../widget/loading_indicator.dart';
 import '../widget/rounded_background_icon.dart';
-import 'more_apps/messaging/chat/models/ChatConversation.dart';
 import 'more_apps/messaging/chat/share_in_chat/ShareInChat.dart';
 import 'more_apps/news/CustomChip.dart';
-import 'more_apps/news/models/NewsDetailItem.dart';
 import 'more_apps/news/models/NewsListItem.dart';
 import 'more_apps/news/news_tile.dart';
 import 'more_apps/user_post/models/user_post.dart';

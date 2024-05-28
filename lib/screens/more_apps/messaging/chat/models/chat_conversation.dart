@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:Slydo/screens/more_apps/messaging/chat/models/GroupDetailModel.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/Participant.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/group_detail_model.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/participant_model.dart';
 import 'package:Slydo/utils/date_time_and_money_converter.dart';
 import 'package:flutter/foundation.dart';
 

@@ -4,8 +4,11 @@ import 'dart:isolate';
 import 'dart:ui';
 
 import 'package:Slydo/data/database_helper.dart';
+import 'package:Slydo/data/state_notifiers/user_bloc.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_conversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/document_file_in_chat_download_model.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
+import 'package:Slydo/utils/enums.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:external_path/external_path.dart';
@@ -16,10 +19,6 @@ import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
-
-import '../../../../../data/state_notifier.dart';
-import '../../../../../utils/enums.dart';
-import '../models/ChatConversation.dart';
 
 class DocumentFileTileForChat extends StatefulWidget {
   final Map<String, dynamic> message;

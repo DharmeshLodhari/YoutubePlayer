@@ -1,6 +1,6 @@
-import 'package:Slydo/screens/more_apps/messaging/chat/models/gif_model/Onclick.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/gif_model/Onload.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/gif_model/Onsent.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/gif_model/on_click.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/gif_model/on_load.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/gif_model/on_sent.dart';
 
 class Analytics {
   Onclick? onclick;

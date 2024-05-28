@@ -17,14 +17,14 @@ import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_user_manager
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/connection_list_synchronizer.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/db_socket_message_handler.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/message_sound_player.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatMessageAction.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/GroupDetailModel.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/Participant.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/gif_model/GIFModel.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_conversation.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_message_action.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/gif_model/gif_model.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/group_detail_model.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatMessage.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatMessagePagination.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/SocketQueueChatMessage.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/participant_model.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/EditOrReplyMessageUI.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/audio_tile_for_chat.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/comment_tile_for_chat.dart';
@@ -3194,7 +3194,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
                 width: 10,
               ),
               Icon(
-                SlydoAppIcon.send_message_2,
+                SlydoAppIcon.sendMessage2,
                 color: navyBlue,
                 size: 22,
               ),

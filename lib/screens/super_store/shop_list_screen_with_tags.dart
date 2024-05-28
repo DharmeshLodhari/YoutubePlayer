@@ -673,7 +673,7 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
     );
   }
 
-  getRowTitle(headers) async {
+  Future<List<Product>> getRowTitle(headers) async {
     final List<Product> result = [];
     for (var item in headers['results']) {
       final Product product = await ShoppingAuthService().createProduct(item);

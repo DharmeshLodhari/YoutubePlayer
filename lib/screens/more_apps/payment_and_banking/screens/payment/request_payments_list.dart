@@ -67,11 +67,11 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
   bool isFirstTime = true;
   late UserBloc userBloc;
 
-  @protected
+  @override
   void initState() {
     // secureScreen();
     debugPrint('INIT STATE');
-    this.getList();
+    getList();
     super.initState();
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==

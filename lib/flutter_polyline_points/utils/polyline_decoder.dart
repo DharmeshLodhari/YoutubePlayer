@@ -1,4 +1,4 @@
-import 'package:Slydo/flutter_polyline_points/PointLatLng.dart';
+import 'package:Slydo/flutter_polyline_points/point_lat_lng.dart';
 
 /// Decode the google encoded string using Encoded Polyline Algorithm Format
 /// for more info about the algorithm check https://developers.google.com/maps/documentation/utilities/polylinealgorithm

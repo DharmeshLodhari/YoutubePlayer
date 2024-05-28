@@ -1,4 +1,4 @@
-import 'package:Slydo/flutter_polyline_points/PointLatLng.dart';
+import 'package:Slydo/flutter_polyline_points/point_lat_lng.dart';
 import 'package:Slydo/flutter_polyline_points/utils/polyline_waypoint.dart';
 import 'package:Slydo/flutter_polyline_points/utils/request_enums.dart';
 

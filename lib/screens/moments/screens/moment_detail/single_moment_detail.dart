@@ -13,7 +13,7 @@ import 'package:Slydo/screens/moments/screens/moments_service.dart';
 import 'package:Slydo/screens/moments/utils.dart';
 import 'package:Slydo/screens/moments/widgets/attachment_widget.dart';
 import 'package:Slydo/screens/moments/widgets/custom_moment_detail_button.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_conversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/share_in_chat/ShareInChat.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_report_screen.dart';
 import 'package:Slydo/screens/post_detail_page.dart';
