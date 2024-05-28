@@ -26,25 +26,23 @@ class _SelectCableProviderState extends State<SelectCableProvider> {
   }
 
   Widget scaffoldBody() {
-    return Container(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(
-            height: 16,
-          ),
-          Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: selectProviderText()),
-          const SizedBox(
-            height: 16,
-          ),
-          Expanded(
-              child: Container(
-            child: getListOfProvider(),
-          ))
-        ],
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(
+          height: 16,
+        ),
+        Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: selectProviderText()),
+        const SizedBox(
+          height: 16,
+        ),
+        Expanded(
+            child: Container(
+          child: getListOfProvider(),
+        ))
+      ],
     );
   }
 

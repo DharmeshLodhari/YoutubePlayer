@@ -618,22 +618,20 @@ class _AddEditDiscountState extends State<AddEditDiscount> {
       },
       child: CustomizedDropDownField(
         title: "Start Date",
-        child: Container(
-          child: ListTile(
-            dense: true,
-            title: Text(
-              startFrom != null ? formatDate(startFrom) : "",
-              style: TextStyle(
-                color: blackFont,
-                fontWeight: FontWeight.w600,
-                fontSize: 16,
-              ),
+        child: ListTile(
+          dense: true,
+          title: Text(
+            startFrom != null ? formatDate(startFrom) : "",
+            style: TextStyle(
+              color: blackFont,
+              fontWeight: FontWeight.w600,
+              fontSize: 16,
             ),
-            trailing: Icon(
-              SlydoAppIcon.date,
-              size: 16,
-              color: darkGrey,
-            ),
+          ),
+          trailing: Icon(
+            SlydoAppIcon.date,
+            size: 16,
+            color: darkGrey,
           ),
         ),
       ),

@@ -376,12 +376,10 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
         ? Center(
             child: CircularLoadingIndicator(),
           )
-        : Container(
-            child: Column(
-              children: [
-                Expanded(child: _buildConnectionsList()),
-              ],
-            ),
+        : Column(
+            children: [
+              Expanded(child: _buildConnectionsList()),
+            ],
           );
   }
 

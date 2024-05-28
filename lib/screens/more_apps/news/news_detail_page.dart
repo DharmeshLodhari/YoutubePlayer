@@ -408,17 +408,15 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
   Widget relatedPost() {
     return Column(
         children: newsDetailItem.newsListItems!
-            .map((news) => Container(
-                  child: Column(
-                    children: [
-                      NewsTile(
-                        newsListItem: news,
-                      ),
-                      const SizedBox(
-                        height: 16,
-                      )
-                    ],
-                  ),
+            .map((news) => Column(
+                  children: [
+                    NewsTile(
+                      newsListItem: news,
+                    ),
+                    const SizedBox(
+                      height: 16,
+                    )
+                  ],
                 ))
             .toList());
   }

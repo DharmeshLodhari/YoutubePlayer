@@ -217,18 +217,16 @@ class _AddVirtualCardState extends State<AddVirtualCard> {
                       ),
                     ),
                   ),
-                  Container(
-                    child: Column(
-                      children: [
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        getSubmitButton(),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                      ],
-                    ),
+                  Column(
+                    children: [
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      getSubmitButton(),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                    ],
                   ),
                 ],
               ),
