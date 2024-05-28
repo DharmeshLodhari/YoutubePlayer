@@ -25,7 +25,7 @@ import '../../business_auth.dart';
 
 // ignore: must_be_immutable
 class AddInvoice extends StatefulWidget {
-  final dynamic arguments;
+  var arguments;
 
   AddInvoice({this.arguments});
 
@@ -377,8 +377,8 @@ class _AddInvoiceState extends State<AddInvoice> {
       );
     } else {
       return Container(
-        height: 100,
         child: const Center(child: Text("No item")),
+        height: 100,
       );
     }
   }
@@ -672,23 +672,25 @@ class _AddInvoiceState extends State<AddInvoice> {
             },
             child: CustomizedDropDownField(
               title: "Due date",
-              child: ListTile(
-                dense: true,
-                title: Text(
-                  formatDateInDigit(dueDate),
-                  style: TextStyle(
-                    color: blackFont,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 16,
+              child: Container(
+                child: ListTile(
+                  dense: true,
+                  title: Text(
+                    formatDateInDigit(dueDate),
+                    style: TextStyle(
+                      color: blackFont,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16,
+                    ),
+                    overflow: TextOverflow.fade,
+                    softWrap: false,
+                    maxLines: 1,
                   ),
-                  overflow: TextOverflow.fade,
-                  softWrap: false,
-                  maxLines: 1,
-                ),
-                trailing: Icon(
-                  SlydoAppIcon.date,
-                  size: 16,
-                  color: darkGrey,
+                  trailing: Icon(
+                    SlydoAppIcon.date,
+                    size: 16,
+                    color: darkGrey,
+                  ),
                 ),
               ),
             ),
@@ -881,7 +883,7 @@ class _AddInvoiceState extends State<AddInvoice> {
     }
   }
 
-  Future<void> createInvoice() async {
+  createInvoice() async {
     try {
       List<InvoiceItem?> invoiceItem = [];
 
@@ -905,10 +907,12 @@ class _AddInvoiceState extends State<AddInvoice> {
         "items": invoiceItem
       };
 
-      for (var item in invoiceItem) {
-        final int index = invoiceItem.indexOf(item);
-        invoiceItem[index]!.amount = invoiceItem[index]!.amount! * 100;
-      }
+      invoiceItem.forEach(
+        (item) {
+          final int index = invoiceItem.indexOf(item);
+          invoiceItem[index]!.amount = invoiceItem[index]!.amount! * 100;
+        },
+      );
       if (conversationId != null) {
         data['conversation_id'] = conversationId!;
       }

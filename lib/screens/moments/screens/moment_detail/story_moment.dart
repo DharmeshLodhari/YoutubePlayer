@@ -24,7 +24,7 @@ import '../../../../widget/dialog.dart';
 import '../../../../widget/loading_indicator.dart';
 import '../../../../widget/read_more_widget.dart';
 import '../../../../widget/rounded_background_icon.dart';
-import '../../../more_apps/messaging/chat/models/chat_conversation.dart';
+import '../../../more_apps/messaging/chat/models/ChatConversation.dart';
 import '../../../more_apps/messaging/chat/share_in_chat/ShareInChat.dart';
 import '../../../more_apps/user_profile/models/user.dart';
 import '../../../more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
@@ -73,32 +73,30 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
   }
 
   Future<bool> addLikeToMoment() async {
-    try {
-      final MomentsModel data =
-          await MomentsService().likeMoment(currentMoment?.id ?? "");
+    final MomentsModel data =
+        await MomentsService().likeMoment(currentMoment?.id ?? "");
+    if (data != null) {
       setState(() {
         currentMoment!.likes = data.likes;
         currentMoment!.dislikes = data.dislikes;
       });
       return true;
-    } catch (e) {
-      return false;
     }
+    return false;
   }
 
   Future<bool> addDisLikeToMoment() async {
-    try {
-      final MomentsModel data =
-          await MomentsService().dislikeMoment(currentMoment?.id ?? "");
+    final MomentsModel data =
+        await MomentsService().dislikeMoment(currentMoment?.id ?? "");
 
+    if (data != null) {
       setState(() {
         currentMoment!.dislikes = data.dislikes;
         currentMoment!.likes = data.likes;
       });
       return true;
-    } catch (error) {
-      return false;
     }
+    return false;
   }
 
   int getLikeCount() {
@@ -189,15 +187,15 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
 
                                 showDialogBox(
                                   context: context,
-                                  actionOneTextColor: white,
-                                  actionOneBgColor: mateRed,
-                                  actionTwoTextColor: blackFont,
-                                  actionTwoBgColor: greyBorderColor,
-                                  title: AppLocalization.of(context)!.delete,
-                                  actionTwoText:
-                                      AppLocalization.of(context)!.cancel,
+                                  actionOneTextColor: blackFont,
+                                  actionOneBgColor: greyBorderColor,
+                                  actionTwoTextColor: white,
+                                  actionTwoBgColor: mateRed,
+                                  title: 'Delete Moment',
                                   actionOneText:
-                                      AppLocalization.of(context)!.delete,
+                                      AppLocalization.of(context)!.discard,
+                                  actionTwoText:
+                                      AppLocalization.of(context)!.continueMsg,
                                   description:
                                       'Are you sure you want to delete this moment?',
                                   roundedBackgroundIcon: RoundedBackgroundIcon(
@@ -207,7 +205,7 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
                                     image: Image.asset(
                                         'assets/images/delete_dialog_icon.png'),
                                   ),
-                                  leftButtonOnPressed: () {
+                                  rightButtonOnPressed: () {
                                     showDialog(
                                         context: context,
                                         builder: (dialogLoadingContext) =>
@@ -442,8 +440,15 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
                           image = currentMoment!.avatar;
                         }
 
+                        widget.controller!.pause();
+                        _renderMomentStateKey.currentState?.controller?.stop();
                         Navigator.of(context)
-                            .pushNamed(Routes.PHOTO_VIEWER, arguments: image);
+                            .pushNamed(Routes.PHOTO_VIEWER, arguments: image)
+                            .whenComplete(() {
+                          widget.controller!.play();
+                          _renderMomentStateKey.currentState?.controller
+                              ?.forward();
+                        });
                       },
                       child: Padding(
                         padding: const EdgeInsets.only(top: 6.0),
@@ -459,13 +464,20 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
                         children: [
                           InkWell(
                             onTap: () {
+                              widget.controller!.pause();
+                              _renderMomentStateKey.currentState?.controller
+                                  ?.stop();
                               Navigator.pushNamed(
                                 context,
                                 Routes.USER_PROFILE,
                                 arguments: {
                                   "searchedUserName": currentMoment!.owner,
                                 },
-                              );
+                              ).whenComplete(() {
+                                widget.controller!.play();
+                                _renderMomentStateKey.currentState?.controller
+                                    ?.forward();
+                              });
                             },
                             child: Text(
                               messageDecoderWithEmoji(
@@ -691,10 +703,10 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
         await ShareInChat().selectShareCustomer(context);
     debugPrint("Selected users = ${listOfRecipient.length}");
 
-    for (var recipient in listOfRecipient) {
+    listOfRecipient.forEach((recipient) {
       addMomentPostToChat(
           recipientUser: recipient!, momentsModel: momentsModel);
-    }
+    });
   }
 
   Future<void> addMomentPostToChat({
@@ -962,9 +974,9 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
     if (currentMoment!.tags != null) {
       currentMoment!.tags!.join(', ');
 
-      for (var tag in currentMoment!.tags!) {
+      currentMoment!.tags!.forEach((tag) {
         formattedTagList.add('#$tag ');
-      }
+      });
 
       return ReadMoreText(
         formattedTagList.join(' '),
@@ -1002,31 +1014,85 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
     }
 
     if (attachment.containsKey('product')) {
-      return attachmentWidget(
-          onTap: () {
-            Navigator.pushNamed(
-              context,
-              Routes.PRODUCT,
-              // arguments: {"productId": 'ce8d6464-8c7f-47db-a381-a163a258713a'},
-              arguments: {"productId": attachment['product']},
-            );
-          },
-          iconData: Icons.shopping_cart_rounded,
-          title: 'Product');
+      return InkWell(
+        onTap: () {
+          Navigator.pushNamed(
+            context,
+            Routes.PRODUCT,
+            // arguments: {"productId": 'ce8d6464-8c7f-47db-a381-a163a258713a'},
+            arguments: {"productId": attachment['product']},
+          );
+        },
+        child: Row(
+          children: [
+            Icon(
+              Icons.shopping_cart_rounded,
+              color: white,
+              size: 18,
+            ),
+            const SizedBox(width: 5),
+            Text(
+              "Product",
+              style: TextStyle(
+                color: white,
+                fontWeight: FontWeight.w600,
+              ),
+            )
+          ],
+        ),
+      );
+      // return attachmentWidget(
+      //     onTap: () {
+      //       Navigator.pushNamed(
+      //         context,
+      //         Routes.PRODUCT,
+      //         // arguments: {"productId": 'ce8d6464-8c7f-47db-a381-a163a258713a'},
+      //         arguments: {"productId": attachment['product']},
+      //       );
+      //     },
+      //     iconData: Icons.shopping_cart_rounded,
+      //     title: 'Product');
     }
 
     if (attachment.containsKey('service')) {
-      return attachmentWidget(
-          onTap: () {
-            Navigator.pushNamed(
-              context,
-              Routes.SERVICE_DETAIL,
-              // arguments: {"serviceId": '08083ad8-04d9-4878-8b18-e820f7c680af'},
-              arguments: {"serviceId": attachment['service']},
-            );
-          },
-          iconData: Icons.handyman_rounded,
-          title: 'Service');
+      return InkWell(
+        onTap: () {
+          Navigator.pushNamed(
+            context,
+            Routes.SERVICE_DETAIL,
+            // arguments: {"serviceId": '08083ad8-04d9-4878-8b18-e820f7c680af'},
+            arguments: {"serviceId": attachment['service']},
+          );
+        },
+        child: Row(
+          children: [
+            Icon(
+              Icons.handyman_rounded,
+              color: white,
+              size: 18,
+            ),
+            const SizedBox(width: 5),
+            Text(
+              "Service",
+              style: TextStyle(
+                color: white,
+                fontWeight: FontWeight.w600,
+              ),
+            )
+          ],
+        ),
+      );
+      // return attachmentWidget(
+      //     onTap: () {
+      //       Navigator.pushNamed(
+      //         context,
+      //         Routes.SERVICE_DETAIL,
+      //         // arguments: {"serviceId": '08083ad8-04d9-4878-8b18-e820f7c680af'},
+      //         arguments: {"serviceId": attachment['service']},
+      //       );
+      //     },
+      //     iconData: Icons.handyman_rounded,
+      //     title: 'Service');
     }
 
     if (attachment.containsKey('blog')) {
@@ -1062,7 +1128,8 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
   }
 
   bool commentingEnabled() {
-    return currentMoment!.enableCommenting;
+    return currentMoment!.enableCommenting != null &&
+        currentMoment!.enableCommenting;
   }
 
   Widget getPayMeBtn() {

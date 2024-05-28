@@ -27,8 +27,8 @@
 //         _streamSubscription = _stream?.listen((NDEFMessage message) {
 //           nfcMessageHandler(message: message);
 //
-//           print("message DATA FROM NFC: ${message.data}");
-//           print("message PAYLOAD FROM NFC: ${message.payload}");
+//           debugPrint("message DATA FROM NFC: ${message.data}");
+//           debugPrint("message PAYLOAD FROM NFC: ${message.payload}");
 //         });
 //       }
 //     });

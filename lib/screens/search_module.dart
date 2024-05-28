@@ -32,7 +32,7 @@ import 'more_apps/messaging/chat/helpers/connection_list_manager.dart';
 import 'more_apps/user_profile/user_auth.dart';
 
 class SearchModule extends StatefulWidget {
-  final dynamic arguments;
+  final arguments;
 
   SearchModule({this.arguments});
 
@@ -69,7 +69,7 @@ class _SearchModuleState extends State<SearchModule> {
   int? count = 0;
   String? next = "";
   String? previous = "";
-  final ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = new ScrollController();
   bool isLoading = false;
   bool noItemInList = false;
 
@@ -590,10 +590,10 @@ class _SearchModuleState extends State<SearchModule> {
           results.clear();
 
           try {
-            tempList?.forEach((result) {
+            tempList!.forEach((result) {
               results.add(getResultTile(result));
             });
-            debugPrint('FINAL RESULT-> $results');
+            debugPrint('FINAL RESULT-> ${results}');
           } catch (e) {
             debugPrint('CANNOT SHOW SEARCH RESULT -> ${e.toString()}');
           }
@@ -630,7 +630,7 @@ class _SearchModuleState extends State<SearchModule> {
   }
 
   // ignore: missing_return
-  Widget getResultTile(Map<String, dynamic> result) {
+  Widget getResultTile(var result) {
     switch (selectedMenuItemIndex) {
       case 0:
         debugPrint('RESULT OKAY->');
@@ -649,17 +649,25 @@ class _SearchModuleState extends State<SearchModule> {
   String getSearchUrl(String searchedText) {
     switch (selectedMenuItemIndex) {
       case 0:
-        return "${AppConfig.baseUrl}/api/v1/search/users/?search=$searchedText";
+        return AppConfig.baseUrl +
+            "/api/v1/search/users/?search=" +
+            searchedText;
       case 1:
-        return "${AppConfig.baseUrl}/api/v1/search/products/?search=$searchedText";
+        return AppConfig.baseUrl +
+            "/api/v1/search/products/?search=" +
+            searchedText;
       case 2:
-        return "${AppConfig.baseUrl}/api/v1/search/services/?search=$searchedText";
+        return AppConfig.baseUrl +
+            "/api/v1/search/services/?search=" +
+            searchedText;
       default:
-        return "${AppConfig.baseUrl}/api/v1/search/users/?search=$searchedText";
+        return AppConfig.baseUrl +
+            "/api/v1/search/users/?search=" +
+            searchedText;
     }
   }
 
-  Widget getUserTile(Map<String, dynamic> object) {
+  Widget getUserTile(var object) {
     final CustomerProfile user = CustomerProfile.fromJson(object);
 
     // if (user.userName.toString().toLowerCase() == "slydo" ||
@@ -766,7 +774,7 @@ class _SearchModuleState extends State<SearchModule> {
     }
   }
 
-  Widget getProductTile(Map<String, dynamic> object) {
+  Widget getProductTile(var object) {
     final Product product = Product();
     product.name = object['name'];
     product.id = object['id'];
@@ -786,7 +794,7 @@ class _SearchModuleState extends State<SearchModule> {
         context, productCard(product, object), product);
   }
 
-  Widget productCard(Product product, Map<String, dynamic> object) {
+  Widget productCard(Product product, var object) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
       child: Card(
@@ -821,14 +829,12 @@ class _SearchModuleState extends State<SearchModule> {
     );
   }
 
-  Widget getLeading(Product product, Map<String, dynamic> object) {
+  Widget getLeading(Product product, var object) {
     var imageUrl;
 
     try {
       imageUrl = object["cover"];
-    } catch (e) {
-      debugPrint("Error $e");
-    }
+    } catch (e) {}
     return GestureDetector(
       onTap: () {
         Navigator.of(context)
@@ -917,7 +923,7 @@ class _SearchModuleState extends State<SearchModule> {
     );
   }
 
-  Widget getServiceTile(Map<String, dynamic> object) {
+  Widget getServiceTile(var object) {
     final Service service = Service();
     service.name = object['name'];
     service.id = object['id'];
@@ -936,7 +942,7 @@ class _SearchModuleState extends State<SearchModule> {
         context, getServiceCard(service, object), service);
   }
 
-  Widget getServiceCard(Service service, Map<String, dynamic> object) {
+  Widget getServiceCard(Service service, var object) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
       child: Card(
@@ -978,13 +984,11 @@ class _SearchModuleState extends State<SearchModule> {
     );
   }
 
-  Widget getLeadingService(Service service, Map<String, dynamic> object) {
+  Widget getLeadingService(Service service, var object) {
     var imageUrl;
     try {
       imageUrl = object["cover"];
-    } catch (e) {
-      debugPrint("Error $e");
-    }
+    } catch (e) {}
 
     return GestureDetector(
       onTap: () {
@@ -1067,7 +1071,7 @@ class _SearchModuleState extends State<SearchModule> {
   void loadUsers(List data) {
     switch (selectedMenuItemIndex) {
       case 0:
-        for (var item in data) {
+        data.forEach((item) {
           if (mounted) {
             setState(() {
               if (data.isNotEmpty) {
@@ -1076,10 +1080,10 @@ class _SearchModuleState extends State<SearchModule> {
               results.add(getUserTile(item));
             });
           }
-        }
+        });
         break;
       case 1:
-        for (var item in data) {
+        data.forEach((item) {
           if (mounted) {
             setState(() {
               if (data.isNotEmpty) {
@@ -1088,10 +1092,10 @@ class _SearchModuleState extends State<SearchModule> {
               results.add(getProductTile(item));
             });
           }
-        }
+        });
         break;
       case 2:
-        for (var item in data) {
+        data.forEach((item) {
           if (mounted) {
             setState(() {
               if (data.isNotEmpty) {
@@ -1100,7 +1104,7 @@ class _SearchModuleState extends State<SearchModule> {
               results.add(getServiceTile(item));
             });
           }
-        }
+        });
         break;
     }
   }
@@ -1367,8 +1371,8 @@ class _SearchModuleState extends State<SearchModule> {
       actionTwoBgColor: greyBorderColor,
       actionTwoTextColor: blackFont,
       title: AppLocalization.of(context)!.block,
-      description:
-          "${AppLocalization.of(context)!.areYouSureWantToBlock} ${user.displayName()}",
+      description: AppLocalization.of(context)!.areYouSureWantToBlock +
+          " ${user.displayName()}",
       actionOneText: AppLocalization.of(context)!.block,
       actionTwoText: AppLocalization.of(context)!.cancel,
     );
@@ -1376,8 +1380,8 @@ class _SearchModuleState extends State<SearchModule> {
       final bool done = await UserAuth().blockUser(user);
       if (done) {
         showSnackbar(context,
-            message:
-                "${user.displayName()} ${AppLocalization.of(context)!.isBlockedSuccessfully}");
+            message: "${user.displayName()} " +
+                AppLocalization.of(context)!.isBlockedSuccessfully);
 
         final ConnectionListBloc connectionListBloc =
             Provider.of<ConnectionListBloc>(context, listen: false);
@@ -1395,7 +1399,7 @@ class _SearchModuleState extends State<SearchModule> {
   }
 
   void connectUserAlert(CustomerProfile user) async {
-    await showDialogBox(
+    final bool? result = await showDialogBox(
       context: context,
       roundedBackgroundIcon: RoundedBackgroundIcon(
         backgroundColor: navyBlue.withOpacity(0.08),

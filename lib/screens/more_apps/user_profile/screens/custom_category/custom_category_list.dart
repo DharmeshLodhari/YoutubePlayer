@@ -30,17 +30,17 @@ class _CustomCategoryListState extends State<CustomCategoryList> {
   String? next = "";
   String? previous = "";
   List<ProductCategory> itemList = [];
-  final ScrollController _scrollController = ScrollController();
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  ScrollController _scrollController = new ScrollController();
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   final GlobalKey<ScaffoldMessengerState> _messengerScaffoldKey =
-      GlobalKey<ScaffoldMessengerState>();
-  final RefreshController _refreshController =
+      new GlobalKey<ScaffoldMessengerState>();
+  RefreshController _refreshController =
       RefreshController(initialRefresh: false);
   bool isLoading = false;
   bool noItemInList = false;
   UserBloc? userBloc;
 
-  final TextEditingController _controller = TextEditingController();
+  TextEditingController _controller = TextEditingController();
   @override
   void initState() {
     Future.delayed(const Duration(seconds: 1), () {
@@ -65,7 +65,7 @@ class _CustomCategoryListState extends State<CustomCategoryList> {
 
   void _onProductRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      final connectionResult = value;
+      var connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         itemCount = 0;
@@ -97,8 +97,8 @@ class _CustomCategoryListState extends State<CustomCategoryList> {
         isLoading = true;
         if (mounted) setState(() {});
 
-        final List<ProductCategory>? result = await ShoppingAuthService()
-            .obtainCustomCategory(userBloc?.user.userName ?? "");
+        List<ProductCategory> result = await ShoppingAuthService()
+            .obtainCustomCategory(userBloc!.user.userName);
 
         if (result == null) {
           isLoading = false;
@@ -137,7 +137,7 @@ class _CustomCategoryListState extends State<CustomCategoryList> {
     }
   }
 
-  void addCategory() {
+  addCategory() {
     showDialogBoxWithInput(
       context: context,
       actionOneTextColor: white,
@@ -188,7 +188,8 @@ class _CustomCategoryListState extends State<CustomCategoryList> {
       ),
       leftButtonOnPressed: () async {
         if (_controller.text.isNotEmpty) {
-          await ShoppingAuthService().createCustomCategory(_controller.text);
+          bool result = await ShoppingAuthService()
+              .createCustomCategory(_controller.text);
           _onProductRefresh();
           _controller.clear();
           Navigator.pop(context);
@@ -197,7 +198,7 @@ class _CustomCategoryListState extends State<CustomCategoryList> {
     );
   }
 
-  void deleteOrEditCategory(ProductCategory prod) {
+  deleteOrEditCategory(ProductCategory prod) {
     _controller.text = prod.name;
     showDialogBoxWithInput(
         context: context,
@@ -251,18 +252,41 @@ class _CustomCategoryListState extends State<CustomCategoryList> {
           ],
         ),
         leftButtonOnPressed: () async {
-          await ShoppingAuthService().deleteCustomCategory(prod.id);
-          _onProductRefresh();
-          _controller.clear();
-          Navigator.pop(context);
+          deleteCategoryDialog(prod.id);
         },
         rightButtonOnPressed: () async {
-          await ShoppingAuthService()
+          bool result = await ShoppingAuthService()
               .editCustomCategory(_controller.text, prod.id);
           _onProductRefresh();
           _controller.clear();
           Navigator.pop(context);
         });
+  }
+
+  void deleteCategoryDialog(id) {
+    showDialogBox(
+      context: context,
+      actionOneTextColor: blackFont,
+      actionOneBgColor: greyBorderColor,
+      actionTwoTextColor: white,
+      actionTwoBgColor: mateRed,
+      title: 'Delete Custom Category',
+      actionOneText: AppLocalization.of(context)!.discard,
+      actionTwoText: AppLocalization.of(context)!.continueMsg,
+      description: 'Are you sure you want to delete this custom category?',
+      roundedBackgroundIcon: RoundedBackgroundIcon(
+        enableMargin: false,
+        width: 90,
+        height: 90,
+        image: Image.asset('assets/images/delete_dialog_icon.png'),
+      ),
+      rightButtonOnPressed: () async {
+        bool result = await ShoppingAuthService().deleteCustomCategory(id);
+        _onProductRefresh();
+        _controller.clear();
+        Navigator.pop(context);
+      },
+    );
   }
 
   @override

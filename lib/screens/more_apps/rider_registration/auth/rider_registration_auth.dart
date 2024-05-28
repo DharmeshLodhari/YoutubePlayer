@@ -56,6 +56,7 @@ class RiderRegistrationAuthService extends AuthService {
     final String url = AppConfig.baseUrl + "/api/v1/user/rider-kyc/$username/";
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
+    debugPrint('Status of KYC...${response.body} and ${response.statusCode}');
     if (response.statusCode == 200 || response.statusCode == 201) {
       final jsonData = jsonDecode(response.body);
       return KYCDataModel.fromJson(jsonData);

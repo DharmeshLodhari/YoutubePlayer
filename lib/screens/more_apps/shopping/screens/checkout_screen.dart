@@ -84,7 +84,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     );
   }
 
-  Widget _scaffoldBody() {
+  _scaffoldBody() {
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(12.0),
@@ -117,24 +117,23 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               ),
             ),
             const SizedBox(height: 18),
-            if (shippingOptionsLoading)
-              Center(child: CircularLoadingIndicator())
-            else
-              Column(
-                children: [
-                  Visibility(
-                    visible: shippingOptions.isNotEmpty,
-                    child: dropDownPickItemWidget(
-                      label: 'Shipping Options',
-                      onTap: () => pickShippingOptions(),
-                      selectedItem: selectedShippingOptionName,
-                    ),
+            shippingOptionsLoading
+                ? Center(child: CircularLoadingIndicator())
+                : Column(
+                    children: [
+                      Visibility(
+                        visible: shippingOptions.isNotEmpty,
+                        child: dropDownPickItemWidget(
+                          label: 'Shipping Options',
+                          onTap: () => pickShippingOptions(),
+                          selectedItem: selectedShippingOptionName,
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 15,
+                      )
+                    ],
                   ),
-                  const SizedBox(
-                    height: 15,
-                  )
-                ],
-              ),
             // Divider(thickness: 0.3, color: blackFont),
             Visibility(
               visible: merchantFullName != null,
@@ -209,7 +208,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             shippingOption != null ? shippingOption?.price ?? 0 : 0);
   }
 
-  int getSubTotalPrice() {
+  getSubTotalPrice() {
     return basketBloc.getSubTotalPriceByMerchant(
         merchantUserName:
             basketBloc.merchantNameMapCopy[merchantFullName] ?? '');
@@ -292,7 +291,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     );
   }
 
-  void onNextClicked() {
+  onNextClicked() {
     basketBloc.orderTotal += getOrderTotalPrice();
     basketBloc.totalShippingCost +=
         shippingOption != null ? shippingOption?.price ?? 0 : 0;
@@ -308,7 +307,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     }
   }
 
-  void resetData() {
+  resetData() {
     deliveryOption = null;
     merchantFullName = null;
     shippingOptions.clear();
@@ -316,14 +315,14 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     if (mounted) setState(() {});
   }
 
-  Future<void> pickMerchantNames() async {
+  pickMerchantNames() async {
     merchantFullNames.clear();
 
     final allMerchants = basketBloc.merchantData;
 
-    for (var element in allMerchants) {
+    allMerchants.forEach((element) {
       merchantFullNames.add(element['name']!);
-    }
+    });
 
     final String? pickedMerchantName = await showPickItemDialog<String>(
       context: context,
@@ -344,7 +343,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     }
   }
 
-  Future<void> pickDeliveryOptions() async {
+  pickDeliveryOptions() async {
     final String? pickedDeliveryOption = await showPickItemDialog<String>(
       context: context,
       items: deliveryOptions,
@@ -366,12 +365,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             if (mounted) setState(() {});
 
             debugPrint('VALUE :: $value');
-            for (var element in value) {
+            value.forEach((element) {
               // String shippingOption = element.name;
               // int shippingOptionAmount = element.price;
               // String currencySymbol = worldCurrencies[element.currency] ?? '';
               shippingOptions.add(element);
-            }
+            });
           },
         ).catchError((error) {
           shippingOptionsLoading = false;
@@ -388,7 +387,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
   void selectCategory() async {}
 
-  Future<void> pickShippingOptions() async {
+  pickShippingOptions() async {
     final ShippingOptionsModel? pickedShippingOption =
         await showDialog<ShippingOptionsModel>(
             context: context,

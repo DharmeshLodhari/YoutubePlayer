@@ -130,7 +130,8 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
           width: 8,
         ),
         addToCartBtn(),
-        const SizedBox(
+        // ignore: prefer_const_constructors
+        SizedBox(
           width: 16,
         ),
       ],

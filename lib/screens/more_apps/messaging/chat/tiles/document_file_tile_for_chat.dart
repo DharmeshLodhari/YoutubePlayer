@@ -19,14 +19,13 @@ import 'package:provider/provider.dart';
 
 import '../../../../../data/state_notifier.dart';
 import '../../../../../utils/enums.dart';
-import '../models/chat_conversation.dart';
+import '../models/ChatConversation.dart';
 
 class DocumentFileTileForChat extends StatefulWidget {
   final Map<String, dynamic> message;
   final ChatConversation? chatConversation;
 
-  const DocumentFileTileForChat(
-      {super.key, required this.message, this.chatConversation});
+  DocumentFileTileForChat({required this.message, this.chatConversation});
 
   @override
   State<DocumentFileTileForChat> createState() =>
@@ -60,7 +59,7 @@ class _DocumentFileTileForChatState extends State<DocumentFileTileForChat> {
                   chatConversation: widget.chatConversation!,
                 ),
                 if (isSend)
-                  SizedBox(
+                  Container(
                       width: 20, child: getMessageTick(message: widget.message))
                 else
                   Container(),
@@ -188,7 +187,7 @@ class _FileTileForChatState extends State<FileTileForChat> {
     send.send([id, status, progress]);
   }
 
-  Future<void> getIfFileIsDownloadable() async {
+  getIfFileIsDownloadable() async {
     final DocumentFileInChatDownloadModel model =
         DocumentFileInChatDownloadModel(
       checkID: checkID,
@@ -320,14 +319,14 @@ class _FileTileForChatState extends State<FileTileForChat> {
     if (filePathInOs != null && filePathInOs != "") {
       log("FILE PATH:- $filePathInOs");
       try {
-        await OpenFilex.open(filePathInOs);
+        final OpenResult openResult = await OpenFilex.open(filePathInOs);
       } catch (error) {
         log("ERROR WHILE OPENING FILE:- $filePathInOs");
       }
     }
   }
 
-  void _downloadAndSaveFileNameToDb() async {
+  _downloadAndSaveFileNameToDb() async {
     final PermissionStatus status = await Permission.storage.request();
 
     var downloadsDirectoryPath;
@@ -368,7 +367,7 @@ class _FileTileForChatState extends State<FileTileForChat> {
     }
   }
 
-  Widget getTrailingIcon(bool isSend) {
+  getTrailingIcon(bool isSend) {
     if (isDownloading) {
       return SizedBox(
         width: 25,
@@ -389,7 +388,7 @@ class _FileTileForChatState extends State<FileTileForChat> {
         color: isSend ? Colors.white : blackFont);
   }
 
-  String truncateFileName(String fileName) {
+  truncateFileName(String fileName) {
     final String actualFileName = fileName.split('.').first;
     if (actualFileName.length >= 13) {
       return '...${fileName.substring(fileName.length - 13)}';
@@ -415,7 +414,7 @@ String getDocumentFileIcon(DocumentFileTypeForChat docsType) {
   }
 }
 
-DocumentFileTypeForChat getDocumentFileTypeForChat(String extension) {
+getDocumentFileTypeForChat(String extension) {
   switch (extension) {
     case 'pdf':
       return DocumentFileTypeForChat.pdf;
@@ -428,5 +427,4 @@ DocumentFileTypeForChat getDocumentFileTypeForChat(String extension) {
     case 'txt':
       return DocumentFileTypeForChat.txt;
   }
-  return DocumentFileTypeForChat.txt;
 }

@@ -78,7 +78,7 @@ class _DisplayProductState extends State<DisplayProduct> {
             arguments: {"product": widget.product});
       },
       child: SizedBox(
-        width: 250,
+        width: 230,
         child: Card(
           semanticContainer: true,
           clipBehavior: Clip.antiAliasWithSaveLayer,
@@ -115,44 +115,8 @@ class _DisplayProductState extends State<DisplayProduct> {
                       child: getRating(
                           numberOfRating: widget.product.rating?.toInt()),
                     ),
-                    if (widget.product.discountedPrice != null)
-                      (checkDiscount(
-                              widget.product.discountIsActive ?? false,
-                              widget.product.discountedPrice ?? 0,
-                              widget.product.price ?? 0))
-                          ? Positioned(
-                              top: 10,
-                              right: 10,
-                              child: showDiscountValue(
-                                  widget.product.discountType ?? "",
-                                  widget.product.discountValue ?? 0,
-                                  widget.product.currency ?? "NGN"))
-                          : const SizedBox()
-                    else
-                      const SizedBox(),
 
-                    if ((widget.product.pricePercentageChange != null) &
-                        (widget.product.pricePercentageChange != 0.0)) ...[
-                      Positioned(
-                        top: 8,
-                        right: 8,
-                        child: Container(
-                          padding: const EdgeInsets.only(
-                              left: 6.0, right: 6.0, top: 4.0, bottom: 4.0),
-                          decoration: BoxDecoration(
-                            color: naturalGreen,
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(8)),
-                          ),
-                          child: Text(
-                            "${widget.product.pricePercentageChange!.toString()}% off",
-                            style: const TextStyle(
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
+                    productStockAndDetailTag(),
 
                     displayShoppingCartControls(),
                     // TODO: to be added in future
@@ -175,6 +139,7 @@ class _DisplayProductState extends State<DisplayProduct> {
                           lengthToTruncateAt: 16,
                           showEllipsis: false,
                         ),
+                        maxLines: 1,
                         style: TextStyle(
                           color: blackFont,
                           fontSize: 14,
@@ -185,14 +150,13 @@ class _DisplayProductState extends State<DisplayProduct> {
                         height: 4,
                       ),
                       Text(
-                        messageDecoderWithEmoji(
-                              truncateString(
-                                str: widget.product.shortDescription!,
-                                lengthToTruncateAt: 60,
-                                showEllipsis: true,
-                              ),
-                            ) ??
-                            "",
+                        truncateString(
+                          str: messageDecoderWithEmoji(
+                                  widget.product.shortDescription) ??
+                              "",
+                          lengthToTruncateAt: 45,
+                          showEllipsis: true,
+                        ),
                         style: TextStyle(
                           fontFamily: "Inter",
                           fontWeight: FontWeight.w400,
@@ -201,10 +165,10 @@ class _DisplayProductState extends State<DisplayProduct> {
                         ),
                       ),
                       const SizedBox(
-                        height: 6,
+                        height: 5,
                       ),
                       Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -217,7 +181,7 @@ class _DisplayProductState extends State<DisplayProduct> {
                                       style: TextStyle(
                                         fontFamily: "Inter",
                                         fontWeight: FontWeight.bold,
-                                        fontSize: 14.8,
+                                        fontSize: 14,
                                         color: navyBlue,
                                       ),
                                     ),
@@ -242,45 +206,43 @@ class _DisplayProductState extends State<DisplayProduct> {
                                     ),
                                   ],
                                 ),
-                                const SizedBox(height: 5),
-                                if (widget.product.discountedPrice != null)
-                                  (checkDiscount(
-                                          widget.product.discountIsActive!,
-                                          widget.product.discountedPrice!,
-                                          widget.product.price!))
-                                      ? Row(
-                                          children: [
-                                            Text(
-                                              worldCurrencies[
-                                                  widget.product.currency!]!,
-                                              style: TextStyle(
-                                                fontFamily: "Inter",
-                                                fontWeight: FontWeight.w400,
-                                                fontSize: 12.8,
-                                                color: navyBlue,
-                                                decoration:
-                                                    TextDecoration.lineThrough,
+                                const SizedBox(height: 4),
+                                widget.product.discountedPrice != null
+                                    ? (checkDiscount(
+                                            widget.product.discountIsActive!,
+                                            widget.product.discountedPrice!,
+                                            widget.product.price!))
+                                        ? Row(
+                                            children: [
+                                              Text(
+                                                worldCurrencies[
+                                                    widget.product.currency!]!,
+                                                style: TextStyle(
+                                                  fontFamily: "Inter",
+                                                  fontWeight: FontWeight.w400,
+                                                  fontSize: 12,
+                                                  color: navyBlue,
+                                                  decoration: TextDecoration
+                                                      .lineThrough,
+                                                ),
                                               ),
-                                            ),
-                                            Text(
-                                              moneyDisplayNormalizer(
-                                                  widget.product.price!),
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.w400,
-                                                fontSize: 12,
-                                                color: navyBlue,
-                                                decoration:
-                                                    TextDecoration.lineThrough,
+                                              Text(
+                                                moneyDisplayNormalizer(
+                                                    widget.product.price!),
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.w400,
+                                                  fontSize: 12,
+                                                  color: navyBlue,
+                                                  decoration: TextDecoration
+                                                      .lineThrough,
+                                                ),
                                               ),
-                                            ),
-                                          ],
-                                        )
-                                      : const SizedBox()
-                                else
-                                  const SizedBox(),
+                                            ],
+                                          )
+                                        : const SizedBox()
+                                    : const SizedBox(),
                               ],
                             ),
-                            const Expanded(child: SizedBox(width: 40)),
                             displayShoppingAddingToCartControl()
                           ]),
                     ],
@@ -460,6 +422,70 @@ class _DisplayProductState extends State<DisplayProduct> {
     );
   }
 
+  Widget productStockAndDetailTag() {
+    if (widget.product.availableFrom?.isAfter(DateTime.now()) ?? false) {
+      return Positioned(
+        top: 10,
+        right: 10,
+        child: showColoredLabeledWidget(
+            text: AppLocalization.of(context)!.comingSoon, color: starYellow),
+      );
+    } else if (widget.product.trackInventory == true &&
+        widget.product.quantity! <= 0) {
+      return Positioned(
+        top: 10,
+        right: 10,
+        child: showColoredLabeledWidget(
+            text: AppLocalization.of(context)!.outOfStock, color: red),
+      );
+    } else if ((widget.product.discountedPrice != null &&
+            widget.product.discountedPrice != 0) ||
+        (widget.product.pricePercentageChange != null &&
+            widget.product.pricePercentageChange != 0.0)) {
+      return buildDiscountPrice();
+    } else {
+      return const SizedBox();
+    }
+  }
+
+  Widget buildDiscountPrice() {
+    if (widget.product.discountedPrice != null &&
+        widget.product.discountedPrice != 0) {
+      if (checkDiscount(widget.product.discountIsActive!,
+          widget.product.discountedPrice!, widget.product.price!)) {
+        return Positioned(
+            top: 10,
+            right: 10,
+            child: showDiscountValue(widget.product.discountType!,
+                widget.product.discountValue!, widget.product.currency));
+      } else {
+        return const SizedBox();
+      }
+    } else {
+      return const SizedBox();
+    }
+    // if ((widget.product.pricePercentageChange != null) &
+    // (widget.product.pricePercentageChange != 0.0)) ...[
+    // Positioned(
+    // top: 8,
+    // right: 8,
+    // child: Container(
+    // padding: EdgeInsets.only(
+    // left: 6.0, right: 6.0, top: 4.0, bottom: 4.0),
+    // decoration: BoxDecoration(
+    // color: naturalGreen,
+    // borderRadius: BorderRadius.all(Radius.circular(8)),
+    // ),
+    // child: Text(
+    // "${widget.product.pricePercentageChange!.toString()}% off",
+    // style: TextStyle(
+    // color: Colors.white,
+    // ),
+    // ),
+    // ),
+    // )
+  }
+
   Widget displayShoppingCartControls() {
     if (isInCart() == true) {
       return Positioned(
@@ -611,7 +637,7 @@ class _DisplayProductState extends State<DisplayProduct> {
     );
   }
 
-  void showBottomSheetDialog() async {
+  showBottomSheetDialog() async {
     final result = await androidBottomSheet(
       enableDrag: true,
       context: context,
@@ -732,19 +758,19 @@ class _DisplayServiceState extends State<DisplayService> {
             arguments: {"service": currentService});
       },
       child: SizedBox(
-        width: 180,
-        height: 500,
+        width: 230,
         child: Card(
+          semanticContainer: true,
+          clipBehavior: Clip.antiAliasWithSaveLayer,
           color: Colors.white,
           margin: EdgeInsets.only(
-              right: widget.giveRightPadding ? 10 : 0.0, bottom: 8.0),
+              right: widget.giveRightPadding ? 10 : 0.0, bottom: 2),
           elevation: 3,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           shadowColor: boxShadow,
           child: Padding(
-            padding:
-                const EdgeInsets.symmetric(vertical: 12.0, horizontal: 6.0),
+            padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 6.0),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
@@ -774,6 +800,7 @@ class _DisplayServiceState extends State<DisplayService> {
                         numberOfRating: widget.service.rating?.toInt(),
                       ),
                     ),
+                    serviceStockAndDetailTag(),
                     displayShoppingCartControls(),
                     //TODO: to be implemented later in future
                     // Positioned(right: 10, top: 10, child: favouriteIcon())
@@ -797,6 +824,7 @@ class _DisplayServiceState extends State<DisplayService> {
                               ),
                             ) ??
                             "",
+                        maxLines: 1,
                         style: TextStyle(
                           color: blackFont,
                           fontSize: 14,
@@ -806,23 +834,19 @@ class _DisplayServiceState extends State<DisplayService> {
                       const SizedBox(
                         height: 4,
                       ),
-                      SizedBox(
-                        width: 140,
-                        height: 14,
-                        child: Text(
-                          messageDecoderWithEmoji(
+                      Text(
+                        truncateString(
+                          str: messageDecoderWithEmoji(
                                   widget.service.shortDescription) ??
                               "",
-                          overflow: widget.service.shortDescription!.length > 21
-                              ? TextOverflow.ellipsis
-                              : TextOverflow.visible,
-                          maxLines: 1,
-                          style: TextStyle(
-                            fontFamily: "Inter",
-                            fontWeight: FontWeight.w300,
-                            fontSize: 9,
-                            color: yarnBlack,
-                          ),
+                          lengthToTruncateAt: 45,
+                          showEllipsis: true,
+                        ),
+                        style: TextStyle(
+                          fontFamily: "Inter",
+                          fontWeight: FontWeight.w300,
+                          fontSize: 10,
+                          color: yarnBlack,
                         ),
                       ),
                       Row(
@@ -858,6 +882,26 @@ class _DisplayServiceState extends State<DisplayService> {
         ),
       ),
     );
+  }
+
+  Widget serviceStockAndDetailTag() {
+    if (widget.service.availableFrom?.isAfter(DateTime.now()) ?? false) {
+      return Positioned(
+        top: 10,
+        right: 10,
+        child: showColoredLabeledWidget(
+            text: AppLocalization.of(context)!.comingSoon, color: starYellow),
+      );
+    } else if (widget.service.isAvailable == false) {
+      return Positioned(
+        top: 10,
+        right: 10,
+        child: showColoredLabeledWidget(
+            text: AppLocalization.of(context)!.outOfStock, color: red),
+      );
+    } else {
+      return const SizedBox();
+    }
   }
 
   Widget favouriteIcon() {
@@ -1128,7 +1172,7 @@ class _DisplayServiceState extends State<DisplayService> {
 }
 
 class FindBusiness extends StatefulWidget {
-  late final CustomerProfile customerProfile;
+  CustomerProfile customerProfile;
   final Function()? onProductRefresh;
   final TileRenderPlace tileRenderPlace;
   final Function(String, bool) callback;

@@ -65,7 +65,7 @@ class _EditJobState extends State<EditJob> {
   List<Cities> cityList = [];
 
   int imageCount = 5;
-  final ScrollController _scrollController = ScrollController();
+  ScrollController _scrollController = ScrollController();
   TextEditingController titleController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
   TextEditingController locationController = TextEditingController();
@@ -120,9 +120,9 @@ class _EditJobState extends State<EditJob> {
   List<String> categoriesNameList = [];
   List<PickedFile> jobLocalImages = [];
   List<Pictures?> jobImagesFromServer = [];
-  final ScrollController _categoryScrollController = ScrollController();
+  ScrollController _categoryScrollController = ScrollController();
   final GlobalKey<ScaffoldMessengerState> _jobScaffoldMessengerKey =
-      GlobalKey<ScaffoldMessengerState>();
+      new GlobalKey<ScaffoldMessengerState>();
   RefreshController refreshController =
       RefreshController(initialRefresh: false);
 
@@ -151,12 +151,12 @@ class _EditJobState extends State<EditJob> {
   TextEditingController? searchItemTextController;
   GlobalKey searchItemTextFormField = GlobalKey();
 
-  List<CategoryListData> searchedCategoryList = [];
+  List searchedCategoryList = [];
 
   StateSetter? bottomSheetStateSetterGlobal;
   bool bottomSheetMounted = false;
 
-  final Debouncer _debouncer = Debouncer(milliseconds: 500);
+  final _debouncer = Debouncer(milliseconds: 500);
   bool noSearchedItem = false;
   bool isItemLoading = false;
 
@@ -456,8 +456,11 @@ class _EditJobState extends State<EditJob> {
     );
   }
 
-  Widget getResultTile(CategoryListData result) {
-    return categoryViewCard(result);
+  Widget getResultTile(var result) {
+    if (result is CategoryListData) {
+      return categoryViewCard(result);
+    }
+    return Container();
   }
 
   Widget categoryViewCard(CategoryListData category) {
@@ -496,7 +499,8 @@ class _EditJobState extends State<EditJob> {
       isLoading = true;
       if (mounted) setState(() {});
 
-      await ServiceHubAuthService().retreiveJob(jobId: jobId).then((value) {
+      final result =
+          await ServiceHubAuthService().retreiveJob(jobId: jobId).then((value) {
         if (mounted) {
           setState(() {
             currentJob = value;
@@ -582,24 +586,24 @@ class _EditJobState extends State<EditJob> {
         });
       }
 
-      StatesModel? selectedStateModel;
-
-      for (StatesModel statesModel in tempList) {
-        if (statesModel.name == shippingAddress?.stateName) {
-          selectedStateModel = statesModel;
-          break;
-        }
-      }
-      if (selectedStateModel != null) {
-        final String? code = selectedStateModel.isoCode;
-        if (code != null) {
-          getShippingCities(code);
-        }
-      }
+      // StatesModel? selectedStateModel;
+      //
+      // for (StatesModel statesModel in tempList) {
+      //   if (statesModel.name == shippingAddress?.stateName) {
+      //     selectedStateModel = statesModel;
+      //     break;
+      //   }
+      // }
+      // if (selectedStateModel != null) {
+      //   String? code = selectedStateModel.isoCode;
+      //   if (code != null) {
+      //     getShippingCities(code);
+      //   }
+      // }
     }
   }
 
-  Future<void> getShippingCities(String? code) async {
+  Future<void> getShippingCities(code) async {
     if (mounted) setState(() {});
     if (!isLoader) {
       isLoader = true;
@@ -805,7 +809,7 @@ class _EditJobState extends State<EditJob> {
     );
   }
 
-  Widget getPickDateStart({
+  getPickDateStart({
     CrossAxisAlignment? crossAxisAlignment,
     String? dateText,
   }) =>
@@ -869,7 +873,7 @@ class _EditJobState extends State<EditJob> {
         ],
       );
 
-  Widget getPickDateEnd({
+  getPickDateEnd({
     CrossAxisAlignment? crossAxisAlignment,
     String? dateText,
   }) =>
@@ -950,7 +954,7 @@ class _EditJobState extends State<EditJob> {
   }
 
   Widget addLocalImages() {
-    return SizedBox(
+    return Container(
       height: 100,
       child: ListView.builder(
         controller: _scrollController,
@@ -1025,7 +1029,7 @@ class _EditJobState extends State<EditJob> {
   }
 
   Widget viewServerImages() {
-    return SizedBox(
+    return Container(
       height: 100,
       child: ListView.builder(
         controller: _scrollController,
@@ -1040,7 +1044,7 @@ class _EditJobState extends State<EditJob> {
   }
 
   Widget showServerImage(int index) {
-    return SizedBox(
+    return Container(
       height: 100,
       child: Stack(
         children: <Widget>[
@@ -1288,7 +1292,7 @@ class _EditJobState extends State<EditJob> {
   }
 
   Widget addImages() {
-    return SizedBox(
+    return Container(
       height: 100,
       child: ListView.builder(
         controller: _scrollController,
@@ -1379,7 +1383,7 @@ class _EditJobState extends State<EditJob> {
   }
 
   Widget showImage(int index) {
-    return SizedBox(
+    return Container(
       height: 100,
       child: Stack(
         children: <Widget>[
@@ -1527,13 +1531,13 @@ class _EditJobState extends State<EditJob> {
           fontWeight: FontWeight.w600,
         ),
       ),
-      onChanged: (String? value) async {
-        final StatesModel picked =
-            stateList.firstWhere((element) => element.name == value);
-        selectedCity = null;
-        await getShippingCities(picked.isoCode);
-        shippingAddress?.stateName = picked.name;
-        setState(() {
+      onChanged: (String? value) {
+        setState(() async {
+          final StatesModel picked =
+              stateList.firstWhere((element) => element.name == value);
+          selectedCity = null;
+          await getShippingCities(picked.isoCode);
+          shippingAddress?.stateName = picked.name;
           selectedState = value!;
         });
       },
@@ -1809,7 +1813,7 @@ class _EditJobState extends State<EditJob> {
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: SizedBox(
+              content: Container(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   elevation: 2,
@@ -1888,7 +1892,7 @@ class _EditJobState extends State<EditJob> {
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: SizedBox(
+              content: Container(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   margin: EdgeInsets.zero,
@@ -2418,41 +2422,43 @@ class CustomizedRadioButtonRow extends StatelessWidget {
           children: [
             Expanded(
               flex: 1,
-              child: Row(
-                children: [
-                  Radio(
-                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    visualDensity: const VisualDensity(
-                      horizontal: VisualDensity.minimumDensity,
-                      vertical: VisualDensity.minimumDensity,
-                    ),
-                    value: "Fixed",
-                    groupValue: groupValue,
-                    onChanged: (String? value) {
-                      // setState(() {
-                      //   groupValue = value!;
-                      // });
-                    },
-                  ),
-                  const SizedBox(
-                    width: 5,
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      // setState(() {
-                      //   groupValue = "Fixed";
-                      // });
-                    },
-                    child: const Text(
-                      "Fixes",
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 14,
-                        fontFamily: "Inter",
+              child: Container(
+                child: Row(
+                  children: [
+                    Radio(
+                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      visualDensity: const VisualDensity(
+                        horizontal: VisualDensity.minimumDensity,
+                        vertical: VisualDensity.minimumDensity,
                       ),
+                      value: "Fixed",
+                      groupValue: groupValue,
+                      onChanged: (String? value) {
+                        // setState(() {
+                        //   groupValue = value!;
+                        // });
+                      },
                     ),
-                  )
-                ],
+                    const SizedBox(
+                      width: 5,
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        // setState(() {
+                        //   groupValue = "Fixed";
+                        // });
+                      },
+                      child: const Text(
+                        "Fixes",
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 14,
+                          fontFamily: "Inter",
+                        ),
+                      ),
+                    )
+                  ],
+                ),
               ),
             ),
             Expanded(

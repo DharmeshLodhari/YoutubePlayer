@@ -36,18 +36,18 @@ class BasketBloc extends ChangeNotifier {
   }
 
   /// New Model implemented
-  final List<BasketItem> _basketItems = [];
+  List<BasketItem> _basketItems = [];
 
   List<BasketItem> get basketItems => _basketItems;
 
   int getProductOrServiceQuantityInCart(String id) {
     int quantity = 0;
 
-    for (var element in _basketItems) {
+    _basketItems.forEach((element) {
       if (element.item?.id == id) {
         quantity = int.parse(element.qty.toString());
       }
-    }
+    });
     return quantity;
   }
 
@@ -56,8 +56,8 @@ class BasketBloc extends ChangeNotifier {
 
     for (var item in _basketItems) {
       int variantTotal = 0;
-      int addOnOptionTotal = 0;
-      int addOnTotal = 0;
+      int AddOnOptionTotal = 0;
+      int AddOnTotal = 0;
       int normalTotal = 0;
       if (item.item?.isProduct ?? false) {
         if (item.hasVariant) {
@@ -70,14 +70,14 @@ class BasketBloc extends ChangeNotifier {
           final Product product = item.item as Product;
           for (AddOns itemAddOn in item.addOns ?? []) {
             for (var option in itemAddOn.options!) {
-              addOnOptionTotal +=
+              AddOnOptionTotal +=
                   int.parse(option.price.toString()) * option.quantity;
             }
           }
           normalTotal = product.getProductRealPrice() *
               int.parse(product.quantity.toString());
-          addOnTotal = addOnOptionTotal + normalTotal;
-          totalPrice += addOnTotal;
+          AddOnTotal = AddOnOptionTotal + normalTotal;
+          totalPrice += AddOnTotal;
         } else {
           final Product product = item.item as Product;
 
@@ -146,24 +146,21 @@ class BasketBloc extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addMerchantName(PurchasableItem item) {
-    final merchantUserName =
-        item is Product ? item.seller : (item as Service).provider;
-    final merchantFullName = item is Product
-        ? item.sellerFullName
-        : (item as Service).providerFullName;
+  void addMerchantName(var item) {
+    final merchantUserName = item is Product ? item.seller : item.provider;
+    final merchantFullName =
+        item is Product ? item.sellerFullName : item.providerFullName;
 
-    merchantNameMap[merchantFullName ?? ""] = merchantUserName ?? "";
-    merchantNameMapCopy[merchantFullName ?? ""] = merchantUserName ?? "";
+    merchantNameMap[merchantFullName] = merchantUserName;
+    merchantNameMapCopy[merchantFullName] = merchantUserName;
 
     debugPrint('MERCHANT NAME COPY LENGTH ::: ${merchantNameMapCopy.length}');
     debugPrint('MERCHANT NAME COPY ::: $merchantNameMapCopy');
   }
 
-  void removeMerchantName(PurchasableItem item) {
-    final merchantFullName = item is Product
-        ? item.sellerFullName
-        : (item as Service).providerFullName;
+  void removeMerchantName(var item) {
+    final merchantFullName =
+        item is Product ? item.sellerFullName : item.providerFullName;
 
     merchantNameMap.remove(merchantFullName);
     merchantNameMapCopy.remove(merchantFullName);
@@ -613,7 +610,7 @@ class BasketBloc extends ChangeNotifier {
   }
 
   void addItemInBasketWithQtyService(
-      PurchasableItem item, String type, SharedCartMemberModel? currentUser,
+      var item, String type, SharedCartMemberModel? currentUser,
       {bool withApiCall = true, bool replaceUpdatedBy = false}) {
     /// if we create or update existing basket item we will store that item to this variable
     /// for sending to server
@@ -621,14 +618,14 @@ class BasketBloc extends ChangeNotifier {
 
     bool flag = false;
 
-    for (var element in _basketItems) {
+    _basketItems.forEach((element) {
       if (element.item?.id == item.id) {
         flag = true;
 
         if (replaceUpdatedBy == true) {
-          (element.item as Product).itemAddedBy = (item as Product).itemAddedBy;
-          element.itemAddedBy = (item).itemAddedBy;
-          element.qty = (item).quantity;
+          (element.item as Product).itemAddedBy = item.itemAddedBy;
+          element.itemAddedBy = item.itemAddedBy;
+          element.qty = (item as Product).quantity;
         }
 
         if (withApiCall == true) {
@@ -638,9 +635,9 @@ class BasketBloc extends ChangeNotifier {
         }
 
         addedOrUpdatedItem = element;
-        continue;
+        return;
       }
-    }
+    });
 
     if (!flag) {
       if (withApiCall == true) {
@@ -664,7 +661,7 @@ class BasketBloc extends ChangeNotifier {
     /// add or update this item to the server
     if (withApiCall && addedOrUpdatedItem != null) {
       final BasketListModifierPayload data = _basketItems.toPayload(
-          addedOrUpdatedItem,
+          addedOrUpdatedItem!,
           actionType: BasketListModifierAction.increaseQty);
       if (data.payload.isNotEmpty) {
         ShoppingAuthService().addOrUpdateItemToShoppingCart(data.payload);
@@ -789,13 +786,13 @@ class BasketBloc extends ChangeNotifier {
   }
 
   // this will remove the product or service from the cart;
-  void removeItemFromCart(PurchasableItem item) {
+  void removeItemFromCart(item) {
     removeItemInBasketWithQty(item);
 
     notifyListeners();
   }
 
-  void removeItemInBasketWithQty(PurchasableItem item) {
+  void removeItemInBasketWithQty(var item) {
     var foundItem;
     try {
       for (int i = 0; i < _items.length; i++) {
@@ -808,17 +805,14 @@ class BasketBloc extends ChangeNotifier {
       if (foundItem != null) {
         if (foundItem["qty"] > 1) {
           foundItem["qty"] = foundItem["qty"] - 1;
-          _total = _total -
-              int.parse((item as Product).getProductRealPrice().toString());
+          _total = _total - int.parse(item.getProductRealPrice());
         } else if (foundItem["qty"] == 1) {
           _items.remove(foundItem);
-          _total = _total -
-              int.parse((item as Product).getProductRealPrice().toString());
+          _total = _total - int.parse(item.getProductRealPrice());
           removeMerchantName(item);
         } else if (foundItem["qty"] == 0) {
           _items.remove(foundItem);
-          _total = _total -
-              int.parse((item as Product).getProductRealPrice().toString());
+          _total = _total - int.parse(item.getProductRealPrice());
           removeMerchantName(item);
         } else {
           debugPrint("ERROR while removing element");
@@ -842,7 +836,7 @@ class BasketBloc extends ChangeNotifier {
     final List itemsCart = await ShoppingAuthService().getShoppingCart();
     final UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
 
-    final SharedCartMemberModel currentUser = userBloc.user.convertToUser();
+    final SharedCartMemberModel? currentUser = userBloc.user.convertToUser();
 
     for (var element in itemsCart) {
       final String type = element is Product ? "product" : "service";
@@ -1118,7 +1112,7 @@ class BasketBloc extends ChangeNotifier {
   int getSubTotalPriceByMerchant({required String merchantUserName}) {
     int subTotal = 0;
 
-    for (var element in items) {
+    items.forEach((element) {
       final item = element['item'];
 
       if (merchantUserName == item.getMerchantUserName()) {
@@ -1143,7 +1137,7 @@ class BasketBloc extends ChangeNotifier {
           }
         }
       }
-    }
+    });
 
     return subTotal;
   }

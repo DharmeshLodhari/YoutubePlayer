@@ -25,9 +25,11 @@ class LogoutHelper {
 
     MainSocketMessageHandler().dispose();
 
+    debugPrint("logout===>start");
     await AuthService().logOut().catchError((error) {
       debugPrint("ERROR:- while logging out the user");
     });
+    debugPrint("logout===>stop");
 
     CacheManager().deleteCache(clearAll: true);
 
@@ -40,6 +42,9 @@ class LogoutHelper {
     PushNotificationService().logout();
 
     final BankAccountBloc bankAccountBlocPart = Provider.of<BankAccountBloc>(
+        myGlobals.navigationKey.currentContext!,
+        listen: false);
+    final DashboardBloc dashboardBloc = Provider.of<DashboardBloc>(
         myGlobals.navigationKey.currentContext!,
         listen: false);
 

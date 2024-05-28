@@ -17,17 +17,17 @@ class UniLinksService {
 
   static void reset() => _promoId = '';
 
-  static void init() async {
+  static init() async {
     // This is used for cases when: APP is not running and the user clicks on a link.
     try {
       final Uri? uri = await getInitialUri();
       _uniLinkHandler(uri: uri);
     } on PlatformException {
       if (kDebugMode)
-        print("(PlatformException) Failed to receive initial uri.");
+        debugPrint("(PlatformException) Failed to receive initial uri.");
     } on FormatException catch (error) {
       if (kDebugMode)
-        print(
+        debugPrint(
             "(FormatException) Malformed Initial URI received. Error: $error");
     }
 
@@ -35,7 +35,7 @@ class UniLinksService {
     uriLinkStream.listen((Uri? uri) async {
       _uniLinkHandler(uri: uri);
     }, onError: (error) {
-      if (kDebugMode) print('UniLinks onUriLink error: $error');
+      if (kDebugMode) debugPrint('UniLinks onUriLink error: $error');
     });
   }
 
@@ -45,7 +45,7 @@ class UniLinksService {
     // String receivedPromoId = params['searchedUserName'] ?? '';
     // debugPrint("receivedPromoId : $receivedPromoId");
     if (uri == null) return;
-    // final Map<String, String> params = uri.queryParameters;
+    final Map<String, String> params = uri.queryParameters;
 
     // Split the URL by '/'
     final List<String> parts = uri.toString().split('/');

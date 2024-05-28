@@ -27,7 +27,7 @@ class MusicExploreScreen extends StatefulWidget {
 }
 
 class _MusicExploreScreenState extends State<MusicExploreScreen> {
-  final CarouselController _carouselController = CarouselController();
+  CarouselController _carouselController = CarouselController();
 
   List<PartialMusicItem> mostRecentDiscoveryList = [];
   bool isMostRecentDiscoveryLoading = false;
@@ -41,7 +41,7 @@ class _MusicExploreScreenState extends State<MusicExploreScreen> {
   List<PartialCelebrityItem> topCelebrityList = [];
   bool isTopCelebrityLoading = false;
 
-  final RefreshController _refreshController =
+  RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
   @override
@@ -103,7 +103,7 @@ class _MusicExploreScreenState extends State<MusicExploreScreen> {
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      final connectionResult = value;
+      var connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         getResult();
@@ -274,7 +274,7 @@ class _MusicExploreScreenState extends State<MusicExploreScreen> {
   Widget musicSlider() {
     return Container(
       child: isSliderLoading
-          ? SizedBox(
+          ? Container(
               height: 180,
               child: Center(
                 child: CircularLoadingIndicator(),
@@ -321,63 +321,67 @@ class _MusicExploreScreenState extends State<MusicExploreScreen> {
   }
 
   Widget mostRecentDiscovery() {
-    return Column(
-      children: [
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Text(
-                "Most Recent Discovery",
-                style: TextStyle(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 18,
-                  color: blackFont,
-                ),
-              ),
-              GestureDetector(
-                child: Text(
-                  "See all",
+    return Container(
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Text(
+                  "Most Recent Discovery",
                   style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14,
-                      color: navyBlue),
-                ),
-                onTap: () {
-                  Navigator.of(context).pushNamed("/music-category");
-                },
-              ),
-            ],
-          ),
-        ),
-        Container(
-          height: 242,
-          color: Colors.white,
-          child: isMostRecentDiscoveryLoading
-              ? Center(
-                  child: CircularLoadingIndicator(),
-                )
-              : SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Container(
-                    padding: const EdgeInsets.only(left: 16),
-                    child: Row(
-                      children: mostRecentDiscoveryList
-                          .map(
-                            (partialMusicItem) => Container(
-                              margin: const EdgeInsets.only(
-                                  right: 12, top: 16, bottom: 16),
-                              child:
-                                  musicCard(partialMusicItem: partialMusicItem),
-                            ),
-                          )
-                          .toList(),
-                    ),
+                    fontWeight: FontWeight.w700,
+                    fontSize: 18,
+                    color: blackFont,
                   ),
                 ),
-        )
-      ],
+                GestureDetector(
+                  child: Text(
+                    "See all",
+                    style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                        color: navyBlue),
+                  ),
+                  onTap: () {
+                    Navigator.of(context).pushNamed("/music-category");
+                  },
+                ),
+              ],
+            ),
+          ),
+          Container(
+            height: 242,
+            color: Colors.white,
+            child: isMostRecentDiscoveryLoading
+                ? Container(
+                    child: Center(
+                      child: CircularLoadingIndicator(),
+                    ),
+                  )
+                : SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Container(
+                      padding: const EdgeInsets.only(left: 16),
+                      child: Row(
+                        children: mostRecentDiscoveryList
+                            .map(
+                              (partialMusicItem) => Container(
+                                margin: const EdgeInsets.only(
+                                    right: 12, top: 16, bottom: 16),
+                                child: musicCard(
+                                    partialMusicItem: partialMusicItem),
+                              ),
+                            )
+                            .toList(),
+                      ),
+                    ),
+                  ),
+          )
+        ],
+      ),
     );
   }
 
@@ -461,57 +465,61 @@ class _MusicExploreScreenState extends State<MusicExploreScreen> {
   }
 
   Widget topCelebrity() {
-    return Column(
-      children: [
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Text(
-                "Top celebrate",
-                style: TextStyle(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 18,
-                  color: blackFont,
-                ),
-              ),
-              GestureDetector(
-                child: Text(
-                  "See all",
+    return Container(
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Text(
+                  "Top celebrate",
                   style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14,
-                      color: navyBlue),
+                    fontWeight: FontWeight.w700,
+                    fontSize: 18,
+                    color: blackFont,
+                  ),
                 ),
-                onTap: () {
-                  Navigator.of(context).pushNamed("/music-category");
-                },
-              ),
-            ],
+                GestureDetector(
+                  child: Text(
+                    "See all",
+                    style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                        color: navyBlue),
+                  ),
+                  onTap: () {
+                    Navigator.of(context).pushNamed("/music-category");
+                  },
+                ),
+              ],
+            ),
           ),
-        ),
-        Container(
-            height: 210,
-            color: Colors.white,
-            child: isTopCelebrityLoading
-                ? Center(
-                    child: CircularLoadingIndicator(),
-                  )
-                : SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Container(
-                      padding: const EdgeInsets.only(left: 16),
-                      child: Row(
-                        children: topCelebrityList
-                            .map((element) => Container(
-                                margin: const EdgeInsets.only(right: 12),
-                                child: celebrityCard(celebrityItem: element)))
-                            .toList(),
+          Container(
+              height: 210,
+              color: Colors.white,
+              child: isTopCelebrityLoading
+                  ? Container(
+                      child: Center(
+                        child: CircularLoadingIndicator(),
                       ),
-                    ),
-                  ))
-      ],
+                    )
+                  : SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Container(
+                        padding: const EdgeInsets.only(left: 16),
+                        child: Row(
+                          children: topCelebrityList
+                              .map((element) => Container(
+                                  margin: const EdgeInsets.only(right: 12),
+                                  child: celebrityCard(celebrityItem: element)))
+                              .toList(),
+                        ),
+                      ),
+                    ))
+        ],
+      ),
     );
   }
 
@@ -566,72 +574,75 @@ class _MusicExploreScreenState extends State<MusicExploreScreen> {
   }
 
   Widget mostPopularAlbum() {
-    return Column(
-      children: [
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Text(
-                "Most popular album",
-                style: TextStyle(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 18,
-                  color: blackFont,
-                ),
-              ),
-              GestureDetector(
-                child: Text(
-                  "See all",
+    return Container(
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Text(
+                  "Most popular album",
                   style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14,
-                      color: navyBlue),
-                ),
-                onTap: () {
-                  Navigator.of(context).pushNamed("/music-category");
-                },
-              ),
-            ],
-          ),
-        ),
-        Container(
-          color: Colors.white,
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          child: isMostPopularAlbumLoading
-              ? SizedBox(
-                  height: 100,
-                  child: Center(
-                    child: CircularLoadingIndicator(),
+                    fontWeight: FontWeight.w700,
+                    fontSize: 18,
+                    color: blackFont,
                   ),
-                )
-              : SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Container(
-                    padding: const EdgeInsets.only(left: 16),
-                    child: Row(
-                      children: mostPopularAlbumList
-                          .map(
-                            (partialAlbum) => Container(
-                              margin: const EdgeInsets.only(right: 12),
-                              child: InkWell(
-                                  onTap: () {
-                                    Navigator.of(context)
-                                        .pushNamed("/album-detail", arguments: {
-                                      "musicPlayer": widget.musicPlayer
-                                    });
-                                  },
-                                  child:
-                                      albumPoster(partialAlbum: partialAlbum)),
-                            ),
-                          )
-                          .toList(),
+                ),
+                GestureDetector(
+                  child: Text(
+                    "See all",
+                    style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                        color: navyBlue),
+                  ),
+                  onTap: () {
+                    Navigator.of(context).pushNamed("/music-category");
+                  },
+                ),
+              ],
+            ),
+          ),
+          Container(
+            color: Colors.white,
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            child: isMostPopularAlbumLoading
+                ? Container(
+                    height: 100,
+                    child: Center(
+                      child: CircularLoadingIndicator(),
+                    ),
+                  )
+                : SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Container(
+                      padding: const EdgeInsets.only(left: 16),
+                      child: Row(
+                        children: mostPopularAlbumList
+                            .map(
+                              (partialAlbum) => Container(
+                                margin: const EdgeInsets.only(right: 12),
+                                child: InkWell(
+                                    onTap: () {
+                                      Navigator.of(context).pushNamed(
+                                          "/album-detail",
+                                          arguments: {
+                                            "musicPlayer": widget.musicPlayer
+                                          });
+                                    },
+                                    child: albumPoster(
+                                        partialAlbum: partialAlbum)),
+                              ),
+                            )
+                            .toList(),
+                      ),
                     ),
                   ),
-                ),
-        )
-      ],
+          )
+        ],
+      ),
     );
   }
 
@@ -649,13 +660,13 @@ class _MusicExploreScreenState extends State<MusicExploreScreen> {
   }
 
   Widget eventPoster(String url) {
-    final bool temp = Random().nextBool();
+    bool temp = Random().nextBool();
     return GestureDetector(
       onTap: () {
         Navigator.of(context).pushNamed("/music-detail",
             arguments: {"musicPlayer": widget.musicPlayer});
       },
-      child: SizedBox(
+      child: Container(
         height: 132,
         width: 218,
         child: Stack(

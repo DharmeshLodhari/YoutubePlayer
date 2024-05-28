@@ -3,8 +3,8 @@ import 'dart:io';
 
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/locator.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/add_group_model.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/group_detail_model.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/AddGroupModel.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/GroupDetailModel.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/user_tile_for_group_detail.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
@@ -22,7 +22,7 @@ import 'package:image_picker/image_picker.dart';
 import '../../../../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 
 class UpdateGroupNameAndProfile extends StatefulWidget {
-  final dynamic arguments;
+  final arguments;
 
   UpdateGroupNameAndProfile({this.arguments});
 
@@ -33,9 +33,9 @@ class UpdateGroupNameAndProfile extends StatefulWidget {
 
 class _UpdateGroupNameAndProfileState extends State<UpdateGroupNameAndProfile> {
   final GlobalKey<ScaffoldState> _scaffoldUpdateGroupNameAndProfileKey =
-      GlobalKey<ScaffoldState>();
+      new GlobalKey<ScaffoldState>();
 
-  final GlobalKey<FormState> _formFieldKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formFieldKey = new GlobalKey<FormState>();
 
   List<CustomerProfile> selectedConnectionList = [];
 
@@ -319,17 +319,18 @@ class _UpdateGroupNameAndProfileState extends State<UpdateGroupNameAndProfile> {
                   isAmountField: true,
                   labelText: AppLocalization.of(context)!.amount,
                   onChanged: (value) {},
-                  // validator: (val) {
-                  //   try {
-                  //     double userAmount = double.parse(val.replaceAll(',', ''));
-                  //     if (userAmount > amountLimit) {
-                  //       return 'You cannot fund more than $amountLimit';
-                  //     }
-                  //   } catch (e) {
-                  //     return AppLocalization.of(context)!.invalidAmount;
-                  //   }
-                  //   return null;
-                  // },
+                  validator: (val) {
+                    try {
+                      final double userAmount =
+                          double.parse(val.replaceAll(',', ''));
+                      // if (userAmount > amountLimit) {
+                      //   return 'You cannot fund more than $amountLimit';
+                      // }
+                    } catch (e) {
+                      return AppLocalization.of(context)!.invalidAmount;
+                    }
+                    return null;
+                  },
                 ),
               ],
               const SizedBox(height: 10),

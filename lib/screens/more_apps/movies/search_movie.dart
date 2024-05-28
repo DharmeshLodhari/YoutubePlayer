@@ -14,8 +14,6 @@ import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class SearchMovie extends StatefulWidget {
-  const SearchMovie({super.key});
-
   @override
   _SearchMovieState createState() => _SearchMovieState();
 }
@@ -39,14 +37,14 @@ class _SearchMovieState extends State<SearchMovie> {
 
   List<MovieItem> movieList = [];
 
-  final RefreshController _refreshController =
+  RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
   bool isLoading = false;
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      final connectionResult = value;
+      var connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         getResult("");
@@ -150,39 +148,38 @@ class _SearchMovieState extends State<SearchMovie> {
           const SizedBox(
             height: 12,
           ),
-          if (isLoading)
-            Expanded(
-              child: Center(
-                child: CircularLoadingIndicator(),
-              ),
-            )
-          else
-            movieList.isEmpty
-                ? Expanded(child: searchBackground())
-                : Expanded(
-                    child: SmartRefresher(
-                      enablePullDown: true,
-                      header: WaterDropHeader(
-                        complete: Container(),
-                        waterDropColor: navyBlue,
-                      ),
-                      controller: _refreshController,
-                      onRefresh: _onRefresh,
-                      child: SingleChildScrollView(
-                        child: Column(
-                          children: movieList
-                              .map(
-                                (movie) => Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 8, horizontal: 16),
-                                    child:
-                                        MovieTileWithHeart(movieItem: movie)),
-                              )
-                              .toList(),
+          isLoading
+              ? Expanded(
+                  child: Center(
+                    child: CircularLoadingIndicator(),
+                  ),
+                )
+              : movieList.isEmpty
+                  ? Expanded(child: searchBackground())
+                  : Expanded(
+                      child: SmartRefresher(
+                        enablePullDown: true,
+                        header: WaterDropHeader(
+                          complete: Container(),
+                          waterDropColor: navyBlue,
+                        ),
+                        controller: _refreshController,
+                        onRefresh: _onRefresh,
+                        child: SingleChildScrollView(
+                          child: Column(
+                            children: movieList
+                                .map(
+                                  (movie) => Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 8, horizontal: 16),
+                                      child:
+                                          MovieTileWithHeart(movieItem: movie)),
+                                )
+                                .toList(),
+                          ),
                         ),
                       ),
                     ),
-                  ),
         ],
       ),
     );
@@ -379,7 +376,7 @@ class _SearchMovieState extends State<SearchMovie> {
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: SizedBox(
+              content: Container(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   elevation: 2,
@@ -500,7 +497,7 @@ class _SearchMovieState extends State<SearchMovie> {
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: SizedBox(
+              content: Container(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   elevation: 2,
@@ -647,7 +644,7 @@ class _SearchMovieState extends State<SearchMovie> {
     );
   }
 
-  Widget getPriceSelection(StateSetter bottomSheetSetState) {
+  Widget getPriceSelection(bottomSheetSetState) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Text(
         "Price",

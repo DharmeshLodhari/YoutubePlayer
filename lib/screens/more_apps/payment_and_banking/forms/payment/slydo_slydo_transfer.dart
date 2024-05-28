@@ -36,7 +36,7 @@ import '../../../user_profile/screens/user_profile_module_new/profile_template/u
 import '../../payment_and_banking_auth.dart';
 
 class SlydoSlydoTransfer extends StatefulWidget {
-  final dynamic arguments;
+  var arguments;
   final Function(bool)? callback;
 
   SlydoSlydoTransfer({this.arguments, this.callback});
@@ -83,6 +83,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
 
   //variables for categories
   bool isLoading = true;
+  bool isBalanceLoading = true;
   List<String?> paymentCategories = [];
   String? selectedCategory;
   late BasketBloc basketBloc;
@@ -95,29 +96,43 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
   bool showMoreOption = false;
   VirtualAccount? virtualAccount;
   late CachedVideoPlayerController controller;
-  double? currentBalance = 0.0;
+  int? currentBalance = 0;
+  bool isBalanceHidden = true;
 
   @override
   void initState() {
     final String? defaultReferenceText =
-        widget.arguments['defaultReferenceText'];
+        widget.arguments['defaultReferenceText'] != null
+            ? widget.arguments['defaultReferenceText']
+            : null;
     _referenceController = TextEditingController(text: defaultReferenceText);
     reference = _referenceController.text;
 
     isFromProfile = widget.arguments != null
-        ? widget.arguments['isFromProfile'] ?? false
+        ? widget.arguments['isFromProfile'] != null
+            ? widget.arguments['isFromProfile']
+            : false
         : false;
     isFromChat = widget.arguments != null
-        ? widget.arguments['isFromChat'] ?? false
+        ? widget.arguments['isFromChat'] != null
+            ? widget.arguments['isFromChat']
+            : false
         : false;
     isFromYarn = widget.arguments != null
-        ? widget.arguments['isFromYarn'] ?? false
+        ? widget.arguments['isFromYarn'] != null
+            ? widget.arguments['isFromYarn']
+            : false
         : false;
     isFromMoment = widget.arguments != null
-        ? widget.arguments['isFromMoment'] ?? false
+        ? widget.arguments['isFromMoment'] != null
+            ? widget.arguments['isFromMoment']
+            : false
         : false;
-    conversationId =
-        widget.arguments != null ? widget.arguments['conversationId'] : null;
+    conversationId = widget.arguments != null
+        ? widget.arguments['conversationId'] != null
+            ? widget.arguments['conversationId']
+            : null
+        : null;
     product = widget.arguments != null ? widget.arguments['product'] : null;
     service = widget.arguments != null ? widget.arguments['service'] : null;
     itemIndex = widget.arguments != null ? widget.arguments['itemIndex'] : null;
@@ -143,7 +158,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
     super.initState();
   }
 
-  Future<void> getRecipientProfileAndGetCategory() async {
+  void getRecipientProfileAndGetCategory() async {
     if (widget.arguments['recipient'] != null) {
       Provider.of<CustomerProfileBloc>(context, listen: false).customer =
           await UserAuth().fetchCustomerProfile(widget.arguments['recipient']);
@@ -154,9 +169,24 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
   }
 
   void getBankAccountDetail() async {
+    isBalanceLoading = true;
+    setState(() {});
+    await getAccountBalance();
     virtualAccount = await DatabaseHelper().getVirtualAccount();
-    // await getAccountBalance();
-    currentBalance = await getAccountBalance();
+    isBalanceLoading = false;
+    setState(() {});
+  }
+
+  Future<void> getAccountBalance() async {
+    await _auth.getAccountBalance().then((value) {
+      final data = value!;
+      final spendableBalance = data["spendable_balance"];
+      if (mounted) {
+        setState(() {
+          currentBalance = spendableBalance;
+        });
+      }
+    });
   }
 
   void setAllFieldProduct() {
@@ -195,11 +225,13 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
               _recipientController.text = '';
             }
             UserAuth().fetchCustomerProfile(recipient).then((customerProfile) {
-              if (mounted) {
-                setState(() {
-                  _payee = customerProfile;
-                  isValidPayee = _payee!.userName != userBloc.user.userName;
-                });
+              if (customerProfile != null) {
+                if (mounted) {
+                  setState(() {
+                    _payee = customerProfile;
+                    isValidPayee = _payee!.userName != userBloc.user.userName;
+                  });
+                }
               }
             });
           });
@@ -256,7 +288,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
         enableMargin: true,
       );
     }
-    return SizedBox(
+    return Container(
       height: 10,
       width: 10,
     );
@@ -274,126 +306,282 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
               padding: EdgeInsets.symmetric(
                   horizontal: 16, vertical: isScreenIsSmall ? 8 : 16),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Card(
-                    elevation: 2,
-                    margin: EdgeInsets.zero,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    shadowColor: iconBtnGrey,
-                    child: Container(
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: iconBtnGrey, width: 1)),
-                      child: Form(
-                        key: _formKey,
-                        child: Container(
-                          child: Column(
-                            children: <Widget>[
-                              getDisplayCard(),
-                              Container(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 20),
-                                child: Column(
-                                  children: [
-                                    const SizedBox(
-                                      height: 20,
-                                    ),
-                                    getRecipientField(),
-                                    const SizedBox(
-                                      height: 20,
-                                    ),
-                                    displayAmountField(),
-                                    const SizedBox(
-                                      height: 20,
-                                    ),
-                                    if (isFromYarn == true ||
-                                        isFromMoment == true) ...[
-                                      const SizedBox()
-                                    ] else ...[
-                                      if (showMoreOption)
-                                        getMoreOption()
-                                      else
-                                        Container(),
-                                      getMoreOptionTrigger(),
-                                    ],
-                                    if (errorMessage == "")
-                                      Container()
-                                    else
-                                      Text(
-                                        errorMessage,
-                                        style: TextStyle(
-                                            color: mateRed,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 16),
-                                      ),
-                                    if (errorMessage == "")
-                                      Container()
-                                    else
-                                      const SizedBox(
-                                        height: 20,
-                                      ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  Container(
-                    child: Column(
-                      children: [
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        if (amount == 0.0) ...[
-                          getSubmitButton()
-                        ] else ...[
-                          if (canDoSlydoTransfer(amount!, currentBalance!))
-                            getSubmitButton()
-                          else
-                            Container(
-                              child: Center(
-                                  child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 16.0),
-                                      child: Text.rich(TextSpan(
-                                          text: AppLocalization.of(context)!
-                                              .minimumTransfer,
-                                          style: TextStyle(
-                                              fontSize: 12,
-                                              color: blackFont,
-                                              fontWeight: FontWeight.w600),
-                                          children: <InlineSpan>[
-                                            TextSpan(
-                                              text: worldCurrencies[userBloc
-                                                      .user.currency!]! +
-                                                  moneyDisplayNormalizer(
-                                                      availableTransfer()),
-                                              style: TextStyle(
-                                                  fontSize: 12,
-                                                  color: blackFont,
-                                                  fontFamily: "Inter",
-                                                  fontWeight: FontWeight.w600),
-                                            )
-                                          ])))),
-                            ),
-                        ],
-
-                        // getSubmitButton(),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                      ],
-                    ),
-                  ),
+                  _buildTransferForm(),
+                  _buildFormFields(),
+                  _buildSendPayment(),
                 ],
               ),
             ),
           );
+  }
+
+  Widget _buildTransferForm() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "Transfer From",
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w400,
+            color: darkGrey,
+            fontFamily: "Inter",
+          ),
+        ),
+        const SizedBox(
+          height: 8,
+        ),
+        Container(
+          width: MediaQuery.of(context).size.width,
+          child: Card(
+            elevation: 0,
+            margin: EdgeInsets.zero,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(7),
+            ),
+            shadowColor: iconBtnGrey,
+            color: greyDarkBackground,
+            child: Container(
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(7),
+                  border: Border.all(color: iconBtnGrey, width: 1)),
+              child: Padding(
+                padding: const EdgeInsets.all(15.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "@${userBloc.user.userName}",
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w400,
+                        color: blackFont,
+                        fontFamily: "Inter",
+                      ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        if (isBalanceLoading == true)
+                          SizedBox(
+                            width: 20,
+                            height: 20,
+                            child:
+                                CircularLoadingIndicator(color: naturalGreen),
+                          )
+                        else
+                          Row(
+                            children: [
+                              Text(
+                                "Transferable Balance : ",
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w400,
+                                  color: navyBlue,
+                                  fontFamily: "Inter",
+                                ),
+                              ),
+                              if (isBalanceHidden)
+                                Container()
+                              else
+                                Text(
+                                  worldCurrencies[userBloc.user.currency] ?? "",
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w400,
+                                    color: navyBlue,
+                                    fontFamily: "Inter",
+                                  ),
+                                ),
+                              Text(
+                                isBalanceHidden
+                                    ? generateAsteriskMask(
+                                        moneyDisplayNormalizer(currentBalance))
+                                    : moneyDisplayNormalizer(currentBalance),
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w400,
+                                  color: navyBlue,
+                                  fontFamily: "Inter",
+                                ),
+                              ),
+                            ],
+                          ),
+                        InkWell(
+                          onTap: () {
+                            toggleBalanceVisibility();
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10.0, vertical: 5.0),
+                            child: Icon(
+                              isBalanceHidden
+                                  ? SlydoAppIcon.eye
+                                  : SlydoAppIcon.eye_close,
+                              color: navyBlue,
+                              size: 12,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(
+          height: 15,
+        ),
+      ],
+    );
+  }
+
+  String generateAsteriskMask(String amount) {
+    // Determine the length of the amount
+    final int amountLength = amount.length;
+
+    // Generate a string of asterisks of the same length as the amount
+    final String asteriskMask = '*' * amountLength;
+
+    // Trim the trailing space and return the asterisk mask
+    return asteriskMask.trim();
+  }
+
+  void toggleBalanceVisibility() {
+    if (isBalanceHidden) {
+      if (userBloc.chatMessageSettings.accountBalanceVisibility == false) {
+        BottomSheetPassCode(
+          context: context,
+          isValidCallback: () {
+            getAccountBalance();
+            isBalanceHidden = false;
+            setState(() {});
+          },
+          cancelCallBack: () {
+            Navigator.pop(context);
+          },
+        );
+      } else {
+        getAccountBalance();
+        isBalanceHidden = false;
+        setState(() {});
+      }
+    } else {
+      isBalanceHidden = !isBalanceHidden;
+      setState(() {});
+    }
+  }
+
+  Widget _buildFormFields() {
+    return Card(
+      elevation: 2,
+      margin: EdgeInsets.zero,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      shadowColor: iconBtnGrey,
+      child: Container(
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: iconBtnGrey, width: 1)),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: <Widget>[
+              getDisplayCard(),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  children: [
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    getRecipientField(),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    displayAmountField(),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    if (isFromYarn == true || isFromMoment == true) ...[
+                      const SizedBox()
+                    ] else ...[
+                      if (showMoreOption) getMoreOption() else Container(),
+                      getMoreOptionTrigger(),
+                    ],
+                    if (errorMessage == "")
+                      Container()
+                    else
+                      Text(
+                        errorMessage,
+                        style: TextStyle(
+                            color: mateRed,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16),
+                      ),
+                    if (errorMessage == "")
+                      Container()
+                    else
+                      const SizedBox(
+                        height: 20,
+                      ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSendPayment() {
+    return Column(
+      children: [
+        const SizedBox(
+          height: 20,
+        ),
+        if (amount == 0.0) ...[
+          getSubmitButton()
+        ] else ...[
+          if (canDoSlydoTransfer(amount!, currentBalance?.toDouble() ?? 0))
+            getSubmitButton()
+          else
+            Container(
+              child: Center(
+                  child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      child: Text.rich(TextSpan(
+                          text: AppLocalization.of(context)!.minimumTransfer,
+                          style: TextStyle(
+                              fontSize: 12,
+                              color: blackFont,
+                              fontWeight: FontWeight.w600),
+                          children: <InlineSpan>[
+                            TextSpan(
+                              text: worldCurrencies[userBloc.user.currency!]! +
+                                  moneyDisplayNormalizer(availableTransfer()),
+                              style: TextStyle(
+                                  fontSize: 12,
+                                  color: blackFont,
+                                  fontFamily: "Inter",
+                                  fontWeight: FontWeight.w600),
+                            )
+                          ])))),
+            ),
+        ],
+
+        // getSubmitButton(),
+        const SizedBox(
+          height: 20,
+        ),
+      ],
+    );
   }
 
   Widget getMoreOption() {
@@ -453,7 +641,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
         },
       );
     }
-    return SizedBox(
+    return Container(
       height: 1,
       width: 1,
     );
@@ -472,37 +660,37 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
   Widget getDisplayCard() {
     initializeDisplayCard();
 
-    // var avatarImage;
+    var avatarImage;
     var qrCodeImage;
     if (_payee != null) {
-      // final Color borderColor = getUserTypeColor(user: _payee!);
+      final Color borderColor = getUserTypeColor(user: _payee!);
 
-      // avatarImage = Container(
-      //   height: 48,
-      //   width: 48,
-      //   decoration: BoxDecoration(
-      //       borderRadius: BorderRadius.circular(
-      //         25,
-      //       ),
-      //       border: Border.all(color: borderColor, width: 2)),
-      //   child: GestureDetector(
-      //     onTap: () {
-      //       Navigator.of(context)
-      //           .pushNamed("/photo-viewer", arguments: _payee!.avatar);
-      //     },
-      //     child: ClipOval(
-      //       child: _payee!.avatar != null
-      //           ? CachedNetworkImage(
-      //               imageUrl: _payee!.avatar!,
-      //               colorBlendMode: BlendMode.darken,
-      //               fit: BoxFit.fill,
-      //               filterQuality: FilterQuality.high,
-      //               errorWidget: imageErrorWidget,
-      //             )
-      //           : const SizedBox.shrink(),
-      //     ),
-      //   ),
-      // );
+      avatarImage = Container(
+        height: 48,
+        width: 48,
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(
+              25,
+            ),
+            border: Border.all(color: borderColor, width: 2)),
+        child: GestureDetector(
+          onTap: () {
+            Navigator.of(context)
+                .pushNamed("/photo-viewer", arguments: _payee!.avatar);
+          },
+          child: ClipOval(
+            child: _payee!.avatar != null
+                ? CachedNetworkImage(
+                    imageUrl: _payee!.avatar!,
+                    colorBlendMode: BlendMode.darken,
+                    fit: BoxFit.fill,
+                    filterQuality: FilterQuality.high,
+                    errorWidget: imageErrorWidget,
+                  )
+                : const SizedBox.shrink(),
+          ),
+        ),
+      );
       setState(() {
         isValidPayee = true;
       });
@@ -715,7 +903,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: SizedBox(
+              content: Container(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   elevation: 2,
@@ -854,7 +1042,11 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
       children: [
         Text(
           "Send money anonymously",
-          style: TextStyle(fontWeight: FontWeight.w400, color: darkGrey),
+          style: TextStyle(
+            fontWeight: FontWeight.w400,
+            color: darkGrey,
+            fontFamily: "Inter",
+          ),
         ),
         Switch(
           value: sendMoneyAnonymous,
@@ -893,7 +1085,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
           content: Stack(
             clipBehavior: Clip.none,
             children: [
-              SizedBox(
+              Container(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   elevation: 2,
@@ -1128,7 +1320,8 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
                           return Future.error(response.body);
                         }
 
-                        if (response.statusCode == 200) {
+                        if (response.statusCode == 200 ||
+                            response.statusCode == 201) {
                           try {
                             popFromShoppingCart(product);
                             //Pop Circular Progress Indicator
@@ -1242,7 +1435,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
       try {
         basketBloc.removeItemFromCart(basketBloc.items[itemIndex!]);
       } catch (e) {
-        debugPrint("SendPayment PopFromShopping cart : $e");
+        debugPrint("SendPayment PopFromShopping cart : " + e.toString());
       }
     }
   }
@@ -1292,10 +1485,10 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
     value = currentBalance!.toInt() * 100 - 1000;
 
     if (value < 0) {
-      // print("The number is negative.");
+      // debugPrint("The number is negative.");
       return 0;
     } else {
-      // print("The number is non-negative.");
+      // debugPrint("The number is non-negative.");
       return value;
     }
   }

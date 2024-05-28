@@ -336,22 +336,21 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 10),
-                if (showFinalAmount)
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      getUserCurrencySymbol(context, fontSize: 30),
-                      Text(
-                        getUserFinalAmount(),
-                        style: TextStyle(
-                            fontSize: 32,
-                            color: navyBlue,
-                            fontWeight: FontWeight.bold),
+                showFinalAmount
+                    ? Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          getUserCurrencySymbol(context, fontSize: 30),
+                          Text(
+                            getUserFinalAmount(),
+                            style: TextStyle(
+                                fontSize: 32,
+                                color: navyBlue,
+                                fontWeight: FontWeight.bold),
+                          )
+                        ],
                       )
-                    ],
-                  )
-                else
-                  const SizedBox.shrink(),
+                    : const SizedBox.shrink(),
               ],
             )
           else

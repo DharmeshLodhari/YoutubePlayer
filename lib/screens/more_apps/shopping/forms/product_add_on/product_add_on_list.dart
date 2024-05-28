@@ -2,6 +2,7 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:Slydo/widget/slide_action_button.dart';
@@ -18,7 +19,7 @@ import '../../models/store.dart';
 import '../../shopping_auth.dart';
 
 class ProductAddOnList extends StatefulWidget {
-  final dynamic arguments;
+  var arguments;
 
   ProductAddOnList({this.arguments, Key? key}) : super(key: key);
 
@@ -86,6 +87,8 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
         noItemInList = true;
         return;
       }
+
+      productAddOnList = [];
       count = result['count'];
       next = result['next'];
       previous = result['previous'];
@@ -286,7 +289,7 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
                                 .pushNamed(Routes.UPDATE_ADD_ON, arguments: {
                               'addOns': productAddOnList[index],
                               'productId': productId,
-                            });
+                            }).whenComplete(() => getAddOnList());
 
                             // Handle the result (map) received from PRODUCT_VARIANT_UPDATE
                             if (data != null && data is AddOns) {
@@ -325,7 +328,7 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
               isAPILoading = true;
               if (mounted) setState(() {});
 
-              loadAllCheckedAddOn();
+              await loadAllCheckedAddOn();
 
               isAPILoading = false;
               if (mounted) setState(() {});
@@ -408,8 +411,8 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
       direction: Axis.horizontal,
       actionPane: const SlidableBehindActionPane(),
       actionExtentRatio: 0.25,
-      actions: listActionSlideActions(addOns: addOns),
       child: VerticalListItem(bankAccountTile),
+      actions: listActionSlideActions(addOns: addOns),
       // secondaryActions: listSecondaryActions(addOns: addOns),
     );
   }
@@ -444,11 +447,34 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
           backgroundColor: mateRed,
           icon: SlydoAppIcon.remove,
           onTap: () async {
-            deleteAddOn(addOns);
+            deleteAddOnDialog(addOns);
           },
           title: AppLocalization.of(context)!.delete,
           slideController: _slideController),
     ];
+  }
+
+  void deleteAddOnDialog(AddOns? addOns) {
+    showDialogBox(
+      context: context,
+      actionOneTextColor: blackFont,
+      actionOneBgColor: greyBorderColor,
+      actionTwoTextColor: white,
+      actionTwoBgColor: mateRed,
+      title: 'Delete Add-on',
+      actionOneText: AppLocalization.of(context)!.discard,
+      actionTwoText: AppLocalization.of(context)!.continueMsg,
+      description: 'Are you sure you want to delete this add-on?',
+      roundedBackgroundIcon: RoundedBackgroundIcon(
+        enableMargin: false,
+        width: 90,
+        height: 90,
+        image: Image.asset('assets/images/delete_dialog_icon.png'),
+      ),
+      rightButtonOnPressed: () async {
+        deleteAddOn(addOns);
+      },
+    );
   }
 
   void deleteAddOn(AddOns? addOns) {

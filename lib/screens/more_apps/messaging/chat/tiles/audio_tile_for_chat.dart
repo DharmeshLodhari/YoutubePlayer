@@ -1,5 +1,5 @@
 import 'package:Slydo/data/state_notifier.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_conversation.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
 import 'package:Slydo/screens/more_apps/music/music_detail_page.dart';
 import 'package:Slydo/utils/util.dart';
@@ -11,7 +11,7 @@ class AudioTileForChat extends StatefulWidget {
   final Map<String, dynamic>? message;
   final ChatConversation? chatConversation;
 
-  const AudioTileForChat({super.key, this.message, this.chatConversation});
+  AudioTileForChat({this.message, this.chatConversation});
 
   @override
   _AudioTileForChatState createState() => _AudioTileForChatState();
@@ -35,7 +35,7 @@ class _AudioTileForChatState extends State<AudioTileForChat> {
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
-    final bool isSend = widget.message!["author"] == userBloc.user.userName;
+    bool isSend = widget.message!["author"] == userBloc.user.userName;
 
     if (_audioPlayer == null || _audioPlayer?.id != widget.message!["id"]) {
       _audioPlayer = AssetsAudioPlayer.withId(widget.message!["id"]);
@@ -112,9 +112,9 @@ class _AudioTileForChatState extends State<AudioTileForChat> {
                     children: [
                       Container(
                         padding: const EdgeInsets.only(top: 6, left: 4),
-                        child: _audioPlayer?.builderRealtimePlayingInfos(
-                            builder: (context, RealtimePlayingInfos info) {
-                          if (info.current == null) {
+                        child: _audioPlayer!.builderRealtimePlayingInfos(
+                            builder: (context, info) {
+                          if (info == null) {
                             return GestureDetector(
                               child: Icon(
                                 Icons.play_arrow_rounded,
@@ -145,7 +145,7 @@ class _AudioTileForChatState extends State<AudioTileForChat> {
                       ),
                       _audioPlayer!.builderRealtimePlayingInfos(
                           builder: (context, info) {
-                        if (info.current == null) {
+                        if (info == null) {
                           return Expanded(
                             child: Column(
                               children: [
@@ -184,7 +184,7 @@ class _AudioTileForChatState extends State<AudioTileForChat> {
               ),
             ),
             if (isSend)
-              SizedBox(
+              Container(
                 width: 20,
                 child: isSend
                     ? Center(

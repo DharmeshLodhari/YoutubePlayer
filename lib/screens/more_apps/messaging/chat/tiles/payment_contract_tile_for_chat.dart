@@ -10,14 +10,14 @@ import '../../../../../data/state_notifier.dart';
 import '../../../../../routes/route_constants.dart';
 import '../../../../../utils/util.dart';
 import '../../../business/models/Contract.dart';
-import '../models/chat_conversation.dart';
+import '../models/ChatConversation.dart';
 import '../utils.dart';
 
 class PostTileForPaymentContract extends StatefulWidget {
   final Map<String, dynamic>? message;
   final ChatConversation? chatConversation;
 
-  const PostTileForPaymentContract(
+  PostTileForPaymentContract(
       {Key? key, required this.message, required this.chatConversation})
       : super(key: key);
 
@@ -71,7 +71,7 @@ class _PostTileForPaymentContractState
               child: getPaymentContractTile(),
             ),
             if (isSender)
-              SizedBox(
+              Container(
                 width: 20,
                 child: isSender
                     ? Center(
@@ -241,7 +241,7 @@ class _PostTileForPaymentContractState
           ],
         ),
         const SizedBox(width: 12),
-        SizedBox(
+        Container(
           width: 70,
           height: 40,
           child: Stack(
@@ -249,7 +249,7 @@ class _PostTileForPaymentContractState
             children: [
               Positioned(
                 top: 6,
-                child: SizedBox(
+                child: Container(
                   width: 70,
                   child: Image.asset(
                     "assets/images/arrow_right.png",

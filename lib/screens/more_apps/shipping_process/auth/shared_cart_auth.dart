@@ -18,6 +18,7 @@ class SharedCartAuthService extends AuthService {
 
     final headers = await getAuthHeaders();
     final response = await httpPost(url, headers: headers, body: _data);
+    final jsonData = jsonDecode(response.body);
 
     debugPrint(
         "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
@@ -313,7 +314,7 @@ class SharedCartAuthService extends AuthService {
     }
   }
 
-  List<dynamic> getCartItems(Map<String, dynamic> jsonResponse) {
+  List<dynamic> getCartItems(var jsonResponse) {
     final List items = [];
     final data = jsonResponse["results"];
 
@@ -340,8 +341,8 @@ class SharedCartAuthService extends AuthService {
     if (cartId == null) {
       return false;
     }
-    final String url =
-        "${AppConfig.baseUrl}/api/v1/shopping-cart/add-item-to-shared-cart/$cartId/";
+    final String url = AppConfig.baseUrl +
+        "/api/v1/shopping-cart/add-item-to-shared-cart/$cartId/";
     final requestData = jsonEncode(data);
     final headers = await getAuthHeaders();
 
@@ -364,8 +365,8 @@ class SharedCartAuthService extends AuthService {
     if (cartId == null) {
       return false;
     }
-    final String url =
-        "${AppConfig.baseUrl}/api/v1/shopping-cart/remove-item-from-shared-cart/$cartId/";
+    final String url = AppConfig.baseUrl +
+        "/api/v1/shopping-cart/remove-item-from-shared-cart/$cartId/";
     final requestData = jsonEncode(data);
     final headers = await getAuthHeaders();
 
@@ -388,8 +389,8 @@ class SharedCartAuthService extends AuthService {
     if (cartId == null) {
       return false;
     }
-    final String url =
-        "${AppConfig.baseUrl}/api/v1/shopping-cart/add-members-to-shared-shopping-cart/$cartId/";
+    final String url = AppConfig.baseUrl +
+        "/api/v1/shopping-cart/add-members-to-shared-shopping-cart/$cartId/";
     final requestData = jsonEncode(data);
     final headers = await getAuthHeaders();
 
@@ -413,8 +414,8 @@ class SharedCartAuthService extends AuthService {
       return false;
     }
 
-    final String url =
-        "${AppConfig.baseUrl}/api/v1/shopping-cart/remove-members-from-shared-shopping-cart/$cartId/";
+    final String url = AppConfig.baseUrl +
+        "/api/v1/shopping-cart/remove-members-from-shared-shopping-cart/$cartId/";
 
     final requestData = jsonEncode(data);
     final headers = await getAuthHeaders();
@@ -438,8 +439,8 @@ class SharedCartAuthService extends AuthService {
     if (cartId == null) {
       return false;
     }
-    final String url =
-        "${AppConfig.baseUrl}/api/v1/shopping-cart/update-cart-meta-data-shared-shopping-cart/$cartId/";
+    final String url = AppConfig.baseUrl +
+        "/api/v1/shopping-cart/update-cart-meta-data-shared-shopping-cart/$cartId/";
     final requestData = jsonEncode(data);
     final headers = await getAuthHeaders();
 

@@ -13,6 +13,7 @@ import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
 
 // ignore: must_be_immutable
@@ -37,6 +38,7 @@ class _DispatchAddressState extends State<DispatchAddress> {
       GlobalKey<ScaffoldMessengerState>();
   final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
+  late SharedPreferences _sharedPreferences;
   bool isLoading = false;
   bool noItemInList = false;
 
@@ -46,6 +48,10 @@ class _DispatchAddressState extends State<DispatchAddress> {
 
   @override
   void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      _sharedPreferences = await SharedPreferences.getInstance();
+    });
+
     if (widget.arguments != null) {
       isForSelection = widget.arguments?["isForSelection"] as bool;
       onShippingAddressChange = widget.arguments?["onShippingAddressChange"]
@@ -121,6 +127,10 @@ class _DispatchAddressState extends State<DispatchAddress> {
         isLoading = false;
         itemList.addAll(tempList);
 
+        if (itemList.length == 1) {
+          await _sharedPreferences.setBool("isCurrentLocation", false);
+        }
+
         if (mounted) setState(() {});
 
         /// to getDefault selected address
@@ -181,6 +191,8 @@ class _DispatchAddressState extends State<DispatchAddress> {
     for (ShippingAddress address in itemList) {
       if (address.is_default == true && isForSelection == false) {
         selectedShippingAddress = address;
+        await _sharedPreferences.setBool("isCurrentLocation", false);
+        setState(() {});
         break;
       }
 
@@ -188,6 +200,8 @@ class _DispatchAddressState extends State<DispatchAddress> {
           selectedShippingAddress != null &&
           selectedShippingAddress?.id == address.id) {
         selectedShippingAddress = address;
+        await _sharedPreferences.setBool("isCurrentLocation", false);
+        setState(() {});
         break;
       }
     }
@@ -422,10 +436,11 @@ class _DispatchAddressState extends State<DispatchAddress> {
                       itemList[index].name!,
                       maxLines: 1,
                       style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 14,
-                          fontFamily: "Inter",
-                          color: blackFont),
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                        fontFamily: "Inter",
+                        color: blackFont,
+                      ),
                       softWrap: false,
                       overflow: TextOverflow.ellipsis,
                     ),

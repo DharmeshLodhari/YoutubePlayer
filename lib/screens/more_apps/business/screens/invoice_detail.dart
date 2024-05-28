@@ -29,7 +29,7 @@ import '../models/Invoice.dart';
 
 // ignore: must_be_immutable
 class InvoiceDetail extends StatefulWidget {
-  final dynamic arguments;
+  var arguments;
 
   InvoiceDetail({required this.arguments});
 
@@ -187,16 +187,16 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
     return Icon(Icons.download_rounded, color: navyBlue);
   }
 
-  void showDeleteDialogForInvoice() {
+  showDeleteDialogForInvoice() {
     showDialogBox(
       context: context,
       actionOneTextColor: blackFont,
-      actionTwoBgColor: mateRed,
-      actionTwoTextColor: Colors.white,
       actionOneBgColor: greyBorderColor,
-      title: AppLocalization.of(context)!.delete,
-      actionTwoText: AppLocalization.of(context)!.delete,
-      actionOneText: AppLocalization.of(context)!.cancel,
+      actionTwoTextColor: white,
+      actionTwoBgColor: mateRed,
+      title: 'Delete Invoice',
+      actionOneText: AppLocalization.of(context)!.discard,
+      actionTwoText: AppLocalization.of(context)!.continueMsg,
       description: 'Are you sure you want to delete this invoice?',
       roundedBackgroundIcon: RoundedBackgroundIcon(
         enableMargin: false,
@@ -210,7 +210,7 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
     );
   }
 
-  void deleteInvoice() {
+  deleteInvoice() {
     showDialog(
         context: context,
         builder: (dialogLoadingContext) => LoadingIndicator());
@@ -234,7 +234,9 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
   }
 
   Widget scaffoldBody() {
-    final bool canPayForInvoice = invoice.status == "Unpaid";
+    final bool canPayForInvoice =
+        invoice.fromCustomer != userBloc.user.userName &&
+            invoice.status == "Unpaid";
     final bool canAddInvoiceItem = invoice.status == 'Draft';
 
     return SingleChildScrollView(
@@ -794,7 +796,7 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
     );
   }
 
-  void _updateInvoiceDate({required bool isDueDate}) {
+  _updateInvoiceDate({required bool isDueDate}) {
     BusinessAuth().updateInvoice(invoiceId: invoice.id.toString(), data: {
       isDueDate ? "due_date" : "invoice_date": dateToString(invoiceDate),
     }).then(
@@ -830,7 +832,7 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
     });
   }
 
-  Future<void> _downloadInvoice() async {
+  _downloadInvoice() async {
     final String fileName = 'Invoice_${invoice.id}.pdf';
     final PermissionStatus status = await Permission.storage.request();
 
@@ -856,16 +858,16 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
     }
   }
 
-  void showDeleteDialogForInvoiceItem(InvoiceItem item) {
+  showDeleteDialogForInvoiceItem(InvoiceItem item) {
     showDialogBox(
       context: context,
       actionOneTextColor: blackFont,
-      actionTwoBgColor: mateRed,
-      actionTwoTextColor: Colors.white,
       actionOneBgColor: greyBorderColor,
-      title: AppLocalization.of(context)!.delete,
-      actionTwoText: AppLocalization.of(context)!.delete,
-      actionOneText: AppLocalization.of(context)!.cancel,
+      actionTwoTextColor: white,
+      actionTwoBgColor: mateRed,
+      title: 'Delete Invoice Item',
+      actionOneText: AppLocalization.of(context)!.discard,
+      actionTwoText: AppLocalization.of(context)!.continueMsg,
       description: 'Are you sure you want to delete this invoice item?',
       roundedBackgroundIcon: RoundedBackgroundIcon(
         enableMargin: false,

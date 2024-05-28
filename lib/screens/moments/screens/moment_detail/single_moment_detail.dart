@@ -13,7 +13,7 @@ import 'package:Slydo/screens/moments/screens/moments_service.dart';
 import 'package:Slydo/screens/moments/utils.dart';
 import 'package:Slydo/screens/moments/widgets/attachment_widget.dart';
 import 'package:Slydo/screens/moments/widgets/custom_moment_detail_button.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_conversation.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/share_in_chat/ShareInChat.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_report_screen.dart';
 import 'package:Slydo/screens/post_detail_page.dart';
@@ -49,7 +49,7 @@ class SingleMomentDetailScreen extends StatefulWidget {
   final void Function() onRightSwipe;
   final void Function() onMomentPop;
 
-  final MomentsModel currentMoment;
+  MomentsModel currentMoment;
 
   final PageController pageCtrl;
 
@@ -87,32 +87,30 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
   }
 
   Future<bool> addLikeToMoment() async {
-    try {
-      final MomentsModel data =
-          await MomentsService().likeMoment(widget.currentMoment.id!);
+    final MomentsModel data =
+        await MomentsService().likeMoment(widget.currentMoment.id!);
+    if (data != null) {
       setState(() {
         widget.currentMoment.likes = data.likes;
         widget.currentMoment.dislikes = data.dislikes;
       });
       return true;
-    } catch (error) {
-      return false;
     }
+    return false;
   }
 
   Future<bool> addDisLikeToMoment() async {
-    try {
-      final MomentsModel data =
-          await MomentsService().dislikeMoment(widget.currentMoment.id!);
+    final MomentsModel data =
+        await MomentsService().dislikeMoment(widget.currentMoment.id!);
 
+    if (data != null) {
       setState(() {
         widget.currentMoment.dislikes = data.dislikes;
         widget.currentMoment.likes = data.likes;
       });
       return true;
-    } catch (error) {
-      return false;
     }
+    return false;
   }
 
   int getLikeCount() {
@@ -136,7 +134,8 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
         widget.videoPlayerControllers.isEmpty) {
       controller = AnimationController(
         vsync: this,
-        duration: Duration(seconds: widget.currentMoment.duration ?? 30),
+        duration:
+            Duration(milliseconds: widget.currentMoment.duration ?? 30000),
       )..addListener(() {
           WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
             if (mounted) setState(() {});
@@ -146,7 +145,8 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
         widget.videoPlayerControllers.isNotEmpty) {
       controller = AnimationController(
         vsync: this,
-        duration: Duration(seconds: widget.currentMoment.duration ?? 30),
+        duration:
+            Duration(milliseconds: widget.currentMoment.duration ?? 30000),
       )..addListener(() {
           WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
             if (mounted) setState(() {});
@@ -161,8 +161,9 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
             if (mounted) setState(() {});
           });
         });
+      controller.forward();
     }
-    controller.animateTo(5.0);
+    // controller.animateTo(5.0);
     pageController = widget.pageCtrl;
 
     super.initState();
@@ -274,15 +275,15 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
 
                                 showDialogBox(
                                   context: context,
-                                  actionOneTextColor: white,
-                                  actionOneBgColor: mateRed,
-                                  actionTwoTextColor: blackFont,
-                                  actionTwoBgColor: greyBorderColor,
-                                  title: AppLocalization.of(context)!.delete,
-                                  actionTwoText:
-                                      AppLocalization.of(context)!.cancel,
+                                  actionOneTextColor: blackFont,
+                                  actionOneBgColor: greyBorderColor,
+                                  actionTwoTextColor: white,
+                                  actionTwoBgColor: mateRed,
+                                  title: 'Delete Moment',
                                   actionOneText:
-                                      AppLocalization.of(context)!.delete,
+                                      AppLocalization.of(context)!.discard,
+                                  actionTwoText:
+                                      AppLocalization.of(context)!.continueMsg,
                                   description:
                                       'Are you sure you want to delete this moment?',
                                   roundedBackgroundIcon: RoundedBackgroundIcon(
@@ -292,7 +293,7 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
                                     image: Image.asset(
                                         'assets/images/delete_dialog_icon.png'),
                                   ),
-                                  leftButtonOnPressed: () {
+                                  rightButtonOnPressed: () {
                                     showDialog(
                                         context: context,
                                         builder: (dialogLoadingContext) =>
@@ -555,7 +556,7 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     InkWell(
-                      onTap: () {
+                      onTap: () async {
                         String? image = '';
                         if (widget.currentMoment.avatar == "" ||
                             widget.currentMoment.avatar ==
@@ -566,8 +567,17 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
                           image = widget.currentMoment.avatar;
                         }
 
+                        await widget.videoPlayerControllers[widget.index]
+                            .pause();
+                        _renderMomentStateKey.currentState?.controller?.stop();
                         Navigator.of(context)
-                            .pushNamed(Routes.PHOTO_VIEWER, arguments: image);
+                            .pushNamed(Routes.PHOTO_VIEWER, arguments: image)
+                            .whenComplete(() async {
+                          await widget.videoPlayerControllers[widget.index]
+                              .play();
+                          _renderMomentStateKey.currentState?.controller
+                              ?.forward();
+                        });
                       },
                       child: Padding(
                         padding: const EdgeInsets.only(top: 6.0),
@@ -583,7 +593,11 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           InkWell(
-                            onTap: () {
+                            onTap: () async {
+                              await widget.videoPlayerControllers[widget.index]
+                                  .pause();
+                              _renderMomentStateKey.currentState?.controller
+                                  ?.stop();
                               Navigator.pushNamed(
                                 context,
                                 Routes.USER_PROFILE,
@@ -591,7 +605,13 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
                                   "searchedUserName":
                                       widget.currentMoment.owner,
                                 },
-                              );
+                              ).whenComplete(() async {
+                                await widget
+                                    .videoPlayerControllers[widget.index]
+                                    .play();
+                                _renderMomentStateKey.currentState?.controller
+                                    ?.forward();
+                              });
                             },
                             child: Text(
                               messageDecoderWithEmoji(
@@ -818,10 +838,10 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
         await ShareInChat().selectShareCustomer(context);
     debugPrint("Selected users = ${listOfRecipient.length}");
 
-    for (var recipient in listOfRecipient) {
+    listOfRecipient.forEach((recipient) {
       addMomentPostToChat(
           recipientUser: recipient!, momentsModel: momentsModel);
-    }
+    });
   }
 
   Future<void> addMomentPostToChat({
@@ -881,7 +901,7 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
       onTap: () {
         Navigator.pop(context);
         MomentsService().updateMoment(
-            momentId: momentModel.id!, data: {"is_public": isPublic}).then(
+            momentId: momentModel.id ?? "", data: {"is_public": isPublic}).then(
           (value) {
             momentModel = value;
             if (mounted) setState(() {});
@@ -1097,9 +1117,9 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
     if (widget.currentMoment.tags != null) {
       widget.currentMoment.tags!.join(', ');
 
-      for (var tag in widget.currentMoment.tags!) {
+      widget.currentMoment.tags!.forEach((tag) {
         formattedTagList.add('#$tag ');
-      }
+      });
 
       return ReadMoreText(
         formattedTagList.join(' '),
@@ -1255,7 +1275,8 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
   }
 
   bool commentingEnabled() {
-    return widget.currentMoment.enableCommenting;
+    return widget.currentMoment.enableCommenting != null &&
+        widget.currentMoment.enableCommenting;
   }
 
   Widget getPayMeBtn() {

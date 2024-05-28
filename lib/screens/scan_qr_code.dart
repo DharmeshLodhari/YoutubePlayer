@@ -26,7 +26,7 @@ import 'more_apps/user_profile/user_auth.dart';
 
 // ignore: must_be_immutable
 class QRCodeView extends StatefulWidget {
-  final dynamic arguments;
+  var arguments;
 
   QRCodeView({this.arguments, Key? key}) : super(key: key);
 
@@ -35,10 +35,10 @@ class QRCodeView extends StatefulWidget {
 }
 
 class _QRCodeViewState extends State<QRCodeView> {
-  Map<String, dynamic> arguments;
+  var arguments;
   late bool canShowDialogBox;
   // We need this variable to show the dialogbox just once cause qrscanner controller uses a stream(using a stream will make the dialogbox show up multiple times).
-  _QRCodeViewState({required this.arguments});
+  _QRCodeViewState({this.arguments});
 
   bool? isRequest = false;
   late CustomerProfileBloc customerProfileBloc;
@@ -46,15 +46,16 @@ class _QRCodeViewState extends State<QRCodeView> {
   AppConfigurationModel? appConfigurationModel;
 
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
-  String qrText = "";
+  var qrText = "";
   QRViewController? controller;
+  late DashboardBloc _dashboardBloc;
 
   @override
   void initState() {
     appConfigurationModel = getIt<AppConfigurationBloc>().appConfigurationModel;
 
     canShowDialogBox = true;
-    isRequest = arguments.isNotEmpty
+    isRequest = arguments != null
         ? arguments['isRequest'] != null
             ? arguments['isRequest']
             : false
@@ -65,6 +66,8 @@ class _QRCodeViewState extends State<QRCodeView> {
 
   @override
   Widget build(BuildContext context) {
+    _dashboardBloc = Provider.of<DashboardBloc>(context);
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: Stack(
@@ -146,20 +149,22 @@ class _QRCodeViewState extends State<QRCodeView> {
 
     controller.scannedDataStream.listen((scanData) async {
       // if we get a text that belongs to us then we process it
-      if (scanData.code!.startsWith(AppConfig.baseUrl) ||
-          scanData.code!.startsWith(AppConfig.baseUrl) ||
-          scanData.code!.startsWith(AppConfig.merchantUrl) ||
-          scanData.code!.startsWith("https://slydo.co") ||
-          scanData.code!.startsWith(AppConfig.localHost)) {
-        final scanDataList = scanData.code!.split('/');
+      if (scanData != null) {
+        if (scanData.code!.startsWith(AppConfig.baseUrl) ||
+            scanData.code!.startsWith(AppConfig.baseUrl) ||
+            scanData.code!.startsWith(AppConfig.merchantUrl) ||
+            scanData.code!.startsWith("https://slydo.co") ||
+            scanData.code!.startsWith(AppConfig.localHost)) {
+          final scanDataList = scanData.code!.split('/');
 
-        scanDataList.removeWhere((value) => value == "");
-        if (canShowDialogBox) {
-          controller.pauseCamera();
-          getNavigationRoot(scanDataList, scanDataCode: scanData.code);
-          controller.resumeCamera();
+          scanDataList.removeWhere((value) => value == "");
+          if (canShowDialogBox) {
+            controller.pauseCamera();
+            getNavigationRoot(scanDataList, scanDataCode: scanData.code);
+            controller.resumeCamera();
+          }
+          canShowDialogBox = false;
         }
-        canShowDialogBox = false;
       }
     });
   }

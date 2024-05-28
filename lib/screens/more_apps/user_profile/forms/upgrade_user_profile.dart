@@ -24,7 +24,7 @@ class _UpgradeUserProfileState extends State<UpgradeUserProfile> {
 
   List type = [];
   String? selectedType;
-  String price = "0";
+  String? price = "0";
   List<String?> paymentCategories = [];
   bool isLoading = true;
   String? selectedCategory;
@@ -67,9 +67,9 @@ class _UpgradeUserProfileState extends State<UpgradeUserProfile> {
       if (mounted) {
         setState(() {
           final List categoriesList = result["results"]["data"];
-          for (var data in categoriesList) {
+          categoriesList.forEach((data) {
             paymentCategories.add(data["name"]);
-          }
+          });
           isLoading = false;
         });
       }
@@ -81,9 +81,9 @@ class _UpgradeUserProfileState extends State<UpgradeUserProfile> {
       if (mounted) {
         setState(() {
           final List profileUpgradeTypeAndPrice = result!;
-          for (var data in profileUpgradeTypeAndPrice) {
+          profileUpgradeTypeAndPrice.forEach((data) {
             type.add({"name": data["account_type"], "price": data["price"]});
-          }
+          });
           isLoading = false;
 
           hideAmountTobePaidDropDown();
@@ -94,11 +94,11 @@ class _UpgradeUserProfileState extends State<UpgradeUserProfile> {
 
   void hideAmountTobePaidDropDown() {
     hideAmountDropDown = false;
-    for (var element in type) {
+    type.forEach((element) {
       if (element["price"].toString() == "0") {
         hideAmountDropDown = true;
       }
-    }
+    });
     setState(() {});
   }
 
@@ -218,11 +218,11 @@ class _UpgradeUserProfileState extends State<UpgradeUserProfile> {
         onChanged: (value) {
           setState(() {
             selectedType = value;
-            for (var element in type) {
+            type.forEach((element) {
               if (element["name"] == selectedType) {
                 price = element["price"].toString();
               }
-            }
+            });
           });
         },
         items: type.map((type) {
@@ -336,9 +336,9 @@ class _UpgradeUserProfileState extends State<UpgradeUserProfile> {
 
     if (validateDropdown()) {
       if (_formKey.currentState!.validate()) {
-        debugPrint("==> ${(int.parse(price) / 100)}");
+        debugPrint("==> ${(int.parse(price ?? "0") / 100)}");
         if (accountBalance != null &&
-            accountBalance! > (int.parse(price) / 100)) {
+            accountBalance! > (int.parse(price ?? "0") / 100)) {
           BottomSheetPassCode(
               context: context,
               isValidCallback: () async {
@@ -450,7 +450,7 @@ class _UpgradeUserProfileState extends State<UpgradeUserProfile> {
                               color: blackFont),
                         ),
                         Text(
-                          moneyDisplayNormalizer(int.parse(price)),
+                          moneyDisplayNormalizer(int.parse(price ?? "0")),
                           style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,

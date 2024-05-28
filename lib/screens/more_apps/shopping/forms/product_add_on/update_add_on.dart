@@ -62,15 +62,15 @@ class _UpdateAddOnState extends State<UpdateAddOn> {
     addOns = widget.arguments["addOns"];
 
     id = addOns.id!;
-    nameController.text = addOns.name!.toString();
-    descriptionController.text = addOns.description!.toString();
+    nameController.text = addOns.name.toString();
+    descriptionController.text = addOns.description.toString();
     isRequired = addOns.isRequired!;
 
     productAddOnOptionList = addOns.options!;
 
     name = addOns.name!.toString();
     description = addOns.description!.toString();
-    selectedType = capitalizeFirstLetter(addOns.selectType!.toString());
+    selectedType = capitalizeFirstLetter(addOns.selectType.toString());
 
     super.initState();
   }
@@ -410,23 +410,26 @@ class _UpdateAddOnState extends State<UpdateAddOn> {
   }
 
   Widget getSubmitButton() {
-    return CurvedButton(
-      onPressed: isAPILoading
-          ? () {}
-          : () async {
-              FocusScope.of(context).unfocus();
-              isAPILoading = true;
-              if (mounted) setState(() {});
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: CurvedButton(
+        onPressed: isAPILoading
+            ? () {}
+            : () async {
+                FocusScope.of(context).unfocus();
+                isAPILoading = true;
+                if (mounted) setState(() {});
 
-              await addNewAddOns();
+                await addNewAddOns();
 
-              isAPILoading = false;
-              if (mounted) setState(() {});
-            },
-      backgroundColor: navyBlue,
-      textColor: Colors.white,
-      text: "Save",
-      isLoading: isAPILoading,
+                isAPILoading = false;
+                if (mounted) setState(() {});
+              },
+        backgroundColor: navyBlue,
+        textColor: Colors.white,
+        text: "Save",
+        isLoading: isAPILoading,
+      ),
     );
   }
 
@@ -496,6 +499,7 @@ class _UpdateAddOnState extends State<UpdateAddOn> {
             //disable click if add-on option is not empty
             final result = await Navigator.of(context)
                 .pushNamed(Routes.ADD_ON_OPTION_LIST, arguments: {
+              'options': productAddOnOptionList,
               'productId': widget.arguments['productId'],
             });
 

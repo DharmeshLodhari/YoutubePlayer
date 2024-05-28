@@ -55,7 +55,7 @@ class _YarnNotificationState extends State<YarnNotification> {
         previous = result['previous'];
         final tempList = result['results'];
 
-        // print('tempList:::: ${tempList.runtimeType}');
+        // debugPrint('tempList:::: ${tempList.runtimeType}');
         if (mounted) {
           setState(() {
             noList = false;

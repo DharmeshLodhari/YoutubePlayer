@@ -8,7 +8,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../../../data/state_notifier.dart';
 import '../../../../locale/app_localization.dart';
-import '../../../more_apps/messaging/chat/models/gif_model/gif_model.dart';
+import '../../../more_apps/messaging/chat/models/gif_model/GIFModel.dart';
 import '../../../more_apps/shopping/models/store.dart';
 import '../../../more_apps/yarn/models/Topics/CommentDetails.dart';
 import '../../../more_apps/yarn/models/Topics/yarn_model.dart';
@@ -68,7 +68,7 @@ class _MomentCommentScreenState extends State<MomentCommentScreen> {
       GlobalKey<MomentCommentTextFieldState>();
   bool? enableComment = false, enablePayment = false;
   bool? enableAdult = false, viewerAdvice = false;
-  String? ageRating;
+  var ageRating;
 
   ScrollController scrollController = ScrollController();
   List<YarnMedia> selectedMedia = [];
@@ -90,7 +90,8 @@ class _MomentCommentScreenState extends State<MomentCommentScreen> {
     super.initState();
   }
 
-  Widget commentListWidget({YarnComment? yarnComment}) {
+  Widget commentListWidget(
+      {avatar, username, comment, createAt, YarnComment? yarnComment}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -239,7 +240,7 @@ class _MomentCommentScreenState extends State<MomentCommentScreen> {
     //   isLoading = true;
 
     if (!isLoading) {
-      if (next.isNotEmpty && !isLoading) {
+      if (next != null && !isLoading) {
         isLoading = true;
         if (mounted) setState(() {});
 
@@ -259,8 +260,8 @@ class _MomentCommentScreenState extends State<MomentCommentScreen> {
         }
 
         count = result['count'];
-        next = result['next'] ?? "";
-        previous = result['previous'] ?? "";
+        next = result['next'] != null ? result['next'] : "";
+        previous = result['previous'] != null ? result['previous'] : "";
         final tempList = result['results'];
 
         yarnComments = [];

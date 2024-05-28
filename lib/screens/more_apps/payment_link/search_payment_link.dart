@@ -40,7 +40,7 @@ class _PaymentLinkSearchState extends State<PaymentLinkSearch> {
 
   final _auth = PaymentAndBankingAuth();
 
-  final ScrollController _scrollController = ScrollController();
+  ScrollController _scrollController = new ScrollController();
 
   SlidableController? _slideController;
 
@@ -48,7 +48,7 @@ class _PaymentLinkSearchState extends State<PaymentLinkSearch> {
 
   void handleSlideIsOpenChanged(bool? isOpen) {}
 
-  Future<void> getPaymenttLinks({String? searchLink}) async {
+  getPaymenttLinks({searchLink}) async {
     if (!isLoading) {
       if (next != null && !isLoading) {
         if (mounted) {
@@ -56,8 +56,7 @@ class _PaymentLinkSearchState extends State<PaymentLinkSearch> {
             isLoading = true;
           });
         }
-        final dynamic result =
-            await _auth.getPaymentLinks(searchLink: searchLink);
+        dynamic result = await _auth.getPaymentLinks(searchLink: searchLink);
         log('payment link search screen results::::: ${result.toString()}');
 
         if (result == null) {
@@ -68,7 +67,7 @@ class _PaymentLinkSearchState extends State<PaymentLinkSearch> {
         next = result['next'];
         count = result['count'];
         previous = result['previous'];
-        final tempList = result['results'];
+        var tempList = result['results'];
         noItemInList = false;
         isLoading = false;
         paymentLinkList.addAll(tempList);
@@ -84,17 +83,16 @@ class _PaymentLinkSearchState extends State<PaymentLinkSearch> {
     }
   }
 
-  Widget paymentLinkCard({
-    String? name,
-    String? date,
-    String? id,
-    String? amount,
-    String? currency,
-    String? status,
-    String? passcode,
-    String? link,
-    String? category,
-  }) {
+  Widget paymentLinkCard(
+      {String? name,
+      String? date,
+      String? id,
+      amount,
+      currency,
+      status,
+      passcode,
+      link,
+      category}) {
     return Padding(
       padding: const EdgeInsets.only(top: 10.0),
       child: GestureDetector(
@@ -140,7 +138,7 @@ class _PaymentLinkSearchState extends State<PaymentLinkSearch> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      getAmount(int.parse(amount ?? ""), currency ?? ""),
+                      getAmount(amount, currency),
                       const SizedBox(
                         height: 10,
                       ),
@@ -157,7 +155,7 @@ class _PaymentLinkSearchState extends State<PaymentLinkSearch> {
                               ? 'Pending'
                               : status,
                           style: TextStyle(
-                            color: colorStats(status),
+                            color: colorStats(status!),
                             fontSize: 10.80,
                             fontFamily: "Inter",
                             fontWeight: FontWeight.w600,
@@ -222,8 +220,8 @@ class _PaymentLinkSearchState extends State<PaymentLinkSearch> {
     );
   }
 
-  void rejectRequestAlert(Map data, int index) async {
-    final bool? result = await showDialogBox(
+  void rejectRequestAlert(data, index) async {
+    bool? result = await showDialogBox(
       context: context,
       roundedBackgroundIcon: RoundedBackgroundIcon(
         backgroundColor: mateRed.withOpacity(0.08),
@@ -248,7 +246,7 @@ class _PaymentLinkSearchState extends State<PaymentLinkSearch> {
       actionTwoText: "Ignore",
     );
     if (result != null && result) {
-      final bool done = true;
+      bool done = true;
       if (done) {
         setState(() {
           // paymentLinkList.removeAt(index);
@@ -319,51 +317,50 @@ class _PaymentLinkSearchState extends State<PaymentLinkSearch> {
           const SizedBox(height: 6),
           searchBox(),
           const SizedBox(height: 12),
-          if (isLoading)
-            Shimmer.fromColors(
-              baseColor: Colors.white,
-              highlightColor: greyBorderColor,
-              child: GridView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: 15),
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                  mainAxisSpacing: 14,
-                  mainAxisExtent: 180,
-                  crossAxisSpacing: 15,
-                  maxCrossAxisExtent: 200,
-                ),
-                itemCount: 2,
-                itemBuilder: (context, index) {
-                  return Card(
-                    color: Colors.grey,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+          isLoading
+              ? Shimmer.fromColors(
+                  baseColor: Colors.white,
+                  highlightColor: greyBorderColor,
+                  child: GridView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 15),
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate:
+                        const SliverGridDelegateWithMaxCrossAxisExtent(
+                      mainAxisSpacing: 14,
+                      mainAxisExtent: 180,
+                      crossAxisSpacing: 15,
+                      maxCrossAxisExtent: 200,
                     ),
-                  );
-                },
-              ),
-            )
-          else
-            const SizedBox.shrink(),
-          if (isSearchIsEmpty)
-            Expanded(
-              child: NoItemInList(
-                msg:
-                    AppLocalization.of(context)!.pleaseTypeSomethingToGetResult,
-                isResult: false,
-              ),
-            )
-          else
-            noItemInList
-                ? Expanded(
-                    child: NoItemInList(
-                      msg: AppLocalization.of(context)!.noResultFound,
-                    ),
-                  )
-                : Expanded(
-                    child: _buildFriendsList(),
+                    itemCount: 2,
+                    itemBuilder: (context, index) {
+                      return Card(
+                        color: Colors.grey,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      );
+                    },
                   ),
+                )
+              : const SizedBox.shrink(),
+          isSearchIsEmpty
+              ? Expanded(
+                  child: NoItemInList(
+                    msg: AppLocalization.of(context)!
+                        .pleaseTypeSomethingToGetResult,
+                    isResult: false,
+                  ),
+                )
+              : noItemInList
+                  ? Expanded(
+                      child: NoItemInList(
+                        msg: AppLocalization.of(context)!.noResultFound,
+                      ),
+                    )
+                  : Expanded(
+                      child: _buildFriendsList(),
+                    ),
         ],
       ),
     );

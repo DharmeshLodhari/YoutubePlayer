@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/routes/route_constants.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/gif_model/gif_model.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/gif_model/GIFModel.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/product_and_service_tile_for_search.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
@@ -55,20 +55,20 @@ import 'models/ask_categories_model.dart';
 import 'models/share_as_yarn_model.dart';
 import 'yarn_dashboard_bloc.dart';
 
-// ignore: must_be_immutable
 class AddOrEditYarn extends StatefulWidget {
-  final YarnCategories? askCategory;
-  final String? passedCategory;
-  final Function(Yarn)? onUpdateYarn;
-  final String? channel;
-  final bool? isYarn;
-  Yarn? yarn;
   List<YarnCategories>? askCategories;
+  YarnCategories? askCategory;
+  bool? isYarn = false;
+  Yarn? yarn;
+  String? passedCategory;
+  Function(Yarn)? onUpdateYarn;
+  String? channel;
+
   List<ShareAsYarnModel>? shareAsYarnModel;
 
   AddOrEditYarn(
       {this.askCategories,
-      this.isYarn = false,
+      this.isYarn,
       this.askCategory,
       this.yarn,
       this.shareAsYarnModel,
@@ -113,7 +113,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
 
   bool isSensitiveContent = false;
   bool isAdultContent = false;
-  String? ageRating;
+  var ageRating;
 
   ///variable for message actions
   bool showMoreAction = false;
@@ -135,7 +135,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
   String? productOrServicePrevious = "";
   final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
-  final ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = new ScrollController();
 
   TextEditingController? searchItemTextController;
   final GlobalKey _key = LabeledGlobalKey("itemSearchTypeSelectionKey");
@@ -145,7 +145,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
   GlobalKey searchItemTextFormField = GlobalKey();
   int bottomSheetSearchIndex = 0;
   bool noSearchedItem = false;
-  dynamic productServicePreview;
+  var productServicePreview;
   Product? productMode;
   Service? serviceMode;
   CustomerProfile? customerProfileMode;
@@ -391,7 +391,8 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
       onChanged: onValueChange,
       inputFormatters: [LengthLimitingTextInputFormatter(400)],
       decoration: InputDecoration(
-        counterText: "${textController!.text.length}/${400}",
+        counterText:
+            textController!.text.length.toString() + "/" + 400.toString(),
         hintText: "Leave your thought",
         hintStyle: TextStyle(
           fontSize: 13,
@@ -669,7 +670,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
   }
 
   Widget gifPreviewList() {
-    return SizedBox(
+    return Container(
       height: MediaQuery.of(context).size.height / 3,
       child: _isGIFLoading
           ? Center(child: CircularLoadingIndicator())
@@ -696,7 +697,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
                       imageUrl: _gifs[index].images!.previewGif!.url!,
                       fit: BoxFit.fill,
                       errorWidget: imageErrorWidget,
-                      placeholder: (context, url) => SizedBox(
+                      placeholder: (context, url) => Container(
                           width: MediaQuery.of(context).size.width / 2,
                           child: Center(child: CircularLoadingIndicator())),
                     ),
@@ -919,7 +920,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(
+        Container(
           height: 100,
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
@@ -981,7 +982,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        SizedBox(
+        Container(
           height: 100,
           child: Stack(
             children: <Widget>[
@@ -1038,7 +1039,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        SizedBox(
+        Container(
           height: 100,
           child: Stack(
             children: <Widget>[
@@ -1203,11 +1204,12 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
       key: UniqueKey(),
       onTap: (String? tappedUser) {
         if (tappedUser != null) {
-          textController!.text = "${textController!.text.replaceRange(
-            (textController!.text.length - (searchString?.length ?? 0)),
-            textController!.text.length,
-            tappedUser,
-          )} ";
+          textController!.text = textController!.text.replaceRange(
+                (textController!.text.length - (searchString?.length ?? 0)),
+                textController!.text.length,
+                tappedUser,
+              ) +
+              " ";
           textController!.selection = TextSelection.fromPosition(TextPosition(
             offset: textController!.text.length,
           ));
@@ -1301,7 +1303,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     _showListAlert(context);
   }
 
-  void _showListAlert(BuildContext context) {
+  _showListAlert(BuildContext context) {
     showPlatformDialog(
       context: context,
       builder: (_) => BasicDialogAlert(
@@ -1349,7 +1351,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
 
             Navigator.pop(context);
           },
-          child: SizedBox(
+          child: Container(
             height: 48,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -1375,7 +1377,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     //   // ),
     //   maxTime: 15,
     // );
-    // print(res);
+    // debugPrint(res);
 
     final XFile? res = await selectSingleImageVideo();
 
@@ -1415,7 +1417,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
       }
     }
 
-    // print(res[0].path);
+    // debugPrint(res[0].path);
     // setState(() {
     //   path = res[0].thumbPath;
     // });
@@ -1432,7 +1434,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     //   ),
     // );
 
-    final List<XFile>? res = await selectMultipleImageVideo();
+    final List<XFile> res = await selectMultipleImageVideo();
 
     if (res == null || res.isEmpty) return;
 
@@ -1699,7 +1701,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     yarn.author = userBloc.user.userName;
     yarn.enablePayMe = enablePayMe;
     yarn.enableCommenting = enableCommenting;
-    yarn.ageRestriction = int.parse(ageRating ?? "");
+    yarn.ageRestriction = int.parse(ageRating);
     yarn.isAdultContent = isAdultContent;
     yarn.isSensitiveContent = isSensitiveContent;
 
@@ -1999,9 +2001,8 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     productOrServiceCount = 0;
     productOrServiceNext = "";
     productOrServicePrevious = "";
-    if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted) {
+    if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
       bottomSheetStateSetterGlobal!(() {});
-    }
     if (mounted) setState(() {});
   }
 
@@ -2012,9 +2013,8 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
       if (productOrServiceNext != null && !isItemLoading) {
         isItemLoading = true;
 
-        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted) {
+        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
           bottomSheetStateSetterGlobal!(() {});
-        }
         if (mounted) setState(() {});
 
         final Map<String, dynamic>? result = await MessageAuth()
@@ -2030,9 +2030,8 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
         final List tempList = result['results'];
 
         isItemLoading = false;
-        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted) {
+        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
           bottomSheetStateSetterGlobal!(() {});
-        }
         if (mounted) setState(() {});
 
         tempList.forEach((item) {
@@ -2047,16 +2046,14 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
           }
         });
 
-        if (bottomSheetStateSetterGlobal != null && bottomSheetMounted) {
+        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
           bottomSheetStateSetterGlobal!(() {});
-        }
         if (mounted) setState(() {});
       }
       if (searchedProductAndService.isEmpty) {
         noSearchedItem = true;
-        if (bottomSheetStateSetterGlobal != null && bottomSheetMounted) {
+        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
           bottomSheetStateSetterGlobal!(() {});
-        }
         if (mounted) setState(() {});
       }
     }
@@ -2064,16 +2061,26 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
 
   String getSearchUrl() {
     if (isProductSearch) {
-      return "${AppConfig.baseUrl}/api/v1/search/products/?search=name__wildcard|*${searchItemTextController!.text}*";
+      return AppConfig.baseUrl +
+          "/api/v1/search/products/?search=name__wildcard|*" +
+          searchItemTextController!.text +
+          "*";
     }
     if (isServiceSearch) {
-      return "${AppConfig.baseUrl}/api/v1/search/services/?search=name__wildcard|*${searchItemTextController!.text}*";
+      return AppConfig.baseUrl +
+          "/api/v1/search/services/?search=name__wildcard|*" +
+          searchItemTextController!.text +
+          "*";
     }
     if (isUserSearch) {
-      return "${AppConfig.baseUrl}/api/v1/search/users/?search=${searchItemTextController!.text}";
+      return AppConfig.baseUrl +
+          "/api/v1/search/users/?search=" +
+          searchItemTextController!.text;
     }
     if (isBlogSearch) {
-      return "${AppConfig.baseUrl}/api/v1/social/posts/public/?search=${searchItemTextController!.text}";
+      return AppConfig.baseUrl +
+          "/api/v1/social/posts/public/?search=" +
+          searchItemTextController!.text;
     }
     return "";
   }
@@ -2280,7 +2287,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     );
   }
 
-  Widget getResultTile(dynamic result) {
+  Widget getResultTile(var result) {
     if (isProductSearch) {
       if (result is Product) {
         return SearchProductTile(
@@ -2478,7 +2485,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     }
   }
 
-  String checkHintText(int selectedMenuItemIndex) {
+  checkHintText(int selectedMenuItemIndex) {
     if (selectedMenuItemIndex == 0) {
       return 'Search blog';
     } else if (selectedMenuItemIndex == 1) {
@@ -2488,11 +2495,10 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     } else if (selectedMenuItemIndex == 3) {
       return 'Search user';
     }
-    return "";
   }
 
-  void buildCreateMediaScreen() {
-    NavigationUtil.push(context,
+  buildCreateMediaScreen() {
+    return NavigationUtil.push(context,
         screen: CreateMediaScreen(
           imageCount: existingMediaList.length + newMediaList.length,
           addedSelectedMedia: (value) async {

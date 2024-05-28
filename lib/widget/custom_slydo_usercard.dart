@@ -269,7 +269,7 @@ class _CustomSlydoUserCardState extends State<CustomSlydoUserCard> {
   }
 
   void connectUserAlert(CustomerProfile user) async {
-    await showDialogBox(
+    final bool? result = await showDialogBox(
       context: context,
       roundedBackgroundIcon: RoundedBackgroundIcon(
         backgroundColor: navyBlue.withOpacity(0.08),

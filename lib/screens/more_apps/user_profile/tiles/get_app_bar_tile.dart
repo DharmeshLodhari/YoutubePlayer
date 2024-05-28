@@ -5,7 +5,7 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/locator.dart';
 import 'package:Slydo/routes/route_constants.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_conversation.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/share_in_chat/ShareInChat.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
@@ -17,6 +17,7 @@ import 'package:Slydo/screens/more_apps/yarn/share_as_a_yarn_screen.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_dashboard_bloc.dart';
 import 'package:Slydo/services/app_config_bloc.dart';
+import 'package:Slydo/services/app_tutorial_controller.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
@@ -25,6 +26,7 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/bottom_sheet_item.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
+import 'package:badges/badges.dart' as badges;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -42,14 +44,14 @@ import '../../yarn/utils/slydo_yarn_links.dart';
 import '../../yarn/yarn_search_screen.dart';
 import '../screens/user_profile_module_new/utils.dart';
 
-// ignore: must_be_immutable
 class GetAppbarTile extends StatefulWidget {
-  final CustomerProfile? searchedUser;
+  CustomerProfile? searchedUser;
+
   bool isLoading = true;
   bool isShrink = false;
-  final ScrollController? scrollController;
-  final String? userType;
-  final Map<String, dynamic>? channelDetail;
+  ScrollController? scrollController;
+  String? userType;
+  Map<String, dynamic>? channelDetail;
   final Function(Map<String, bool>)? callback;
   final Function(Map<String, dynamic>)? callbackProductService;
 
@@ -72,6 +74,7 @@ class GetAppbarTile extends StatefulWidget {
 class _GetAppbarTileState extends State<GetAppbarTile> {
   CustomerProfile? searchedUser;
   late UserBloc userBloc;
+  late BasketBloc basketBloc;
   bool isOwner = false;
   String? searchedUserName;
   bool isInRequestList = false;
@@ -108,11 +111,12 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
+    basketBloc = Provider.of<BasketBloc>(context);
     customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
     yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context, listen: false);
 
     if (searchedUser != null) {
-      hasAddress = searchedUser!.userAbout?.userAddress?.addressLine1 != null &&
+      hasAddress = searchedUser?.userAbout?.userAddress?.addressLine1 != null &&
           (searchedUser!.userAbout?.userAddress?.addressLine1?.isNotEmpty ??
               false);
       hasContact = searchedUser!.userAbout?.contact != null &&
@@ -159,8 +163,8 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
           actions: actionButtons(),
           title: widget.isShrink
               ? userNameWithVerifiedIcon(
-                  name: searchedUser!.displayName()!,
-                  isVerified: searchedUser!.isVerified,
+                  name: searchedUser?.displayName()!,
+                  isVerified: searchedUser?.isVerified,
                   textStyle: const TextStyle(
                     fontSize: 18,
                     color: Colors.white,
@@ -247,7 +251,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
                 backgroundColor: Colors.transparent,
               ),
             )
-          : searchedUser!.userAbout == null
+          : searchedUser?.userAbout == null
               ? const Center(
                   child: CircularProgressIndicator(
                     strokeWidth: 2.5,
@@ -261,8 +265,8 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
 
   Widget getWallpaper() {
     if (widget.userType == "channel") {
-      return widget.channelDetail!['banner'] == "" ||
-              widget.channelDetail!['banner'] == null
+      return widget.channelDetail?['banner'] == "" ||
+              widget.channelDetail?['banner'] == null
           ? Image.asset(
               "assets/images/default_user_wallpaper.png",
               width: double.infinity,
@@ -289,8 +293,8 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
                 ),
               ),
             );
-    } else if (searchedUser!.type!.toLowerCase() == "user") {
-      return searchedUser!.wallpaper == "" || searchedUser!.wallpaper == null
+    } else if (searchedUser?.type?.toLowerCase() == "user") {
+      return searchedUser?.wallpaper == "" || searchedUser?.wallpaper == null
           ? Image.asset(
               "assets/images/default_user_wallpaper.png",
               width: double.infinity,
@@ -299,7 +303,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
           : GestureDetector(
               onTap: () {
                 Navigator.of(context).pushNamed("/photo-viewer",
-                    arguments: searchedUser!.wallpaper);
+                    arguments: searchedUser?.wallpaper);
               },
               child: Container(
                 color: navyBlue,
@@ -307,7 +311,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
                   width: double.infinity,
                   height: double.infinity,
                   errorWidget: wallpaperErrorWidget,
-                  imageUrl: searchedUser!.wallpaper!,
+                  imageUrl: searchedUser?.wallpaper ?? "",
                   fit: BoxFit.cover,
                   placeholder: (context, url) =>
                       Center(child: CircularLoadingIndicator()),
@@ -318,7 +322,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
               ),
             );
     } else {
-      return searchedUser!.userAbout!.wallpaper == ""
+      return searchedUser?.userAbout?.wallpaper == ""
           ? Image.asset(
               "assets/images/default_user_wallpaper.png",
               width: double.infinity,
@@ -327,7 +331,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
           : GestureDetector(
               onTap: () {
                 Navigator.of(context).pushNamed("/photo-viewer",
-                    arguments: searchedUser!.userAbout!.wallpaper);
+                    arguments: searchedUser?.userAbout?.wallpaper);
               },
               child: Container(
                 color: navyBlue,
@@ -335,7 +339,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
                   width: double.infinity,
                   height: double.infinity,
                   errorWidget: wallpaperErrorWidget,
-                  imageUrl: searchedUser!.userAbout!.wallpaper,
+                  imageUrl: searchedUser?.userAbout?.wallpaper ?? "",
                   fit: BoxFit.cover,
                   placeholder: (context, url) =>
                       Center(child: CircularLoadingIndicator()),
@@ -368,7 +372,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
         channelDetail!['group_username'] ?? channelDetail!['group_name']);
 
     return Positioned(
-      top: searchedUser?.bio == null || searchedUser!.bio!.isEmpty ? 180 : 170,
+      top: searchedUser?.bio == null ? 180 : 170,
       left: 20,
       right: 0,
       child: Column(
@@ -456,7 +460,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
                       children: [
                         Text(
                           getFormattedViewCount(
-                              noOfViews: searchedUser!.followers!,
+                              noOfViews: searchedUser?.followers ?? 0,
                               addViewText: false,
                               showZeroViews: true),
                           style: TextStyle(
@@ -466,7 +470,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
                         ),
                         const SizedBox(width: 2),
                         Text(
-                          searchedUser!.followers! > 1
+                          (searchedUser?.followers ?? 0) > 1
                               ? 'Subscribers'
                               : 'Subscriber',
                           style: TextStyle(color: blackFont, fontSize: 10),
@@ -510,13 +514,13 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
                 child: GestureDetector(
                   onTap: () {
                     String image = "";
-                    if (searchedUser!.avatar! == "" ||
-                        searchedUser!.avatar ==
+                    if (searchedUser?.avatar! == "" ||
+                        searchedUser?.avatar ==
                             "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png") {
-                      image =
-                          getInitials(searchedUser!.fullName!).toUpperCase();
+                      image = getInitials(searchedUser?.fullName ?? "")
+                          .toUpperCase();
                     } else {
-                      image = searchedUser!.avatar!;
+                      image = searchedUser?.avatar ?? "";
                     }
                     Navigator.of(context)
                         .pushNamed(Routes.PHOTO_VIEWER, arguments: image);
@@ -585,15 +589,15 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
                       alignment: Alignment.centerLeft,
                       child: Text(
                         messageDecoderWithEmoji(
-                                searchedUser!.displayName() ?? "") ??
+                                searchedUser?.displayName() ?? "") ??
                             "",
                         style: TextStyle(fontSize: 12, color: yarnBlack),
                       )),
                   Align(
                     alignment: Alignment.centerLeft,
                     child: userNameWithVerifiedIcon(
-                        name: "@${searchedUser!.userName ?? ''}",
-                        isVerified: searchedUser!.isVerified,
+                        name: "@${searchedUser?.userName ?? ''}",
+                        isVerified: searchedUser?.isVerified,
                         textStyle: TextStyle(
                           fontSize: 12,
                           color: HexColor("#151515"),
@@ -625,7 +629,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
             children: [
               getFollowUnFollowWidget(),
               UserFollowersView(
-                userName: searchedUser!.userName,
+                userName: searchedUser?.userName,
               ),
             ],
           ),
@@ -635,7 +639,8 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
   }
 
   Widget getUserProfilePic() {
-    final Color borderColor = getUserTypeColorByType(type: searchedUser!.type!);
+    final Color borderColor =
+        getUserTypeColorByType(type: searchedUser?.type ?? "");
 
     if (widget.userType == 'channel') {
       if (widget.channelDetail!['avatar'] == null) {
@@ -656,14 +661,14 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
         );
       }
     } else {
-      if (searchedUser!.avatar! == "" ||
-          searchedUser!.avatar ==
+      if (searchedUser?.avatar! == "" ||
+          searchedUser?.avatar ==
               "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png") {
         return CircleAvatar(
           backgroundColor: navyBlue,
           radius: 25,
           child: Text(
-            getInitials(searchedUser!.fullName!).toUpperCase(),
+            getInitials(searchedUser?.fullName ?? "").toUpperCase(),
             style: TextStyle(color: white, fontWeight: FontWeight.w700),
           ),
         );
@@ -680,7 +685,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
           child: ClipOval(
             child: CachedNetworkImage(
               imageUrl:
-                  searchedUser?.avatar == "" || searchedUser?.avatar == null
+                  searchedUser?.avatar! == "" || searchedUser?.avatar! == null
                       ? defaultImage
                       : searchedUser?.avatar ?? "",
               colorBlendMode: BlendMode.darken,
@@ -690,12 +695,12 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
             ),
           ),
         );
-        // return CircleAvatar(
-        //   radius: 25,
-        //   backgroundImage: CachedNetworkImageProvider(
-        //     searchedUser!.avatar!,
-        //   ),
-        // );
+        return CircleAvatar(
+          radius: 25,
+          backgroundImage: CachedNetworkImageProvider(
+            searchedUser!.avatar!,
+          ),
+        );
       }
     }
   }
@@ -774,17 +779,17 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
       );
     }
 
-    if (searchedUser!.userName == userBloc.user.userName) {
+    if (searchedUser?.userName == userBloc.user.userName) {
       return const SizedBox.shrink();
     }
-    if (searchedUser!.isFollowing != null &&
-        searchedUser!.isFollowing == true) {
+    if (searchedUser?.isFollowing != null &&
+        searchedUser?.isFollowing == true) {
       return InkWell(
         onTap: () {
           isLoadingFollowingAction = true;
           if (mounted) setState(() {});
           UserAuth()
-              .followOrUnfollowUser(searchedUser!.userName!,
+              .followOrUnfollowUser(searchedUser?.userName ?? "",
                   shouldFollow: false)
               .then((value) async {
             if (value == true) {
@@ -826,7 +831,8 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
         isLoadingFollowingAction = true;
         if (mounted) setState(() {});
         UserAuth()
-            .followOrUnfollowUser(searchedUser!.userName!, shouldFollow: true)
+            .followOrUnfollowUser(searchedUser?.userName ?? "",
+                shouldFollow: true)
             .then((value) async {
           if (value == true) {
             await getSearchedUser(load: false);
@@ -876,7 +882,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
                     alignment: Alignment.centerLeft,
                     child: Text(
                       messageDecoderWithEmoji(
-                              searchedUser!.displayName() ?? "") ??
+                              searchedUser?.displayName() ?? "") ??
                           "",
                       style: TextStyle(
                           fontSize: 10,
@@ -886,8 +892,8 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
                 Align(
                   alignment: Alignment.centerLeft,
                   child: userNameWithVerifiedIcon(
-                      name: "@${channelDetail!['owner']['username'] ?? ''}",
-                      isVerified: searchedUser!.isVerified,
+                      name: "@${channelDetail?['owner']['username'] ?? ''}",
+                      isVerified: searchedUser?.isVerified,
                       textStyle: TextStyle(
                         fontSize: 10,
                         color: HexColor("#151515"),
@@ -916,7 +922,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
             SvgPicture.asset("yarn/calendar".toSVG()),
             const SizedBox(width: 12),
             Text(
-              '${getDate(searchedUser!.dateJoined!)}',
+              '${getDate(searchedUser?.dateJoined ?? "")}',
               style: TextStyle(
                   color: HexColor("78797A"),
                   fontSize: 10,
@@ -986,7 +992,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
               children: [
                 Text(
                   getFormattedViewCount(
-                      noOfViews: searchedUser!.followers!,
+                      noOfViews: searchedUser?.followers ?? 0,
                       addViewText: false,
                       showZeroViews: true),
                   style:
@@ -994,7 +1000,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
                 ),
                 const SizedBox(width: 2),
                 Text(
-                  searchedUser!.followers! > 1 ? 'Followers' : 'Follower',
+                  (searchedUser?.followers ?? 0) > 1 ? 'Followers' : 'Follower',
                 ),
               ],
             ),
@@ -1006,7 +1012,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
   }
 
   Widget getUserBioStringWidget() {
-    if (searchedUser?.bio == null || searchedUser!.bio!.isEmpty) {
+    if (searchedUser?.bio == null) {
       return const SizedBox.shrink();
     } else {
       return Container(
@@ -1054,7 +1060,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
 
     try {
       user = await UserAuth()
-          .fetchCustomerProfileWithAuth(searchedUser!.userName.toString());
+          .fetchCustomerProfileWithAuth(searchedUser?.userName.toString());
     } catch (e) {
       Navigator.pop(context);
       showToast(message: 'User not found');
@@ -1091,6 +1097,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
 
   List<Widget> actionButtons() {
     return [
+      getCartIcon(),
       getQRCodeIcon(),
       if (widget.userType == 'channel') const SizedBox() else getSearchIcon(),
       menuIcon(),
@@ -1099,7 +1106,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
   }
 
   Widget getChatIcon() {
-    return searchedUser!.conversationId != ""
+    return searchedUser?.conversationId != ""
         ? Row(
             children: [
               chatIcon(),
@@ -1109,6 +1116,80 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
             ],
           )
         : Container();
+  }
+
+  Widget getCartIcon() {
+    return Row(
+      children: [
+        _cartBtn(),
+        const SizedBox(
+          width: 8,
+        ),
+      ],
+    );
+  }
+
+  Widget _cartBtn() {
+    return RoundedBackgroundIcon(
+      height: 34,
+      width: 34,
+      key: tutorialProfileCartKey,
+      icon: badges.Badge(
+        badgeContent: getBadgeContent(),
+        position: badges.BadgePosition.topEnd(
+            end: getBadgeCount().length == 1 ? -3 : 0, top: 0),
+        badgeAnimation: const badges.BadgeAnimation.rotation(
+          animationDuration: Duration(seconds: 1),
+          colorChangeAnimationDuration: Duration(seconds: 1),
+          loopAnimation: false,
+          curve: Curves.fastOutSlowIn,
+          colorChangeAnimationCurve: Curves.easeInCubic,
+        ),
+        badgeStyle: badges.BadgeStyle(
+          shape: badges.BadgeShape.circle,
+          badgeColor: naturalGreen,
+          padding: basketBloc.basketItems.length == 0
+              ? const EdgeInsets.all(0)
+              : const EdgeInsets.all(4),
+          elevation: 0,
+        ),
+        child: const Center(
+          child: Icon(
+            SlydoAppIconNew.cart,
+            color: Colors.white,
+            size: 16,
+          ),
+        ),
+      ),
+      backgroundColor: lightGrey.withOpacity(0.1),
+      enableMargin: false,
+      onTap: () {
+        NavigationUtil.pushNamed(context, routeName: Routes.SHOPPING_CART);
+      },
+    );
+  }
+
+  Widget? getBadgeContent() {
+    if (basketBloc.basketItems.length == 0) {
+      return null;
+    }
+    return Text(
+      getBadgeCount(),
+      style: const TextStyle(
+        fontFamily: 'Inter',
+        fontSize: 10,
+        color: Colors.white,
+        fontWeight: FontWeight.bold,
+      ),
+    );
+  }
+
+  String getBadgeCount() {
+    int totalItem = 0;
+    basketBloc.basketItems.forEach((element) {
+      totalItem = totalItem + int.parse(element.qty.toString());
+    });
+    return totalItem > 99 ? '99+' : totalItem.toString();
   }
 
   Widget getQRCodeIcon() {
@@ -1123,7 +1204,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
   }
 
   Widget getSearchIcon() {
-    return searchedUser!.type!.toLowerCase() != "user"
+    return searchedUser?.type?.toLowerCase() != "user"
         ? Row(
             children: [
               searchIcon(),
@@ -1168,10 +1249,10 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
         } else {
           //get the account detail of clicked user
           final VirtualAccount virtualAccount = VirtualAccount(
-            accountName: searchedUser!.wallet!.accountName,
-            accountNumber: searchedUser!.wallet!.accountNumber,
-            financialInstitution: searchedUser!.wallet!.financialInstitution!,
-            customerUsername: searchedUser!.wallet!.customerUsername,
+            accountName: searchedUser?.wallet?.accountName,
+            accountNumber: searchedUser?.wallet?.accountNumber,
+            financialInstitution: searchedUser?.wallet?.financialInstitution!,
+            customerUsername: searchedUser?.wallet?.customerUsername,
             note: "",
           );
 
@@ -1205,7 +1286,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
         ),
         onTap: () {
           Navigator.pushNamed(context, '/chat-screen',
-              arguments: {"recipientUserName": searchedUser!.userName});
+              arguments: {"recipientUserName": searchedUser?.userName});
         },
         backgroundColor: lightGrey.withOpacity(0.1),
         enableMargin: true,
@@ -1331,8 +1412,8 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
       );
     }
 
-    if (searchedUser!.userName != userBloc.user.userName) {
-      if (searchedUser!.conversationId != "") {
+    if (searchedUser?.userName != userBloc.user.userName) {
+      if (searchedUser?.conversationId != "") {
         return Row(
           children: [
             chatIcon(),
@@ -1407,7 +1488,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
   List<Widget> generateBottomSheetItem() {
     final List<Widget> list = [];
 
-    if (searchedUser!.userName == userBloc.user.userName) {
+    if (searchedUser?.userName == userBloc.user.userName) {
       list.add(
         bottomSheetItem(
           title: AppLocalization.of(context)!.createAPost,
@@ -1455,7 +1536,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
                 userBloc.user.hasWritePermission(ProtectionPermission.profile);
             if (hasPermission == PermissionType.WRITE) {
               var business = '';
-              if (searchedUser!.type!.toLowerCase() == "user") {
+              if (searchedUser?.type!.toLowerCase() == "user") {
                 business = 'no';
               } else if (widget.userType == 'channel') {
                 business = 'no';
@@ -1486,7 +1567,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
           },
         ),
       );
-      if ((searchedUser != null && searchedUser!.type!.toLowerCase() != 'user'))
+      if ((searchedUser != null && searchedUser?.type!.toLowerCase() != 'user'))
         list.add(
           bottomSheetItem(
             title: "Manage Business",
@@ -1514,11 +1595,11 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
         onTap: () {
           Navigator.pop(context);
           final String merchantUrl =
-              'https://slydo.co/store/${searchedUser!.userName!}';
+              'https://slydo.co/store/${searchedUser?.userName!}';
           final shareBody = userBloc.user.type != 'User'
               ? merchantUrl
-              : "https://slydo.co/user/${searchedUser!.userName!}";
-          Share.share(shareBody, subject: "${searchedUser!.displayName()}");
+              : "https://slydo.co/user/${searchedUser?.userName!}";
+          Share.share(shareBody, subject: "${searchedUser?.displayName()}");
         },
       ),
     );
@@ -1546,13 +1627,13 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
       ),
     );
 
-    if (searchedUser!.userName != userBloc.user.userName) {
+    if (searchedUser?.userName != userBloc.user.userName) {
       if (searchedUser?.type?.toLowerCase() != "user") {
         list.add(
           bottomSheetItem(
             title: "Write Review",
             iconData: SlydoAppIcon.star,
-            isLast: userBloc.user.userName == searchedUser!.userName,
+            isLast: userBloc.user.userName == searchedUser?.userName,
             onTap: () async {
               Navigator.pop(context);
               Navigator.of(context).pushNamed("/add-review",
@@ -1565,7 +1646,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
 
     ///check if the profile is not for channel
     if (widget.userType != 'channel') {
-      if (userBloc.user.userName != searchedUser!.userName) {
+      if (userBloc.user.userName != searchedUser?.userName) {
         list.addAll(
           [
             bottomSheetItem(
@@ -1576,7 +1657,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
                 if (!isOwner) {
                   Navigator.of(context)
                       .pushNamed('/compose_message', arguments: {
-                    'recipient': searchedUser!.userName,
+                    'recipient': searchedUser?.userName,
                     'subject': "",
                   });
                 }
@@ -1595,7 +1676,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
                   Navigator.of(context).pushNamed('/send-payment',
                       arguments: <String, dynamic>{
                         'isFromProfile': false,
-                        'recipient': searchedUser!.userName
+                        'recipient': searchedUser?.userName
                       });
                 });
                 // } else {
@@ -1615,7 +1696,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
                     Navigator.pop(context);
                     Navigator.of(context).pushNamed('/request-payment',
                         arguments: <String, dynamic>{
-                          'recipient': searchedUser!.userName,
+                          'recipient': searchedUser?.userName,
                           'isFromProfile': false,
                           'isRequest': true
                         });
@@ -1660,14 +1741,14 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
         );
       }
       if (userBloc.user.type == "User" &&
-          userBloc.user.userName == searchedUser!.userName) {
+          userBloc.user.userName == searchedUser?.userName) {
         list.add(
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 8.0),
             child: bottomSheetItem(
               title: "Upgrade",
               icon: const Icon(Icons.upgrade_rounded),
-              isLast: userBloc.user.userName == searchedUser!.userName,
+              isLast: userBloc.user.userName == searchedUser?.userName,
               onTap: () async {
                 Navigator.pop(context);
                 upgradeAccount();
@@ -1688,7 +1769,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
   List<Widget> generateBottomSheetItemForManageBusiness() {
     final List<Widget> list = [];
 
-    if (searchedUser!.userName == userBloc.user.userName) {
+    if (searchedUser?.userName == userBloc.user.userName) {
       list.add(
         bottomSheetItem(
           title: "Add-ons",
@@ -1775,9 +1856,9 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
   }
 
   void sendProfileToUsersInChat() async {
-    final List<ChatConversation?>? listOfRecipient =
+    final List<ChatConversation?> listOfRecipient =
         await ShareInChat().selectShareCustomer(context);
-    debugPrint("Selected users = ${listOfRecipient?.length}");
+    debugPrint("Selected users = ${listOfRecipient.length}");
 
     final Map<String, dynamic> itemData =
         searchedUser?.toJsonToSendInToChat() ?? {};
@@ -1828,19 +1909,20 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
   }
 
   Widget getOwnerAvatar() {
-    if (searchedUser!.avatar! == "" ||
-        searchedUser!.avatar ==
+    if (searchedUser?.avatar! == "" ||
+        searchedUser?.avatar ==
             "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png") {
       return GestureDetector(
         onTap: () {
           Navigator.of(context).pushNamed("/photo-viewer",
-              arguments: getInitials(searchedUser!.fullName!).toUpperCase());
+              arguments:
+                  getInitials(searchedUser?.fullName ?? "").toUpperCase());
         },
         child: CircleAvatar(
           backgroundColor: navyBlue,
           radius: 15,
           child: Text(
-            getInitials(searchedUser!.fullName!).toUpperCase(),
+            getInitials(searchedUser?.fullName ?? "").toUpperCase(),
             style: TextStyle(color: white, fontWeight: FontWeight.w700),
           ),
         ),
@@ -1849,7 +1931,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
       return GestureDetector(
         onTap: () {
           Navigator.of(context)
-              .pushNamed("/photo-viewer", arguments: searchedUser!.avatar!);
+              .pushNamed("/photo-viewer", arguments: searchedUser?.avatar!);
         },
         child: Container(
           height: 15,
@@ -1862,7 +1944,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
           child: ClipOval(
             child: CachedNetworkImage(
               imageUrl:
-                  searchedUser?.avatar == "" || searchedUser?.avatar == null
+                  searchedUser?.avatar! == "" || searchedUser?.avatar! == null
                       ? defaultImage
                       : searchedUser?.avatar ?? "",
               colorBlendMode: BlendMode.darken,

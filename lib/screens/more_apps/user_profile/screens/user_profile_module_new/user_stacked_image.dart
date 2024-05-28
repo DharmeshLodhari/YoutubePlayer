@@ -45,8 +45,9 @@ class StackedWidgets extends StatelessWidget {
   }
 }
 
-Widget buildImage(String urlImage, String fullName) {
+Widget buildImage(String urlImage, String fullName, String userType) {
   final double borderSize = 2;
+  Color borderColor = getUserTypeColorByType(type: userType);
 
   if (urlImage == "" ||
       urlImage ==
@@ -69,8 +70,12 @@ Widget buildImage(String urlImage, String fullName) {
   } else {
     return ClipOval(
       child: Container(
-        padding: EdgeInsets.all(borderSize),
-        color: Colors.white,
+        // padding: EdgeInsets.all(borderSize),
+        decoration: BoxDecoration(
+          border: Border.all(color: borderColor, width: 2),
+          shape: BoxShape.circle,
+        ),
+        // color: Colors.white,
         child: ClipOval(
           child: CachedNetworkImage(
             imageUrl: urlImage,

@@ -1,6 +1,6 @@
-import 'package:Slydo/screens/more_apps/messaging/chat/models/gif_model/on_click.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/gif_model/on_load.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/gif_model/on_sent.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/gif_model/Onclick.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/gif_model/Onload.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/gif_model/Onsent.dart';
 
 class Analytics {
   Onclick? onclick;
@@ -19,15 +19,15 @@ class Analytics {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    if (onclick != null) {
-      data['onclick'] = onclick!.toJson();
+    final Map<String, dynamic> data = Map<String, dynamic>();
+    if (this.onclick != null) {
+      data['onclick'] = this.onclick!.toJson();
     }
-    if (onload != null) {
-      data['onload'] = onload!.toJson();
+    if (this.onload != null) {
+      data['onload'] = this.onload!.toJson();
     }
-    if (onsent != null) {
-      data['onsent'] = onsent!.toJson();
+    if (this.onsent != null) {
+      data['onsent'] = this.onsent!.toJson();
     }
     return data;
   }

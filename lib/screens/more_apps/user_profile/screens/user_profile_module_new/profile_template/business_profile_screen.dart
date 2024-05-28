@@ -14,10 +14,10 @@ import 'package:text_scroll/text_scroll.dart';
 import '../utils.dart';
 
 class BusinessProfileScreen extends StatefulWidget {
-  final CustomerProfile? searchedUser;
-  final String? searchedUserName;
-  final bool isOwner;
-  final bool isLoading;
+  CustomerProfile? searchedUser;
+  String? searchedUserName;
+  bool isOwner;
+  bool isLoading;
 
   BusinessProfileScreen({
     Key? key,
@@ -43,7 +43,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
   TabController? _tabController;
   PageController? _pageController;
   int _currentIndex = 0;
-  final PageStorageBucket _bucket = PageStorageBucket();
+  final PageStorageBucket _bucket = new PageStorageBucket();
 
   // Define a list to store the UserTab objects
   List<UserTab> userTabs = [];
@@ -91,17 +91,19 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
     final orderedKeys = <String>[];
 
     // Iterate through the 'ordering' array and add keys that exist in boolMap to orderedKeys
-    // Iterate through the JSON object and filter boolean values
-    result.forEach((key, value) {
-      if (value is bool) {
-        boolMap[key] = value;
-      }
-    });
+    if (result is Map<String, dynamic>) {
+      // Iterate through the JSON object and filter boolean values
+      result.forEach((key, value) {
+        if (value is bool) {
+          boolMap[key] = value;
+        }
+      });
 
-    // Iterate through the JSON object and add tabs for boolean values that are true
-    for (var key in orderingList) {
-      if (boolMap.containsKey(key)) {
-        orderedKeys.add(key);
+      // Iterate through the JSON object and add tabs for boolean values that are true
+      for (var key in orderingList) {
+        if (boolMap.containsKey(key)) {
+          orderedKeys.add(key);
+        }
       }
     }
 
@@ -155,6 +157,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
   }
 
   Future<void> getAlertTagData() async {
+    debugPrint("============================>");
     if (flashTagNext != null && !isFlashTagLoading) {
       isFlashTagLoading = true;
       if (mounted) setState(() {});
@@ -284,13 +287,14 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
     );
   }
 
-  void obtainCustomCategory(String user) async {
+  void obtainCustomCategory(user) async {
     try {
       final List<ProductCategory> result =
-          await ShoppingAuthService().obtainCustomCategory(user);
+          await ShoppingAuthService().obtainCustomCategory(user!);
       final List<ProductCategory> initial = [];
-      initial.add(const ProductCategory("All", id: "all"));
       initial.add(const ProductCategory("Explore", id: "main"));
+      initial.add(const ProductCategory("All", id: "all"));
+
       initial.addAll(result);
       customCategories = initial;
       selectedCategory = customCategories.first.id;
@@ -484,10 +488,11 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
       color: white,
       child: Column(
         children: [
-          const SizedBox(height: 24),
+          const SizedBox(height: 15),
           Container(
-            height: 20,
-            margin: const EdgeInsets.only(right: 24, left: 10),
+            height: 32,
+            padding: const EdgeInsets.only(left: 12),
+            margin: const EdgeInsets.only(right: 16),
             alignment: Alignment.centerLeft,
             child: ListView(
               shrinkWrap: true,
@@ -500,26 +505,30 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
                               selectedCategory = e.id;
                             });
                           },
-                          child: Padding(
-                            padding: const EdgeInsets.only(
-                              left: 24,
-                            ),
-                            child: Container(
-                              padding: const EdgeInsets.only(
-                                bottom:
-                                    3, // This can be the space you need between text and underline
-                              ),
-                              decoration: selectedCategory == e.id
-                                  ? BoxDecoration(
-                                      border: Border(
-                                        bottom: BorderSide(
-                                          color: navyBlue,
-                                          width:
-                                              2.0, // This would be the width of the underline
-                                        ),
+                          child: Container(
+                            decoration: selectedCategory == e.id
+                                ? BoxDecoration(
+                                    border: Border(
+                                      bottom: BorderSide(
+                                        color: navyBlue,
+                                        width:
+                                            2.5, // This would be the width of the underline
                                       ),
-                                    )
-                                  : const BoxDecoration(),
+                                    ),
+                                  )
+                                : BoxDecoration(
+                                    border: Border(
+                                      bottom: BorderSide(
+                                        color:
+                                            greySecondaryYarn.withOpacity(0.5),
+                                        width:
+                                            1, // This would be the width of the underline
+                                      ),
+                                    ),
+                                  ),
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 12.0),
                               child: Text(
                                 e.name.toTitleCase(),
                                 style: TextStyle(
@@ -540,12 +549,12 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
               ],
             ),
           ),
-          Container(
-              margin: const EdgeInsets.only(left: 30),
-              child: Divider(
-                color: greySecondaryYarn.withOpacity(.6),
-              )),
-          const SizedBox(height: 14),
+          // Container(
+          //   margin: EdgeInsets.only(left: 30),
+          //   child: Divider(
+          //     color: greySecondaryYarn,
+          //   ),
+          // ),
         ],
       ),
     );
@@ -577,6 +586,9 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
         if (customCategories.isNotEmpty &&
             _currentUser.tabs[_currentIndex].name == "product")
           customCategoryWidget(),
+        const SizedBox(
+          height: 20,
+        ),
         Expanded(
           child: (customCategories.isNotEmpty &&
                   _currentUser.tabs[_currentIndex].name == "product" &&
@@ -669,7 +681,6 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
     );
   }
 
-  @override
   Future<void> dispose() async {
     super.dispose();
     scrollController?.dispose();
@@ -681,7 +692,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
     _pageController?.removeListener(_scrollListener);
   }
 
-  void refreshTabs(Map<String, bool> val) {
+  refreshTabs(Map<String, bool> val) {
     if (compareMaps(reorderedBoolMap, val)) {
       debugPrint('The maps are equal.');
     } else {
@@ -725,7 +736,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
     }
   }
 
-  void productServiceTabReload(Map<String, dynamic> val) {
+  productServiceTabReload(Map<String, dynamic> val) {
     productLabel = val['product_label'].toString();
     serviceLabel = val['service_label'].toString();
     if (mounted) setState(() {});

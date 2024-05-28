@@ -158,7 +158,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
                   await _auth.makePaymentForCartOrder({"orders": orders});
 
               debugPrint('STATUS CODE :: ${response.statusCode}');
-              if (response.statusCode == 200) {
+              if (response.statusCode == 200 || response.statusCode == 201) {
                 Navigator.of(context)
                     .popUntil(ModalRoute.withName(Routes.DASHBOARD));
                 Navigator.pushNamed(context, Routes.ORDERS_LIST);

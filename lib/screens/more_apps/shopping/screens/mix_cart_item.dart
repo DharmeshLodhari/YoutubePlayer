@@ -36,7 +36,7 @@ class _MixCartItemState extends State<MixCartItem> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final _auth = PaymentAndBankingAuth();
 
-  final RefreshController _refreshController =
+  RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
   Widget audioTile = Container();
@@ -70,14 +70,14 @@ class _MixCartItemState extends State<MixCartItem> {
   void initializeShoppingCart() async {
     debugPrint("initializeShoppingCart called");
     final List items = await ShoppingAuthService().getShoppingCart();
-    for (var element in items) {
+    items.forEach((element) {
       final String type = element is Product ? "product" : "service";
       basketBloc.addItemToCart(
         item: element,
         type: type,
         currentUser: userBloc.user.convertToUser(),
       );
-    }
+    });
   }
 
   @override
@@ -404,13 +404,13 @@ class _MixCartItemState extends State<MixCartItem> {
       currentUser: userBloc.user.convertToUser(),
     );
     late var mapData;
-    for (var element in basketBloc.items) {
+    basketBloc.items.forEach((element) {
       if (element["item"].conversationID ==
           basketBloc.items[index]["item"].conversationID) {
         mapData = element;
-        continue;
+        return;
       }
-    }
+    });
     final Map<String, dynamic> data = {
       "type": type,
       "id": mapData["item"].conversationID,
@@ -425,13 +425,13 @@ class _MixCartItemState extends State<MixCartItem> {
         basketBloc.items[index]["item"] is Product ? "product" : "service";
 
     late var mapData;
-    for (var element in basketBloc.items) {
+    basketBloc.items.forEach((element) {
       if (element["item"].conversationID ==
           basketBloc.items[index]["item"].conversationID) {
         mapData = element;
-        continue;
+        return;
       }
-    }
+    });
     final Map data = {
       "type": type,
       "id": mapData["item"].conversationID,
@@ -528,7 +528,7 @@ class _MixCartItemState extends State<MixCartItem> {
     );
   }
 
-  void addNoteDialog() {
+  addNoteDialog() {
     showMaterialDialog<String>(
       context: context,
       child: WillPopScope(
@@ -623,7 +623,8 @@ class _MixCartItemState extends State<MixCartItem> {
                   }
                   final response =
                       await _auth.makePaymentForCartOrder({"orders": orders});
-                  if (response.statusCode == 200) {
+                  if (response.statusCode == 200 ||
+                      response.statusCode == 201) {
                     Navigator.popAndPushNamed(
                       context,
                       Routes.ORDERS_LIST,
@@ -669,7 +670,7 @@ class _MixCartItemState extends State<MixCartItem> {
 // ignore: must_be_immutable
 class VerticalListItem extends StatelessWidget {
   Widget? child;
-  dynamic item;
+  var item;
   String? type;
 
   VerticalListItem(Widget child, var item) {

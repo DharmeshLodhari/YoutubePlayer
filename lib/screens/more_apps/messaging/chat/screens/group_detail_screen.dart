@@ -4,8 +4,8 @@ import 'dart:convert';
 import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_group_action_manager.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/group_detail_model.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/participant_model.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/GroupDetailModel.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/Participant.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/user_tile_for_group_detail.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
@@ -26,7 +26,7 @@ import '../../../../../widget/dialog.dart';
 import '../../../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 
 class GroupDetailScreen extends StatefulWidget {
-  final dynamic arguments;
+  final arguments;
 
   GroupDetailScreen({this.arguments});
 
@@ -36,7 +36,7 @@ class GroupDetailScreen extends StatefulWidget {
 
 class _GroupDetailScreenState extends State<GroupDetailScreen> {
   final GlobalKey<ScaffoldState> _scaffoldGroupDetailScreen =
-      GlobalKey<ScaffoldState>();
+      new GlobalKey<ScaffoldState>();
 
   SlidableController? _slideController;
 
@@ -89,10 +89,9 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
                 message:
                     "${messageData['meta_data']['author']} has deleted this group !!");
 
-            if (mounted) {
+            if (mounted)
               Navigator.popUntil(
                   context, ModalRoute.withName(Routes.DASHBOARD));
-            }
             return;
           } else if (messageData['meta_data']['action'] == "remove_user") {
             final List users = messageData['meta_data']['users'];
@@ -104,10 +103,9 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
                   message:
                       "${messageData['meta_data']['author']} has removed you from group !!");
 
-              if (mounted) {
+              if (mounted)
                 Navigator.popUntil(
                     context, ModalRoute.withName(Routes.DASHBOARD));
-              }
               return;
             }
           }
@@ -281,46 +279,47 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
         ),
       );
     }
-    // return Container(
-    //   height: 36,
-    //   width: 36,
-    //   child: Container(
-    //     height: 36,
-    //     width: 36,
-    //     decoration: BoxDecoration(
-    //         borderRadius: BorderRadius.circular(
-    //           25,
-    //         ),
-    //         border: Border.all(color: borderColor, width: 2)),
-    //     child: GestureDetector(
-    //       onTap: () {
-    //         Navigator.of(context).pushNamed("/photo-viewer",
-    //             arguments: groupDetail != null
-    //                 ? groupDetail!.avatar ?? defaultImage
-    //                 : defaultImage);
-    //       },
-    //       child: ClipOval(
-    //         child: CachedNetworkImage(
-    //           imageUrl: groupDetail != null
-    //               ? groupDetail!.avatar ?? defaultImage
-    //               : defaultImage,
-    //           colorBlendMode: BlendMode.darken,
-    //           fit: BoxFit.fill,
-    //           filterQuality: FilterQuality.high,
-    //           errorWidget: imageErrorWidget,
-    //         ),
-    //       ),
-    //     ),
-    //   ),
-    // );
+
+    return Container(
+      height: 36,
+      width: 36,
+      child: Container(
+        height: 36,
+        width: 36,
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(
+              25,
+            ),
+            border: Border.all(color: borderColor, width: 2)),
+        child: GestureDetector(
+          onTap: () {
+            Navigator.of(context).pushNamed("/photo-viewer",
+                arguments: groupDetail != null
+                    ? groupDetail!.avatar ?? defaultImage
+                    : defaultImage);
+          },
+          child: ClipOval(
+            child: CachedNetworkImage(
+              imageUrl: groupDetail != null
+                  ? groupDetail!.avatar ?? defaultImage
+                  : defaultImage,
+              colorBlendMode: BlendMode.darken,
+              fit: BoxFit.fill,
+              filterQuality: FilterQuality.high,
+              errorWidget: imageErrorWidget,
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   List<Widget> getGroupActions() {
     if (groupDetail!.adminUsers.contains(userBloc.user.userName)) {
       return [
-        if (isLoading) Container() else editGroupBtn(),
+        isLoading ? Container() : editGroupBtn(),
         const SizedBox(width: 8),
-        if (isLoading) Container() else addUserToGroupBtn(),
+        isLoading ? Container() : addUserToGroupBtn(),
         const SizedBox(
           width: 16,
         )
@@ -376,10 +375,12 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
         ? Center(
             child: CircularLoadingIndicator(),
           )
-        : Column(
-            children: [
-              Expanded(child: _buildConnectionsList()),
-            ],
+        : Container(
+            child: Column(
+              children: [
+                Expanded(child: _buildConnectionsList()),
+              ],
+            ),
           );
   }
 
@@ -662,10 +663,10 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
       actionExtentRatio: 0.20,
       fastThreshold: 1,
       showAllActionsThreshold: 0.6,
-      actions: listActionSlideActions(user, index),
-      secondaryActions: listSecondaryActions(user, index),
       // movementDuration: Duration(milliseconds: 300),
       child: VerticalListItem(user, groupDetail),
+      actions: listActionSlideActions(user, index),
+      secondaryActions: listSecondaryActions(user, index),
     );
   }
 
@@ -968,19 +969,21 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
               users: selectedUsers as List<CustomerProfile>)
           .then((value) {
         if (value) {
-          final List<Participant> usersAdded = [];
+          if (selectedUsers is List<CustomerProfile>) {
+            final List<Participant> usersAdded = [];
 
-          selectedUsers.forEach((element) {
-            usersAdded.add(Participant(
-                avatar: element.avatar,
-                fullName: element.displayName(),
-                type: element.type,
-                userName: element.userName));
-          });
+            selectedUsers.forEach((element) {
+              usersAdded.add(Participant(
+                  avatar: element.avatar,
+                  fullName: element.displayName(),
+                  type: element.type,
+                  userName: element.userName));
+            });
 
-          groupDetail!.participants.addAll(usersAdded);
-          showToast(message: "Users are added in group !!");
-          if (mounted) setState(() {});
+            groupDetail!.participants.addAll(usersAdded);
+            showToast(message: "Users are added in group !!");
+            if (mounted) setState(() {});
+          }
         }
       }).catchError((error) {
         debugPrint("ERROR:- $error");
@@ -1037,10 +1040,9 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
               conversationId: conversationId);
           dashboardBloc.index = 3;
           showToast(message: "You deleted the ${groupDetail?.fullName}!!");
-          if (mounted) {
+          if (mounted)
             Navigator.of(context)
                 .popUntil(ModalRoute.withName(Routes.DASHBOARD));
-          }
         }
       }).catchError((error) {
         isExitingGroup = false;

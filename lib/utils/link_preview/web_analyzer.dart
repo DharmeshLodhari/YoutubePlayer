@@ -100,7 +100,7 @@ class WebAnalyzer {
       // debugPrint("Error $e");
     }
 
-    // print("$url cost ${DateTime.now().difference(start).inMilliseconds}");
+    // debugPrint("$url cost ${DateTime.now().difference(start).inMilliseconds}");
 
     return info;
   }
@@ -109,7 +109,7 @@ class WebAnalyzer {
     final response = await _requestUrl(url);
 
     if (response == null) return null;
-    // print("$url ${response.statusCode}");
+    // debugPrint("$url ${response.statusCode}");
     if (multimedia!) {
       final String? contentType = response.headers["content-type"];
       if (contentType != null) {
@@ -202,7 +202,7 @@ class WebAnalyzer {
     if (cookie != null || (cookie == null && _cookies[uri.host] != null)) {
       request.headers["Cookie"] = cookie ?? _cookies[uri.host]!;
     }
-    // print(request.headers);
+    // debugPrint(request.headers);
     final stream = await client.send(request);
 
     if (stream.statusCode == HttpStatus.movedTemporarily ||
@@ -220,7 +220,7 @@ class WebAnalyzer {
         }
         count++;
         client.close();
-        // print("Redirect ====> $url");
+        // debugPrint("Redirect ====> $url");
         return _requestUrl(url, count: count, cookie: cookie);
       }
     } else if (stream.statusCode == HttpStatus.ok) {
@@ -262,7 +262,7 @@ class WebAnalyzer {
       // final start = DateTime.now();
       final headHtml = _getHeadHtml(html);
       final document = parser.parse(headHtml);
-      // print("dom cost ${DateTime.now().difference(start).inMilliseconds}");
+      // debugPrint("dom cost ${DateTime.now().difference(start).inMilliseconds}");
       final uri = Uri.parse(url);
 
       // get image or video
@@ -362,7 +362,7 @@ class WebAnalyzer {
       if (body.length > 300) {
         body = body.substring(0, 300);
       }
-      // print("html cost ${DateTime.now().difference(start).inMilliseconds}");
+      // debugPrint("html cost ${DateTime.now().difference(start).inMilliseconds}");
       return body;
     }
     return description;

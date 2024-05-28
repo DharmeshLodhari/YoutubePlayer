@@ -38,12 +38,12 @@ class NormalCartScreenState extends State<NormalCartScreen> {
   // final _auth = PaymentAndBankingAuth();
 
   final GlobalKey<ScaffoldMessengerState> _normalCartScaffoldMessengerKey =
-      GlobalKey<ScaffoldMessengerState>();
+      new GlobalKey<ScaffoldMessengerState>();
 
-  final RefreshController _refreshController =
+  RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
-  final ScrollController _normalScrollController = ScrollController();
+  ScrollController _normalScrollController = new ScrollController();
   AppConfigurationModel? appConfigurationModel;
 
   bool isLoading = false;
@@ -368,7 +368,7 @@ class NormalCartScreenState extends State<NormalCartScreen> {
 
               final int? price = product.getProductRealPrice();
               final int quantity = item['qty'] ?? 0;
-              final int priceQuantity = price ?? 0 * quantity;
+              final int priceQuantity = price! * quantity;
               totalPrice += AddOnTotal + priceQuantity;
               // }
             }
@@ -423,7 +423,7 @@ class NormalCartScreenState extends State<NormalCartScreen> {
     final Map<String, dynamic> dataInfo =
         getUpdatedCartItem(type, basketBloc.items[index]["item"].id);
 
-    debugPrint('fola chat one fourrrr::: $dataInfo');
+    debugPrint('fola chat one fourrrr::: ${dataInfo}');
 
     //close pop up if quantity to reduce is 1 currently
     if (dataInfo["variants"] == null) {
@@ -504,7 +504,7 @@ class NormalCartScreenState extends State<NormalCartScreen> {
     return dataInfo;
   }
 
-  int getTotalVariantQuantity(List<dynamic>? variantsList) {
+  int getTotalVariantQuantity(List<dynamic>? variantsList, id) {
     int totalQuantity = 0;
 
     if (variantsList!.isNotEmpty) {
@@ -529,12 +529,12 @@ class NormalCartScreenState extends State<NormalCartScreen> {
     );
 
     late var mapData;
-    for (var element in basketBloc.items) {
+    basketBloc.items.forEach((element) {
       if (element["item"].id == basketBloc.items[index]["item"].id) {
         mapData = element;
-        continue;
+        return;
       }
-    }
+    });
     final Map<String, dynamic> data = {
       "type": type,
       "id": mapData["item"].id,
@@ -565,12 +565,12 @@ class NormalCartScreenState extends State<NormalCartScreen> {
         basketBloc.items[index]["item"] is Product ? "product" : "service";
 
     late var mapData;
-    for (var element in basketBloc.items) {
+    basketBloc.items.forEach((element) {
       if (element["item"].id == basketBloc.items[index]["item"].id) {
         mapData = element;
-        continue;
+        return;
       }
-    }
+    });
     final Map data = {
       "type": type,
       "id": mapData["item"].id,
@@ -586,13 +586,13 @@ class NormalCartScreenState extends State<NormalCartScreen> {
     late var mapData;
     final String type =
         basketBloc.items[index]["item"] is Product ? "product" : "service";
-    for (var element in basketBloc.items) {
+    basketBloc.items.forEach((element) {
       if (element["item"].id == basketBloc.items[index]["item"].id) {
         element['qty'] = int.parse(element['qty'].toString()) + 1;
         mapData = element;
-        continue;
+        return;
       }
-    }
+    });
     if (mounted) setState(() {});
     //update to server
     final addOn = mapData['add_ons'];
@@ -902,7 +902,7 @@ class NormalCartScreenState extends State<NormalCartScreen> {
 //                     await _auth.makePaymentForCartOrder({"orders": orders});
 //                 Navigator.popUntil(
 //                     context, ModalRoute.withName(Routes.DASHBOARD));
-//                 if (response.statusCode == 200) {
+//                 if (response.statusCode == 200 || response.statusCode == 201) {
 //                   Navigator.pushNamed(context, Routes.ORDERS_LIST);
 //                 } else if (response.statusCode == 500) {
 //                   showToast(

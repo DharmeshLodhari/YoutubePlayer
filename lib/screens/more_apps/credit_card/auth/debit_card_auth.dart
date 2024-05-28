@@ -31,7 +31,7 @@ class DebitCardAuth extends AuthService {
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final List<AllCards> cards = [];
       final jsonData = json.decode(response.body);
 
@@ -79,7 +79,7 @@ class DebitCardAuth extends AuthService {
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final List<CardTransactions> cardTransaction = [];
       final jsonData = json.decode(response.body);
 
@@ -127,7 +127,7 @@ class DebitCardAuth extends AuthService {
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final List<CardTransactions> cardTransaction = [];
       final jsonData = json.decode(response.body);
 
@@ -167,7 +167,7 @@ class DebitCardAuth extends AuthService {
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final jsonData = json.decode(response.body);
 
       // debugPrint("JSON EXCHANGE RATE::- $jsonData");
@@ -187,7 +187,7 @@ class DebitCardAuth extends AuthService {
 
     final String url = "${AppConfig.baseUrl}/api/v1/virtual-cards/cards/";
     debugPrint('url:: $url');
-    debugPrint('report body::: $body');
+    debugPrint('report body::: ${body}');
 
     final headers = await getAuthHeaders();
     final response =
@@ -219,7 +219,7 @@ class DebitCardAuth extends AuthService {
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     } else if (response.statusCode == 500) {
       return null;
@@ -241,7 +241,7 @@ class DebitCardAuth extends AuthService {
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     } else if (response.statusCode == 500) {
       return null;
@@ -253,7 +253,7 @@ class DebitCardAuth extends AuthService {
   // fund card
   Future<bool?> fundCard(Map<String, dynamic> data, String cardId) async {
     debugPrint("FUND CARD");
-    debugPrint("FUND CARD :::: $data");
+    debugPrint("FUND CARD :::: ${data}");
 
     final String url =
         "${AppConfig.baseUrl}/api/v1/virtual-cards/cards/$cardId/top-up/";
@@ -265,7 +265,7 @@ class DebitCardAuth extends AuthService {
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     } else if (response.statusCode == 500) {
       return null;
@@ -291,7 +291,7 @@ class DebitCardAuth extends AuthService {
     debugPrint(
         "RESPONSE WITHDRAW CARD CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     } else if (response.statusCode == 500) {
       return null;
@@ -315,7 +315,7 @@ class DebitCardAuth extends AuthService {
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     } else if (response.statusCode == 500) {
       return null;

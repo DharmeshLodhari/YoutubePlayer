@@ -374,7 +374,13 @@ class TransactionTile extends StatelessWidget {
             ),
           )
         : userImageUserInitialsPic(
-            transaction!.avatar!, transaction!.displayToCustomer, 25, 48);
+            transaction!.toCustomer.contains("slydo") ||
+                    transaction!.fromCustomer.contains("slydo")
+                ? "http://cdn.slydo.co.global.prod.fastly.net/media/customer/avatar/2cf2c21f76f24effb7d88821a8c85629.jpg"
+                : transaction!.avatar!,
+            transaction!.displayToCustomer,
+            25,
+            48);
   }
 
   Widget getAmount() {

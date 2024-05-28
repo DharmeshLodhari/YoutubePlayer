@@ -22,19 +22,21 @@ class _UtilityDashboardState extends State<UtilityDashboard> {
   }
 
   Widget foregroundScreen() {
-    return Column(
-      children: [
-        Expanded(
-          child: ListView(
-            padding: const EdgeInsets.only(left: 16, right: 16),
-            children: [
-              const SizedBox(height: 10),
-              firstRowItems(),
-              secondRowItems(),
-            ],
+    return Container(
+      child: Column(
+        children: [
+          Expanded(
+            child: ListView(
+              padding: const EdgeInsets.only(left: 16, right: 16),
+              children: [
+                const SizedBox(height: 10),
+                firstRowItems(),
+                secondRowItems(),
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 

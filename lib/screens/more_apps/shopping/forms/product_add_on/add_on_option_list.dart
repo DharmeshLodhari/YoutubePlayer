@@ -3,6 +3,7 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:Slydo/widget/slide_action_button.dart';
@@ -21,7 +22,7 @@ import '../../models/store.dart';
 import '../../shopping_auth.dart';
 
 class AddOnOptionList extends StatefulWidget {
-  final dynamic arguments;
+  var arguments;
 
   AddOnOptionList({this.arguments, Key? key}) : super(key: key);
 
@@ -48,6 +49,7 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
   bool noItemInList = false;
   final _auth = ShoppingAuthService();
   bool isAPILoading = false;
+  List<AddOnOption> selectedOptions = [];
 
   //slidable tile
   SlidableController? _slideController;
@@ -55,6 +57,7 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
   @override
   void initState() {
     productId = widget.arguments["productId"];
+    selectedOptions = widget.arguments["options"];
 
     getAddOnOptionList();
 
@@ -63,7 +66,9 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
       if (_scrollController.position.pixels ==
               _scrollController.position.maxScrollExtent &&
           _scrollController.position.pixels != 0) {
-        getAddOnOptionList();
+        if (next != null) {
+          getAddOnOptionList();
+        }
       }
     });
 
@@ -87,6 +92,7 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
         noItemInList = true;
         return;
       }
+      addOnOptionList = [];
       count = result['count'];
       next = result['next'];
       previous = result['previous'];
@@ -158,8 +164,11 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
         key: _scaffoldMessengerKey,
         child: Scaffold(
           key: _scaffoldKey,
-          backgroundColor: Colors.white,
+          backgroundColor: lightGrey,
           appBar: appBar() as PreferredSizeWidget?,
+          floatingActionButton: getSubmitButton(),
+          floatingActionButtonLocation:
+              FloatingActionButtonLocation.centerFloat,
           body: SmartRefresher(
               enablePullDown: true,
               header: WaterDropHeader(
@@ -237,63 +246,50 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
   }
 
   Widget _buildAddOnOptionList() {
-    return Stack(
-      children: [
-        if (noItemInList)
-          NoItemInList(
+    return noItemInList
+        ? NoItemInList(
             title: AppLocalization.of(context)!.noAddOnYet,
             msg: AppLocalization.of(context)!.noAddOnYetSub,
           )
-        else
-          isLoading && addOnOptionList.isEmpty
-              ? buildLoadingIndicator(isLoading: isLoading)
-              : ListView.builder(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  //+1 for progressbar
-                  itemCount: addOnOptionList.length + 1,
-                  itemBuilder: (BuildContext context, int index) {
-                    if (index == addOnOptionList.length) {
-                      return buildJumpingLoadingIndicator(isLoading: isLoading);
-                    } else {
-                      return _getSlidableWithLists(
-                          context,
-                          GestureDetector(
-                            onTap: () async {
-                              // toggleAddOnCheckedState(index);
-                              final data = await Navigator.of(context)
-                                  .pushNamed(
-                                      Routes.PRODUCT_ADD_ON_OPTION_UPDATE,
-                                      arguments: {
-                                    'addOnOption': addOnOptionList[index],
-                                    'productId': productId,
-                                  });
+        : isLoading && addOnOptionList.isEmpty
+            ? buildLoadingIndicator(isLoading: isLoading)
+            : ListView.builder(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                //+1 for progressbar
+                itemCount: addOnOptionList.length + 1,
+                itemBuilder: (BuildContext context, int index) {
+                  if (index == addOnOptionList.length) {
+                    return buildJumpingLoadingIndicator(isLoading: isLoading);
+                  } else {
+                    return _getSlidableWithLists(
+                        context,
+                        GestureDetector(
+                          onTap: () async {
+                            // toggleAddOnCheckedState(index);
+                            final data = await Navigator.of(context).pushNamed(
+                                Routes.PRODUCT_ADD_ON_OPTION_UPDATE,
+                                arguments: {
+                                  'addOnOption': addOnOptionList[index],
+                                  'productId': productId,
+                                });
 
-                              // Handle the result (map) received from PRODUCT_ADD_ON_OPTION_UPDATE
-                              if (data != null && data is AddOnOption) {
-                                //save the add-on option details for later use
-                                // _onRefresh();
-                                updateItemById(data.id!, data);
-                                if (mounted) setState(() {});
-                              }
-                            },
-                            child: addOnOptionTile(
-                                addOnOption: addOnOptionList[index],
-                                index: index),
-                          ),
-                          addOnOptionList[index]);
-                    }
-                  },
-                  controller: _scrollController,
-                ),
-        Positioned(
-          bottom: 25, // Adjust the distance from the bottom as needed
-          right: 25,
-          left: 25,
-
-          child: getSubmitButton(),
-        ),
-      ],
-    );
+                            // Handle the result (map) received from PRODUCT_ADD_ON_OPTION_UPDATE
+                            if (data != null && data is AddOnOption) {
+                              //save the add-on option details for later use
+                              // _onRefresh();
+                              updateItemById(data.id!, data);
+                              if (mounted) setState(() {});
+                            }
+                          },
+                          child: addOnOptionTile(
+                              addOnOption: addOnOptionList[index],
+                              index: index),
+                        ),
+                        addOnOptionList[index]);
+                  }
+                },
+                controller: _scrollController,
+              );
   }
 
   Widget addOnOptionTile({required AddOnOption addOnOption, int? index}) {
@@ -386,24 +382,27 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
   }
 
   Widget getSubmitButton() {
-    return CurvedButton(
-      onPressed: isAPILoading
-          ? () {}
-          : () async {
-              FocusScope.of(context).unfocus();
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: CurvedButton(
+        onPressed: isAPILoading
+            ? () {}
+            : () async {
+                FocusScope.of(context).unfocus();
 
-              isAPILoading = true;
-              if (mounted) setState(() {});
+                isAPILoading = true;
+                if (mounted) setState(() {});
 
-              loadAllCheckedAddOn();
+                await loadAllCheckedAddOn();
 
-              isAPILoading = false;
-              if (mounted) setState(() {});
-            },
-      backgroundColor: navyBlue,
-      textColor: Colors.white,
-      text: "Save",
-      isLoading: isAPILoading,
+                isAPILoading = false;
+                if (mounted) setState(() {});
+              },
+        backgroundColor: navyBlue,
+        textColor: Colors.white,
+        text: "Save",
+        isLoading: isAPILoading,
+      ),
     );
   }
 
@@ -457,8 +456,8 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
       direction: Axis.horizontal,
       actionPane: const SlidableBehindActionPane(),
       actionExtentRatio: 0.25,
-      actions: listActionSlideActions(addOnOption: addOnOption),
       child: VerticalListItem(bankAccountTile),
+      actions: listActionSlideActions(addOnOption: addOnOption),
       // secondaryActions: listSecondaryActions(addOnOption: addOnOption),
     );
   }
@@ -503,11 +502,34 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
           backgroundColor: mateRed,
           icon: SlydoAppIcon.remove,
           onTap: () async {
-            deleteAddOnOption(addOnOption!);
+            deleteAddOnDialog(addOnOption!);
           },
           title: AppLocalization.of(context)!.delete,
           slideController: _slideController),
     ];
+  }
+
+  void deleteAddOnDialog(AddOnOption addOnOption) {
+    showDialogBox(
+      context: context,
+      actionOneTextColor: blackFont,
+      actionOneBgColor: greyBorderColor,
+      actionTwoTextColor: white,
+      actionTwoBgColor: mateRed,
+      title: 'Delete Add-on Option',
+      actionOneText: AppLocalization.of(context)!.discard,
+      actionTwoText: AppLocalization.of(context)!.continueMsg,
+      description: 'Are you sure you want to delete this add-on option?',
+      roundedBackgroundIcon: RoundedBackgroundIcon(
+        enableMargin: false,
+        width: 90,
+        height: 90,
+        image: Image.asset('assets/images/delete_dialog_icon.png'),
+      ),
+      rightButtonOnPressed: () async {
+        deleteAddOnOption(addOnOption);
+      },
+    );
   }
 
   void deleteAddOnOption(AddOnOption addOnOption) {

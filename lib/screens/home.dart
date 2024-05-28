@@ -57,10 +57,10 @@ import 'more_apps/user_profile/user_auth.dart';
 import 'more_apps/yarn/yarn_dashboard.dart';
 
 class Home extends StatefulWidget {
-  const Home({Key? key}) : super(key: key);
+  Home({Key? key}) : super(key: key);
 
   @override
-  State<Home> createState() => _HomeState();
+  _HomeState createState() => _HomeState();
 }
 
 class _HomeState extends State<Home> {
@@ -95,7 +95,8 @@ class _HomeState extends State<Home> {
   bool isExploreMomentsLoading = false;
   List<ExploreMomentsModel> exploreMomentsList = [];
   List<MomentsModel> momentsList = [];
-  final ScrollController _myConnectionsScrollController = ScrollController();
+  ScrollController _myConnectionsScrollController = ScrollController();
+  SharedPreferences? _sharedPreferences;
 
   List<Yarn> yarnTopicList = [];
   late YarnDashboardBloc yarnDashboardBloc;
@@ -110,24 +111,23 @@ class _HomeState extends State<Home> {
   void initState() {
     appConfigurationModel = getIt<AppConfigurationBloc>().appConfigurationModel;
 
-    getAddressList();
     getYarnList(categoryId: null);
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-      SharedPreferences sharedPreferences;
-
-      sharedPreferences = await SharedPreferences.getInstance();
+      _sharedPreferences = await SharedPreferences.getInstance();
+      await getAddressList();
       bool isAppTutorialDone = false;
       try {
         isAppTutorialDone =
-            sharedPreferences.getBool('isAppTutorialDone') ?? false;
+            _sharedPreferences?.getBool('isAppTutorialDone') ?? false;
       } catch (error) {
         isAppTutorialDone = false;
       }
 
       if (!isAppTutorialDone) {
         final bool result =
-            await sharedPreferences.setBool("isAppTutorialDone", true);
+            await _sharedPreferences?.setBool("isAppTutorialDone", true) ??
+                false;
         debugPrint("result:- $result");
         await Future.delayed(const Duration(milliseconds: 1500)).then((value) {
           AppTutorialController().showTutorial(context);
@@ -148,7 +148,7 @@ class _HomeState extends State<Home> {
         isLoading = true;
         if (mounted) setState(() {});
 
-        const String latestTrending = 'latest';
+        final String latestTrending = 'latest';
 
         final Map<String, dynamic>? result = await YarnAuth().getAllYarn(
             next, previous ?? '',
@@ -205,17 +205,17 @@ class _HomeState extends State<Home> {
           if (yarnDashboardBloc.createYarnTopicList.isNotEmpty) {
             ///add createYarnTopicList to tempList if any
 
-            for (var item in yarnDashboardBloc.createYarnTopicList) {
+            yarnDashboardBloc.createYarnTopicList.forEach((item) {
               tempList.insert(0, item);
-            }
+            });
           }
 
           if (yarnDashboardBloc.reYarnTopicList.isNotEmpty) {
             ///add reYarnTopicList to tempList if any
 
-            for (var item in yarnDashboardBloc.reYarnTopicList) {
+            yarnDashboardBloc.reYarnTopicList.forEach((item) {
               tempList.insert(0, item);
-            }
+            });
           }
 
           if (deleteYarnTopicList.isNotEmpty) {
@@ -321,9 +321,9 @@ class _HomeState extends State<Home> {
       }
     }
 
-    accountNumber = virtualAccount!.accountNumber!;
-    bankName = virtualAccount!.financialInstitution!.name!;
-    accountName = virtualAccount!.accountName!;
+    accountNumber = virtualAccount?.accountNumber ?? "";
+    bankName = virtualAccount?.financialInstitution?.name ?? "";
+    accountName = virtualAccount?.accountName ?? "";
 
     if (mounted) setState(() {});
   }
@@ -509,15 +509,15 @@ class _HomeState extends State<Home> {
             onTap: () {
               showSnackbar(context, message: "Coming soon");
               return;
-              // if (userBloc.user.rider == null) {
-              //   Navigator.of(context).pushNamed(Routes.RIDE_TYPE);
-              // } else {
-              //   if (userBloc.user.rider?.isStatusApproved() == false) {
-              //     getKYCStatus();
-              //   } else {
-              //     Navigator.of(context).pushNamed(Routes.RIDERS_UPDATE);
-              //   }
-              // }
+              if (userBloc.user.rider == null) {
+                Navigator.of(context).pushNamed(Routes.RIDE_TYPE);
+              } else {
+                if (userBloc.user.rider?.isStatusApproved() == false) {
+                  getKYCStatus();
+                } else {
+                  Navigator.of(context).pushNamed(Routes.RIDERS_UPDATE);
+                }
+              }
             },
             child: Container(
               margin: const EdgeInsets.symmetric(horizontal: 16),
@@ -606,7 +606,7 @@ class _HomeState extends State<Home> {
       },
     ];
 
-    return SizedBox(
+    return Container(
       height: 100.0,
       child: ListView(
         scrollDirection: Axis.horizontal,
@@ -629,7 +629,7 @@ class _HomeState extends State<Home> {
   }
 
   Widget shortcutView(
-      String imagePath, String title, String forReadPermission) {
+      String imagePath, String title, String ForReadPermission) {
     // return !userBloc.user.hasWritePermission(title)
     //     ? Stack(
     //         children: [
@@ -645,32 +645,52 @@ class _HomeState extends State<Home> {
     //         ],
     //       )
     //     : _buildIconAndText(imagePath, title);
-    return _buildIconAndText(imagePath, title, forReadPermission);
+    return _buildIconAndText(imagePath, title, ForReadPermission);
   }
 
   Widget _buildIconAndText(
-      String imagePath, String title, String forReadPermission) {
-    return PermissionProtectionWidget(
-      permissionName: title,
-      isShowLock: true,
-      position: 0,
-      isLockForRead: forReadPermission,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          SvgPicture.asset(
-            imagePath.toSVG(),
-          ),
-          const SizedBox(height: 10),
-          Text(
-            title,
-            style: const TextStyle(
-                fontSize: 13, fontWeight: FontWeight.w600, fontFamily: "Inter"),
-          ),
-        ],
-      ),
-    );
+      String imagePath, String title, String ForReadPermission) {
+    return title == ProtectionPermission.services
+        ? Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              SvgPicture.asset(
+                imagePath.toSVG(),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                title,
+                style: const TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    fontFamily: "Inter"),
+              ),
+            ],
+          )
+        : PermissionProtectionWidget(
+            permissionName: title,
+            isShowLock: true,
+            position: 0,
+            isLockForRead: ForReadPermission,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                SvgPicture.asset(
+                  imagePath.toSVG(),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  title,
+                  style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      fontFamily: "Inter"),
+                ),
+              ],
+            ),
+          );
   }
 
   void onClickShortcut(String shortcut) {
@@ -740,47 +760,49 @@ class _HomeState extends State<Home> {
     final dynamicHeight =
         calculateDynamicHeight(longestSubTitle!, screenHeight);
 
-    return Column(
-      // padding: EdgeInsets.zero,
-      children: List.generate(
-        ((shortcuts.length + 1) / 2).ceil(), // Adjusted the generation logic
-        (index) {
-          final startIndex = index * 2;
-          final endIndex = startIndex + 2;
-          final pairShortcuts = shortcuts.sublist(
-            startIndex,
-            endIndex.clamp(
-                0, shortcuts.length), // Use clamp to avoid out-of-bounds
-          );
+    return Container(
+      child: Column(
+        // padding: EdgeInsets.zero,
+        children: List.generate(
+          ((shortcuts.length + 1) / 2).ceil(), // Adjusted the generation logic
+          (index) {
+            final startIndex = index * 2;
+            final endIndex = startIndex + 2;
+            final pairShortcuts = shortcuts.sublist(
+              startIndex,
+              endIndex.clamp(
+                  0, shortcuts.length), // Use clamp to avoid out-of-bounds
+            );
 
-          // If the pairShortcuts list has fewer than 2 items, add empty placeholders
-          while (pairShortcuts.length < 2) {
-            pairShortcuts.add({});
-          }
+            // If the pairShortcuts list has fewer than 2 items, add empty placeholders
+            while (pairShortcuts.length < 2) {
+              pairShortcuts.add({});
+            }
 
-          return Row(
-            children: pairShortcuts.map((shortcut) {
-              return Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(0.0),
-                  child: shortcut.isEmpty
-                      ? Container() // Empty view placeholder
-                      : GestureDetector(
-                          onTap: () {
-                            onClickShortcutExtra(shortcut['title']!);
-                          },
-                          child: shortcutViewExtra(
-                              shortcut['imagePath']!,
-                              shortcut['title']!,
-                              shortcut['subTitle']!,
-                              shortcut['color']!,
-                              dynamicHeight),
-                        ),
-                ),
-              );
-            }).toList(),
-          );
-        },
+            return Row(
+              children: pairShortcuts.map((shortcut) {
+                return Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(0.0),
+                    child: shortcut.isEmpty
+                        ? Container() // Empty view placeholder
+                        : GestureDetector(
+                            onTap: () {
+                              onClickShortcutExtra(shortcut['title']!);
+                            },
+                            child: shortcutViewExtra(
+                                shortcut['imagePath']!,
+                                shortcut['title']!,
+                                shortcut['subTitle']!,
+                                shortcut['color']!,
+                                dynamicHeight),
+                          ),
+                  ),
+                );
+              }).toList(),
+            );
+          },
+        ),
       ),
     );
   }
@@ -819,7 +841,7 @@ class _HomeState extends State<Home> {
     );
   }
 
-  Widget sectionHeader(String title, String more) {
+  Widget sectionHeader(title, more) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -856,7 +878,7 @@ class _HomeState extends State<Home> {
 
   Widget shortcutViewExtra(String imagePath, String title, String subTitle,
       String color, double dynamicHeight) {
-    const double opacity = 0.8;
+    final double opacity = 0.8;
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
       padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
@@ -987,6 +1009,8 @@ class _HomeState extends State<Home> {
   }
 
   Widget _appBar() {
+    final Color borderColor =
+        getUserTypeColorByType(type: userBloc.user.type ?? "");
     return AppBar(
       backgroundColor: Colors.transparent,
       automaticallyImplyLeading: false,
@@ -996,8 +1020,14 @@ class _HomeState extends State<Home> {
         onTap: () {
           profileAndroidSheet();
         },
-        child: userImageUserInitialsPic(
-            userBloc.user.avatar ?? "", userBloc.user.fullName ?? "", 25, 45),
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border.all(color: borderColor, width: 2),
+            shape: BoxShape.circle,
+          ),
+          child: userImageUserInitialsPic(
+              userBloc.user.avatar ?? "", userBloc.user.fullName ?? "", 25, 45),
+        ),
       ),
       title: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1086,7 +1116,7 @@ class _HomeState extends State<Home> {
         badgeStyle: badges.BadgeStyle(
           shape: badges.BadgeShape.circle,
           badgeColor: naturalGreen,
-          padding: basketBloc.basketItems.isEmpty
+          padding: basketBloc.basketItems.length == 0
               ? const EdgeInsets.all(0)
               : const EdgeInsets.all(4),
           elevation: 0,
@@ -1124,14 +1154,22 @@ class _HomeState extends State<Home> {
   }
 
   Future<void> showNoAddressFoundDialog(BuildContext context) async {
-    showDialogBoxWithTitle(
+    showDialogBoxWithColumnButton(
       context: context,
-      actionTextColor: white,
-      actionBgColor: navyBlue,
+      actionTwoTextColor: white,
+      actionOneTextColor: navyBlue,
+      actionOneBgColor: white,
+      actionTwoBgColor: navyBlue,
+      isOverlayTapDismiss: false,
       title: AppLocalization.of(context)!.noAddressFound,
-      actionText: AppLocalization.of(context)!.addNewAddress,
+      actionOne: AppLocalization.of(context)!.useCurrentLocation,
+      actionTwo: AppLocalization.of(context)!.addNewAddress,
       description: AppLocalization.of(context)!.addressFoundMsg,
-      ButtonOnPressed: () {
+      ButtonOneOnPressed: () async {
+        await _sharedPreferences?.setBool("isCurrentLocation", true);
+        setState(() {});
+      },
+      ButtonTwoOnPressed: () {
         NavigationUtil.push(context, screen: AddEditShippingAddress())
             .whenComplete(() => getAddressList());
       },
@@ -1139,14 +1177,22 @@ class _HomeState extends State<Home> {
   }
 
   Future<void> showChangeAddressDialog(BuildContext context) async {
-    showDialogBoxWithTitle(
+    showDialogBoxWithColumnButton(
       context: context,
-      actionTextColor: white,
-      actionBgColor: navyBlue,
+      actionTwoTextColor: white,
+      actionOneTextColor: navyBlue,
+      actionOneBgColor: white,
+      actionTwoBgColor: navyBlue,
+      isOverlayTapDismiss: false,
       title: AppLocalization.of(context)!.changeAddress,
-      actionText: AppLocalization.of(context)!.selectAddress,
+      actionOne: AppLocalization.of(context)!.useCurrentLocation,
+      actionTwo: AppLocalization.of(context)!.changeAddress,
       description: AppLocalization.of(context)!.changeAddressMsg,
-      ButtonOnPressed: () async {
+      ButtonOneOnPressed: () async {
+        await _sharedPreferences?.setBool("isCurrentLocation", true);
+        setState(() {});
+      },
+      ButtonTwoOnPressed: () async {
         await Navigator.of(context)
             .pushNamed(Routes.DISPATCH_ADDRESS)
             .whenComplete(() => getAddressList());
@@ -1156,6 +1202,8 @@ class _HomeState extends State<Home> {
   }
 
   Widget _buildCurrentLocation() {
+    final bool getLocationStatus =
+        _sharedPreferences?.getBool('isCurrentLocation') ?? false;
     return InkWell(
       onTap: () {
         if (!isEmpty) {
@@ -1166,56 +1214,55 @@ class _HomeState extends State<Home> {
       },
       child: Row(
         children: [
-          Container(
-            padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 5.0),
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(15.0),
-                border: Border.all(color: navyBlue)),
-            child: Row(
-              children: [
-                const Icon(
-                  Icons.location_pin,
-                  color: Colors.black,
-                  size: 18.0,
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                  child: Text(
-                    _buildLocationText(),
-                    style: TextStyle(
-                        fontSize: 12,
-                        fontFamily: 'Inter',
-                        color: black,
-                        fontWeight: FontWeight.w300),
-                  ),
-                ),
-                const Icon(
-                  Icons.keyboard_arrow_down,
-                  color: Colors.black,
-                  size: 15.0,
-                ),
-              ],
+          const Icon(
+            Icons.location_pin,
+            color: Colors.black,
+            size: 15.0,
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 3.0),
+            child: Text(
+              _buildLocationText(),
+              style: TextStyle(
+                fontSize: 11,
+                fontFamily: 'Inter',
+                color: black,
+                fontWeight: FontWeight.w300,
+              ),
             ),
           ),
-          Container(),
+          if (defaultAddress?.city != null && getLocationStatus != true)
+            const Icon(
+              Icons.keyboard_arrow_down,
+              color: Colors.black,
+              size: 15.0,
+            ),
         ],
       ),
     );
   }
 
   String _buildLocationText() {
-    if (isEmpty) {
-      return 'Select Location';
+    final bool getLocationStatus =
+        _sharedPreferences?.getBool('isCurrentLocation') ?? false;
+    if (getLocationStatus == true) {
+      return 'Using your current location';
     } else {
-      if (defaultAddress?.city == null) {
-        return 'Select Location';
+      if (isEmpty) {
+        return 'Select Address';
       } else {
-        return "${defaultAddress?.city}, ${defaultAddress?.stateName}";
+        if (defaultAddress?.city == null) {
+          return 'Select Address';
+        } else {
+          return "${defaultAddress?.city}, ${defaultAddress?.stateName}";
+        }
       }
     }
   }
 
-  void getAddressList() async {
+  Future<void> getAddressList() async {
+    final bool getLocationStatus =
+        _sharedPreferences?.getBool('isCurrentLocation') ?? false;
     if (mounted) setState(() {});
 
     final Map<String, dynamic>? result =
@@ -1230,40 +1277,38 @@ class _HomeState extends State<Home> {
 
     final List<ShippingAddress> tempList = result['results'];
 
-    if (mounted) {
-      setState(() {
-        isLoading = false;
-        isEmpty = tempList.isEmpty;
-        if (isEmpty) {
-          showNoAddressFoundDialog(context);
-        }
-        defaultAddress = tempList.firstWhere((element) => element.is_default!);
-        if (defaultAddress != null) {
-          userBloc.user.defaultAddress = defaultAddress;
-        }
-      });
+    isEmpty = tempList.isEmpty;
+    if (isEmpty && getLocationStatus == false) {
+      showNoAddressFoundDialog(context);
     }
+    defaultAddress =
+        tempList.firstWhere((element) => element.is_default ?? false);
+    if (defaultAddress != null) {
+      userBloc.user.defaultAddress = defaultAddress;
+    }
+    if (mounted) setState(() {});
   }
 
   Widget? getBadgeContent() {
-    if (basketBloc.basketItems.isEmpty) {
+    if (basketBloc.basketItems.length == 0) {
       return null;
     }
     return Text(
       getBadgeCount(),
       style: const TextStyle(
-          fontFamily: 'Inter',
-          fontSize: 10,
-          color: Colors.white,
-          fontWeight: FontWeight.bold),
+        fontFamily: 'Inter',
+        fontSize: 10,
+        color: Colors.white,
+        fontWeight: FontWeight.bold,
+      ),
     );
   }
 
   String getBadgeCount() {
     int totalItem = 0;
-    for (var element in basketBloc.basketItems) {
+    basketBloc.basketItems.forEach((element) {
       totalItem = totalItem + int.parse(element.qty.toString());
-    }
+    });
     return totalItem > 99 ? '99+' : totalItem.toString();
   }
 
@@ -1327,24 +1372,45 @@ class _HomeState extends State<Home> {
         const SizedBox(
           height: 15.0,
         ),
-        InkWell(
-          onTap: () {
-            if (label == 'Total Balance') {
-              toggleBalanceVisibility();
-            }
-          },
-          child: Text(
-            label,
-            style: TextStyle(
-              fontSize: 14,
-              color: white,
-              fontFamily: 'Inter',
-              fontWeight: FontWeight.w500,
+        Row(
+          children: [
+            InkWell(
+              onTap: () {
+                if (label == 'Total Balance') {
+                  toggleBalanceVisibility();
+                }
+              },
+              child: Text(
+                label,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: white,
+                  fontFamily: 'Inter',
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
             ),
-          ),
+            const SizedBox(
+              width: 5,
+            ),
+            if (label == 'Total Balance')
+              InkWell(
+                onTap: () {
+                  isLoading = true;
+                  getAccountBalance();
+                  setState(() {});
+                },
+                child: SvgPicture.asset(
+                  "refresh".toSVG(),
+                  color: white,
+                  height: 20,
+                  width: 20,
+                ),
+              ),
+          ],
         ),
         const SizedBox(
-          height: 5.0,
+          height: 5,
         ),
         Row(
           children: [
@@ -1354,17 +1420,12 @@ class _HomeState extends State<Home> {
                     toggleBalanceVisibility();
                   },
                   child: actualBalance(balance)),
-              const SizedBox(
-                width: 10.0,
-              ),
               InkWell(
                 onTap: () {
                   toggleBalanceVisibility();
                 },
-                child: Padding(
-                  padding: isBalanceHidden
-                      ? const EdgeInsets.only(bottom: 5.0)
-                      : const EdgeInsets.only(bottom: 0.0),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
                   child: Icon(
                     isBalanceHidden ? SlydoAppIcon.eye : SlydoAppIcon.eye_close,
                     color: white,
@@ -1426,18 +1487,25 @@ class _HomeState extends State<Home> {
 
   void toggleBalanceVisibility() {
     if (isBalanceHidden) {
-      BottomSheetPassCode(
-        context: context,
-        isValidCallback: () {
-          isLoading = true;
-          getAccountBalance();
-          isBalanceHidden = false;
-          setState(() {});
-        },
-        cancelCallBack: () {
-          Navigator.pop(context);
-        },
-      );
+      if (userBloc.chatMessageSettings.accountBalanceVisibility == false) {
+        BottomSheetPassCode(
+          context: context,
+          isValidCallback: () {
+            isLoading = true;
+            getAccountBalance();
+            isBalanceHidden = false;
+            setState(() {});
+          },
+          cancelCallBack: () {
+            Navigator.pop(context);
+          },
+        );
+      } else {
+        isLoading = true;
+        getAccountBalance();
+        isBalanceHidden = false;
+        setState(() {});
+      }
     } else {
       isBalanceHidden = !isBalanceHidden;
       setState(() {});
@@ -1537,7 +1605,7 @@ class _HomeState extends State<Home> {
     return GestureDetector(
       onTap: () {
         NavigationUtil.push(context,
-            screen: QRCodeView(arguments: const {'isRequest': false}));
+            screen: QRCodeView(arguments: {'isRequest': false}));
         // NavigationUtil.push(context, screen: QrCodePage(arguments: {'isProfile': 'false', 'virtualAccount': virtualAccount}));
       },
       child: Container(
@@ -1551,14 +1619,14 @@ class _HomeState extends State<Home> {
           ),
         ), //
         child: Row(
-          children: const [
-            Icon(
+          children: [
+            const Icon(
               SlydoAppIcon.qr_code,
               size: 15,
               color: Colors.white,
             ),
-            SizedBox(width: 7),
-            Text(
+            const SizedBox(width: 7),
+            const Text(
               'QR',
               style: TextStyle(
                 fontSize: 15,
@@ -1596,7 +1664,7 @@ class _HomeState extends State<Home> {
     });
   }
 
-  Widget checkUser() {
+  checkUser() {
     if (userBloc.user.type.toString().toLowerCase() == 'user') {
       return Column(
         children: [
@@ -1995,7 +2063,7 @@ class _HomeState extends State<Home> {
         isLoading = true;
         if (mounted) setState(() {});
 
-        final User? user = await DatabaseHelper().getUser();
+        final User? _user = await DatabaseHelper().getUser();
 
         final SharedPreferences sharedPreferences =
             await SharedPreferences.getInstance();
@@ -2012,13 +2080,13 @@ class _HomeState extends State<Home> {
         bool isStaffLogin = secureUser.isStaffLogin ?? false;
 
         if (phoneNumber != "") {
-          phoneNumber = "+${country.phoneCode!}$phoneNumber";
+          phoneNumber = "+" + country.phoneCode! + phoneNumber;
         }
 
         if (phoneNumber == "" || password == "") {
-          phoneNumber = user?.phoneNumber ?? "";
-          password = user?.password ?? "";
-          company = user?.staff?.employerUsername ?? "";
+          phoneNumber = _user?.phoneNumber ?? "";
+          password = _user?.password ?? "";
+          company = _user?.staff?.employerUsername ?? "";
           if (company.isNotEmpty) {
             isStaffLogin = true;
           }
@@ -2047,7 +2115,7 @@ class _HomeState extends State<Home> {
         isLoading = false;
         if (mounted) setState(() {});
         // showToast(message: err.toString());
-        debugPrint("Cannot Update Avatar : $err");
+        debugPrint("Cannot Update Avatar : " + err.toString());
       }
     }
   }
@@ -2063,7 +2131,7 @@ class _HomeState extends State<Home> {
     return asteriskMask.trim();
   }
 
-  void showTutorial(String? shortcut) {
+  showTutorial(String? shortcut) {
     switch (shortcut) {
       case 'Send':
         tutorialSendPaymentKey;

@@ -72,7 +72,7 @@ class _UserLoginState extends State<UserLogin> {
 
   List<CompanyName> companyList = [];
   // String businessName = "";
-  final List<String> _dropdownItems = [];
+  List<String> _dropdownItems = [];
 
   ScrollController scrollController = ScrollController();
 
@@ -303,7 +303,7 @@ class _UserLoginState extends State<UserLogin> {
           controller: companyController,
           focusNode: companyFocusNode,
           onChanged: (String val) {
-            if (val.isNotEmpty && val.length >= 3) {
+            if (val != null && val.length >= 3) {
               searchCompanyName(val);
             } else {
               setState(() {
@@ -636,40 +636,42 @@ class _UserLoginState extends State<UserLogin> {
     final BoxDecoration selectedDecoration = BoxDecoration(
         borderRadius: BorderRadius.circular(10),
         border: Border.all(color: navyBlue));
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Text(
-          "Password",
-          style: TextStyle(
-            fontSize: 14,
-            color: darkGrey,
-            fontWeight: FontWeight.w400,
-            fontFamily: "Inter",
+    return Container(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text(
+            "Password",
+            style: TextStyle(
+              fontSize: 14,
+              color: darkGrey,
+              fontWeight: FontWeight.w400,
+              fontFamily: "Inter",
+            ),
           ),
-        ),
-        const SizedBox(
-          height: 6.0,
-        ),
-        PinPut(
-          eachFieldWidth: 45,
-          eachFieldHeight: 45,
-          obscureText: '•',
-          validator: (val) => val!.length < 4
-              ? AppLocalization.of(context)!.invalidPassword
-              : null,
-          fieldsCount: 6,
-          focusNode: _pinPutFocusNode,
-          controller: passwordController,
-          submittedFieldDecoration: pinPutDecoration,
-          selectedFieldDecoration: selectedDecoration,
-          followingFieldDecoration: pinPutDecoration,
-          pinAnimationType: PinAnimationType.scale,
-          textInputAction: TextInputAction.done,
-          keyboardType: TextInputType.number,
-          textStyle: TextStyle(color: blackFont, fontSize: 35),
-        ),
-      ],
+          const SizedBox(
+            height: 6.0,
+          ),
+          PinPut(
+            eachFieldWidth: 45,
+            eachFieldHeight: 45,
+            obscureText: '•',
+            validator: (val) => val!.length < 4
+                ? AppLocalization.of(context)!.invalidPassword
+                : null,
+            fieldsCount: 6,
+            focusNode: _pinPutFocusNode,
+            controller: passwordController,
+            submittedFieldDecoration: pinPutDecoration,
+            selectedFieldDecoration: selectedDecoration,
+            followingFieldDecoration: pinPutDecoration,
+            pinAnimationType: PinAnimationType.scale,
+            textInputAction: TextInputAction.done,
+            keyboardType: TextInputType.number,
+            textStyle: TextStyle(color: blackFont, fontSize: 35),
+          ),
+        ],
+      ),
     );
   }
 
@@ -696,12 +698,12 @@ class _UserLoginState extends State<UserLogin> {
               width: Checkbox.width - 1.5,
               height: Checkbox.width - 1.5,
               child: Container(
-                decoration: BoxDecoration(
+                decoration: new BoxDecoration(
                   border: Border.all(
                     color: greyBorderColor,
                     width: 1,
                   ),
-                  borderRadius: BorderRadius.circular(5),
+                  borderRadius: new BorderRadius.circular(5),
                 ),
                 child: Theme(
                   data: ThemeData(
@@ -937,14 +939,14 @@ class _UserLoginState extends State<UserLogin> {
   void initializeShoppingCart() async {
     debugPrint("initializeShoppingCart called");
     final List items = await ShoppingAuthService().getShoppingCart();
-    for (var element in items) {
+    items.forEach((element) {
       final String type = element is Product ? "product" : "service";
       basketBloc.addItemToCart(
           item: element,
           type: type,
           currentUser: userBloc.user.convertToUser(),
           withApiCall: false);
-    }
+    });
     await sharedCartBloc.refreshAllCart(context);
   }
 

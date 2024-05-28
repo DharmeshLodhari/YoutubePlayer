@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:Slydo/screens/more_apps/messaging/chat/models/group_detail_model.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/participant_model.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/GroupDetailModel.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/Participant.dart';
 import 'package:Slydo/utils/date_time_and_money_converter.dart';
 import 'package:flutter/foundation.dart';
 
@@ -80,7 +80,7 @@ class ChatConversation {
 
   /// Creating Server Payload From ChatConversation
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
+    final Map<String, dynamic> data = Map<String, dynamic>();
     data['avatar'] = avatar;
     data['banner'] = banner;
     data['conversation_id'] = conversationId;
@@ -134,7 +134,7 @@ class ChatConversation {
 
   /// Creating DB Payload From ChatConversation
   Map<String, dynamic> toDBJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
+    final Map<String, dynamic> data = Map<String, dynamic>();
     data['avatar'] = avatar;
     data['banner'] = banner;
     data['conversation_id'] = conversationId;
@@ -186,7 +186,7 @@ class ChatConversation {
 
   static ChatConversation fromChatConversation(
       ChatConversation chatConversation) {
-    final ChatConversation _chatConversation = ChatConversation();
+    ChatConversation _chatConversation = ChatConversation();
     _chatConversation.adminUsers = chatConversation.adminUsers;
     _chatConversation.avatar = chatConversation.avatar;
     _chatConversation.banner = chatConversation.banner;

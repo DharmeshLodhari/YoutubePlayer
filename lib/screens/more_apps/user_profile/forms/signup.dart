@@ -27,16 +27,16 @@ import '../screens/subscriptions/subscription_model.dart';
 
 // ignore: must_be_immutable
 class SignUp extends StatefulWidget {
-  final dynamic arguments;
+  var arguments;
 
-  const SignUp({super.key, required this.arguments});
+  SignUp({required this.arguments});
 
   @override
   _SignUpState createState() => _SignUpState(arguments: arguments);
 }
 
 class _SignUpState extends State<SignUp> {
-  Map<String, dynamic> arguments;
+  var arguments;
   String? accountType;
   int? subscriptionsId;
   String? industryType;
@@ -172,7 +172,7 @@ class _SignUpState extends State<SignUp> {
     super.initState();
   }
 
-  Future<void> getProductIndustries() async {
+  void getProductIndustries() async {
     loading = true;
     if (mounted) setState(() {});
     final result = await _auth.listOfIndustries();
@@ -456,35 +456,41 @@ class _SignUpState extends State<SignUp> {
   }
 
   Widget appIcon() {
-    return Image.asset(
-      "assets/images/app_logo_navyBlue.png",
-      height: MediaQuery.of(context).size.height / 16,
-      frameBuilder: imageFrameBuilder,
+    return Container(
+      child: Image.asset(
+        "assets/images/app_logo_navyBlue.png",
+        height: MediaQuery.of(context).size.height / 16,
+        frameBuilder: imageFrameBuilder,
+      ),
     );
   }
 
   Widget registerTitle() {
-    return Row(
-      children: <Widget>[
-        Text(
-          "Slydo ",
-          style: TextStyle(
-              fontSize: 22, fontWeight: FontWeight.w700, color: navyBlue),
-        ),
-        Text(
-          "Registration",
-          style: TextStyle(
-              fontSize: 22, fontWeight: FontWeight.w700, color: blackFont),
-        ),
-      ],
+    return Container(
+      child: Row(
+        children: <Widget>[
+          Text(
+            "Slydo ",
+            style: TextStyle(
+                fontSize: 22, fontWeight: FontWeight.w700, color: navyBlue),
+          ),
+          Text(
+            "Registration",
+            style: TextStyle(
+                fontSize: 22, fontWeight: FontWeight.w700, color: blackFont),
+          ),
+        ],
+      ),
     );
   }
 
   Widget nameInstructionNote() {
-    return Text(
-      "Please ensure the information below matches that which is on your government issued ID",
-      style: TextStyle(
-          fontSize: 12, color: blackFont, fontWeight: FontWeight.w600),
+    return Container(
+      child: Text(
+        "Please ensure the information below matches that which is on your government issued ID",
+        style: TextStyle(
+            fontSize: 12, color: blackFont, fontWeight: FontWeight.w600),
+      ),
     );
   }
 
@@ -898,8 +904,7 @@ class _SignUpState extends State<SignUp> {
                         fontWeight: FontWeight.w600),
                     recognizer: TapGestureRecognizer()
                       ..onTap = () {
-                        launchUrl(Uri.parse(
-                            'http://https://slydo.co/termsandconditions'));
+                        launch('http://https://slydo.co/termsandconditions');
                       },
                   ),
                   TextSpan(
@@ -910,8 +915,7 @@ class _SignUpState extends State<SignUp> {
                         fontWeight: FontWeight.w600),
                     recognizer: TapGestureRecognizer()
                       ..onTap = () {
-                        launchUrl(
-                            Uri.parse('http://https://slydo.co/privacypolicy'));
+                        launch('http://https://slydo.co/privacypolicy');
                       },
                   ),
                   TextSpan(
@@ -926,8 +930,7 @@ class _SignUpState extends State<SignUp> {
                         fontWeight: FontWeight.w600),
                     recognizer: TapGestureRecognizer()
                       ..onTap = () {
-                        launchUrl(Uri.parse(
-                            'http://https://slydo.co/termsandconditions'));
+                        launch('http://https://slydo.co/termsandconditions');
                       },
                   ),
                 ],
@@ -1330,7 +1333,7 @@ class _SignUpState extends State<SignUp> {
 
   SubscriptionsModel? subscriptionsModel;
   List<SubscriptionsModel>? subscriptionsModelList = [];
-  Future<void> getSubscriptionList() async {
+  void getSubscriptionList() async {
     setState(() {
       subscriptionsModel = null;
       subscriptionsModelList = null;

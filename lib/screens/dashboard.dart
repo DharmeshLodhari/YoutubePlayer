@@ -8,7 +8,7 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_synchronizer.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/main_socket_message_handler.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_conversation.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
@@ -48,23 +48,23 @@ import 'more_apps/yarn/yarn_dashboard_bloc.dart';
 
 // ignore: must_be_immutable
 class Dashboard extends StatefulWidget {
-  final dynamic arguments;
+  var arguments;
 
-  const Dashboard({super.key, this.arguments});
+  Dashboard({this.arguments});
 
   @override
-  State<Dashboard> createState() => _DashboardState(arguments: arguments);
+  _DashboardState createState() => _DashboardState(arguments: arguments);
 }
 
 class _DashboardState extends State<Dashboard> {
-  _DashboardState({required this.arguments});
+  _DashboardState({this.arguments});
 
   //newUI Variables
   late DashboardBloc _dashboardBloc;
-  final DatabaseHelper _db = DatabaseHelper();
+  DatabaseHelper _db = DatabaseHelper();
 
   int _currentIndex = 0;
-  Map<String, dynamic>? arguments;
+  var arguments;
   List<Widget>? screens;
   late UserBloc userBloc;
   late BasketBloc basketBloc;
@@ -84,7 +84,7 @@ class _DashboardState extends State<Dashboard> {
     'home/settings',
   ];
 
-  List<String> list = ['Home', 'Store', 'Chat', 'Settings'];
+  var list = ['Home', 'Store', 'Chat', 'Settings'];
   List<Widget> _pages = [Container(), Container(), Container(), Container()];
 
   @override
@@ -96,16 +96,17 @@ class _DashboardState extends State<Dashboard> {
       _pages = [
         KeepAlivePage(wantKeepAlive: false, child: Home()),
         const SuperStoreHome(),
-        KeepAlivePage(wantKeepAlive: true, child: const ConnectionDashboard()),
+        KeepAlivePage(wantKeepAlive: true, child: ConnectionDashboard()),
         GeneralSettingScreen(),
       ];
+      setState(() {});
     });
 
     if (mounted) MainSocketMessageHandler().dispose();
     if (mounted) {
       setState(() {
         if (arguments != null) {
-          final int? indexFromRoute = arguments?['dashboardIndex'];
+          final int? indexFromRoute = arguments['dashboardIndex'];
 
           if (indexFromRoute != null) {
             setState(() {
@@ -409,7 +410,7 @@ class _DashboardState extends State<Dashboard> {
       badgeStyle: badges.BadgeStyle(
         shape: badges.BadgeShape.circle,
         badgeColor: naturalGreen,
-        padding: basketBloc.basketItems.isEmpty
+        padding: basketBloc.basketItems.length == 0
             ? const EdgeInsets.all(0)
             : const EdgeInsets.all(4),
         elevation: 0,
@@ -425,7 +426,7 @@ class _DashboardState extends State<Dashboard> {
   }
 
   Widget? getBadgeContent() {
-    if (basketBloc.basketItems.isEmpty) {
+    if (basketBloc.basketItems.length == 0) {
       return null;
     }
     return Text(
@@ -580,15 +581,14 @@ class _DashboardState extends State<Dashboard> {
             children: [
               Stack(
                 children: [
-                  if (iconList[index] == 'home/super_store')
-                    Icon(Icons.shopping_basket, color: color)
-                  else
-                    SvgPicture.asset(
-                      iconList[index].toSVG(),
-                      color: color,
-                      width: 28,
-                      height: 28,
-                    ),
+                  iconList[index] == 'home/super_store'
+                      ? Icon(Icons.shopping_basket, color: color)
+                      : SvgPicture.asset(
+                          iconList[index].toSVG(),
+                          color: color,
+                          width: 28,
+                          height: 28,
+                        ),
                   if (list[index] == 'Chat') // Only show badge for Chat icon
                     Positioned(
                       top: 0, // Adjust the top value as needed
@@ -665,7 +665,7 @@ class _DashboardState extends State<Dashboard> {
         onTap: (index) {
           setState(() {
             // Unfocus the keyboard
-            FocusScope.of(context).requestFocus(FocusNode());
+            FocusScope.of(context).requestFocus(new FocusNode());
             if (userBloc.user.staff != null && index == 2) {
               showToast(message: AppLocalization.of(context)?.doNotPermission);
               return;

@@ -4,8 +4,8 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_user_manager.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/add_group_model.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_user_model.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/AddGroupModel.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatUserModel.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/tiles/user_tile.dart';
@@ -25,7 +25,7 @@ import '../../../../../../locator.dart';
 import '../../../../../../services/app_config_bloc.dart';
 
 class SetNameAndProfileOfGroup extends StatefulWidget {
-  final dynamic arguments;
+  final arguments;
 
   SetNameAndProfileOfGroup({this.arguments});
 
@@ -498,17 +498,18 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
                   isAmountField: true,
                   labelText: AppLocalization.of(context)!.amount,
                   onChanged: (value) {},
-                  // validator: (val) {
-                  //   try {
-                  //     final double userAmount = double.parse(val.replaceAll(',', ''));
-                  //     if (userAmount > amountLimit) {
-                  //       return 'You cannot fund more than $amountLimit';
-                  //     }
-                  //   } catch (e) {
-                  //     return AppLocalization.of(context)!.invalidAmount;
-                  //   }
-                  //   return null;
-                  // },
+                  validator: (val) {
+                    try {
+                      final double userAmount =
+                          double.parse(val.replaceAll(',', ''));
+                      // if (userAmount > amountLimit) {
+                      //   return 'You cannot fund more than $amountLimit';
+                      // }
+                    } catch (e) {
+                      return AppLocalization.of(context)!.invalidAmount;
+                    }
+                    return null;
+                  },
                 ),
               ],
               const SizedBox(height: 10),

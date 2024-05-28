@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:Slydo/data/state_notifier.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_conversation.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
@@ -135,39 +135,40 @@ class _TransactionTileForChatState extends State<TransactionTileForChat> {
                   const SizedBox(
                     height: 12,
                   ),
-                  Row(
-                    children: [
-                      Icon(
-                        SlydoAppIcon.true_icon,
-                        size: 12,
-                        color: naturalGreen,
-                      ),
-                      const SizedBox(
-                        width: 4,
-                      ),
-                      Row(
-                        children: [
-                          Text(getTransactionStatus(isSend: isSend),
-                              style: TextStyle(
-                                  color: blackFont,
-                                  fontWeight: isScreenSmall
-                                      ? FontWeight.w500
-                                      : FontWeight.w600,
-                                  fontSize: isScreenSmall ? 12 : 14)),
-                          Text(
-                              getDateTime(
-                                  dateAndTime: widget.message!['created_at']),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              softWrap: false,
-                              style: TextStyle(
-                                color: darkGrey,
-                                fontSize: isScreenSmall ? 10 : 12,
-                                fontWeight: FontWeight.w400,
-                              ))
-                        ],
-                      ),
-                    ],
+                  Container(
+                    child: Row(
+                      children: [
+                        Icon(
+                          SlydoAppIcon.true_icon,
+                          size: 12,
+                          color: naturalGreen,
+                        ),
+                        const SizedBox(
+                          width: 4,
+                        ),
+                        Row(
+                          children: [
+                            Text(getTransactionStatus(isSend: isSend),
+                                style: TextStyle(
+                                    color: blackFont,
+                                    fontWeight: isScreenSmall
+                                        ? FontWeight.w500
+                                        : FontWeight.w600,
+                                    fontSize: isScreenSmall ? 12 : 14)),
+                            Text(
+                                "${getDateTime(dateAndTime: widget.message!['created_at'])}",
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                softWrap: false,
+                                style: TextStyle(
+                                  color: darkGrey,
+                                  fontSize: isScreenSmall ? 10 : 12,
+                                  fontWeight: FontWeight.w400,
+                                ))
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                   if (widget.chatConversation!.isGroupConversation!)
                     Column(
@@ -175,7 +176,7 @@ class _TransactionTileForChatState extends State<TransactionTileForChat> {
                         const SizedBox(
                           height: 4,
                         ),
-                        SizedBox(
+                        Container(
                           width: 42,
                           child: Stack(
                             clipBehavior: Clip.none,
@@ -236,7 +237,7 @@ class _TransactionTileForChatState extends State<TransactionTileForChat> {
               ),
             ),
             if (isSend)
-              SizedBox(
+              Container(
                 width: 20,
                 child: isSend
                     ? Center(
@@ -304,8 +305,8 @@ class PaymentRequestTileForChat extends StatefulWidget {
   final UserBloc? userBloc;
   final ChatConversation? chatConversation;
 
-  const PaymentRequestTileForChat(
-      {super.key, this.message, this.userBloc, this.chatConversation});
+  PaymentRequestTileForChat(
+      {this.message, this.userBloc, this.chatConversation});
 
   @override
   _PaymentRequestTileForChatState createState() =>
@@ -576,37 +577,40 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
                   else
                     Container(),
                   if (paymentActionStatus != "None")
-                    Row(
-                      children: [
-                        Icon(
-                          SlydoAppIcon.true_icon,
-                          size: 12,
-                          color: getStatusOfPaymentColor(),
-                        ),
-                        const SizedBox(
-                          width: 4,
-                        ),
-                        Row(
-                          children: [
-                            Text(getStatusOfThePayment(isSend),
-                                style: TextStyle(
-                                    color: blackFont,
-                                    fontWeight: isScreenSmall
-                                        ? FontWeight.w500
-                                        : FontWeight.w600,
-                                    fontSize: isScreenSmall ? 12 : 14)),
-                            Text(getDateTime(dateAndTime: paymentActionTime),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                softWrap: false,
-                                style: TextStyle(
-                                  color: darkGrey,
-                                  fontSize: isScreenSmall ? 10 : 12,
-                                  fontWeight: FontWeight.w400,
-                                ))
-                          ],
-                        ),
-                      ],
+                    Container(
+                      child: Row(
+                        children: [
+                          Icon(
+                            SlydoAppIcon.true_icon,
+                            size: 12,
+                            color: getStatusOfPaymentColor(),
+                          ),
+                          const SizedBox(
+                            width: 4,
+                          ),
+                          Row(
+                            children: [
+                              Text(getStatusOfThePayment(isSend),
+                                  style: TextStyle(
+                                      color: blackFont,
+                                      fontWeight: isScreenSmall
+                                          ? FontWeight.w500
+                                          : FontWeight.w600,
+                                      fontSize: isScreenSmall ? 12 : 14)),
+                              Text(
+                                  "${getDateTime(dateAndTime: paymentActionTime)}",
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  softWrap: false,
+                                  style: TextStyle(
+                                    color: darkGrey,
+                                    fontSize: isScreenSmall ? 10 : 12,
+                                    fontWeight: FontWeight.w400,
+                                  ))
+                            ],
+                          ),
+                        ],
+                      ),
                     )
                   else
                     Container(),
@@ -616,7 +620,7 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
                         const SizedBox(
                           height: 4,
                         ),
-                        SizedBox(
+                        Container(
                           width: 42,
                           child: Stack(
                             clipBehavior: Clip.none,
@@ -679,7 +683,7 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
             if (isSend)
               Align(
                 alignment: Alignment.bottomCenter,
-                child: SizedBox(
+                child: Container(
                   width: 20,
                   child: isSend
                       ? Align(
@@ -730,7 +734,7 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
               paymentRequest,
               messageId: widget.message!["id"]);
 
-          if (response.statusCode == 200) {
+          if (response.statusCode == 200 || response.statusCode == 201) {
             showToast(message: "Payment request fulfilled !!");
           } else {
             debugPrint(

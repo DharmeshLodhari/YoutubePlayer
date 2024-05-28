@@ -21,7 +21,8 @@ class MyAlertDialog<T> extends StatelessWidget {
       height: 0.0,
     ),
     this.isDividerEnabled = true,
-  }) : super(key: key);
+  })  : assert(contentPadding != null),
+        super(key: key);
 
   /// The (optional) title of the dialog is displayed in a large font at the top
   /// of the dialog.
@@ -144,7 +145,7 @@ class MyAlertDialog<T> extends StatelessWidget {
     if (actions != null) {
       if (isDividerEnabled) children.add(divider);
       children.add(ButtonBarTheme(
-        data: const ButtonBarThemeData(),
+        data: ButtonBarThemeData(),
         child: ButtonBar(
           children: actions!,
         ),

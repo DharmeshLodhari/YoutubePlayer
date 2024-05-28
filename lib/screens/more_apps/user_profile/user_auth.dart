@@ -6,7 +6,7 @@ import 'dart:io';
 import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/screens/moments/models/comment_model.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_conversation.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/jwt.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/services/auth.dart';
@@ -26,7 +26,7 @@ class UserAuth extends AuthService {
     if (userName == null) {
       return CustomerProfile();
     }
-    final String url = "${AppConfig.baseUrl}/api/v1/user/customer/$userName";
+    final String url = AppConfig.baseUrl + "/api/v1/user/customer/$userName";
     final uuid = const Uuid();
     final transactionId = uuid.v4();
 
@@ -42,7 +42,7 @@ class UserAuth extends AuthService {
     debugPrint(
         "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final jsonData = json.decode(response.body);
 
       final CustomerProfile customerProfile =
@@ -58,13 +58,13 @@ class UserAuth extends AuthService {
       return CustomerProfile();
     }
     final String url =
-        "${AppConfig.baseUrl}/api/v1/user/customer/${userName.trim()}";
+        AppConfig.baseUrl + "/api/v1/user/customer/" + userName.trim();
 
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
 
     debugPrint('FETCH PROFILE WITH AUTH ::: $url ${response.body}');
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final jsonData = json.decode(response.body);
 
       final CustomerProfile customerProfile =
@@ -81,8 +81,10 @@ class UserAuth extends AuthService {
     if (userName == null) {
       return {};
     }
-    final String url =
-        "${AppConfig.baseUrl}/api/v1/user/follow/followers/${userName.trim()}/";
+    final String url = AppConfig.baseUrl +
+        "/api/v1/user/follow/followers/" +
+        userName.trim() +
+        "/";
 
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
@@ -90,7 +92,7 @@ class UserAuth extends AuthService {
     debugPrint('FETCH CUSTOMER FOLLOWER ::: $url ${response.body}');
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final List<UserFollowers> userFollowers = [];
       final jsonData = json.decode(response.body);
       for (var item in jsonData['results']) {
@@ -122,8 +124,10 @@ class UserAuth extends AuthService {
     final User? user = await getUser();
     if (user == null) return Future.error("Try after Some time");
     final headers = await getAuthHeaders();
-    final String url =
-        "${AppConfig.baseUrl}/api/v1/user/update-avatar/${user.userName!}/";
+    final String url = AppConfig.baseUrl +
+        "/api/v1/user/update-avatar/" +
+        user.userName! +
+        "/";
 
     if (avatar != null) {
       final avatarPath = avatar.path;
@@ -150,7 +154,7 @@ class UserAuth extends AuthService {
       }
       final responseBody = await response.stream.bytesToString();
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
         final jsonData = jsonDecode(responseBody);
 
         final CustomerProfile customerProfile = CustomerProfile(
@@ -178,8 +182,10 @@ class UserAuth extends AuthService {
     final User? user = await getUser();
     if (user == null) return Future.error("User Not Found");
     final headers = await getAuthHeaders();
-    final String url =
-        "${AppConfig.baseUrl}/api/v1/user/update-avatar/${user.userName!}/";
+    final String url = AppConfig.baseUrl +
+        "/api/v1/user/update-avatar/" +
+        user.userName! +
+        "/";
 
     final response = await httpDelete(url, headers: headers);
 
@@ -193,9 +199,9 @@ class UserAuth extends AuthService {
     }
   }
 
-  Future<User> verifyUserDetail(File? documentPhoto, File? userPhoto) async {
+  Future<User> verifyUserDetail(File documentPhoto, File userPhoto) async {
     final headers = await getAuthHeaders();
-    final String url = "${AppConfig.baseUrl}/api/v1/user/kyc/";
+    final String url = AppConfig.baseUrl + "/api/v1/user/kyc/";
 
     if (documentPhoto != null && userPhoto != null) {
       final document = documentPhoto.path;
@@ -220,7 +226,7 @@ class UserAuth extends AuthService {
       final response = await request.send();
 
       final responseBody = await response.stream.bytesToString();
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
         final jsonData = json.decode(responseBody);
 
         final User user = await createUser(jsonData);
@@ -236,7 +242,7 @@ class UserAuth extends AuthService {
   // Register the user with the backend servers
   Future<bool> userRegistration(Map<String, dynamic> _body) async {
     final Map<String, dynamic> data = {};
-    final String url = "${AppConfig.baseUrl}/api/v1/user/account/";
+    final String url = AppConfig.baseUrl + "/api/v1/user/account/";
     final headers = getNonAuthHeader();
     final _getData = await getDeviceInfo();
     data.addAll(_body);
@@ -263,7 +269,7 @@ class UserAuth extends AuthService {
 
 // it will register the phone number to get OTP
   Future<bool> registerPhoneNumber(String phoneNumber) async {
-    final String url = "${AppConfig.baseUrl}/api/v1/sms/register-phone-number/";
+    final String url = AppConfig.baseUrl + "/api/v1/sms/register-phone-number/";
     final headers = getNonAuthHeader();
     final data = {
       "phone": phoneNumber,
@@ -278,6 +284,7 @@ class UserAuth extends AuthService {
     debugPrint('REGISTER PHONE NUMBER RESPONSE ::: ${response.body}');
 
     if (response.statusCode == 200 || response.statusCode == 205) {
+      final jsonData = json.decode(response.body);
       return true;
     } else {
       if (AppConfig.enableLogs.value) debugPrint("DATA SENT:- $data");
@@ -290,7 +297,7 @@ class UserAuth extends AuthService {
 
   // it will resend OTP for registration the phone number to get OTP
   Future<bool> registerResendOTP(String phoneNumber) async {
-    final String url = "${AppConfig.baseUrl}/api/v1/sms/resend-otp/";
+    final String url = AppConfig.baseUrl + "/api/v1/sms/resend-otp/";
     final headers = getNonAuthHeader();
     final data = {
       "phone": phoneNumber,
@@ -305,7 +312,7 @@ class UserAuth extends AuthService {
     debugPrint(
         'RESEND OTP REGISTER PHONE NUMBER RESPONSE ::: ${response.body}');
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     } else {
       if (AppConfig.enableLogs.value) debugPrint("DATA SENT:- $data");
@@ -319,7 +326,7 @@ class UserAuth extends AuthService {
   // password reset OTP
   Future<http.Response> passwordResetOtp(String phoneNumber) async {
     final String url =
-        "${AppConfig.baseUrl}/api/v1/sms/get-password-reset-token/";
+        AppConfig.baseUrl + "/api/v1/sms/get-password-reset-token/";
     final headers = getNonAuthHeader();
     final data = {
       "phone": phoneNumber,
@@ -338,7 +345,7 @@ class UserAuth extends AuthService {
 
   Future<bool> canContinueRegistrationWithPhoneNumber(
       {required String phoneNumber}) async {
-    final String url = "${AppConfig.baseUrl}/api/v1/user/verify-phone-number/";
+    final String url = AppConfig.baseUrl + "/api/v1/user/verify-phone-number/";
 
     final data = {"phone_number": '+234$phoneNumber'};
     final headers = getNonAuthHeader();
@@ -351,7 +358,7 @@ class UserAuth extends AuthService {
     debugPrint('PHONE NUMBER DATA ::: $data');
     debugPrint(
         "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       if (jsonData['exist'] == true) {
         // If {"exist":true} it means phone number already exists on our server so the user can't proceed with the entered phone number.
         return false;
@@ -369,7 +376,8 @@ class UserAuth extends AuthService {
       String? phoneNumber,
       String otp,
       String passwordToken) async {
-    final String url = "${AppConfig.baseUrl}/api/v1/sms/verify/";
+    late String result;
+    final String url = AppConfig.baseUrl + "/api/v1/sms/verify/";
     final headers = getNonAuthHeader();
     final data = {
       "phone": phoneNumber,
@@ -385,7 +393,7 @@ class UserAuth extends AuthService {
 
     debugPrint('VERIFY PHONE NUMBER RESPONSE DATA ::: ${response.body}');
     final jsonData = json.decode(response.body);
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final resetToken = jsonData['reset-token'];
 
       if (resetToken != null) {
@@ -403,7 +411,7 @@ class UserAuth extends AuthService {
   // it will verify the phone number to  OTP
   Future<bool> resetPassword(String passwordOne, String passwordTwo,
       String? phoneNumber, String? resetToken) async {
-    final String url = "${AppConfig.baseUrl}/api/v1/user/auth/password-reset/";
+    final String url = AppConfig.baseUrl + "/api/v1/user/auth/password-reset/";
     final headers = getNonAuthHeader();
 
     final data = {
@@ -425,7 +433,7 @@ class UserAuth extends AuthService {
     final jsonData = jsonDecode(response.body);
     debugPrint(
         "URL:- $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     } else {
       throw jsonData;
@@ -433,14 +441,14 @@ class UserAuth extends AuthService {
   }
 
   Future<Map<String, dynamic>> changePassword(Map<String, dynamic> data) async {
-    final String url = "${AppConfig.baseUrl}/api/v1/user/change-password/";
+    final String url = AppConfig.baseUrl + "/api/v1/user/change-password/";
     final headers = await getAuthHeaders();
     final _data = jsonEncode(data);
     final response = await httpPatch(url, headers: headers, body: _data);
     debugPrint(
         "URL:- $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       // Because the jwt expires every 5 minutes we will take note of the time they
       // where  created and the use that to compute the expiration time of the
       // token. So that we will only use the token if its still valid.
@@ -468,9 +476,9 @@ class UserAuth extends AuthService {
   Future<ShippingAddress> fetchUserAddress({String? customerName}) async {
     String url = "";
     if (customerName != null) {
-      url = "${AppConfig.baseUrl}/api/v1/user/shipping-address/$customerName/";
+      url = AppConfig.baseUrl + "/api/v1/user/shipping-address/$customerName/";
     } else {
-      url = "${AppConfig.baseUrl}/api/v1/user/address/";
+      url = AppConfig.baseUrl + "/api/v1/user/address/";
     }
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
@@ -479,7 +487,7 @@ class UserAuth extends AuthService {
     debugPrint('USER ADDRESS -> $url');
     debugPrint('USER ADDRESS -> $jsonData');
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       debugPrint('USER ADDRESS ::: $jsonData');
       return ShippingAddress.fromJson(jsonData);
     }
@@ -493,13 +501,13 @@ class UserAuth extends AuthService {
   }
 
   Future<UserAbout> fetchUserAboutInfo({String? userName}) async {
-    final String url = "${AppConfig.baseUrl}/api/v1/user/about/$userName/";
+    final String url = AppConfig.baseUrl + "/api/v1/user/about/$userName/";
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
 
     debugPrint('FETCH USER ABOUT INFO RESPONSE ::: ${response.body}');
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final jsonData = jsonDecode(response.body);
       return UserAbout.fromJson(jsonData);
     }
@@ -508,7 +516,7 @@ class UserAuth extends AuthService {
 
   Future<UserAbout> addOrUpdateUserBio(
       {UserAbout? userAbout, String? nickName}) async {
-    final String url = "${AppConfig.baseUrl}/api/v1/user/about/";
+    final String url = AppConfig.baseUrl + "/api/v1/user/about/";
 
     debugPrint("Files send:-  before Headers");
 
@@ -529,11 +537,15 @@ class UserAuth extends AuthService {
       final Map<String, dynamic> data = userAbout.toJson();
 
       data.forEach((key, value) {
-        request.fields[key] =
-            (value is List<Map> || value is Map) ? jsonEncode(value) : value;
+        if (key == "search_keywords") {
+          request.fields[key] = jsonEncode(value);
+        } else {
+          request.fields[key] =
+              (value is List<Map> || value is Map) ? jsonEncode(value) : value;
+        }
       });
 
-      request.fields['nickname'] = nickName!;
+      request.fields['nickname'] = nickName ?? "";
       debugPrint("Files send:- d ${request.files}");
 
       //create multipart using filepath, string or bytes
@@ -558,7 +570,7 @@ class UserAuth extends AuthService {
       if (userAbout != null) {
         data = userAbout.toJson();
       }
-      debugPrint("USER DATA -->  $data");
+      debugPrint("USER DATA -->  ${data}");
 
       data['nickname'] = nickName;
       final _data = jsonEncode(data);
@@ -569,14 +581,14 @@ class UserAuth extends AuthService {
       debugPrint(
           "URL: $url STATUSCODE:- ${response.statusCode} body:- $responseBody");
     }
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return UserAbout.fromJson(jsonDecode(responseBody));
     }
     return Future.error("$responseBody");
   }
 
   Future<List<StatesModel>> getStates() async {
-    final String url = "${AppConfig.baseUrl}/api/v1/user/states";
+    final String url = AppConfig.baseUrl + "/api/v1/user/states";
 
     final headers = await getAuthHeaders();
 
@@ -584,7 +596,7 @@ class UserAuth extends AuthService {
 
     debugPrint('FETCH STATE RESPONSE ::: ${response.body}');
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final List responseBody = jsonDecode(response.body);
       return responseBody.map((e) => StatesModel.fromJson(e)).toList();
     }
@@ -593,7 +605,7 @@ class UserAuth extends AuthService {
 
   Future<Map<String, dynamic>> updateSimpleUserDetail(
       {String? nickName, String? bio, String? wallpaper}) async {
-    final String url = "${AppConfig.baseUrl}/api/v1/user/update-customer/";
+    final String url = AppConfig.baseUrl + "/api/v1/user/update-customer/";
     debugPrint("URL:- $url");
     debugPrint("URL WALLPAPER:- $wallpaper");
 
@@ -637,7 +649,7 @@ class UserAuth extends AuthService {
           "RESPONSE :- STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
     }
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final dynamic responseData = jsonDecode(responseBody);
       return {
         "nickname": responseData['nickname'],
@@ -654,9 +666,9 @@ class UserAuth extends AuthService {
     late String url;
 
     if (isUserNormalUser) {
-      url = "${AppConfig.baseUrl}/api/v1/user/about/";
+      url = AppConfig.baseUrl + "/api/v1/user/about/";
     } else {
-      url = "${AppConfig.baseUrl}/api/v1/user/update-customer/";
+      url = AppConfig.baseUrl + "/api/v1/user/update-customer/";
     }
 
     final response = await httpDelete(url, headers: headers);
@@ -671,7 +683,7 @@ class UserAuth extends AuthService {
   }
 
   Future<bool> addUserAddress(Map data) async {
-    final String url = "${AppConfig.baseUrl}/api/v1/user/address/";
+    final String url = AppConfig.baseUrl + "/api/v1/user/address/";
     final headers = await getAuthHeaders();
     final _data = jsonEncode(data);
     final response = await httpPost(url, headers: headers, body: _data);
@@ -687,7 +699,7 @@ class UserAuth extends AuthService {
 
   ///Friends List
   Future<Map<String, dynamic>?> contacts(String? next, String? previous) async {
-    String url = "${AppConfig.baseUrl}/api/v1/user/contacts/";
+    String url = AppConfig.baseUrl + "/api/v1/user/contacts/";
     if (next == null) {
       return null;
     }
@@ -698,7 +710,7 @@ class UserAuth extends AuthService {
     final response = await httpGet(url, headers: headers);
     debugPrint('USER RES CONTACTS :::: $response');
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final jsonData = json.decode(response.body) ?? {};
       debugPrint('USER CONTACTS :::: $jsonData');
 
@@ -720,7 +732,7 @@ class UserAuth extends AuthService {
   Future<List?> fetchMissedContact(
       {required String createdAt, String? conversationId}) async {
     final String url =
-        "${AppConfig.chatUrl}/api/v1/chat/fetch-missed-conversations/";
+        AppConfig.chatUrl + "/api/v1/chat/fetch-missed-conversations/";
 
     final headers = await getAuthHeaders();
     debugPrint("URL:- $url");
@@ -733,7 +745,7 @@ class UserAuth extends AuthService {
     final response =
         await httpPost(url, headers: headers, body: jsonEncode(data));
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       debugPrint("STATUSCODE:- ${response.statusCode} BODY:- ${response.body}");
       return jsonDecode(response.body);
     } else {
@@ -746,12 +758,12 @@ class UserAuth extends AuthService {
   // Fetch user profile
   Future<ChatConversation> fetchContactProfile(String userName) async {
     final String url =
-        "${AppConfig.baseUrl}/api/v1/user/connections/${userName.trim()}/";
+        AppConfig.baseUrl + "/api/v1/user/connections/" + userName.trim() + "/";
 
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final jsonData = jsonDecode(response.body);
       debugPrint("STATUS CODE:- ${response.statusCode}");
       debugPrint("response from fetchCustomer = $jsonData");
@@ -769,7 +781,7 @@ class UserAuth extends AuthService {
 
   Future<bool> removeFromContactList(CustomerProfile user) async {
     final String url =
-        "${AppConfig.baseUrl}/api/v1/user/contacts/remove-from-contact/";
+        AppConfig.baseUrl + "/api/v1/user/contacts/remove-from-contact/";
     debugPrint("URL:- $url");
     final data = {"user": user.userName};
     final headers = await getAuthHeaders();
@@ -777,7 +789,7 @@ class UserAuth extends AuthService {
     final response = await httpPatch(url, headers: headers, body: _data);
     debugPrint(
         "RESPONSE :- STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     }
     return false;
@@ -787,7 +799,7 @@ class UserAuth extends AuthService {
   Future<bool> checkInContactList(String? user, String? checker) async {
     // Note that the checker is the request.user making this request.
     final String url =
-        "${AppConfig.baseUrl}/api/v1/user/contacts/check-in-contact/";
+        AppConfig.baseUrl + "/api/v1/user/contacts/check-in-contact/";
     final data = {"checker": checker, "user": user};
     final headers = await getAuthHeaders();
     final _data = jsonEncode(data);
@@ -795,7 +807,7 @@ class UserAuth extends AuthService {
     final response = await httpPatch(url, headers: headers, body: _data);
     // debugPrint("data $_data");
     // debugPrint("response ${response.statusCode} ${response.body}");
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     }
     return false;
@@ -804,7 +816,7 @@ class UserAuth extends AuthService {
   Future<bool> checkInRequest(String? user) async {
     // Note that the checker is the request.user making this request.
     final String url =
-        "${AppConfig.baseUrl}/api/v1/user/contact-request/check-in-request/";
+        AppConfig.baseUrl + "/api/v1/user/contact-request/check-in-request/";
     final data = {"to_user": user};
     final headers = await getAuthHeaders();
     final _data = jsonEncode(data);
@@ -812,14 +824,14 @@ class UserAuth extends AuthService {
     debugPrint("is In Request List-->${response.body}");
     debugPrint("is In Request List-->${response.statusCode}");
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     }
     return false;
   }
 
   Future<bool> makeContactRequest(CustomerProfile user) async {
-    final String url = "${AppConfig.baseUrl}/api/v1/user/contact-request/";
+    final String url = AppConfig.baseUrl + "/api/v1/user/contact-request/";
     final data = {"to_user": user.userName};
 
     final headers = await getAuthHeaders();
@@ -827,7 +839,7 @@ class UserAuth extends AuthService {
     final response = await httpPost(url, headers: headers, body: _data);
     debugPrint("Data :- $data");
     debugPrint("response :- ${response.body}");
-    if (response.statusCode == 201) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     }
     return false;
@@ -837,7 +849,7 @@ class UserAuth extends AuthService {
   Future<Map<String, dynamic>?> listBlockUsers(
       String? next, String? previous) async {
     String url =
-        "${AppConfig.baseUrl}/api/v1/user/contacts/list-block-contact/";
+        AppConfig.baseUrl + "/api/v1/user/contacts/list-block-contact/";
     if (next == null) {
       return null;
     }
@@ -847,7 +859,7 @@ class UserAuth extends AuthService {
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final jsonData = json.decode(response.body);
 
       final Map<String, dynamic> result = {
@@ -865,13 +877,13 @@ class UserAuth extends AuthService {
 
   Future<bool> blockUser(CustomerProfile user) async {
     final String url =
-        "${AppConfig.baseUrl}/api/v1/user/contacts/block-contact/";
+        AppConfig.baseUrl + "/api/v1/user/contacts/block-contact/";
     final data = {"user": user.userName};
     final headers = await getAuthHeaders();
     final _data = jsonEncode(data);
     final response = await httpPatch(url, headers: headers, body: _data);
     log('message......mesaaager  ooooo. ${response.statusCode}');
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     }
     return false;
@@ -879,12 +891,12 @@ class UserAuth extends AuthService {
 
   Future<bool> unBlockUser(CustomerProfile user) async {
     final String url =
-        "${AppConfig.baseUrl}/api/v1/user/contacts/unblock-contact/";
+        AppConfig.baseUrl + "/api/v1/user/contacts/unblock-contact/";
     final data = {"user": user.userName};
     final headers = await getAuthHeaders();
     final _data = jsonEncode(data);
     final response = await httpPatch(url, headers: headers, body: _data);
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     }
     return false;
@@ -893,7 +905,7 @@ class UserAuth extends AuthService {
   // Contact Request
   Future<Map<String, dynamic>?> listContactRequests(
       String? next, String? previous) async {
-    String url = "${AppConfig.baseUrl}/api/v1/user/contact-request/";
+    String url = AppConfig.baseUrl + "/api/v1/user/contact-request/";
     if (next == null) {
       return null;
     }
@@ -903,7 +915,7 @@ class UserAuth extends AuthService {
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final jsonData = json.decode(response.body);
 
       final Map<String, dynamic> result = {
@@ -921,13 +933,13 @@ class UserAuth extends AuthService {
 
   Future<bool> acceptContactRequest(CustomerProfile user) async {
     final String url =
-        "${AppConfig.baseUrl}/api/v1/user/contact-request/accept/";
+        AppConfig.baseUrl + "/api/v1/user/contact-request/accept/";
     final data = {"user": user.userName};
     final headers = await getAuthHeaders();
     final _data = jsonEncode(data);
     final response = await httpPatch(url, headers: headers, body: _data);
     debugPrint('RES __ ${response.body}');
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     }
     return false;
@@ -935,19 +947,19 @@ class UserAuth extends AuthService {
 
   Future<bool> cancelOrRejectContactRequest(CustomerProfile user) async {
     final String url =
-        "${AppConfig.baseUrl}/api/v1/user/contact-request/cancel-or-reject/";
+        AppConfig.baseUrl + "/api/v1/user/contact-request/cancel-or-reject/";
     final data = {"user": user.userName};
     final headers = await getAuthHeaders();
     final _data = jsonEncode(data);
     final response = await httpPatch(url, headers: headers, body: _data);
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     }
     return false;
   }
 
   Future<bool> upgradeUserProfile(Map<String, dynamic> data) async {
-    final String url = "${AppConfig.baseUrl}/api/v1/user/upgrade-user-account/";
+    final String url = AppConfig.baseUrl + "/api/v1/user/upgrade-user-account/";
     final headers = await getAuthHeaders();
     final _data = jsonEncode(data);
     final response = await httpPost(url, headers: headers, body: _data);
@@ -960,10 +972,10 @@ class UserAuth extends AuthService {
   }
 
   Future<List?> getUserProfileUpgradeDetails() async {
-    final String url = "${AppConfig.baseUrl}/api/v1/user/profile-pricing/";
+    final String url = AppConfig.baseUrl + "/api/v1/user/profile-pricing/";
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final jsonData = json.decode(response.body);
       return jsonData["results"];
     } else {
@@ -985,7 +997,7 @@ class UserAuth extends AuthService {
     // debugPrint("DATA SENT:- $_data");
     // var response = await httpPost(url, body: _data, headers: headers);
     //
-    // if (response.statusCode == 200) {
+    // if (response.statusCode == 200 || response.statusCode == 201) {
     return true;
     // } else {
     //   debugPrint(
@@ -1008,7 +1020,7 @@ class UserAuth extends AuthService {
     //
     // debugPrint("RESPONSE=> ${response.body}");
     //
-    // if (response.statusCode == 200) {
+    // if (response.statusCode == 200 || response.statusCode == 201) {
     //   var jsonData = json.decode(response.body);
     final jsonData = {"otp": "123456"};
     return jsonData['otp'];
@@ -1027,7 +1039,7 @@ class UserAuth extends AuthService {
     // var _data = jsonEncode(data);
     // var response = await httpPost(url, body: _data, headers: headers);
     //
-    // if (response.statusCode == 200) {
+    // if (response.statusCode == 200 || response.statusCode == 201) {
     //   var jsonData = json.decode(response.body);
     //   var resetToken = jsonData['reset-token'];
     //   return resetToken;
@@ -1049,7 +1061,7 @@ class UserAuth extends AuthService {
   //
   //   var response = await httpGet(url, headers: headers);
   //
-  //   if (response.statusCode == 200) {
+  //   if (response.statusCode == 200 || response.statusCode == 201) {
   //     debugPrint("Result:- ${response.body}");
   //     return true;
   //   } else {
@@ -1063,11 +1075,11 @@ class UserAuth extends AuthService {
   Future<Map<String, dynamic>?> searchUserInContact(
       String? next, String? previous,
       {String? query}) async {
-    String url =
-        "${AppConfig.baseUrl}/api/v1/user/group-conversation/search-user-contacts";
+    String url = AppConfig.baseUrl +
+        "/api/v1/user/group-conversation/search-user-contacts";
 
     if (query != "") {
-      url = "$url?q=$query/";
+      url = url + "?q=$query/";
     }
     url = Uri.encodeFull(url);
     debugPrint("URL:- $url");
@@ -1080,7 +1092,7 @@ class UserAuth extends AuthService {
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final jsonData = json.decode(response.body);
 
       final Map<String, dynamic> result = {
@@ -1109,10 +1121,10 @@ class UserAuth extends AuthService {
     final _data = jsonEncode(data);
 
     if (shouldFollow == true) {
-      url = "${AppConfig.baseUrl}/api/v1/user/follow/";
+      url = AppConfig.baseUrl + "/api/v1/user/follow/";
       response = await httpPost(url, headers: headers, body: _data);
     } else {
-      url = "${AppConfig.baseUrl}/api/v1/user/follow/unfollow/";
+      url = AppConfig.baseUrl + "/api/v1/user/follow/unfollow/";
       response = await httpPatch(url, headers: headers, body: _data);
     }
 
@@ -1138,9 +1150,9 @@ class UserAuth extends AuthService {
     }
 
     if (isFollowingUser == true) {
-      url = "${AppConfig.baseUrl}/api/v1/user/follow/following/$username/";
+      url = AppConfig.baseUrl + "/api/v1/user/follow/following/$username/";
     } else {
-      url = "${AppConfig.baseUrl}/api/v1/user/follow/followers/$username/";
+      url = AppConfig.baseUrl + "/api/v1/user/follow/followers/$username/";
     }
 
     final headers = await getAuthHeaders();
@@ -1148,7 +1160,7 @@ class UserAuth extends AuthService {
 
     debugPrint('FOLLOWING LIST ::: ${response.statusCode}');
     debugPrint('FOLLOWING LIST ::: ${response.body}');
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final jsonData = jsonDecode(response.body);
       final List results = jsonData['results'];
 
@@ -1164,7 +1176,7 @@ class UserAuth extends AuthService {
   Future<BasePaginationModel<List<CustomerProfile>>> getListOfSuggestions({
     required String? nextUrl,
   }) async {
-    late String? url = "${AppConfig.baseUrl}/api/v1/user/suggestions/";
+    late String? url = AppConfig.baseUrl + "/api/v1/user/suggestions/";
 
     if (nextUrl != null && nextUrl.isNotEmpty) {
       url = getSecureUrl(url: nextUrl);
@@ -1175,7 +1187,7 @@ class UserAuth extends AuthService {
 
     debugPrint('SUGGESTIONS LIST ::: ${response.statusCode}');
     debugPrint('SUGGESTIONS LIST ::: ${response.body}');
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final jsonData = jsonDecode(response.body);
       final List results = jsonData['results'];
 
@@ -1189,7 +1201,7 @@ class UserAuth extends AuthService {
   }
 
   Future<bool> deactivateUserAccount() async {
-    final String url = "${AppConfig.baseUrl}/api/v1/user/deactivate-account/";
+    final String url = AppConfig.baseUrl + "/api/v1/user/deactivate-account/";
     debugPrint("URL:- $url ");
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
@@ -1214,7 +1226,7 @@ class UserAuth extends AuthService {
     debugPrint(
         "RESPONSE STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final jsonData = json.decode(response.body);
 
       final Map<String, dynamic> result = {"results": jsonData};
@@ -1234,7 +1246,7 @@ class UserAuth extends AuthService {
     debugPrint(
         "RESPONSE STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     }
     return false;

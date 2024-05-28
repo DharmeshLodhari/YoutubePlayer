@@ -8,17 +8,17 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class AddReview extends StatefulWidget {
-  const AddReview({Key? key, required this.arguments}) : super(key: key);
+  AddReview({Key? key, required this.arguments}) : super(key: key);
 
-  final Map<String, dynamic> arguments;
+  Map<String, dynamic> arguments;
 
   @override
-  State<AddReview> createState() => _AddReviewState();
+  _AddReviewState createState() => _AddReviewState();
 }
 
 class _AddReviewState extends State<AddReview> {
   final maxLines = 4;
-  final TextEditingController _reviewController = TextEditingController();
+  TextEditingController _reviewController = TextEditingController();
   int rating = 1;
 
   CustomerProfile? searchedUser;
@@ -80,13 +80,13 @@ class _AddReviewState extends State<AddReview> {
                             height: 20,
                           ),
                           ClipRRect(
-                            borderRadius: BorderRadius.circular(16),
                             child: CachedNetworkImage(
                               imageUrl: getImage(),
                               height: 200,
                               width: 200,
                               fit: BoxFit.fill,
                             ),
+                            borderRadius: BorderRadius.circular(16),
                           ),
                           const SizedBox(
                             height: 20,
@@ -122,12 +122,11 @@ class _AddReviewState extends State<AddReview> {
                 ),
               ),
             ),
-            if (isLoading)
-              const Center(
-                child: CircularProgressIndicator(),
-              )
-            else
-              Container()
+            isLoading
+                ? const Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : Container()
           ],
         ),
       ),
@@ -257,7 +256,7 @@ class _AddReviewState extends State<AddReview> {
   }
 
   void onButtonTap() async {
-    final Map<String, dynamic> data = {
+    Map<String, dynamic> data = {
       "text": _reviewController.text,
       "rating": rating,
     };

@@ -72,7 +72,7 @@ class _JobsDashboardState extends State<JobsDashboard> {
   int bottomSheetSearchIndex = 0;
   bool noSearchedItem = false;
 
-  List<CategoryListData> searchedCategoryList = [];
+  List searchedCategoryList = [];
   StateSetter? bottomSheetStateSetterGlobal;
   bool bottomSheetMounted = false;
 
@@ -94,7 +94,7 @@ class _JobsDashboardState extends State<JobsDashboard> {
     });
   }
 
-  void getActiveJobListing({String? category}) async {
+  void getActiveJobListing({category}) async {
     if (!isActiveListLoading) {
       if (productNext != null && !isActiveListLoading) {
         isActiveListLoading = true;
@@ -143,7 +143,7 @@ class _JobsDashboardState extends State<JobsDashboard> {
   }
 
   @override
-  void initState() {
+  initState() {
     getActiveJobListing();
     _jobsScrollController.addListener(() {
       if (_jobsScrollController.position.pixels ==
@@ -158,7 +158,7 @@ class _JobsDashboardState extends State<JobsDashboard> {
     super.initState();
   }
 
-  void _refreshPage() {
+  _refreshPage() {
     productNext = "";
     productCount = 0;
     productPrevious = "";
@@ -780,20 +780,20 @@ class _JobsDashboardState extends State<JobsDashboard> {
                 return _buildIndicatorForSearchCategory();
               } else {
                 return GestureDetector(
-                  onTap: () {
-                    // get selected category
-                    final CategoryListData picked = searchedCategoryList[index];
-                    selectedCategory = picked.name!;
+                    onTap: () {
+                      // get selected category
+                      final CategoryListData picked =
+                          searchedCategoryList[index];
+                      selectedCategory = picked.name!;
 
-                    //refresh the active job listing with selected category
-                    // _refreshPage();
-                    if (mounted) setState(() {});
-                    Navigator.pop(context);
+                      //refresh the active job listing with selected category
+                      // _refreshPage();
+                      if (mounted) setState(() {});
+                      Navigator.pop(context);
 
-                    FocusScope.of(context).requestFocus();
-                  },
-                  child: categoryViewCard(searchedCategoryList[index]),
-                );
+                      FocusScope.of(context).requestFocus();
+                    },
+                    child: getResultTile(searchedCategoryList[index]));
               }
             },
             controller: _scrollController,
@@ -810,6 +810,13 @@ class _JobsDashboardState extends State<JobsDashboard> {
             )
           : Container(),
     );
+  }
+
+  Widget getResultTile(var result) {
+    if (result is CategoryListData) {
+      return categoryViewCard(result);
+    }
+    return Container();
   }
 
   Widget categoryViewCard(CategoryListData category) {

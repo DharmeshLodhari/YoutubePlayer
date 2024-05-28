@@ -86,19 +86,19 @@ class ReadMoreTextState extends State<ReadMoreText> {
         );
     final colorClickableText =
         widget.colorClickableText ?? Theme.of(context).colorScheme.secondary;
-    final defaultLessStyle = widget.lessStyle ??
+    final _defaultLessStyle = widget.lessStyle ??
         effectiveTextStyle!.copyWith(color: colorClickableText);
-    final defaultMoreStyle = widget.moreStyle ??
+    final _defaultMoreStyle = widget.moreStyle ??
         effectiveTextStyle!.copyWith(color: colorClickableText);
-    final defaultDelimiterStyle = widget.delimiterStyle ?? effectiveTextStyle;
+    final _defaultDelimiterStyle = widget.delimiterStyle ?? effectiveTextStyle;
 
     final TextSpan link = TextSpan(
       text: _readMore ? widget.trimCollapsedText : widget.trimExpandedText,
-      style: _readMore ? defaultMoreStyle : defaultLessStyle,
+      style: _readMore ? _defaultMoreStyle : _defaultLessStyle,
       recognizer: TapGestureRecognizer()..onTap = _onTapLink,
     );
 
-    final TextSpan delimiter = TextSpan(
+    final TextSpan _delimiter = TextSpan(
       text: _readMore
           ? widget.trimCollapsedText.isNotEmpty
               ? widget.delimiter
@@ -106,7 +106,7 @@ class ReadMoreTextState extends State<ReadMoreText> {
           : widget.trimExpandedText.isNotEmpty
               ? widget.delimiter
               : '',
-      style: defaultDelimiterStyle,
+      style: _defaultDelimiterStyle,
       recognizer: TapGestureRecognizer()..onTap = _onTapLink,
     );
 
@@ -166,7 +166,7 @@ class ReadMoreTextState extends State<ReadMoreText> {
                 text: _readMore
                     ? widget.data.substring(0, widget.trimLength)
                     : widget.data,
-                children: <TextSpan>[delimiter, link],
+                children: <TextSpan>[_delimiter, link],
               );
             } else {
               textSpan = TextSpan(
@@ -183,7 +183,7 @@ class ReadMoreTextState extends State<ReadMoreText> {
                     ? widget.data.substring(0, endIndex) +
                         (linkLongerThanLine ? _kLineSeparator : '')
                     : widget.data,
-                children: <TextSpan>[delimiter, link],
+                children: <TextSpan>[_delimiter, link],
               );
             } else {
               textSpan = TextSpan(

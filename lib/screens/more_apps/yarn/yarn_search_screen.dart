@@ -13,8 +13,8 @@ import 'yarn_auth.dart';
 import 'yarn_detail_screen.dart';
 
 class SearchScreen extends StatefulWidget {
-  final YarnCategories? askCategory;
-  final String? searchText;
+  YarnCategories? askCategory;
+  String? searchText;
   SearchScreen({Key? key, this.askCategory, this.searchText}) : super(key: key);
 
   @override
@@ -62,7 +62,7 @@ class _SearchScreenState extends State<SearchScreen> {
       categoryId = widget.askCategory!.id;
     }
     if (!isLoading) {
-      if (next.isNotEmpty && !isLoading) {
+      if (next != null && !isLoading) {
         isLoading = true;
         if (mounted) setState(() {});
 
@@ -134,7 +134,7 @@ class _SearchScreenState extends State<SearchScreen> {
     }
   }
 
-  void _refreshList() {
+  _refreshList() {
     count = 0;
     next = "";
     previous = "";
@@ -245,14 +245,14 @@ class _SearchScreenState extends State<SearchScreen> {
     );
   }
 
-  // Widget _buildSearchBox() {
-  //   return Row(
-  //     children: [
-  //       _buildSearchField(),
-  //       _buildFilterIconButton(),
-  //     ],
-  //   );
-  // }
+  Widget _buildSearchBox() {
+    return Row(
+      children: [
+        _buildSearchField(),
+        _buildFilterIconButton(),
+      ],
+    );
+  }
 
   Widget _buildSearchField() {
     return TextFormField(
@@ -339,32 +339,32 @@ class _SearchScreenState extends State<SearchScreen> {
     );
   }
 
-  // Widget _buildFilterIconButton() {
-  //   return SizedBox(
-  //     key: _key,
-  //     //height: 34,
-  //     width: 34,
-  //     child: Card(
-  //       // color: isPopMenuOpen ? navyBlue : iconBtnGrey,
-  //       elevation: 0,
-  //       margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
-  //       child: IconButton(
-  //         icon: const Icon(
-  //           SlydoAppIconNew.filter,
-  //           color: Colors.black,
-  //           size: 20,
-  //         ),
-  //         onPressed: () {
-  //           if (menu.isMenuOpen) {
-  //             menu.closeMenu();
-  //           } else {
-  //             menu.openMenu();
-  //           }
-  //         },
-  //       ),
-  //     ),
-  //   );
-  // }
+  Widget _buildFilterIconButton() {
+    return SizedBox(
+      key: _key,
+      //height: 34,
+      width: 34,
+      child: Card(
+        // color: isPopMenuOpen ? navyBlue : iconBtnGrey,
+        elevation: 0,
+        margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
+        child: IconButton(
+          icon: const Icon(
+            SlydoAppIconNew.filter,
+            color: Colors.black,
+            size: 20,
+          ),
+          onPressed: () {
+            if (menu.isMenuOpen) {
+              menu.closeMenu();
+            } else {
+              menu.openMenu();
+            }
+          },
+        ),
+      ),
+    );
+  }
 
   Widget _buildPostList() {
     return Expanded(

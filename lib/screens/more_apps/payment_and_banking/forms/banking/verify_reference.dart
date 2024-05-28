@@ -8,9 +8,9 @@ import 'package:flutter/services.dart';
 
 // ignore: must_be_immutable
 class AddMoneyToSlydoTwo extends StatefulWidget {
-  final dynamic arguments;
+  var arguments;
 
-  const AddMoneyToSlydoTwo({super.key, this.arguments});
+  AddMoneyToSlydoTwo({this.arguments});
 
   @override
   _AddMoneyToSlydoTwoState createState() => _AddMoneyToSlydoTwoState();
@@ -41,7 +41,7 @@ class _AddMoneyToSlydoTwoState extends State<AddMoneyToSlydoTwo> {
     amount = widget.arguments["amount"].toString();
     referenceNumber = widget.arguments["reference"].toString();
     currency = widget.arguments["currency"].toString();
-    final Map? bankDetails = widget.arguments["bank_details"];
+    Map? bankDetails = widget.arguments["bank_details"];
     if (bankDetails == null || bankDetails.isEmpty) {
       // isBankDetailsIsEmpty = true;
       isBankDetailsIsEmpty = false;
@@ -260,7 +260,7 @@ class _AddMoneyToSlydoTwoState extends State<AddMoneyToSlydoTwo> {
               const SizedBox(
                 height: 20,
               ),
-              if (isChecked) getSubmitButton() else Container(),
+              isChecked ? getSubmitButton() : Container(),
               const SizedBox(
                 height: 20,
               ),
@@ -324,7 +324,7 @@ class _AddMoneyToSlydoTwoState extends State<AddMoneyToSlydoTwo> {
                 ),
               ),
               onTap: () {
-                Clipboard.setData(ClipboardData(text: referenceNumber));
+                Clipboard.setData(new ClipboardData(text: referenceNumber));
                 showToast(message: "Reference number copied !!");
               },
             ),
@@ -345,12 +345,12 @@ class _AddMoneyToSlydoTwoState extends State<AddMoneyToSlydoTwo> {
               width: Checkbox.width - 1.5,
               height: Checkbox.width - 1.5,
               child: Container(
-                decoration: BoxDecoration(
+                decoration: new BoxDecoration(
                   border: Border.all(
                     color: greyBorderColor,
                     width: 1,
                   ),
-                  borderRadius: BorderRadius.circular(5),
+                  borderRadius: new BorderRadius.circular(5),
                 ),
                 child: Theme(
                   data: ThemeData(
@@ -404,7 +404,7 @@ class _AddMoneyToSlydoTwoState extends State<AddMoneyToSlydoTwo> {
         builder: (context) => Center(child: CircularLoadingIndicator()));
 
     if (_formKeyTwo.currentState!.validate()) {
-      final data = {"reference": referenceNumber};
+      var data = {"reference": referenceNumber};
       PaymentAndBankingAuth()
           .confirmTopUpWithReferenceNumber(data)
           .then((value) {

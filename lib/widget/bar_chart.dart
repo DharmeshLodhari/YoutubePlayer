@@ -9,7 +9,7 @@ import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
 class BarChart extends StatefulWidget {
-  final dynamic arguments;
+  var arguments;
 
   BarChart({this.arguments});
 
@@ -18,9 +18,9 @@ class BarChart extends StatefulWidget {
 }
 
 class _BarChartState extends State<BarChart> {
-  Map<String, dynamic> arguments;
+  var arguments;
 
-  _BarChartState({required this.arguments});
+  _BarChartState({this.arguments});
 
   late UserBloc userBloc;
   List<dynamic>? expenses;
@@ -53,17 +53,17 @@ class _BarChartState extends State<BarChart> {
       mostExpensive = 0;
       barData = [0, 0, 0, 0, 0, 0, 0];
 
-      for (var data in expenses!) {
+      expenses!.forEach((dynamic data) {
         if (data["amount"] > mostExpensive) {
           mostExpensive = double.parse(data["amount"].toString());
         }
-      }
+      });
       getData(expenses!);
     });
   }
 
   void getData(List<dynamic> expenses) {
-    for (var data in expenses) {
+    expenses.forEach((data) {
       final amount = double.parse(data["amount"].toString());
       if (amount >= 0.01) {
         setState(() {
@@ -71,7 +71,7 @@ class _BarChartState extends State<BarChart> {
         });
       }
       barData[data["day"] - 1] = double.parse(data["amount"].toString());
-    }
+    });
   }
 
   @override
@@ -237,21 +237,21 @@ class _BarState extends State<Bar> {
       },
       child: Column(
         children: <Widget>[
-          if (showAmount)
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8), color: blackFont),
-              child: Text(
-                moneyConverter(widget.amountSpent.toString()),
-                style: const TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white),
-              ),
-            )
-          else
-            Container(height: 20),
+          showAmount
+              ? Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8), color: blackFont),
+                  child: Text(
+                    moneyConverter(widget.amountSpent),
+                    style: const TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white),
+                  ),
+                )
+              : Container(height: 20),
           const SizedBox(height: 6.0),
           Container(
             height: barHeight,

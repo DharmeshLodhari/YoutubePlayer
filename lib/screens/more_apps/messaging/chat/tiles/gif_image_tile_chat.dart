@@ -1,5 +1,5 @@
 import 'package:Slydo/data/state_notifier.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_conversation.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -10,8 +10,7 @@ class GIFImageForChatMessage extends StatelessWidget {
   final Map<String, dynamic>? message;
   final ChatConversation? chatConversation;
 
-  const GIFImageForChatMessage(
-      {super.key, this.message, this.chatConversation});
+  GIFImageForChatMessage({this.message, this.chatConversation});
 
   @override
   Widget build(BuildContext context) {
@@ -132,7 +131,7 @@ class GIFImageForChatMessage extends StatelessWidget {
               ),
             ),
             if (isSend)
-              SizedBox(
+              Container(
                 width: 20,
                 child: isSend
                     ? Center(

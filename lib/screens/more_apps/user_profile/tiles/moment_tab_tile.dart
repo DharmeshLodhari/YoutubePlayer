@@ -13,8 +13,8 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shimmer/shimmer.dart';
 
 class MomentsTab extends StatefulWidget {
-  final CustomerProfile? searchedUser;
-  final String? channelUsername;
+  CustomerProfile? searchedUser;
+  String? channelUsername;
   MomentsTab({Key? key, required this.searchedUser, this.channelUsername})
       : super(key: key);
 
@@ -28,7 +28,7 @@ class _MomentsTabState extends State<MomentsTab> {
   int? myMomentsCount = 0;
   bool isMyMomentsLoading = false;
   List<MomentsModel> myMomentsList = [];
-  final ScrollController _myMomentsScrollController = ScrollController();
+  final ScrollController _myMomentsScrollController = new ScrollController();
 
   final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
@@ -40,7 +40,7 @@ class _MomentsTabState extends State<MomentsTab> {
     getSearchedUserMoments();
   }
 
-  Future<void> getSearchedUserMoments() async {
+  getSearchedUserMoments() async {
     if (!isMyMomentsLoading) {
       if (myMomentsNext != null && !isMyMomentsLoading) {
         if (mounted) {
@@ -81,7 +81,7 @@ class _MomentsTabState extends State<MomentsTab> {
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      final connectionResult = value;
+      var connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         _refreshPage();
@@ -96,7 +96,7 @@ class _MomentsTabState extends State<MomentsTab> {
     });
   }
 
-  void _refreshPage() {
+  _refreshPage() {
     isFirstTime = true;
     myMomentsNext = "";
     myMomentsCount = 0;
@@ -118,51 +118,42 @@ class _MomentsTabState extends State<MomentsTab> {
         ),
         controller: _refreshController,
         onRefresh: _onRefresh,
-        child: Column(
-          children: [
-            if (myMomentsList.isEmpty)
-              Expanded(
-                child: NoItemInList(
-                  msg: AppLocalization.of(context)!.noMoments,
-                ),
+        child: myMomentsList.isEmpty
+            ? NoItemInList(
+                msg: AppLocalization.of(context)!.noMoments,
               )
-            else
-              Expanded(
-                child: ListView(
-                  controller: _myMomentsScrollController,
-                  children: [
-                    const SizedBox(height: 16),
-                    if (isMyMomentsLoading)
-                      Shimmer.fromColors(
-                        baseColor: Colors.white,
-                        highlightColor: greyBorderColor,
-                        child: GridView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          gridDelegate:
-                              const SliverGridDelegateWithMaxCrossAxisExtent(
-                            maxCrossAxisExtent: 200,
-                            mainAxisExtent: 300,
-                          ),
-                          itemCount: 2,
-                          itemBuilder: (context, index) {
-                            return Card(
-                              color: Colors.grey,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                            );
-                          },
+            : ListView(
+                controller: _myMomentsScrollController,
+                children: [
+                  const SizedBox(height: 16),
+                  if (isMyMomentsLoading)
+                    Shimmer.fromColors(
+                      baseColor: Colors.white,
+                      highlightColor: greyBorderColor,
+                      child: GridView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        gridDelegate:
+                            const SliverGridDelegateWithMaxCrossAxisExtent(
+                          maxCrossAxisExtent: 200,
+                          mainAxisExtent: 300,
                         ),
-                      )
-                    else
-                      const SizedBox.shrink(),
-                    myMomentsListWidget(),
-                  ],
-                ),
+                        itemCount: 2,
+                        itemBuilder: (context, index) {
+                          return Card(
+                            color: Colors.grey,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                          );
+                        },
+                      ),
+                    )
+                  else
+                    const SizedBox.shrink(),
+                  myMomentsListWidget(),
+                ],
               ),
-          ],
-        ),
       ),
     );
   }

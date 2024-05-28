@@ -27,10 +27,10 @@ class _SearchUserState extends State<SearchUser> {
   List<Widget> results = [];
   bool noItemInList = false;
   bool isSearchIsEmpty = true;
-  final AuthService _auth = AuthService();
+  AuthService _auth = AuthService();
   String autoCompleteSearchText = "";
 
-  final ScrollController _scrollController = ScrollController();
+  ScrollController _scrollController = ScrollController();
   TextEditingController searchItemTextController = TextEditingController();
 
   void getList() async {
@@ -90,7 +90,8 @@ class _SearchUserState extends State<SearchUser> {
     }
   }
 
-  Widget getUserTile(Map<String, dynamic> object) {
+  Widget getUserTile(var object) {
+    debugPrint('object::::$object');
     final CustomerProfile user = CustomerProfile.fromJson(object);
 
     if (user.userName.toString().toLowerCase() == "slydo" ||
@@ -154,7 +155,7 @@ class _SearchUserState extends State<SearchUser> {
   }
 
   Widget getUserLeading(CustomerProfile user) {
-    // final Color borderColor = getUserTypeColor(user: user);
+    final Color borderColor = getUserTypeColor(user: user);
 
     return GestureDetector(
       onTap: () {
@@ -211,7 +212,7 @@ class _SearchUserState extends State<SearchUser> {
     });
   }
 
-  void _isRefreshing() {
+  _isRefreshing() {
     count = 0;
     next = "";
     previous = "";

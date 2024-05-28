@@ -47,9 +47,12 @@ class _TakeProofPhotoState extends State<TakeProofPhoto> {
       cameras = availableCameras;
       if (cameras.length > 0) {
         initCamera(cameras[0]);
-      } else {}
+      } else {
+        debugPrint("No camera available");
+      }
     }).catchError((err) {
       // 3
+      debugPrint('Error: $err.code\nError Message: $err.message');
     });
   }
 
@@ -91,9 +94,12 @@ class _TakeProofPhotoState extends State<TakeProofPhoto> {
               cameras = availableCameras;
               if (cameras.length > 0) {
                 initCamera(cameras[_isRearCameraSelected ? 0 : 1]);
-              } else {}
+              } else {
+                debugPrint("No camera available");
+              }
             }).catchError((err) {
               // 3
+              debugPrint('Error: $err.code\nError Message: $err.message');
             });
           },
         ),

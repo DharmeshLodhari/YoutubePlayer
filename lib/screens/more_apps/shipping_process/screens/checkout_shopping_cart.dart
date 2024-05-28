@@ -180,14 +180,14 @@ class _ShoppingCartState extends State<ShoppingCart> {
           onTap: () async {
             showToast(message: 'Coming Soon');
             return;
-            // final result = await Navigator.of(context).pushNamed(
-            //     Routes.SELECT_USER_FOR_GROUP,
-            //     arguments: {"create": "basket"});
-            //
-            // if (result != null && result is bool && result == true) {
-            //   sharedStateKey = GlobalKey<SharedCartScreenState>();
-            //   setState(() {});
-            // }
+            final result = await Navigator.of(context).pushNamed(
+                Routes.SELECT_USER_FOR_GROUP,
+                arguments: {"create": "basket"});
+
+            if (result != null && result is bool && result == true) {
+              sharedStateKey = GlobalKey<SharedCartScreenState>();
+              setState(() {});
+            }
           },
           backgroundColor: iconBtnGrey,
           enableMargin: true,

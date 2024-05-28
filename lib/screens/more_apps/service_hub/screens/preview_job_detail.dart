@@ -6,7 +6,7 @@ import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_conversation.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/share_in_chat/ShareInChat.dart';
 import 'package:Slydo/screens/more_apps/service_hub/auth/service_hub_auth.dart';
 import 'package:Slydo/screens/more_apps/service_hub/models/jobs.dart';
@@ -533,7 +533,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
     return 'Paid';
   }
 
-  Widget getPaymentStatusRow() {
+  getPaymentStatusRow() {
     return job?.assignee == userBloc.user.userName
         ? Column(
             children: [
@@ -1126,7 +1126,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
     }
   }
 
-  Widget getListNowBtn() {
+  getListNowBtn() {
     return CurvedButton(
       onPressed: isAPILoading
           ? () {}
@@ -1146,7 +1146,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
     );
   }
 
-  Widget getUnListNowBtn() {
+  getUnListNowBtn() {
     return CurvedButton(
       onPressed: isAPILoading
           ? () {}
@@ -1166,7 +1166,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
     );
   }
 
-  Widget getApplyNowBtn() {
+  getApplyNowBtn() {
     return CurvedButton(
       onPressed: isAPILoading
           ? () {}
@@ -1184,7 +1184,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
     );
   }
 
-  Widget cancelApplicationNowBtn() {
+  cancelApplicationNowBtn() {
     return CurvedButton(
       onPressed: isAPILoading
           ? () {}
@@ -1235,7 +1235,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
     );
   }
 
-  Future<void> cancelApplication() async {
+  cancelApplication() async {
     await ServiceHubAuthService().cancelApplicationForJob(
         {"applicant": "${userBloc.user.userName}"},
         jobId: job!.id).then((value) {
@@ -1249,7 +1249,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
     });
   }
 
-  Future<void> createJobListing() async {
+  createJobListing() async {
     await ServiceHubAuthService().createListing({
       "job": job!.id,
     }).then((value) {
@@ -1262,8 +1262,8 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
     });
   }
 
-  Future<void> removeJobListing() async {
-    debugPrint('debugPrint listing id $listingId');
+  removeJobListing() async {
+    debugPrint('print listing id $listingId');
     await ServiceHubAuthService().removeJobListing(listingId).then((value) {
       Navigator.pushNamed(context, Routes.SUPER_HUB, arguments: {'page': 1});
       showToast(message: AppLocalization.of(context)!.jobRemovedFromListing);
@@ -1273,7 +1273,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
     });
   }
 
-  Future<void> applyForJob() async {
+  applyForJob() async {
     await ServiceHubAuthService().applyForJob(
         {"applicant": userBloc.user.userName},
         jobId: job!.id).then((value) {
@@ -1587,7 +1587,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
     );
   }
 
-  void onPageFunction(int index, CarouselPageChangedReason reason) {
+  onPageFunction(index, reason) {
     currentIndex = index;
     setState(() {});
   }

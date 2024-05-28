@@ -49,9 +49,12 @@ class _TakeDeliveryProofState extends State<TakeDeliveryProof> {
       cameras = availableCameras;
       if (cameras.length > 0) {
         initCamera(cameras[0]);
-      } else {}
+      } else {
+        debugPrint("No camera available");
+      }
     }).catchError((err) {
       // 3
+      debugPrint('Error: $err.code\nError Message: $err.message');
     });
   }
 
@@ -70,6 +73,7 @@ class _TakeDeliveryProofState extends State<TakeDeliveryProof> {
             debugPrint('User denied camera access.');
             break;
           default:
+            debugPrint('Handle other errors.');
             break;
         }
       }
@@ -113,9 +117,12 @@ class _TakeDeliveryProofState extends State<TakeDeliveryProof> {
               cameras = availableCameras;
               if (cameras.length > 0) {
                 initCamera(cameras[_isRearCameraSelected ? 0 : 1]);
-              } else {}
+              } else {
+                debugPrint("No camera available");
+              }
             }).catchError((err) {
               // 3
+              debugPrint('Error: $err.code\nError Message: $err.message');
             });
           },
         ),
@@ -153,12 +160,11 @@ class _TakeDeliveryProofState extends State<TakeDeliveryProof> {
     return SafeArea(
       child: Stack(
         children: [
-          if (_cameraController?.value.isInitialized ?? false)
-            CameraPreview(_cameraController!)
-          else
-            Container(
-                color: Colors.black,
-                child: const Center(child: CircularProgressIndicator())),
+          (_cameraController?.value.isInitialized ?? false)
+              ? CameraPreview(_cameraController!)
+              : Container(
+                  color: Colors.black,
+                  child: const Center(child: CircularProgressIndicator())),
           Align(
             alignment: Alignment.bottomCenter,
             child: Container(
@@ -167,16 +173,16 @@ class _TakeDeliveryProofState extends State<TakeDeliveryProof> {
               child: Center(
                 child: Column(
                   children: [
-                    if (videoTimer != 4)
-                      Text(
-                        videoTimer.toString(),
-                        style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600),
-                      )
-                    else
-                      const SizedBox.shrink(),
+                    // ignore: prefer_if_elements_to_conditional_expressions
+                    videoTimer != 4
+                        ? Text(
+                            videoTimer.toString(),
+                            style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600),
+                          )
+                        : const SizedBox.shrink(),
                     const SizedBox(height: 10),
                     GestureDetector(
                       onTap: takePhoto,
@@ -219,7 +225,7 @@ class _TakeDeliveryProofState extends State<TakeDeliveryProof> {
     }
     try {
       await _cameraController?.setFlashMode(FlashMode.off);
-      final XFile? picture = await _cameraController?.takePicture();
+      XFile? picture = await _cameraController?.takePicture();
       Navigator.of(context).popAndPushNamed(
           Routes.PREVIEW_DELIVERY_PROOF_SCREEN,
           arguments: {"filePath": picture?.path});

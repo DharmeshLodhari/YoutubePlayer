@@ -24,8 +24,9 @@ class BottomSheetPassCode {
     showModalBottomSheet(
         elevation: 2,
         backgroundColor: Colors.white,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
+        // ignore: prefer_const_constructors
+        shape: RoundedRectangleBorder(
+          borderRadius: const BorderRadius.only(
             topRight: Radius.circular(20),
             topLeft: Radius.circular(20),
           ),
@@ -76,8 +77,8 @@ class BottomSheetPassCode {
             ));
   }
 
-  void _onPassCodeEntered(String enteredPassCode) {
-    final bool isValid = userBloc.user.password == enteredPassCode;
+  _onPassCodeEntered(String enteredPassCode) {
+    bool isValid = userBloc.user.password == enteredPassCode;
     _verificationNotifier.add(isValid);
   }
 }

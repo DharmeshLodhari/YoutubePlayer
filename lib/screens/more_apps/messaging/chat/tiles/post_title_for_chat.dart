@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:Slydo/data/state_notifier.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_conversation.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
 import 'package:Slydo/screens/post_detail_page.dart';
 import 'package:Slydo/utils/video_player_controller/chewie_player.dart';
@@ -20,7 +20,7 @@ class PostTileForChat extends StatefulWidget {
   final Map<String, dynamic>? message;
   final ChatConversation? chatConversation;
 
-  const PostTileForChat(
+  PostTileForChat(
       {Key? key, required this.message, required this.chatConversation})
       : super(key: key);
 
@@ -75,7 +75,7 @@ class _PostTileForChatState extends State<PostTileForChat> {
     userBloc = Provider.of<UserBloc>(context);
     yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context, listen: false);
 
-    final bool isSend = widget.message!["author"] == userBloc.user.userName;
+    bool isSend = widget.message!["author"] == userBloc.user.userName;
 
     return GestureDetector(
       onTap: () {
@@ -150,12 +150,12 @@ class _PostTileForChatState extends State<PostTileForChat> {
                                 ),
                               ],
                             )
-                          : const SizedBox(
+                          : Container(
                               height: 0,
                               width: 0,
                             )
                     else
-                      const SizedBox(
+                      Container(
                         height: 0,
                         width: 0,
                       ),
@@ -246,7 +246,7 @@ class _PostTileForChatState extends State<PostTileForChat> {
                 ),
               ),
               if (isSend)
-                SizedBox(
+                Container(
                   width: 20,
                   child: isSend
                       ? Center(

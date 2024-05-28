@@ -25,12 +25,12 @@ class _SearchingForRideState extends State<SearchingForRide> {
 
   void navigateToArrivingDriver() async {
     driverFindingTimer = Timer(const Duration(seconds: 5), () {
-      // final bool isDriverFound = true;
-      // if (isDriverFound) {
-      Navigator.of(context).pushNamed("/driver-arriving");
-      // } else {
-      //   Navigator.of(context).pushNamed("/no-vehicle-found");
-      // }
+      bool isDriverFound = true;
+      if (isDriverFound) {
+        Navigator.of(context).pushNamed("/driver-arriving");
+      } else {
+        Navigator.of(context).pushNamed("/no-vehicle-found");
+      }
     });
   }
 

@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:Slydo/data/state_notifier.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_conversation.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -15,8 +15,7 @@ class VideoTileForChat extends StatelessWidget {
   final Map<String, dynamic>? message;
   final ChatConversation? chatConversation;
 
-  const VideoTileForChat(
-      {super.key, required this.message, this.chatConversation});
+  VideoTileForChat({required this.message, this.chatConversation});
 
   @override
   Widget build(BuildContext context) {
@@ -197,7 +196,7 @@ class VideoTileForChat extends StatelessWidget {
                               errorWidget: imageErrorWidget,
                             ),
                           ),
-                          SizedBox(
+                          Container(
                             height: MediaQuery.of(context).size.width / 3,
                             width: MediaQuery.of(context).size.width / 1.8,
                             // height: MediaQuery.of(context).size.width / 2.2,
@@ -227,7 +226,7 @@ class VideoTileForChat extends StatelessWidget {
               ),
             ),
             if (isSend)
-              SizedBox(
+              Container(
                 width: 20,
                 child: isSend
                     ? Center(

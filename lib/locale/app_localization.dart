@@ -397,6 +397,13 @@ class AppLocalization {
     );
   }
 
+  String get useCurrentLocation {
+    return Intl.message(
+      "Use Current Location",
+      name: "useCurrentLocation",
+    );
+  }
+
   String get addNewAddress {
     return Intl.message(
       "Add New Address",
@@ -418,16 +425,9 @@ class AppLocalization {
     );
   }
 
-  String get selectAddress {
-    return Intl.message(
-      "Select Address",
-      name: "selectAddress",
-    );
-  }
-
   String get changeAddressMsg {
     return Intl.message(
-      "Kindly add a current address to your list to continue using this App. This will help us give you recommendation that are relevant & closer to you.",
+      "Want to change your location? This will help us recommend business closer to you.",
       name: "addressFoundMsg",
     );
   }
@@ -549,6 +549,13 @@ class AppLocalization {
     return Intl.message(
       "CANCEL",
       name: "cancel",
+    );
+  }
+
+  String get discard {
+    return Intl.message(
+      "Discard",
+      name: "discard",
     );
   }
 
@@ -1589,6 +1596,13 @@ class AppLocalization {
     return Intl.message(
       "Moment",
       name: "previewMoment",
+    );
+  }
+
+  String get selectCover {
+    return Intl.message(
+      "Select Cover",
+      name: "selectCover",
     );
   }
 
@@ -3033,7 +3047,7 @@ class AppLocalization {
 
   String get comingSoon {
     return Intl.message(
-      "Coming Sonn!",
+      "Coming Soon",
       name: "comingSoon",
     );
   }

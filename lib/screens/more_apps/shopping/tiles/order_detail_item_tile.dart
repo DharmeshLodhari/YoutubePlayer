@@ -85,7 +85,7 @@ class _OrderTileForProductState extends State<OrderTileForProduct> {
       badgeStyle: badges.BadgeStyle(
         shape: badges.BadgeShape.circle,
         badgeColor: naturalGreen,
-        padding: qty.toString().isEmpty
+        padding: qty.toString().length == 0
             ? const EdgeInsets.all(0)
             : const EdgeInsets.all(4),
         elevation: 0,
@@ -95,8 +95,8 @@ class _OrderTileForProductState extends State<OrderTileForProduct> {
         child: CachedNetworkImage(
           height: 48,
           width: 48,
-          imageUrl: product?.serverImages != null
-              ? product?.serverImages?.first ?? ""
+          imageUrl: product!.serverImages!.isNotEmpty
+              ? product!.serverImages!.first!
               : defaultImage,
           colorBlendMode: BlendMode.darken,
           fit: BoxFit.fitWidth,
@@ -120,26 +120,28 @@ class _OrderTileForProductState extends State<OrderTileForProduct> {
   }
 
   Widget getTrailing() {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: <Widget>[
-        Text(
-          worldCurrencies[product!.currency!]!,
-          style: TextStyle(
-              color: blackFont,
-              fontFamily: "Inter",
-              fontWeight: FontWeight.w600,
-              fontSize: 14),
-        ),
-        Text(
-          moneyDisplayNormalizer(int.parse(product!.price.toString())),
-          style: TextStyle(
-            color: blackFont,
-            fontWeight: FontWeight.w600,
-            fontSize: 14,
+    return Container(
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Text(
+            worldCurrencies[product!.currency!]!,
+            style: TextStyle(
+                color: blackFont,
+                fontFamily: "Inter",
+                fontWeight: FontWeight.w600,
+                fontSize: 14),
           ),
-        ),
-      ],
+          Text(
+            moneyDisplayNormalizer(int.parse(product!.price.toString())),
+            style: TextStyle(
+              color: blackFont,
+              fontWeight: FontWeight.w600,
+              fontSize: 14,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -275,7 +277,7 @@ class _OrderTileForServiceState extends State<OrderTileForService> {
       badgeStyle: badges.BadgeStyle(
         shape: badges.BadgeShape.circle,
         badgeColor: naturalGreen,
-        padding: qty.toString().isEmpty
+        padding: qty.toString().length == 0
             ? const EdgeInsets.all(0)
             : const EdgeInsets.all(4),
         elevation: 0,

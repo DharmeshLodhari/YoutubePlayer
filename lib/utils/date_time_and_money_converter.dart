@@ -14,10 +14,10 @@ DateTime getStartingOfWeek(DateTime date) {
 
 DateTime getEndingOfWeek(DateTime date) {
   final DateTime startingOfWeek = getStartingOfWeek(date);
-  return startingOfWeek.add(const Duration(days: 6));
+  return startingOfWeek.add(Duration(days: 6));
 }
 
-String moneyConverter(String amount, {bool isNotCompact = false}) {
+String moneyConverter(var amount, {bool isNotCompact = false}) {
   final amt = double.parse(amount.toString());
   final FlutterMoneyFormatter fmf =
       FlutterMoneyFormatter(amount: amt, settings: MoneyFormatterSettings());

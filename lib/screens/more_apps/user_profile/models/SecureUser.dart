@@ -4,8 +4,12 @@ class SecureUser {
   String? company;
   bool? isStaffLogin = false;
 
-  SecureUser(
-      {this.password, this.phoneNumber, this.company, this.isStaffLogin});
+  SecureUser({
+    this.password,
+    this.phoneNumber,
+    this.company,
+    this.isStaffLogin,
+  });
 
   factory SecureUser.fromJson(Map<String, dynamic> json) {
     return SecureUser(

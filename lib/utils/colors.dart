@@ -43,6 +43,7 @@ Color selectedListItemBackgroundBlue = HexColor("#F8F9FF");
 Color yarnBlack = HexColor("#151515");
 Color transparent = Colors.transparent;
 
+Color greyDarkBackground = HexColor("#F0F2F5");
 Color greyBackground = HexColor("#F1F3F4");
 Color greySecondaryYarn = HexColor("#D9D9D9");
 Color darkGreyYarn = HexColor("#808080");

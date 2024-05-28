@@ -109,7 +109,7 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
     LocationData? currentLocation;
     try {
       currentLocation = await _locationTracker.getLocation();
-      final double? accuracy = currentLocation.accuracy;
+      double? accuracy = currentLocation.accuracy;
       debugPrint('Location Accuracy: $accuracy meters');
     } catch (e) {
       debugPrint('Error getting location: $e');
@@ -271,11 +271,11 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
 
   Future<void> _cameraToPosition(LocationData pos) async {
     controller = await _mapController.future;
-    // final double zoomLevel = await controller?.getZoomLevel() ?? 13;
-    // final CameraPosition _newCameraPosition = CameraPosition(
-    //   target: LatLng(pos.latitude!, pos.longitude!),
-    //   zoom: zoomLevel,
-    // );
+    final double zoomLevel = await controller?.getZoomLevel() ?? 13;
+    final CameraPosition _newCameraPosition = CameraPosition(
+      target: LatLng(pos.latitude!, pos.longitude!),
+      zoom: zoomLevel,
+    );
     // await controller?.animateCamera(
     //   CameraUpdate.newCameraPosition(_newCameraPosition),
     // );
@@ -300,15 +300,14 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
   Duration calculateDurationInMinutes(
       double distanceInMeters, double riderSpeedMetersPerSecond) {
     // Calculate duration in seconds
-    final double durationInSeconds =
-        distanceInMeters / riderSpeedMetersPerSecond;
+    double durationInSeconds = distanceInMeters / riderSpeedMetersPerSecond;
 
     // Convert duration to minutes
     // double durationInMinutes = durationInSeconds / 60;
 
     // return durationInMinutes.floor();
 
-    final Duration d = Duration(seconds: durationInSeconds.floor());
+    Duration d = Duration(seconds: durationInSeconds.floor());
 
     return d;
   }
@@ -506,7 +505,7 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
     //     polylineCoordinates.add(LatLng(point.latitude, point.longitude));
     //   });
     // } else {
-    //   print(result.errorMessage);
+    //   debugPrint(result.errorMessage);
     // }
     // return polylineCoordinates;
   }

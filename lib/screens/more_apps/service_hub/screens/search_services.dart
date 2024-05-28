@@ -14,6 +14,7 @@ import 'package:flutter/material.dart';
 import '../../../../../../utils/util.dart';
 import '../../../../../../widget/customized_dropdown_field.dart';
 import '../../../../../../widget/rounded_background_icon.dart';
+import '../../../../widget/debouncer_widget.dart';
 
 class SearchServices extends StatefulWidget {
   SearchServices({
@@ -68,7 +69,7 @@ class _SearchServicesState extends State<SearchServices> {
   String? sortBy;
   String? sortByMenuItemValue = 'Best match';
   TextEditingController searchController = TextEditingController();
-  // final _debouncer = Debouncer(milliseconds: 500);
+  final _debouncer = Debouncer(milliseconds: 500);
 
   @override
   void initState() {
@@ -157,9 +158,9 @@ class _SearchServicesState extends State<SearchServices> {
         if (mounted) {
           isLoading = false;
           try {
-            for (var result in tempList!) {
+            tempList!.forEach((result) {
               products.add(result);
-            }
+            });
             debugPrint("PRODUCTS:- $products");
           } catch (e) {
             debugPrint("error adding products $e");
@@ -198,9 +199,9 @@ class _SearchServicesState extends State<SearchServices> {
       servicesCategories = await ShoppingAuthService().getServicesCategories();
       servicesCategoriesCopy = servicesCategories;
 
-      for (var element in servicesCategoriesCopy!) {
+      servicesCategoriesCopy!.forEach((element) {
         categoryCheckMark[element.name] = false;
-      }
+      });
     } catch (e) {
       servicesCategories = [];
       servicesCategoriesCopy = [];
@@ -910,7 +911,7 @@ class _SearchServicesState extends State<SearchServices> {
     );
   }
 
-  Widget getPriceRange(StateSetter bottomSheetSetState) {
+  Widget getPriceRange(bottomSheetSetState) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

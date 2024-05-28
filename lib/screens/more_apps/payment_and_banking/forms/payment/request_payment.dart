@@ -816,7 +816,8 @@ class _RequestPaymentState extends State<RequestPayment> {
 
                     await _auth.createPaymentRequests(data).then((value) {
                       response = value;
-                      if (response.statusCode == 201) {
+                      if (response.statusCode == 200 ||
+                          response.statusCode == 201) {
                         Navigator.pop(context);
                         if (!isFromChat!) {
                           _dashboardBloc.index = 0;

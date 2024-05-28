@@ -139,31 +139,30 @@ class _SearchEventState extends State<SearchEvent> {
           const SizedBox(
             height: 12,
           ),
-          if (isLoading)
-            Expanded(
-              child: Center(
-                child: CircularLoadingIndicator(),
-              ),
-            )
-          else
-            eventList.isEmpty
-                ? Expanded(child: searchBackground())
-                : Expanded(
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: eventList
-                            .map(
-                              (element) => Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 8, horizontal: 16),
-                                  child: EventTileWithHeart(
-                                    partialEvent: element,
-                                  )),
-                            )
-                            .toList(),
+          isLoading
+              ? Expanded(
+                  child: Center(
+                    child: CircularLoadingIndicator(),
+                  ),
+                )
+              : eventList.isEmpty
+                  ? Expanded(child: searchBackground())
+                  : Expanded(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: eventList
+                              .map(
+                                (element) => Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 8, horizontal: 16),
+                                    child: EventTileWithHeart(
+                                      partialEvent: element,
+                                    )),
+                              )
+                              .toList(),
+                        ),
                       ),
                     ),
-                  ),
         ],
       ),
     );
@@ -633,7 +632,7 @@ class _SearchEventState extends State<SearchEvent> {
     );
   }
 
-  Widget getPriceSelection(StateSetter bottomSheetSetState) {
+  Widget getPriceSelection(bottomSheetSetState) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Text(
         "Price",

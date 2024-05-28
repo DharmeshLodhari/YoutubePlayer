@@ -12,13 +12,14 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/image_crop.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:video_player/video_player.dart';
 
 class CreateMediaScreen extends StatefulWidget {
   final Function(List<YarnMedia>)? addedSelectedMedia;
-  final int? imageCount;
+  int? imageCount;
 
   CreateMediaScreen({Key? key, this.addedSelectedMedia, this.imageCount})
       : super(key: key);
@@ -358,7 +359,7 @@ class _CreateMediaScreenState extends State<CreateMediaScreen> {
     }
   }
 
-  Future<void> setUpVideoPlayer() async {
+  setUpVideoPlayer() async {
     videoPlayerController = VideoPlayerController.file(File(videoPath!),
         videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true))
       ..initialize().then((_) => videoPlayerController?.play())
@@ -428,11 +429,11 @@ class _CreateMediaScreenState extends State<CreateMediaScreen> {
     return Container(color: greyBorderColor);
   }
 
-  Future<void> pickFileFromMedia() async {
-    // int countMedia = 0;
-    // if (widget.imageCount! > 0) {
-    //   countMedia = 4 - widget.imageCount!;
-    // }
+  pickFileFromMedia() async {
+    int countMedia = 0;
+    if (widget.imageCount! > 0) {
+      countMedia = 4 - widget.imageCount!;
+    }
 
     // List<Media>? res = await ImagesPicker.pick(
     //   count: countMedia,
@@ -444,7 +445,8 @@ class _CreateMediaScreenState extends State<CreateMediaScreen> {
     //   ),
     // );
 
-    final List<XFile>? res = await selectMultipleImageVideo();
+    final List<XFile> res = await selectMultipleImageVideo();
+    debugPrint("imageCount = ${widget.imageCount}");
     if (res == null || res.isEmpty) return;
     if ((widget.imageCount ?? 0) + res.length > 4) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -468,7 +470,8 @@ class _CreateMediaScreenState extends State<CreateMediaScreen> {
             await NavigationUtil.push(context, screen: TrimmerView(file: file));
         if (videoFilePath is String) {
           videoPath = videoFilePath;
-          await getVideoThumbnailFromUrl(videoPath!);
+          final Uint8List? uInt8List =
+              await getVideoThumbnailFromUrl(videoPath!);
           final String? thumbnailImage =
               await generateThumbNailFromVideo(videoPath: videoPath!);
 
@@ -524,10 +527,13 @@ class _CreateMediaScreenState extends State<CreateMediaScreen> {
           description.lensDirection == CameraLensDirection.front);
     }
 
+    if (newDescription != null) {
+      debugPrint('NEW DESC :: $newDescription');
+    }
     _initCameraController(newCameraDescription: newDescription);
   }
 
-  Future<void> goBack() async {
+  goBack() async {
     if (videoPath != null) {
       debugPrint('VIDEO SIZE -> ::: ${File(videoPath!).lengthSync()}');
 

@@ -7,9 +7,9 @@ import '../user_auth.dart';
 
 // ignore: must_be_immutable
 class VerifyResetPasswordOTPScreen extends StatefulWidget {
-  final dynamic arguments;
+  var arguments;
 
-  const VerifyResetPasswordOTPScreen({super.key, this.arguments});
+  VerifyResetPasswordOTPScreen({this.arguments});
 
   @override
   _VerifyResetPasswordOTPScreenState createState() =>
@@ -198,7 +198,7 @@ class _VerifyResetPasswordOTPScreenState
   void verifyOTP() {
     if (_verifyOtpFormKey.currentState!.validate()) {
       final String enteredOTP = otpController!.text.trim();
-      const String passwordToken = "true";
+      final String passwordToken = "true";
 
       UserAuth()
           .verifyPhoneNumber(phoneNumber, enteredOTP, passwordToken)

@@ -21,7 +21,7 @@ import '../../../widget/customized_passcode_sheet/bottomsheet_passcode.dart';
 import '../payment_and_banking/payment_and_banking_auth.dart';
 
 class FundVirtualCard extends StatefulWidget {
-  final dynamic arguments;
+  var arguments;
 
   FundVirtualCard({this.arguments, Key? key}) : super(key: key);
 
@@ -171,36 +171,39 @@ class FundVirtualCardState extends State<FundVirtualCard> {
                         if (canCashOut(nairaCheck, balance))
                           getSubmitButton()
                         else
-                          Center(
-                              child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 16.0),
-                                  child: Text.rich(TextSpan(
-                                      text: AppLocalization.of(context)!
-                                          .availableFund,
-                                      style: TextStyle(
-                                          fontSize: 12,
-                                          color: blackFont,
-                                          fontWeight: FontWeight.w600),
-                                      children: <InlineSpan>[
-                                        TextSpan(
-                                          text: double.parse(moneyDisplayNormalizer(
-                                                      displayPossibleCashOutAmount(
-                                                          balance))) >=
-                                                  35.00
-                                              ? worldCurrencies[userBloc!
-                                                      .user.currency!]! +
-                                                  moneyDisplayNormalizer(
-                                                      displayPossibleCashOutAmount(
-                                                          balance))
-                                              : '${worldCurrencies[userBloc!.user.currency!]!}0.00',
-                                          style: TextStyle(
-                                              fontSize: 12,
-                                              color: blackFont,
-                                              fontFamily: "Inter",
-                                              fontWeight: FontWeight.w600),
-                                        )
-                                      ])))),
+                          Container(
+                            child: Center(
+                                child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 16.0),
+                                    child: Text.rich(TextSpan(
+                                        text: AppLocalization.of(context)!
+                                            .availableFund,
+                                        style: TextStyle(
+                                            fontSize: 12,
+                                            color: blackFont,
+                                            fontWeight: FontWeight.w600),
+                                        children: <InlineSpan>[
+                                          TextSpan(
+                                            text: double.parse(
+                                                        moneyDisplayNormalizer(
+                                                            displayPossibleCashOutAmount(
+                                                                balance))) >=
+                                                    35.00
+                                                ? worldCurrencies[userBloc!
+                                                        .user.currency!]! +
+                                                    moneyDisplayNormalizer(
+                                                        displayPossibleCashOutAmount(
+                                                            balance))
+                                                : '${worldCurrencies[userBloc!.user.currency!]!}0.00',
+                                            style: TextStyle(
+                                                fontSize: 12,
+                                                color: blackFont,
+                                                fontFamily: "Inter",
+                                                fontWeight: FontWeight.w600),
+                                          )
+                                        ])))),
+                          ),
                         const SizedBox(
                           height: 20,
                         ),
@@ -214,11 +217,11 @@ class FundVirtualCardState extends State<FundVirtualCard> {
   }
 
   Widget mainCreditCardContent(AllCards cardData) {
-    // var cardColors = [];
-    Color cardColor;
+    var cardColors = [];
+    var cardColor;
 
     if (cardData.color == null) {
-      // cardColors = [navyBlue, richPink, black, orange];
+      cardColors = [navyBlue, richPink, black, orange];
       cardColor = navyBlue;
     } else {
       final String? color = cardData.color;

@@ -12,8 +12,10 @@ import 'package:Slydo/widget/customized_checkbox_field.dart';
 import 'package:Slydo/widget/customized_dropdown_field.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/delete_product_and_service_confirm_alert.dart';
+import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/image_crop.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
+import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -22,7 +24,7 @@ import '../shopping_auth.dart';
 
 // ignore: must_be_immutable
 class EditService extends StatefulWidget {
-  final dynamic arguments;
+  var arguments;
 
   EditService({this.arguments});
 
@@ -31,7 +33,7 @@ class EditService extends StatefulWidget {
 }
 
 class _EditServiceState extends State<EditService> {
-  final dynamic arguments;
+  var arguments;
 
   _EditServiceState({this.arguments});
 
@@ -43,13 +45,14 @@ class _EditServiceState extends State<EditService> {
   Service currentService = Service();
 
   int imageCount = 5;
-  final ScrollController _scrollController = ScrollController();
+  ScrollController _scrollController = ScrollController();
   List<PickedFile> serviceLocalImages = [];
   List<String?> serviceImagesFromServer = [];
   String? serviceName = "";
   String? serviceDescription = "";
   String? serviceCategory = "";
   String? serviceShortDescription = "";
+  String? searchKeyword = "";
   String? servicePrice = "";
   ServiceCategory? selectedServiceCategory;
   bool? serviceIsAvailable = false;
@@ -61,6 +64,7 @@ class _EditServiceState extends State<EditService> {
   TextEditingController serviceShortDescriptionController =
       TextEditingController();
   TextEditingController servicePriceController = TextEditingController();
+  TextEditingController searchKeywordController = TextEditingController();
   List<ServiceCategory>? serviceCategories;
   bool isLoading = false;
   bool isAPILoading = false;
@@ -109,10 +113,12 @@ class _EditServiceState extends State<EditService> {
       // assigning to our edit controllers
 
       serviceTitleController.text = currentService.name!;
-      serviceDescriptionController.text = currentService.description!;
+      serviceDescriptionController.text =
+          messageDecoderWithEmoji(currentService.description) ?? "";
       servicePriceController.text =
           moneyNormalizer(int.parse(currentService.price!)).toString();
-      serviceShortDescriptionController.text = currentService.shortDescription!;
+      serviceShortDescriptionController.text =
+          messageDecoderWithEmoji(currentService.shortDescription) ?? "";
 
       serviceImagesFromServer.addAll(currentService.serverImages!);
       serviceName = currentService.name;
@@ -122,6 +128,11 @@ class _EditServiceState extends State<EditService> {
       serviceIsAvailable = currentService.isAvailable;
       serviceAvailableFrom = currentService.availableFrom;
       serviceShortDescription = currentService.shortDescription;
+      searchKeyword =
+          messageDecoderWithEmoji(currentService.searchKeywords?.join(", "));
+      searchKeywordController.text =
+          messageDecoderWithEmoji(currentService.searchKeywords?.join(", ")) ??
+              "";
 
       // assigning the dropdown from currentProduct
       serviceCategories?.forEach((catagory) {
@@ -192,18 +203,15 @@ class _EditServiceState extends State<EditService> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       const SizedBox(height: 10),
-                      if (checkImageLimitForServerImage())
-                        viewServerImages()
-                      else
-                        Container(),
-                      if (checkImageLimitForServerImage())
-                        const SizedBox(height: 8)
-                      else
-                        Container(),
-                      if (checkImageLimitForLocalImage())
-                        addLocalImages()
-                      else
-                        Container(),
+                      checkImageLimitForServerImage()
+                          ? viewServerImages()
+                          : Container(),
+                      checkImageLimitForServerImage()
+                          ? const SizedBox(height: 8)
+                          : Container(),
+                      checkImageLimitForLocalImage()
+                          ? addLocalImages()
+                          : Container(),
                       const SizedBox(
                         height: 10,
                       ),
@@ -222,6 +230,8 @@ class _EditServiceState extends State<EditService> {
                       getServiceShortDescription(),
                       const SizedBox(height: 10),
                       getServiceDescription(),
+                      const SizedBox(height: 10),
+                      getSearchEngineKeyword(),
                       const SizedBox(height: 40),
                       getSubmitButton(),
                       const SizedBox(height: 40),
@@ -243,7 +253,7 @@ class _EditServiceState extends State<EditService> {
   }
 
   Widget addLocalImages() {
-    return SizedBox(
+    return Container(
       height: 100,
       child: ListView.builder(
         controller: _scrollController,
@@ -263,7 +273,7 @@ class _EditServiceState extends State<EditService> {
   }
 
   Widget viewServerImages() {
-    return SizedBox(
+    return Container(
       height: 100,
       child: ListView.builder(
         controller: _scrollController,
@@ -472,7 +482,7 @@ class _EditServiceState extends State<EditService> {
   bool checkImageLimitForServerImage() {
     if (serviceLocalImages.length + serviceImagesFromServer.length !=
             imageCount ||
-        serviceImagesFromServer.isNotEmpty) {
+        serviceImagesFromServer.length != 0) {
       return true;
     }
     return false;
@@ -482,7 +492,7 @@ class _EditServiceState extends State<EditService> {
   bool checkImageLimitForLocalImage() {
     if (serviceLocalImages.length + serviceImagesFromServer.length !=
             imageCount ||
-        serviceLocalImages.isNotEmpty) {
+        serviceLocalImages.length != 0) {
       return true;
     }
     return false;
@@ -517,6 +527,29 @@ class _EditServiceState extends State<EditService> {
       onChanged: (val) {
         serviceShortDescription = val;
       },
+    );
+  }
+
+  Widget getSearchEngineKeyword() {
+    return Column(
+      children: [
+        CustomizedTextFormField(
+          controller: searchKeywordController,
+          labelText: "Search Keyword - SEO (Optional)",
+          onChanged: (val) {
+            searchKeyword = val;
+          },
+        ),
+        Text(
+          'These words will help customer see your service online when they search it.',
+          style: TextStyle(
+            color: darkGrey,
+            fontSize: 12,
+            fontWeight: FontWeight.w400,
+            fontFamily: "Inter",
+          ),
+        )
+      ],
     );
   }
 
@@ -565,7 +598,7 @@ class _EditServiceState extends State<EditService> {
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: SizedBox(
+              content: Container(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   elevation: 2,
@@ -675,7 +708,7 @@ class _EditServiceState extends State<EditService> {
               backgroundColor: mateRed,
               onPressed: () async {
                 FocusScope.of(context).unfocus();
-                deleteProduct();
+                deleteServiceDialog();
               }),
         ),
         const SizedBox(
@@ -705,6 +738,29 @@ class _EditServiceState extends State<EditService> {
     );
   }
 
+  void deleteServiceDialog() {
+    showDialogBox(
+      context: context,
+      actionOneTextColor: blackFont,
+      actionOneBgColor: greyBorderColor,
+      actionTwoTextColor: white,
+      actionTwoBgColor: mateRed,
+      title: 'Delete Service',
+      actionOneText: AppLocalization.of(context)!.discard,
+      actionTwoText: AppLocalization.of(context)!.continueMsg,
+      description: 'Are you sure you want to delete this service?',
+      roundedBackgroundIcon: RoundedBackgroundIcon(
+        enableMargin: false,
+        width: 90,
+        height: 90,
+        image: Image.asset('assets/images/delete_dialog_icon.png'),
+      ),
+      rightButtonOnPressed: () {
+        deleteService();
+      },
+    );
+  }
+
   Future<void> editService() async {
     if (_formKey.currentState!.validate()) {
       if (serviceLocalImages.length >= 0) {
@@ -720,6 +776,7 @@ class _EditServiceState extends State<EditService> {
           currentService.price = moneyInputNormalizer(servicePrice!).toString();
           currentService.isAvailable = serviceIsAvailable;
           currentService.availableFrom = serviceAvailableFrom;
+          currentService.searchKeywords = searchKeyword?.split(", ");
 
           await _auth.editService(currentService).then((value) {
             showToast(
@@ -801,7 +858,7 @@ class _EditServiceState extends State<EditService> {
     );
   }
 
-  void deleteProduct() async {
+  void deleteService() async {
     final bool? result = await showDialog(
       context: context,
       builder: (context) => ConfirmDelete(),
@@ -825,6 +882,7 @@ class _EditServiceState extends State<EditService> {
     serviceShortDescriptionController.dispose();
     servicePriceController.dispose();
     _scrollController.dispose();
+    searchKeywordController.dispose();
     super.dispose();
   }
 }

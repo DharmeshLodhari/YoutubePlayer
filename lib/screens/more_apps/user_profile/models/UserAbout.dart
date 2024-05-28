@@ -7,42 +7,52 @@ class UserAbout {
   String wallpaper;
   List<OpeningHourForDay> openingHours;
   Industry? industry;
+  List<String>? searchKeywords;
 
-  UserAbout(
-      {this.bio = '',
-      this.userAddress,
-      this.contact = "",
-      this.wallpaper = "",
-      this.openingHours = const [],
-      this.industry});
+  UserAbout({
+    this.bio = '',
+    this.userAddress,
+    this.contact = "",
+    this.wallpaper = "",
+    this.openingHours = const [],
+    this.industry,
+    this.searchKeywords,
+  });
 
   factory UserAbout.fromJson(Map<String, dynamic> json) {
     return UserAbout(
-        userAddress: UserAddress.fromJson(json['address']),
-        wallpaper: json['wallpaper'] ?? "",
-        contact: json['contact'] ?? "",
-        openingHours: json['opening_hours'] != null
-            ? (json['opening_hours'] as List)
-                .map((i) => OpeningHourForDay.fromJson(i))
-                .toList()
-            : [],
-        industry: Industry.fromJson(json['industry']));
+      userAddress: UserAddress.fromJson(json['address']),
+      wallpaper: json['wallpaper'] ?? "",
+      contact: json['contact'] ?? "",
+      openingHours: json['opening_hours'] != null
+          ? (json['opening_hours'] as List)
+              .map((i) => OpeningHourForDay.fromJson(i))
+              .toList()
+          : [],
+      industry: Industry.fromJson(json['industry']),
+      searchKeywords: json["search_keywords"] == null
+          ? []
+          : List<String>.from(json["search_keywords"]!.map((x) => x)),
+    );
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
+    final Map<String, dynamic> data = new Map<String, dynamic>();
 
-    data['address'] = userAddress?.toJson();
-    data['bio'] = bio;
-    data['contact'] = contact;
-    if (!wallpaper.contains("https") &&
-        !wallpaper.contains("http") &&
-        wallpaper != "") {
-      data['wallpaper'] = wallpaper;
+    data['address'] = this.userAddress?.toJson();
+    data['bio'] = this.bio;
+    data['contact'] = this.contact;
+    if (!this.wallpaper.contains("https") &&
+        !this.wallpaper.contains("http") &&
+        this.wallpaper != "") {
+      data['wallpaper'] = this.wallpaper;
     }
 
-    data['opening_hours'] = openingHours.map((v) => v.toJson()).toList();
-    data['industry'] = industry!.toJson();
+    data['opening_hours'] = this.openingHours.map((v) => v.toJson()).toList();
+    data['industry'] = this.industry?.id;
+    data["search_keywords"] = searchKeywords == null
+        ? []
+        : List<String>.from(searchKeywords!.map((x) => x));
     return data;
   }
 }
@@ -79,13 +89,13 @@ class UserAddress {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['id'] = id;
-    data['state'] = state;
-    data['address_line_1'] = addressLine1;
-    data['address_line_2'] = addressLine2;
-    data['city'] = city;
-    data['post_code'] = postCode;
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['state'] = this.state;
+    data['address_line_1'] = this.addressLine1;
+    data['address_line_2'] = this.addressLine2;
+    data['city'] = this.city;
+    data['post_code'] = this.postCode;
     return data;
   }
 }
@@ -108,9 +118,9 @@ class Industry {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['id'] = id;
-    data['name'] = name;
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['name'] = this.name;
     return data;
   }
 }
@@ -126,15 +136,15 @@ class UserState {
     id = json['id'];
     name = json['name'];
     country =
-        json['country'] != null ? Country.fromJson(json['country']) : null;
+        json['country'] != null ? new Country.fromJson(json['country']) : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['id'] = id;
-    data['name'] = name;
-    if (country != null) {
-      data['country'] = country!.toJson();
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['name'] = this.name;
+    if (this.country != null) {
+      data['country'] = this.country!.toJson();
     }
     return data;
   }
@@ -154,10 +164,10 @@ class Country {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['id'] = id;
-    data['name'] = name;
-    data['iso_code'] = isoCode;
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['name'] = this.name;
+    data['iso_code'] = this.isoCode;
     return data;
   }
 }

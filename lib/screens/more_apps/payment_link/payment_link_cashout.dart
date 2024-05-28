@@ -763,7 +763,7 @@ class _PaymentLinkCashOutState extends State<PaymentLinkCashOut> {
                         if (bankList.length >= 1) ...[
                           bankCardDisplay(bankList[index]),
                         ] else ...[
-                          // print('The array does not have a second element.');
+                          // debugPrint('The array does not have a second element.');
                         ]
                       ],
                     ));
@@ -1057,7 +1057,7 @@ class _PaymentLinkCashOutState extends State<PaymentLinkCashOut> {
           return Future.error(response.body);
         }
 
-        if (response.statusCode == 201) {
+        if (response.statusCode == 200 || response.statusCode == 201) {
           showSnackbar(context,
               message: 'Payment link successfully cashed out..',
               duration: 2000);

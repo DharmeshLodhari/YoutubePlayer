@@ -22,8 +22,8 @@ class UtilityAuth extends AuthService {
       return null;
     }
     if (next == "") {
-      url =
-          "${AppConfig.baseUrl}/api/v1/utilities/providers/?category=$utilitiesProvider";
+      url = AppConfig.baseUrl +
+          "/api/v1/utilities/providers/?category=$utilitiesProvider";
     } else {
       url = getSecureUrl(url: next);
     }
@@ -31,7 +31,7 @@ class UtilityAuth extends AuthService {
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final List<ProviderModel> providerModelList = [];
 
       final jsonData = json.decode(response.body);
@@ -60,13 +60,13 @@ class UtilityAuth extends AuthService {
   Future<List<ProviderProductModel>> getUtilityProviderProduct(
       {required String providerId}) async {
     final String url =
-        "${AppConfig.baseUrl}/api/v1/utilities/providers/$providerId/";
+        AppConfig.baseUrl + "/api/v1/utilities/providers/$providerId/";
 
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
     debugPrint('provider details response ::: ${response.body}');
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final List providerProduct = jsonDecode(response.body)['products'];
       final List<ProviderProductModel> providerDetailsModelList =
           providerProduct
@@ -87,7 +87,7 @@ class UtilityAuth extends AuthService {
       return null;
     }
     if (next == "") {
-      url = "${AppConfig.baseUrl}/api/v1/utilities/transactions/";
+      url = AppConfig.baseUrl + "/api/v1/utilities/transactions/";
     } else {
       url = getSecureUrl(url: next);
     }
@@ -96,7 +96,7 @@ class UtilityAuth extends AuthService {
     final response = await httpGet(url, headers: headers);
 
     debugPrint('HISTORY :::: ${response.body}');
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final jsonData = json.decode(response.body);
       final List resultList = jsonData['results'];
 
@@ -143,13 +143,13 @@ class UtilityAuth extends AuthService {
   Future<UtilityHistoryModel?> getUtilityTransactionsDetails(
       {required String transactionsId}) async {
     final String url =
-        "${AppConfig.baseUrl}/api/v1/utilities/transactions/$transactionsId/";
+        AppConfig.baseUrl + "/api/v1/utilities/transactions/$transactionsId/";
 
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
 
     debugPrint('TRANSACTION DETAILS RESPONSE ::: ${response.body}');
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final jsonData = jsonDecode(response.body);
       return UtilityHistoryModel.fromJson(jsonData);
     } else {
@@ -163,7 +163,7 @@ class UtilityAuth extends AuthService {
     required String customerRefNum,
   }) async {
     final String url =
-        "${AppConfig.baseUrl}/api/v1/utilities/ref-number-lookup/";
+        AppConfig.baseUrl + "/api/v1/utilities/ref-number-lookup/";
 
     // var data = {
     //   "product_id": productId,
@@ -171,7 +171,7 @@ class UtilityAuth extends AuthService {
     //   "customer_ref_num": customerRefNum,
     // };
 
-    // print('data ----> $data');
+    // debugPrint('data ----> $data');
 
     final data = {
       "customer_ref_num": '0105498919',
@@ -184,16 +184,16 @@ class UtilityAuth extends AuthService {
 
     debugPrint('VERIFY REFERENCE RESPONSE ::: ${response.body}');
     return 'a';
-    // if (response.statusCode == 200) {
-    // return jsonDecode(response.body)['customer_id'];
-    // } else {
-    //   return null;
-    // }
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      // return jsonDecode(response.body)['customer_id'];
+    } else {
+      return null;
+    }
   }
 
   Future<bool> payUtilityBill(
       {required BillPaymentModel billPaymentModel}) async {
-    final String url = "${AppConfig.baseUrl}/api/v1/utilities/payment/";
+    final String url = AppConfig.baseUrl + "/api/v1/utilities/payment/";
 
     final Map<String, dynamic> data = billPaymentModel.toJson();
 

@@ -1,16 +1,17 @@
 import 'package:Slydo/data/currency.dart';
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
-class DisplayProductForDiscount extends StatelessWidget {
-  final Product product;
+class DisplayServiceForDiscount extends StatelessWidget {
+  final Service service;
   final bool isSelected;
   final void Function(bool) onChange;
 
-  const DisplayProductForDiscount({
-    required this.product,
+  const DisplayServiceForDiscount({
+    required this.service,
     required this.onChange,
     required this.isSelected,
     Key? key,
@@ -18,13 +19,14 @@ class DisplayProductForDiscount extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print("${DateTime.now().toString()}");
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(context, '/product',
-            arguments: {"product": product});
+        Navigator.pushNamed(context, Routes.SERVICE_DETAIL,
+            arguments: {"service": service});
       },
       child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+        margin: const EdgeInsets.symmetric(vertical: 7, horizontal: 16),
         child: Card(
           semanticContainer: true,
           clipBehavior: Clip.antiAliasWithSaveLayer,
@@ -36,7 +38,7 @@ class DisplayProductForDiscount extends StatelessWidget {
               side: const BorderSide(color: Color(0xFFDCE0E8)),
               borderRadius: BorderRadius.circular(8)),
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 13),
+            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 13),
             child: Row(
               children: <Widget>[
                 Checkbox(
@@ -54,7 +56,7 @@ class DisplayProductForDiscount extends StatelessWidget {
                     borderRadius: BorderRadius.circular(15),
                     clipBehavior: Clip.antiAliasWithSaveLayer,
                     child: CachedNetworkImage(
-                      imageUrl: product.cover!,
+                      imageUrl: service.cover!,
                       fit: BoxFit.cover,
                       width: 80,
                       errorWidget: productAndServiceBigErrorWidget,
@@ -71,7 +73,7 @@ class DisplayProductForDiscount extends StatelessWidget {
                     children: [
                       Text(
                         truncateString(
-                          str: product.name!,
+                          str: messageDecoderWithEmoji(service.name) ?? "",
                           lengthToTruncateAt: 16,
                           showEllipsis: false,
                         ),
@@ -85,14 +87,13 @@ class DisplayProductForDiscount extends StatelessWidget {
                         height: 4,
                       ),
                       Text(
-                        messageDecoderWithEmoji(
-                              truncateString(
-                                str: product.shortDescription!,
-                                lengthToTruncateAt: 60,
-                                showEllipsis: true,
-                              ),
-                            ) ??
-                            "",
+                        truncateString(
+                          str: messageDecoderWithEmoji(
+                                  service.shortDescription) ??
+                              "",
+                          lengthToTruncateAt: 45,
+                          showEllipsis: true,
+                        ),
                         style: TextStyle(
                           fontFamily: "Inter",
                           fontWeight: FontWeight.w400,
@@ -103,13 +104,13 @@ class DisplayProductForDiscount extends StatelessWidget {
                       const SizedBox(
                         height: 6,
                       ),
-                      getRating(numberOfRating: product.rating?.toInt()),
+                      getRating(numberOfRating: service.rating?.toInt()),
                     ],
                   ),
                 ),
                 Row(mainAxisAlignment: MainAxisAlignment.start, children: [
                   Text(
-                    worldCurrencies[product.currency!]!,
+                    worldCurrencies[service.currency!]!,
                     style: TextStyle(
                       fontFamily: "Inter",
                       fontWeight: FontWeight.bold,
@@ -118,7 +119,7 @@ class DisplayProductForDiscount extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    moneyDisplayNormalizer(product.price!),
+                    moneyDisplayNormalizer(int.parse(service.price!)),
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 14,

@@ -843,7 +843,7 @@ class _AddAccountState extends State<AddAccount> {
                         if (bankList.isNotEmpty) ...[
                           bankCardDisplay(bankList[index]),
                         ] else ...[
-                          // print('The array does not have a second element.');
+                          // debugPrint('The array does not have a second element.');
                         ]
                       ],
                     ));

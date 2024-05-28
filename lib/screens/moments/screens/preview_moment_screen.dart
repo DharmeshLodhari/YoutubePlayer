@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/moments/screens/pick_attachment_screen.dart';
+import 'package:Slydo/screens/moments/screens/select_video_cover_page.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/navigation_util.dart';
@@ -30,7 +31,7 @@ import 'moments_service.dart';
 
 class PreviewMomentScreen extends StatefulWidget {
   final String filePath;
-  final dynamic arguments;
+  var arguments;
 
   PreviewMomentScreen({Key? key, required this.filePath, this.arguments})
       : super(key: key);
@@ -57,6 +58,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
   bool attachmentItemLoading = false;
   List<String> attachmentList = ['Blog', 'Product', 'Service', 'Url', 'None'];
   List<String> attachmentItemList = [];
+  String? selectedImageThumb;
 
   // Thumbnail that would be generated from the video the user captured.
   String? generatedVideoThumbnail;
@@ -776,32 +778,86 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
           width: 60,
           height: 250,
           child: Center(
-            child: GestureDetector(
-                onTap: () {
-                  setState(() {
-                    isTapped = !isTapped;
-                    if (isTapped == true) {
-                      videoPlayerController?.play();
-                    } else {
-                      videoPlayerController?.pause();
-                    }
-                  });
-                },
-                child: CornerRadiusVideo(
-                    widget: Stack(children: [
-                  VideoPlayer(videoPlayerController!),
-                  if (isTapped == false)
-                    Align(
-                      alignment: Alignment.center,
-                      child: SvgPicture.asset(
-                        "yarn/cam_vec".toSVG(),
-                        height: 50,
-                        width: 50,
+            child: CornerRadiusVideo(
+              widget: Column(
+                children: [
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          isTapped = !isTapped;
+                          if (isTapped == true) {
+                            videoPlayerController?.play();
+                          } else {
+                            videoPlayerController?.pause();
+                          }
+                        });
+                      },
+                      child: Container(
+                        color: Colors.red,
+                        child: Stack(children: [
+                          VideoPlayer(videoPlayerController!),
+                          if (selectedImageThumb != null && isTapped == false)
+                            Center(
+                              child: Image(
+                                width: double.infinity,
+                                height: 250,
+                                image: FileImage(
+                                  File(selectedImageThumb ?? ""),
+                                ),
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          if (isTapped == false)
+                            Align(
+                              alignment: Alignment.center,
+                              child: SvgPicture.asset(
+                                "yarn/cam_vec".toSVG(),
+                                height: 50,
+                                width: 50,
+                              ),
+                            )
+                          else
+                            const SizedBox.shrink(),
+                        ]),
                       ),
-                    )
-                  else
-                    const SizedBox.shrink()
-                ]))),
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () async {
+                      final data = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => SelectVideoCoverPage(
+                            videoPath: widget.filePath,
+                          ),
+                        ),
+                      );
+
+                      if (data != null) {
+                        selectedImageThumb = data;
+                        if (mounted) setState(() {});
+                      }
+                    },
+                    child: Container(
+                      width: double.infinity,
+                      color: greyTagColor,
+                      padding: EdgeInsets.all(7.0),
+                      child: Center(
+                        child: Text(
+                          AppLocalization.of(context)!.selectCover,
+                          style: TextStyle(
+                            color: blackFont,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ));
       //   ),
       // );
@@ -872,27 +928,31 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
     MomentsService()
         .createMoment(
       createMomentModel: CreateMomentModel(
-          enableLike: enableLikes,
-          enableCommenting: enableCommenting,
-          isPermanent: isPermanent,
-          enablePayMe: enablePayMe,
-          isPublic: isPublic,
-          userTags: newUserTags,
-          mediaPoster: generatedVideoThumbnail,
-          filePath: widget.filePath,
-          text: momentTitle,
-          url: urlTextCtrl.text,
-          payMeLabel: enablePayMe
-              ? payMeCtrl.text.isEmpty
-                  ? 'Pay Me'
-                  : payMeCtrl.text
-              : null,
-          payMeButtonColor:
-              enablePayMe ? pickedColor.value.toRadixString(16) : null,
-          attachmentMap: getAttachmentMap(),
-          duration: fileType == 'video'
-              ? videoPlayerController?.value.duration.inSeconds.toString()
-              : ''),
+        enableLike: enableLikes,
+        enableCommenting: enableCommenting,
+        isPermanent: isPermanent,
+        enablePayMe: enablePayMe,
+        isPublic: isPublic,
+        userTags: newUserTags,
+        // mediaPoster: generatedVideoThumbnail,
+        mediaPoster: selectedImageThumb != null
+            ? selectedImageThumb
+            : generatedVideoThumbnail,
+        filePath: widget.filePath,
+        text: momentTitle,
+        url: urlTextCtrl.text,
+        payMeLabel: enablePayMe
+            ? payMeCtrl.text.isEmpty
+                ? 'Pay Me'
+                : payMeCtrl.text
+            : null,
+        payMeButtonColor:
+            enablePayMe ? pickedColor.value.toRadixString(16) : null,
+        attachmentMap: getAttachmentMap(),
+        duration: fileType == 'video'
+            ? videoPlayerController?.value.duration.inMilliseconds.toString()
+            : '',
+      ),
       channelUsername:
           widget.arguments == "" ? "" : widget.arguments['channel'],
     )
@@ -939,7 +999,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
     super.dispose();
   }
 
-  Future<void> pickAttachmentWidget() async {
+  pickAttachmentWidget() async {
     final String? pickedAttachmentOption = await showPickItemDialog<String>(
       context: context,
       items: attachmentList,
@@ -1002,7 +1062,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
     }
   }
 
-  Future<void> pickAttachmentItemWidget() async {
+  pickAttachmentItemWidget() async {
     final AttachmentItemModel? pickedItemAttachment =
         await showDialog<AttachmentItemModel>(
       context: context,

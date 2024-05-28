@@ -6,6 +6,8 @@ import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/OpeningHour.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/UserAbout.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/screens/super_store/models/product_industry_model.dart';
+import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -16,6 +18,7 @@ import 'package:Slydo/widget/image_crop.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -42,10 +45,16 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
   TextEditingController? addressLine1Controller;
   TextEditingController? addressLine2Controller;
   TextEditingController? contactNumberController;
+  TextEditingController? searchKeywordController;
   late TextEditingController _fullNameController;
   late TextEditingController _userNameController;
   TextEditingController? _nicknameController;
   ShippingAddress? defaultAddress;
+  String? industryId;
+  String? industryName;
+  List<ProductIndustryResults> industries = [];
+  bool loading = false;
+  String searchKeywords = "";
 
   List<String> openingHoursDays = [
     "Monday",
@@ -116,14 +125,27 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
     addressLine1Controller = TextEditingController();
     addressLine2Controller = TextEditingController();
     contactNumberController = TextEditingController();
+    searchKeywordController = TextEditingController();
     _userNameController = TextEditingController();
     _nicknameController = TextEditingController();
     _fullNameController = TextEditingController();
 
     WidgetsBinding.instance.addPostFrameCallback((timestamp) async {
+      if (userBloc.user.type == "Business") {
+        await getProductIndustries();
+      }
       await getAddress();
       userBioDetail = userBloc.userAbout;
       bioController?.text = messageDecoderWithEmoji(userBloc.user.bio!)!;
+      if (userBioDetail?.searchKeywords != null) {
+        searchKeywords = userBioDetail?.searchKeywords?.join(", ") ?? "";
+        searchKeywordController?.text =
+            userBioDetail?.searchKeywords?.join(", ") ?? "";
+      }
+      if (userBioDetail?.industry != null) {
+        industryId = userBioDetail?.industry?.id ?? "";
+        industryName = userBioDetail?.industry?.name ?? "";
+      }
       if (userBioDetail?.userAddress?.addressLine1 != null) {
         addressLine1Controller?.text =
             userBioDetail?.userAddress?.addressLine1 ?? "";
@@ -167,6 +189,21 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
     super.initState();
   }
 
+  getProductIndustries() async {
+    loading = true;
+    if (mounted) setState(() {});
+    final result = await AuthService().listOfIndustries();
+    if (result != null) {
+      industries = result["product"];
+      loading = false;
+      if (mounted) setState(() {});
+    } else {
+      industries = [];
+      loading = false;
+      if (mounted) setState(() {});
+    }
+  }
+
   Future<void> getAddress() async {
     // if (mounted) setState(() {});
 
@@ -183,35 +220,38 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
 
     final List<ShippingAddress> tempList = result['results'];
 
-    if (mounted) {
-      setState(() {
-        isLoading = false;
-        defaultAddress = tempList.firstWhere((element) => element.is_default!);
-      });
+    if (tempList.isNotEmpty) {
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+          defaultAddress =
+              tempList.firstWhere((element) => element.is_default!);
+        });
+      }
     }
   }
 
   void addUserAddedOpeningHour() {
     final List<String?> updatedDays = [];
-    for (var element in userBioDetail!.openingHours) {
+    userBioDetail!.openingHours.forEach((element) {
       final String time = element.time!.trim();
       final List<String> openingAndClosingTime = time.split("-");
 
-      for (var existing in userAddedOpeningHours) {
+      userAddedOpeningHours.forEach((existing) {
         if (element.day == existing["day"]) {
           updatedDays.add(element.day);
           existing['is_open'] = true;
           existing['starting_hour'] = openingAndClosingTime[0].trim();
           existing['closing_hour'] = openingAndClosingTime[1].trim();
         }
-      }
-    }
+      });
+    });
 
-    for (var element in userAddedOpeningHours) {
+    userAddedOpeningHours.forEach((element) {
       if (!updatedDays.contains(element["day"])) {
         element["is_open"] = false;
       }
-    }
+    });
 
     setState(() {});
   }
@@ -254,7 +294,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
         child: Column(
           children: [
             getUserPersonalDetail(),
-            if (isUserIsSimpleUser) Container() else getUserBioDetails(),
+            isUserIsSimpleUser ? Container() : getUserBioDetails(),
             const SizedBox(height: 20),
             getSubmitButton(),
             const SizedBox(height: 40),
@@ -272,6 +312,9 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
         children: <Widget>[
           const SizedBox(height: 20),
           addBioField(),
+          if (userBloc.user.type == "Business") industryDropdown(),
+          const SizedBox(height: 20),
+          getSearchEngineKeyword(),
           const SizedBox(height: 20),
           addContactNumberField(),
           const SizedBox(height: 20),
@@ -291,6 +334,173 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
           addOpeningHour(),
         ],
       ),
+    );
+  }
+
+  Widget industryDropdown() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 20),
+        Text(
+          'Industry',
+          style: TextStyle(
+            color: darkGrey,
+            fontSize: 16,
+            fontFamily: "Inter",
+            fontWeight: FontWeight.w400,
+          ),
+        ),
+        const SizedBox(height: 6),
+        DropdownSearch<String>(
+          popupProps: PopupProps.dialog(
+              showSearchBox: true,
+              searchFieldProps: TextFieldProps(
+                cursorColor: navyBlue,
+                decoration: InputDecoration(
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(
+                      color: greyBorderColor,
+                      width: 1.0,
+                    ),
+                  ),
+                  disabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(
+                      color: greyBorderColor,
+                      width: 1.0,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(
+                      color: navyBlue,
+                      width: 1.0,
+                    ),
+                  ),
+                  errorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(
+                      color: greyBorderColor,
+                      width: 1.0,
+                    ),
+                  ),
+                  focusedErrorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(
+                      color: greyBorderColor,
+                      width: 1.0,
+                    ),
+                  ),
+                ),
+              )),
+          dropdownDecoratorProps: DropDownDecoratorProps(
+            dropdownSearchDecoration: InputDecoration(
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: greyBorderColor,
+                  width: 1.0,
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: greyBorderColor,
+                  width: 1.0,
+                ),
+              ),
+              errorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: greyBorderColor,
+                  width: 1.0,
+                ),
+              ),
+            ),
+            baseStyle: TextStyle(
+              fontSize: 16,
+              color: blackFont,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          items: industries.map((ProductIndustryResults item) {
+            return messageDecoderWithEmoji(item.name) ?? "";
+          }).toList(),
+          onChanged: (String? value) {
+            setState(() {
+              industryName = value!;
+              final selectedIndustry =
+                  industries.firstWhere((industry) => industry.name == value);
+              industryId = selectedIndustry.id;
+            });
+          },
+          validator: (String? value) {
+            if (value != null && value.isNotEmpty) {
+              return null;
+            } else {
+              return 'Pick an industry';
+            }
+          },
+          selectedItem: industryName,
+        ),
+        // DropdownButtonFormField2(
+        //   buttonHeight: 50,
+        //   isExpanded: true,
+        //   value: industryId,
+        //   style: TextStyle(
+        //     fontSize: 16,
+        //     color: blackFont,
+        //     fontWeight: FontWeight.w600,
+        //   ),
+        //   decoration: InputDecoration(
+        //     contentPadding: EdgeInsets.symmetric(horizontal: 0),
+        //     enabledBorder: OutlineInputBorder(
+        //       borderRadius: BorderRadius.circular(10),
+        //       borderSide: BorderSide(
+        //         color: greyBorderColor,
+        //         width: 1.0,
+        //       ),
+        //     ),
+        //     focusedBorder: OutlineInputBorder(
+        //       borderRadius: BorderRadius.circular(10),
+        //       borderSide: BorderSide(
+        //         color: greyBorderColor,
+        //         width: 1.0,
+        //       ),
+        //     ),
+        //     errorBorder: OutlineInputBorder(
+        //       borderRadius: BorderRadius.circular(10),
+        //       borderSide: BorderSide(
+        //         color: greyBorderColor,
+        //         width: 1.0,
+        //       ),
+        //     ),
+        //   ),
+        //   items: industries.map((ProductIndustryResults item) {
+        //     return DropdownMenuItem<String>(
+        //       value: item.id,
+        //       child: Text(item.name!),
+        //     );
+        //   }).toList(),
+        //   onChanged: (String? value) {
+        //     setState(() {
+        //       industryId = value!;
+        //       // var selectedIndustry =
+        //       //     industries.firstWhere((industry) => industry.id == value);
+        //       // industryName = selectedIndustry.name;
+        //     });
+        //   },
+        //   validator: (String? value) {
+        //     if (value != null && value.isNotEmpty) {
+        //       return null;
+        //     } else {
+        //       return 'Pick an industry';
+        //     }
+        //   },
+        // ),
+      ],
     );
   }
 
@@ -372,7 +582,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
     return checkSlydoName(nickName);
   }
 
-  Widget getAppbar(BuildContext context) {
+  Widget getAppbar(var context) {
     return SliverOverlapAbsorber(
       handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
       sliver: SliverSafeArea(
@@ -553,7 +763,6 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
                 bottom: 0,
                 right: 0,
                 child: GestureDetector(
-                  onTap: selectProfilePictureAction,
                   child: ClipOval(
                     child: Container(
                       color: Colors.white,
@@ -565,6 +774,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
                       ),
                     ),
                   ),
+                  onTap: selectProfilePictureAction,
                 ),
               )
             ],
@@ -729,6 +939,29 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
     );
   }
 
+  Widget getSearchEngineKeyword() {
+    return Column(
+      children: [
+        CustomizedTextFormField(
+          controller: searchKeywordController,
+          labelText: "SEO (Optional)",
+          onChanged: (val) {
+            searchKeywords = val;
+          },
+        ),
+        Text(
+          'These keywords will help google recommend your business when they search online.',
+          style: TextStyle(
+            color: darkGrey,
+            fontSize: 12,
+            fontWeight: FontWeight.w400,
+            fontFamily: "Inter",
+          ),
+        )
+      ],
+    );
+  }
+
   Widget addOpeningHour() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -807,12 +1040,12 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
                         width: Checkbox.width,
                         height: Checkbox.width,
                         child: Container(
-                          decoration: BoxDecoration(
+                          decoration: new BoxDecoration(
                             border: Border.all(
                               color: greyBorderColor,
                               width: 1,
                             ),
-                            borderRadius: BorderRadius.circular(4),
+                            borderRadius: new BorderRadius.circular(4),
                           ),
                           child: Theme(
                             data: ThemeData(
@@ -1029,7 +1262,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
         } else {
           isSearchedUserAboutLoading = true;
           if (mounted) setState(() {});
-          final String nickName = _nicknameController!.text.trim();
+          final String nickName = _nicknameController?.text.trim() ?? "";
 
           final UserBloc tempUserBloc =
               Provider.of<UserBloc>(context, listen: false);
@@ -1125,7 +1358,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
           child: CircularLoadingIndicator(),
         ),
       );
-      userBioDetail!.userAddress = UserAddress(
+      userBioDetail?.userAddress = UserAddress(
         state: pickedStateId,
         id: userBloc.userAbout?.userAddress?.id,
         city: userBloc.userAbout?.userAddress?.city,
@@ -1162,38 +1395,41 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
   }
 
   void addDataToUserAboutObject() {
-    userBioDetail!.bio = bioController!.text.trim();
-    userBioDetail!.userAddress!.addressLine1 =
-        addressLine1Controller!.text.trim();
-    userBioDetail!.userAddress!.addressLine2 =
-        addressLine2Controller!.text.trim();
-    userBioDetail!.userAddress!.city = cityController!.text.trim();
-    userBioDetail!.contact = contactNumberController!.text.trim();
+    userBioDetail?.bio = bioController!.text.trim();
+    userBioDetail?.userAddress?.addressLine1 =
+        addressLine1Controller?.text.trim();
+    userBioDetail?.userAddress?.addressLine2 =
+        addressLine2Controller?.text.trim();
+    userBioDetail?.userAddress?.city = cityController!.text.trim();
+    userBioDetail?.contact = contactNumberController!.text.trim();
+    userBioDetail?.industry?.id = industryId;
+    userBioDetail?.searchKeywords = searchKeywords.split(", ");
+    // userBioDetail?.industry?.name = industryName;
 
     addOpeningHoursToUserAboutObject();
   }
 
   void addOpeningHoursToUserAboutObject() {
-    userBioDetail!.openingHours = [];
+    userBioDetail?.openingHours = [];
 
-    for (var element in userAddedOpeningHours) {
+    userAddedOpeningHours.forEach((element) {
       if (element["is_open"]) {
         final OpeningHourForDay openingHour = OpeningHourForDay();
 
         openingHour.day = element["day"];
         openingHour.time =
             "${element["starting_hour"]} - ${element["closing_hour"]}";
-        if (userBioDetail!.openingHours.isNotEmpty) {
-          userBioDetail!.openingHours = [openingHour];
+        if (userBioDetail?.openingHours == null) {
+          userBioDetail?.openingHours = [openingHour];
         } else {
-          userBioDetail!.openingHours.add(openingHour);
+          userBioDetail?.openingHours.add(openingHour);
         }
       }
-    }
+    });
 
-    for (var element in userBioDetail!.openingHours) {
+    userBioDetail?.openingHours.forEach((element) {
       debugPrint('OPENING HOURS ---> ${element.toJson()}');
-    }
+    });
   }
 
   Future<String?> selectImageAction({String? imageName}) async {

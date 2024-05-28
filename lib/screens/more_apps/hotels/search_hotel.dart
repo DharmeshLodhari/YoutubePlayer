@@ -39,7 +39,7 @@ class _SearchHotelState extends State<SearchHotel> {
   List<HotelRoomItem> hotelRooms = [];
   bool isLoading = false;
 
-  final RefreshController _refreshController =
+  RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
   @override
@@ -67,7 +67,7 @@ class _SearchHotelState extends State<SearchHotel> {
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      final connectionResult = value;
+      var connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         getResult();
@@ -149,40 +149,39 @@ class _SearchHotelState extends State<SearchHotel> {
           const SizedBox(
             height: 12,
           ),
-          if (isLoading)
-            Expanded(
-              child: Center(
-                child: CircularLoadingIndicator(),
-              ),
-            )
-          else
-            hotelRooms.isEmpty
-                ? Expanded(child: searchBackground())
-                : Expanded(
-                    child: SmartRefresher(
-                      enablePullDown: true,
-                      header: WaterDropHeader(
-                        complete: Container(),
-                        waterDropColor: navyBlue,
-                      ),
-                      controller: _refreshController,
-                      onRefresh: _onRefresh,
-                      child: SingleChildScrollView(
-                        child: Column(
-                          children: hotelRooms
-                              .map(
-                                (element) => Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 8, horizontal: 16),
-                                    child: HotelTileWithHeart(
-                                      hotelRoom: element,
-                                    )),
-                              )
-                              .toList(),
+          isLoading
+              ? Expanded(
+                  child: Center(
+                    child: CircularLoadingIndicator(),
+                  ),
+                )
+              : hotelRooms.isEmpty
+                  ? Expanded(child: searchBackground())
+                  : Expanded(
+                      child: SmartRefresher(
+                        enablePullDown: true,
+                        header: WaterDropHeader(
+                          complete: Container(),
+                          waterDropColor: navyBlue,
+                        ),
+                        controller: _refreshController,
+                        onRefresh: _onRefresh,
+                        child: SingleChildScrollView(
+                          child: Column(
+                            children: hotelRooms
+                                .map(
+                                  (element) => Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 8, horizontal: 16),
+                                      child: HotelTileWithHeart(
+                                        hotelRoom: element,
+                                      )),
+                                )
+                                .toList(),
+                          ),
                         ),
                       ),
                     ),
-                  ),
         ],
       ),
     );
@@ -645,7 +644,7 @@ class _SearchHotelState extends State<SearchHotel> {
     );
   }
 
-  Widget getPriceSelection(StateSetter bottomSheetSetState) {
+  Widget getPriceSelection(bottomSheetSetState) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Text(
         "Price",

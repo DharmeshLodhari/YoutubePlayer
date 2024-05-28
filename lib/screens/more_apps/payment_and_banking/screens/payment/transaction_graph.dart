@@ -41,10 +41,10 @@ class _TransactionGraphState extends State<TransactionGraph> {
   late int week;
   late DateTime start;
   late DateTime end;
-  dynamic barChartData;
+  var barChartData;
   Map<String?, num?>? _measures;
-  dynamic income;
-  dynamic expenditure;
+  var income;
+  var expenditure;
   List<GraphData> firstData = [
     GraphData(day: 0, amount: 0),
     GraphData(day: 1, amount: 0),
@@ -66,7 +66,7 @@ class _TransactionGraphState extends State<TransactionGraph> {
 
   @override
   void initState() {
-    final DateTime date = DateTime.now();
+    DateTime date = DateTime.now();
     week = weekNumber(date);
     start = getStartingOfWeek(date);
     end = getEndingOfWeek(date);
@@ -163,7 +163,7 @@ class _TransactionGraphState extends State<TransactionGraph> {
                             thickness: 1,
                           ),
                           if (isLoading)
-                            SizedBox(
+                            Container(
                               height: 240,
                               child: Center(
                                 child: CircularLoadingIndicator(),
@@ -297,7 +297,7 @@ class _TransactionGraphState extends State<TransactionGraph> {
               GestureDetector(
                 child: Row(
                   children: <Widget>[
-                    SizedBox(
+                    Container(
                       height: 10,
                       width: 10,
                       child: ClipOval(
@@ -324,7 +324,7 @@ class _TransactionGraphState extends State<TransactionGraph> {
               GestureDetector(
                 child: Row(
                   children: <Widget>[
-                    SizedBox(
+                    Container(
                       height: 10,
                       width: 10,
                       child: ClipOval(
@@ -519,7 +519,7 @@ class _TransactionGraphState extends State<TransactionGraph> {
     return AppLocalization.of(context)!.day;
   }
 
-  void _onSelectionChanged(charts.SelectionModel model) {
+  _onSelectionChanged(charts.SelectionModel model) {
     final selectedDatum = model.selectedDatum;
     final measures = <String?, num?>{};
     if (selectedDatum.isNotEmpty) {

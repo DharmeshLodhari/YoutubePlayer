@@ -15,7 +15,7 @@ import 'models/PropertyItem.dart';
 // ignore: must_be_immutable
 class PropertyTileWithHeart extends StatefulWidget {
   String? imageUrl;
-  PropertyTileWithHeart({super.key, this.imageUrl});
+  PropertyTileWithHeart({this.imageUrl});
 
   @override
   _PropertyTileWithHeartState createState() => _PropertyTileWithHeartState();
@@ -38,174 +38,176 @@ class _PropertyTileWithHeartState extends State<PropertyTileWithHeart> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        CustomBoxShadow(
-          child: Card(
-              elevation: 3,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
-              margin: EdgeInsets.zero,
-              shadowColor: boxShadowTwo,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: Column(
-                  children: <Widget>[
-                    Stack(
-                      children: [
-                        CarouselSlider(
-                          options: CarouselOptions(
-                              viewportFraction: 1.0,
-                              enlargeCenterPage: true,
-                              autoPlay: false,
-                              aspectRatio: 2,
-                              onPageChanged: (index, _) {
-                                if (mounted) {
-                                  setState(() {
-                                    _current = index;
-                                  });
-                                }
-                              }),
-                          items: hotelImgList
-                              .map(
-                                (image) => InkWell(
-                                  child: CachedNetworkImage(
-                                    width: double.infinity,
-                                    imageUrl: image,
-                                    fit: BoxFit.fill,
-                                  ),
-                                  onTap: () {
-                                    Navigator.of(context)
-                                        .pushNamed("/hotel-detail");
-                                  },
-                                ),
-                              )
-                              .toList(),
-                        ),
-                        Positioned(
-                          bottom: 0,
-                          left: MediaQuery.of(context).size.width / 2 -
-                              ((5 * hotelImgList.length) + 16),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: hotelImgList.map((url) {
-                              final int index = hotelImgList.indexOf(url);
-                              return Container(
-                                width: 5.0,
-                                height: 5.0,
-                                margin: const EdgeInsets.symmetric(
-                                    vertical: 10.0, horizontal: 2.0),
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: _current == index
-                                      ? Colors.white
-                                      : Colors.white30,
-                                ),
-                              );
-                            }).toList(),
-                          ),
-                        )
-                      ],
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+        Container(
+          child: CustomBoxShadow(
+            child: Card(
+                elevation: 3,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)),
+                margin: EdgeInsets.zero,
+                shadowColor: boxShadowTwo,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: Column(
+                    children: <Widget>[
+                      Stack(
                         children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "House 1 for rent",
-                                softWrap: false,
-                                overflow: TextOverflow.fade,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 14,
-                                  color: blackFont,
+                          CarouselSlider(
+                            options: CarouselOptions(
+                                viewportFraction: 1.0,
+                                enlargeCenterPage: true,
+                                autoPlay: false,
+                                aspectRatio: 2,
+                                onPageChanged: (index, _) {
+                                  if (mounted) {
+                                    setState(() {
+                                      _current = index;
+                                    });
+                                  }
+                                }),
+                            items: hotelImgList
+                                .map(
+                                  (image) => InkWell(
+                                    child: CachedNetworkImage(
+                                      width: double.infinity,
+                                      imageUrl: image,
+                                      fit: BoxFit.fill,
+                                    ),
+                                    onTap: () {
+                                      Navigator.of(context)
+                                          .pushNamed("/hotel-detail");
+                                    },
+                                  ),
+                                )
+                                .toList(),
+                          ),
+                          Positioned(
+                            bottom: 0,
+                            left: MediaQuery.of(context).size.width / 2 -
+                                ((5 * hotelImgList.length) + 16),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: hotelImgList.map((url) {
+                                final int index = hotelImgList.indexOf(url);
+                                return Container(
+                                  width: 5.0,
+                                  height: 5.0,
+                                  margin: const EdgeInsets.symmetric(
+                                      vertical: 10.0, horizontal: 2.0),
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: _current == index
+                                        ? Colors.white
+                                        : Colors.white30,
+                                  ),
+                                );
+                              }).toList(),
+                            ),
+                          )
+                        ],
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  "House 1 for rent",
+                                  softWrap: false,
+                                  overflow: TextOverflow.fade,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 14,
+                                    color: blackFont,
+                                  ),
                                 ),
-                              ),
-                              Row(
-                                children: [
-                                  Row(
-                                    children: [
-                                      Text(
-                                        "₦",
-                                        softWrap: false,
-                                        overflow: TextOverflow.fade,
-                                        style: TextStyle(
+                                Row(
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Text(
+                                          "₦",
+                                          softWrap: false,
+                                          overflow: TextOverflow.fade,
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w700,
+                                              fontSize: 14,
+                                              color: navyBlue,
+                                              fontFamily: "Roborto"),
+                                        ),
+                                        Text(
+                                          "34.00",
+                                          softWrap: false,
+                                          overflow: TextOverflow.fade,
+                                          style: TextStyle(
                                             fontWeight: FontWeight.w700,
                                             fontSize: 14,
                                             color: navyBlue,
-                                            fontFamily: "Roborto"),
-                                      ),
-                                      Text(
-                                        "34.00",
-                                        softWrap: false,
-                                        overflow: TextOverflow.fade,
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w700,
-                                          fontSize: 14,
-                                          color: navyBlue,
+                                          ),
                                         ),
-                                      ),
-                                    ],
-                                  ),
-                                  Text(
-                                    "/ month",
-                                    softWrap: false,
-                                    overflow: TextOverflow.fade,
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w400,
-                                      fontSize: 12,
-                                      color: darkGrey,
+                                      ],
                                     ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 4,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "Old Ken road, London SE15",
-                                softWrap: false,
-                                overflow: TextOverflow.fade,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: 14,
-                                  color: darkGrey,
+                                    Text(
+                                      "/ month",
+                                      softWrap: false,
+                                      overflow: TextOverflow.fade,
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w400,
+                                        fontSize: 12,
+                                        color: darkGrey,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ),
-                              Row(
-                                children: [
-                                  Icon(
-                                    SlydoAppIcon.star,
-                                    color: starYellow,
-                                    size: 11,
+                              ],
+                            ),
+                            const SizedBox(
+                              height: 4,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  "Old Ken road, London SE15",
+                                  softWrap: false,
+                                  overflow: TextOverflow.fade,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w400,
+                                    fontSize: 14,
+                                    color: darkGrey,
                                   ),
-                                  const SizedBox(
-                                    width: 4,
-                                  ),
-                                  Text(
-                                    "7.8",
-                                    style: TextStyle(
-                                        fontSize: 14, color: blackFont),
-                                  )
-                                ],
-                              )
-                            ],
-                          ),
-                        ],
-                      ),
-                    )
-                  ],
-                ),
-              )),
+                                ),
+                                Row(
+                                  children: [
+                                    Icon(
+                                      SlydoAppIcon.star,
+                                      color: starYellow,
+                                      size: 11,
+                                    ),
+                                    const SizedBox(
+                                      width: 4,
+                                    ),
+                                    Text(
+                                      "7.8",
+                                      style: TextStyle(
+                                          fontSize: 14, color: blackFont),
+                                    )
+                                  ],
+                                )
+                              ],
+                            ),
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                )),
+          ),
         ),
         Positioned(
           right: 10,
@@ -229,7 +231,7 @@ class _PropertyTileWithHeartState extends State<PropertyTileWithHeart> {
 class PropertyImagesTile extends StatefulWidget {
   final PropertyItem? property;
 
-  const PropertyImagesTile({this.property});
+  PropertyImagesTile({this.property});
 
   @override
   _PropertyImagesTileState createState() => _PropertyImagesTileState();
@@ -412,7 +414,7 @@ class _PropertyImagesTileState extends State<PropertyImagesTile> {
 class RentPropertyTile extends StatefulWidget {
   final PropertyItem? property;
 
-  const RentPropertyTile({this.property});
+  RentPropertyTile({this.property});
 
   @override
   _RentPropertyTileState createState() => _RentPropertyTileState();
@@ -865,7 +867,7 @@ class _RentPropertyTileState extends State<RentPropertyTile> {
 class RentPropertyTileWithoutHeart extends StatefulWidget {
   final PropertyItem? property;
 
-  const RentPropertyTileWithoutHeart({this.property});
+  RentPropertyTileWithoutHeart({this.property});
 
   @override
   _RentPropertyTileWithoutHeartState createState() =>
@@ -1271,7 +1273,7 @@ class _RentPropertyTileWithoutHeartState
 class PartialPropertyItemTile extends StatelessWidget {
   final PartialPropertyItem? property;
 
-  const PartialPropertyItemTile({this.property});
+  PartialPropertyItemTile({this.property});
 
   @override
   Widget build(BuildContext context) {
@@ -1371,7 +1373,7 @@ class PartialPropertyItemTile extends StatelessWidget {
 class CityItemCard extends StatelessWidget {
   final CityData? city;
 
-  const CityItemCard({super.key, this.city});
+  CityItemCard({this.city});
 
   @override
   Widget build(BuildContext context) {
@@ -1424,8 +1426,6 @@ class CityItemCard extends StatelessWidget {
 }
 
 class ReviewTile extends StatelessWidget {
-  const ReviewTile({super.key});
-
   @override
   Widget build(BuildContext context) {
     return Container(

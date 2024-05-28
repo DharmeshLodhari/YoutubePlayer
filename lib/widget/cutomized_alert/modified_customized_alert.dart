@@ -92,21 +92,20 @@ class ModifiedCustomizedAlert {
                               SizedBox(
                                 height: image != null ? 8 : 20,
                               ),
-                              if (desc == null)
-                                Container()
-                              else
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 40),
-                                  child: Text(
-                                    desc ?? "",
-                                    style: TextStyle(
-                                        color: blackFont,
-                                        fontSize: 16.0,
-                                        fontFamily: "Inter"),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ),
+                              desc == null
+                                  ? Container()
+                                  : Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 40),
+                                      child: Text(
+                                        desc ?? "",
+                                        style: TextStyle(
+                                            color: blackFont,
+                                            fontSize: 16.0,
+                                            fontFamily: "Inter"),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
                               const SizedBox(
                                 height: 4,
                               ),
@@ -199,7 +198,7 @@ class ModifiedCustomizedAlert {
   }
 
 // Shows alert with selected animation
-  dynamic _showAnimation(animation, secondaryAnimation, child) {
+  _showAnimation(animation, secondaryAnimation, child) {
     if (style.animationType == AnimationType.fromRight) {
       return AnimationTransition.fromRight(
           animation, secondaryAnimation, child);

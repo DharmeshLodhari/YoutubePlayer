@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:Slydo/screens/more_apps/shopping/models/ShoppingProduct.dart';
+import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -315,7 +316,17 @@ class _ShoppingTileWithHeartWithProductState
                                   fontSize: 14),
                             ),
                             Text(
-                              moneyDisplayNormalizer(widget.product?.price!),
+                              moneyDisplayNormalizer(widget
+                                          .product?.discountedPrice !=
+                                      null
+                                  ? ((checkDiscount(
+                                          widget.product?.discountIsActive ??
+                                              false,
+                                          widget.product?.discountedPrice ?? 0,
+                                          widget.product?.price ?? 0))
+                                      ? widget.product?.discountedPrice
+                                      : widget.product?.price!)
+                                  : widget.product?.price!),
                               style: TextStyle(
                                 color: navyBlue,
                                 fontWeight: FontWeight.bold,

@@ -645,7 +645,7 @@ class _SharedCartPaymentState extends State<SharedCartPayment> {
             final response = await PaymentAndBankingAuth()
                 .makePaymentForCartOrder({"orders": orders});
 
-            if (response.statusCode == 200) {
+            if (response.statusCode == 200 || response.statusCode == 201) {
               Navigator.popUntil(
                   context, ModalRoute.withName(Routes.DASHBOARD));
               Navigator.of(context).pushNamed(Routes.SUCCESSFUL_ORDER);

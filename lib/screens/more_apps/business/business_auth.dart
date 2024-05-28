@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
 import 'package:Slydo/services/auth.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 
 import '../../../utils/enums.dart';
 import '../../../utils/util.dart';
@@ -23,12 +23,12 @@ class BusinessAuth extends AuthService {
 
     debugPrint('IS CONTRACTOR :: $isContractor');
     if (next == "") {
-      url = "${AppConfig.baseUrl}/api/v1/transactions/payment-contract/";
+      url = AppConfig.baseUrl + "/api/v1/transactions/payment-contract/";
 
-      url = "$url?is_contractor=$isContractor";
+      url = url + "?is_contractor=$isContractor";
 
       if (contractStatus != null) {
-        url = "$url&status=${contractStatus.name}";
+        url = url + "&status=${contractStatus.name}";
       }
     } else {
       url = getSecureUrl(url: next);
@@ -39,7 +39,7 @@ class BusinessAuth extends AuthService {
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final jsonData = json.decode(response.body);
       debugPrint('GET CONTRACT LIST :::: $jsonData');
 
@@ -68,12 +68,12 @@ class BusinessAuth extends AuthService {
 
   Future<ContractModel> getContract(String id) async {
     final String url =
-        "${AppConfig.baseUrl}/api/v1/transactions/payment-contract/$id/";
+        AppConfig.baseUrl + "/api/v1/transactions/payment-contract/$id/";
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
 
     debugPrint('GET CONTRACT ::: ${json.decode(response.body)}');
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final ContractModel contract =
           ContractModel.fromJson(json.decode(response.body));
 
@@ -85,12 +85,12 @@ class BusinessAuth extends AuthService {
   }
 
   Future<bool> acceptContract({required int contractId}) async {
-    final String url =
-        "${AppConfig.baseUrl}/api/v1/transactions/payment-contract/accepted/$contractId";
+    final String url = AppConfig.baseUrl +
+        "/api/v1/transactions/payment-contract/accepted/$contractId";
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     } else {
       return false;
@@ -98,8 +98,8 @@ class BusinessAuth extends AuthService {
   }
 
   Future<bool> cancelOrRejectContract({required int contractId}) async {
-    final String url =
-        "${AppConfig.baseUrl}/api/v1/transactions/payment-contract/reject-or-cancel/$contractId/";
+    final String url = AppConfig.baseUrl +
+        "/api/v1/transactions/payment-contract/reject-or-cancel/$contractId/";
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
 
@@ -112,7 +112,7 @@ class BusinessAuth extends AuthService {
 
   Future<String?> getConversationId({required String name}) async {
     final String url =
-        "${AppConfig.baseUrl}/api/v1/user/contacts/get-conversation-id/";
+        AppConfig.baseUrl + "/api/v1/user/contacts/get-conversation-id/";
 
     final data = {"contact": name};
 
@@ -121,7 +121,7 @@ class BusinessAuth extends AuthService {
         await httpPost(url, body: jsonEncode(data), headers: headers);
 
     debugPrint('GET CONVERSATION ID :: ${response.body}');
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final jsonData = jsonDecode(response.body);
       return jsonData['conversation_id'];
     } else {
@@ -136,12 +136,12 @@ class BusinessAuth extends AuthService {
       return null;
     }
     if (next == "") {
-      url = "${AppConfig.baseUrl}/api/v1/transactions/list/";
+      url = AppConfig.baseUrl + "/api/v1/transactions/list/";
       if (moneyIn) {
-        url = "$url?money_in=true";
+        url = url + "?money_in=true";
       }
       if (moneyOut) {
-        url = "$url?money_out=true";
+        url = url + "?money_out=true";
       }
     } else {
       url = next;
@@ -149,7 +149,7 @@ class BusinessAuth extends AuthService {
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
     debugPrint("${response.body}");
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final List<Transaction> transactions = [];
       // This variable will hold list of transactions we got from server
       // var user = await getUser();
@@ -197,14 +197,14 @@ class BusinessAuth extends AuthService {
 
   Future<bool> addContract(Map data) async {
     final String url =
-        "${AppConfig.baseUrl}/api/v1/transactions/payment-contract/";
+        AppConfig.baseUrl + "/api/v1/transactions/payment-contract/";
     final headers = await getAuthHeaders();
 
     final _data = jsonEncode(data);
     debugPrint("$_data");
     final response = await httpPost(url, body: _data, headers: headers);
     debugPrint('ADD CONTRACT RESPONSE ::: ${response.body}');
-    if (response.statusCode == 201) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     } else {
       final jsonData = json.decode(response.body);
@@ -214,14 +214,14 @@ class BusinessAuth extends AuthService {
 
   Future<bool> updateContract({String? id, Map? data}) async {
     final String url =
-        "${AppConfig.baseUrl}/api/v1/transactions/payment-contract/$id/";
+        AppConfig.baseUrl + "/api/v1/transactions/payment-contract/$id/";
     final headers = await getAuthHeaders();
     final _data = jsonEncode(data);
     final response = await httpPatch(url, headers: headers, body: _data);
     debugPrint('UPDATE CONTRACT ::: ${response.body}');
     debugPrint('STATUS :: ${json.decode(response.body)['status']}');
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     }
     final jsonData = json.decode(response.body);
@@ -237,12 +237,12 @@ class BusinessAuth extends AuthService {
     }
 
     if (next == "") {
-      url = "${AppConfig.baseUrl}/api/v1/transactions/invoice/";
+      url = AppConfig.baseUrl + "/api/v1/transactions/invoice/";
 
-      url = "$url?sender=$isSender";
+      url = url + "?sender=$isSender";
 
       if (invoiceStatus != null) {
-        url = "$url&status=${invoiceStatus.name}";
+        url = url + "&status=${invoiceStatus.name}";
       }
     } else {
       url = getSecureUrl(url: next);
@@ -255,7 +255,7 @@ class BusinessAuth extends AuthService {
 
     debugPrint('GET INVOICE LIST ::: ${response.body}');
     final jsonData = json.decode(response.body);
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final List<InvoiceModel> invoiceList = [];
       final List jsonResult = jsonData['results'];
 
@@ -278,11 +278,11 @@ class BusinessAuth extends AuthService {
   }
 
   Future<InvoiceModel> getInvoice(String id) async {
-    final url = "${AppConfig.baseUrl}/api/v1/transactions/invoice/$id/";
+    final url = AppConfig.baseUrl + "/api/v1/transactions/invoice/$id/";
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final InvoiceModel invoice =
           InvoiceModel.fromJson(json.decode(response.body));
       return invoice;
@@ -292,7 +292,7 @@ class BusinessAuth extends AuthService {
   }
 
   Future<bool> addInvoice(Map data) async {
-    final url = "${AppConfig.baseUrl}/api/v1/transactions/invoice/";
+    final url = AppConfig.baseUrl + "/api/v1/transactions/invoice/";
     final headers = await getAuthHeaders();
 
     debugPrint('DATE ::: $data');
@@ -300,7 +300,7 @@ class BusinessAuth extends AuthService {
     final response = await httpPost(url, body: _data, headers: headers);
 
     debugPrint('ADD INVOICE RESPONSE ::: ${response.body}');
-    if (response.statusCode == 201) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     }
     final jsonData = json.decode(response.body);
@@ -308,7 +308,7 @@ class BusinessAuth extends AuthService {
   }
 
   Future<bool> updateInvoice({String? invoiceId, Map? data}) async {
-    final url = "${AppConfig.baseUrl}/api/v1/transactions/invoice/$invoiceId/";
+    final url = AppConfig.baseUrl + "/api/v1/transactions/invoice/$invoiceId/";
     final headers = await getAuthHeaders();
 
     final _data = jsonEncode(data);
@@ -317,7 +317,7 @@ class BusinessAuth extends AuthService {
     debugPrint('DATA ::: $_data');
     debugPrint('UPDATE INVOICE RESPONSE ::: ${response.body}');
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     }
     final jsonData = json.decode(response.body);
@@ -325,7 +325,7 @@ class BusinessAuth extends AuthService {
   }
 
   Future<bool> deleteInvoice({required int invoiceId}) async {
-    final url = "${AppConfig.baseUrl}/api/v1/transactions/invoice/$invoiceId/";
+    final url = AppConfig.baseUrl + "/api/v1/transactions/invoice/$invoiceId/";
     final headers = await getAuthHeaders();
 
     final response = await httpDelete(url, headers: headers);
@@ -340,13 +340,13 @@ class BusinessAuth extends AuthService {
   }
 
   Future<bool> markInvoiceAsPaid({required int invoiceId}) async {
-    final url =
-        "${AppConfig.baseUrl}/api/v1/transactions/invoice/mark-as-pay/$invoiceId/";
+    final url = AppConfig.baseUrl +
+        "/api/v1/transactions/invoice/mark-as-pay/$invoiceId/";
     final headers = await getAuthHeaders();
 
     final response = await httpGet(url, headers: headers);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     }
     final jsonData = json.decode(response.body);
@@ -355,13 +355,13 @@ class BusinessAuth extends AuthService {
 
   Future<bool> payInvoice({required int invoiceId}) async {
     final url =
-        "${AppConfig.baseUrl}/api/v1/transactions/invoice/pay/$invoiceId/";
+        AppConfig.baseUrl + "/api/v1/transactions/invoice/pay/$invoiceId/";
     final headers = await getAuthHeaders();
 
     final response = await httpGet(url, headers: headers);
     debugPrint('PAY INVOICE ::: ${response.body}');
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     }
     final jsonData = json.decode(response.body);
@@ -370,7 +370,7 @@ class BusinessAuth extends AuthService {
 
   Future<bool> deleteInvoiceItem({required int itemId}) async {
     final url =
-        "${AppConfig.baseUrl}/api/v1/transactions/invoice/item/$itemId/";
+        AppConfig.baseUrl + "/api/v1/transactions/invoice/item/$itemId/";
     final headers = await getAuthHeaders();
     final response = await httpDelete(url, headers: headers);
     debugPrint('DELETE INVOICE ITEM ::: ${response.body}');
@@ -385,7 +385,7 @@ class BusinessAuth extends AuthService {
 
   Future<bool> addInvoiceItemToExistingInvoice(
       {required int invoiceId, required InvoiceItem invoiceItem}) async {
-    final url = "${AppConfig.baseUrl}/api/v1/transactions/invoice/$invoiceId/";
+    final url = AppConfig.baseUrl + "/api/v1/transactions/invoice/$invoiceId/";
     final headers = await getAuthHeaders();
     final data = invoiceItem.toJson();
     data.removeWhere((key, value) => value == null);
@@ -405,7 +405,7 @@ class BusinessAuth extends AuthService {
   Future<bool> updateInvoiceItem(
       {required int itemId, required InvoiceItem invoiceItem}) async {
     final url =
-        "${AppConfig.baseUrl}/api/v1/transactions/invoice/item/$itemId/";
+        AppConfig.baseUrl + "/api/v1/transactions/invoice/item/$itemId/";
     final headers = await getAuthHeaders();
     final data = invoiceItem.toJson();
     data.removeWhere((key, value) => value == null);
@@ -415,7 +415,7 @@ class BusinessAuth extends AuthService {
     debugPrint('UPDATE INVOICE ITEM ::: ${response.body}');
     debugPrint('UPDATE INVOICE ITEM ::: ${response.statusCode}');
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     }
 
@@ -428,7 +428,7 @@ class BusinessAuth extends AuthService {
   //   var data = invoice.toJson();
   //   var _data = jsonEncode(data);
   //   var response = await httpPost(url, body: _data, headers: headers);
-  //   if (response.statusCode == 201) {
+  //   if (response.statusCode == 200 || response.statusCode == 201) {
   //     return true;
   //   }
   //   var jsonData = json.decode(response.body);

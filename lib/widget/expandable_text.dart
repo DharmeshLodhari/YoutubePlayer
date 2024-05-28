@@ -9,7 +9,7 @@ class ExpandableText extends StatefulWidget {
   bool isExpanded = false;
 
   @override
-  _ExpandableTextState createState() => _ExpandableTextState();
+  _ExpandableTextState createState() => new _ExpandableTextState();
 }
 
 class _ExpandableTextState extends State<ExpandableText>
@@ -23,8 +23,7 @@ class _ExpandableTextState extends State<ExpandableText>
         child: ConstrainedBox(
           constraints: widget.isExpanded
               ? const BoxConstraints()
-              // ignore: prefer_const_constructors
-              : BoxConstraints(maxHeight: 50.0),
+              : const BoxConstraints(maxHeight: 50.0),
           child: Text(
             widget.text,
             softWrap: true,

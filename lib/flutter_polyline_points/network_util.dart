@@ -15,7 +15,7 @@ class NetworkUtil {
     final List<PolylineResult> results = [];
 
     final response = await http.get(request.toUri());
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final parsedJson = json.decode(response.body);
       if (parsedJson["status"]?.toLowerCase() == STATUS_OK &&
           parsedJson["routes"] != null &&

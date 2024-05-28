@@ -18,7 +18,7 @@ import '../../payment_and_banking/payment_and_banking_auth.dart';
 
 // ignore: must_be_immutable
 class VerifyRegistrationOTPScreen extends StatefulWidget {
-  final dynamic arguments;
+  var arguments;
 
   VerifyRegistrationOTPScreen({this.arguments});
 
@@ -38,7 +38,7 @@ class _VerifyRegistrationOTPScreenState
 
   Timer? _timer;
   int _duration = 10 * 60; // 10 minutes in seconds
-  // bool _isRunning = false;
+  bool _isRunning = false;
   Country _selectedDialogCountry = CountryPickerUtils.getCountryByIsoCode('NG');
   TextEditingController phoneNumberController = TextEditingController();
   bool showButton = false;
@@ -58,9 +58,9 @@ class _VerifyRegistrationOTPScreenState
   }
 
   void startTimer() {
-    // setState(() {
-    //   _isRunning = true;
-    // });
+    setState(() {
+      _isRunning = true;
+    });
 
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
@@ -77,7 +77,7 @@ class _VerifyRegistrationOTPScreenState
     _timer?.cancel();
     setState(() {
       showResend = true;
-      // _isRunning = false;
+      _isRunning = false;
     });
   }
 
@@ -142,31 +142,34 @@ class _VerifyRegistrationOTPScreenState
                         flex: 6,
                         child: Form(
                           key: _verifyOtpFormKey,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              verifyOTPTitle(),
-                              flexibleSpace(flex: 1),
-                              expirationNote(),
-                              flexibleSpace(flex: 3),
-                              if (phoneNumber == null || phoneNumber == "") ...[
-                                selectCountryField(),
-                                const SizedBox(height: 12),
-                                phoneNumberField(),
-                                const SizedBox(height: 12),
+                          child: Container(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                verifyOTPTitle(),
+                                flexibleSpace(flex: 1),
+                                expirationNote(),
+                                flexibleSpace(flex: 3),
+                                if (phoneNumber == null ||
+                                    phoneNumber == "") ...[
+                                  selectCountryField(),
+                                  const SizedBox(height: 12),
+                                  phoneNumberField(),
+                                  const SizedBox(height: 12),
+                                ],
+                                otpFillUpField(),
+                                flexibleSpace(flex: 1),
+                                if (phoneNumber != null) ...[
+                                  Align(
+                                    alignment: Alignment.centerRight,
+                                    child: resendOtp(),
+                                  ),
+                                ],
+                                flexibleSpace(flex: 2),
+                                verifyBtn(),
+                                flexibleSpace(flex: 1),
                               ],
-                              otpFillUpField(),
-                              flexibleSpace(flex: 1),
-                              if (phoneNumber != null) ...[
-                                Align(
-                                  alignment: Alignment.centerRight,
-                                  child: resendOtp(),
-                                ),
-                              ],
-                              flexibleSpace(flex: 2),
-                              verifyBtn(),
-                              flexibleSpace(flex: 1),
-                            ],
+                            ),
                           ),
                         ),
                       ),
@@ -370,7 +373,7 @@ class _VerifyRegistrationOTPScreenState
     }
   }
 
-  void _processVerifyCreditCardOtp(BuildContext context, String response) {
+  _processVerifyCreditCardOtp(BuildContext context, String response) {
     Navigator.pop(context); // pop loading indicator;
 
     switch (response) {
@@ -433,7 +436,7 @@ class _VerifyRegistrationOTPScreenState
       isNumberOnlyInput: true,
       keyboardType: TextInputType.phone,
       controller: phoneNumberController,
-      validator: (val) => validatePhoneNumber(val),
+      validator: validatePhoneNumber,
       onChanged: (value) {
         if (value.isEmpty || value.length < 10) {
           setState(() {
@@ -459,7 +462,7 @@ class _VerifyRegistrationOTPScreenState
     );
   }
 
-  String? validatePhoneNumber(String number) {
+  String? validatePhoneNumber(number) {
     if (number.contains('+') ||
         number.contains('-') ||
         number.contains('*') ||

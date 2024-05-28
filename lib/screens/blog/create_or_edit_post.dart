@@ -30,7 +30,7 @@ class CreateOrEditPostScreen extends StatefulWidget {
   final UserPost? userPost;
   final String? channel;
 
-  const CreateOrEditPostScreen({Key? key, this.userPost, this.channel})
+  CreateOrEditPostScreen({Key? key, this.userPost, this.channel})
       : super(key: key);
 
   @override
@@ -102,7 +102,7 @@ class _CreateOrEditPostScreenState extends State<CreateOrEditPostScreen> {
     super.dispose();
   }
 
-  void initializeUserPostVariables() {
+  initializeUserPostVariables() {
     isImagePicked = _imagePath != null;
     _imagePath = widget.userPost!.image;
     _videoPath = widget.userPost!.video;
@@ -146,9 +146,7 @@ class _CreateOrEditPostScreenState extends State<CreateOrEditPostScreen> {
       _quillBodyTextController = flutterQuill.QuillController(
           document: flutterQuill.Document.fromJson(blogBodyTextJson),
           selection: const TextSelection.collapsed(offset: 0));
-    } catch (e) {
-      debugPrint("Error $e");
-    }
+    } catch (e) {}
   }
 
   @override
@@ -208,7 +206,7 @@ class _CreateOrEditPostScreenState extends State<CreateOrEditPostScreen> {
     );
   }
 
-  Widget _scaffoldBody() {
+  _scaffoldBody() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12.0),
       child: Form(
@@ -530,17 +528,17 @@ class _CreateOrEditPostScreenState extends State<CreateOrEditPostScreen> {
     }
   }
 
-  void createOrUpdateBlogPost() {
-    final List<String> newUserTags =
+  createOrUpdateBlogPost() {
+    final List<String>? newUserTags =
         []; // For replacing the # in a tag with an empty string.
 
-    for (var tag in userTags) {
+    userTags.forEach((tag) {
       if (tag.startsWith('#')) {
-        newUserTags.add(tag.replaceAll("#", ''));
+        newUserTags?.add(tag.replaceAll("#", ''));
       } else {
-        newUserTags.add(tag);
+        newUserTags?.add(tag);
       }
-    }
+    });
 
     final userBloc = Provider.of<UserBloc>(context, listen: false);
     UserPostAuth()
@@ -600,7 +598,7 @@ class _CreateOrEditPostScreenState extends State<CreateOrEditPostScreen> {
   //   return file;
   // }
 
-  void _pickBlogImage({Function(String image)? imagePickedCallBack}) async {
+  _pickBlogImage({Function(String image)? imagePickedCallBack}) async {
     final String? croppedImage = await getFile(context);
 
     if (imagePickedCallBack != null && croppedImage != null) {
@@ -610,14 +608,14 @@ class _CreateOrEditPostScreenState extends State<CreateOrEditPostScreen> {
         setState(() {
           _imagePath = croppedImage;
           isImagePicked = true;
-          debugPrint('Fola cropped:::: $croppedImage');
-          debugPrint('Fola cropped 000:::: $_imagePath');
+          debugPrint('Fola cropped:::: ${croppedImage}');
+          debugPrint('Fola cropped 000:::: ${_imagePath}');
         });
       }
     }
   }
 
-  void _pickBlogVideo({Function(String video)? videoPickedCallBack}) async {
+  _pickBlogVideo({Function(String video)? videoPickedCallBack}) async {
     final String? videoPath = await getFile(context, fileType: MediaType.video);
 
     if (videoPath != null) {
@@ -693,12 +691,12 @@ class _CreateOrEditPostScreenState extends State<CreateOrEditPostScreen> {
           child: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: const [
+              children: [
                 // Icon(
                 //   Icons.add_circle,
                 //   size: 40,
                 // ),
-                Text('Tap here to add blog post header image')
+                const Text('Tap here to add blog post header image')
               ],
             ),
           ),
@@ -1082,7 +1080,7 @@ class _CreateOrEditPostScreenState extends State<CreateOrEditPostScreen> {
     });
   }
 
-  bool _showPickMediaDialogBox() {
+  _showPickMediaDialogBox() {
     showDialogBox(
       context: context,
       actionOneText: 'VIDEO',
@@ -1122,7 +1120,7 @@ class _CreateOrEditPostScreenState extends State<CreateOrEditPostScreen> {
     return true;
   }
 
-  void sendMediaToServerAndAddToBlogPost(
+  sendMediaToServerAndAddToBlogPost(
       {required MediaType mediaType, required String mediaFile}) {
     final index = _quillBodyTextController.selection.baseOffset;
     final length = _quillBodyTextController.selection.extentOffset - index;

@@ -26,6 +26,7 @@ class JobsSearchFilter extends StatefulWidget {
 }
 
 class _JobsSearchFilterState extends State<JobsSearchFilter> {
+  TextEditingController _controller = TextEditingController();
   String productPrice = "";
   String priceFrom = "";
   String priceTo = "";
@@ -63,8 +64,8 @@ class _JobsSearchFilterState extends State<JobsSearchFilter> {
   List<String> categoriesNameList = [];
   final GlobalKey<ScaffoldMessengerState> _filterScaffoldMessengerKey =
       GlobalKey<ScaffoldMessengerState>();
-  final ScrollController _categoriesScrollController = ScrollController();
-  final ScrollController _locationScrollController = ScrollController();
+  ScrollController _categoriesScrollController = ScrollController();
+  ScrollController _locationScrollController = ScrollController();
 
   final List<String> items = [
     'Item1',
@@ -112,9 +113,9 @@ class _JobsSearchFilterState extends State<JobsSearchFilter> {
             isCategoryLoading = false;
             categoriesList.addAll(tempList!);
             categoriesListCopy = categoriesList;
-            for (var element in tempList) {
+            tempList.forEach((element) {
               categoriesNameList.add(element.name!);
-            }
+            });
           });
         }
       }
@@ -165,14 +166,14 @@ class _JobsSearchFilterState extends State<JobsSearchFilter> {
             isLocationLoading = false;
             locationsList.addAll(tempList!);
             locationsListCopy = locationsList;
-            for (var element in tempList) {
+            tempList.forEach((element) {
               listStates.add(element.name!);
-            }
+            });
           });
         }
-        for (var element in locationsListCopy) {
+        locationsListCopy.forEach((element) {
           stateCheckMark[element!.name!] = false;
-        }
+        });
       }
       if (locationsList.isEmpty) {
         if (mounted) {
@@ -655,7 +656,7 @@ class _JobsSearchFilterState extends State<JobsSearchFilter> {
           flex: 1,
           child: CurvedButton(
             onPressed: () {
-              debugPrint("FilterMap : $filterMap");
+              debugPrint("$filterMap");
 
               Navigator.pushNamed(context, Routes.JOBS_SEARCH,
                   arguments: {'filterMap': filterMap});

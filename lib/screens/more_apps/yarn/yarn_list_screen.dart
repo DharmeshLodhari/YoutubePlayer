@@ -16,7 +16,7 @@ import 'yarn_detail_screen.dart';
 
 class YarnListScreen extends StatefulWidget {
   final String? selectedCategory;
-  final Function(bool)? onPageRefresh;
+  Function(bool)? onPageRefresh;
 
   YarnListScreen({
     Key? key,
@@ -41,7 +41,7 @@ class YarnListScreenState extends State<YarnListScreen> {
   RefreshController refreshController =
       RefreshController(initialRefresh: false);
   String? selectedId;
-  final ScrollController _scrollController = ScrollController();
+  ScrollController _scrollController = new ScrollController();
   late YarnDashboardBloc yarnDashboardBloc;
   late DashboardBloc _dashboardBloc;
 
@@ -127,22 +127,21 @@ class YarnListScreenState extends State<YarnListScreen> {
             ///add createYarnTopicList to tempList if any
             if (widget.selectedCategory != null) {
               // Filter the list of createYarnTopicList by id
-              final List<Yarn> filteredListCreateYarnTopicList =
-                  yarnDashboardBloc.createYarnTopicList
-                      .where((item) =>
-                          item.category!.id == widget.selectedCategory)
-                      .toList();
+              List<Yarn>? filteredListCreateYarnTopicList = yarnDashboardBloc
+                  .createYarnTopicList
+                  .where((item) => item.category!.id == widget.selectedCategory)
+                  .toList();
 
               // Check if any matching createYarnTopicList
               if (filteredListCreateYarnTopicList.isNotEmpty) {
-                for (var item in filteredListCreateYarnTopicList) {
+                filteredListCreateYarnTopicList.forEach((item) {
                   tempList.insert(0, item);
-                }
+                });
               }
             } else {
-              for (var item in yarnDashboardBloc.createYarnTopicList) {
+              yarnDashboardBloc.createYarnTopicList.forEach((item) {
                 tempList.insert(0, item);
-              }
+              });
             }
           }
 
@@ -151,7 +150,7 @@ class YarnListScreenState extends State<YarnListScreen> {
 
             if (widget.selectedCategory != null) {
               // Filter the list of reYarnTopicList by id
-              final List<Yarn> filteredListReYarnTopicList = yarnDashboardBloc
+              List<Yarn>? filteredListReYarnTopicList = yarnDashboardBloc
                   .reYarnTopicList
                   .where((item) =>
                       item.reYarn!.category!.id == widget.selectedCategory)
@@ -159,9 +158,9 @@ class YarnListScreenState extends State<YarnListScreen> {
 
               // Check if any matching reYarnTopicList
               if (filteredListReYarnTopicList.isNotEmpty) {
-                for (var item in filteredListReYarnTopicList) {
+                filteredListReYarnTopicList.forEach((item) {
                   tempList.insert(0, item);
-                }
+                });
               }
 
               // List<Yarn>? filteredListTempList = tempList
@@ -176,9 +175,9 @@ class YarnListScreenState extends State<YarnListScreen> {
               //   });
               // }
             } else {
-              for (var item in yarnDashboardBloc.reYarnTopicList) {
+              yarnDashboardBloc.reYarnTopicList.forEach((item) {
                 tempList.insert(0, item);
-              }
+              });
             }
           }
 
@@ -226,29 +225,29 @@ class YarnListScreenState extends State<YarnListScreen> {
     yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context);
     _dashboardBloc = Provider.of<DashboardBloc>(context);
 
-    /// check if yarn bottom navigation is clicked
-    /// scroll back to the top of the page
-    if (_dashboardBloc.topYarn == true) {
-      _dashboardBloc.topYarn = false;
-      if (_scrollController.hasClients) {
-        final position = _scrollController.position.minScrollExtent;
-        _scrollController.animateTo(
-          position,
-          duration: const Duration(milliseconds: 1),
-          curve: Curves.easeOut,
-        );
-      }
-    }
-
-    /// check if scroll controller is at the top, send call back to
-    /// yarn dashboard to set category as visible
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_scrollController.position.pixels == 0) {
-        // Scroll controller is at the top
-        widget.onPageRefresh!(true);
-        if (mounted) setState(() {});
-      }
-    });
+    // /// check if yarn bottom navigation is clicked
+    // /// scroll back to the top of the page
+    // if (_dashboardBloc.topYarn == true) {
+    //   _dashboardBloc.topYarn = false;
+    //   if (_scrollController.hasClients) {
+    //     final position = _scrollController.position.minScrollExtent;
+    //     _scrollController.animateTo(
+    //       position,
+    //       duration: Duration(milliseconds: 1),
+    //       curve: Curves.easeOut,
+    //     );
+    //   }
+    // }
+    //
+    // /// check if scroll controller is at the top, send call back to
+    // /// yarn dashboard to set category as visible
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   if (_scrollController.position.pixels == 0) {
+    //     // Scroll controller is at the top
+    //     widget.onPageRefresh!(true);
+    //     if (mounted) setState(() {});
+    //   }
+    // });
 
     return SmartRefresher(
       enablePullDown: true,

@@ -19,20 +19,20 @@ class JobDescriptionCard extends StatelessWidget {
   String? user;
 
   String getTimeDifference() {
-    final difference =
+    var difference =
         DateTime.now().difference(DateTime.parse(job!.creationDate!));
     String time = '';
-    debugPrint('$difference-----');
+    debugPrint(difference.toString() + '-----');
     if (difference > const Duration(hours: 24)) {
-      time = '${difference.inDays} days';
+      time = difference.inDays.toString() + ' days';
     } else if (difference > const Duration(hours: 1)) {
-      time = '${difference.inHours} hrs';
+      time = difference.inHours.toString() + ' hrs';
     } else if (difference > const Duration(minutes: 1)) {
-      time = '${difference.inMinutes} mins';
+      time = difference.inMinutes.toString() + ' mins';
     } else if (difference > const Duration(seconds: 1)) {
-      time = '${difference.inSeconds} sec';
+      time = difference.inSeconds.toString() + ' sec';
     } else {
-      time = '${difference.inMilliseconds} ms';
+      time = difference.inMilliseconds.toString() + ' ms';
     }
 
     return time;
@@ -121,46 +121,45 @@ class JobDescriptionCard extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                if (job?.assignee != null &&
-                    user != job?.assignee &&
-                    job!.isListed == false &&
-                    job!.applicants!.contains(user))
-                  Container(
-                    width: 54,
-                    // height: 20,
-                    alignment: Alignment.center,
-                    padding: const EdgeInsets.all(6),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: red),
-                      color: red.withOpacity(0.1),
-                    ),
-                    child: Text(
-                      'closed',
-                      style: TextStyle(
-                        color: red,
-                        fontSize: 10.80,
-                        fontFamily: "Inter",
-                        fontWeight: FontWeight.w600,
+                job?.assignee != null &&
+                        user != job?.assignee &&
+                        job!.isListed == false &&
+                        job!.applicants!.contains(user)
+                    ? Container(
+                        width: 54,
+                        // height: 20,
+                        alignment: Alignment.center,
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(color: red),
+                          color: red.withOpacity(0.1),
+                        ),
+                        child: Text(
+                          'closed',
+                          style: TextStyle(
+                            color: red,
+                            fontSize: 10.80,
+                            fontFamily: "Inter",
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      )
+                    : Container(
+                        padding: const EdgeInsets.fromLTRB(20, 6, 20, 6),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20),
+                            color: colorStatus(job!.status!).withOpacity(.4)),
+                        child: Text(
+                          textStatus(job!.status!),
+                          style: TextStyle(
+                            color: colorStatus(job!.status!),
+                            fontSize: 12,
+                            fontFamily: "Inter",
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
                       ),
-                    ),
-                  )
-                else
-                  Container(
-                    padding: const EdgeInsets.fromLTRB(20, 6, 20, 6),
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        color: colorStatus(job!.status!).withOpacity(.4)),
-                    child: Text(
-                      textStatus(job!.status!),
-                      style: TextStyle(
-                        color: colorStatus(job!.status!),
-                        fontSize: 12,
-                        fontFamily: "Inter",
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
               ],
             ),
             const SizedBox(

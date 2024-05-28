@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:Slydo/data/state_notifier.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_conversation.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/post_title_for_chat.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/Envelope.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
@@ -20,8 +20,7 @@ class EditOrReplyMessageUI extends StatefulWidget {
   final Map<String, dynamic>? messageData;
   final ChatConversation? chatConversation;
 
-  const EditOrReplyMessageUI(
-      {super.key, this.messageData, this.chatConversation});
+  EditOrReplyMessageUI({this.messageData, this.chatConversation});
 
   @override
   _EditOrReplyMessageUIState createState() => _EditOrReplyMessageUIState();
@@ -381,7 +380,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
             ),
           ),
           if (widget.chatConversation!.isGroupConversation!)
-            SizedBox(
+            Container(
               height: 50,
               width: 70,
               child: Stack(
@@ -426,7 +425,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
               ),
             )
           else
-            const SizedBox(
+            Container(
               width: 1,
               height: 1,
             ),
@@ -505,7 +504,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
             ),
           ),
           if (widget.chatConversation!.isGroupConversation!)
-            SizedBox(
+            Container(
               height: 50,
               width: 70,
               child: Stack(
@@ -550,7 +549,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
               ),
             )
           else
-            const SizedBox(
+            Container(
               width: 1,
               height: 1,
             ),
@@ -916,7 +915,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  messageDecoderWithEmoji(envelope.title ?? "")!,
+                  messageDecoderWithEmoji("${envelope.title ?? ""}")!,
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
@@ -941,7 +940,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
             ),
           ),
           if (widget.chatConversation!.isGroupConversation!)
-            SizedBox(
+            Container(
               height: 50,
               width: 80,
               child: Stack(
@@ -986,7 +985,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
               ),
             )
           else
-            const SizedBox(
+            Container(
               width: 1,
               height: 1,
             ),

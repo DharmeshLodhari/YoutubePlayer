@@ -24,7 +24,7 @@ class SharedCartModel {
   // bool? splitBill;
   bool? splitBillEvenly = false;
 
-  final List<BasketItem> _basketItems = [];
+  List<BasketItem> _basketItems = [];
 
   List<BasketItem> get basketItems => _basketItems;
 
@@ -159,7 +159,7 @@ class SharedCartModel {
   }
 
   void addItemInBasketWithQtyService(
-      PurchasableItem item, String type, SharedCartMemberModel? currentUser,
+      var item, String type, SharedCartMemberModel? currentUser,
       {bool withApiCall = true, bool replaceUpdatedBy = false}) {
     /// if we create or update existing basket item we will store that item to this variable
     /// for sending to server
@@ -172,9 +172,9 @@ class SharedCartModel {
         flag = true;
 
         if (replaceUpdatedBy == true) {
-          (element.item as Product).itemAddedBy = (item as Product).itemAddedBy;
+          (element.item as Product).itemAddedBy = item.itemAddedBy;
           element.itemAddedBy = item.itemAddedBy;
-          element.qty = item.quantity;
+          element.qty = (item as Product).quantity;
         }
 
         if (withApiCall == true) {
@@ -725,11 +725,11 @@ class SharedCartModel {
   void getSplitBillEvenlyPercentage() {
     if (splitBillEvenly == true) {
       if (members != null) {
-        final int listLength = members?.length ?? 0;
+        final int? listLength = members?.length ?? 0;
 
         for (var item in members!) {
           item.percentageValue =
-              double.parse((100 / listLength).toStringAsFixed(2));
+              double.parse((100 / listLength!).toStringAsFixed(2));
         }
       }
     }
@@ -738,10 +738,10 @@ class SharedCartModel {
   void getSplitBillEvenlyPayment(int? totalOrder) {
     if (splitBillEvenly == true) {
       if (members != null) {
-        final int listLength = members?.length ?? 0;
+        final int? listLength = members?.length ?? 0;
 
         for (var item in members!) {
-          item.paymentValue = ((totalOrder ?? 0) / listLength).floor();
+          item.paymentValue = ((totalOrder ?? 0) / listLength!).floor();
         }
       }
     }

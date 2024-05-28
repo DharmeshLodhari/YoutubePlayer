@@ -5,8 +5,8 @@ import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_group_action_manager.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/group_detail_model.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/participant_model.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/GroupDetailModel.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/Participant.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/user_tile_for_group_detail.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/global_key.dart';
@@ -23,9 +23,9 @@ import '../../message_auth.dart';
 
 // ignore: must_be_immutable
 class SearchGroupMember extends StatefulWidget {
-  final dynamic arguments;
+  var arguments;
 
-  const SearchGroupMember({this.arguments});
+  SearchGroupMember({this.arguments});
 
   @override
   _SearchGroupMemberState createState() => _SearchGroupMemberState();
@@ -33,16 +33,16 @@ class SearchGroupMember extends StatefulWidget {
 
 class _SearchGroupMemberState extends State<SearchGroupMember> {
   final GlobalKey<ScaffoldState> _scaffoldSearchGroupMemberKey =
-      GlobalKey<ScaffoldState>();
+      new GlobalKey<ScaffoldState>();
   final GlobalKey<ScaffoldMessengerState>
       _scaffoldMessengerSearchGroupMemberKey =
-      GlobalKey<ScaffoldMessengerState>();
+      new GlobalKey<ScaffoldMessengerState>();
 
   int? count = 0;
   String? next = "";
   String? previous = "";
   List<Participant> groupMember = [];
-  final ScrollController _scrollController = ScrollController();
+  ScrollController _scrollController = new ScrollController();
 
   TextEditingController? searchUserController;
 
@@ -59,7 +59,7 @@ class _SearchGroupMemberState extends State<SearchGroupMember> {
   late MainSocketProvider mainSocketProvider;
   StreamSubscription? streamSubscription;
 
-  @override
+  @protected
   void initState() {
     searchUserController = TextEditingController();
     _slideController = SlidableController(
@@ -69,7 +69,7 @@ class _SearchGroupMemberState extends State<SearchGroupMember> {
 
     groupDetail = widget.arguments["groupDetail"];
 
-    getList();
+    this.getList();
 
     super.initState();
     _scrollController.addListener(() {
@@ -264,9 +264,7 @@ class _SearchGroupMemberState extends State<SearchGroupMember> {
 
         final List<Participant> users = [];
 
-        for (var element in tempList) {
-          users.add(Participant.fromJson(element));
-        }
+        tempList.forEach((element) => users.add(Participant.fromJson(element)));
 
         isLoading = false;
         if (mounted) setState(() {});
@@ -319,9 +317,9 @@ class _SearchGroupMemberState extends State<SearchGroupMember> {
       actionExtentRatio: 0.20,
       fastThreshold: 1,
       showAllActionsThreshold: 0.6,
+      child: VerticalListItem(user, groupDetail),
       actions: listActionSlideActions(user, index),
       secondaryActions: listSecondaryActions(user, index),
-      child: VerticalListItem(user, groupDetail),
     );
   }
 
@@ -622,19 +620,21 @@ class _SearchGroupMemberState extends State<SearchGroupMember> {
               users: selectedUsers as List<CustomerProfile>)
           .then((value) {
         if (value) {
-          final List<Participant> usersAdded = [];
+          if (selectedUsers is List<CustomerProfile>) {
+            final List<Participant> usersAdded = [];
 
-          for (var element in selectedUsers) {
-            usersAdded.add(Participant(
-                avatar: element.avatar,
-                fullName: element.displayName(),
-                type: element.type,
-                userName: element.userName));
+            selectedUsers.forEach((element) {
+              usersAdded.add(Participant(
+                  avatar: element.avatar,
+                  fullName: element.displayName(),
+                  type: element.type,
+                  userName: element.userName));
+            });
+
+            groupDetail!.participants.addAll(usersAdded);
+            showToast(message: "Users are added in group !!");
+            if (mounted) setState(() {});
           }
-
-          groupDetail!.participants.addAll(usersAdded);
-          showToast(message: "Users are added in group !!");
-          if (mounted) setState(() {});
         }
       }).catchError((error) {
         debugPrint("ERROR:- $error");
@@ -657,7 +657,7 @@ class _SearchGroupMemberState extends State<SearchGroupMember> {
 }
 
 class VerticalListItem extends StatefulWidget {
-  const VerticalListItem(this.user, this.groupDetail, {super.key});
+  VerticalListItem(this.user, this.groupDetail);
 
   final CustomerProfile user;
   final GroupDetailModel? groupDetail;

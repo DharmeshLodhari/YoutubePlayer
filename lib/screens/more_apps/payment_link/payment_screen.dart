@@ -37,9 +37,8 @@ class PaymentLinkScreen extends StatefulWidget {
 }
 
 class _PaymentLinkScreenState extends State<PaymentLinkScreen> {
-  final TextEditingController _amountController = TextEditingController();
-  late final TextEditingController _referenceController =
-      TextEditingController();
+  TextEditingController _amountController = TextEditingController();
+  late TextEditingController _referenceController = TextEditingController();
 
   final _sendPaymentScaffold = GlobalKey<ScaffoldState>();
   final _sendPaymentScaffoldMessenger = GlobalKey<ScaffoldMessengerState>();
@@ -218,7 +217,7 @@ class _PaymentLinkScreenState extends State<PaymentLinkScreen> {
     }
   }
 
-  void showDataAlert(String link) {
+  showDataAlert(link) {
     showDialog(
         context: context,
         builder: (context) {
@@ -386,7 +385,7 @@ class _PaymentLinkScreenState extends State<PaymentLinkScreen> {
 
               await Future.delayed(const Duration(seconds: 3));
 
-              // final String description = 'General Payment';
+              final String description = 'General Payment';
               final data = {
                 "currency": userBloc.user.currency,
                 "amount": moneyInputNormalizer(amount.toString()),
@@ -397,7 +396,7 @@ class _PaymentLinkScreenState extends State<PaymentLinkScreen> {
               await _auth.makePaymentLink(data).then((value) async {
                 debugPrint(
                     "status code:- ${value.statusCode}  body:- ${value.body}");
-                final Map<String, dynamic> res = jsonDecode(value.body);
+                final dynamic res = jsonDecode(value.body);
 
                 response = value;
 
@@ -409,7 +408,7 @@ class _PaymentLinkScreenState extends State<PaymentLinkScreen> {
                   return Future.error(response.body);
                 }
 
-                if (response.statusCode == 201) {
+                if (response.statusCode == 200 || response.statusCode == 201) {
                   showDataAlert(res['link']);
                   Navigator.pop(context);
                   Navigator.pop(context);
@@ -608,10 +607,10 @@ class _PaymentLinkScreenState extends State<PaymentLinkScreen> {
     value = currentBalance!.toInt() * 100 - 1000;
 
     if (value < 0) {
-      // print("The number is negative.");
+      // debugPrint("The number is negative.");
       return 0;
     } else {
-      // print("The number is non-negative.");
+      // debugPrint("The number is non-negative.");
       return value;
     }
   }
@@ -692,6 +691,7 @@ class _PaymentLinkScreenState extends State<PaymentLinkScreen> {
       controller: _amountController,
       onChanged: (val) {
         if (mounted) {
+          debugPrint(val);
           setState(() {
             amount = double.parse(val.replaceAll(',', ''));
           });

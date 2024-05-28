@@ -7,10 +7,11 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class UserReviewList extends StatefulWidget {
-  final CustomerProfile? user;
+  CustomerProfile? user;
   UserReviewList({@required this.user, Key? key}) : super(key: key);
 
   @override
@@ -178,47 +179,47 @@ class _UserReviewListState extends State<UserReviewList> {
                   }
                 },
               );
-    // StaggeredGridView.countBuilder(
-    //   physics: const ClampingScrollPhysics(),
-    //   controller: _reviewScrollController,
-    //   crossAxisCount: 2,
-    //   shrinkWrap: true,
-    //   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-    //   mainAxisSpacing: 20,
-    //   itemCount: reviewList.length + 1,
-    //   itemBuilder: (BuildContext context, int index) {
-    //     if (index == reviewList.length) {
-    //       return buildLoadingIndicator(isLoading: isReviewLoading);
-    //     } else {
-    //       return ReviewTile(
-    //         review: reviewList[index],
-    //       );
-    //     }
-    //   },
-    //   staggeredTileBuilder: (int index) => const StaggeredTile.count(2, 0.85),
-    // );
-    //
-    // /*ListView.builder(
-    //         physics: ClampingScrollPhysics(),
-    //         controller: _reviewScrollController,
-    //         itemCount: reviewList.length,
-    //         itemBuilder: (BuildContext context, int index) {
-    //           if (index == reviewList.length) {
-    //             return _buildReviewIndicator();
-    //           } else {
-    //             return Padding(
-    //               padding: const EdgeInsets.only(
-    //                 bottom: 8.0,
-    //                 left: 24.0,
-    //                 right: 24.0,
-    //                 top: 24.0,
-    //               ),
-    //               child: ReviewTile(
-    //                 review: reviewList[index],
-    //               ),
-    //             );
-    //           }
-    //         },
-    //       );*/
+    StaggeredGridView.countBuilder(
+      physics: const ClampingScrollPhysics(),
+      controller: _reviewScrollController,
+      crossAxisCount: 2,
+      shrinkWrap: true,
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      mainAxisSpacing: 20,
+      itemCount: reviewList.length + 1,
+      itemBuilder: (BuildContext context, int index) {
+        if (index == reviewList.length) {
+          return buildLoadingIndicator(isLoading: isReviewLoading);
+        } else {
+          return ReviewTile(
+            review: reviewList[index],
+          );
+        }
+      },
+      staggeredTileBuilder: (int index) => const StaggeredTile.count(2, 0.85),
+    );
+
+    /*ListView.builder(
+            physics: ClampingScrollPhysics(),
+            controller: _reviewScrollController,
+            itemCount: reviewList.length,
+            itemBuilder: (BuildContext context, int index) {
+              if (index == reviewList.length) {
+                return _buildReviewIndicator();
+              } else {
+                return Padding(
+                  padding: const EdgeInsets.only(
+                    bottom: 8.0,
+                    left: 24.0,
+                    right: 24.0,
+                    top: 24.0,
+                  ),
+                  child: ReviewTile(
+                    review: reviewList[index],
+                  ),
+                );
+              }
+            },
+          );*/
   }
 }

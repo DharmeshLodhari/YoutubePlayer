@@ -1,7 +1,6 @@
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/rich_text.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
-import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
@@ -171,25 +170,25 @@ class AskNotificationView extends StatelessWidget {
       BuildContext context, String? notificationId) {
     showDialogBox(
         context: context,
-        actionOneTextColor: white,
-        actionOneBgColor: mateRed,
-        actionTwoTextColor: blackFont,
-        actionTwoBgColor: greyBorderColor,
-        title: 'Delete',
-        actionTwoText: AppLocalization.of(context)!.cancel,
-        actionOneText: AppLocalization.of(context)!.delete,
-        description: 'Are you sure you want to delete this Notification?',
+        actionOneTextColor: blackFont,
+        actionOneBgColor: greyBorderColor,
+        actionTwoTextColor: white,
+        actionTwoBgColor: mateRed,
+        title: 'Delete Notification',
+        actionOneText: AppLocalization.of(context)!.discard,
+        actionTwoText: AppLocalization.of(context)!.continueMsg,
+        description: 'Are you sure you want to delete this notification?',
         roundedBackgroundIcon: RoundedBackgroundIcon(
           enableMargin: false,
           width: 90,
           height: 90,
-          image: Icon(SlydoAppIcon.delete, color: mateRed),
+          image: Image.asset('assets/images/delete_dialog_icon.png'),
         ),
-        leftButtonOnPressed: () {
+        rightButtonOnPressed: () {
           // Navigator.pop(context);
           return deleteNotification(notificationId);
         },
-        rightButtonOnPressed: () {
+        leftButtonOnPressed: () {
           debugPrint('Cancel clicked');
           // return Navigator.pop(context);
         });

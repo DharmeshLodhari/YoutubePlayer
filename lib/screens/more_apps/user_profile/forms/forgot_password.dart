@@ -79,16 +79,14 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                               height: 20,
                             ),
                             phoneNumberField(),
-                            if (isOTPSent)
-                              const SizedBox(
-                                height: 20,
-                              )
-                            else
-                              Container(),
-                            if (isOTPSent)
-                              getVerificationOTPWidget()
-                            else
-                              Container(),
+                            isOTPSent
+                                ? const SizedBox(
+                                    height: 20,
+                                  )
+                                : Container(),
+                            isOTPSent
+                                ? getVerificationOTPWidget()
+                                : Container(),
                             const SizedBox(
                               height: 20,
                             ),
@@ -212,7 +210,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
         const SizedBox(width: 8.0),
         Expanded(
           child: Text(
-            "(${country.name!})",
+            "(" + country.name! + ")",
             overflow: TextOverflow.fade,
             softWrap: false,
             style: TextStyle(
@@ -315,8 +313,8 @@ class _ForgotPasswordState extends State<ForgotPassword> {
             phoneNumberFromTextField.replaceFirst("0", "");
       }
 
-      final String phoneNumber =
-          "+${_selectedDialogCountry.phoneCode!}$phoneNumberFromTextField";
+      String phoneNumber =
+          "+" + _selectedDialogCountry.phoneCode! + phoneNumberFromTextField;
 
       UserAuth().passwordResetOtp(phoneNumber).then((value) {
         response = value;
@@ -329,7 +327,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
 
         isLoading = false;
 
-        if (response.statusCode == 200) {
+        if (response.statusCode == 200 || response.statusCode == 201) {
           Navigator.of(context).popAndPushNamed('/reset-password',
               arguments: {'phoneNumber': phoneNumber});
         } else if (response.statusCode == 400) {

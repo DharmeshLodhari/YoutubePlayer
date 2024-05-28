@@ -28,11 +28,11 @@ import '../widget/bottom_sheet_item.dart';
 import '../widget/dialog.dart';
 import '../widget/loading_indicator.dart';
 import '../widget/rounded_background_icon.dart';
-import 'more_apps/messaging/chat/models/chat_conversation.dart';
+import 'more_apps/messaging/chat/models/ChatConversation.dart';
 import 'more_apps/messaging/chat/share_in_chat/ShareInChat.dart';
 import 'more_apps/news/CustomChip.dart';
+import 'more_apps/news/models/NewsDetailItem.dart';
 import 'more_apps/news/models/NewsListItem.dart';
-import 'more_apps/news/models/news_detail_item.dart';
 import 'more_apps/news/news_tile.dart';
 import 'more_apps/user_post/models/user_post.dart';
 import 'more_apps/user_post/tile/user_post_tile.dart';
@@ -88,8 +88,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
     });
   }
 
-  void getBlogDetailsAndInitializeVideoController(
-      {required UserPost userPost}) {
+  getBlogDetailsAndInitializeVideoController({required UserPost userPost}) {
     if (userPost.video != null && userPost.video!.isNotEmpty) {
       _mainVideoController = VideoPlayerController.network(userPost.video!);
 
@@ -202,7 +201,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
     super.dispose();
   }
 
-  void reloadPage() {
+  reloadPage() {
     setState(() {
       getPostFuture = UserPostAuth().getSinglePost(postID: widget.postId!);
     });
@@ -472,13 +471,13 @@ class _PostDetailPageState extends State<PostDetailPage> {
             Navigator.pop(context);
             showDialogBox(
               context: context,
-              actionOneTextColor: white,
-              actionOneBgColor: mateRed,
-              actionTwoTextColor: blackFont,
-              actionTwoBgColor: greyBorderColor,
-              title: AppLocalization.of(context)!.delete,
-              actionTwoText: AppLocalization.of(context)!.cancel,
-              actionOneText: AppLocalization.of(context)!.delete,
+              actionOneTextColor: blackFont,
+              actionOneBgColor: greyBorderColor,
+              actionTwoTextColor: white,
+              actionTwoBgColor: mateRed,
+              title: 'Delete Blog Post',
+              actionOneText: AppLocalization.of(context)!.discard,
+              actionTwoText: AppLocalization.of(context)!.continueMsg,
               description: 'Are you sure you want to delete this blog post?',
               roundedBackgroundIcon: RoundedBackgroundIcon(
                 enableMargin: false,
@@ -486,7 +485,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
                 height: 90,
                 image: Image.asset('assets/images/delete_dialog_icon.png'),
               ),
-              leftButtonOnPressed: () {
+              rightButtonOnPressed: () {
                 UserPostUtils.deleteBlogPost(
                     onDeleteBlog: () {
                       Navigator.pop(context);
@@ -535,7 +534,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
             }));
   }
 
-  Future<void> sendPostToUserInChat() async {
+  sendPostToUserInChat() async {
     final List<ChatConversation?> listOfRecipient =
         await ShareInChat().selectShareCustomer(context);
     debugPrint("Selected users = ${listOfRecipient.length}");
@@ -545,7 +544,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
     });
   }
 
-  Future<void> addUserPostToChat({
+  addUserPostToChat({
     required ChatConversation recipientUser,
     String? url,
   }) async {
@@ -586,7 +585,6 @@ class _PostDetailPageState extends State<PostDetailPage> {
   }
 }
 
-// ignore: must_be_immutable
 class PostDetailPageScaffoldBody extends StatefulWidget {
   final int? views;
   UserPost userPost;
@@ -642,7 +640,15 @@ class _PostDetailPageScaffoldBodyState
     debugPrint('WIDGET POST --> ${widget.userPost.toJson()}');
     user = Provider.of<UserBloc>(context).user;
 
-    if (widget.tags is List<List<String>>) {
+    if (widget.tags is List<String>) {
+      debugPrint('myVariable is of type List<String>');
+      for (String item in widget.tags) {
+        if (hasAlphabeticCharacters(item)) {
+          showTag = true;
+          break;
+        }
+      }
+    } else if (widget.tags is List<List<String>>) {
       final List<List<String>> myList = widget.tags.cast<List<String>>();
       debugPrint('myVariable is of type List<List<String>>');
       for (List<String> innerList in myList) {
@@ -654,13 +660,7 @@ class _PostDetailPageScaffoldBodyState
         }
       }
     } else {
-      debugPrint('myVariable is of type List<String>');
-      for (String item in widget.tags) {
-        if (hasAlphabeticCharacters(item)) {
-          showTag = true;
-          break;
-        }
-      }
+      debugPrint('myVariable is not of the expected types');
     }
 
     return widget.isLoading
@@ -753,7 +753,7 @@ class _PostDetailPageScaffoldBodyState
     return regex.hasMatch(item);
   }
 
-  Widget _commentWidget() {
+  _commentWidget() {
     if (!widget.userPost.enableCommenting!) {
       return const SizedBox.shrink();
     }
@@ -841,27 +841,30 @@ class _PostDetailPageScaffoldBodyState
       onTap: user.userName == widget.userPost.authorUsername
           ? () => showToast(message: 'You cannot dislike your post')
           : dislikeUnlikePost,
-      child: Row(
-        children: [
-          Icon(
-            widget.userPost.userDisLiked == true
-                ? Icons.thumb_down_alt_rounded
-                : Icons.thumb_down_alt_outlined,
-            size: 16,
-            color: widget.userPost.userDisLiked! == true ? mateRed : blackFont,
-          ),
-          const SizedBox(width: 4),
-          Text(
-            widget.userPost.dislikes != null
-                ? widget.userPost.dislikes!.toString()
-                : '0',
-            style: TextStyle(
-              color: blackFont,
-              fontWeight: FontWeight.w400,
-              fontSize: 14,
+      child: Container(
+        child: Row(
+          children: [
+            Icon(
+              widget.userPost.userDisLiked == true
+                  ? Icons.thumb_down_alt_rounded
+                  : Icons.thumb_down_alt_outlined,
+              size: 16,
+              color:
+                  widget.userPost.userDisLiked! == true ? mateRed : blackFont,
             ),
-          ),
-        ],
+            const SizedBox(width: 4),
+            Text(
+              widget.userPost.dislikes != null
+                  ? widget.userPost.dislikes!.toString()
+                  : '0',
+              style: TextStyle(
+                color: blackFont,
+                fontWeight: FontWeight.w400,
+                fontSize: 14,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -61,70 +61,66 @@ class CustomizedAlert {
         child: Center(
           child: SingleChildScrollView(
             child: AlertDialog(
-              insetPadding: EdgeInsets.zero,
-              backgroundColor: style.backgroundColor ??
-                  Theme.of(context).dialogBackgroundColor,
-              shape: style.alertBorder ?? _defaultShape(),
-              titlePadding: const EdgeInsets.all(0.0),
-              title: Container(
-                width: MediaQuery.of(context).size.width - 40,
-                child: Center(
-                  child: content ??
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Column(
-                            children: <Widget>[
-                              const SizedBox(
-                                height: 24,
-                              ),
-                              _getImage() ?? Container(),
-                              const SizedBox(
-                                height: 12,
-                              ),
-                              Text(
-                                title ?? "",
-                                style: TextStyle(
-                                    color: blackFont,
-                                    fontWeight: FontWeight.w700,
-                                    fontFamily: "Inter",
-                                    fontSize: 16.0),
-                                textAlign: TextAlign.center,
-                              ),
-                              SizedBox(
-                                height: image != null ? 8 : 20,
-                              ),
-                              if (desc == null)
-                                Container()
-                              else
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 40),
-                                  child: Text(
-                                    desc ?? "",
-                                    style: TextStyle(
-                                        color: darkGrey,
-                                        fontSize: 14.0,
-                                        fontWeight: FontWeight.w400,
-                                        fontFamily: "Inter"),
-                                    textAlign: TextAlign.center,
-                                  ),
+                insetPadding: EdgeInsets.zero,
+                backgroundColor: style.backgroundColor ??
+                    Theme.of(context).dialogBackgroundColor,
+                shape: style.alertBorder ?? _defaultShape(),
+                titlePadding: const EdgeInsets.all(0.0),
+                title: Container(
+                  width: MediaQuery.of(context).size.width - 40,
+                  child: Center(
+                    child: content ??
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Column(
+                              children: <Widget>[
+                                const SizedBox(
+                                  height: 20,
                                 ),
-                              const SizedBox(
-                                height: 4,
-                              ),
-                            ],
-                          )
-                        ],
-                      ),
+                                _getImage() ?? Container(),
+                                Text(
+                                  title ?? "",
+                                  style: TextStyle(
+                                      color: blackFont,
+                                      fontWeight: FontWeight.w700,
+                                      fontFamily: "Inter",
+                                      fontSize: 16.0),
+                                  textAlign: TextAlign.center,
+                                ),
+                                SizedBox(
+                                  height: image != null ? 15 : 20,
+                                ),
+                                if (desc == null)
+                                  Container()
+                                else
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 40),
+                                    child: Text(
+                                      desc ?? "",
+                                      style: TextStyle(
+                                          color: darkGrey,
+                                          fontSize: 14.0,
+                                          fontWeight: FontWeight.w400,
+                                          fontFamily: "Inter"),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                              ],
+                            )
+                          ],
+                        ),
+                  ),
                 ),
-              ),
-              contentPadding: style.buttonAreaPadding,
-              content: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: _getButtons(),
-              ),
-            ),
+                contentPadding: style.buttonAreaPadding,
+                content: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: _getButtons(),
+                )),
           ),
         ),
       ),
@@ -197,7 +193,7 @@ class CustomizedAlert {
   }
 
 // Shows alert with selected animation
-  dynamic _showAnimation(animation, secondaryAnimation, child) {
+  _showAnimation(animation, secondaryAnimation, child) {
     if (style.animationType == AnimationType.fromRight) {
       return AnimationTransition.fromRight(
           animation, secondaryAnimation, child);

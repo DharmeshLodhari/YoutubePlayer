@@ -768,7 +768,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
         borderRadius: const BorderRadius.all(
           Radius.circular(10.0),
         ),
-        border: Border.all(
+        border: new Border.all(
             color: isSelected ? navyBlue : lightGrey,
             width: 1.0,
             style: BorderStyle.solid),
@@ -891,33 +891,35 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
   }
 
   Widget aboutPartnerList() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          "About the partner",
-          style: TextStyle(
-            fontWeight: FontWeight.w700,
-            fontSize: 16,
-            color: blackFont,
+    return Container(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "About the partner",
+            style: TextStyle(
+              fontWeight: FontWeight.w700,
+              fontSize: 16,
+              color: blackFont,
+            ),
           ),
-        ),
-        const SizedBox(
-          height: 16,
-        ),
-        Column(
-          children: hotelRoomDetailItem.partners!
-              .map((partner) => Container(
-                    margin: const EdgeInsets.only(bottom: 12),
-                    child: InkWell(
-                        onTap: () {
-                          Navigator.of(context).pushNamed("/partner-detail");
-                        },
-                        child: PartnerTile()),
-                  ))
-              .toList(),
-        ),
-      ],
+          const SizedBox(
+            height: 16,
+          ),
+          Column(
+            children: hotelRoomDetailItem.partners!
+                .map((partner) => Container(
+                      margin: const EdgeInsets.only(bottom: 12),
+                      child: InkWell(
+                          onTap: () {
+                            Navigator.of(context).pushNamed("/partner-detail");
+                          },
+                          child: PartnerTile()),
+                    ))
+                .toList(),
+          ),
+        ],
+      ),
     );
   }
 

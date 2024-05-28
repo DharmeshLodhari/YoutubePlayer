@@ -42,7 +42,7 @@ class _AddMediaToChatMessageState extends State<AddMediaToChatMessage> {
   ChewieController? _chewieController;
 
   /// Music Player
-  final AssetsAudioPlayer _audioPlayer = AssetsAudioPlayer();
+  AssetsAudioPlayer _audioPlayer = AssetsAudioPlayer();
   bool isAudioPlaying = false;
 
   @override
@@ -158,67 +158,69 @@ class _AddMediaToChatMessageState extends State<AddMediaToChatMessage> {
   }
 
   Widget scaffoldBody() {
-    return Column(
-      children: [
-        Expanded(
-          child: Stack(
-            children: [
-              getMediaRenderer(),
-              Positioned(
-                top: 4,
-                left: 4,
-                child: InkWell(
-                  child: ClipOval(
-                    child: Container(
-                      height: 36,
-                      width: 36,
-                      child: Icon(
-                        Icons.arrow_back_ios_rounded,
-                        color: mediaType == "file" ? blackFont : Colors.white,
-                        size: 18,
+    return Container(
+      child: Column(
+        children: [
+          Expanded(
+            child: Stack(
+              children: [
+                getMediaRenderer(),
+                Positioned(
+                  top: 4,
+                  left: 4,
+                  child: InkWell(
+                    child: ClipOval(
+                      child: Container(
+                        height: 36,
+                        width: 36,
+                        child: Icon(
+                          Icons.arrow_back_ios_rounded,
+                          color: mediaType == "file" ? blackFont : Colors.white,
+                          size: 18,
+                        ),
                       ),
                     ),
-                  ),
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                ),
-              ),
-            ],
-          ),
-        ),
-        if (mediaType != "audio")
-          Container(
-            color: Colors.white,
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            constraints: const BoxConstraints(
-              maxHeight: 100,
-            ),
-            child: Row(
-              children: <Widget>[
-                const SizedBox(
-                  width: 8,
-                ),
-                Expanded(child: getMessageTextFormField()),
-                InkWell(
-                  onTap: sendMessage,
-                  child: Row(
-                    children: [
-                      const SizedBox(width: 8),
-                      Icon(
-                        Icons.send,
-                        color: navyBlue,
-                      ),
-                      const SizedBox(width: 8),
-                    ],
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
                   ),
                 ),
               ],
             ),
-          )
-        else
-          Container(),
-      ],
+          ),
+          if (mediaType != "audio")
+            Container(
+              color: Colors.white,
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              constraints: const BoxConstraints(
+                maxHeight: 100,
+              ),
+              child: Row(
+                children: <Widget>[
+                  const SizedBox(
+                    width: 8,
+                  ),
+                  Expanded(child: getMessageTextFormField()),
+                  InkWell(
+                    onTap: sendMessage,
+                    child: Row(
+                      children: [
+                        const SizedBox(width: 8),
+                        Icon(
+                          Icons.send,
+                          color: navyBlue,
+                        ),
+                        const SizedBox(width: 8),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            )
+          else
+            Container(),
+        ],
+      ),
     );
   }
 
@@ -499,7 +501,7 @@ class _AddMediaToChatMessageState extends State<AddMediaToChatMessage> {
   }
 }
 
-DocumentFileTypeForChat getDocumentFileTypeForChat(String extension) {
+getDocumentFileTypeForChat(String extension) {
   switch (extension) {
     case 'pdf':
       return DocumentFileTypeForChat.pdf;
@@ -512,7 +514,6 @@ DocumentFileTypeForChat getDocumentFileTypeForChat(String extension) {
     case 'txt':
       return DocumentFileTypeForChat.txt;
   }
-  return DocumentFileTypeForChat.txt;
 }
 
 String getDocumentFileIcon(DocumentFileTypeForChat docsType) {

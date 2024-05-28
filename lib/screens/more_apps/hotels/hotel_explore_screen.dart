@@ -20,7 +20,7 @@ class HotelExploreScreen extends StatefulWidget {
 }
 
 class _HotelExploreScreenState extends State<HotelExploreScreen> {
-  final CarouselController _carouselController = CarouselController();
+  CarouselController _carouselController = CarouselController();
 
   List<PartialHotelRoomItem> sliderItem = [];
   bool isSliderLoading = false;
@@ -34,7 +34,7 @@ class _HotelExploreScreenState extends State<HotelExploreScreen> {
   List<CityData> listOfCity = [];
   bool isExploreByCityLoading = false;
 
-  final RefreshController _refreshController =
+  RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
   @override
@@ -423,63 +423,65 @@ class _HotelExploreScreenState extends State<HotelExploreScreen> {
   }
 
   Widget exploreByCity() {
-    return Column(
-      children: [
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Text(
-                "Explore by City",
-                style: TextStyle(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 18,
-                  color: blackFont,
-                ),
-              ),
-              GestureDetector(
-                child: Text(
-                  "See all",
+    return Container(
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Text(
+                  "Explore by City",
                   style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14,
-                      color: navyBlue),
-                ),
-                onTap: () {
-                  Navigator.of(context).pushNamed("/hotel-category");
-                },
-              ),
-            ],
-          ),
-        ),
-        Container(
-          height: 210,
-          color: Colors.white,
-          child: isExploreByCityLoading
-              ? Center(
-                  child: CircularLoadingIndicator(),
-                )
-              : SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Container(
-                    padding: const EdgeInsets.only(left: 16),
-                    child: Row(
-                      children: listOfCity
-                          .map(
-                            (city) => Container(
-                              margin: const EdgeInsets.only(right: 12),
-                              child: CityItemCard(
-                                city: city,
-                              ),
-                            ),
-                          )
-                          .toList(),
-                    ),
+                    fontWeight: FontWeight.w700,
+                    fontSize: 18,
+                    color: blackFont,
                   ),
                 ),
-        )
-      ],
+                GestureDetector(
+                  child: Text(
+                    "See all",
+                    style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                        color: navyBlue),
+                  ),
+                  onTap: () {
+                    Navigator.of(context).pushNamed("/hotel-category");
+                  },
+                ),
+              ],
+            ),
+          ),
+          Container(
+            height: 210,
+            color: Colors.white,
+            child: isExploreByCityLoading
+                ? Center(
+                    child: CircularLoadingIndicator(),
+                  )
+                : SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Container(
+                      padding: const EdgeInsets.only(left: 16),
+                      child: Row(
+                        children: listOfCity
+                            .map(
+                              (city) => Container(
+                                margin: const EdgeInsets.only(right: 12),
+                                child: CityItemCard(
+                                  city: city,
+                                ),
+                              ),
+                            )
+                            .toList(),
+                      ),
+                    ),
+                  ),
+          )
+        ],
+      ),
     );
   }
 

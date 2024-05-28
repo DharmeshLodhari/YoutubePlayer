@@ -26,7 +26,7 @@ class YarnCommentReplyList extends StatefulWidget {
 
 class _YarnCommentReplyListState extends State<YarnCommentReplyList> {
   /// Variables for Sorting POPUP MENU
-  final GlobalKey _key = LabeledGlobalKey("yarnCommentListSort");
+  GlobalKey _key = LabeledGlobalKey("yarnCommentListSort");
   late CustomizedPopUpMenu menu;
   int selectedMenuItemIndex = 0;
   bool isPopMenuOpen = false;
@@ -175,7 +175,7 @@ class _YarnCommentReplyListState extends State<YarnCommentReplyList> {
       selectFilter = 'created_at';
     }
     if (!isLoading) {
-      if (next.isNotEmpty && !isLoading) {
+      if (next != null && !isLoading) {
         isLoading = true;
         if (mounted) setState(() {});
 
@@ -194,8 +194,8 @@ class _YarnCommentReplyListState extends State<YarnCommentReplyList> {
         }
 
         count = result['count'] ?? 0;
-        next = result['next'] ?? "";
-        previous = result['previous'] ?? "";
+        next = result['next'] != null ? result['next'] : "";
+        previous = result['previous'] != null ? result['previous'] : "";
         final tempList = result['results'];
         yarnComments = [];
         if (mounted) {

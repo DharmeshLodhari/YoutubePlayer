@@ -17,15 +17,15 @@ import '../../moments_bloc.dart';
 import '../moments_service.dart';
 
 class MomentsDetailsScreen extends StatefulWidget {
-  late final String? nextPageUrl;
+  String? nextPageUrl;
 
   /* 'indexOfMoment'
   * This is the index of the moment that was clicked from 'moments_screen'.
   * When the user comes to this page, the moment that will be shown at first is the
   * moment the user clicked (through this index).*/
-  late final int indexOfMoment;
+  int indexOfMoment;
   final List<String> listOfConnectionNames;
-  late final List<List<MomentsModel>> momentsModelList;
+  List<List<MomentsModel>> momentsModelList;
 
   MomentsDetailsScreen({
     Key? key,
@@ -53,8 +53,10 @@ class _MomentsDetailsScreenState extends State<MomentsDetailsScreen> {
   late PageController _verticalScrollPageViewCtrl;
   int? horizoallyPageIndex;
 
-  final List<CachedVideoPlayerController> _videoPlayerControllers = [];
-  final List<PhotoViewController> _photoViewController = [];
+  List<CachedVideoPlayerController> _videoPlayerControllers = [];
+  List<PhotoViewController> _photoViewController = [];
+  // late List<String> videoUrls;
+  // late List<File> cachedVideos;
 
   @override
   void initState() {
@@ -68,10 +70,28 @@ class _MomentsDetailsScreenState extends State<MomentsDetailsScreen> {
     }
   }
 
+  // Future<void> _downloadAndCacheVideos() async {
+  //   if (widget.momentsModelList != null && widget.momentsModelList.isNotEmpty) {
+  //     for (var momentsModel in widget.momentsModelList) {
+  //       momentsModel
+  //           .where((element) => element.mediaType == 'video')
+  //           .map((e) => videoUrls.add(e.media ?? ""));
+  //     }
+  //     cachedVideos = await Future.wait(
+  //         videoUrls.map((url) => DefaultCacheManager().getSingleFile(url)));
+  //     _videoPlayerControllers = cachedVideos
+  //         .map((video) => CachedVideoPlayerController.file(video))
+  //         .toList();
+  //     await Future.wait(
+  //         _videoPlayerControllers.map((controller) => controller.initialize()));
+  //     setState(() {});
+  //   }
+  // }
+
   // To get the initial page that the pageview will show when the user gets this screen and
   // the previous and next two moments(if there is) have been loaded.
   int getInitialPageIndex() {
-    if (widget.momentsModelList.isNotEmpty) {
+    if (widget.momentsModelList != null && widget.momentsModelList.isNotEmpty) {
       return widget.indexOfMoment;
     } else {
       if (widget.indexOfMoment > 2) {
@@ -87,9 +107,7 @@ class _MomentsDetailsScreenState extends State<MomentsDetailsScreen> {
     try {
       clearAllMedia();
       _verticalScrollPageViewCtrl.dispose();
-    } catch (error) {
-      debugPrint("Error $error");
-    }
+    } catch (error) {}
     super.dispose();
   }
 
@@ -159,6 +177,7 @@ class _MomentsDetailsScreenState extends State<MomentsDetailsScreen> {
                 channelUsername: '');
         widget.momentsModelList = List.from(widget.momentsModelList)
           ..add(momentsModelList);
+        // _downloadAndCacheVideos();
       }
 
       showLoadingIndicator(loadingNextPageUrl: loadingNextPageUrl, show: false);
@@ -170,16 +189,19 @@ class _MomentsDetailsScreenState extends State<MomentsDetailsScreen> {
     }
   }
 
-  void showLoadingIndicator(
-      {required bool loadingNextPageUrl, required bool show}) {
+  showLoadingIndicator({required bool loadingNextPageUrl, required bool show}) {
     if (loadingNextPageUrl) {
-      setState(() {
-        nextPageUrlLoading = show;
-      });
+      if (mounted) {
+        setState(() {
+          nextPageUrlLoading = show;
+        });
+      }
     } else {
-      setState(() {
-        loadingMoments = show;
-      });
+      if (mounted) {
+        setState(() {
+          loadingMoments = show;
+        });
+      }
     }
   }
 
@@ -201,7 +223,7 @@ class _MomentsDetailsScreenState extends State<MomentsDetailsScreen> {
       // Whether previous or next index depending on if the user has gotten to the top or end of the vertical list respectively.
       final int indexToWorkWith = getNextList ? nextIndex : previousIndex;
 
-      debugPrint('ERROR FETCHING MOMENT :: $indexToWorkWith');
+      debugPrint('ERROR FETCHING MOMENT :: ${indexToWorkWith}');
 
       if (widget.listOfConnectionNames.indices.contains(indexToWorkWith)) {
         try {
@@ -233,20 +255,16 @@ class _MomentsDetailsScreenState extends State<MomentsDetailsScreen> {
 
   void clearAllMedia() {
     log("DISPOSING VIDEO CONTROLLERS:- ${_videoPlayerControllers.length} PHOTO CONTROLLERS:- ${_photoViewController.length}");
-    for (var element in _videoPlayerControllers) {
+    _videoPlayerControllers.forEach((element) {
       try {
         element.dispose();
-      } catch (error) {
-        debugPrint("Error $error");
-      }
-    }
-    for (var element in _photoViewController) {
+      } catch (error) {}
+    });
+    _photoViewController.forEach((element) {
       try {
         element.dispose();
-      } catch (error) {
-        debugPrint("Error $error");
-      }
-    }
+      } catch (error) {}
+    });
   }
 
   @override
@@ -400,9 +418,7 @@ class MediaRendererPageViewState extends State<MediaRendererPageView> {
   void deactivate() {
     try {
       _pageCtrl?.dispose();
-    } catch (error) {
-      debugPrint("Error $error");
-    }
+    } catch (error) {}
 
     super.deactivate();
   }
@@ -428,9 +444,15 @@ class MediaRendererPageViewState extends State<MediaRendererPageView> {
                 curve: Curves.easeIn);
           },
           onRightSwipe: () {
-            _pageCtrl!.nextPage(
-                duration: const Duration(milliseconds: 200),
-                curve: Curves.easeIn);
+            if (widget.momentsModelList.length - 1 ==
+                _pageCtrl?.page?.toInt()) {
+              widget.onMomentPop;
+              Navigator.pop(context);
+            } else {
+              _pageCtrl!.nextPage(
+                  duration: const Duration(milliseconds: 200),
+                  curve: Curves.easeIn);
+            }
           },
           onMomentPop: widget.onMomentPop,
           pageCtrl: _pageCtrl!,
@@ -452,7 +474,6 @@ class Range extends Iterable<int> {
   final int start;
   final int end;
 
-  @override
   int get length => end - start + 1;
 
   @override
@@ -460,9 +481,9 @@ class Range extends Iterable<int> {
       Iterable.generate(length, (i) => start + i).iterator;
 
   @override
-  bool contains(Object? element) {
-    if (element == null || element is! int) return false;
-    return element >= start && element <= end;
+  bool contains(Object? index) {
+    if (index == null || index is! int) return false;
+    return index >= start && index <= end;
   }
 
   @override

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
@@ -75,7 +76,7 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
   final Map<int, FocusNode> _focusNodes = {};
   Timer? _debounce;
 
-  @override
+  @protected
   void initState() {
     getList();
     _scrollController.addListener(() {
@@ -577,7 +578,7 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
                         ),
                       const SizedBox(width: 5.0),
                       if (cardData.cardBrand == 'Visa')
-                        const SizedBox.shrink()
+                        SizedBox.shrink()
                       else
                         Column(
                           children: [
@@ -607,7 +608,7 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
     _debounce?.cancel();
     _debounce = Timer(const Duration(seconds: 2), () {
       _focusNodes[index]!.unfocus(); // Disable focus for the specific card
-      // print('Performing API call for card $index with text: $newText');
+      // debugPrint('Performing API call for card $index with text: $newText');
       editCard(cardData, newText);
     });
   }

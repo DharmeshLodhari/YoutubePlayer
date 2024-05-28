@@ -8,7 +8,7 @@ import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_conversation.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/share_in_chat/ShareInChat.dart';
 import 'package:Slydo/screens/more_apps/service_hub/auth/service_hub_auth.dart';
 import 'package:Slydo/screens/more_apps/service_hub/models/jobs.dart';
@@ -1064,7 +1064,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
     return 'Paid';
   }
 
-  Widget getPaymentStatusRow() {
+  getPaymentStatusRow() {
     return Column(
       children: [
         const Divider(),
@@ -1431,7 +1431,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
     }
   }
 
-  Widget endJobButton() {
+  endJobButton() {
     return CurvedButton(
       onPressed: isAPILoading
           ? () {}
@@ -1451,8 +1451,9 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
     );
   }
 
-  Future<void> endJob() async {
+  endJob() async {
     await ServiceHubAuthService().endJob(job!.id).then((value) {
+      debugPrint("$value");
       if (value == true) {
         Navigator.pushNamed(context, Routes.CONTRACTOR_SCREEN, arguments: job);
       } else {
@@ -1464,7 +1465,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
     });
   }
 
-  Future<void> getRatingsAndReveiw() async {
+  getRatingsAndReveiw() async {
     await ServiceHubAuthService()
         .rateAndReviewContratorDetail(jobId: job!.id)
         .then((value) {
@@ -1523,7 +1524,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
     );
   }
 
-  Widget getListNowBtn() {
+  getListNowBtn() {
     return CurvedButton(
       onPressed: isAPILoading
           ? () {}
@@ -1543,7 +1544,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
     );
   }
 
-  Widget getUnListNowBtn() {
+  getUnListNowBtn() {
     return CurvedButton(
       onPressed: isAPILoading
           ? () {}
@@ -1563,7 +1564,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
     );
   }
 
-  Widget getApplyNowBtn() {
+  getApplyNowBtn() {
     return CurvedButton(
       onPressed: isAPILoading
           ? () {}
@@ -1584,7 +1585,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
     );
   }
 
-  Widget cancelApplicationNowBtn() {
+  cancelApplicationNowBtn() {
     return CurvedButton(
       onPressed: isAPILoading
           ? () {}
@@ -1599,7 +1600,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
     );
   }
 
-  Future<void> createJobListing() async {
+  createJobListing() async {
     await ServiceHubAuthService().createListing({
       "job": job!.id,
     }).then((value) {
@@ -1612,7 +1613,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
     });
   }
 
-  Future<void> removeJobFromActiveListing() async {
+  removeJobFromActiveListing() async {
     await ServiceHubAuthService()
         .removeJobListing(job!.activeListing)
         .then((value) {
@@ -1624,7 +1625,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
     });
   }
 
-  Future<void> applyForJob() async {
+  applyForJob() async {
     await ServiceHubAuthService().applyForJob(
         {"applicant": "${userBloc.user.userName}"},
         jobId: job!.id).then((value) {
@@ -1637,7 +1638,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
     });
   }
 
-  Future<void> cancelApplication() async {
+  cancelApplication() async {
     await ServiceHubAuthService().cancelApplicationForJob(
         {"applicant": "${userBloc.user.userName}"},
         jobId: job!.id).then((value) {
@@ -2103,7 +2104,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
     );
   }
 
-  void onPageFunction(int index, CarouselPageChangedReason reason) {
+  onPageFunction(index, reason) {
     currentIndex = index;
     setState(() {});
   }

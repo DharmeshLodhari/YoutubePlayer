@@ -15,13 +15,14 @@ import 'package:Slydo/widget/image_crop.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../../widget/rounded_background_icon.dart';
 import '../../shopping_auth.dart';
 
 class ProductVariantUpdate extends StatefulWidget {
-  final dynamic arguments;
+  var arguments;
 
   ProductVariantUpdate({this.arguments, Key? key}) : super(key: key);
 
@@ -46,10 +47,11 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
   bool productIsAvailable = false;
   bool inventoryIsAvailable = false;
   bool trackInventory = false;
-  DateTime productAvailableFrom = DateTime.now();
+  DateTime todayDate = DateTime.now();
+  String? productAvailableFrom;
   bool isLoading = false;
   bool isAPILoading = false;
-  int inventoryCount = 0;
+  int inventoryCount = 1;
 
   // var typeList = ['Size', 'Color'];
   List<VariantTypes> typeList = [
@@ -90,18 +92,22 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
         moneyNormalizer(int.parse(variant!.price!)).toString();
     availableFromController.text = variant!.availableFrom!.toString();
     productIsAvailable = variant!.isAvailable!;
-    trackInventory = variant!.trackInventory!;
+    inventoryIsAvailable = variant!.trackInventory!;
     inventoryCount = variant!.quantity!;
-    productAvailableFrom = variant!.availableFrom!;
+    if (variant!.availableFrom!.isNotEmpty) {
+      productAvailableFrom = variant!.availableFrom!;
+    } else {
+      productAvailableFrom = DateFormat('yyyy-MM-dd').format(todayDate);
+    }
     productImagesFromServer.addAll(variant!.serverImages!);
 
     title = variant!.title!.toString();
     size = variant!.value!.toString();
     color = variant!.colour!.toString();
     variantPrice = moneyNormalizer(int.parse(variant!.price!)).toString();
-    productIsAvailable = variant!.isAvailable!;
-    trackInventory = variant!.trackInventory!;
-    inventoryCount = variant!.quantity!;
+    // productIsAvailable = variant!.isAvailable!;
+    // inventoryIsAvailable = variant!.trackInventory!;
+    // inventoryCount = variant!.quantity!;
 
     super.initState();
   }
@@ -160,16 +166,15 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      if (checkImageLimitForServerImage())
-                        viewServerImages()
-                      else
-                        Container(),
+                      if (productImagesFromServer.isNotEmpty)
+                        checkImageLimitForServerImage()
+                            ? viewServerImages()
+                            : Container(),
 
                       const SizedBox(height: 10),
-                      if (checkImageLimitForLocalImage())
-                        addLocalImages()
-                      else
-                        Container(),
+                      checkImageLimitForLocalImage()
+                          ? addLocalImages()
+                          : Container(),
                       // addImages(),
 
                       const SizedBox(height: 10),
@@ -177,15 +182,15 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
                       const SizedBox(height: 10),
                       getTypeField(),
 
-                      if (selectedType == 'Size') ...[
+                      if (selectedType == VariantTypes.Size) ...[
                         const SizedBox(height: 10),
                         addSizeField(),
                       ],
-                      if (selectedType == 'Color') ...[
+                      if (selectedType == VariantTypes.Color) ...[
                         const SizedBox(height: 10),
                         getColorField(),
                       ],
-                      if (selectedType == 'Color n Size') ...[
+                      if (selectedType == VariantTypes.ColorAndSize) ...[
                         const SizedBox(height: 10),
                         getColorField(),
                         const SizedBox(height: 10),
@@ -383,7 +388,7 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
   // }
 
   Widget viewServerImages() {
-    return SizedBox(
+    return Container(
       height: 100,
       child: ListView.builder(
         controller: _scrollController,
@@ -398,7 +403,7 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
   }
 
   Widget showServerImage(int index) {
-    return SizedBox(
+    return Container(
       height: 100,
       child: Stack(
         children: <Widget>[
@@ -442,7 +447,7 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
                   size: 15,
                 ),
               ),
-              onPressed: () {
+              onPressed: () async {
                 // var imageId = currentProduct.getImageId(productImagesFromServer[index]);
                 // debugPrint("imageId:- $imageId");
                 // _auth.deleteProductOrServiceImage(imageId).then((value) {
@@ -484,7 +489,7 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
   }
 
   Widget addLocalImages() {
-    return SizedBox(
+    return Container(
       height: 100,
       child: ListView.builder(
         controller: _scrollController,
@@ -513,7 +518,7 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
           ),
           shadowColor: dividerColor,
           margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
-          child: SizedBox(
+          child: Container(
             width: 100,
             child: Image.file(
               File(croppedImageList[index]),
@@ -706,7 +711,11 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
               DateTime.now().year, DateTime.now().month, DateTime.now().day),
           lastDate: DateTime(2101),
         ).then((value) {
-          productAvailableFrom = DateTime(value!.year, value.month, value.day);
+          final DateTime selectedDate =
+              DateTime(value!.year, value.month, value.day);
+
+          productAvailableFrom = DateFormat('yyyy-MM-dd').format(selectedDate);
+          // productAvailableFrom = DateTime(value!.year, value.month, value.day);
           setState(() {});
         }).catchError((error) {});
       },
@@ -716,7 +725,7 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
           child: ListTile(
             dense: true,
             title: Text(
-              formatDate(productAvailableFrom),
+              productAvailableFrom ?? "",
               style: TextStyle(
                 color: blackFont,
                 fontWeight: FontWeight.w600,
@@ -957,7 +966,7 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
           variant.price = moneyInputNormalizer(variantPrice).toString();
           variant.isAvailable = productIsAvailable;
           variant.availableFrom = productAvailableFrom;
-          variant.trackInventory = trackInventory;
+          variant.trackInventory = inventoryIsAvailable;
           variant.currency = 'NGN';
 
           await _auth.updateVariant(variant, id).then((value) {

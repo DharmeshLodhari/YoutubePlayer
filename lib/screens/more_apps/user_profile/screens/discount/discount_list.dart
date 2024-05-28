@@ -1,6 +1,6 @@
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
-import 'package:Slydo/screens/more_apps/user_profile/forms/add_edit_discount.dart';
+import 'package:Slydo/screens/more_apps/user_profile/forms/add_edit_discount_new.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/discount/discount_model.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/navigation_util.dart';
@@ -116,11 +116,13 @@ class _DiscountListState extends State<DiscountList> {
           });
         }
       } else if (next == null && itemList.length > 6) {
-        _messengerScaffoldKey.currentState?.showSnackBar(SnackBar(
-          content:
-              Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: const Duration(milliseconds: 500),
-        ));
+        _messengerScaffoldKey.currentState?.showSnackBar(
+          SnackBar(
+            content: Text(
+                AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
+            duration: const Duration(milliseconds: 500),
+          ),
+        );
       }
     }
   }
@@ -144,9 +146,7 @@ class _DiscountListState extends State<DiscountList> {
             controller: _refreshController,
             onRefresh: _onProductRefresh,
             child: noItemInList
-                ? NoItemInList(msg: AppLocalization.of(context)!.noResultFound
-                    // msg: AppLocalization.of(context)!.noProducts,
-                    )
+                ? NoItemInList(msg: AppLocalization.of(context)!.noResultFound)
                 : isLoading
                     ? _buildShimmerEffect()
                     : _buildItemList(),
@@ -260,7 +260,7 @@ class _DiscountListState extends State<DiscountList> {
           onTap: () async {
             final result = await NavigationUtil.push(
               context,
-              screen: AddEditDiscount(),
+              screen: AddEditDiscountNew(),
             );
             if (result != null && result == true) {
               getList(fetchFresh: true);
@@ -300,7 +300,7 @@ class _DiscountListState extends State<DiscountList> {
       onTap: () async {
         final result = await NavigationUtil.push(
           context,
-          screen: AddEditDiscount(
+          screen: AddEditDiscountNew(
             discountModel: itemList[index],
           ),
         );
@@ -328,7 +328,7 @@ class _DiscountListState extends State<DiscountList> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        messageDecoderWithEmoji(itemList[index].name) ??
+                        messageDecoderWithEmoji(itemList[index].name ?? "") ??
                             itemList[index].merchant ??
                             "",
                         maxLines: 1,

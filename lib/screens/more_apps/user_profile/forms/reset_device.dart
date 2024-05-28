@@ -111,23 +111,25 @@ class _ResetDeviceState extends State<ResetDevice> {
   }
 
   Widget titleText() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          "Slydo",
-          style: TextStyle(
-              fontSize: 22, fontWeight: FontWeight.w700, color: navyBlue),
-        ),
-        const SizedBox(
-          height: 10,
-        ),
-        Text(
-          "Reset your Slydo device",
-          style: TextStyle(
-              fontSize: 18, fontWeight: FontWeight.w700, color: blackFont),
-        ),
-      ],
+    return Container(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "Slydo",
+            style: TextStyle(
+                fontSize: 22, fontWeight: FontWeight.w700, color: navyBlue),
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          Text(
+            "Reset your Slydo device",
+            style: TextStyle(
+                fontSize: 18, fontWeight: FontWeight.w700, color: blackFont),
+          ),
+        ],
+      ),
     );
   }
 
@@ -229,7 +231,7 @@ class _ResetDeviceState extends State<ResetDevice> {
     return Column(
       children: [
         phoneNumberField(),
-        if (isPhoneNumberIsVerified) getPasswordField() else Container(),
+        isPhoneNumberIsVerified ? getPasswordField() : Container(),
         const SizedBox(height: 20),
         getSubmitButton(),
         const SizedBox(height: 20),
@@ -474,11 +476,13 @@ class _ResetDeviceState extends State<ResetDevice> {
 
         UserAuth().resetDevice(data: data).then((result) {
           Navigator.pop(context);
-          if (result) {
-            showAlertDialogForInformation();
+          if (result != null) {
+            if (result) {
+              showAlertDialogForInformation();
 
-            // Navigator.pop(context);
+              // Navigator.pop(context);
 
+            }
           }
         }).catchError((error) {
           Navigator.pop(context);

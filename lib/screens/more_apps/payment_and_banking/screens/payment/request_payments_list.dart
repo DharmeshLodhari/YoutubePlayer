@@ -67,7 +67,6 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
   bool isFirstTime = true;
   late UserBloc userBloc;
 
-  @override
   @protected
   void initState() {
     // secureScreen();
@@ -108,7 +107,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
       });
   }
 
-  void _refresh() {
+  _refresh() {
     count = 0;
     next = "";
     previous = "";
@@ -753,7 +752,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
             if (!result) return;
 
             final response = await _auth.acceptPaymentRequests(paymentRequest);
-            if (response.statusCode == 200) {
+            if (response.statusCode == 200 || response.statusCode == 201) {
               _showSnackBar(
                   context, AppLocalization.of(context)!.paymentRequestAccepted);
               if (mounted) {
@@ -913,10 +912,9 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
 }
 
 class VerticalListItem extends StatefulWidget {
-  const VerticalListItem(this.paymentRequest, {this.key}) : super(key: key);
+  VerticalListItem(this.paymentRequest, {this.key}) : super(key: key);
 
   final PaymentRequest paymentRequest;
-  @override
   final Key? key;
 
   @override
@@ -1061,8 +1059,8 @@ class _VerticalListItemState extends State<VerticalListItem> {
               }
               if (result) {
                 showToast(
-                    message:
-                        "${widget.paymentRequest.payee} ${AppLocalization.of(context)!.isBlocked}");
+                    message: "${widget.paymentRequest.payee} " +
+                        AppLocalization.of(context)!.isBlocked);
               } else {
                 showToast(message: AppLocalization.of(context)!.error);
               }

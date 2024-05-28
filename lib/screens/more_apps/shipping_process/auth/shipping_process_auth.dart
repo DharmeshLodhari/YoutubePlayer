@@ -12,7 +12,7 @@ import 'package:flutter/cupertino.dart';
 class ShippingProcessAuthService extends AuthService {
   // Get all package details in cart
   Future<List<PackageDetailsModel>> getAllPackageDetail(
-      bool isSharedCart, String cartId) async {
+      isSharedCart, String cartId) async {
     try {
       String url = AppConfig.baseUrl;
 
@@ -27,7 +27,8 @@ class ShippingProcessAuthService extends AuthService {
       final jsonData = jsonDecode(response.body);
       debugPrint('Fetch Package Details BODY ---> ${response.body}');
       debugPrint("response ${response.body}");
-      if (response.statusCode == 200) {
+      debugPrint("${response.statusCode}");
+      if (response.statusCode == 200 || response.statusCode == 201) {
         final List jsonDataResult = jsonData;
         return jsonDataResult
             .map((json) => PackageDetailsModel.fromJson(json))
@@ -38,12 +39,12 @@ class ShippingProcessAuthService extends AuthService {
       }
     } on Exception catch (e) {
       showToast(message: e.toString());
-      debugPrint("response $e");
+      debugPrint("response ${e}");
       debugPrint("Error: $e");
       throw e;
     } catch (err) {
       showToast(message: err.toString());
-      debugPrint("Error : $err");
+      debugPrint("$err");
       throw err;
     }
   }
@@ -73,7 +74,7 @@ class ShippingProcessAuthService extends AuthService {
     debugPrint('BODY shipping:: ${response.body}');
     debugPrint('STATUS CO  :: ${response.statusCode}');
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       if (packageDetailsModel.shippingType == ShippingTypes.courier) {
         final List jsonDataResult = json.decode(response.body);
         return jsonDataResult
@@ -180,7 +181,7 @@ class ShippingProcessAuthService extends AuthService {
     debugPrint('BODY shipping:: ${response.body}');
     debugPrint('STATUS CO  :: ${response.statusCode}');
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final Map<String, dynamic> data = json.decode(response.body);
 
       final String id = data['id'];

@@ -1,4 +1,5 @@
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/states_model.dart';
@@ -7,9 +8,17 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_checkbox_field.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
+import 'package:Slydo/widget/dialog.dart';
+import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:dropdown_search/dropdown_search.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+// import 'package:location/location.dart';
 import 'package:provider/provider.dart';
 
 class AddEditShippingAddress extends StatefulWidget {
@@ -23,6 +32,11 @@ class AddEditShippingAddress extends StatefulWidget {
 
 class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
   final _formKey = GlobalKey<FormState>();
+
+  late GoogleMapController mapController;
+  Position? currentLocation;
+  Set<Marker> currentLocationMarker = <Marker>{};
+  String? _mapStyle;
 
   bool isAPILoading = false;
 
@@ -43,23 +57,106 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
   List<String> states = [];
   late UserBloc userBloc;
   String? name, phone;
+  // final Location location = Location();
 
   @override
   void initState() {
+    getCurrentLocation();
+
+    rootBundle.loadString('assets/map_style.json').then((string) {
+      _mapStyle = string;
+    });
+
     if (widget.shippingAddress != null) {
       isEdit = true;
     }
     shippingAddress = widget.shippingAddress?.copyWith() ?? ShippingAddress();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       userBloc = Provider.of<UserBloc>(context, listen: false);
 
-      getShippingStates();
+      await getShippingStates();
     });
     super.initState();
   }
 
-  void getShippingStates() async {
+  void getCurrentLocation() async {
+    try {
+      if (isEdit) {
+        currentLocation = Position.fromMap({
+          'latitude': shippingAddress.latitude,
+          'longitude': shippingAddress.longitude,
+        });
+      } else {
+        // currentLocation = await location.getLocation();
+        currentLocation = await Future.any([
+          Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high),
+          Future.delayed(const Duration(seconds: 5), () => null),
+        ]);
+        if (currentLocation == null) {
+          currentLocation = await Geolocator.getCurrentPosition(
+              desiredAccuracy: LocationAccuracy.high);
+          // currentLocation = await location.getLocation();
+        }
+      }
+      if (currentLocation != null) {
+        currentLocationMarker = {
+          Marker(
+            markerId: const MarkerId('currentLocation'),
+            position: LatLng(currentLocation?.latitude ?? 0,
+                currentLocation?.longitude ?? 0),
+            infoWindow: const InfoWindow(title: 'Current Location'),
+          )
+        };
+      }
+    } catch (e) {
+      debugPrint('Error getting location: $e');
+    }
+    // final LocationData location = await _locationTracker.getLocation();
+  }
+
+  // Future<LocationData?> getCurrentLocation() async {
+  //   LocationData? currentLocation;
+  //   try {
+  //     currentLocation = await location.getLocation();
+  //     double? accuracy = currentLocation.accuracy;
+  //     debugPrint('Location Accuracy: $accuracy meters');
+  //   } catch (e) {
+  //     debugPrint('Error getting location: $e');
+  //   }
+  //   // final LocationData location = await _locationTracker.getLocation();
+  //   return currentLocation;
+  // }
+
+  void _onMapCreated(GoogleMapController controller) {
+    setState(() {
+      controller.setMapStyle(_mapStyle);
+      mapController = controller;
+    });
+  }
+
+  void _changeLocation(LatLng newLocation) {
+    Position currentLocation = Position.fromMap({
+      'latitude': newLocation.latitude,
+      'longitude': newLocation.longitude,
+    });
+
+    setState(() {
+      currentLocation = currentLocation;
+      debugPrint(
+          'getChangeLocation: ${currentLocation.latitude}, ${currentLocation.longitude}');
+      currentLocationMarker = {
+        Marker(
+          markerId: const MarkerId('currentLocation'),
+          position: newLocation,
+          infoWindow: const InfoWindow(title: 'Current Location'),
+        )
+      };
+    });
+    mapController.animateCamera(CameraUpdate.newLatLng(newLocation));
+  }
+
+  Future<void> getShippingStates() async {
     selectedState = shippingAddress.stateName;
     selectedCity = shippingAddress.city;
     if (mounted) setState(() {});
@@ -90,24 +187,24 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
         });
       }
 
-      StatesModel? selectedStateModel;
-
-      for (StatesModel statesModel in tempList) {
-        if (statesModel.name == shippingAddress.stateName) {
-          selectedStateModel = statesModel;
-          break;
-        }
-      }
-      if (selectedStateModel != null) {
-        final String? code = selectedStateModel.isoCode;
-        if (code != null) {
-          getShippingCities(code);
-        }
-      }
+      // StatesModel? selectedStateModel;
+      //
+      // for (StatesModel statesModel in tempList) {
+      //   if (statesModel.name == shippingAddress.stateName) {
+      //     selectedStateModel = statesModel;
+      //     break;
+      //   }
+      // }
+      // if (selectedStateModel != null) {
+      //   String? code = selectedStateModel.isoCode;
+      //   if (code != null) {
+      //     getShippingCities(code);
+      //   }
+      // }
     }
   }
 
-  Future<void> getShippingCities(String? code) async {
+  Future<void> getShippingCities(code) async {
     if (mounted) setState(() {});
     if (!isLoading) {
       isLoading = true;
@@ -187,6 +284,10 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 const SizedBox(height: 20),
+                showMapLocation(),
+                const SizedBox(
+                  height: 16,
+                ),
                 addTitleField(),
                 const SizedBox(
                   height: 16,
@@ -246,6 +347,40 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
       onPressed: () {
         Navigator.pop(context);
       },
+    );
+  }
+
+  Widget showMapLocation() {
+    return Container(
+      height: 200,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(5),
+        color: greyBorderColor,
+      ),
+      child: currentLocation == null && isEdit == false
+          ? const Center(
+              child: CircularProgressIndicator(),
+            )
+          : GoogleMap(
+              onMapCreated: _onMapCreated,
+              initialCameraPosition: CameraPosition(
+                target: isEdit
+                    ? LatLng(shippingAddress.latitude ?? 0,
+                        shippingAddress.longitude ?? 0)
+                    : LatLng(currentLocation?.latitude ?? 0,
+                        currentLocation?.longitude ?? 0),
+                zoom: 15.0,
+              ),
+              markers: currentLocationMarker,
+              onTap: (LatLng location) {
+                _changeLocation(location);
+              },
+              gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>[
+                new Factory<OneSequenceGestureRecognizer>(
+                  () => new EagerGestureRecognizer(),
+                ),
+              ].toSet(),
+            ),
     );
   }
 
@@ -429,65 +564,65 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
     );
   }
 
-  Widget stateDropdown() {
-    return DropdownButtonFormField2(
-      buttonHeight: 50,
-      isExpanded: true,
-      value: selectedState,
-      style: TextStyle(
-        fontSize: 16,
-        color: blackFont,
-        fontWeight: FontWeight.w600,
-      ),
-      decoration: InputDecoration(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 0),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(
-            color: greyBorderColor,
-            width: 1.0,
-          ),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(
-            color: greyBorderColor,
-            width: 1.0,
-          ),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(
-            color: greyBorderColor,
-            width: 1.0,
-          ),
-        ),
-      ),
-      items: itemList.map((StatesModel item) {
-        return DropdownMenuItem<String>(
-          value: item.name,
-          child: Text(item.name!),
-        );
-      }).toList(),
-      onChanged: (String? value) async {
-        final StatesModel picked =
-            itemList.firstWhere((element) => element.name == value);
-        selectedCity = null;
-        await getShippingCities(picked.isoCode);
-        shippingAddress.stateName = picked.name;
-        setState(() {
-          selectedState = value!;
-        });
-      },
-      validator: (String? value) {
-        if (value != null && value.isNotEmpty) {
-          return null;
-        } else {
-          return 'Pick a state';
-        }
-      },
-    );
-  }
+  // Widget stateDropdown() {
+  //   return DropdownButtonFormField2(
+  //     buttonHeight: 50,
+  //     isExpanded: true,
+  //     value: selectedState,
+  //     style: TextStyle(
+  //       fontSize: 16,
+  //       color: blackFont,
+  //       fontWeight: FontWeight.w600,
+  //     ),
+  //     decoration: InputDecoration(
+  //       contentPadding: EdgeInsets.symmetric(horizontal: 0),
+  //       enabledBorder: OutlineInputBorder(
+  //         borderRadius: BorderRadius.circular(10),
+  //         borderSide: BorderSide(
+  //           color: greyBorderColor,
+  //           width: 1.0,
+  //         ),
+  //       ),
+  //       focusedBorder: OutlineInputBorder(
+  //         borderRadius: BorderRadius.circular(10),
+  //         borderSide: BorderSide(
+  //           color: greyBorderColor,
+  //           width: 1.0,
+  //         ),
+  //       ),
+  //       errorBorder: OutlineInputBorder(
+  //         borderRadius: BorderRadius.circular(10),
+  //         borderSide: BorderSide(
+  //           color: greyBorderColor,
+  //           width: 1.0,
+  //         ),
+  //       ),
+  //     ),
+  //     items: itemList.map((StatesModel item) {
+  //       return DropdownMenuItem<String>(
+  //         value: item.name,
+  //         child: Text(item.name!),
+  //       );
+  //     }).toList(),
+  //     onChanged: (String? value) async {
+  //       StatesModel picked =
+  //           itemList.firstWhere((element) => element.name == value);
+  //       selectedCity = null;
+  //       await getShippingCities(picked.isoCode);
+  //       shippingAddress.stateName = picked.name;
+  //       setState(() {
+  //         selectedState = value!;
+  //       });
+  //     },
+  //     validator: (String? value) {
+  //       if (value != null && value.isNotEmpty) {
+  //         return null;
+  //       } else {
+  //         return 'Pick a state';
+  //       }
+  //     },
+  //   );
+  // }
 
   Widget stateDropdownSearch() {
     return DropdownSearch<String>(
@@ -566,13 +701,13 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
           fontWeight: FontWeight.w600,
         ),
       ),
-      onChanged: (String? value) async {
-        final StatesModel picked =
-            itemList.firstWhere((element) => element.name == value);
-        selectedCity = null;
-        await getShippingCities(picked.isoCode);
-        shippingAddress.stateName = picked.name;
-        setState(() {
+      onChanged: (String? value) {
+        setState(() async {
+          final StatesModel picked =
+              itemList.firstWhere((element) => element.name == value);
+          selectedCity = null;
+          await getShippingCities(picked.isoCode);
+          shippingAddress.stateName = picked.name;
           selectedState = value!;
         });
       },
@@ -586,59 +721,59 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
       selectedItem: selectedState,
     );
 
-    // return DropdownButtonFormField2(
-    //   buttonHeight: 50,
-    //   isExpanded: true,
-    //   value: selectedCity,
-    //   style: TextStyle(
-    //     fontSize: 16,
-    //     color: blackFont,
-    //     fontWeight: FontWeight.w600,
-    //   ),
-    //   decoration: InputDecoration(
-    //     contentPadding: const EdgeInsets.symmetric(horizontal: 0),
-    //     enabledBorder: OutlineInputBorder(
-    //       borderRadius: BorderRadius.circular(10),
-    //       borderSide: BorderSide(
-    //         color: greyBorderColor,
-    //         width: 1.0,
-    //       ),
-    //     ),
-    //     focusedBorder: OutlineInputBorder(
-    //       borderRadius: BorderRadius.circular(10),
-    //       borderSide: BorderSide(
-    //         color: greyBorderColor,
-    //         width: 1.0,
-    //       ),
-    //     ),
-    //     errorBorder: OutlineInputBorder(
-    //       borderRadius: BorderRadius.circular(10),
-    //       borderSide: BorderSide(
-    //         color: greyBorderColor,
-    //         width: 1.0,
-    //       ),
-    //     ),
-    //   ),
-    //   items: cityList.map((Cities item) {
-    //     return DropdownMenuItem<String>(
-    //       value: item.name,
-    //       child: Text(item.name!),
-    //     );
-    //   }).toList(),
-    //   onChanged: (String? value) {
-    //     shippingAddress.city = value;
-    //     setState(() {
-    //       selectedCity = value!;
-    //     });
-    //   },
-    //   validator: (String? value) {
-    //     if (value != null && value.isNotEmpty) {
-    //       return null;
-    //     } else {
-    //       return 'Pick a city';
-    //     }
-    //   },
-    // );
+    return DropdownButtonFormField2(
+      buttonHeight: 50,
+      isExpanded: true,
+      value: selectedCity,
+      style: TextStyle(
+        fontSize: 16,
+        color: blackFont,
+        fontWeight: FontWeight.w600,
+      ),
+      decoration: InputDecoration(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 0),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(
+            color: greyBorderColor,
+            width: 1.0,
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(
+            color: greyBorderColor,
+            width: 1.0,
+          ),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(
+            color: greyBorderColor,
+            width: 1.0,
+          ),
+        ),
+      ),
+      items: cityList.map((Cities item) {
+        return DropdownMenuItem<String>(
+          value: item.name,
+          child: Text(item.name!),
+        );
+      }).toList(),
+      onChanged: (String? value) {
+        shippingAddress.city = value;
+        setState(() {
+          selectedCity = value!;
+        });
+      },
+      validator: (String? value) {
+        if (value != null && value.isNotEmpty) {
+          return null;
+        } else {
+          return 'Pick a city';
+        }
+      },
+    );
   }
 
   // Widget cityDropdown() {
@@ -790,59 +925,59 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
       selectedItem: selectedCity,
     );
 
-    // return DropdownButtonFormField2(
-    //   buttonHeight: 50,
-    //   isExpanded: true,
-    //   value: selectedCity,
-    //   style: TextStyle(
-    //     fontSize: 16,
-    //     color: blackFont,
-    //     fontWeight: FontWeight.w600,
-    //   ),
-    //   decoration: InputDecoration(
-    //     contentPadding: const EdgeInsets.symmetric(horizontal: 0),
-    //     enabledBorder: OutlineInputBorder(
-    //       borderRadius: BorderRadius.circular(10),
-    //       borderSide: BorderSide(
-    //         color: greyBorderColor,
-    //         width: 1.0,
-    //       ),
-    //     ),
-    //     focusedBorder: OutlineInputBorder(
-    //       borderRadius: BorderRadius.circular(10),
-    //       borderSide: BorderSide(
-    //         color: greyBorderColor,
-    //         width: 1.0,
-    //       ),
-    //     ),
-    //     errorBorder: OutlineInputBorder(
-    //       borderRadius: BorderRadius.circular(10),
-    //       borderSide: BorderSide(
-    //         color: greyBorderColor,
-    //         width: 1.0,
-    //       ),
-    //     ),
-    //   ),
-    //   items: cityList.map((Cities item) {
-    //     return DropdownMenuItem<String>(
-    //       value: item.name,
-    //       child: Text(item.name!),
-    //     );
-    //   }).toList(),
-    //   onChanged: (String? value) {
-    //     shippingAddress.city = value;
-    //     setState(() {
-    //       selectedCity = value!;
-    //     });
-    //   },
-    //   validator: (String? value) {
-    //     if (value != null && value.isNotEmpty) {
-    //       return null;
-    //     } else {
-    //       return 'Pick a city';
-    //     }
-    //   },
-    // );
+    return DropdownButtonFormField2(
+      buttonHeight: 50,
+      isExpanded: true,
+      value: selectedCity,
+      style: TextStyle(
+        fontSize: 16,
+        color: blackFont,
+        fontWeight: FontWeight.w600,
+      ),
+      decoration: InputDecoration(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 0),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(
+            color: greyBorderColor,
+            width: 1.0,
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(
+            color: greyBorderColor,
+            width: 1.0,
+          ),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(
+            color: greyBorderColor,
+            width: 1.0,
+          ),
+        ),
+      ),
+      items: cityList.map((Cities item) {
+        return DropdownMenuItem<String>(
+          value: item.name,
+          child: Text(item.name!),
+        );
+      }).toList(),
+      onChanged: (String? value) {
+        shippingAddress.city = value;
+        setState(() {
+          selectedCity = value!;
+        });
+      },
+      validator: (String? value) {
+        if (value != null && value.isNotEmpty) {
+          return null;
+        } else {
+          return 'Pick a city';
+        }
+      },
+    );
   }
 
   Widget getSubmitButton() {
@@ -856,13 +991,7 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
                     ? () {}
                     : () async {
                         FocusScope.of(context).unfocus();
-                        isDeleteLoading = true;
-                        if (mounted) setState(() {});
-
-                        await deleteItem();
-
-                        isDeleteLoading = false;
-                        if (mounted) setState(() {});
+                        deleteDispachAddressDialog();
                       },
                 backgroundColor: red,
                 textColor: Colors.white,
@@ -918,25 +1047,61 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
     );
   }
 
+  void deleteDispachAddressDialog() {
+    showDialogBox(
+      context: context,
+      actionOneTextColor: blackFont,
+      actionOneBgColor: greyBorderColor,
+      actionTwoTextColor: white,
+      actionTwoBgColor: mateRed,
+      title: 'Delete Dispatch Address',
+      actionOneText: AppLocalization.of(context)!.discard,
+      actionTwoText: AppLocalization.of(context)!.continueMsg,
+      description: 'Are you sure you want to delete this dispatch address?',
+      roundedBackgroundIcon: RoundedBackgroundIcon(
+        enableMargin: false,
+        width: 90,
+        height: 90,
+        image: Image.asset('assets/images/delete_dialog_icon.png'),
+      ),
+      rightButtonOnPressed: () async {
+        isDeleteLoading = true;
+        if (mounted) setState(() {});
+
+        await deleteItem();
+
+        isDeleteLoading = false;
+        if (mounted) setState(() {});
+      },
+    );
+  }
+
   Future<void> addEditItem() async {
     if (_formKey.currentState?.validate() ?? false) {
       //the api call will first create the product then use the id from the
       //response to save the variant
+      shippingAddress.country = "NG";
       shippingAddress.email = userBloc.user.userName! + "@slydo.co";
       shippingAddress.phone = userBloc.user.phoneNumber;
       shippingAddress.first_name = userBloc.user.fullName!.split(" ").first;
       shippingAddress.last_name = userBloc.user.fullName!.split(" ").last;
       shippingAddress.is_residential = shippingAddress.is_residential;
+      shippingAddress.latitude = currentLocation?.latitude;
+      shippingAddress.longitude = currentLocation?.longitude;
 
       await ShoppingAuthService()
           .addUpdateAddress(shippingAddress, isEdit: isEdit)
           .then((value) async {
-        Navigator.pop(context, true);
-        showToast(
-          message: isEdit
-              ? "Address updated successfully"
-              : "Address added successfully",
-        );
+        if (value != null) {
+          Navigator.pop(context, true);
+          showToast(
+            message: isEdit
+                ? "Address updated successfully"
+                : "Address added successfully",
+          );
+        } else {
+          showToast(message: "Failed to add address");
+        }
       }).catchError((error) {
         debugPrint("Product check::: ${error.toString()}");
         showToast(message: error.toString());

@@ -9,7 +9,6 @@ import 'scrollable_positioned_list.dart';
 ///
 /// See [ScrollablePositionedList]
 class StickyGroupedListView<T, E> extends StatefulWidget {
-  @override
   final Key? key;
 
   /// Items of which [itemBuilder] or [indexedItemBuilder] produce the list.
@@ -158,12 +157,12 @@ class StickyGroupedListView<T, E> extends StatefulWidget {
 
 class _StickyGroupedListViewState<T, E>
     extends State<StickyGroupedListView<T, E>> {
-  final StreamController<int> _streamController = StreamController<int>();
+  StreamController<int> _streamController = StreamController<int>();
   ItemPositionsListener? _listener;
   GroupedItemScrollController? _controller;
   GlobalKey? _groupHeaderKey;
   List<T> _sortedElements = [];
-  final GlobalKey _key = GlobalKey();
+  GlobalKey _key = GlobalKey();
   int _topElementIndex = 0;
   RenderBox? _headerBox;
   RenderBox? _listBox;
@@ -265,7 +264,7 @@ class _StickyGroupedListViewState<T, E>
             context, _sortedElements[actualIndex], actualIndex);
   }
 
-  void _positionListener() {
+  _positionListener() {
     _headerBox ??=
         _groupHeaderKey?.currentContext?.findRenderObject() as RenderBox?;
     final double headerHeight = _headerBox?.size.height ?? 0;
@@ -288,7 +287,7 @@ class _StickyGroupedListViewState<T, E>
                 position.itemTrailingEdge > _headerDimension!)
             .reduce(reducePositions);
 
-        final int index = (currentItem?.index ?? 0) ~/ 2;
+        final int index = (currentItem?.index)! ~/ 2;
         if (_topElementIndex != index) {
           final E curr = widget.groupBy(_sortedElements[index]);
           final E prev = widget.groupBy(_sortedElements[_topElementIndex]);

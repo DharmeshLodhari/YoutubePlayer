@@ -6,7 +6,7 @@ import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/main.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_conversation.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/share_in_chat/ShareInChat.dart';
 import 'package:Slydo/screens/more_apps/review/models/review.dart';
 import 'package:Slydo/screens/more_apps/review/review_auth.dart';
@@ -14,6 +14,7 @@ import 'package:Slydo/screens/more_apps/review/tiles/review_tile.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/product_and_service/checkout_product_service.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/bottom_sheet_item.dart';
@@ -42,7 +43,7 @@ import '../../shopping_auth.dart';
 
 // ignore: must_be_immutable
 class ServiceDetailPage extends StatefulWidget {
-  final dynamic arguments;
+  var arguments;
 
   ServiceDetailPage({required this.arguments});
 
@@ -53,12 +54,12 @@ class ServiceDetailPage extends StatefulWidget {
 
 class _ServiceDetailPageState extends State<ServiceDetailPage>
     with TickerProviderStateMixin {
-  Map<String, dynamic> arguments;
+  var arguments;
   bool canRate = false;
-  // late DashboardBloc _dashboardBloc;
+  late DashboardBloc _dashboardBloc;
   bool noReviewInList = false;
 
-  _ServiceDetailPageState({required this.arguments});
+  _ServiceDetailPageState({this.arguments});
 
   Service? service;
   late CustomerProfileBloc customerProfileBloc;
@@ -71,7 +72,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   late bool isValidCustomer;
   bool isOtherItemFetched = false;
   bool isOtherItemIsEmpty = true;
-  final ScrollController _scrollController = ScrollController();
+  ScrollController _scrollController = ScrollController();
 
   List<dynamic> sellersOtherItems = [];
 
@@ -132,6 +133,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
       Navigator.pop(context);
       showToast(message: e.toString());
     });
+    ;
   }
 
   Future canReviewService() async {
@@ -141,7 +143,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
     data['type'] = 'services';
     data['id'] = service?.id ?? "";
 
-    debugPrint('service data :: $data');
+    debugPrint('service data :: ${data}');
 
     ReviewAuth().checkIfCanReviewProductOrService(data).then((value) {
       canRate = value;
@@ -201,15 +203,8 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
 
   @override
   Widget build(BuildContext context) {
-    if (serviceIsLoading) {
-      return Scaffold(
-        body: Center(
-          child: CircularLoadingIndicator(),
-        ),
-      );
-    }
     customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
-    // _dashboardBloc = Provider.of<DashboardBloc>(context);
+    _dashboardBloc = Provider.of<DashboardBloc>(context);
     basketBloc = Provider.of<BasketBloc>(context);
     yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context, listen: false);
     isValidCustomer = userBloc.user.userName != service?.provider;
@@ -496,7 +491,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
         badgeStyle: badges.BadgeStyle(
             shape: badges.BadgeShape.circle,
             badgeColor: naturalGreen,
-            padding: basketBloc.basketItems.isEmpty
+            padding: basketBloc.basketItems.length == 0
                 ? const EdgeInsets.all(0)
                 : const EdgeInsets.all(4)),
         child: Center(
@@ -607,7 +602,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
       badgeStyle: badges.BadgeStyle(
         shape: badges.BadgeShape.circle,
         badgeColor: naturalGreen,
-        padding: basketBloc.basketItems.isEmpty
+        padding: basketBloc.basketItems.length == 0
             ? const EdgeInsets.all(0)
             : const EdgeInsets.all(4),
       ),
@@ -628,7 +623,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   }
 
   Widget? getBadgeContent() {
-    if (basketBloc.basketItems.isEmpty) {
+    if (basketBloc.basketItems.length == 0) {
       return null;
     }
     return Text(
@@ -669,6 +664,9 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   }
 
   Widget _buildServiceDetailsPage(BuildContext context) {
+    if (serviceIsLoading) {
+      return buildProductShimmerLoadingIndicator(isLoading: serviceIsLoading);
+    }
     return ListView(
       controller: _scrollController,
       children: <Widget>[
@@ -676,7 +674,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
           children: [
             _buildServiceImagesWidgets(),
             Container(
-              padding: const EdgeInsets.only(right: 20, left: 20, top: 24),
+              padding: const EdgeInsets.only(right: 16, left: 16, top: 24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
@@ -771,7 +769,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   }
 
   Widget _buildReviewList() {
-    return reviewList.isEmpty
+    return reviewList.length == 0
         ? Center(
             child: Text(
               "No Review yet",
@@ -872,7 +870,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
               }
             }
           },
-          child: SizedBox(
+          child: Container(
             width: double.infinity,
             child: Center(
               child: Text(
@@ -912,7 +910,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                     Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
                         arguments: service?.providerAvatar);
                   },
-                  child: SizedBox(
+                  child: Container(
                     height: 48,
                     width: 48,
                     child: ClipOval(
@@ -955,7 +953,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
       padding: const EdgeInsets.symmetric(horizontal: 4.0),
       child: imgList?.length == 0
           ? AspectRatio(
-              aspectRatio: 1.7,
+              aspectRatio: 1.5,
               child: Center(
                 child: CircularLoadingIndicator(),
               ),
@@ -964,25 +962,27 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
               ? Stack(
                   children: [
                     AspectRatio(
-                      aspectRatio: 1.7,
+                      aspectRatio: 1.5,
                       child: Container(
                         child: Center(
-                            child: ClipRRect(
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(10)),
-                          child: CachedNetworkImage(
-                            placeholder: (context, url) =>
-                                Center(child: CircularLoadingIndicator()),
-                            imageUrl: imgList![0]!,
-                            fit: BoxFit.fitHeight,
-                            height: double.infinity,
-                            width: double.infinity,
-                            errorWidget: productAndServiceBigErrorWidget,
+                          child: ClipRRect(
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(10)),
+                            child: CachedNetworkImage(
+                              placeholder: (context, url) =>
+                                  Center(child: CircularLoadingIndicator()),
+                              imageUrl: imgList![0]!,
+                              fit: BoxFit.cover,
+                              height: double.infinity,
+                              width: double.infinity,
+                              errorWidget: productAndServiceBigErrorWidget,
+                            ),
                           ),
-                        )),
+                        ),
                       ),
                     ),
-                    getOutOfStockTag(),
+                    serviceStockAndDetailTag(),
+                    // getOutOfStockTag(),
                   ],
                 )
               : Column(
@@ -995,7 +995,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                               viewportFraction: 1.0,
                               enlargeCenterPage: true,
                               autoPlay: false,
-                              aspectRatio: 1.7,
+                              aspectRatio: 1.5,
                               onPageChanged: (index, _) {
                                 if (mounted) {
                                   setState(() {
@@ -1006,25 +1006,28 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                           items: imgList!
                               .map((item) => Stack(
                                     children: [
-                                      getOutOfStockTag(),
                                       Container(
                                         child: Center(
-                                            child: ClipRRect(
-                                          borderRadius: const BorderRadius.all(
-                                              Radius.circular(10)),
-                                          child: CachedNetworkImage(
-                                            placeholder: (context, url) => Center(
-                                                child:
-                                                    CircularLoadingIndicator()),
-                                            imageUrl: item!,
-                                            errorWidget:
-                                                productAndServiceBigErrorWidget,
-                                            fit: BoxFit.fitHeight,
-                                            height: double.infinity,
-                                            width: double.infinity,
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                const BorderRadius.all(
+                                                    Radius.circular(10)),
+                                            child: CachedNetworkImage(
+                                              placeholder: (context, url) => Center(
+                                                  child:
+                                                      CircularLoadingIndicator()),
+                                              imageUrl: item!,
+                                              errorWidget:
+                                                  productAndServiceBigErrorWidget,
+                                              fit: BoxFit.cover,
+                                              height: double.infinity,
+                                              width: double.infinity,
+                                            ),
                                           ),
-                                        )),
+                                        ),
                                       ),
+                                      serviceStockAndDetailTag(),
+                                      // getOutOfStockTag(),
                                     ],
                                   ))
                               .toList(),
@@ -1058,6 +1061,26 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                   ],
                 ),
     );
+  }
+
+  Widget serviceStockAndDetailTag() {
+    if (service?.availableFrom?.isAfter(DateTime.now()) ?? false) {
+      return Positioned(
+        top: 20,
+        right: 10,
+        child: showColoredLabeledWidget(
+            text: AppLocalization.of(context)!.comingSoon, color: starYellow),
+      );
+    } else if (service?.isAvailable == false) {
+      return Positioned(
+        top: 20,
+        right: 10,
+        child: showColoredLabeledWidget(
+            text: AppLocalization.of(context)!.outOfStock, color: red),
+      );
+    } else {
+      return const SizedBox();
+    }
   }
 
   Widget getOutOfStockTag() {
@@ -1236,8 +1259,8 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   }
 
   Widget _buildProviderOtherServices() {
-    return SizedBox(
-      height: 310,
+    return Container(
+      height: 290,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[

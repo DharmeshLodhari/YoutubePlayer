@@ -21,7 +21,7 @@ import '../business_auth.dart';
 
 // ignore: must_be_immutable
 class ContractDetail extends StatefulWidget {
-  final dynamic arguments;
+  var arguments;
 
   ContractDetail({required this.arguments});
 
@@ -172,7 +172,7 @@ class _ContractDetailState extends State<ContractDetail> {
     return Icon(Icons.download_rounded, color: navyBlue);
   }
 
-  void _downloadContract() async {
+  _downloadContract() async {
     final String fileName = 'Contract_${contract.id}.pdf';
     final PermissionStatus status = await Permission.storage.request();
 

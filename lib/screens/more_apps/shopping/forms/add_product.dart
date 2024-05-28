@@ -29,7 +29,7 @@ import '../../../../routes/route_constants.dart';
 import '../shopping_auth.dart';
 
 class AddProduct extends StatefulWidget {
-  final dynamic arguments;
+  var arguments;
 
   AddProduct({Key? key, this.arguments}) : super(key: key);
 
@@ -50,14 +50,16 @@ class _AddProductState extends State<AddProduct> {
   ProductCondition? selectedProductCondition;
   ProductCondition? selectedDeliveryTimeCondition;
   int imageCount = 5;
-  final ScrollController _scrollController = ScrollController();
+  ScrollController _scrollController = ScrollController();
 
   // TextEditingController _myController = TextEditingController();
-  final TextfieldTagsController _myController = TextfieldTagsController();
+  TextfieldTagsController _myController = TextfieldTagsController();
+  TextfieldTagsController textfieldTagsController = TextfieldTagsController();
   List<PickedFile> productImages = [];
   String productName = "";
   String productDescription = "";
   String productShortDescription = "";
+  String searchKeyword = "";
   String productCategory = "";
   String productSubCategory = "";
   String productCondition = "";
@@ -88,9 +90,9 @@ class _AddProductState extends State<AddProduct> {
   int inventoryCount = 1;
   List<Variant> productVariantList = [];
   List<AddOns> productAddOnsList = [];
-  List<String> weightSi = ['Grams', 'Kilograms'];
-  List<String> widthSi = ['Centimetres', 'Metres'];
-  List<String> heightSi = ['Centimetres', 'Metres'];
+  var weightSi = ['Grams', 'Kilograms'];
+  var widthSi = ['Centimetres', 'Metres'];
+  var heightSi = ['Centimetres', 'Metres'];
   List<String> measurementList = ['Weight', 'Height', 'Width'];
   Map<String, bool> measurementCheckMark = {};
   List<String> pickedMeasurementList = [];
@@ -118,7 +120,7 @@ class _AddProductState extends State<AddProduct> {
   DiscountModel? selectedDiscount;
   String discountName = "";
   final GlobalKey<ScaffoldMessengerState> _messengerScaffoldKey =
-      GlobalKey<ScaffoldMessengerState>();
+      new GlobalKey<ScaffoldMessengerState>();
 
   @override
   void deactivate() {
@@ -247,7 +249,7 @@ class _AddProductState extends State<AddProduct> {
     if (mounted) setState(() {});
   }
 
-  void getSubCategories(dynamic id) async {
+  void getSubCategories(id) async {
     if (mounted) setState(() {});
 
     try {
@@ -345,6 +347,8 @@ class _AddProductState extends State<AddProduct> {
                       getProductShortDescription(),
                       const SizedBox(height: 10),
                       getProductDescription(),
+                      const SizedBox(height: 10),
+                      getSearchEngineKeyword(),
                       const SizedBox(height: 20),
                       getIsAvailableField(),
                       const SizedBox(height: 16),
@@ -432,14 +436,16 @@ class _AddProductState extends State<AddProduct> {
                       const SizedBox(height: 16),
                       getEnableInSuperStoreField(),
                       const SizedBox(height: 16),
-                      if (productVariantList.isEmpty) ...[
+                      if (productVariantList == null ||
+                          productVariantList.isEmpty) ...[
                         // getAddVariationFormField(),
                         productVariation(),
                       ] else ...[
                         displaySelectedVariant(),
                       ],
                       const SizedBox(height: 16),
-                      if (productAddOnsList.isEmpty) ...[
+                      if (productAddOnsList == null ||
+                          productAddOnsList.isEmpty) ...[
                         productAddOns(),
                       ] else ...[
                         displaySelectedAddOn(),
@@ -479,7 +485,7 @@ class _AddProductState extends State<AddProduct> {
   }
 
   Widget addImages() {
-    return SizedBox(
+    return Container(
       height: 100,
       child: ListView.builder(
         controller: _scrollController,
@@ -570,7 +576,7 @@ class _AddProductState extends State<AddProduct> {
   }
 
   Widget showImage(int index) {
-    return SizedBox(
+    return Container(
       height: 100,
       child: Stack(
         children: <Widget>[
@@ -650,6 +656,34 @@ class _AddProductState extends State<AddProduct> {
       onChanged: (val) {
         productShortDescription = val;
       },
+    );
+  }
+
+  Widget getSearchEngineKeyword() {
+    return Column(
+      children: [
+        // CustomTextFieldTag(
+        //     textfieldTagsController: textfieldTagsController,
+        //     readOnly: false,
+        //     onTap: (String tag) {
+        //       debugPrint("$tag");
+        //     }),
+        CustomizedTextFormField(
+          labelText: "Search Keyword - SEO (Optional)",
+          onChanged: (val) {
+            searchKeyword = val;
+          },
+        ),
+        Text(
+          'These words will help customer see your product online when they search it.',
+          style: TextStyle(
+            color: darkGrey,
+            fontSize: 12,
+            fontWeight: FontWeight.w400,
+            fontFamily: "Inter",
+          ),
+        )
+      ],
     );
   }
 
@@ -745,21 +779,6 @@ class _AddProductState extends State<AddProduct> {
           // selectItemCategory();
         },
       ),
-    );
-  }
-
-  Widget getTags() {
-    return CustomizedTextFormField(
-      labelText: "Tags",
-      validator: (val) {
-        if (val.isNotEmpty) {
-          return null;
-        }
-        return AppLocalization.of(context)!.shortDescription;
-      },
-      onChanged: (val) {
-        productShortDescription = val;
-      },
     );
   }
 
@@ -1130,7 +1149,7 @@ class _AddProductState extends State<AddProduct> {
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: SizedBox(
+              content: Container(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   elevation: 2,
@@ -1201,7 +1220,7 @@ class _AddProductState extends State<AddProduct> {
     }
   }
 
-  bool showDeliveryTime() {
+  showDeliveryTime() {
     final List industry = ['Grocery Store', 'Liquor Store', 'Restaurant/Cafe'];
     if (industry.contains(userBloc!.userAbout!.industry!.name)) {
       return true;
@@ -1210,7 +1229,7 @@ class _AddProductState extends State<AddProduct> {
   }
 
   Widget getProductConditionField() {
-    debugPrint("my controller :- $_myController");
+    debugPrint("my controller :- ${_myController}");
     return CustomizedDropDownField(
       title: "Product condition",
       child: ListTile(
@@ -1302,6 +1321,7 @@ class _AddProductState extends State<AddProduct> {
           height: 6,
         ),
         CustomTextFieldTag(
+          // initialTags: ["Test"],
           textfieldTagsController: _myController,
           onTap: (String tag) {
             setState(() {
@@ -1353,7 +1373,7 @@ class _AddProductState extends State<AddProduct> {
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: SizedBox(
+              content: Container(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   margin: EdgeInsets.zero,
@@ -1453,7 +1473,7 @@ class _AddProductState extends State<AddProduct> {
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: SizedBox(
+              content: Container(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   margin: EdgeInsets.zero,
@@ -2099,6 +2119,7 @@ class _AddProductState extends State<AddProduct> {
           product.discount = selectedDiscount;
           product.quantity = inventoryCount;
           product.addressId = defaultAddress?.id;
+          product.searchKeywords = searchKeyword.split(", ");
 
           // product.variant = [];
 
@@ -2694,24 +2715,26 @@ class _AddProductState extends State<AddProduct> {
           if (mounted) setState(() {});
         }
       },
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            'Add Product Variation',
-            maxLines: 1,
-            style: TextStyle(
-                color: productAddOnsList.isNotEmpty ? darkGrey : navyBlue,
-                fontFamily: "Inter",
-                fontWeight: FontWeight.w500,
-                fontSize: 14),
-          ),
-          Icon(
-            Icons.arrow_forward_ios,
-            size: 16,
-            color: blackFont,
-          ),
-        ],
+      child: Container(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Add Product Variation',
+              maxLines: 1,
+              style: TextStyle(
+                  color: productAddOnsList.isNotEmpty ? darkGrey : navyBlue,
+                  fontFamily: "Inter",
+                  fontWeight: FontWeight.w500,
+                  fontSize: 14),
+            ),
+            Icon(
+              Icons.arrow_forward_ios,
+              size: 16,
+              color: blackFont,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -2808,24 +2831,26 @@ class _AddProductState extends State<AddProduct> {
           if (mounted) setState(() {});
         }
       },
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            'Add Product Add-ons',
-            maxLines: 1,
-            style: TextStyle(
-                color: productVariantList.isNotEmpty ? darkGrey : navyBlue,
-                fontWeight: FontWeight.w500,
-                fontFamily: "Inter",
-                fontSize: 14),
-          ),
-          Icon(
-            Icons.arrow_forward_ios,
-            size: 16,
-            color: blackFont,
-          ),
-        ],
+      child: Container(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Add Product Add-ons',
+              maxLines: 1,
+              style: TextStyle(
+                  color: productVariantList.isNotEmpty ? darkGrey : navyBlue,
+                  fontWeight: FontWeight.w500,
+                  fontFamily: "Inter",
+                  fontSize: 14),
+            ),
+            Icon(
+              Icons.arrow_forward_ios,
+              size: 16,
+              color: blackFont,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -2875,7 +2900,7 @@ class _AddProductState extends State<AddProduct> {
   Widget _buildAddOnList() {
     return isLoading && productAddOnsList.isEmpty
         ? buildLoadingIndicator(isLoading: isLoading)
-        : SizedBox(
+        : Container(
             // height: 200,
             height: 80 * productAddOnsList.length.toDouble(),
             child: ListView.builder(
@@ -2929,6 +2954,7 @@ class _AddProductState extends State<AddProduct> {
   void dispose() {
     _scrollController.dispose();
     _myController.dispose();
+    textfieldTagsController.dispose();
     userTags = [];
     super.dispose();
   }

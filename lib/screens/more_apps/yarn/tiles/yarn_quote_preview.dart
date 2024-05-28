@@ -25,11 +25,11 @@ import '../widgets/yarn_media_renderer.dart';
 import '../yarn_dashboard_bloc.dart';
 
 class YarnQuotePreview extends StatefulWidget {
-  final Yarn yarn;
-  final Function(Yarn)? onDeleteYarn;
-  final Function(Yarn)? onReYarn;
-  final Function(Yarn)? onUpdateYarn;
-  final Function()? navigateToReyarn;
+  Yarn yarn;
+  Function(Yarn)? onDeleteYarn;
+  Function(Yarn)? onReYarn;
+  Function(Yarn)? onUpdateYarn;
+  Function()? navigateToReyarn;
   final Color? backGroundColor;
 
   YarnQuotePreview(
@@ -183,10 +183,9 @@ class _YarnQuotePreviewState extends State<YarnQuotePreview> {
             height: 8,
           ),
         ],
-        if (widget.yarn.factChecked == true)
-          _buildFactCheckWidget()
-        else
-          const SizedBox.shrink(),
+        widget.yarn.factChecked == true
+            ? _buildFactCheckWidget()
+            : const SizedBox.shrink(),
         const SizedBox(height: 6),
         // _buildTopActions(),
       ],
@@ -381,7 +380,7 @@ class _YarnQuotePreviewState extends State<YarnQuotePreview> {
 
     widget.yarn.body.toString().split(' ').forEach((ch) {
       list.add(ch);
-      // print(ch);
+      // debugPrint(ch);
     });
 
     list.forEach((data) {

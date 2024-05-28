@@ -11,13 +11,12 @@ import 'package:uuid/uuid.dart';
 import '../../../../data/state_notifier.dart';
 import '../../../../locale/app_localization.dart';
 import '../../../../utils/navigation_util.dart';
-import '../../../../utils/slydo_app_icon_icons.dart';
 import '../../../../utils/util.dart';
 import '../../../../widget/dialog.dart';
 import '../../../../widget/rounded_background_icon.dart';
 import '../../../moments/models/moments_model.dart';
 import '../../../moments/screens/moment_detail/moment_comment.screen.dart';
-import '../../messaging/chat/models/chat_conversation.dart';
+import '../../messaging/chat/models/ChatConversation.dart';
 import '../../messaging/chat/share_in_chat/ShareInChat.dart';
 import '../add_or_edit_yarn_screen.dart';
 import '../models/Topics/CommentDetails.dart';
@@ -29,18 +28,18 @@ import '../yarn_list_screen.dart';
 import '../yarn_report_screen.dart';
 
 class YarnOptions extends StatefulWidget {
-  final Yarn? yarnTopic;
-  final YarnComment? commentDetail;
-  final bool? isComment;
-  final bool? isShareOption;
-  final Function(Yarn)? onDeleteYarn;
-  final Function(YarnComment)? onDeleteComment;
-  final Function(Yarn)? onUpdate;
-  final Function(YarnComment, bool)? onUpdateMomentComment;
-  final Function(bool)? minusComment;
-  final String? momentUsername;
-  final MomentsModel? moment;
-  final Function(bool)? reloadView;
+  Yarn? yarnTopic;
+  YarnComment? commentDetail;
+  bool? isComment;
+  bool? isShareOption;
+  Function(Yarn)? onDeleteYarn;
+  Function(YarnComment)? onDeleteComment;
+  Function(Yarn)? onUpdate;
+  Function(YarnComment, bool)? onUpdateMomentComment;
+  Function(bool)? minusComment;
+  String? momentUsername;
+  MomentsModel? moment;
+  Function(bool)? reloadView;
   final Function(bool)? callbackUpdateCommentCount;
 
   YarnOptions(
@@ -64,7 +63,7 @@ class YarnOptions extends StatefulWidget {
 
 class _YarnOptionsState extends State<YarnOptions> {
   late YarnDashboardBloc yarnDashboardBloc;
-  // late PageController _pageViewController;
+  late PageController _pageViewController;
   int currentAskTapOnHome = 0;
   bool? pinned = false;
 
@@ -339,51 +338,51 @@ class _YarnOptionsState extends State<YarnOptions> {
     );
   }
 
-  void showDeleteYarnDialog() {
+  showDeleteYarnDialog() {
     showDialogBox(
         context: context,
-        actionOneTextColor: white,
-        actionOneBgColor: mateRed,
-        actionTwoTextColor: blackFont,
-        actionTwoBgColor: greyBorderColor,
-        title: 'Delete',
-        actionTwoText: AppLocalization.of(context)!.cancel,
-        actionOneText: AppLocalization.of(context)!.delete,
+        actionOneTextColor: blackFont,
+        actionOneBgColor: greyBorderColor,
+        actionTwoTextColor: white,
+        actionTwoBgColor: mateRed,
+        title: 'Delete Yarn',
+        actionOneText: AppLocalization.of(context)!.discard,
+        actionTwoText: AppLocalization.of(context)!.continueMsg,
         description: 'Are you sure you want to delete this yarn?',
         roundedBackgroundIcon: RoundedBackgroundIcon(
           enableMargin: false,
           width: 90,
           height: 90,
-          image: Icon(SlydoAppIcon.delete, color: mateRed),
+          image: Image.asset('assets/images/delete_dialog_icon.png'),
         ),
-        leftButtonOnPressed: () => deleteYarnAndQuestion(),
-        rightButtonOnPressed: () {
+        rightButtonOnPressed: () => deleteYarnAndQuestion(),
+        leftButtonOnPressed: () {
           return Navigator.pop(context);
         });
   }
 
-  void showDeleteYarnCommentDialog() {
+  showDeleteYarnCommentDialog() {
     showDialogBox(
         context: context,
-        actionOneTextColor: white,
-        actionOneBgColor: mateRed,
-        actionTwoTextColor: blackFont,
-        actionTwoBgColor: greyBorderColor,
-        title: 'Delete',
-        actionTwoText: AppLocalization.of(context)!.cancel,
-        actionOneText: AppLocalization.of(context)!.delete,
+        actionOneTextColor: blackFont,
+        actionOneBgColor: greyBorderColor,
+        actionTwoTextColor: white,
+        actionTwoBgColor: mateRed,
+        title: 'Delete Comment',
+        actionOneText: AppLocalization.of(context)!.discard,
+        actionTwoText: AppLocalization.of(context)!.continueMsg,
         description: 'Are you sure you want to delete this comment?',
         roundedBackgroundIcon: RoundedBackgroundIcon(
           enableMargin: false,
           width: 90,
           height: 90,
-          image: Icon(SlydoAppIcon.delete, color: mateRed),
+          image: Image.asset('assets/images/delete_dialog_icon.png'),
         ),
-        leftButtonOnPressed: () {
+        rightButtonOnPressed: () {
           // Navigator.pop(context);
           return deleteComment();
         },
-        rightButtonOnPressed: () {
+        leftButtonOnPressed: () {
           return Navigator.pop(context);
         });
   }
@@ -616,6 +615,7 @@ class _YarnOptionsState extends State<YarnOptions> {
 
   Widget _buildTile(
       {String? icon,
+      double? width,
       String? title,
       String? subTitle,
       GestureTapCallback? onTap}) {
@@ -628,7 +628,7 @@ class _YarnOptionsState extends State<YarnOptions> {
             Container(
               padding: const EdgeInsets.all(10.0),
               width: 40,
-              decoration: BoxDecoration(
+              decoration: new BoxDecoration(
                 shape: BoxShape.circle,
                 color: Colors.blue.withOpacity(0.05),
               ),
@@ -762,12 +762,12 @@ class _YarnOptionsState extends State<YarnOptions> {
   }
 
   Future deleteYarnAndQuestion() async {
-    final bool isQuestion = widget.yarnTopic!.isQuestion;
+    final bool? isQuestion = widget.yarnTopic!.isQuestion;
     final bool? data =
         await YarnAuth().deleteSingleTopics(yarnId: widget.yarnTopic!.id);
     if (data != null && data) {
       showToast(
-          message: isQuestion
+          message: isQuestion ?? false
               ? "Question Deleted Successfully"
               : "Yarn Deleted Successfully");
       if (widget.yarnTopic != null) {

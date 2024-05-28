@@ -17,37 +17,37 @@ Future<List<ShippingAddress>> getAddressListing(
   String? listNext = "";
   String? listPrevious = "";
   final List<ShippingAddress> addressListing = [];
-  // int? listCount = 0;
+  int? listCount = 0;
   final Map<String, dynamic> data = {
     "addresses": addressIdList,
   };
 
-  if (listNext.isNotEmpty) {
+  if (listNext != null) {
     final Map<String, dynamic>? result = await ShippingProcessAuthService()
         .getAddressListing(listNext, listPrevious, data);
 
-    // listCount = result!['count'];
-    listNext = result?['next'];
-    listPrevious = result?['previous'];
-    final tempList = result?['results'];
+    listCount = result!['count'];
+    listNext = result['next'];
+    listPrevious = result['previous'];
+    final tempList = result['results'];
     addressListing.addAll(tempList);
   }
   return addressListing;
 }
 
 Future<List<SharedCartModel>> getCartList() async {
-  // int? listCount = 0;
+  int? listCount = 0;
   String? listNext = "";
   String? listPrevious = "";
   final List<SharedCartModel> cartNameListing = [];
-  if (listNext.isNotEmpty) {
+  if (listNext != null) {
     final Map<String, dynamic>? result =
         await SharedCartAuthService().getSharedCartList(listNext, listPrevious);
 
-    // listCount = result?['count'];
-    listNext = result?['next'];
-    listPrevious = result?['previous'];
-    final tempList = result?['results'];
+    listCount = result!['count'];
+    listNext = result['next'];
+    listPrevious = result['previous'];
+    final tempList = result['results'];
     cartNameListing.addAll(tempList);
   }
   return cartNameListing;
@@ -125,7 +125,7 @@ Future<bool?> buildNewCartAlertDialog(
 
         final SharedCartBloc sharedCartBloc =
             Provider.of<SharedCartBloc>(context, listen: false);
-        final int? index = sharedCartBloc.cartList
+        final int index = sharedCartBloc.cartList
             .indexWhere((item) => item.id == notification['data']['cart_id']);
 
         if (index == null || index < 0) {

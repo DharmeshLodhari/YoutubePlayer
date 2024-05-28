@@ -16,6 +16,7 @@ import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/bottom_sheet_item_with_check.dart';
+import 'package:Slydo/widget/customized_passcode_sheet/bottomsheet_passcode.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
@@ -108,6 +109,7 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
                 getReferralCodeTile(),
                 getIncomingSoundTile(),
                 getOutGoingSoundTile(),
+                getAccountBalanceVisibilityTile(),
                 getCurrencyTile(),
                 getLanguageTile(),
                 getSettingsTile(
@@ -579,6 +581,60 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
                 userBloc.chatMessageSettings = chatMessageSettings;
                 DatabaseHelper()
                     .updateGeneralSettings(chatMessageSettings.toDBJson());
+              },
+              activeTrackColor: navyBlueLight,
+              activeColor: navyBlue,
+              inactiveTrackColor: navyBlueLight,
+            ),
+          ),
+          onTap: () {},
+        ),
+      ),
+    );
+  }
+
+  Widget getAccountBalanceVisibilityTile() {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      shadowColor: boxShadowTwo,
+      elevation: 0,
+      child: Container(
+        decoration: decorateBox(),
+        child: ListTile(
+          title: Text(
+            "Account Balance Visibility",
+            maxLines: 1,
+            style: TextStyle(
+              color: blackFont,
+              fontWeight: FontWeight.w600,
+              fontSize: 14,
+              fontFamily: "Inter",
+            ),
+            overflow: TextOverflow.fade,
+            softWrap: false,
+          ),
+          trailing: Container(
+            width: 60,
+            child: Switch(
+              value: userBloc.chatMessageSettings.accountBalanceVisibility!,
+              onChanged: (value) {
+                BottomSheetPassCode(
+                  context: context,
+                  isValidCallback: () {
+                    final ChatMessageSettings chatMessageSettings =
+                        ChatMessageSettings();
+                    chatMessageSettings.accountBalanceVisibility =
+                        userBloc.chatMessageSettings.accountBalanceVisibility;
+                    chatMessageSettings.accountBalanceVisibility = value;
+                    userBloc.chatMessageSettings = chatMessageSettings;
+                    DatabaseHelper()
+                        .updateGeneralSettings(chatMessageSettings.toDBJson());
+                  },
+                  cancelCallBack: () {
+                    Navigator.pop(context);
+                  },
+                );
               },
               activeTrackColor: navyBlueLight,
               activeColor: navyBlue,

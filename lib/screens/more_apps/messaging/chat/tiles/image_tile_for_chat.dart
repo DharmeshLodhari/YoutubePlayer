@@ -2,7 +2,7 @@ import 'dart:ui' as ui;
 
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/routes/route_constants.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_conversation.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -13,7 +13,7 @@ class ImageTileForChat extends StatelessWidget {
   final Map<String, dynamic>? message;
   final ChatConversation? chatConversation;
 
-  const ImageTileForChat({super.key, this.message, this.chatConversation});
+  ImageTileForChat({this.message, this.chatConversation});
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +46,7 @@ class ImageTileForChat extends StatelessWidget {
                     "type": "image",
                     "file": message!['media'],
                     "message": message!['text'],
-                    "poster": message!["poster"]
+                    "poster": message!["poster"] ?? null
                   },
                 );
               },
@@ -168,7 +168,7 @@ class ImageTileForChat extends StatelessWidget {
                           fit: BoxFit.cover,
                           imageBuilder: buildImage,
                           progressIndicatorBuilder:
-                              (context, url, downloadProgress) => SizedBox(
+                              (context, url, downloadProgress) => Container(
                             height: MediaQuery.of(context).size.width / 3,
                             width: MediaQuery.of(context).size.width / 1.8,
                             child: Center(
@@ -192,7 +192,7 @@ class ImageTileForChat extends StatelessWidget {
 
             //Message tick
             if (isSend)
-              SizedBox(
+              Container(
                 width: 20,
                 child: isSend
                     ? Center(

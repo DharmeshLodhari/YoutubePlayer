@@ -13,9 +13,9 @@ import '../../../../../utils/util.dart';
 import '../../../user_profile/models/job_service_model.dart';
 
 class JobCardChatDescription extends StatefulWidget {
-  const JobCardChatDescription({Key? key, required this.jobMessage})
+  JobCardChatDescription({Key? key, required this.jobMessage})
       : super(key: key);
-  final Map<String, dynamic> jobMessage;
+  final jobMessage;
 
   @override
   State<JobCardChatDescription> createState() => _JobCardChatDescriptionState();
@@ -30,20 +30,20 @@ class _JobCardChatDescriptionState extends State<JobCardChatDescription> {
   Map<String, dynamic>? authorData;
 
   String getTimeDifference(String date) {
-    final difference = DateTime.now().difference(DateTime.parse(date));
+    var difference = DateTime.now().difference(DateTime.parse(date));
     String time = '';
-    debugPrint('$difference-----');
+    debugPrint(difference.toString() + '-----');
 
     if (difference > const Duration(hours: 24)) {
-      time = '${difference.inDays} days';
+      time = difference.inDays.toString() + ' days';
     } else if (difference > const Duration(hours: 1)) {
-      time = '${difference.inHours} hrs';
+      time = difference.inHours.toString() + ' hrs';
     } else if (difference > const Duration(minutes: 1)) {
-      time = '${difference.inMinutes} mins';
+      time = difference.inMinutes.toString() + ' mins';
     } else if (difference > const Duration(seconds: 1)) {
-      time = '${difference.inSeconds} sec';
+      time = difference.inSeconds.toString() + ' sec';
     } else {
-      time = '${difference.inMilliseconds} ms';
+      time = difference.inMilliseconds.toString() + ' ms';
     }
 
     return time;
@@ -54,15 +54,15 @@ class _JobCardChatDescriptionState extends State<JobCardChatDescription> {
     log('message${widget.jobMessage.toString()}');
     userBloc = Provider.of<UserBloc>(context);
 
-    if (widget.jobMessage["meta_data"] is String) {
+    if (widget.jobMessage!["meta_data"] is String) {
       data = jsonDecode(widget.jobMessage["meta_data"]);
-    } else if (widget.jobMessage["meta_data"] is Map) {
+    } else if (widget.jobMessage!["meta_data"] is Map) {
       data = widget.jobMessage["meta_data"];
     }
 
     jobServiceToChatModel = JobServiceToChatModel.fromJson(data!);
 
-    final bool isSend = widget.jobMessage['author'] == userBloc.user.userName;
+    bool isSend = widget.jobMessage['author'] == userBloc.user.userName;
 
     return GestureDetector(
       onTap: () =>
@@ -238,7 +238,7 @@ class _JobCardChatDescriptionState extends State<JobCardChatDescription> {
                   width: 20,
                   child: isSend
                       ? Center(
-                          child: getMessageTick(message: widget.jobMessage),
+                          child: getMessageTick(message: widget.jobMessage!),
                         )
                       : Container(),
                 )

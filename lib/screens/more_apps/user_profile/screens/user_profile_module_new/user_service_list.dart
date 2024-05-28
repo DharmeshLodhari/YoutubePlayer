@@ -82,7 +82,7 @@ class _UserServiceListState extends State<UserServiceList> {
         key: _serviceScaffoldKey,
         body: Container(
           color: lightGrey,
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
           child: SmartRefresher(
             enablePullDown: true,
             header: WaterDropHeader(
@@ -99,51 +99,42 @@ class _UserServiceListState extends State<UserServiceList> {
   }
 
   Widget _buildList() {
-    return Column(
-      children: [
-        if (noServiceInList)
-          Expanded(
-            child: NoItemInList(
-              msg: AppLocalization.of(context)!.noProducts,
-            ),
-          )
-        else
-          Expanded(
-            child: ListView(
-              children: [
-                _buildServiceList(),
-                if (isServiceLoading)
-                  Shimmer.fromColors(
-                    baseColor: Colors.white,
-                    highlightColor: greyBorderColor,
-                    child: GridView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      gridDelegate:
-                          const SliverGridDelegateWithMaxCrossAxisExtent(
-                        mainAxisExtent: 180,
-                        mainAxisSpacing: 16,
-                        crossAxisSpacing: 15,
-                        maxCrossAxisExtent: 200,
-                      ),
-                      itemCount: 2,
-                      itemBuilder: (context, index) {
-                        return Card(
-                          color: Colors.grey,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        );
-                      },
+    if (noServiceInList)
+      return NoItemInList(
+        msg: AppLocalization.of(context)!.noProducts,
+      );
+    else
+      return ListView(
+        children: [
+          Container(child: _buildServiceList()),
+          if (isServiceLoading)
+            Shimmer.fromColors(
+              baseColor: Colors.white,
+              highlightColor: greyBorderColor,
+              child: GridView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                  mainAxisExtent: 180,
+                  mainAxisSpacing: 16,
+                  crossAxisSpacing: 15,
+                  maxCrossAxisExtent: 200,
+                ),
+                itemCount: 2,
+                itemBuilder: (context, index) {
+                  return Card(
+                    color: Colors.grey,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                  )
-                else
-                  const SizedBox.shrink(),
-              ],
-            ),
-          ),
-      ],
-    );
+                  );
+                },
+              ),
+            )
+          else
+            const SizedBox.shrink(),
+        ],
+      );
   }
 
   Widget _buildServiceList() {
@@ -168,7 +159,7 @@ class _UserServiceListState extends State<UserServiceList> {
                 ),
                 gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
                   mainAxisSpacing: 8,
-                  mainAxisExtent: 274,
+                  mainAxisExtent: 260,
                   crossAxisSpacing: 15,
                   maxCrossAxisExtent: 200,
                 ),
@@ -251,27 +242,27 @@ class _UserServiceListState extends State<UserServiceList> {
       ),
     );
 
-    // Widget getOutOfStockTag(int index) {
-    //   if (!serviceList[index].isAvailable!) {
-    //     if (widget.isOwner) {
-    //       return Positioned(
-    //         left: 38,
-    //         top: 24,
-    //         child: getColoredLabeledWidget(
-    //             text: AppLocalization.of(context)!.outOfStock,
-    //             color: starYellow),
-    //       );
-    //     } else {
-    //       return Positioned(
-    //         left: 8,
-    //         top: 20,
-    //         child: getColoredLabeledWidget(
-    //             text: AppLocalization.of(context)!.outOfStock,
-    //             color: starYellow),
-    //       );
-    //     }
-    //   }
-    //   return const SizedBox.shrink();
-    // }
+    Widget getOutOfStockTag(int index) {
+      if (!serviceList[index].isAvailable!) {
+        if (widget.isOwner) {
+          return Positioned(
+            left: 38,
+            top: 24,
+            child: getColoredLabeledWidget(
+                text: AppLocalization.of(context)!.outOfStock,
+                color: starYellow),
+          );
+        } else {
+          return Positioned(
+            left: 8,
+            top: 20,
+            child: getColoredLabeledWidget(
+                text: AppLocalization.of(context)!.outOfStock,
+                color: starYellow),
+          );
+        }
+      }
+      return const SizedBox.shrink();
+    }
   }
 }

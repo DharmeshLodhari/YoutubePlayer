@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:Slydo/data/state_notifier.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_conversation.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/Envelope.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
@@ -14,7 +14,7 @@ class EnvelopeTileForChat extends StatefulWidget {
   final Map<String, dynamic>? message;
   final ChatConversation? chatConversation;
 
-  const EnvelopeTileForChat({super.key, this.message, this.chatConversation});
+  EnvelopeTileForChat({this.message, this.chatConversation});
 
   @override
   _EnvelopeTileForChatState createState() => _EnvelopeTileForChatState();
@@ -45,9 +45,9 @@ class _EnvelopeTileForChatState extends State<EnvelopeTileForChat> {
 
     // customerProfile = CustomerProfile.fromJson(data);
 
-    final bool isSend = widget.message!["author"] == userBloc.user.userName;
+    bool isSend = widget.message!["author"] == userBloc.user.userName;
 
-    final Map<String, dynamic>? message = widget.message;
+    Map<String, dynamic>? message = widget.message;
 
     return Column(
       children: [
@@ -66,7 +66,7 @@ class _EnvelopeTileForChatState extends State<EnvelopeTileForChat> {
                   message: message, envelope: envelope, isSend: isSend),
             ),
             if (isSend)
-              SizedBox(
+              Container(
                 width: 20,
                 child: isSend
                     ? Center(
@@ -208,7 +208,7 @@ class _EnvelopeTileForChatState extends State<EnvelopeTileForChat> {
                   ),
                 ),
                 if (widget.chatConversation!.isGroupConversation!)
-                  SizedBox(
+                  Container(
                     width: 60,
                     child: Stack(
                       children: [
@@ -267,7 +267,7 @@ class _EnvelopeTileForChatState extends State<EnvelopeTileForChat> {
       onTap: () {
         if (isEmptyEnvelope) {
           if (envelope.toCustomer == userBloc.user.userName) {
-            final ChatConversation _chatConversation =
+            ChatConversation _chatConversation =
                 ChatConversation.fromChatConversation(widget.chatConversation!);
 
             if (widget.chatConversation!.isGroupConversation!) {

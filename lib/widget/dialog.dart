@@ -2,7 +2,9 @@ import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/cutomized_alert/alert_style.dart';
+import 'package:Slydo/widget/cutomized_alert/border_dialog_button.dart';
 import 'package:Slydo/widget/cutomized_alert/customized_alert.dart';
+import 'package:Slydo/widget/cutomized_alert/customized_alert_column_button.dart';
 import 'package:Slydo/widget/cutomized_alert/dailog_button_stateful.dart';
 import 'package:Slydo/widget/cutomized_alert/dialog_button.dart';
 import 'package:Slydo/widget/cutomized_alert/modified_customized_alert.dart';
@@ -90,6 +92,62 @@ Future<bool?> showDialogBoxWithTitle(
         textColor: actionTextColor,
         text: actionText,
         backgroundColor: actionBgColor,
+      )
+    ],
+  ).show();
+}
+
+Future<bool?> showDialogBoxWithColumnButton(
+    {Widget? content,
+    required BuildContext context,
+    String? title,
+    String? description,
+    String? actionOne,
+    bool firstActionPrimary = true,
+    String? image,
+    Color? actionOneBgColor,
+    Color? actionOneTextColor,
+    Color? actionTwoBgColor,
+    Color? actionTwoTextColor,
+    String? actionTwo,
+    Function()? ButtonOneOnPressed,
+    Function()? ButtonTwoOnPressed,
+    bool isOverlayTapDismiss = true,
+    RoundedBackgroundIcon? roundedBackgroundIcon}) {
+  return CustomizedAlertColumnButton(
+    title: title,
+    content: content,
+    context: context,
+    desc: description,
+    roundedBackgroundIcon: roundedBackgroundIcon,
+    style: AlertStyle(
+      isOverlayTapDismiss: isOverlayTapDismiss,
+      isCloseButton: false,
+    ),
+    buttons: [
+      BorderDialogButton(
+        outlineBorder: true,
+        onPressed: () {
+          Navigator.pop(context, firstActionPrimary ? false : true);
+          if (ButtonOneOnPressed != null) {
+            ButtonOneOnPressed();
+          }
+        },
+        textColor: actionOneTextColor,
+        text: actionOne,
+        backgroundColor: actionOneBgColor,
+      ),
+      BorderDialogButton(
+        outlineBorder: false,
+        onPressed: () {
+          Navigator.pop(context, firstActionPrimary ? false : true);
+          if (ButtonTwoOnPressed != null) {
+            ButtonTwoOnPressed();
+          }
+        },
+        textColor: actionTwoTextColor,
+        text: actionTwo,
+        backgroundColor: actionTwoBgColor,
       )
     ],
   ).show();
@@ -407,7 +465,7 @@ Future<T?> showPickItemDialog<T>({
       insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
       contentPadding: EdgeInsets.zero,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      content: SizedBox(
+      content: Container(
         width: MediaQuery.of(context).size.width - 40,
         child: Card(
           margin: EdgeInsets.zero,
@@ -484,7 +542,7 @@ void showSwipeHintCard({required BuildContext context}) {
     builder: (context) => Dialog(
       elevation: 0,
       insetPadding: const EdgeInsets.symmetric(horizontal: 20),
-      child: SizedBox(
+      child: Container(
         width: MediaQuery.of(context).size.width,
         child: Image.asset(
           "assets/images/card_swipe_hint.png",
@@ -501,7 +559,7 @@ void showHoldHintCard({required BuildContext context}) {
     builder: (context) => Dialog(
       elevation: 0,
       insetPadding: const EdgeInsets.symmetric(horizontal: 20),
-      child: SizedBox(
+      child: Container(
         width: MediaQuery.of(context).size.width,
         child: Image.asset(
           "assets/images/card_hold_hint.png",
@@ -578,7 +636,7 @@ Future<bool> showInAppLocationAlertPopUp(
       child: Dialog(
         elevation: 0,
         insetPadding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-        child: SizedBox(
+        child: Container(
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height,
           child: Container(

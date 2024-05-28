@@ -16,13 +16,12 @@ import 'package:provider/provider.dart';
 import '../../../../../locale/app_localization.dart';
 import '../../../../../routes/route_constants.dart';
 import '../../../../../utils/my_audio_player.dart';
-import '../../../../../utils/slydo_app_icon_icons.dart';
 import '../../../../../widget/dialog.dart';
 import '../../../../../widget/rounded_background_icon.dart';
 
 // ignore: must_be_immutable
 class EnvelopeDetailScreen extends StatefulWidget {
-  final dynamic arguments;
+  final arguments;
   EnvelopeDetailScreen({required this.arguments});
 
   @override
@@ -32,11 +31,11 @@ class EnvelopeDetailScreen extends StatefulWidget {
 
 class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
     with SingleTickerProviderStateMixin {
-  Map<String, dynamic> arguments;
+  var arguments;
 
   bool isLoading = true;
 
-  _EnvelopeDetailScreenState({required this.arguments});
+  _EnvelopeDetailScreenState({this.arguments});
 
   CustomerProfile? senderCustomer;
 
@@ -96,7 +95,7 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
     debugPrint("envelope ${envelope!.toJson()}");
     await getSearchedUser();
     if (envelope!.type != "empty-envelop") {
-      final Envelope? envelopeFromServer = await MessageAuth()
+      final Envelope envelopeFromServer = await MessageAuth()
           .getEnvelope(envelope: envelope!, id: data!['id'])
           .catchError((error) {
         deleteChatMessage();
@@ -346,24 +345,24 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
         : Container();
   }
 
-  void showDialogToDeleteEnvelope() {
+  showDialogToDeleteEnvelope() {
     showDialogBox(
       context: context,
-      actionOneTextColor: white,
-      actionOneBgColor: mateRed,
-      actionTwoTextColor: blackFont,
-      actionTwoBgColor: greyBorderColor,
-      title: 'Delete',
-      actionTwoText: AppLocalization.of(context)!.cancel,
-      actionOneText: AppLocalization.of(context)!.delete,
+      actionOneTextColor: blackFont,
+      actionOneBgColor: greyBorderColor,
+      actionTwoTextColor: white,
+      actionTwoBgColor: mateRed,
+      title: 'Delete Envelope',
+      actionOneText: AppLocalization.of(context)!.discard,
+      actionTwoText: AppLocalization.of(context)!.continueMsg,
       description: 'Are you sure you want to delete this envelope?',
       roundedBackgroundIcon: RoundedBackgroundIcon(
         enableMargin: false,
         width: 90,
         height: 90,
-        image: Icon(SlydoAppIcon.delete, color: mateRed),
+        image: Image.asset('assets/images/delete_dialog_icon.png'),
       ),
-      leftButtonOnPressed: () {
+      rightButtonOnPressed: () {
         deleteEnvelope();
       },
     );
@@ -393,7 +392,7 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
     }
   }
 
-  Widget getAppbar(BuildContext context) {
+  Widget getAppbar(var context) {
     return SliverOverlapAbsorber(
       handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
       sliver: SliverSafeArea(
@@ -418,15 +417,17 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
               Navigator.pop(context);
             },
           ),
-          title: const Text(
-            "Details",
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 22,
-              fontWeight: FontWeight.w600,
+          title: Container(
+            child: const Text(
+              "Details",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 22,
+                fontWeight: FontWeight.w600,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
           ),
           titleSpacing: 0,
           backgroundColor: navyBlue,

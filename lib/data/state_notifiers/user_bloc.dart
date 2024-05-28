@@ -30,14 +30,6 @@ class UserBloc extends ChangeNotifier {
     notifyListeners();
   }
 
-  bool get isStaffLogin => _isStaffLogin;
-  bool _isStaffLogin = false;
-
-  set isStaffLogin(bool isStaffLogin) {
-    _isStaffLogin = isStaffLogin;
-    notifyListeners();
-  }
-
   // Getter
   User get user => _user;
 
@@ -74,7 +66,7 @@ class UserBloc extends ChangeNotifier {
 
   void removeProfileCover() {
     _user.wallpaper = "";
-    _user.userAbout!.wallpaper = "";
+    _user.userAbout?.wallpaper = "";
     notifyListeners();
   }
 

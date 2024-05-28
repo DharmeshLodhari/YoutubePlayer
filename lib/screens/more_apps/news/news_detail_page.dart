@@ -1,6 +1,6 @@
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/news/CustomChip.dart';
-import 'package:Slydo/screens/more_apps/news/models/news_detail_item.dart';
+import 'package:Slydo/screens/more_apps/news/models/NewsDetailItem.dart';
 import 'package:Slydo/screens/more_apps/news/news_tile.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -33,7 +33,7 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
 
   NewsDetailItem newsDetailItem = NewsDetailItem();
   bool isLoading = false;
-  final RefreshController _refreshController =
+  RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
   @override
@@ -44,7 +44,7 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      final connectionResult = value;
+      var connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         getResult();
@@ -408,15 +408,17 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
   Widget relatedPost() {
     return Column(
         children: newsDetailItem.newsListItems!
-            .map((news) => Column(
-                  children: [
-                    NewsTile(
-                      newsListItem: news,
-                    ),
-                    const SizedBox(
-                      height: 16,
-                    )
-                  ],
+            .map((news) => Container(
+                  child: Column(
+                    children: [
+                      NewsTile(
+                        newsListItem: news,
+                      ),
+                      const SizedBox(
+                        height: 16,
+                      )
+                    ],
+                  ),
                 ))
             .toList());
   }

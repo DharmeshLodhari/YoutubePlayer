@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:Slydo/data/state_notifier.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_conversation.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
 import 'package:Slydo/screens/more_apps/yarn/models/Topics/CommentDetails.dart';
 import 'package:Slydo/screens/more_apps/yarn/models/Topics/yarn_model.dart';
@@ -35,7 +35,7 @@ class CommentTileForChat extends StatefulWidget {
   final Map<String, dynamic>? message;
   final ChatConversation? chatConversation;
 
-  const CommentTileForChat(
+  CommentTileForChat(
       {Key? key, required this.message, required this.chatConversation})
       : super(key: key);
 
@@ -46,7 +46,7 @@ class CommentTileForChat extends StatefulWidget {
 class _CommentTileForChatState extends State<CommentTileForChat> {
   late UserBloc userBloc;
   late YarnQuestionForChatModel yarnQuestionForChatModel;
-  late YarnComment? yarnComment;
+  late YarnComment yarnComment;
   bool isLoading = false;
   bool isMediaPresent = false;
   bool isNewModel = false;
@@ -70,7 +70,7 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
       yarnComment = YarnComment.fromJson(jsonDecode(meta));
       if (yarnComment != null) {
         final Map<String, dynamic> linkData =
-            detectLinkInText(messageDecoderWithEmoji(yarnComment?.comment)!);
+            detectLinkInText(messageDecoderWithEmoji(yarnComment.comment)!);
 
         if (linkData["hasLink"]) {
           isUrlPresent = true;
@@ -79,14 +79,14 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
           if (!linkToBePreview!.contains("http")) {
             // debugPrint('Link to view question::: ${linkData.toString()}');
 
-            linkToBePreview = "http://${linkToBePreview!}";
+            linkToBePreview = "http://" + linkToBePreview!;
           }
         }
-        if (yarnComment?.attachment != null) {
+        if (yarnComment.attachment != null) {
           isAttachmentPresent = true;
         }
 
-        if (yarnComment?.media != null) {
+        if (yarnComment.media.isNotEmpty) {
           isMediaPresent = true;
         }
       }
@@ -140,7 +140,6 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
 
         if (body['comment_type'] == 'yarn') {
           if (yarnTopic != null) {
-            if (!mounted) return;
             NavigationUtil.push(
               context,
               screen: YarnDetailScreen(
@@ -151,7 +150,6 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
         } else {
           final YarnComment yarnComment = YarnComment.fromJson(body);
           if (yarnTopic != null) {
-            if (!mounted) return;
             NavigationUtil.push(
               context,
               screen: YarnCommentDetailScreen(
@@ -221,12 +219,12 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
                                 ),
                               ],
                             )
-                          : const SizedBox(
+                          : Container(
                               height: 0,
                               width: 0,
                             )
                     else
-                      const SizedBox(
+                      Container(
                         height: 0,
                         width: 0,
                       ),
@@ -246,7 +244,7 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
                 ),
               ),
               if (isSend)
-                SizedBox(
+                Container(
                   width: 20,
                   child: isSend
                       ? Center(
@@ -370,7 +368,7 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
     var removedLink = '';
 
     removedLink = removeLinksAndWords(
-        yarnComment?.comment != null ? yarnComment?.comment ?? "" : '', []);
+        yarnComment.comment != null ? yarnComment.comment! : '', []);
 
     if (isUrlPresent) {
       return Column(
@@ -411,7 +409,7 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
               key: ValueKey("${linkToBePreview}233"),
               url: linkToBePreview!,
               builder: (info) {
-                if (info == null) {
+                if (info == null)
                   return InkWell(
                     onTap: () {
                       launchUrl(Uri.parse(linkToBePreview!));
@@ -427,7 +425,6 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
                       ),
                     ),
                   );
-                }
                 if (info is WebImageInfo) {
                   return CachedNetworkImage(
                     imageUrl: info.image!,
@@ -437,12 +434,11 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
                 }
 
                 final WebInfo webInfo = info as WebInfo;
-                if (!WebAnalyzer.isNotEmpty(webInfo.title)) {
+                if (!WebAnalyzer.isNotEmpty(webInfo.title))
                   return const SizedBox(
                     height: 0,
                     width: 0,
                   );
-                }
                 return Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
@@ -494,21 +490,23 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
   }
 
   Widget _buildSingleImage({required BuildContext context}) {
-    return SizedBox(
+    return Container(
       width: double.infinity,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(10),
-        child: CachedNetworkImage(
-          imageUrl: yarnQuestionForChatModel.media!.first.file!,
-          fit: BoxFit.cover,
-          errorWidget: imageErrorWidget,
+      child: Container(
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(10),
+          child: CachedNetworkImage(
+            imageUrl: yarnQuestionForChatModel.media!.first.file!,
+            fit: BoxFit.cover,
+            errorWidget: imageErrorWidget,
+          ),
         ),
       ),
     );
   }
 
   Widget _buildTwoImageRow({required BuildContext context}) {
-    return SizedBox(
+    return Container(
       height: 175,
       child: Row(
         children: yarnQuestionForChatModel.media!
@@ -540,7 +538,7 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
   }
 
   Widget _buildThreeImageRow({required BuildContext context}) {
-    return SizedBox(
+    return Container(
       height: 175,
       child: Row(
         children: [
@@ -610,100 +608,102 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
   }
 
   Widget _buildFourImageRow({required BuildContext context}) {
-    return Column(
-      children: [
-        Row(
-          children: [
-            Expanded(
-              child: Container(
-                height: (MediaQuery.of(context).size.width - 40) / 2,
-                width: (MediaQuery.of(context).size.width - 40) / 2,
-                padding: const EdgeInsets.symmetric(horizontal: 5),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: CachedNetworkImage(
-                    imageUrl: yarnQuestionForChatModel.media![0].file!,
-                    fit: BoxFit.cover,
-                    height: double.infinity,
-                    width: double.infinity,
-                    errorWidget: imageErrorWidget,
+    return Container(
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Container(
+                  height: (MediaQuery.of(context).size.width - 40) / 2,
+                  width: (MediaQuery.of(context).size.width - 40) / 2,
+                  padding: const EdgeInsets.symmetric(horizontal: 5),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: CachedNetworkImage(
+                      imageUrl: yarnQuestionForChatModel.media![0].file!,
+                      fit: BoxFit.cover,
+                      height: double.infinity,
+                      width: double.infinity,
+                      errorWidget: imageErrorWidget,
+                    ),
                   ),
                 ),
               ),
-            ),
-            Expanded(
-              child: Container(
-                height: (MediaQuery.of(context).size.width - 40) / 2,
-                width: (MediaQuery.of(context).size.width - 40) / 2,
-                padding: const EdgeInsets.symmetric(horizontal: 5),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
+              Expanded(
+                child: Container(
+                  height: (MediaQuery.of(context).size.width - 40) / 2,
+                  width: (MediaQuery.of(context).size.width - 40) / 2,
+                  padding: const EdgeInsets.symmetric(horizontal: 5),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: CachedNetworkImage(
+                      imageUrl: yarnQuestionForChatModel.media![1].file!,
+                      fit: BoxFit.cover,
+                      height: double.infinity,
+                      width: double.infinity,
+                      errorWidget: imageErrorWidget,
+                    ),
+                  ),
                 ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: CachedNetworkImage(
-                    imageUrl: yarnQuestionForChatModel.media![1].file!,
-                    fit: BoxFit.cover,
-                    height: double.infinity,
-                    width: double.infinity,
-                    errorWidget: imageErrorWidget,
+              )
+            ],
+          ),
+          const SizedBox(
+            height: 8,
+          ),
+          Row(
+            children: [
+              Expanded(
+                child: Container(
+                  height: (MediaQuery.of(context).size.width - 40) / 2,
+                  width: (MediaQuery.of(context).size.width - 40) / 2,
+                  padding: const EdgeInsets.symmetric(horizontal: 5),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: CachedNetworkImage(
+                      imageUrl: yarnQuestionForChatModel.media![2].file!,
+                      fit: BoxFit.cover,
+                      height: double.infinity,
+                      width: double.infinity,
+                      errorWidget: imageErrorWidget,
+                    ),
                   ),
                 ),
               ),
-            )
-          ],
-        ),
-        const SizedBox(
-          height: 8,
-        ),
-        Row(
-          children: [
-            Expanded(
-              child: Container(
-                height: (MediaQuery.of(context).size.width - 40) / 2,
-                width: (MediaQuery.of(context).size.width - 40) / 2,
-                padding: const EdgeInsets.symmetric(horizontal: 5),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: CachedNetworkImage(
-                    imageUrl: yarnQuestionForChatModel.media![2].file!,
-                    fit: BoxFit.cover,
-                    height: double.infinity,
-                    width: double.infinity,
-                    errorWidget: imageErrorWidget,
+              Expanded(
+                child: Container(
+                  height: (MediaQuery.of(context).size.width - 40) / 2,
+                  width: (MediaQuery.of(context).size.width - 40) / 2,
+                  padding: const EdgeInsets.symmetric(horizontal: 5),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: CachedNetworkImage(
+                      imageUrl: yarnQuestionForChatModel.media![3].file!,
+                      fit: BoxFit.cover,
+                      height: double.infinity,
+                      width: double.infinity,
+                      errorWidget: imageErrorWidget,
+                    ),
                   ),
                 ),
-              ),
-            ),
-            Expanded(
-              child: Container(
-                height: (MediaQuery.of(context).size.width - 40) / 2,
-                width: (MediaQuery.of(context).size.width - 40) / 2,
-                padding: const EdgeInsets.symmetric(horizontal: 5),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: CachedNetworkImage(
-                    imageUrl: yarnQuestionForChatModel.media![3].file!,
-                    fit: BoxFit.cover,
-                    height: double.infinity,
-                    width: double.infinity,
-                    errorWidget: imageErrorWidget,
-                  ),
-                ),
-              ),
-            )
-          ],
-        ),
-      ],
+              )
+            ],
+          ),
+        ],
+      ),
     );
   }
 
@@ -725,8 +725,8 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
         ),
 
         if (isAttachmentPresent &&
-            yarnComment?.attachment != null &&
-            yarnComment?.attachment?.isEmpty != true) ...[
+            yarnComment.attachment != null &&
+            yarnComment.attachment?.isEmpty != true) ...[
           getDisplayWidget(_buildAttachment),
           const SizedBox(
             height: 8,
@@ -762,7 +762,7 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
               child: InkWell(
                 onTap: () {
                   Navigator.pushNamed(context, Routes.USER_PROFILE, arguments: {
-                    "searchedUserName": yarnComment?.authorUsername
+                    "searchedUserName": yarnComment.authorUsername
                   });
                 },
                 child: Column(
@@ -775,7 +775,7 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
                           flex: 3,
                           child: Text(
                             messageDecoderWithEmoji(
-                                    yarnComment?.authorName ?? "") ??
+                                    yarnComment.authorName ?? "") ??
                                 "",
                             style: TextStyle(fontSize: 12, color: yarnBlack),
                           ),
@@ -784,8 +784,8 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
                           width: 4,
                         ),
                         Text(
-                          yarnComment?.createdAt != null
-                              ? '${getGetYarnQuestionDateTime(yarnComment?.createdAt ?? "")}'
+                          yarnComment.createdAt != null
+                              ? '${getGetYarnQuestionDateTime(yarnComment.createdAt!)}'
                               : "",
                           overflow: TextOverflow.fade,
                           style: TextStyle(fontSize: 12, color: yarnBlack),
@@ -793,7 +793,7 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
                       ],
                     ),
                     Text(
-                      "@${yarnComment?.authorUsername}",
+                      "@${yarnComment.authorUsername!}",
                       style: TextStyle(
                         color: yarnBlack,
                         fontSize: 14,
@@ -814,7 +814,7 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
     return InkWell(
       onTap: () {
         Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
-            arguments: yarnComment?.authorAvatar);
+            arguments: yarnComment.authorAvatar!);
       },
       child: Container(
         height: 36,
@@ -822,7 +822,7 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
         decoration: const BoxDecoration(shape: BoxShape.circle),
         child: ClipOval(
           child: CachedNetworkImage(
-            imageUrl: yarnComment?.authorAvatar ?? "",
+            imageUrl: yarnComment.authorAvatar!,
             fit: BoxFit.cover,
             errorWidget: imageErrorWidget,
           ),
@@ -835,9 +835,9 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
     var newString = '';
     final list = [];
 
-    yarnComment?.comment.toString().split(' ').forEach((ch) {
+    yarnComment.comment.toString().split(' ').forEach((ch) {
       list.add(ch);
-      // print(ch);
+      // debugPrint(ch);
     });
 
     list.forEach((data) {
@@ -850,9 +850,9 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
           !data.toString().trim().endsWith('.')) {
         final replaceWith = 'http://' + data;
 
-        newString = '$newString $replaceWith';
+        newString = newString + ' ' + replaceWith.toString();
       } else {
-        newString = '$newString $data';
+        newString = newString + ' ' + data.toString();
       }
     });
 
@@ -895,7 +895,7 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
               key: ValueKey("${linkToBePreview}233"),
               url: linkToBePreview!,
               builder: (info) {
-                if (info == null) {
+                if (info == null)
                   return InkWell(
                     onTap: () {
                       launchUrl(Uri.parse(linkToBePreview!));
@@ -911,7 +911,6 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
                       ),
                     ),
                   );
-                }
                 if (info is WebImageInfo) {
                   return CachedNetworkImage(
                     imageUrl: info.image!,
@@ -921,12 +920,11 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
                 }
 
                 final WebInfo webInfo = info as WebInfo;
-                if (!WebAnalyzer.isNotEmpty(webInfo.title)) {
+                if (!WebAnalyzer.isNotEmpty(webInfo.title))
                   return const SizedBox(
                     height: 0,
                     width: 0,
                   );
-                }
                 return Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
@@ -966,26 +964,26 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
 
   Widget _buildAttachment() {
     Widget childWidget;
-    if (yarnComment?.attachmentType == 'service') {
-      final Service service = Service.fromJson(yarnComment?.attachment);
+    if (yarnComment.attachmentType == 'service') {
+      final Service service = Service.fromJson(yarnComment.attachment);
       childWidget = YarnServiceTile(
         service: service,
       );
-    } else if (yarnComment?.attachmentType == 'product') {
-      final Product product = Product.fromJson(yarnComment?.attachment);
+    } else if (yarnComment.attachmentType == 'product') {
+      final Product product = Product.fromJson(yarnComment.attachment);
       childWidget = YarnProductTile(
         product: product,
       );
-    } else if (yarnComment?.attachmentType == 'blog') {
-      final UserPost post = UserPost.fromJson(yarnComment?.attachment);
+    } else if (yarnComment.attachmentType == 'blog') {
+      final UserPost post = UserPost.fromJson(yarnComment.attachment);
       childWidget = YarnBlogPostTile(
         post: post,
         showAuthorDetails: true,
         onDeleteBlog: () {},
       );
-    } else if (yarnComment?.attachmentType == 'profile') {
+    } else if (yarnComment.attachmentType == 'profile') {
       final CustomerProfile customerProfile =
-          CustomerProfile.fromJson(yarnComment?.attachment ?? {});
+          CustomerProfile.fromJson(yarnComment.attachment ?? {});
       childWidget = YarnCustomerPostTile(
         customerProfile: customerProfile,
         showAuthorDetails: true,
@@ -1017,7 +1015,7 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
 
   Widget _buildImagesRowNew() {
     return YarnCommentMediaRender(
-      yarnTopic: yarnComment!,
+      yarnTopic: yarnComment,
     );
   }
 }

@@ -15,7 +15,7 @@ import 'yarn_detail_screen.dart';
 
 class TrendingListScreen extends StatefulWidget {
   final String? selectedCategory;
-  final Function(bool)? onPageRefresh;
+  Function(bool)? onPageRefresh;
 
   TrendingListScreen({Key? key, this.selectedCategory, this.onPageRefresh})
       : super(key: key);
@@ -35,10 +35,10 @@ class TrendingListScreenState extends State<TrendingListScreen> {
   List<Yarn> deleteYarnTopicList = [];
   int count = 0;
   bool noList = false;
-  final RefreshController _postRefreshController =
+  RefreshController _postRefreshController =
       RefreshController(initialRefresh: false);
   String? selectedId;
-  final ScrollController _trendingScrollController = ScrollController();
+  ScrollController _trendingScrollController = new ScrollController();
   late DashboardBloc _dashboardBloc;
 
   @override
@@ -127,29 +127,29 @@ class TrendingListScreenState extends State<TrendingListScreen> {
   Widget build(BuildContext context) {
     _dashboardBloc = Provider.of<DashboardBloc>(context);
 
-    /// check if yarn bottom navigation is clicked
-    /// scroll back to the top of the page
-    if (_dashboardBloc.topYarn == true) {
-      _dashboardBloc.topYarn = false;
-      if (_trendingScrollController.hasClients) {
-        final position = _trendingScrollController.position.minScrollExtent;
-        _trendingScrollController.animateTo(
-          position,
-          duration: const Duration(milliseconds: 1),
-          curve: Curves.easeOut,
-        );
-      }
-    }
-
-    /// check if scroll controller is at the top, send call back to
-    /// yarn dashboard to set category as visible
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_trendingScrollController.position.pixels == 0) {
-        // Scroll controller is at the top
-        widget.onPageRefresh!(true);
-        if (mounted) setState(() {});
-      }
-    });
+    // /// check if yarn bottom navigation is clicked
+    // /// scroll back to the top of the page
+    // if (_dashboardBloc.topYarn == true) {
+    //   _dashboardBloc.topYarn = false;
+    //   if (_trendingScrollController.hasClients) {
+    //     final position = _trendingScrollController.position.minScrollExtent;
+    //     _trendingScrollController.animateTo(
+    //       position,
+    //       duration: Duration(milliseconds: 1),
+    //       curve: Curves.easeOut,
+    //     );
+    //   }
+    // }
+    //
+    // /// check if scroll controller is at the top, send call back to
+    // /// yarn dashboard to set category as visible
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   if (_trendingScrollController.position.pixels == 0) {
+    //     // Scroll controller is at the top
+    //     widget.onPageRefresh!(true);
+    //     if (mounted) setState(() {});
+    //   }
+    // });
 
     return Column(
       children: [

@@ -374,8 +374,8 @@ class _SuperStoreState extends State<SuperStore> {
     //         : FutureBuilder(
     //             future: getProducts(),
     //             builder: (context, snapshot) {
-    //               print(snapshot.data);
-    //               print("_________________________");
+    //               debugPrint(snapshot.data);
+    //               debugPrint("_________________________");
     //               if (snapshot.hasData) {
     //                 List<Product> result = snapshot.data as List<Product>;
     //                 return result.isEmpty

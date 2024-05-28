@@ -1,4 +1,4 @@
-import 'package:Slydo/flutter_polyline_points/point_lat_lng.dart';
+import 'package:Slydo/flutter_polyline_points/PointLatLng.dart';
 import 'package:Slydo/flutter_polyline_points/utils/polyline_waypoint.dart';
 import 'package:Slydo/flutter_polyline_points/utils/request_enums.dart';
 
@@ -79,9 +79,7 @@ class PolylineRequest {
     });
     if (wayPoints.isNotEmpty) {
       final List wayPointsArray = [];
-      for (var point in wayPoints) {
-        wayPointsArray.add(point.location);
-      }
+      wayPoints.forEach((point) => wayPointsArray.add(point.location));
       String wayPointsString = wayPointsArray.join('|');
       if (optimizeWaypoints) {
         wayPointsString = 'optimize:true|$wayPointsString';

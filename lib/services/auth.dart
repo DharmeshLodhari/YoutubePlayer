@@ -17,10 +17,10 @@ import 'package:Slydo/utils/country_picker/utils.dart';
 import 'package:Slydo/utils/global_key.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
-import 'package:location/location.dart';
-import 'package:permission_handler/permission_handler.dart';
+// import 'package:location/location.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
@@ -35,7 +35,8 @@ class AuthService {
   final Duration timeOutDuration = const Duration(seconds: 12);
   final String timeOutErrorMessage = "Server is not responding";
 
-  final DatabaseHelper _db = DatabaseHelper();
+  DatabaseHelper _db = DatabaseHelper();
+  // Location location = Location();
 
   static const int API_CALL_RETRY_COUNT = 5;
 
@@ -97,9 +98,9 @@ class AuthService {
   //   debugPrint("URL => $url BODY => $_body");
   //
   //   var response = await http.post(url, body: _body, headers: headers);
-  //   print('RESPONSE:-----> $response');
+  //   debugPrint('RESPONSE:-----> $response');
   //
-  //   if (response.statusCode == 200) {
+  //   if (response.statusCode == 200 || response.statusCode == 201) {
   //     debugPrint(
   //         "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
   //
@@ -144,7 +145,7 @@ class AuthService {
     debugPrint(url);
     final response = await httpGet(url);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final jsonData = json.decode(response.body) as List<dynamic>;
       final List<CompanyName> result =
           jsonData.map((e) => CompanyName.fromJson(e)).toList();
@@ -210,7 +211,7 @@ class AuthService {
 
     final response = await http.post(url, body: _body, headers: headers);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       debugPrint(
           "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
 
@@ -378,6 +379,8 @@ class AuthService {
 
     final String? expirationTime = jwt?.expiration ?? null;
 
+    final startTime = DateTime.now();
+
     if ((jwt?.access ?? null) != null && (jwt?.access ?? "") != "") {
       isNewTokenNeeded = true;
     }
@@ -421,32 +424,46 @@ class AuthService {
     if (locationHeader.isNotEmpty) {
       headers.addAll(locationHeader);
     }
+    final endTime = DateTime.now();
+    debugPrint(
+        'Parallel Time in hader: ${endTime.difference(startTime).inMilliseconds}ms');
     return headers;
   }
 
   Future<Map<String, String>> getUserLocationHeader() async {
     final Map<String, String> data = {};
-    final Location location = Location();
 
+    final startTime = DateTime.now();
+
+    final SharedPreferences _sharedPreferences =
+        await SharedPreferences.getInstance();
+    final UserBloc userBloc = Provider.of<UserBloc>(
+        myGlobals.navigationKey.currentContext!,
+        listen: false);
+    final bool getLocationStatus =
+        _sharedPreferences.getBool('isCurrentLocation') ?? false;
     try {
-      final status = await Permission.location.status;
-      if (status.isGranted) {
-        final LocationData locationData = await location.getLocation();
+      // var status = await Permission.location.status;
+      // if (status.isGranted) {
+      if (getLocationStatus) {
+        // LocationData locationData = await location.getLocation();
+        final Position position = await Geolocator.getCurrentPosition(
+            desiredAccuracy: LocationAccuracy.high,
+            timeLimit: const Duration(seconds: 10));
 
         data.addAll({
           "X-User-Current-Location":
-              "${locationData.longitude}, ${locationData.latitude}"
+              "${position.longitude}, ${position.latitude}"
         });
       } else {
-        final UserBloc userBloc = Provider.of<UserBloc>(
-            myGlobals.navigationKey.currentContext!,
-            listen: false);
-
         data.addAll({
           "X-User-Current-Location":
               "${userBloc.user.defaultAddress?.longitude}, ${userBloc.user.defaultAddress?.latitude}"
         });
       }
+      final endTime = DateTime.now();
+      debugPrint(
+          'Parallel Time in location: ${endTime.difference(startTime).inMilliseconds}ms');
     } catch (error) {
       debugPrint("Error $error");
     }
@@ -467,18 +484,19 @@ class AuthService {
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       if (!response.body.contains('results')) {
         final Map<String, dynamic> result = {"product": []};
 
-        debugPrint('CALLING OTHER check 2 ---> $result');
+        debugPrint('CALLING OTHER check 2 ---> ${result}');
 
         return result;
       }
       final jsonData = json.decode(response.body);
-      final List<ProductIndustryResults> results = (jsonData["results"] as List)
-          .map((e) => ProductIndustryResults.fromJson(e))
-          .toList();
+      final List<ProductIndustryResults>? results =
+          (jsonData["results"] as List)
+              .map((e) => ProductIndustryResults.fromJson(e))
+              .toList();
 
       final Map<String, dynamic> result = {"product": results};
 
@@ -514,7 +532,7 @@ class AuthService {
     final _data = jsonEncode(data);
 
     final response = await httpPost(url, headers: headers, body: _data);
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     }
     debugPrint(
@@ -596,7 +614,7 @@ class AuthService {
         .timeout(timeOutDuration, onTimeout: () => timeOutFunction());
 
     debugPrint('SEARCH USER ::: ${response.body}');
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final jsonData = json.decode(response.body);
 
       final Map<String, dynamic> result = {
@@ -617,10 +635,11 @@ class AuthService {
       debugPrint("Timeout on URL:- $url");
     }
 
-    return Future.error("$timeOutErrorMessage");
+    return Future.error(
+        "$timeOutErrorMessage $url took more than ${timeOutDuration.inSeconds}");
   }
 
-  Future<void> wasTokenBlackListed(Response response) async {
+  Future<void> wasTokenBlackListed(var response) async {
     if (response.statusCode == 401 ||
         response.statusCode == 403 ||
         response.statusCode == 423) {
@@ -647,7 +666,7 @@ class AuthService {
   }
 
   /// TO CHECK IF WE GET TOKEN EXPIRED RESPONSE FROM API
-  Future<bool> isTokenExpire(Response response) async {
+  Future<bool> isTokenExpire(var response) async {
     if (response.statusCode == 401 ||
         response.statusCode == 403 ||
         response.statusCode == 423) {

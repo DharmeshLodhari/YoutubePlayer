@@ -41,9 +41,9 @@ double getBgHeightOfAppBar(String bio, bool hasAddress, bool hasContact) {
     //   height = 340;
     // }
     if (Platform.isAndroid) {
-      height = 330;
+      height = 350;
     } else {
-      height = 300;
+      height = 330;
     }
   } else if (bioLength <= 50) {
     // if (hasAddress && hasContact) {
@@ -56,7 +56,7 @@ double getBgHeightOfAppBar(String bio, bool hasAddress, bool hasContact) {
     if (Platform.isAndroid) {
       height = 360;
     } else {
-      height = 335;
+      height = 340;
     }
   } else if (bioLength <= 100) {
     // if (hasAddress && hasContact) {
@@ -69,7 +69,7 @@ double getBgHeightOfAppBar(String bio, bool hasAddress, bool hasContact) {
     if (Platform.isAndroid) {
       height = 380;
     } else {
-      height = 350;
+      height = 360;
     }
   } else if (bioLength <= 200) {
     // if (hasAddress && hasContact) {
@@ -82,7 +82,7 @@ double getBgHeightOfAppBar(String bio, bool hasAddress, bool hasContact) {
     if (Platform.isAndroid) {
       height = 400;
     } else {
-      height = 370;
+      height = 390;
     }
   }
 
@@ -95,7 +95,7 @@ double getBgHeightOfAppBar(String bio, bool hasAddress, bool hasContact) {
   return height;
 }
 
-Future<List> fetchYarnData(String? searchedUserName, String isChannel) async {
+fetchYarnData(String? searchedUserName, String isChannel) async {
   Map<String, dynamic>? data;
   try {
     data = await YarnAuth().getAllYarn("", "",
@@ -103,9 +103,7 @@ Future<List> fetchYarnData(String? searchedUserName, String isChannel) async {
         isType: false,
         userName: searchedUserName,
         isChannel: isChannel);
-  } catch (error) {
-    debugPrint("Error $error");
-  }
+  } catch (error) {}
   if (data != null) {
     // debugPrint('IS SHOW YARN ---> $data');
 
@@ -116,14 +114,12 @@ Future<List> fetchYarnData(String? searchedUserName, String isChannel) async {
   return [];
 }
 
-Future<List> fetchChannelData(String? searchedUserName) async {
+fetchChannelData(String? searchedUserName) async {
   BasePaginationModel<List<ChannelModel>>? basePaginationModel;
   try {
     basePaginationModel = await MessageAuth()
         .getChannels(nextUrl: '', searchText: '', ownerName: searchedUserName);
-  } catch (error) {
-    debugPrint("Error $error");
-  }
+  } catch (error) {}
   if (basePaginationModel != null) {
     // debugPrint('IS SHOW CHANNELS ---> $basePaginationModel');
 
@@ -134,8 +130,7 @@ Future<List> fetchChannelData(String? searchedUserName) async {
   return [];
 }
 
-Future<List> fetchPostData(
-    String? searchedUserName, String? channelUserName) async {
+fetchPostData(String? searchedUserName, String? channelUserName) async {
   Map<String, dynamic>? data;
   try {
     data = await UserPostAuth().listUserPosts(
@@ -155,15 +150,12 @@ Future<List> fetchPostData(
   return [];
 }
 
-Future<List> fetchMomentData(
-    String? searchedUserName, String? channelUsername) async {
+fetchMomentData(String? searchedUserName, String? channelUsername) async {
   List<MomentsModel> momentsModel = [];
   try {
     momentsModel = await MomentsService().getMomentsWithOwnerName(
         ownerName: searchedUserName!, channelUsername: channelUsername);
-  } catch (error) {
-    debugPrint("Error $error");
-  }
+  } catch (error) {}
   if (momentsModel.isNotEmpty) {
     // debugPrint('IS SHOW MOMENTS ---> $momentsModel');
 
@@ -174,14 +166,12 @@ Future<List> fetchMomentData(
   return [];
 }
 
-Future<List> fetchProductData(String? searchedUserName, bool? isChannel) async {
+fetchProductData(String? searchedUserName, bool? isChannel) async {
   Map<String, dynamic>? data;
   try {
     data = await ShoppingAuthService()
         .listOfProduct("", "", "", isChannel, userName: searchedUserName);
-  } catch (error) {
-    debugPrint("Error $error");
-  }
+  } catch (error) {}
   if (data != null) {
     debugPrint('IS SHOW PRODUCT ---> $data');
     final List<dynamic> result = data["results"];
@@ -191,14 +181,12 @@ Future<List> fetchProductData(String? searchedUserName, bool? isChannel) async {
   return [];
 }
 
-Future<List> fetchServiceData(String? searchedUserName) async {
+fetchServiceData(String? searchedUserName) async {
   Map<String, dynamic>? data;
   try {
     data = await ShoppingAuthService()
         .listServicesByProvider("", "", userName: searchedUserName);
-  } catch (error) {
-    debugPrint("Error $error");
-  }
+  } catch (error) {}
   if (data != null) {
     final List<dynamic> result = data["results"];
     if (result.isNotEmpty) return result;
@@ -235,14 +223,12 @@ Widget momentTab(CustomerProfile? searchedUser, String channelUsername) {
 
 Widget productTab(CustomerProfile? searchedUser, bool isOwner, bool isChannel,
     {String? next, String? type}) {
-  return KeepAlivePage(
-    child: UserProductList(
-        user: searchedUser,
-        isOwner: isOwner,
-        channel: isChannel,
-        next: next,
-        type: type),
-  );
+  return UserProductList(
+      user: searchedUser,
+      isOwner: isOwner,
+      channel: isChannel,
+      next: next,
+      type: type);
 }
 
 Widget serviceTab(CustomerProfile? searchedUser, bool isOwner) {
@@ -290,8 +276,7 @@ String getGroupUsername(String channelUsername) {
   }
 }
 
-Widget showDiscountValue(
-    String discountType, num discountValue, String currency) {
+Widget showDiscountValue(String discountType, num discountValue, currency) {
   return Container(
     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
     decoration: BoxDecoration(
@@ -300,7 +285,7 @@ Widget showDiscountValue(
       "-" +
           (discountType == "percentage"
               ? discountValue.toString() + "% off"
-              : worldCurrencies[currency]! +
+              : worldCurrencies[currency!]! +
                   moneyDisplayNormalizer(discountValue.toInt()).toString()),
       style: TextStyle(
         color: white,
@@ -312,7 +297,24 @@ Widget showDiscountValue(
   );
 }
 
-bool checkDiscount(bool discountIsActive, num? discountedPrice, num price) {
+Widget showColoredLabeledWidget({required String text, required Color color}) {
+  return Container(
+    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+    decoration:
+        BoxDecoration(color: color, borderRadius: BorderRadius.circular(5)),
+    child: Text(
+      text,
+      style: TextStyle(
+        color: white,
+        fontSize: 10,
+        fontFamily: 'Inter',
+        fontWeight: FontWeight.w700,
+      ),
+    ),
+  );
+}
+
+bool checkDiscount(bool discountIsActive, num discountedPrice, num price) {
   if (discountIsActive &
       (discountedPrice != null) &
       (price != discountedPrice)) {

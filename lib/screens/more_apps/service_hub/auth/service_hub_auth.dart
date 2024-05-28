@@ -38,7 +38,7 @@ class ServiceHubAuthService extends AuthService {
     );
     debugPrint('STORE URL BODY ---> ${response.body}');
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return ListOfCategories.fromJson(json.decode(response.body));
     }
 
@@ -62,7 +62,7 @@ class ServiceHubAuthService extends AuthService {
 
     final response = await httpGet(url, headers: headers);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final jsonData = json.decode(response.body);
 
       final Map<String, dynamic> result = {
@@ -81,7 +81,7 @@ class ServiceHubAuthService extends AuthService {
 
   // get active job listing
   Future<ActiveJobListing?> getActiveJobListing(String? next, String? previous,
-      {String? category,String? search,String? sortby,String? priceFrom,String? priceTo,String? location}) async {
+      {String? category, search, sortby, priceFrom, priceTo, location}) async {
     String url = "/api/v1/job-service/listing/?";
     if (next == null) {
       return null;
@@ -116,7 +116,7 @@ class ServiceHubAuthService extends AuthService {
     final response = await httpGet(url, headers: headers);
     debugPrint('ACTIVE LISTING URL BODY ---> ${response.body}');
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return ActiveJobListing.fromJson(json.decode(response.body));
     }
 
@@ -134,6 +134,7 @@ class ServiceHubAuthService extends AuthService {
     if (next == "") {
       if (myJobType != null) {
         url = "${AppConfig.baseUrl}/api/v1/job-service/job/?$myJobType=$userId";
+        debugPrint('my applied $url');
       } else {
         url = "${AppConfig.baseUrl}/api/v1/job-service/job/";
       }
@@ -147,7 +148,7 @@ class ServiceHubAuthService extends AuthService {
     final response = await httpGet(url, headers: headers);
     debugPrint('My Job LISTING URL BODY ---> ${response.body}');
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return MyJobList.fromJson(json.decode(response.body));
     }
 
@@ -176,7 +177,7 @@ class ServiceHubAuthService extends AuthService {
     final response = await httpGet(url, headers: headers);
     debugPrint('Job Location URL BODY ---> ${response.body}');
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return JobLocationModel.fromJson(json.decode(response.body));
     }
 
@@ -195,6 +196,7 @@ class ServiceHubAuthService extends AuthService {
     if (next == "") {
       if (jobId != null) {
         url = "${AppConfig.baseUrl}/api/v1/job-service/job/$jobId/applicants/";
+        debugPrint('my job applicant $url');
       } else {
         url = "${AppConfig.baseUrl}/api/v1/job-service/job/";
       }
@@ -208,7 +210,7 @@ class ServiceHubAuthService extends AuthService {
     final response = await httpGet(url, headers: headers);
     debugPrint('Job APPLICANT LISTING URL BODY ---> ${response.body}');
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final decodedResponse = json.decode(response.body);
       return List<JobApplicantModel>.from(
           decodedResponse.map((model) => JobApplicantModel.fromJson(model)));
@@ -230,7 +232,7 @@ class ServiceHubAuthService extends AuthService {
 
     debugPrint(
         "ACCEPT JOB APPLICANT URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     } else {
       debugPrint(
@@ -251,7 +253,7 @@ class ServiceHubAuthService extends AuthService {
 
     debugPrint(
         "REVIEW AND RATE URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
-    if (response.statusCode == 201) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     } else {
       debugPrint(
@@ -273,7 +275,7 @@ class ServiceHubAuthService extends AuthService {
 
     debugPrint(
         "REVIEW AND RATE URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return response.body;
     } else {
       debugPrint(
@@ -294,7 +296,7 @@ class ServiceHubAuthService extends AuthService {
 
     debugPrint(
         "ACCEPT JOB APPLICANT URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     } else {
       debugPrint(
@@ -304,12 +306,13 @@ class ServiceHubAuthService extends AuthService {
   }
 
   Future<JobModel?> createJobRequest(Map _data) async {
-    // print('actived $_data');
+    // debugPrint('actived $_data');
     final headers = await getAuthHeaders();
     final String url = "${AppConfig.baseUrl}/api/v1/job-service/job/";
     // var _data = jsonEncode(data.toString());
     // debugPrint('PLACE DATA ::: $_data');
     _data["picture_count"] = _data['localImages'].length;
+    debugPrint('actived $_data');
 
     //create multipart request for POST or PATCH method
     final request = http.MultipartRequest("POST", Uri.parse(url));
@@ -332,6 +335,8 @@ class ServiceHubAuthService extends AuthService {
       newList.add(multipartFile);
     }
 
+    debugPrint('actived request ${request.files}');
+
     // Add multipart to request
     request.files.addAll(newList);
 
@@ -343,7 +348,8 @@ class ServiceHubAuthService extends AuthService {
           "Please upload smaller images, One or all of your images are too large.");
     }
     final responseBody = await response.stream.bytesToString();
-    if (response.statusCode == 201) {
+    debugPrint('job create $responseBody');
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return JobModel.fromJson(json.decode(responseBody));
     } else {
       debugPrint(
@@ -355,12 +361,13 @@ class ServiceHubAuthService extends AuthService {
 
   // edit job
   Future<JobModel?> editMyJob(Map _data, {required String jobId}) async {
-    // print('actived $_data');
+    // debugPrint('actived $_data');
     final headers = await getAuthHeaders();
     final String url = "${AppConfig.baseUrl}/api/v1/job-service/job/$jobId/";
     // var _data = jsonEncode(data.toString());
     // debugPrint('PLACE DATA ::: $_data');
     _data["picture_count"] = _data['localImages'].length;
+    debugPrint('actived $_data');
 
     //create multipart request for POST or PATCH method
     final request = http.MultipartRequest("PATCH", Uri.parse(url));
@@ -383,6 +390,8 @@ class ServiceHubAuthService extends AuthService {
       newList.add(multipartFile);
     }
 
+    debugPrint('actived request ${request.files}');
+
     // Add multipart to request
     request.files.addAll(newList);
 
@@ -394,7 +403,8 @@ class ServiceHubAuthService extends AuthService {
           "Please upload smaller images, One or all of your images are too large.");
     }
     final responseBody = await response.stream.bytesToString();
-    // if (response.statusCode == 200) {
+    debugPrint('job create $responseBody');
+    // if (response.statusCode == 200 || response.statusCode == 201) {
     //   return JobModel.fromJson(json.decode(responseBody));
     // } else {
     //   debugPrint(
@@ -421,7 +431,8 @@ class ServiceHubAuthService extends AuthService {
       final response = await httpGet(url, headers: headers);
       debugPrint('RETREIVE Job LISTING URL BODY ---> ${response.body}');
 
-      if (response.statusCode == 200) {
+      debugPrint("${response.statusCode}");
+      if (response.statusCode == 200 || response.statusCode == 201) {
         return JobModel.fromJson(json.decode(response.body));
       } else {
         showToast(message: response.body.toString());
@@ -432,6 +443,7 @@ class ServiceHubAuthService extends AuthService {
       debugPrint("Error: $e");
     } catch (err) {
       showToast(message: err.toString());
+      debugPrint("$err");
     }
     return null;
   }
@@ -446,7 +458,7 @@ class ServiceHubAuthService extends AuthService {
       final headers = await getAuthHeaders();
       final response = await httpGet(url, headers: headers);
       debugPrint('RETREIVE Job LISTING URL BODY ---> ${response.body}');
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
         return ActiveListingData.fromJson(json.decode(response.body));
       } else {
         showToast(message: response.body.toString());
@@ -457,6 +469,7 @@ class ServiceHubAuthService extends AuthService {
       debugPrint("Error: $e");
     } catch (err) {
       showToast(message: err.toString());
+      debugPrint("$err");
     }
     return null;
   }
@@ -473,7 +486,7 @@ class ServiceHubAuthService extends AuthService {
 
     debugPrint(
         "CREATE LISTING URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
-    if (response.statusCode == 201) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return jsonData;
     } else {
       debugPrint(
@@ -490,7 +503,9 @@ class ServiceHubAuthService extends AuthService {
         AppConfig.baseUrl + "/api/v1/job-service/listing/" + listingId! + '/';
     final headers = await getAuthHeaders();
     final response = await httpPatch(url, headers: headers, body: _data);
-    if (response.statusCode == 200) {
+    debugPrint('lister...$response');
+    debugPrint('lister. url..$url');
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     }
     return false;
@@ -502,6 +517,7 @@ class ServiceHubAuthService extends AuthService {
         AppConfig.baseUrl + "/api/v1/job-service/job/$jobId/end-job/";
     final headers = await getAuthHeaders();
     final response = await httpPatch(url, headers: headers);
+    debugPrint('end jobber...${response.body} and ${response.statusCode}');
     if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     }
@@ -520,7 +536,7 @@ class ServiceHubAuthService extends AuthService {
 
     debugPrint(
         "APPLY FOR JOB URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
-    if (response.statusCode == 201) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return jsonData;
     } else {
       debugPrint(
@@ -542,7 +558,7 @@ class ServiceHubAuthService extends AuthService {
 
     debugPrint(
         "APPLY FOR JOB URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return jsonData;
     } else {
       debugPrint(
@@ -587,7 +603,7 @@ class ServiceHubAuthService extends AuthService {
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
     final jsonData = json.decode(response.body);
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return jsonData;
     } else {
       throw jsonData;
@@ -614,7 +630,7 @@ class ServiceHubAuthService extends AuthService {
     final response = await httpGet(url, headers: headers);
     debugPrint('My Job LISTING URL BODY ---> ${response.body}');
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return MyJobList.fromJson(json.decode(response.body));
     }
 

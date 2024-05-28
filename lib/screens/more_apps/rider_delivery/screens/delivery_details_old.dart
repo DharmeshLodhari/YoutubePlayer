@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/data/state_notifiers/rider_delivery_bloc.dart';
 import 'package:Slydo/locale/app_localization.dart';
@@ -17,7 +18,7 @@ import 'package:sizer/sizer.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class DeliveryDetails extends StatefulWidget {
-  final dynamic arguments;
+  var arguments;
 
   DeliveryDetails({Key? key, this.arguments}) : super(key: key);
 
@@ -26,7 +27,7 @@ class DeliveryDetails extends StatefulWidget {
 }
 
 class _DeliveryDetailsState extends State<DeliveryDetails> {
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   String? journeyId;
   bool isRejectAPILoading = false;
@@ -97,7 +98,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
     super.initState();
   }
 
-  Future<void> fetchJobData() async {
+  fetchJobData() async {
     isLoading = true;
     if (mounted) setState(() {});
     await RiderDeliveryAuthService().fetchJob(journeyId).then((value) {
@@ -555,191 +556,191 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
     );
   }
 
-  // Widget _buildLogoAndDeliveryAndAmount() {
-  //   return Row(
-  //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //     children: [
-  //       Row(
-  //         children: [
-  //           _buildLogo(),
-  //           _buildVerticalDivider(),
-  //           _buildDelivery(),
-  //         ],
-  //       ),
-  //       Row(
-  //         crossAxisAlignment: CrossAxisAlignment.start,
-  //         children: [
-  //           _buildCurrencySymbols(),
-  //           _buildAmount(),
-  //         ],
-  //       )
-  //     ],
-  //   );
-  // }
-  //
-  // Widget _buildLogo() {
-  //   return Image.network(
-  //     riderDeliveryBloc.deliveryDetails?.merchantAvatar ?? "",
-  //     height: 24,
-  //     width: 24,
-  //     fit: BoxFit.fill,
-  //     filterQuality: FilterQuality.high,
-  //     cacheHeight: 24,
-  //     cacheWidth: 24,
-  //     frameBuilder: imageFrameBuilder,
-  //     errorBuilder: (context, error, stackTrace) {
-  //       return Padding(
-  //         padding: const EdgeInsets.all(8.0),
-  //         child: Image.network(
-  //           defaultImage,
-  //           colorBlendMode: BlendMode.darken,
-  //           fit: BoxFit.fill,
-  //           filterQuality: FilterQuality.high,
-  //         ),
-  //       );
-  //     },
-  //   );
-  // }
-  //
-  // Widget _buildVerticalDivider() {
-  //   return Container(
-  //     height: 55,
-  //     child: VerticalDivider(
-  //       color: greySecondaryYarn,
-  //       thickness: 1,
-  //       indent: 10,
-  //       endIndent: 10,
-  //       width: 20,
-  //     ),
-  //   );
-  // }
-  //
-  // Widget _buildDelivery() {
-  //   return Text(
-  //     riderDeliveryBloc.deliveryDetails?.merchantFullName ?? "",
-  //     style: TextStyle(
-  //       color: black,
-  //       fontSize: 12,
-  //       fontWeight: FontWeight.w500,
-  //       fontFamily: "Inter",
-  //     ),
-  //   );
-  // }
-  //
-  // Widget _buildCurrencySymbols() {
-  //   return Text(
-  //     worldCurrencies[riderDeliveryBloc.deliveryDetails?.currency]!,
-  //     style: TextStyle(
-  //       color: yarnBlack,
-  //       fontSize: 13,
-  //       fontWeight: FontWeight.w700,
-  //       fontFamily: "Inter",
-  //     ),
-  //   );
-  // }
-  //
-  // Widget _buildAmount() {
-  //   return Text(
-  //     "0",
-  //     style: TextStyle(
-  //       color: yarnBlack,
-  //       fontSize: 26,
-  //       fontWeight: FontWeight.w700,
-  //       fontFamily: "Inter",
-  //     ),
-  //   );
-  // }
-  //
-  // Widget _buildItemsAndKg() {
-  //   return Text(
-  //     "${riderDeliveryBloc.deliveryDetails?.totalNoOfItems} Items (${riderDeliveryBloc.deliveryDetails?.totalWeight}Kg)",
-  //     style: TextStyle(
-  //       color: black,
-  //       fontSize: 13,
-  //       fontWeight: FontWeight.w500,
-  //       fontFamily: "Inter",
-  //     ),
-  //   );
-  // }
-  //
-  // Widget _buildIconAndAddressAndPickup() {
-  //   return Row(
-  //     crossAxisAlignment: CrossAxisAlignment.center,
-  //     children: [
-  //       _buildIconImage(),
-  //       SizedBox(width: MediaQuery.of(context).size.width * 0.02),
-  //       Expanded(child: _buildMainAddressColumn())
-  //     ],
-  //   );
-  // }
-  //
-  // Widget _buildIconImage() {
-  //   return SvgPicture.asset(
-  //     'assets/images/rider/ic_route.svg',
-  //     height: 65,
-  //   );
-  // }
-  //
-  // Widget _buildMainAddressColumn() {
-  //   return Column(
-  //     crossAxisAlignment: CrossAxisAlignment.start,
-  //     children: [
-  //       Column(
-  //         crossAxisAlignment: CrossAxisAlignment.start,
-  //         children: [
-  //           Text(
-  //             '${riderDeliveryBloc.deliveryDetails?.pickupAddress?.addressLineOne}, ${riderDeliveryBloc.deliveryDetails?.pickupAddress?.addressLineTwo}',
-  //             style: TextStyle(
-  //               fontWeight: FontWeight.w500,
-  //               color: darkGrey,
-  //               fontSize: 12,
-  //               fontFamily: "Inter",
-  //             ),
-  //             overflow: TextOverflow.ellipsis,
-  //           ),
-  //           Text(
-  //             riderDeliveryBloc.deliveryDetails?.expectedPickupTime
-  //                     .toString() ??
-  //                 "",
-  //             style: TextStyle(
-  //               color: navyBlue,
-  //               fontSize: 12,
-  //               fontWeight: FontWeight.w400,
-  //               fontFamily: "Inter",
-  //             ),
-  //           ),
-  //         ],
-  //       ),
-  //       const SizedBox(height: 19),
-  //       Column(
-  //         crossAxisAlignment: CrossAxisAlignment.start,
-  //         children: [
-  //           Text(
-  //             '${riderDeliveryBloc.deliveryDetails?.deliveryAddress?.addressLineOne}, ${riderDeliveryBloc.deliveryDetails?.deliveryAddress?.addressLineTwo}',
-  //             style: TextStyle(
-  //               fontWeight: FontWeight.w500,
-  //               color: darkGrey,
-  //               fontSize: 12,
-  //               fontFamily: "Inter",
-  //             ),
-  //             overflow: TextOverflow.ellipsis,
-  //           ),
-  //           Text(
-  //             riderDeliveryBloc.deliveryDetails?.expectedDeliveryTime
-  //                     .toString() ??
-  //                 "",
-  //             style: TextStyle(
-  //               color: navyBlue,
-  //               fontSize: 12,
-  //               fontWeight: FontWeight.w400,
-  //               fontFamily: "Inter",
-  //             ),
-  //           ),
-  //         ],
-  //       ),
-  //     ],
-  //   );
-  // }
+  Widget _buildLogoAndDeliveryAndAmount() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Row(
+          children: [
+            _buildLogo(),
+            _buildVerticalDivider(),
+            _buildDelivery(),
+          ],
+        ),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildCurrencySymbols(),
+            _buildAmount(),
+          ],
+        )
+      ],
+    );
+  }
+
+  Widget _buildLogo() {
+    return Image.network(
+      riderDeliveryBloc.deliveryDetails?.merchantAvatar ?? "",
+      height: 24,
+      width: 24,
+      fit: BoxFit.fill,
+      filterQuality: FilterQuality.high,
+      cacheHeight: 24,
+      cacheWidth: 24,
+      frameBuilder: imageFrameBuilder,
+      errorBuilder: (context, error, stackTrace) {
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Image.network(
+            defaultImage,
+            colorBlendMode: BlendMode.darken,
+            fit: BoxFit.fill,
+            filterQuality: FilterQuality.high,
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildVerticalDivider() {
+    return Container(
+      height: 55,
+      child: VerticalDivider(
+        color: greySecondaryYarn,
+        thickness: 1,
+        indent: 10,
+        endIndent: 10,
+        width: 20,
+      ),
+    );
+  }
+
+  Widget _buildDelivery() {
+    return Text(
+      riderDeliveryBloc.deliveryDetails?.merchantFullName ?? "",
+      style: TextStyle(
+        color: black,
+        fontSize: 12,
+        fontWeight: FontWeight.w500,
+        fontFamily: "Inter",
+      ),
+    );
+  }
+
+  Widget _buildCurrencySymbols() {
+    return Text(
+      worldCurrencies[riderDeliveryBloc.deliveryDetails?.currency]!,
+      style: TextStyle(
+        color: yarnBlack,
+        fontSize: 13,
+        fontWeight: FontWeight.w700,
+        fontFamily: "Inter",
+      ),
+    );
+  }
+
+  Widget _buildAmount() {
+    return Text(
+      "0",
+      style: TextStyle(
+        color: yarnBlack,
+        fontSize: 26,
+        fontWeight: FontWeight.w700,
+        fontFamily: "Inter",
+      ),
+    );
+  }
+
+  Widget _buildItemsAndKg() {
+    return Text(
+      "${riderDeliveryBloc.deliveryDetails?.totalNoOfItems} Items (${riderDeliveryBloc.deliveryDetails?.totalWeight}Kg)",
+      style: TextStyle(
+        color: black,
+        fontSize: 13,
+        fontWeight: FontWeight.w500,
+        fontFamily: "Inter",
+      ),
+    );
+  }
+
+  Widget _buildIconAndAddressAndPickup() {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        _buildIconImage(),
+        SizedBox(width: MediaQuery.of(context).size.width * 0.02),
+        Expanded(child: _buildMainAddressColumn())
+      ],
+    );
+  }
+
+  Widget _buildIconImage() {
+    return SvgPicture.asset(
+      'assets/images/rider/ic_route.svg',
+      height: 65,
+    );
+  }
+
+  Widget _buildMainAddressColumn() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '${riderDeliveryBloc.deliveryDetails?.pickupAddress?.addressLineOne}, ${riderDeliveryBloc.deliveryDetails?.pickupAddress?.addressLineTwo}',
+              style: TextStyle(
+                fontWeight: FontWeight.w500,
+                color: darkGrey,
+                fontSize: 12,
+                fontFamily: "Inter",
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+            Text(
+              riderDeliveryBloc.deliveryDetails?.expectedPickupTime
+                      .toString() ??
+                  "",
+              style: TextStyle(
+                color: navyBlue,
+                fontSize: 12,
+                fontWeight: FontWeight.w400,
+                fontFamily: "Inter",
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 19),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '${riderDeliveryBloc.deliveryDetails?.deliveryAddress?.addressLineOne}, ${riderDeliveryBloc.deliveryDetails?.deliveryAddress?.addressLineTwo}',
+              style: TextStyle(
+                fontWeight: FontWeight.w500,
+                color: darkGrey,
+                fontSize: 12,
+                fontFamily: "Inter",
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+            Text(
+              riderDeliveryBloc.deliveryDetails?.expectedDeliveryTime
+                      .toString() ??
+                  "",
+              style: TextStyle(
+                color: navyBlue,
+                fontSize: 12,
+                fontWeight: FontWeight.w400,
+                fontFamily: "Inter",
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
 
   Widget _buildButtonAcceptReject() {
     return Padding(
@@ -874,8 +875,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
   }
 
   Widget _buildDistanceAndHours() {
-    final Duration? duration =
-        riderDeliveryBloc.deliveryDetails?.travelDuration;
+    Duration? duration = riderDeliveryBloc.deliveryDetails?.travelDuration;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

@@ -14,7 +14,7 @@ import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_hand
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_user_manager.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/connection_list_manager.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/main_socket_message_handler.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_conversation.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatMessage.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/utils.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
@@ -39,6 +39,7 @@ bool isDialogueOpen = false;
 
 Future<void> fcmBackgroundMessageHandler(RemoteMessage remoteMessage) async {
 // await Firebase.initializeApp();
+  debugPrint("onBackgroundMessage: ${remoteMessage.data}");
 
   try {
     /// {data:
@@ -63,6 +64,7 @@ Future<void> fcmBackgroundMessageHandler(RemoteMessage remoteMessage) async {
             : {};
 
     if (notification.isEmpty) {
+      debugPrint("Invalid Data Format:-  ${remoteMessage.data}");
       return;
     }
 
@@ -188,7 +190,8 @@ Future<void> fcmBackgroundMessageHandler(RemoteMessage remoteMessage) async {
       AwesomeNotificationService().showNotification(message: data);
     }
   } catch (error) {
-    debugPrint("Error $error");
+    debugPrint("ERROR IN BACKGROUND HANDLER : - $error");
+    debugPrint("DATA IN BACKGROUND HANDLER : - $remoteMessage");
   }
 
   return Future<void>.value();
@@ -201,7 +204,7 @@ class PushNotificationService {
   StreamSubscription? streamListen;
 
   static final PushNotificationService _singleton =
-      PushNotificationService._internal();
+      new PushNotificationService._internal();
 
   factory PushNotificationService() {
     return _singleton;
@@ -228,9 +231,10 @@ class PushNotificationService {
     await _fcm.getToken().then((String? token) async {
       data["token"] = token;
 
+      debugPrint("FCM Token:- $token");
       // this piece of code convert Map<dynamic,dynamic> data to Map<String,String> tempData
       // so we can store that data into database
-      final Map<String, dynamic> tempData = Map<String, dynamic>();
+      final Map<String, dynamic> tempData = new Map<String, dynamic>();
       tempData['firebaseToken'] = data['token'];
       tempData['type'] = data['type'];
       tempData['mode'] = data['mode'];
@@ -256,6 +260,7 @@ class PushNotificationService {
 
     streamListen =
         FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
+      debugPrint("onMessage: ${message.data}");
       // creating notification from server payload
       final Map<String, dynamic> notification = Platform.isIOS
           ? decodeNotificationIOS(message.data)
@@ -268,13 +273,16 @@ class PushNotificationService {
           (notification["data"]['type'] == "chatroom_message" ||
               notification["data"]['type'] == "nudge_user" ||
               notification["data"]['type'] == "acknowledge_message")) {
+        debugPrint("notification data = ${notification["data"]}");
+        debugPrint(
+            "notification data type = ${notification["data"] is String}");
         Map<String, dynamic>? decodeMessage;
         try {
           decodeMessage = notification["data"] is Map
               ? notification["data"]
               : jsonDecode(notification["data"]);
 
-          debugPrint('FRANK DECODED MESSAGE ---> $decodeMessage');
+          debugPrint('FRANK DECODED MESSAGE ---> ${decodeMessage}');
         } catch (error) {
           debugPrint("ERROR:- while adding data to db from FCM $notification");
         }
@@ -307,7 +315,7 @@ class PushNotificationService {
                   context: myGlobals.scaffoldKey.currentContext!,
                   notification: notification);
 
-              if (result != null && result && result == true) {
+              if (result != null && result as bool && result == true) {
                 isDialogueOpen = false;
               } else {
                 isDialogueOpen = false;
@@ -326,7 +334,7 @@ class PushNotificationService {
                   context: myGlobals.scaffoldKey.currentContext!,
                   notification: notification);
 
-              if (result != null && result && result == true) {
+              if (result != null && result as bool && result == true) {
                 isDialogueOpen = false;
               } else {
                 isDialogueOpen = false;
@@ -336,12 +344,13 @@ class PushNotificationService {
           default:
         }
       } else {
-        debugPrint('FRANK ELSE BLOCK LINE 265 ---> $notification');
+        debugPrint('FRANK ELSE BLOCK LINE 265 ---> ${notification}');
 
         if ((notification["body"].toString().toLowerCase() == "hello" ||
                     notification["body"].toString().toLowerCase() == "null") &&
                 notification['title'] == "" ||
             notification["body"] == "" && notification['title'] == "") {
+          debugPrint("ERROR:- notification data = $notification");
           return;
         }
         if (notification["actions"].toString().contains('/moment/')) return;
@@ -367,6 +376,8 @@ class PushNotificationService {
     });
 
     FirebaseMessaging.onMessageOpenedApp.listen((message) {
+      debugPrint("onLaunch: ${message.data}");
+
       // creating notification from server payload
       // var notification = Platform.isAndroid
       //     ? getAndroidNotification(message.data)
@@ -438,27 +449,26 @@ class PushNotificationService {
       } else if (payload.length > 13 &&
           payload.substring(0, 13) == "/chat-screen/") {
         //this variable will fetch the username of the recipient
-        final String? recipientUsername =
+        final String recipientUsername =
             payload.replaceAll("/chat-screen/", "");
+        debugPrint("Recipient user name = $recipientUsername");
 
         if (recipientUsername != null) {
           showDialog(
               context: context!,
               builder: (context) => Center(child: CircularLoadingIndicator()));
 
-          final ChatConversation? chatConversation =
+          final ChatConversation chatConversation =
               await UserAuth().fetchContactProfile(recipientUsername);
 
           if (chatConversation == null) {
             Navigator.of(context)
                 .popUntil(ModalRoute.withName(Routes.DASHBOARD));
             return;
-          } else {
-            Navigator.of(context)
-                .popUntil(ModalRoute.withName(Routes.DASHBOARD));
-            Navigator.pushNamed(context, '/chat-screen',
-                arguments: {"searchedUser": chatConversation});
           }
+          Navigator.of(context).popUntil(ModalRoute.withName(Routes.DASHBOARD));
+          Navigator.pushNamed(context, '/chat-screen',
+              arguments: {"searchedUser": chatConversation});
         }
       } else if (payload.toString().contains("orders-list")) {
         Navigator.of(context!).popUntil(ModalRoute.withName(Routes.DASHBOARD));
@@ -495,12 +505,13 @@ class PushNotificationService {
         Navigator.of(context).pushNamed(Routes.SHOPPING_CART);
       }
     } catch (error) {
-      debugPrint("Error $error");
+      debugPrint("new error:- $error");
     }
   }
 
   void _navigateToItemDetail(
       Map<String, dynamic> notification, BuildContext? context) async {
+    debugPrint("navigate function is called");
     onSelectNotification(notification['actions'], context, notification);
   }
 
@@ -583,6 +594,7 @@ Map<String, dynamic> decodeNotification(Map<String, dynamic> message) {
     debugPrint("ERROR11:- $error");
   }
 
+  debugPrint("notification from android $notification");
   return notification;
 }
 
@@ -619,6 +631,7 @@ Map<String, dynamic> decodeNotificationIOS(Map<String, dynamic> message) {
     debugPrint("ERROR22:- $error");
   }
 
+  debugPrint("notification from android $notification");
   return notification;
 }
 

@@ -1,4 +1,4 @@
-import 'package:Slydo/screens/more_apps/messaging/chat/models/group_detail_model.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/GroupDetailModel.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -13,7 +13,7 @@ class UserTileForGroupDetail extends StatefulWidget {
 
   GroupDetailModel? groupDetail;
 
-  UserTileForGroupDetail({super.key, this.user, this.groupDetail});
+  UserTileForGroupDetail({this.user, this.groupDetail});
 
   @override
   _UserTileForGroupDetailState createState() => _UserTileForGroupDetailState();
@@ -50,7 +50,7 @@ class _UserTileForGroupDetailState extends State<UserTileForGroupDetail> {
     return tile;
   }
 
-  Widget showSelectedUserAvatar(String? imageUrl, String fullName) {
+  Widget showSelectedUserAvatar(String imageUrl, String fullName) {
     final Color borderColor = getUserTypeColor(user: widget.user!);
 
     if (imageUrl == null ||

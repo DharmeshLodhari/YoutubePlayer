@@ -18,8 +18,6 @@ import 'property_dashboard_bloc.dart';
 import 'property_tile.dart';
 
 class PropertyExploreScreen extends StatefulWidget {
-  const PropertyExploreScreen({super.key});
-
   @override
   _PropertyExploreScreenState createState() => _PropertyExploreScreenState();
 }
@@ -34,7 +32,7 @@ class _PropertyExploreScreenState extends State<PropertyExploreScreen> {
   List<CityData> listOfCity = [];
   bool isExploreByCityLoading = false;
 
-  final RefreshController _refreshController =
+  RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
   PropertyFilterBloc? _propertyFilterBloc;
@@ -86,7 +84,7 @@ class _PropertyExploreScreenState extends State<PropertyExploreScreen> {
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      final connectionResult = value;
+      var connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         getResult();
@@ -293,125 +291,129 @@ class _PropertyExploreScreenState extends State<PropertyExploreScreen> {
   }
 
   Widget mostRecentDiscoveryList() {
-    return Column(
-      children: [
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Text(
-                "Most recent discovery",
-                style: TextStyle(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 18,
-                  color: blackFont,
-                ),
-              ),
-              GestureDetector(
-                child: Text(
-                  "See all",
+    return Container(
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Text(
+                  "Most recent discovery",
                   style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14,
-                      color: navyBlue),
-                ),
-                onTap: () {
-                  Navigator.of(context).pushNamed("/property-category");
-                },
-              ),
-            ],
-          ),
-        ),
-        Container(
-          height: 210,
-          color: Colors.white,
-          child: isMostRecentDiscoveryLoading
-              ? Center(
-                  child: CircularLoadingIndicator(),
-                )
-              : SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Container(
-                    padding: const EdgeInsets.only(left: 16),
-                    child: Row(
-                      children: mostRecentDiscovery
-                          .map(
-                            (property) => Container(
-                              margin: const EdgeInsets.only(right: 12),
-                              child: PartialPropertyItemTile(
-                                property: property,
-                              ),
-                            ),
-                          )
-                          .toList(),
-                    ),
+                    fontWeight: FontWeight.w700,
+                    fontSize: 18,
+                    color: blackFont,
                   ),
                 ),
-        )
-      ],
+                GestureDetector(
+                  child: Text(
+                    "See all",
+                    style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                        color: navyBlue),
+                  ),
+                  onTap: () {
+                    Navigator.of(context).pushNamed("/property-category");
+                  },
+                ),
+              ],
+            ),
+          ),
+          Container(
+            height: 210,
+            color: Colors.white,
+            child: isMostRecentDiscoveryLoading
+                ? Center(
+                    child: CircularLoadingIndicator(),
+                  )
+                : SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Container(
+                      padding: const EdgeInsets.only(left: 16),
+                      child: Row(
+                        children: mostRecentDiscovery
+                            .map(
+                              (property) => Container(
+                                margin: const EdgeInsets.only(right: 12),
+                                child: PartialPropertyItemTile(
+                                  property: property,
+                                ),
+                              ),
+                            )
+                            .toList(),
+                      ),
+                    ),
+                  ),
+          )
+        ],
+      ),
     );
   }
 
   Widget exploreByCity(
       {required String categoryName, String? movieName, String? moviePoster}) {
-    return Column(
-      children: [
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Text(
-                categoryName,
-                style: TextStyle(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 18,
-                  color: blackFont,
-                ),
-              ),
-              GestureDetector(
-                child: Text(
-                  "See all",
+    return Container(
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Text(
+                  categoryName,
                   style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14,
-                      color: navyBlue),
-                ),
-                onTap: () {
-                  Navigator.of(context).pushNamed("/property-category");
-                },
-              ),
-            ],
-          ),
-        ),
-        Container(
-          height: 210,
-          color: Colors.white,
-          child: isExploreByCityLoading
-              ? Center(
-                  child: CircularLoadingIndicator(),
-                )
-              : SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Container(
-                    padding: const EdgeInsets.only(left: 16),
-                    child: Row(
-                      children: listOfCity
-                          .map(
-                            (city) => Container(
-                              margin: const EdgeInsets.only(right: 12),
-                              child: CityItemCard(
-                                city: city,
-                              ),
-                            ),
-                          )
-                          .toList(),
-                    ),
+                    fontWeight: FontWeight.w700,
+                    fontSize: 18,
+                    color: blackFont,
                   ),
                 ),
-        )
-      ],
+                GestureDetector(
+                  child: Text(
+                    "See all",
+                    style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                        color: navyBlue),
+                  ),
+                  onTap: () {
+                    Navigator.of(context).pushNamed("/property-category");
+                  },
+                ),
+              ],
+            ),
+          ),
+          Container(
+            height: 210,
+            color: Colors.white,
+            child: isExploreByCityLoading
+                ? Center(
+                    child: CircularLoadingIndicator(),
+                  )
+                : SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Container(
+                      padding: const EdgeInsets.only(left: 16),
+                      child: Row(
+                        children: listOfCity
+                            .map(
+                              (city) => Container(
+                                margin: const EdgeInsets.only(right: 12),
+                                child: CityItemCard(
+                                  city: city,
+                                ),
+                              ),
+                            )
+                            .toList(),
+                      ),
+                    ),
+                  ),
+          )
+        ],
+      ),
     );
   }
 
@@ -464,78 +466,80 @@ class _PropertyExploreScreenState extends State<PropertyExploreScreen> {
   }
 
   Widget nearByYou() {
-    return Column(
-      children: [
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Text(
-                "Nearby you",
-                style: TextStyle(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 18,
-                  color: blackFont,
-                ),
-              ),
-              GestureDetector(
-                child: Text(
-                  "See all",
+    return Container(
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Text(
+                  "Nearby you",
                   style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14,
-                      color: navyBlue),
+                    fontWeight: FontWeight.w700,
+                    fontSize: 18,
+                    color: blackFont,
+                  ),
                 ),
-                onTap: () {
-                  Navigator.of(context).pushNamed("/property-category");
-                },
-              ),
-            ],
+                GestureDetector(
+                  child: Text(
+                    "See all",
+                    style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                        color: navyBlue),
+                  ),
+                  onTap: () {
+                    Navigator.of(context).pushNamed("/property-category");
+                  },
+                ),
+              ],
+            ),
           ),
-        ),
-        Container(
-          color: Colors.white,
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          child: isNearByItemLoading
-              ? SizedBox(
-                  height: 220,
-                  width: double.infinity,
-                  child: Center(
-                    child: CircularLoadingIndicator(),
-                  ),
-                )
-              : SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Container(
-                    padding: const EdgeInsets.only(
-                      left: 16,
-                      bottom: 12,
+          Container(
+            color: Colors.white,
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            child: isNearByItemLoading
+                ? Container(
+                    height: 220,
+                    width: double.infinity,
+                    child: Center(
+                      child: CircularLoadingIndicator(),
                     ),
-                    child: Row(
-                      children: nearByItem
-                          .map((element) => Container(
-                                margin: const EdgeInsets.only(right: 16),
-                                child: RentPropertyTile(
-                                  property: element,
-                                ),
-                              ))
-                          .toList(),
+                  )
+                : SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Container(
+                      padding: const EdgeInsets.only(
+                        left: 16,
+                        bottom: 12,
+                      ),
+                      child: Row(
+                        children: nearByItem
+                            .map((element) => Container(
+                                  margin: const EdgeInsets.only(right: 16),
+                                  child: RentPropertyTile(
+                                    property: element,
+                                  ),
+                                ))
+                            .toList(),
+                      ),
                     ),
                   ),
-                ),
-        )
-      ],
+          )
+        ],
+      ),
     );
   }
 
   Widget eventPoster(String url) {
-    final bool temp = Random().nextBool();
+    bool temp = Random().nextBool();
     return GestureDetector(
       onTap: () {
         Navigator.of(context).pushNamed("/property-detail");
       },
-      child: SizedBox(
+      child: Container(
         height: 132,
         width: 218,
         child: Stack(

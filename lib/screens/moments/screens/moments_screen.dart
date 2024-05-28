@@ -118,7 +118,7 @@ class _MomentsScreenState extends State<MomentsScreen> {
     });
   }
 
-  void _refreshPage() {
+  _refreshPage() {
     nextContactMoments = "";
     nextExploreMoments = "";
     countContactMoments = 0;
@@ -136,7 +136,7 @@ class _MomentsScreenState extends State<MomentsScreen> {
     getExploreMoments();
   }
 
-  Future<void> getConnectionMoments() async {
+  getConnectionMoments() async {
     if (!isContactMomentsLoading) {
       if (nextContactMoments != null && !isContactMomentsLoading) {
         if (mounted) {
@@ -173,7 +173,7 @@ class _MomentsScreenState extends State<MomentsScreen> {
     }
   }
 
-  Future<void> getExploreMoments() async {
+  getExploreMoments() async {
     if (!isExploreMomentsLoading) {
       if (nextExploreMoments != null && !isExploreMomentsLoading) {
         if (mounted) {
@@ -224,8 +224,8 @@ class _MomentsScreenState extends State<MomentsScreen> {
         //       listOfMoments?.add(exploreMomentsList[i].moments![j]);
         //     });
         //   }
-        //   print('beeetttttt....${exploreMomentsList[i].moments!.length}');
-        //   print('list of momentssss....${listOfMoments!.length}');
+        //   debugPrint('beeetttttt....${exploreMomentsList[i].moments!.length}');
+        //   debugPrint('list of momentssss....${listOfMoments!.length}');
         // }
         if (mounted) setState(() {});
 
@@ -476,66 +476,66 @@ class _MomentsScreenState extends State<MomentsScreen> {
           ),
         ),
       );
-    }
-
-    if (contactMomentsList.isEmpty) {
-      return const SizedBox.shrink();
-    }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
+    } else {
+      if (contactMomentsList.isEmpty) {
+        return const SizedBox.shrink();
+      } else {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CircleAvatar(
-              radius: 10,
-              backgroundColor: navyBlue,
-              child: const Icon(
-                Icons.group,
-                color: Colors.white,
-                size: 14,
+            Row(
+              children: [
+                CircleAvatar(
+                  radius: 10,
+                  backgroundColor: navyBlue,
+                  child: const Icon(
+                    Icons.group,
+                    color: Colors.white,
+                    size: 14,
+                  ),
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  "My Friends",
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: blackFont,
+                    // fontSize: 16,P
+                    fontFamily: "Inter",
+                  ),
+                ),
+                const SizedBox(width: 10),
+              ],
+            ),
+            const SizedBox(height: 12),
+            SizedBox(
+              height: 180,
+              child: ListView.builder(
+                shrinkWrap: true,
+                controller: _myConnectionsScrollController,
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                itemCount: contactMomentsList.length + 1,
+                itemBuilder: (BuildContext context, int index) {
+                  if (index == contactMomentsList.length) {
+                    return buildLoadingIndicator(
+                        isLoading: isContactMomentsLoading);
+                  } else {
+                    return ContactMomentsCard(
+                      index: index,
+                      nextPageUrl: nextContactMoments,
+                      userMomentModel: contactMomentsList[index],
+                      listOfConnectionsNames:
+                          contactMomentsList.map((e) => e.owner!).toList(),
+                    );
+                  }
+                },
               ),
             ),
-            const SizedBox(width: 6),
-            Text(
-              "My Friends",
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                color: blackFont,
-                // fontSize: 16,P
-                fontFamily: "Inter",
-              ),
-            ),
-            const SizedBox(width: 10),
           ],
-        ),
-        const SizedBox(height: 12),
-        SizedBox(
-          height: 180,
-          child: ListView.builder(
-            shrinkWrap: true,
-            controller: _myConnectionsScrollController,
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(vertical: 4),
-            itemCount: contactMomentsList.length + 1,
-            itemBuilder: (BuildContext context, int index) {
-              if (index == contactMomentsList.length) {
-                return buildLoadingIndicator(
-                    isLoading: isContactMomentsLoading);
-              } else {
-                return ContactMomentsCard(
-                  index: index,
-                  nextPageUrl: nextContactMoments,
-                  userMomentModel: contactMomentsList[index],
-                  listOfConnectionsNames:
-                      contactMomentsList.map((e) => e.owner!).toList(),
-                );
-              }
-            },
-          ),
-        ),
-      ],
-    );
+        );
+      }
+    }
   }
 
   Widget exploreMomentsListWidget() {
@@ -623,7 +623,7 @@ class ContactMomentsCard extends StatefulWidget {
   final MomentsModel userMomentModel;
   final List<String> listOfConnectionsNames;
 
-  const ContactMomentsCard({
+  ContactMomentsCard({
     Key? key,
     required this.index,
     required this.nextPageUrl,
@@ -777,7 +777,7 @@ class ExploreMomentsCard extends StatefulWidget {
   final bool showProfileAvatar;
   final List<ExploreMomentsModel> exploreMomentsModelList;
 
-  const ExploreMomentsCard(
+  ExploreMomentsCard(
       {Key? key,
       this.onTap,
       this.showProfileAvatar =
@@ -812,11 +812,11 @@ class _ExploreMomentsCardState extends State<ExploreMomentsCard> {
       if (e.mediaType == 'video') {
         storyItems.add(Shiddo.pageVideo(e.media!,
             controller: storyController,
-            duration: Duration(seconds: e.duration!),
+            duration: Duration(milliseconds: e.duration!),
             momentsModel: e));
       }
       log('message...first${widget.exploreMomentsModelList[widget.index].moments!.length}');
-      log('message...second$e');
+      log('message...second${e}');
     }).toList();
     super.initState();
   }
@@ -1014,10 +1014,10 @@ String getTime(String dateTime) {
 
 Color getProfilePicBorderColor(User user) {
   return blackFont;
-  // debugPrint('USER TYPE -> ${user.type}');
-  // return user.type!.toLowerCase() != "user"
-  //     ? user.type!.toLowerCase() != "business"
-  //         ? starYellow
-  //         : naturalGreen
-  //     : navyBlue;
+  debugPrint('USER TYPE -> ${user.type}');
+  return user.type!.toLowerCase() != "user"
+      ? user.type!.toLowerCase() != "business"
+          ? starYellow
+          : naturalGreen
+      : navyBlue;
 }

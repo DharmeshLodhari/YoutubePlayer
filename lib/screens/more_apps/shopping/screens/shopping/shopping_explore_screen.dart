@@ -24,7 +24,7 @@ class ShoppingExploreScreen extends StatefulWidget {
 }
 
 class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
-  final CarouselController _carouselController = CarouselController();
+  CarouselController _carouselController = CarouselController();
 
   late ShoppingDashboardBloc shoppingDashboardBloc;
 
@@ -42,7 +42,7 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
   List<ShoppingProduct> discountProductList = [];
   bool isDiscountProductListLoading = false;
 
-  final RefreshController _refreshController =
+  RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
   @override
@@ -338,114 +338,118 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
 
   Widget productCarouselSlider() {
     return isSliderLoading
-        ? SizedBox(
+        ? Container(
             height: 180,
             child: Center(
               child: CircularLoadingIndicator(),
             ),
           )
-        : CarouselSlider(
-            carouselController: _carouselController,
-            options: CarouselOptions(
-              viewportFraction: 0.9,
-              enlargeCenterPage: false,
-              autoPlay: true,
-              aspectRatio: 2,
-              initialPage: 0,
-            ),
-            items: sliderList
-                .map(
-                  (product) => GestureDetector(
-                    onTap: () {
-                      ShoppingAuthService()
-                          .getProduct(product.id!)
-                          .then((value) {
-                        Navigator.pushNamed(context, '/product',
-                            arguments: {"product": value});
-                      });
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 5),
-                      child: Center(
-                          child: ClipRRect(
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(10)),
-                        child: CachedNetworkImage(
-                          imageUrl: product.cover!,
-                          fit: BoxFit.fill,
-                          height: double.infinity,
-                          width: double.infinity,
-                          errorWidget: productAndServiceErrorWidget,
-                          memCacheHeight:
-                              (MediaQuery.of(context).size.height * 0.6)
-                                  .toInt(),
-                        ),
-                      )),
+        : Container(
+            child: CarouselSlider(
+              carouselController: _carouselController,
+              options: CarouselOptions(
+                viewportFraction: 0.9,
+                enlargeCenterPage: false,
+                autoPlay: true,
+                aspectRatio: 2,
+                initialPage: 0,
+              ),
+              items: sliderList
+                  .map(
+                    (product) => GestureDetector(
+                      onTap: () {
+                        ShoppingAuthService()
+                            .getProduct(product.id!)
+                            .then((value) {
+                          Navigator.pushNamed(context, '/product',
+                              arguments: {"product": value});
+                        });
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 5),
+                        child: Center(
+                            child: ClipRRect(
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(10)),
+                          child: CachedNetworkImage(
+                            imageUrl: product.cover!,
+                            fit: BoxFit.fill,
+                            height: double.infinity,
+                            width: double.infinity,
+                            errorWidget: productAndServiceErrorWidget,
+                            memCacheHeight:
+                                (MediaQuery.of(context).size.height * 0.6)
+                                    .toInt(),
+                          ),
+                        )),
+                      ),
                     ),
-                  ),
-                )
-                .toList(),
+                  )
+                  .toList(),
+            ),
           );
   }
 
   Widget trendingProductList() {
-    return Column(
-      children: [
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Text(
-                "Trending Products",
-                style: TextStyle(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 18,
-                  color: blackFont,
-                ),
-              ),
-              GestureDetector(
-                child: Text(
-                  "See all",
+    return Container(
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Text(
+                  "Trending Products",
                   style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14,
-                      color: navyBlue),
-                ),
-                onTap: () {
-                  Navigator.of(context).pushNamed("/shopping-category");
-                },
-              ),
-            ],
-          ),
-        ),
-        Container(
-          height: 210,
-          color: Colors.white,
-          child: isTrendingProductLoading
-              ? Container(
-                  child: Center(
-                    child: CircularLoadingIndicator(),
+                    fontWeight: FontWeight.w700,
+                    fontSize: 18,
+                    color: blackFont,
                   ),
-                )
-              : SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Container(
-                    padding: const EdgeInsets.only(left: 16),
-                    child: Row(
-                      children: trendingProduct
-                          .map(
-                            (product) => Container(
-                              margin: const EdgeInsets.only(right: 12),
-                              child: productNameCard(product: product),
-                            ),
-                          )
-                          .toList(),
+                ),
+                GestureDetector(
+                  child: Text(
+                    "See all",
+                    style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                        color: navyBlue),
+                  ),
+                  onTap: () {
+                    Navigator.of(context).pushNamed("/shopping-category");
+                  },
+                ),
+              ],
+            ),
+          ),
+          Container(
+            height: 210,
+            color: Colors.white,
+            child: isTrendingProductLoading
+                ? Container(
+                    child: Center(
+                      child: CircularLoadingIndicator(),
+                    ),
+                  )
+                : SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Container(
+                      padding: const EdgeInsets.only(left: 16),
+                      child: Row(
+                        children: trendingProduct
+                            .map(
+                              (product) => Container(
+                                margin: const EdgeInsets.only(right: 12),
+                                child: productNameCard(product: product),
+                              ),
+                            )
+                            .toList(),
+                      ),
                     ),
                   ),
-                ),
-        )
-      ],
+          )
+        ],
+      ),
     );
   }
 
@@ -505,62 +509,64 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
   }
 
   Widget getTodayDealList() {
-    return Column(
-      children: [
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Text(
-                "Today's deal",
-                style: TextStyle(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 18,
-                  color: blackFont,
-                ),
-              ),
-              GestureDetector(
-                child: Text(
-                  "See all",
+    return Container(
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Text(
+                  "Today's deal",
                   style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14,
-                      color: navyBlue),
-                ),
-                onTap: () {
-                  Navigator.of(context).pushNamed("/shopping-category");
-                },
-              ),
-            ],
-          ),
-        ),
-        Container(
-          color: Colors.white,
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          child: isTodayDealLoading
-              ? SizedBox(
-                  height: 140,
-                  child: Center(
-                    child: CircularLoadingIndicator(),
+                    fontWeight: FontWeight.w700,
+                    fontSize: 18,
+                    color: blackFont,
                   ),
-                )
-              : SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Container(
-                    padding: const EdgeInsets.only(left: 16),
-                    child: Row(
-                      children: todayDeal
-                          .map((product) => Container(
-                                margin: const EdgeInsets.only(right: 12),
-                                child: productPoster(product: product),
-                              ))
-                          .toList(),
+                ),
+                GestureDetector(
+                  child: Text(
+                    "See all",
+                    style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                        color: navyBlue),
+                  ),
+                  onTap: () {
+                    Navigator.of(context).pushNamed("/shopping-category");
+                  },
+                ),
+              ],
+            ),
+          ),
+          Container(
+            color: Colors.white,
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            child: isTodayDealLoading
+                ? Container(
+                    height: 140,
+                    child: Center(
+                      child: CircularLoadingIndicator(),
+                    ),
+                  )
+                : SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Container(
+                      padding: const EdgeInsets.only(left: 16),
+                      child: Row(
+                        children: todayDeal
+                            .map((product) => Container(
+                                  margin: const EdgeInsets.only(right: 12),
+                                  child: productPoster(product: product),
+                                ))
+                            .toList(),
+                      ),
                     ),
                   ),
-                ),
-        )
-      ],
+          )
+        ],
+      ),
     );
   }
 
@@ -597,7 +603,7 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
             ),
           ),
           if (isDiscountProductListLoading)
-            SizedBox(
+            Container(
               height: 200,
               child: Center(
                 child: CircularLoadingIndicator(),
@@ -613,7 +619,7 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
                   padding: const EdgeInsets.only(left: 16, right: 16),
                   child: Column(
                     children: [
-                      SizedBox(
+                      Container(
                         height: 244,
                         child: CustomBoxShadow(
                           child: Card(
@@ -700,7 +706,7 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
                                               ],
                                             ),
                                           ),
-                                          SizedBox(
+                                          Container(
                                             height: 60,
                                             child: Center(
                                               child: Row(
@@ -775,7 +781,7 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
               arguments: {"product": value});
         });
       },
-      child: SizedBox(
+      child: Container(
         height: 132,
         width: 218,
         child: Stack(

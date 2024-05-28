@@ -34,13 +34,13 @@ class _SuperBlogState extends State<SuperBlog> {
   bool isFirstTime = true;
   bool isPostLoading = false;
   List<UserPost> postList = [];
-  final ScrollController _postScrollController = ScrollController();
+  ScrollController _postScrollController = ScrollController();
 
-  // final GlobalKey<ScaffoldState> _postScaffoldKey = GlobalKey<ScaffoldState>();
-  final RefreshController _postRefreshController =
+  GlobalKey<ScaffoldState> _postScaffoldKey = GlobalKey<ScaffoldState>();
+  RefreshController _postRefreshController =
       RefreshController(initialRefresh: false);
 
-  void resetAndGetListOfBlogs(String value) {
+  resetAndGetListOfBlogs(String value) {
     titleToSearch = value;
     postCount = 0;
     postNext = '';
@@ -121,7 +121,7 @@ class _SuperBlogState extends State<SuperBlog> {
   void initState() {
     _pageViewCtrl = PageController(initialPage: 0);
 
-    getListOfBlogs();
+    this.getListOfBlogs();
     _postScrollController.addListener(() {
       if (_postScrollController.position.pixels ==
               _postScrollController.position.maxScrollExtent &&
@@ -403,7 +403,7 @@ class _SuperBlogState extends State<SuperBlog> {
     );
   }
 
-  void _onChanged(String value) {
+  _onChanged(String value) {
     if (_pageViewCtrl.page != 0) {
       _pageViewCtrl.jumpToPage(0);
     }
@@ -446,13 +446,13 @@ class _SlydoBlogsListState extends State<SlydoBlogsList> {
   bool isFirstTime = true;
   bool isPostLoading = false;
   List<UserPost> postList = [];
-  final ScrollController _postScrollController = ScrollController();
+  ScrollController _postScrollController = ScrollController();
 
-  // final GlobalKey<ScaffoldState> _postScaffoldKey = GlobalKey<ScaffoldState>();
-  final RefreshController _postRefreshController =
+  GlobalKey<ScaffoldState> _postScaffoldKey = GlobalKey<ScaffoldState>();
+  RefreshController _postRefreshController =
       RefreshController(initialRefresh: false);
 
-  void resetAndGetListOfBlogs(String value) {
+  resetAndGetListOfBlogs(String value) {
     titleToSearch = value;
     postCount = 0;
     postNext = '';
@@ -531,7 +531,7 @@ class _SlydoBlogsListState extends State<SlydoBlogsList> {
 
   @override
   void initState() {
-    getListOfBlogs();
+    this.getListOfBlogs();
     _postScrollController.addListener(() {
       if (_postScrollController.position.pixels ==
               _postScrollController.position.maxScrollExtent &&

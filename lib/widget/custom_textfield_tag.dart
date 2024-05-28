@@ -5,12 +5,14 @@ import 'package:textfield_tags/textfield_tags.dart';
 // ignore: must_be_immutable
 class CustomTextFieldTag extends StatefulWidget {
   final List<String>? initialTags;
+  final bool readOnly;
   final TextfieldTagsController? textfieldTagsController;
   final Function(String) onTap;
 
   CustomTextFieldTag({
     Key? key,
     this.initialTags,
+    this.readOnly = true,
     required this.textfieldTagsController,
     required this.onTap,
   }) : super(key: key);
@@ -32,7 +34,7 @@ class _CustomTextFieldTagState extends State<CustomTextFieldTag> {
       inputfieldBuilder: (context, tec, fn, error, onChanged, onSubmitted) {
         return ((context, sc, tags, onTagDelete) {
           return TextField(
-            readOnly: true,
+            readOnly: widget.readOnly,
             controller: tec,
             focusNode: fn,
             decoration: InputDecoration(

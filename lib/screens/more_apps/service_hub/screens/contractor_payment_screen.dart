@@ -27,7 +27,7 @@ import '../models/jobs.dart';
 
 class ContractorPaymentScreen extends StatefulWidget {
   ContractorPaymentScreen({Key? key, this.arguments}) : super(key: key);
-  final dynamic arguments;
+  var arguments;
 
   @override
   State<ContractorPaymentScreen> createState() =>
@@ -40,23 +40,23 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
   JobModel? jobmodel;
   // String? selectedCategory;
   List<String?> paymentCategories = [];
-  final TextEditingController _recipientController = TextEditingController();
-  final TextEditingController _categoryController = TextEditingController();
-  final TextEditingController _refNumberController = TextEditingController();
-  final TextEditingController _amountController = TextEditingController();
-  final TextEditingController _reviewController = TextEditingController();
+  TextEditingController _recipientController = TextEditingController();
+  TextEditingController _categoryController = TextEditingController();
+  TextEditingController _refNumberController = TextEditingController();
+  TextEditingController _amountController = TextEditingController();
+  TextEditingController _reviewController = TextEditingController();
 
   CustomerProfile? messageReceiver;
   late UserBloc userBloc;
-  final FocusNode _recipientFocus = FocusNode();
-  final FocusNode _refNumberFocus = FocusNode();
-  final FocusNode _categoryFocus = FocusNode();
+  FocusNode _recipientFocus = FocusNode();
+  FocusNode _refNumberFocus = FocusNode();
+  FocusNode _categoryFocus = FocusNode();
   // double? amount;
   int? rateValue;
   bool? isLoading;
   final _auth = PaymentAndBankingAuth();
   String errorMessage = "";
-  UserLocation? userLocation;
+  var userLocation;
   late http.Response response;
 
   final _sendPaymentScaffoldMessenger = GlobalKey<ScaffoldMessengerState>();
@@ -73,7 +73,7 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
     super.initState();
   }
 
-  Future<void> getContractorDetail() async {
+  getContractorDetail() async {
     messageReceiver = await UserAuth().fetchCustomerProfile(jobmodel!.assignee);
     _refNumberController.text = '';
     _categoryController.text = 'Finance';
@@ -201,7 +201,7 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
     );
   }
 
-  void ratingAndReviewModal() {
+  ratingAndReviewModal() {
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
@@ -306,9 +306,9 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
     );
   }
 
-  Future<void> endJob() async {
+  endJob() async {
     await ServiceHubAuthService().endJob(jobmodel!.id).then((value) {
-      debugPrint("Value : $value");
+      debugPrint("$value");
       if (value == true) {
         makePayment();
       } else {
@@ -320,7 +320,7 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
     });
   }
 
-  Future<void> submitRatingAndReview() async {
+  submitRatingAndReview() async {
     await ServiceHubAuthService()
         .rateAndReviewContrator(jobId: jobmodel!.id, data: {
       "job_contractor": jobmodel!.assignee,
@@ -378,7 +378,7 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
     }
   }
 
-  Future<void> makePayment() async {
+  makePayment() async {
     if (Platform.isIOS) {
       userLocation = await locationService.getLocation();
     }
@@ -394,8 +394,8 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
       "description": _refNumberController.text.isEmpty
           ? description
           : _refNumberController.text.trim(),
-      "latitude": Platform.isIOS ? userLocation?.latitude : "",
-      "longitude": Platform.isIOS ? userLocation?.longitude : "",
+      "latitude": Platform.isIOS ? userLocation.latitude : "",
+      "longitude": Platform.isIOS ? userLocation.longitude : "",
       "is_anonymous": false,
       "made_from_chat": false,
     };
@@ -406,7 +406,7 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
 
       response = value;
       final jsonData = json.decode(response.body);
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
         _auth
             .updateStatusPayment(
                 jobId: jobmodel!.id, transactionId: jsonData['transaction_id'])
@@ -440,7 +440,7 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
     return false;
   }
 
-  Widget sendPayment() {
+  sendPayment() {
     return PermissionProtectionWidget(
       permissionName: ProtectionPermission.transaction,
       isLockForRead: '1',
@@ -453,7 +453,7 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
     );
   }
 
-  Widget submitRatingAndReviewButton() {
+  submitRatingAndReviewButton() {
     return CurvedButton(
       onPressed: () => submitRatingAndReview(),
       backgroundColor: navyBlue,
@@ -462,7 +462,7 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
     );
   }
 
-  Widget displayCard() {
+  displayCard() {
     return Column(
       children: [
         ListTile(

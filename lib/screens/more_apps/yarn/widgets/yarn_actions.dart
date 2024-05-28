@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/routes/route_constants.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_conversation.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/share_in_chat/ShareInChat.dart';
 import 'package:Slydo/screens/more_apps/yarn/models/Topics/yarn_model.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
@@ -24,8 +24,8 @@ import '../yarn_dashboard_bloc.dart';
 class YarnActions extends StatefulWidget {
   final Yarn yarn;
   final Function(Yarn)? onReYarnAdded;
-  final bool? minusComment;
-  final List<Yarn>? checkIfReyarned;
+  bool? minusComment;
+  List<Yarn>? checkIfReyarned;
 
   YarnActions(
       {required this.yarn,
@@ -194,7 +194,7 @@ class _YarnActionsState extends State<YarnActions> {
   Widget _buildReYarnButton() {
     bool canReYarn = true;
     bool canReYarnTemp = true;
-    // final bool canReYarnMain = true;
+    final bool canReYarnMain = true;
     if (widget.yarn.reYarn != null) {
       canReYarn = false;
     }

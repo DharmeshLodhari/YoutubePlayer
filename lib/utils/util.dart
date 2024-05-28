@@ -4,9 +4,10 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
+import 'package:Slydo/screens/more_apps/shopping/widget/product_detail_shimmer.dart';
+import 'package:Slydo/screens/more_apps/user_profile/widgets/user_profile_shimmer.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_shimmer.dart';
 import 'package:Slydo/utils/date_time_and_money_converter.dart';
-import 'package:Slydo/utils/enums.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -159,10 +160,10 @@ Widget imageFrameBuilder(BuildContext context, Widget child, int? frame,
     return child;
   }
   return AnimatedOpacity(
+    child: child,
     opacity: frame == null ? 0 : 1,
     duration: const Duration(milliseconds: 100),
     curve: Curves.easeOut,
-    child: child,
   );
 }
 
@@ -212,7 +213,7 @@ Widget wallpaperErrorWidget(BuildContext context, String url, dynamic error) =>
       filterQuality: FilterQuality.high,
     );
 
-String? getLoggedInUserName(BuildContext context) {
+getLoggedInUserName(BuildContext context) {
   return Provider.of<UserBloc>(context, listen: false).user.userName;
 }
 
@@ -441,30 +442,32 @@ Widget transactionOrKycDetailTile(IconData icon, String title, String subtitle,
     Widget? trailingWidget,
     TextStyle? subtitleTextStyle}) {
   debugPrint("==>$subtitle");
-  return ListTile(
-    dense: true,
-    leading: RoundedBackgroundIcon(
-      icon: Icon(icon, color: blackFont, size: 18),
-      backgroundColor: iconBtnGrey,
-    ),
-    title: Text(
-      title,
-      style: TextStyle(
-        fontWeight: FontWeight.w600,
-        color: blackFont,
-        fontSize: 14,
+  return Container(
+    child: ListTile(
+      dense: true,
+      leading: RoundedBackgroundIcon(
+        icon: Icon(icon, color: blackFont, size: 18),
+        backgroundColor: iconBtnGrey,
       ),
+      title: Text(
+        title,
+        style: TextStyle(
+          fontWeight: FontWeight.w600,
+          color: blackFont,
+          fontSize: 14,
+        ),
+      ),
+      subtitle: Text(
+        getCurrency(subtitle, transaction?.currency),
+        style: subtitleTextStyle ??
+            TextStyle(
+              color: blackFont,
+              fontSize: 14,
+              fontFamily: "Inter",
+            ),
+      ),
+      trailing: trailingWidget,
     ),
-    subtitle: Text(
-      getCurrency(subtitle, transaction?.currency),
-      style: subtitleTextStyle ??
-          TextStyle(
-            color: blackFont,
-            fontSize: 14,
-            fontFamily: "Inter",
-          ),
-    ),
-    trailing: trailingWidget,
   );
 }
 
@@ -484,59 +487,61 @@ Widget transactionOrPayoutTile(
     status = 'cancel';
   }
 
-  return ListTile(
-    dense: true,
-    leading: Container(
-      padding: const EdgeInsets.all(10.0),
-      margin: const EdgeInsets.only(top: 5.0, bottom: 5.0),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10.0),
-        color: navyBlueLight.withOpacity(0.1),
-      ),
-      child: SvgPicture.asset(
-        path,
-        width: 14,
-        height: 14,
-        color: blackFont,
-      ),
-    ),
-    title: Text(
-      title,
-      style: TextStyle(
-        fontWeight: FontWeight.w600,
-        color: blackFont,
-        fontSize: 14,
-      ),
-    ),
-    subtitle: Row(
-      children: [
-        Container(
-          padding: status != ""
-              ? const EdgeInsets.only(
-                  left: 10.0, right: 10, top: 3.0, bottom: 3.0)
-              : const EdgeInsets.all(0.0),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(5.0),
-            color: checkStatusBgColor(status),
-          ),
-          child: Text(
-            getCurrency(subtitle, transaction?.currency),
-            style: subtitleTextStyle ??
-                TextStyle(
-                  color: checkStatusForColor(status),
-                  fontSize: 14,
-                  fontFamily: "Inter",
-                ),
-          ),
+  return Container(
+    child: ListTile(
+      dense: true,
+      leading: Container(
+        padding: const EdgeInsets.all(10.0),
+        margin: const EdgeInsets.only(top: 5.0, bottom: 5.0),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10.0),
+          color: navyBlueLight.withOpacity(0.1),
         ),
-        Container(),
-      ],
+        child: SvgPicture.asset(
+          path,
+          width: 14,
+          height: 14,
+          color: blackFont,
+        ),
+      ),
+      title: Text(
+        title,
+        style: TextStyle(
+          fontWeight: FontWeight.w600,
+          color: blackFont,
+          fontSize: 14,
+        ),
+      ),
+      subtitle: Row(
+        children: [
+          Container(
+            padding: status != ""
+                ? const EdgeInsets.only(
+                    left: 10.0, right: 10, top: 3.0, bottom: 3.0)
+                : const EdgeInsets.all(0.0),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(5.0),
+              color: checkStatusBgColor(status),
+            ),
+            child: Text(
+              getCurrency(subtitle, transaction?.currency),
+              style: subtitleTextStyle ??
+                  TextStyle(
+                    color: checkStatusForColor(status),
+                    fontSize: 14,
+                    fontFamily: "Inter",
+                  ),
+            ),
+          ),
+          Container(),
+        ],
+      ),
+      trailing: trailingWidget,
     ),
-    trailing: trailingWidget,
   );
 }
 
-Color? checkStatusBgColor(String status) {
+checkStatusBgColor(String status) {
   if (status == 'done') {
     return naturalGreen.withOpacity(0.1);
   } else if (status == 'processing') {
@@ -546,10 +551,9 @@ Color? checkStatusBgColor(String status) {
   } else if (status == "") {
     return Colors.transparent;
   }
-  return blackFont;
 }
 
-Color checkStatusForColor(String status) {
+checkStatusForColor(String status) {
   if (status == 'done') {
     return naturalGreen;
   } else if (status == 'processing') {
@@ -559,7 +563,6 @@ Color checkStatusForColor(String status) {
   } else if (status == "") {
     return blackFont;
   }
-  return blackFont;
 }
 
 Widget getSettingTile(
@@ -634,6 +637,20 @@ Widget buildShimmerLoadingIndicator({required bool isLoading}) {
   );
 }
 
+Widget buildProductShimmerLoadingIndicator({required bool isLoading}) {
+  return Opacity(
+    opacity: isLoading ? 1.0 : 00,
+    child: isLoading ? const ProductDetailShimmer() : Container(),
+  );
+}
+
+Widget buildProfileShimmerLoadingIndicator({required bool isLoading}) {
+  return Opacity(
+    opacity: isLoading ? 1.0 : 00,
+    child: isLoading ? const UserProfileShimmer() : Container(),
+  );
+}
+
 Widget buildLoadingIndicator({required bool isLoading}) {
   return Padding(
     padding: const EdgeInsets.all(8.0),
@@ -691,8 +708,8 @@ Widget customAppBar({required BuildContext context, required String title}) {
 
 Widget getColoredLabeledWidget({required String text, required Color color}) {
   return Container(
-    margin: const EdgeInsets.only(left: 8.0),
-    padding: const EdgeInsets.symmetric(horizontal: 6.0),
+    margin: const EdgeInsets.only(left: 5.0),
+    padding: const EdgeInsets.symmetric(horizontal: 5.0),
     decoration: BoxDecoration(
       color: color,
       borderRadius: BorderRadius.circular(6),
@@ -719,7 +736,7 @@ Widget flexibleSpace({int flex = 1}) {
   );
 }
 
-void showSnackbar(BuildContext context,
+showSnackbar(BuildContext context,
     {required String message, int duration = 500}) {
   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
     content: Text(message),
@@ -836,12 +853,12 @@ List<String> errorImageList = [
   "https://slydo-assets.s3.amazonaws.com/media/customer/avatar/me.jpeg"
 ];
 
-Widget getAmount(int amount, String currency, {double fontSize = 14}) {
+Widget getAmount(amount, currency, {double fontSize = 14}) {
   return Row(
     mainAxisSize: MainAxisSize.min,
     children: <Widget>[
       Text(
-        worldCurrencies[currency]!,
+        worldCurrencies[currency!]!,
         style: TextStyle(
             fontFamily: "Inter",
             color: blackFont,
@@ -858,7 +875,7 @@ Widget getAmount(int amount, String currency, {double fontSize = 14}) {
 }
 
 Widget getDateTime(BuildContext context, String dateTime,
-    {double fontSize = 10, Color? color}) {
+    {double fontSize = 10, color}) {
   final DateTime transactionTime = DateTime.parse(dateTime).toLocal();
   final String date = DateFormat("dd/MM/yyyy").format(transactionTime);
   final String time = DateFormat("hh:mm a").format(transactionTime);
@@ -1110,7 +1127,7 @@ double formatRating(double rating) {
 class BlogSettingsTitles extends StatefulWidget {
   final bool isEnabled;
   final Function()? onTap;
-  final bool? isSwitched;
+  bool? isSwitched;
   final Widget icon;
   final String title;
   final bool hasSwitch;
@@ -1236,7 +1253,7 @@ Color getRatingColor(int? numberOfRating, int i) {
       : Colors.grey;
 }
 
-String enumToString(UtilitiesProvidersEnum mEnum) {
+String enumToString(mEnum) {
   //UtilitiesProvidersEnum.Electricity
 
   return mEnum.toString().split('.')[1].replaceAll('_', ' ');
@@ -1396,7 +1413,6 @@ String? toTimeAgoLabel({required DateTime dateTime}) {
   }
 
   debugPrint('IN MINUTES --> $inMinutes');
-  return "";
 }
 
 String elapsedTime({required DateTime dateTime}) {
@@ -1605,7 +1621,7 @@ List<Map<String, dynamic>> nigeriaStateAndLg = [
       "Gamawa",
       "Ganjuwa",
       "Giade",
-      "Itas/Gadau",
+      "Itas\/Gadau",
       "Jama'Are",
       "Katagum",
       "Kirfi",
@@ -1662,7 +1678,7 @@ List<Map<String, dynamic>> nigeriaStateAndLg = [
       "Hawul",
       "Jere",
       "Kaga",
-      "Kala/Balge",
+      "Kala\/Balge",
       "Konduga",
       "Kukawa",
       "Kwaya-Kusar",
@@ -1682,7 +1698,7 @@ List<Map<String, dynamic>> nigeriaStateAndLg = [
     "lgas": [
       "Brass",
       "Ekeremor",
-      "Kolokuma/Opokuma",
+      "Kolokuma\/Opokuma",
       "Nembe",
       "Ogbia",
       "Sagbama",
@@ -1799,7 +1815,7 @@ List<Map<String, dynamic>> nigeriaStateAndLg = [
       "Ikere",
       "Ikole",
       "Ilejemeje",
-      "Irepodun/Ifelodun",
+      "Irepodun\/Ifelodun",
       "Ise-Orun",
       "Moba",
       "Oye"
@@ -1844,7 +1860,7 @@ List<Map<String, dynamic>> nigeriaStateAndLg = [
       "Kwami",
       "Nafada",
       "Shongom",
-      "Yamaltu/Deba"
+      "Yamaltu\/Deba"
     ]
   },
   {
@@ -1856,7 +1872,7 @@ List<Map<String, dynamic>> nigeriaStateAndLg = [
       "Ezinihitte",
       "Ideato-North",
       "Ideato-South",
-      "Ihitte/Uboma",
+      "Ihitte\/Uboma",
       "Ikeduru",
       "Isiala-Mbano",
       "Isu",
@@ -2024,12 +2040,12 @@ List<Map<String, dynamic>> nigeriaStateAndLg = [
       "Idah",
       "Igalamela-Odolu",
       "Ijumu",
-      "Kabba/Bunu",
+      "Kabba\/Bunu",
       "Kogi",
       "Lokoja",
       "Mopa-Muro",
       "Ofu",
-      "Ogori/Magongo",
+      "Ogori\/Magongo",
       "Okehi",
       "Okene",
       "Olamaboro",
@@ -2176,7 +2192,7 @@ List<Map<String, dynamic>> nigeriaStateAndLg = [
     "lgas": [
       "Abeokuta-North",
       "Abeokuta-South",
-      "Ado-Odo/Ota",
+      "Ado-Odo\/Ota",
       "Ewekoro",
       "Ifo",
       "Ijebu-East",
@@ -2316,7 +2332,7 @@ List<Map<String, dynamic>> nigeriaStateAndLg = [
   {
     "state": "Rivers",
     "lgas": [
-      "Abua/Odual",
+      "Abua\/Odual",
       "Ahoada-East",
       "Ahoada-West",
       "Akuku Toru",
@@ -2330,13 +2346,13 @@ List<Map<String, dynamic>> nigeriaStateAndLg = [
       "Gokana",
       "Ikwerre",
       "Khana",
-      "Obio/Akpor",
+      "Obio\/Akpor",
       "Ogba-Egbema-Ndoni",
-      "Ogba/Egbema/Ndoni",
-      "Ogu/Bolo",
+      "Ogba\/Egbema\/Ndoni",
+      "Ogu\/Bolo",
       "Okrika",
       "Omuma",
-      "Opobo/Nkoro",
+      "Opobo\/Nkoro",
       "Oyigbo",
       "Port-Harcourt",
       "Tai"
@@ -2444,9 +2460,9 @@ List<String> expiresList = [
 List<String> getAllStates() {
   final List<String> states = [];
 
-  for (var element in nigeriaStateAndLg) {
+  nigeriaStateAndLg.forEach((element) {
     states.add(element['state']);
-  }
+  });
 
   return states;
 }
@@ -2492,8 +2508,8 @@ extension StringCasingExtension on String {
 }
 
 bool canCashOut(int amount, int accountBalance) {
-  const int payoutCharge = 2500; //transaction charges in kobo
-  const int minimumAccountBalance =
+  final int payoutCharge = 2500; //transaction charges in kobo
+  final int minimumAccountBalance =
       1000; //the minimum a user's account can have at any time in kobo
   int totalDeduction = 0;
   int balanceAfterTransaction = 0;
@@ -2510,8 +2526,8 @@ bool canCashOut(int amount, int accountBalance) {
 }
 
 int displayPossibleCashOutAmount(int accountBalance) {
-  const int payoutCharge = 2500; //transaction charges in kobo
-  const int minimumAccountBalance =
+  final int payoutCharge = 2500; //transaction charges in kobo
+  final int minimumAccountBalance =
       1000; //the minimum a user's account can have at any time in kobo
   int possibleSendOutAmount = 0;
 
@@ -2542,8 +2558,8 @@ Widget userImageUserInitialsPic(
       ),
     );
   } else {
-    final String? url = image;
-    final String? imageUrl = url?.replaceAll('https//', 'https://');
+    final String url = image;
+    final String imageUrl = url.replaceAll('https//', 'https://');
 
     return Container(
       width: imageWidth,
@@ -2555,7 +2571,7 @@ Widget userImageUserInitialsPic(
         image: DecorationImage(
           fit: BoxFit.cover,
           image: CachedNetworkImageProvider(
-            imageUrl ?? "",
+            imageUrl,
           ),
         ),
       ),

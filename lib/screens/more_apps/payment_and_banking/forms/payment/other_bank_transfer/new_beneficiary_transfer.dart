@@ -9,6 +9,7 @@ import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/permission_protection_widget.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -34,10 +35,10 @@ import '../../../payment_and_banking_auth.dart';
 
 // ignore: must_be_immutable
 class NewBeneficiaryTransfer extends StatefulWidget {
-  final dynamic arguments;
+  var arguments;
   final Function(bool)? callback;
 
-  const NewBeneficiaryTransfer({super.key, this.arguments, this.callback});
+  NewBeneficiaryTransfer({this.arguments, this.callback});
 
   // Declare a field that holds the userData.
   @override
@@ -85,6 +86,8 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
   VirtualAccount? virtualAccount;
   bool isAccountFound = false;
   int? accountBalance = 0;
+  bool isBalanceHidden = true;
+  bool isBalanceLoading = true;
 
   @override
   void initState() {
@@ -93,7 +96,7 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
   }
 
   void getBankAccountDetail() async {
-    isLoading = true;
+    isBalanceLoading = true;
     setState(() {});
     await getAccountBalance();
     virtualAccount = await DatabaseHelper().getVirtualAccount();
@@ -103,7 +106,7 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
     if (virtualAccount != null) {
       isAccountFound = true;
     }
-    isLoading = false;
+    isBalanceLoading = false;
     setState(() {});
   }
 
@@ -131,144 +134,312 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
             horizontal: 16, vertical: isScreenIsSmall ? 8 : 16),
         child: Column(
           children: [
-            Card(
-              elevation: 2,
-              margin: EdgeInsets.zero,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              shadowColor: iconBtnGrey,
-              child: Container(
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: iconBtnGrey, width: 1)),
-                child: Form(
-                  key: _formKey,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Column(
-                      children: <Widget>[
-                        const SizedBox(
-                          height: 30,
-                        ),
+            _buildTransferForm(),
+            _buildFormFields(),
+            _buildSendPayment(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTransferForm() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "Transfer From",
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w400,
+            color: darkGrey,
+            fontFamily: "Inter",
+          ),
+        ),
+        const SizedBox(
+          height: 8,
+        ),
+        Container(
+          width: MediaQuery.of(context).size.width,
+          child: Card(
+            elevation: 0,
+            margin: EdgeInsets.zero,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(7),
+            ),
+            shadowColor: iconBtnGrey,
+            color: greyDarkBackground,
+            child: Container(
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(7),
+                  border: Border.all(color: iconBtnGrey, width: 1)),
+              child: Padding(
+                padding: const EdgeInsets.all(15.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "@${userBloc.user.userName}",
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w400,
+                        color: blackFont,
+                        fontFamily: "Inter",
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        if (isBalanceLoading == true)
+                          SizedBox(
+                            width: 20,
+                            height: 20,
+                            child:
+                                CircularLoadingIndicator(color: naturalGreen),
+                          )
+                        else
+                          Row(
+                            children: [
+                              Text(
+                                "Transferable Balance : ",
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w400,
+                                  color: navyBlue,
+                                  fontFamily: "Inter",
+                                ),
+                              ),
+                              if (isBalanceHidden)
+                                Container()
+                              else
+                                Text(
+                                  worldCurrencies[userBloc.user.currency] ?? "",
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w400,
+                                    color: navyBlue,
+                                    fontFamily: "Inter",
+                                  ),
+                                ),
+                              Text(
+                                isBalanceHidden
+                                    ? generateAsteriskMask(
+                                        moneyDisplayNormalizer(accountBalance))
+                                    : moneyDisplayNormalizer(accountBalance),
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w400,
+                                  color: navyBlue,
+                                  fontFamily: "Inter",
+                                ),
+                              ),
+                            ],
+                          ),
                         InkWell(
                           onTap: () {
-                            FocusScope.of(context).unfocus();
-
-                            clearSearchedListItems();
-                            showSearchBankBottomSheet();
+                            toggleBalanceVisibility();
                           },
-                          child: TextFormField(
-                            controller: bankController,
-                            enabled: false,
-                            style: TextStyle(
-                                fontSize: 18,
-                                color: blackFont,
-                                fontWeight: FontWeight.w600),
-                            decoration: InputDecoration(
-                              filled: true,
-                              fillColor: greyBorderColor,
-                              contentPadding: const EdgeInsets.only(
-                                  left: 8, bottom: 0, top: 0, right: 15),
-                              hintText: 'Select Bank',
-                              hintStyle: TextStyle(
-                                  fontSize: 18,
-                                  color: blackFont,
-                                  fontWeight: FontWeight.w600),
-                              suffixIcon: Icon(
-                                Icons.arrow_drop_down_outlined,
-                                color: blackFont,
-                              ),
-                              border: const OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  width: 0,
-                                  style: BorderStyle.none,
-                                ),
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(8.0),
-                                ),
-                              ),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10.0, vertical: 5.0),
+                            child: Icon(
+                              isBalanceHidden
+                                  ? SlydoAppIcon.eye
+                                  : SlydoAppIcon.eye_close,
+                              color: navyBlue,
+                              size: 12,
                             ),
                           ),
                         ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        getAccountNumber(),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        getAccountName(),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        displayAmountField(),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        getDescription(),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        noteForUser(),
-                        const SizedBox(
-                          height: 20,
-                        ),
                       ],
                     ),
-                  ),
+                  ],
                 ),
               ),
             ),
-            Container(
-              child: Column(
-                children: [
-                  const SizedBox(
-                    height: 40,
-                  ),
-                  if (canCashOut(amount!, accountBalance!))
-                    getSubmitButton()
-                  else
-                    Container(
-                      child: Center(
-                          child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(vertical: 16.0),
-                              child: Text.rich(TextSpan(
-                                  text: AppLocalization.of(context)!
-                                      .minimumTransfer,
-                                  style: TextStyle(
-                                      fontSize: 12,
-                                      color: blackFont,
-                                      fontWeight: FontWeight.w600),
-                                  children: <InlineSpan>[
-                                    TextSpan(
-                                      text: double.parse(moneyDisplayNormalizer(
-                                                  displayPossibleCashOutAmount(
-                                                      accountBalance!))) >=
-                                              35.00
-                                          ? worldCurrencies[
-                                                  userBloc.user.currency!]! +
-                                              moneyDisplayNormalizer(
-                                                  displayPossibleCashOutAmount(
-                                                      accountBalance!))
-                                          : '${worldCurrencies[userBloc.user.currency!]!}0.00',
-                                      style: TextStyle(
-                                          fontSize: 12,
-                                          color: blackFont,
-                                          fontFamily: "Inter",
-                                          fontWeight: FontWeight.w600),
-                                    )
-                                  ])))),
-                    ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                ],
-              ),
-            ),
-          ],
+          ),
         ),
+        const SizedBox(
+          height: 15,
+        ),
+      ],
+    );
+  }
+
+  String generateAsteriskMask(String amount) {
+    // Determine the length of the amount
+    final int amountLength = amount.length;
+
+    // Generate a string of asterisks of the same length as the amount
+    final String asteriskMask = '*' * amountLength;
+
+    // Trim the trailing space and return the asterisk mask
+    return asteriskMask.trim();
+  }
+
+  void toggleBalanceVisibility() {
+    if (isBalanceHidden) {
+      if (userBloc.chatMessageSettings.accountBalanceVisibility == false) {
+        BottomSheetPassCode(
+          context: context,
+          isValidCallback: () {
+            getAccountBalance();
+            isBalanceHidden = false;
+            setState(() {});
+          },
+          cancelCallBack: () {
+            Navigator.pop(context);
+          },
+        );
+      } else {
+        getAccountBalance();
+        isBalanceHidden = false;
+        setState(() {});
+      }
+    } else {
+      isBalanceHidden = !isBalanceHidden;
+      setState(() {});
+    }
+  }
+
+  Widget _buildFormFields() {
+    return Card(
+      elevation: 2,
+      margin: EdgeInsets.zero,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      shadowColor: iconBtnGrey,
+      child: Container(
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: iconBtnGrey, width: 1)),
+        child: Form(
+          key: _formKey,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Column(
+              children: <Widget>[
+                const SizedBox(
+                  height: 30,
+                ),
+                InkWell(
+                  onTap: () {
+                    FocusScope.of(context).unfocus();
+
+                    clearSearchedListItems();
+                    showSearchBankBottomSheet();
+                  },
+                  child: TextFormField(
+                    controller: bankController,
+                    enabled: false,
+                    style: TextStyle(
+                        fontSize: 18,
+                        color: blackFont,
+                        fontWeight: FontWeight.w600),
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: greyBorderColor,
+                      contentPadding: const EdgeInsets.only(
+                          left: 8, bottom: 0, top: 0, right: 15),
+                      hintText: 'Select Bank',
+                      hintStyle: TextStyle(
+                          fontSize: 18,
+                          color: blackFont,
+                          fontWeight: FontWeight.w600),
+                      suffixIcon: Icon(
+                        Icons.arrow_drop_down_outlined,
+                        color: blackFont,
+                      ),
+                      border: const OutlineInputBorder(
+                        borderSide: BorderSide(
+                          width: 0,
+                          style: BorderStyle.none,
+                        ),
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(8.0),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                getAccountNumber(),
+                const SizedBox(
+                  height: 20,
+                ),
+                getAccountName(),
+                const SizedBox(
+                  height: 20,
+                ),
+                displayAmountField(),
+                const SizedBox(
+                  height: 20,
+                ),
+                getDescription(),
+                const SizedBox(
+                  height: 20,
+                ),
+                noteForUser(),
+                const SizedBox(
+                  height: 20,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSendPayment() {
+    return Container(
+      child: Column(
+        children: [
+          const SizedBox(
+            height: 40,
+          ),
+          if (canCashOut(amount!, accountBalance!))
+            getSubmitButton()
+          else
+            Container(
+              child: Center(
+                  child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      child: Text.rich(TextSpan(
+                          text: AppLocalization.of(context)!.minimumTransfer,
+                          style: TextStyle(
+                              fontSize: 12,
+                              color: blackFont,
+                              fontWeight: FontWeight.w600),
+                          children: <InlineSpan>[
+                            TextSpan(
+                              text: double.parse(moneyDisplayNormalizer(
+                                          displayPossibleCashOutAmount(
+                                              accountBalance!))) >=
+                                      35.00
+                                  ? worldCurrencies[userBloc.user.currency!]! +
+                                      moneyDisplayNormalizer(
+                                          displayPossibleCashOutAmount(
+                                              accountBalance!))
+                                  : '${worldCurrencies[userBloc.user.currency!]!}0.00',
+                              style: TextStyle(
+                                  fontSize: 12,
+                                  color: blackFont,
+                                  fontFamily: "Inter",
+                                  fontWeight: FontWeight.w600),
+                            )
+                          ])))),
+            ),
+          const SizedBox(
+            height: 20,
+          ),
+        ],
       ),
     );
   }
@@ -491,7 +662,8 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
 
                   Navigator.pop(context);
 
-                  if (response.statusCode == 201) {
+                  if (response.statusCode == 200 ||
+                      response.statusCode == 201) {
                     Navigator.pop(context);
                     Navigator.of(context)
                         .pushNamed(Routes.TRANSACTIONS, arguments: {'page': 1});
@@ -966,7 +1138,7 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
                         if (bankList.length >= 1) ...[
                           bankCardDisplay(bankList[index]),
                         ] else ...[
-                          // print('The array does not have a second element.');
+                          // debugPrint('The array does not have a second element.');
                         ]
                       ],
                     ));
@@ -996,9 +1168,8 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
       if (next != null && !isItemLoading) {
         isItemLoading = true;
 
-        if (bottomSheetStateSetterGlobal != null && bottomSheetMounted) {
+        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
           bottomSheetStateSetterGlobal!(() {});
-        }
         if (mounted) setState(() {});
 
         final Map<String, dynamic>? result =
@@ -1013,9 +1184,8 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
         final List tempList = result['results'];
 
         isItemLoading = false;
-        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted) {
+        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
           bottomSheetStateSetterGlobal!(() {});
-        }
         bankList.clear();
         if (mounted) setState(() {});
 
@@ -1023,16 +1193,14 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
           bankList.add(BankModel.fromJson(item));
         });
 
-        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted) {
+        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
           bottomSheetStateSetterGlobal!(() {});
-        }
         if (mounted) setState(() {});
       }
       if (bankList.isEmpty) {
         noSearchedItem = true;
-        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted) {
+        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
           bottomSheetStateSetterGlobal!(() {});
-        }
         if (mounted) setState(() {});
       }
     }

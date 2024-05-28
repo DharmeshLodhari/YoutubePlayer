@@ -101,47 +101,47 @@ class JobModel {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['id'] = id;
-    data['tags'] = tags;
-    if (pictures != null) {
-      data['pictures'] = pictures!.map((v) => v.toJson()).toList();
+    final Map<String, dynamic> data = Map<String, dynamic>();
+    data['id'] = this.id;
+    data['tags'] = this.tags;
+    if (this.pictures != null) {
+      data['pictures'] = this.pictures!.map((v) => v.toJson()).toList();
     }
-    if (video != null) {
-      data['video'] = video!.toJson();
+    if (this.video != null) {
+      data['video'] = this.video!.toJson();
     }
-    if (category != null) {
-      data['category'] = category!.toJson();
+    if (this.category != null) {
+      data['category'] = this.category!.toJson();
     }
-    data['owner_avatar'] = ownerAvatar;
-    data['owner_name'] = ownerName;
-    data['applicants_count'] = applicantsCount;
-    data['active_listing'] = activeListing;
-    data['title'] = title;
-    data['pay'] = pay;
-    data['status'] = status;
-    data['owner'] = owner;
-    data['is_listed'] = isListed;
-    data['is_online'] = isOnline;
-    data['applicants'] = applicants;
-    data['assignee'] = assignee;
-    data['assignee_avatar'] = assigneeAvatar;
-    data['description'] = description;
-    data['due_date'] = dueDate;
-    data['creation_date'] = creationDate;
-    data['reference_number'] = referenceNumber;
+    data['owner_avatar'] = this.ownerAvatar;
+    data['owner_name'] = this.ownerName;
+    data['applicants_count'] = this.applicantsCount;
+    data['active_listing'] = this.activeListing;
+    data['title'] = this.title;
+    data['pay'] = this.pay;
+    data['status'] = this.status;
+    data['owner'] = this.owner;
+    data['is_listed'] = this.isListed;
+    data['is_online'] = this.isOnline;
+    data['applicants'] = this.applicants;
+    data['assignee'] = this.assignee;
+    data['assignee_avatar'] = this.assigneeAvatar;
+    data['description'] = this.description;
+    data['due_date'] = this.dueDate;
+    data['creation_date'] = this.creationDate;
+    data['reference_number'] = this.referenceNumber;
     // data['location'] = this.location;
-    data['city'] = city;
-    data['state'] = state;
-    data['transaction_id'] = transactionId;
-    data['is_verified'] = isVerified;
+    data['city'] = this.city;
+    data['state'] = this.state;
+    data['transaction_id'] = this.transactionId;
+    data['is_verified'] = this.isVerified;
     return data;
   }
 
   // ignore: missing_return
   String getImageId(String? imageUrl) {
     // debugPrint("${this.serverImages}");
-    for (var data in pictures!) {
+    for (var data in this.pictures!) {
       if (data.image == imageUrl) {
         return data.id.toString();
       }
@@ -164,10 +164,10 @@ class Pictures {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['id'] = id;
-    data['image'] = image;
-    data['caption'] = caption;
+    final Map<String, dynamic> data = Map<String, dynamic>();
+    data['id'] = this.id;
+    data['image'] = this.image;
+    data['caption'] = this.caption;
     return data;
   }
 }
@@ -186,10 +186,10 @@ class Category {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['slug'] = slug;
-    data['image'] = image;
-    data['name'] = name;
+    final Map<String, dynamic> data = Map<String, dynamic>();
+    data['slug'] = this.slug;
+    data['image'] = this.image;
+    data['name'] = this.name;
     return data;
   }
 }
@@ -197,8 +197,8 @@ class Category {
 class Video {
   String? id;
   String? file;
-  dynamic imagePoster;
-  dynamic caption;
+  Null imagePoster;
+  Null caption;
 
   Video({this.id, this.file, this.imagePoster, this.caption});
 
@@ -210,11 +210,11 @@ class Video {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['id'] = id;
-    data['file'] = file;
-    data['image_poster'] = imagePoster;
-    data['caption'] = caption;
+    final Map<String, dynamic> data = Map<String, dynamic>();
+    data['id'] = this.id;
+    data['file'] = this.file;
+    data['image_poster'] = this.imagePoster;
+    data['caption'] = this.caption;
     return data;
   }
 }

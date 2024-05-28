@@ -10,7 +10,7 @@ import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
 class VideoRecorder extends StatefulWidget {
-  final dynamic arguments;
+  var arguments;
 
   VideoRecorder({this.arguments});
 
@@ -110,6 +110,9 @@ class _VideoRecorderState extends State<VideoRecorder> {
                   ),
                 ),
                 Container(
+                  child: const Padding(
+                    padding: EdgeInsets.all(1.0),
+                  ),
                   height: MediaQuery.of(context).size.height,
                   width: MediaQuery.of(context).size.width,
                   decoration: BoxDecoration(
@@ -121,9 +124,6 @@ class _VideoRecorderState extends State<VideoRecorder> {
                           : dividerColor,
                       width: 1.0,
                     ),
-                  ),
-                  child: const Padding(
-                    padding: EdgeInsets.all(1.0),
                   ),
                 ),
                 Positioned(
@@ -161,10 +161,15 @@ class _VideoRecorderState extends State<VideoRecorder> {
           }
           return Stack(
             children: <Widget>[
-              Center(
-                child: _cameraPreviewWidget(),
+              Container(
+                child: Center(
+                  child: _cameraPreviewWidget(),
+                ),
               ),
               Container(
+                child: const Padding(
+                  padding: EdgeInsets.all(1.0),
+                ),
                 height: MediaQuery.of(context).size.height,
                 width: MediaQuery.of(context).size.width,
                 decoration: BoxDecoration(
@@ -176,9 +181,6 @@ class _VideoRecorderState extends State<VideoRecorder> {
                             : dividerColor,
                     width: 1.0,
                   ),
-                ),
-                child: const Padding(
-                  padding: EdgeInsets.all(1.0),
                 ),
               ),
               Positioned(
@@ -318,12 +320,12 @@ class _VideoRecorderState extends State<VideoRecorder> {
                   : null,
               child: ClipOval(
                 child: AnimatedSwitcher(
+                  child: recordingButton,
                   transitionBuilder: (child, animation) => ScaleTransition(
                     scale: animation,
                     child: child,
                   ),
                   duration: const Duration(microseconds: 500),
-                  child: recordingButton,
                 ),
               ),
             ),

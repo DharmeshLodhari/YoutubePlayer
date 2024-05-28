@@ -13,6 +13,7 @@ import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
@@ -20,7 +21,7 @@ import '../../../widget/customized_passcode_sheet/bottomsheet_passcode.dart';
 import '../payment_and_banking/payment_and_banking_auth.dart';
 
 class WithdrawVirtualCard extends StatefulWidget {
-  final dynamic arguments;
+  var arguments;
 
   WithdrawVirtualCard({this.arguments, Key? key}) : super(key: key);
 
@@ -160,42 +161,44 @@ class WithdrawVirtualCardState extends State<WithdrawVirtualCard> {
                       ),
                     ),
                   ),
-                  Column(
-                    children: [
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      if (canWithdraw(usdCheck!, allCards.availableBalance!))
-                        getSubmitButton()
-                      else
-                        Container(
-                          child: Center(
-                              child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 16.0),
-                                  child: Text.rich(TextSpan(
-                                      text: AppLocalization.of(context)!
-                                          .availableFund,
-                                      style: TextStyle(
-                                          fontSize: 12,
-                                          color: blackFont,
-                                          fontWeight: FontWeight.w600),
-                                      children: <InlineSpan>[
-                                        TextSpan(
-                                          text: formatAsDollar(
-                                              allCards.availableBalance!),
-                                          style: TextStyle(
-                                              fontSize: 12,
-                                              color: blackFont,
-                                              fontFamily: "Inter",
-                                              fontWeight: FontWeight.w600),
-                                        )
-                                      ])))),
+                  Container(
+                    child: Column(
+                      children: [
+                        const SizedBox(
+                          height: 20,
                         ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                    ],
+                        if (canWithdraw(usdCheck!, allCards.availableBalance!))
+                          getSubmitButton()
+                        else
+                          Container(
+                            child: Center(
+                                child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 16.0),
+                                    child: Text.rich(TextSpan(
+                                        text: AppLocalization.of(context)!
+                                            .availableFund,
+                                        style: TextStyle(
+                                            fontSize: 12,
+                                            color: blackFont,
+                                            fontWeight: FontWeight.w600),
+                                        children: <InlineSpan>[
+                                          TextSpan(
+                                            text: formatAsDollar(
+                                                allCards.availableBalance!),
+                                            style: TextStyle(
+                                                fontSize: 12,
+                                                color: blackFont,
+                                                fontFamily: "Inter",
+                                                fontWeight: FontWeight.w600),
+                                          )
+                                        ])))),
+                          ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -204,9 +207,11 @@ class WithdrawVirtualCardState extends State<WithdrawVirtualCard> {
   }
 
   Widget mainCreditCardContent(AllCards cardData) {
+    var cardColors = [];
     var cardColor;
 
     if (cardData.color == null) {
+      cardColors = [navyBlue, richPink, black, orange];
       cardColor = navyBlue;
     } else {
       final String? color = cardData.color;
@@ -230,7 +235,7 @@ class WithdrawVirtualCardState extends State<WithdrawVirtualCard> {
       }
     }
 
-    return SizedBox(
+    return Container(
       height: 200,
       child: Card(
         elevation: 0,
@@ -387,7 +392,7 @@ class WithdrawVirtualCardState extends State<WithdrawVirtualCard> {
                               ),
                             const SizedBox(width: 5.0),
                             if (cardData.cardBrand == 'Visa')
-                              const SizedBox.shrink()
+                              SizedBox.shrink()
                             else
                               Column(
                                 children: [
@@ -631,12 +636,12 @@ class WithdrawVirtualCardState extends State<WithdrawVirtualCard> {
 
   bool canWithdraw(double enteredAmount, double currentBalance) {
     if (enteredAmount <= 0) {
-      // print("Invalid withdrawal amount: Please enter a positive amount.");
+      // debugPrint("Invalid withdrawal amount: Please enter a positive amount.");
       return false;
     }
 
     if (enteredAmount > currentBalance) {
-      // print("Insufficient balance: You cannot withdraw more than your current balance.");
+      // debugPrint("Insufficient balance: You cannot withdraw more than your current balance.");
       return false;
     }
 

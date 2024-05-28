@@ -16,7 +16,7 @@ class SubscriptionsAuth extends AuthService {
     debugPrint('GET SUBSCRIPTION LIST');
     debugPrint(
         "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final List results = jsonDecode(response.body)['results'];
       final List<SubscriptionsModel> subscriptionModelList =
           results.map((json) => SubscriptionsModel.fromJson(json)).toList();
@@ -37,7 +37,7 @@ class SubscriptionsAuth extends AuthService {
     final response = await httpGet(url, headers: headers);
     debugPrint(
         "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       if (jsonDecode(response.body)['available'] == true) {
         return true;
       } else {
@@ -52,10 +52,12 @@ class SubscriptionsAuth extends AuthService {
       {required int subscriptionsId,
       required String accountType,
       required String businessName}) async {
+    bool? userAccountUpgraded;
     final String url = AppConfig.baseUrl + "/api/v1/user/upgrade-user-account/";
 
     final headers = await getAuthHeaders();
-
+    debugPrint(accountType);
+    debugPrint(businessName);
     final data = {
       'id': subscriptionsId,
       "account_type": accountType,

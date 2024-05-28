@@ -51,12 +51,13 @@ class RiderDeliveryBloc extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> refreshJobDetail(String? journeyId) async {
-    await getJobDetail(journeyId);
+  Future<DeliveryModel> refreshJobDetail(String? journeyId) async {
+    final DeliveryModel deliveryModel = await getJobDetail(journeyId);
     notifyListeners();
+    return deliveryModel;
   }
 
-  Future<void> getJobDetail(String? journeyId) async {
+  getJobDetail(String? journeyId) async {
     await RiderDeliveryAuthService().fetchJob(journeyId).then((value) {
       if (value != null) {
         updateDeliveryModel(value);

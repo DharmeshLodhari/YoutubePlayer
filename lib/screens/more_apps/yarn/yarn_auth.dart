@@ -53,7 +53,7 @@ class YarnAuth extends AuthService {
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final List<YarnCategories> askCategories = [];
       final jsonData = json.decode(response.body);
 
@@ -100,7 +100,7 @@ class YarnAuth extends AuthService {
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final List<ProductCategory> productCategories = [];
       final jsonData = json.decode(response.body);
 
@@ -137,7 +137,7 @@ class YarnAuth extends AuthService {
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       UsersCategories usersCategory;
       final jsonData = json.decode(response.body);
       debugPrint("JSON DECODED:- $jsonData");
@@ -165,7 +165,7 @@ class YarnAuth extends AuthService {
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       UserYarnSettings yarnSettings;
       final jsonData = json.decode(response.body);
       yarnSettings = UserYarnSettings.fromJson(jsonData);
@@ -190,7 +190,7 @@ class YarnAuth extends AuthService {
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
-    if (response.statusCode == 201) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       UserYarnSettings yarnSettings;
       final jsonData = json.decode(response.body);
       debugPrint("JSON DECODED:- $jsonData");
@@ -216,7 +216,7 @@ class YarnAuth extends AuthService {
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
-    if (response.statusCode == 201) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       UsersCategories usersCategory;
       final jsonData = json.decode(response.body);
       debugPrint("JSON DECODED:- $jsonData");
@@ -246,7 +246,7 @@ class YarnAuth extends AuthService {
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       UsersCategories usersCategory;
       final jsonData = json.decode(response.body);
       debugPrint("JSON DECODED:- $jsonData");
@@ -276,7 +276,7 @@ class YarnAuth extends AuthService {
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       UsersCategories usersCategory;
       final jsonData = json.decode(response.body);
       debugPrint("JSON DECODED:- $jsonData");
@@ -341,7 +341,7 @@ class YarnAuth extends AuthService {
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final List<Yarn> yarnTopics = [];
       final jsonData = json.decode(response.body);
 
@@ -390,7 +390,7 @@ class YarnAuth extends AuthService {
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final List<Yarn> yarnTopics = [];
       final jsonData = json.decode(response.body);
 
@@ -445,7 +445,7 @@ class YarnAuth extends AuthService {
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final jsonData = json.decode(response.body);
       final Yarn yarnTopic = Yarn.fromJson(jsonData);
 
@@ -499,7 +499,7 @@ class YarnAuth extends AuthService {
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final List<Yarn> yarnTopics = [];
       final jsonData = json.decode(response.body);
       for (var item in jsonData["results"]) {
@@ -600,7 +600,7 @@ class YarnAuth extends AuthService {
           "Please upload smaller images, One or all of your images are too large.");
     }
     final responseBody = await response.stream.bytesToString();
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final result = jsonDecode(responseBody);
       return result;
     } else {
@@ -718,10 +718,10 @@ class YarnAuth extends AuthService {
     debugPrint("MEDIA LENGTH::: ${reYarn.media.length}");
 
     if (response.statusCode == 401) {
-      await getAuthHeaders();
+      final headers = await getAuthHeaders();
       // var response =
       // await httpPost(url, headers: headers, body: jsonEncode(body));
-      await _createYarn(reYarn, url);
+      final response = await _createYarn(reYarn, url);
     }
 
     // debugPrint(
@@ -843,12 +843,12 @@ class YarnAuth extends AuthService {
     }
     final responseBody = await response.stream.bytesToString();
 
-    debugPrint('RESPONSE BODY url :::: $url');
-    debugPrint('RESPONSE BODY :::: $responseBody');
+    debugPrint('RESPONSE BODY url :::: ${url}');
+    debugPrint('RESPONSE BODY :::: ${responseBody}');
     debugPrint('RESPONSE BODY 111 :::: ${jsonDecode(responseBody)}');
 
-    if (response.statusCode == 201) {
-      debugPrint('RESPONSE BODY create:::: $responseBody');
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      debugPrint('RESPONSE BODY create:::: ${responseBody}');
 
       if (s == 'Add') {
         final data = jsonDecode(responseBody);
@@ -960,7 +960,7 @@ class YarnAuth extends AuthService {
     }
 
     final responseBody = await response.stream.bytesToString();
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final YarnComment commentDetails =
           YarnComment.fromJson(json.decode(responseBody));
 
@@ -1000,7 +1000,7 @@ class YarnAuth extends AuthService {
 
     debugPrint(
         "COMMENTS RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final List<YarnComment> commentsDetails = [];
       final jsonData = json.decode(response.body);
 
@@ -1090,7 +1090,7 @@ class YarnAuth extends AuthService {
     debugPrint(
         "RESPONSE PINNED POST CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
-    if (response.statusCode == 201) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     } else if (response.statusCode == 500) {
       return null;
@@ -1112,7 +1112,7 @@ class YarnAuth extends AuthService {
     debugPrint(
         "RESPONSE PINNED GET CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final data = json.decode(response.body);
       return data;
     } else if (response.statusCode == 500) {
@@ -1143,7 +1143,7 @@ class YarnAuth extends AuthService {
     debugPrint(
         "RESPONSE PINNED DELETE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     } else if (response.statusCode == 500) {
       return null;
@@ -1237,7 +1237,7 @@ class YarnAuth extends AuthService {
 
     final responseBody = await response.stream.bytesToString();
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final YarnComment commentDetail =
           YarnComment.fromJson(json.decode(responseBody));
 
@@ -1274,7 +1274,7 @@ class YarnAuth extends AuthService {
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final List<YarnComment> commentDetails = [];
       final jsonData = json.decode(response.body);
       for (var item in jsonData['results']) {
@@ -1309,7 +1309,7 @@ class YarnAuth extends AuthService {
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final data = json.decode(response.body);
       return data;
     } else if (response.statusCode == 500) {
@@ -1331,7 +1331,7 @@ class YarnAuth extends AuthService {
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final data = json.decode(response.body);
       return data;
     } else if (response.statusCode == 500) {
@@ -1353,7 +1353,7 @@ class YarnAuth extends AuthService {
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final data = json.decode(response.body);
       return data;
     } else if (response.statusCode == 500) {
@@ -1375,7 +1375,7 @@ class YarnAuth extends AuthService {
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final data = json.decode(response.body);
       return data;
     } else if (response.statusCode == 500) {
@@ -1396,7 +1396,7 @@ class YarnAuth extends AuthService {
     //   url = "${AppConfig.baseUrl}/api/v1/social/moments/report/$postId/";
     // }
     debugPrint('url$url');
-    debugPrint('report body::: $body');
+    debugPrint('report body::: ${body}');
 
     final headers = await getAuthHeaders();
     final response =
@@ -1424,7 +1424,7 @@ class YarnAuth extends AuthService {
     //   url = "${AppConfig.baseUrl}/api/v1/social/moments/report/$postId/";
     // }
     debugPrint('url$url');
-    debugPrint('report body::: $body');
+    debugPrint('report body::: ${body}');
 
     final headers = await getAuthHeaders();
     final response =
@@ -1451,7 +1451,7 @@ class YarnAuth extends AuthService {
     //   url = "${AppConfig.baseUrl}/api/v1/social/moments/report/$postId/";
     // }
     debugPrint('url$url');
-    debugPrint('report body::: $body');
+    debugPrint('report body::: ${body}');
 
     final headers = await getAuthHeaders();
     final response =
@@ -1489,7 +1489,7 @@ class YarnAuth extends AuthService {
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     } else if (response.statusCode == 500) {
       return null;
@@ -1512,7 +1512,7 @@ class YarnAuth extends AuthService {
         .timeout(timeOutDuration, onTimeout: () => timeOutFunction());
 
     debugPrint('SEARCH USER ::: ${response.body}');
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final List<CustomerProfile> customerProfiles = [];
       final jsonData = json.decode(response.body);
 
@@ -1554,7 +1554,7 @@ class YarnAuth extends AuthService {
 
     debugPrint(
         "COMMENTS RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final List<Notifications> notifications = [];
       final jsonData = json.decode(response.body);
       for (var item in jsonData["results"]) {

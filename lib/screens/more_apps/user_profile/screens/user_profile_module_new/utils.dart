@@ -1,15 +1,14 @@
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_stacked_image.dart';
-import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_quote_preview.dart';
 import 'package:flutter/material.dart';
 
 import '../../../yarn/models/Topics/yarn_model.dart';
 
-Widget getFollowersWidget(YarnQuotePreview widget,
-    {double radiusSize = 32,
-    double radiusShift = 10,
-    double radiusHeight = 32,
-    double radiusWidth = 32}) {
+Widget getFollowersWidget(widget,
+    {double radiusSize: 32,
+    double radiusShift: 10,
+    double radiusHeight: 32,
+    double radiusWidth: 32}) {
   final List<UserFollowers> viewers = [];
 
   if (widget.yarn.viewersAvatars != null) {
@@ -28,10 +27,10 @@ Widget getFollowersWidget(YarnQuotePreview widget,
 
 Widget followersWidget(
     {List<UserFollowers>? userImages,
-    double radiusSize = 32,
-    double radiusShift = 10,
-    double radiusHeight = 32,
-    double radiusWidth = 32}) {
+    double radiusSize: 32,
+    double radiusShift: 10,
+    double radiusHeight: 32,
+    double radiusWidth: 32}) {
   final int count = userImages!.length;
   if (count == 0) {
     return const SizedBox();
@@ -52,10 +51,10 @@ Widget followersWidget(
 
 Widget getMembersWidget(
     {List<UserFollowers>? userImages,
-    double radiusSize = 20,
-    double radiusShift = 10,
-    double radiusHeight = 20,
-    double radiusWidth = 20}) {
+    double radiusSize: 20,
+    double radiusShift: 10,
+    double radiusHeight: 20,
+    double radiusWidth: 20}) {
   final int count = userImages!.length;
   if (count == 0) {
     return const SizedBox();
@@ -75,9 +74,7 @@ Widget getMembersWidget(
 }
 
 Widget buildFollowersCountWidget(List<UserFollowers> userFollowers,
-    {List<UserFollowers>? userImages,
-    double radiusHeight = 32,
-    double radiusWidth = 32}) {
+    {userImages, double radiusHeight: 32, double radiusWidth: 32}) {
   final int count = userFollowers.length - 4;
   return Container(
     height: radiusHeight,
@@ -102,11 +99,12 @@ Widget buildFollowersCountWidget(List<UserFollowers> userFollowers,
 
 Widget buildStackedFollowersWidget(
     {List<UserFollowers>? images,
-    double radiusSize = 32,
-    double radiusShift = 10}) {
-  if (images!.isNotEmpty) {
+    double radiusSize: 32,
+    double radiusShift: 10}) {
+  if (images!.length != 0) {
     final items = images
-        .map((image) => buildImage(image.avatar ?? '', image.fullName ?? ''))
+        .map((image) => buildImage(
+            image.avatar ?? '', image.fullName ?? '', image.accountType ?? ""))
         .toList();
 
     return Padding(
@@ -123,10 +121,10 @@ Widget buildStackedFollowersWidget(
 
 Widget buildMultipleFollowersWidget(
     {List<UserFollowers>? userImages,
-    double radiusSize = 32,
-    double radiusShift = 10,
-    double radiusHeight = 32,
-    double radiusWidth = 32}) {
+    double radiusSize: 32,
+    double radiusShift: 10,
+    double radiusHeight: 32,
+    radiusWidth: 32}) {
   return Padding(
     padding: const EdgeInsets.only(right: 12),
     child: StackedWidgets(
@@ -135,8 +133,10 @@ Widget buildMultipleFollowersWidget(
       items: [
         ...List.generate(
             4,
-            (index) => buildImage(userImages![index].avatar ?? "",
-                userImages[index].fullName ?? '')),
+            (index) => buildImage(
+                userImages![index].avatar ?? "",
+                userImages[index].fullName ?? '',
+                userImages[index].accountType ?? "")),
         if (userImages != null && userImages.length != 4)
           buildFollowersCountWidget(userImages,
               radiusWidth: radiusWidth, radiusHeight: radiusHeight),
@@ -145,9 +145,9 @@ Widget buildMultipleFollowersWidget(
   );
 }
 
-String capitalizeAndRemoveUnderscores(String? input) {
+String capitalizeAndRemoveUnderscores(String input) {
   if (input == null || input.isEmpty) {
-    return input ?? "";
+    return input;
   }
 
   // Split the input string by underscores

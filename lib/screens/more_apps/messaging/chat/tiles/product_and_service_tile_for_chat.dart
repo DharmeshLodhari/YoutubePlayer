@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_conversation.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
@@ -24,8 +24,7 @@ class ProductTileForChatMessage extends StatefulWidget {
   final Map<String, dynamic>? message;
   final ChatConversation? chatConversation;
 
-  const ProductTileForChatMessage(
-      {super.key, required this.message, this.chatConversation});
+  ProductTileForChatMessage({required this.message, this.chatConversation});
 
   @override
   _ProductTileForChatMessageState createState() =>
@@ -49,6 +48,8 @@ class _ProductTileForChatMessageState extends State<ProductTileForChatMessage> {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint(
+        'widget.message!["meta_data"].toString()${widget.message!.toString()}');
     if (widget.message!["meta_data"] is String) {
       product = Product.fromJson(jsonDecode(widget.message!["meta_data"]));
     } else if (widget.message!["meta_data"] is Map) {
@@ -130,12 +131,12 @@ class _ProductTileForChatMessageState extends State<ProductTileForChatMessage> {
                                 ),
                               ],
                             )
-                          : const SizedBox(
+                          : Container(
                               height: 0,
                               width: 0,
                             )
                     else
-                      const SizedBox(
+                      Container(
                         height: 0,
                         width: 0,
                       ),
@@ -149,145 +150,151 @@ class _ProductTileForChatMessageState extends State<ProductTileForChatMessage> {
                             shadowColor: boxShadowTwo,
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(10),
-                              child: Column(
-                                children: <Widget>[
-                                  Expanded(
-                                    child: CachedNetworkImage(
-                                      width: double.infinity,
-                                      imageUrl: product!.cover!,
-                                      fit: BoxFit.cover,
-                                      filterQuality: FilterQuality.high,
-                                      progressIndicatorBuilder:
-                                          (context, url, downloadProgress) =>
-                                              Center(
-                                        child: CircularProgressIndicator(
-                                          value: downloadProgress.progress,
-                                          strokeWidth: 2.5,
-                                          valueColor:
-                                              AlwaysStoppedAnimation(navyBlue),
-                                          backgroundColor: Colors.transparent,
+                              child: Container(
+                                child: Column(
+                                  children: <Widget>[
+                                    Expanded(
+                                      child: CachedNetworkImage(
+                                        width: double.infinity,
+                                        imageUrl: product!.cover!,
+                                        fit: BoxFit.cover,
+                                        filterQuality: FilterQuality.high,
+                                        progressIndicatorBuilder:
+                                            (context, url, downloadProgress) =>
+                                                Center(
+                                          child: CircularProgressIndicator(
+                                            value: downloadProgress.progress,
+                                            strokeWidth: 2.5,
+                                            valueColor: AlwaysStoppedAnimation(
+                                                navyBlue),
+                                            backgroundColor: Colors.transparent,
+                                          ),
                                         ),
+                                        errorWidget:
+                                            productAndServiceErrorWidget,
                                       ),
-                                      errorWidget: productAndServiceErrorWidget,
                                     ),
-                                  ),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 16, vertical: 8),
-                                    child: Column(
-                                      children: [
-                                        Row(
-                                          children: [
-                                            Expanded(
-                                              child: Text(
-                                                messageDecoderWithEmoji(
-                                                        product?.name) ??
-                                                    "",
-                                                maxLines: 1,
-                                                style: TextStyle(
-                                                    fontWeight: FontWeight.w700,
-                                                    fontSize: 14,
-                                                    color: blackFont),
-                                                softWrap: false,
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                            ),
-                                            RichText(
-                                              text: TextSpan(children: [
-                                                TextSpan(
-                                                    text: worldCurrencies[
-                                                        product!.currency!],
-                                                    style: TextStyle(
-                                                        fontFamily: "Inter",
-                                                        color: navyBlue,
-                                                        fontWeight:
-                                                            FontWeight.w700,
-                                                        fontSize: 14)),
-                                                TextSpan(
-                                                    // text: widget.product.price.toString(),
-                                                    text:
-                                                        moneyDisplayNormalizer(
-                                                            int.parse(product!
-                                                                .price
-                                                                .toString())),
-                                                    style: TextStyle(
-                                                      color: navyBlue,
-                                                      fontSize: 14,
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 16, vertical: 8),
+                                      child: Column(
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Expanded(
+                                                child: Text(
+                                                  messageDecoderWithEmoji(
+                                                          product?.name) ??
+                                                      "",
+                                                  maxLines: 1,
+                                                  style: TextStyle(
                                                       fontWeight:
                                                           FontWeight.w700,
-                                                    ))
-                                              ]),
+                                                      fontSize: 14,
+                                                      color: blackFont),
+                                                  softWrap: false,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                ),
+                                              ),
+                                              RichText(
+                                                text: TextSpan(children: [
+                                                  TextSpan(
+                                                      text: worldCurrencies[
+                                                          product!.currency!],
+                                                      style: TextStyle(
+                                                          fontFamily: "Inter",
+                                                          color: navyBlue,
+                                                          fontWeight:
+                                                              FontWeight.w700,
+                                                          fontSize: 14)),
+                                                  TextSpan(
+                                                      // text: widget.product.price.toString(),
+                                                      text:
+                                                          moneyDisplayNormalizer(
+                                                              int.parse(product!
+                                                                  .price
+                                                                  .toString())),
+                                                      style: TextStyle(
+                                                        color: navyBlue,
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w700,
+                                                      ))
+                                                ]),
+                                              )
+                                            ],
+                                          ),
+                                          if (product!.seller ==
+                                              userBloc.user.userName)
+                                            Container(
+                                              height: 4,
                                             )
-                                          ],
-                                        ),
-                                        if (product!.seller ==
-                                            userBloc.user.userName)
-                                          Container(
-                                            height: 4,
-                                          )
-                                        else
-                                          Container(
-                                            child: Column(
-                                              children: [
-                                                const SizedBox(
-                                                  height: 8,
-                                                ),
-                                                Row(
-                                                  children: [
-                                                    addToCartWidget(
-                                                        item: product),
-                                                    const SizedBox(
-                                                      width: 8,
-                                                    ),
-                                                    Expanded(
-                                                      child: CurvedButton(
-                                                        height: 36,
-                                                        isPaymentBtn: true,
-                                                        textColor: Colors.white,
-                                                        backgroundColor:
-                                                            navyBlue,
-                                                        text: "BUY NOW",
-                                                        borderRadius: 10,
-                                                        onPressed: () async {
-                                                          if (appConfigurationModel
-                                                                  ?.enablePayment ==
-                                                              true) {
-                                                            final bool result =
-                                                                await showDisclaimerDialogueForGoods(
-                                                                    context);
-                                                            if (result) {
-                                                              customerProfileBloc
-                                                                      .customer =
-                                                                  await UserAuth()
-                                                                      .fetchCustomerProfile(
-                                                                          product!
-                                                                              .seller);
-
-                                                              Navigator.of(
-                                                                      context)
-                                                                  .pushNamed(
-                                                                '/send-payment',
-                                                                arguments: {
-                                                                  'isFromProfile':
-                                                                      false,
-                                                                  'product':
-                                                                      product
-                                                                },
-                                                              );
-                                                            }
-                                                          }
-                                                        },
+                                          else
+                                            Container(
+                                              child: Column(
+                                                children: [
+                                                  const SizedBox(
+                                                    height: 8,
+                                                  ),
+                                                  Row(
+                                                    children: [
+                                                      addToCartWidget(
+                                                          item: product),
+                                                      const SizedBox(
+                                                        width: 8,
                                                       ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ],
-                                            ),
-                                          )
-                                      ],
+                                                      Expanded(
+                                                        child: CurvedButton(
+                                                          height: 36,
+                                                          isPaymentBtn: true,
+                                                          textColor:
+                                                              Colors.white,
+                                                          backgroundColor:
+                                                              navyBlue,
+                                                          text: "BUY NOW",
+                                                          borderRadius: 10,
+                                                          onPressed: () async {
+                                                            if (appConfigurationModel
+                                                                    ?.enablePayment ==
+                                                                true) {
+                                                              final bool
+                                                                  result =
+                                                                  await showDisclaimerDialogueForGoods(
+                                                                      context);
+                                                              if (result) {
+                                                                customerProfileBloc
+                                                                        .customer =
+                                                                    await UserAuth()
+                                                                        .fetchCustomerProfile(
+                                                                            product!.seller);
+
+                                                                Navigator.of(
+                                                                        context)
+                                                                    .pushNamed(
+                                                                  '/send-payment',
+                                                                  arguments: {
+                                                                    'isFromProfile':
+                                                                        false,
+                                                                    'product':
+                                                                        product
+                                                                  },
+                                                                );
+                                                              }
+                                                            }
+                                                          },
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
+                                              ),
+                                            )
+                                        ],
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                             )),
                       ),
@@ -296,7 +303,7 @@ class _ProductTileForChatMessageState extends State<ProductTileForChatMessage> {
                 ),
               ),
               if (isSend)
-                SizedBox(
+                Container(
                   width: 20,
                   child: isSend
                       ? Center(
@@ -339,7 +346,7 @@ class _ProductTileForChatMessageState extends State<ProductTileForChatMessage> {
     );
   }
 
-  Widget addToCartWidget({PurchasableItem? item}) {
+  Widget addToCartWidget({var item}) {
     return RoundedBackgroundIcon(
       borderRadius: 16,
       height: 38,
@@ -354,19 +361,17 @@ class _ProductTileForChatMessageState extends State<ProductTileForChatMessage> {
         final String type = item is Product ? "product" : "service";
         debugPrint("item $item type:- $type");
         basketBloc.addItemToCart(
-          item: (item?.isProduct ?? false)
-              ? (item as Product)
-              : (item as Service),
+          item: item,
           type: type,
           currentUser: userBloc.user.convertToUser(),
         );
         late var mapData;
-        for (var element in basketBloc.items) {
-          if (element["item"].id == item?.id) {
+        basketBloc.items.forEach((element) {
+          if (element["item"].id == item.id) {
             mapData = element;
-            continue;
+            return;
           }
-        }
+        });
         final Map<String, dynamic> data = {
           "type": type,
           "id": mapData["item"].id,
@@ -384,7 +389,7 @@ class ServiceTileChatMessage extends StatefulWidget {
   final Map<String, dynamic>? message;
   final ChatConversation? chatConversation;
 
-  const ServiceTileChatMessage({required this.message, this.chatConversation});
+  ServiceTileChatMessage({required this.message, this.chatConversation});
 
   @override
   _ServiceTileChatMessageState createState() => _ServiceTileChatMessageState();
@@ -488,12 +493,12 @@ class _ServiceTileChatMessageState extends State<ServiceTileChatMessage> {
                                 ),
                               ],
                             )
-                          : const SizedBox(
+                          : Container(
                               height: 0,
                               width: 0,
                             )
                     else
-                      const SizedBox(
+                      Container(
                         height: 0,
                         width: 0,
                       ),
@@ -586,61 +591,64 @@ class _ServiceTileChatMessageState extends State<ServiceTileChatMessage> {
                                               userBloc.user.userName)
                                             Container()
                                           else
-                                            Column(
-                                              children: [
-                                                const SizedBox(
-                                                  height: 8,
-                                                ),
-                                                Row(
-                                                  children: [
-                                                    addToCartWidget(
-                                                        item: service),
-                                                    const SizedBox(
-                                                      width: 8,
-                                                    ),
-                                                    Expanded(
-                                                      child: CurvedButton(
-                                                        height: 36,
-                                                        isPaymentBtn: false,
-                                                        textColor: Colors.white,
-                                                        backgroundColor:
-                                                            navyBlue,
-                                                        text: "PAY NOW",
-                                                        borderRadius: 10,
-                                                        onPressed: () async {
-                                                          if (appConfigurationModel
-                                                                  ?.enablePayment ==
-                                                              true) {
-                                                            final bool result =
-                                                                await showDisclaimerDialogueForGoods(
-                                                                    context);
-                                                            if (result) {
-                                                              customerProfileBloc
-                                                                      .customer =
-                                                                  await UserAuth()
-                                                                      .fetchCustomerProfile(
-                                                                          service!
-                                                                              .provider);
-
-                                                              Navigator.of(
-                                                                      context)
-                                                                  .pushNamed(
-                                                                '/send-payment',
-                                                                arguments: {
-                                                                  'isFromProfile':
-                                                                      false,
-                                                                  'service':
-                                                                      service
-                                                                },
-                                                              );
-                                                            }
-                                                          }
-                                                        },
+                                            Container(
+                                              child: Column(
+                                                children: [
+                                                  const SizedBox(
+                                                    height: 8,
+                                                  ),
+                                                  Row(
+                                                    children: [
+                                                      addToCartWidget(
+                                                          item: service),
+                                                      const SizedBox(
+                                                        width: 8,
                                                       ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ],
+                                                      Expanded(
+                                                        child: CurvedButton(
+                                                          height: 36,
+                                                          isPaymentBtn: false,
+                                                          textColor:
+                                                              Colors.white,
+                                                          backgroundColor:
+                                                              navyBlue,
+                                                          text: "PAY NOW",
+                                                          borderRadius: 10,
+                                                          onPressed: () async {
+                                                            if (appConfigurationModel
+                                                                    ?.enablePayment ==
+                                                                true) {
+                                                              final bool
+                                                                  result =
+                                                                  await showDisclaimerDialogueForGoods(
+                                                                      context);
+                                                              if (result) {
+                                                                customerProfileBloc
+                                                                        .customer =
+                                                                    await UserAuth()
+                                                                        .fetchCustomerProfile(
+                                                                            service!.provider);
+
+                                                                Navigator.of(
+                                                                        context)
+                                                                    .pushNamed(
+                                                                  '/send-payment',
+                                                                  arguments: {
+                                                                    'isFromProfile':
+                                                                        false,
+                                                                    'service':
+                                                                        service
+                                                                  },
+                                                                );
+                                                              }
+                                                            }
+                                                          },
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
+                                              ),
                                             )
                                         ],
                                       ),
@@ -655,7 +663,7 @@ class _ServiceTileChatMessageState extends State<ServiceTileChatMessage> {
                 ),
               ),
               if (isSend)
-                SizedBox(
+                Container(
                   width: 20,
                   child: isSend
                       ? Center(
@@ -698,7 +706,7 @@ class _ServiceTileChatMessageState extends State<ServiceTileChatMessage> {
     );
   }
 
-  Widget addToCartWidget({PurchasableItem? item}) {
+  Widget addToCartWidget({var item}) {
     return RoundedBackgroundIcon(
       borderRadius: 16,
       height: 38,
@@ -713,25 +721,25 @@ class _ServiceTileChatMessageState extends State<ServiceTileChatMessage> {
         final String type = item is Product ? "product" : "service";
         debugPrint("item $item type:- $type");
         basketBloc.addItemToCart(
-          item: (item?.isProduct ?? false) ? item as Product : item as Service,
+          item: item,
           type: type,
           currentUser: userBloc.user.convertToUser(),
         );
-        // late var mapData;
-        // basketBloc.items.forEach((element) {
-        //   if (element["item"].checkID == item.checkID) {
-        //     mapData = element;
-        //     return;
-        //   }
-        // });
-        // final Map<String, dynamic> data = {
-        //   "type": type,
-        //   "id": mapData["item"].checkID,
-        //   "qty": mapData["qty"],
-        // };
-        // debugPrint("Data From Product Page : $data");
-        // showToast(message: "Item added to the cart !!");
-        // await ShoppingAuthService().addOrUpdateItemToShoppingCart(data);
+        late var mapData;
+        basketBloc.items.forEach((element) {
+          if (element["item"].checkID == item.checkID) {
+            mapData = element;
+            return;
+          }
+        });
+        final Map<String, dynamic> data = {
+          "type": type,
+          "id": mapData["item"].checkID,
+          "qty": mapData["qty"],
+        };
+        debugPrint("Data From Product Page : $data");
+        showToast(message: "Item added to the cart !!");
+        await ShoppingAuthService().addOrUpdateItemToShoppingCart(data);
       },
     );
   }

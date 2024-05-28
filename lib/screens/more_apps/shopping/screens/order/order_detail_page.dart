@@ -37,7 +37,7 @@ import '../../shopping_auth.dart';
 
 // ignore: must_be_immutable
 class OrderDetailPage extends StatefulWidget {
-  final dynamic arguments;
+  var arguments;
 
   OrderDetailPage({required this.arguments});
 
@@ -47,7 +47,7 @@ class OrderDetailPage extends StatefulWidget {
 }
 
 class _OrderDetailPageState extends State<OrderDetailPage> {
-  final dynamic arguments;
+  var arguments;
 
   _OrderDetailPageState({this.arguments});
 
@@ -67,7 +67,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   String? statusOfOrderCopy =
       ""; //This variable is used to track if the statusOfOrder has changed.
 
-  final GlobalKey _key = LabeledGlobalKey("orderDetailPagePopUpMenu");
+  GlobalKey _key = LabeledGlobalKey("orderDetailPagePopUpMenu");
   late CustomizedPopUpMenu menu;
   int selectedMenuItemIndex = 0;
   bool isPopMenuOpen = false;
@@ -166,7 +166,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     await launchUrl(launchUri);
   }
 
-  String getOrderStatusTime(Order? order, String? status) {
+  getOrderStatusTime(Order? order, String? status) {
     var time = '';
     var date = '';
     order?.statusTimeStamp?.map((e) {
@@ -180,7 +180,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     return date + time;
   }
 
-  bool getActiveOrderStatus(Order? order, String? status) {
+  getActiveOrderStatus(Order? order, String? status) {
     bool value = false;
     order?.statusTimeStamp?.map((e) {
       if (e[status ?? ''] != null) {
@@ -190,7 +190,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     return value;
   }
 
-  bool getCanceledOrderStatus(Order? order, String? status) {
+  getCanceledOrderStatus(Order? order, String? status) {
     bool value = false;
     for (var v in order?.statusTimeStamp ?? []) {
       if (v.containsKey('Canceled')) {
@@ -200,7 +200,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     return value;
   }
 
-  bool getOnHoldAndPendingOrderStatus(Order? order, String? status) {
+  getOnHoldAndPendingOrderStatus(Order? order, String? status) {
     bool value = false;
     for (var v in order?.statusTimeStamp ?? []) {
       if (v.containsKey('On Hold') || v.containsKey('Pending')) {
@@ -210,7 +210,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     return value;
   }
 
-  Future<void> fetchOrder(String orderId) async {
+  void fetchOrder(String orderId) async {
     setState(() {
       isLoading = true;
     });
@@ -295,7 +295,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
       ),
       centerTitle: false,
       title: Text(
-        "${"Ref # :${order?.id ?? ""}"}",
+        "${"Ref # :" + (order?.id ?? "")}",
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
@@ -401,8 +401,8 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   }
 
   Widget _buildBody() {
-    // final bool canPay = order?.status == 'Awaiting Payment' &&
-    //     userBloc.user.userName != order?.merchant;
+    final bool canPay = order?.status == 'Awaiting Payment' &&
+        userBloc.user.userName != order?.merchant;
 
     return isLoading
         ? Center(
@@ -770,7 +770,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
                   child: Text(
-                    getOrderNote() ?? "",
+                    getOrderNote(),
                     style: TextStyle(
                         fontSize: 14,
                         color: blackFont,
@@ -848,9 +848,9 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     });
   }
 
-  String? getOrderNote() {
+  getOrderNote() {
     if (order?.note == "") {
-      return "${AppLocalization.of(context)!.noSpecialNoteAttached} !!";
+      return AppLocalization.of(context)!.noSpecialNoteAttached + " !!";
     }
     return order?.note;
   }
@@ -1013,6 +1013,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
           setState!(() {
             updateStatus(value);
             statusOfOrder = value;
+            debugPrint(value);
           });
         }
       },
@@ -1040,7 +1041,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Text(
-                  "${AppLocalization.of(context)!.subTotal} : ",
+                  AppLocalization.of(context)!.subTotal + " : ",
                   style: TextStyle(
                     fontSize: 14,
                     color: black,
@@ -1072,7 +1073,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Text(
-                  "${AppLocalization.of(context)!.shipping} : ",
+                  AppLocalization.of(context)!.shipping + " : ",
                   style: TextStyle(
                     fontSize: 14,
                     color: black,
@@ -1104,7 +1105,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Text(
-                  "${AppLocalization.of(context)!.tax} : ",
+                  AppLocalization.of(context)!.tax + " : ",
                   style: TextStyle(
                     fontSize: 14,
                     color: black,
@@ -1137,7 +1138,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Text(
-                  "${AppLocalization.of(context)!.total} : ",
+                  AppLocalization.of(context)!.total + " : ",
                   style: TextStyle(
                     fontSize: 14,
                     color: black,
@@ -1183,7 +1184,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     );
   }
 
-  Widget getItemTileUi(int index) {
+  getItemTileUi(int index) {
     if (items[index]["type"] == "product") {
       return OrderTileForProduct(
         items[index],
@@ -1201,15 +1202,15 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
       direction: Axis.horizontal,
       actionPane: const SlidableBehindActionPane(),
       actionExtentRatio: 0.25,
+      child: VerticalListItem(itemTile, item),
       actions: listActionSlideActions(index),
       secondaryActions: listSecondaryActions(index),
-      child: VerticalListItem(itemTile, item),
     );
   }
 
   List<Widget> listSecondaryActions(int index) {
     final item = items[index];
-    final String conditionForUser =
+    final conditionForUser =
         item["type"] == "product" ? item["item"].seller : item["item"].provider;
 
     bool isValid = true;
@@ -1251,7 +1252,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     return [];
   }
 
-  void navigateToComposeMessage(String conditionForUser, int index) async {
+  void navigateToComposeMessage(var conditionForUser, int index) async {
     Navigator.of(context).pushNamed('/compose_message', arguments: {
       'recipient': conditionForUser.toString(),
       'subject': items[index]["item"].name.toString(),
@@ -1262,7 +1263,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
 
   void handleSlideIsOpenChanged(bool? isOpen) {}
 
-  void updateStatus(String value) {
+  void updateStatus(value) {
     showDialog(
         context: context,
         builder: (dialogLoadingContext) => LoadingIndicator());
@@ -1282,15 +1283,15 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
 
   int _currentStep = 0;
 
-  void tapped(int step) {
+  tapped(int step) {
     setState(() => _currentStep = step);
   }
 
-  void continued() {
+  continued() {
     _currentStep < 5 ? setState(() => _currentStep += 1) : null;
   }
 
-  void cancel() {
+  cancel() {
     _currentStep > 0 ? setState(() => _currentStep -= 1) : null;
   }
 
@@ -1696,7 +1697,9 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                               color: blackFont,
                               fontSize: 10,
                               fontWeight: FontWeight.w400)),
-                      Text(getOrderStatusTime(order, "On Hold"),
+                      Text(
+                          getOrderStatusTime(order, "On Hold") ??
+                              getOrderStatusTime(order, "Pending"),
                           style: TextStyle(
                               color: blackFont,
                               fontSize: 10,
@@ -1811,10 +1814,10 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
 // ignore: must_be_immutable
 class VerticalListItem extends StatelessWidget {
   Widget? child;
-  PurchasableItem? item;
+  var item;
   String? type;
 
-  VerticalListItem(Widget child, Map<String, dynamic> item) {
+  VerticalListItem(Widget child, var item) {
     this.child = child;
     this.type = item["type"];
     this.item = item["item"];
@@ -1825,12 +1828,12 @@ class VerticalListItem extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         if (type == "product") {
-          final Product? product = item as Product;
+          final Product? product = item;
           Navigator.pushNamed(context, "/product",
               arguments: {"product": product});
         }
         if (type == "service") {
-          final Service? service = item as Service;
+          final Service? service = item;
           Navigator.pushNamed(context, "/service-detail",
               arguments: {"service": service});
         }

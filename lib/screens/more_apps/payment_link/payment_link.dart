@@ -24,7 +24,7 @@ import 'payment_transaction_info.dart';
 
 class PaymentLink extends StatefulWidget {
   PaymentLink({Key? key, this.listMap}) : super(key: key);
-  final List? listMap;
+  List? listMap = [];
 
   @override
   State<PaymentLink> createState() => _PaymentLinkState();
@@ -42,14 +42,14 @@ class _PaymentLinkState extends State<PaymentLink> {
   bool isLoading = false;
   bool noItemInList = false;
 
-  final ScrollController _scrollController = ScrollController();
+  ScrollController _scrollController = new ScrollController();
 
-  final RefreshController _refreshController =
+  RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
   SlidableController? _slideController;
 
-  Future<void> getPaymentLinks() async {
+  getPaymentLinks() async {
     if (!isLoading) {
       if (next != null && !isLoading) {
         if (mounted) {
@@ -81,7 +81,7 @@ class _PaymentLinkState extends State<PaymentLink> {
     }
   }
 
-  Future<void> cancelPaymentLinks(String cancelPaymentLink) async {
+  cancelPaymentLinks(String cancelPaymentLink) async {
     if (mounted) {
       setState(() {
         isLoading = true;
@@ -104,7 +104,7 @@ class _PaymentLinkState extends State<PaymentLink> {
     setState(() {});
   }
 
-  Future<void> filterPaymentLinks(String filter) async {
+  filterPaymentLinks(String filter) async {
     if (mounted) {
       setState(() {
         isLoading = true;
@@ -135,17 +135,16 @@ class _PaymentLinkState extends State<PaymentLink> {
     }
   }
 
-  Widget paymentLinkCard({
-    String? name,
-    String? date,
-    String? id,
-    String? amount,
-    String? currency,
-    String? status,
-    String? passcode,
-    String? link,
-    String? category,
-  }) {
+  Widget paymentLinkCard(
+      {String? name,
+      String? date,
+      String? id,
+      amount,
+      currency,
+      status,
+      passcode,
+      link,
+      category}) {
     return Padding(
       padding: const EdgeInsets.only(top: 10.0),
       child: GestureDetector(
@@ -191,7 +190,7 @@ class _PaymentLinkState extends State<PaymentLink> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      getAmount(int.parse(amount ?? ""), currency ?? ""),
+                      getAmount(amount, currency),
                       const SizedBox(
                         height: 10,
                       ),
@@ -208,7 +207,7 @@ class _PaymentLinkState extends State<PaymentLink> {
                               ? 'Pending'
                               : status,
                           style: TextStyle(
-                            color: colorStats(status),
+                            color: colorStats(status!),
                             fontSize: 10.80,
                             fontFamily: "Inter",
                             fontWeight: FontWeight.w600,
@@ -577,7 +576,7 @@ class _PaymentLinkState extends State<PaymentLink> {
     super.initState();
   }
 
-  void rejectRequestAlert(Map data, int index) async {
+  void rejectRequestAlert(data, index) async {
     final bool? result = await showDialogBox(
       context: context,
       roundedBackgroundIcon: RoundedBackgroundIcon(

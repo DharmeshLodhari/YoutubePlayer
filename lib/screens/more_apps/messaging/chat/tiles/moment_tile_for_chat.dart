@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/moments/screens/moment_detail/moment_detail_page.dart';
 import 'package:Slydo/screens/moments/screens/moments_service.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_conversation.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -16,7 +16,7 @@ class MomentTileForChat extends StatefulWidget {
   final Map<String, dynamic>? message;
   final ChatConversation? chatConversation;
 
-  const MomentTileForChat(
+  MomentTileForChat(
       {Key? key, required this.message, required this.chatConversation})
       : super(key: key);
 
@@ -93,7 +93,7 @@ class _MomentTileForChatState extends State<MomentTileForChat> {
                 isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              if (isSend) Container() else Container(width: 20),
+              isSend ? Container() : Container(width: 20),
               Container(
                 constraints: BoxConstraints(
                   maxWidth: MediaQuery.of(context).size.width / 1.75,
@@ -128,32 +128,31 @@ class _MomentTileForChatState extends State<MomentTileForChat> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (widget.chatConversation!.isGroupConversation!)
-                      widget.message!['author'] != userBloc.user.userName
-                          ? Column(
-                              children: [
-                                Text(
-                                  widget.message!['author_full_name'] ??
-                                      widget.message!['author'],
-                                  style: TextStyle(
-                                      color: isSend ? Colors.white : navyBlue,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w700),
-                                ),
-                                const SizedBox(
-                                  height: 4,
-                                ),
-                              ],
-                            )
-                          : const SizedBox(
-                              height: 0,
-                              width: 0,
-                            )
-                    else
-                      const SizedBox(
-                        height: 0,
-                        width: 0,
-                      ),
+                    widget.chatConversation!.isGroupConversation!
+                        ? widget.message!['author'] != userBloc.user.userName
+                            ? Column(
+                                children: [
+                                  Text(
+                                    widget.message!['author_full_name'] ??
+                                        widget.message!['author'],
+                                    style: TextStyle(
+                                        color: isSend ? Colors.white : navyBlue,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w700),
+                                  ),
+                                  const SizedBox(
+                                    height: 4,
+                                  ),
+                                ],
+                              )
+                            : Container(
+                                height: 0,
+                                width: 0,
+                              )
+                        : Container(
+                            height: 0,
+                            width: 0,
+                          ),
                     Expanded(
                       child: Card(
                         margin: EdgeInsets.zero,
@@ -257,17 +256,16 @@ class _MomentTileForChatState extends State<MomentTileForChat> {
                   ],
                 ),
               ),
-              if (isSend)
-                SizedBox(
-                  width: 20,
-                  child: isSend
-                      ? Center(
-                          child: getMessageTick(message: widget.message!),
-                        )
-                      : Container(),
-                )
-              else
-                Container(),
+              isSend
+                  ? Container(
+                      width: 20,
+                      child: isSend
+                          ? Center(
+                              child: getMessageTick(message: widget.message!),
+                            )
+                          : Container(),
+                    )
+                  : Container(),
             ],
           ),
           const SizedBox(
@@ -277,23 +275,21 @@ class _MomentTileForChatState extends State<MomentTileForChat> {
             mainAxisAlignment:
                 isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
             children: [
-              if (isSend)
-                Container()
-              else
-                const SizedBox(
-                  width: 20,
-                ),
+              isSend
+                  ? Container()
+                  : const SizedBox(
+                      width: 20,
+                    ),
               Text(
                 formatTime(widget.message!['created_at']),
                 style: TextStyle(
                     color: darkGrey, fontSize: 10, fontWeight: FontWeight.w500),
               ),
-              if (isSend)
-                const SizedBox(
-                  width: 20,
-                )
-              else
-                Container(),
+              isSend
+                  ? const SizedBox(
+                      width: 20,
+                    )
+                  : Container(),
             ],
           ),
         ],

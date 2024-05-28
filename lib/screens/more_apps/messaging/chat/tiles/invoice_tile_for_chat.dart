@@ -9,7 +9,7 @@ import '../../../../../data/state_notifier.dart';
 import '../../../../../routes/route_constants.dart';
 import '../../../../../utils/util.dart';
 import '../../../business/models/Invoice.dart';
-import '../models/chat_conversation.dart';
+import '../models/ChatConversation.dart';
 import '../utils.dart';
 
 class PostTileForInvoice extends StatefulWidget {
@@ -47,7 +47,7 @@ class _PostTileForInvoiceState extends State<PostTileForInvoice> {
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
 
-    final bool isSender = widget.message!["author"] == userBloc.user.userName;
+    bool isSender = widget.message!["author"] == userBloc.user.userName;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -66,7 +66,7 @@ class _PostTileForInvoiceState extends State<PostTileForInvoice> {
               child: getPaymentContractTile(),
             ),
             if (isSender)
-              SizedBox(
+              Container(
                 width: 20,
                 child: isSender
                     ? Center(

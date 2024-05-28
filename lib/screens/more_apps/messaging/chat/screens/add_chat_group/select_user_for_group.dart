@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:Slydo/data/state_notifiers/shared_cart_bloc.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/group_detail_model.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/GroupDetailModel.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/auth/shared_cart_auth.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/models/shared_cart_model.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
@@ -23,7 +23,7 @@ import '../../../../user_profile/screens/user_profile_module_new/profile_templat
 
 // ignore: must_be_immutable
 class SelectUserForGroup extends StatefulWidget {
-  final dynamic arguments;
+  var arguments;
 
   SelectUserForGroup({this.arguments});
 
@@ -44,7 +44,7 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
   String? previous = "";
   List<CustomerProfile> connectionList = [];
   List<CustomerProfile> selectedConnectionList = [];
-  final ScrollController _scrollController = ScrollController();
+  ScrollController _scrollController = ScrollController();
 
   TextEditingController? searchUserController;
 
@@ -314,7 +314,7 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
     );
   }
 
-  Widget showSelectedUser(String? imageUrl, String fullName) {
+  Widget showSelectedUser(String imageUrl, String fullName) {
     if (imageUrl == null ||
         imageUrl == "" ||
         imageUrl ==
@@ -395,7 +395,7 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
 
         final List<CustomerProfile> users = [];
 
-        for (var element in tempList) {
+        tempList.forEach((element) {
           final CustomerProfile customerProfile =
               CustomerProfile.fromJson(element);
 
@@ -403,14 +403,15 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
               customerProfile.userName != "slydo") {
             users.add(customerProfile);
           }
-        }
+        });
 
-        if (widget.arguments["create"] == "addMember") {
+        if (widget.arguments["create"] == "addMember" &&
+            sharedCartBloc.getSharedCartModel() != null) {
           for (int i = 0; i < users.length; i++) {
-            final List<SharedCartMemberModel> memberList =
+            final List<SharedCartMemberModel>? memberList =
                 sharedCartBloc.getSharedCartModel().members ?? [];
-            for (int j = 0; j < memberList.length; j++) {
-              if (users[i].userName == memberList[j].userName) {
+            for (int j = 0; j < (memberList?.length ?? 0); j++) {
+              if (users[i].userName == memberList?[j].userName) {
                 selectedConnectionList.add(users[i]);
               }
             }
@@ -522,11 +523,11 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
   Future<void> addCartGroup() async {
     final List<String> result = [];
     for (int i = 0; i < selectedConnectionList.length; i++) {
-      final List<SharedCartMemberModel> memberList =
+      final List<SharedCartMemberModel>? memberList =
           sharedCartBloc.getSharedCartModel().members ?? [];
       bool isExist = false;
-      for (int j = 0; j < memberList.length; j++) {
-        if (selectedConnectionList[i].userName == memberList[j].userName) {
+      for (int j = 0; j < (memberList?.length ?? 0); j++) {
+        if (selectedConnectionList[i].userName == memberList?[j].userName) {
           isExist = true;
           break;
         }

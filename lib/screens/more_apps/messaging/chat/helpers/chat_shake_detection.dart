@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:Slydo/data/state_notifier.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_conversation.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -18,7 +18,7 @@ class ChatShakeDetection extends ChangeNotifier {
   ShakeDetector? _detector;
   bool _showShakingAlert = false;
   Timer? _nudgeAlertTimer;
-  final Duration _nudgeAlertDuration = const Duration(seconds: 11);
+  Duration _nudgeAlertDuration = const Duration(seconds: 11);
   ChatConversation? _recipientUser;
   late UserBloc _userBloc;
 

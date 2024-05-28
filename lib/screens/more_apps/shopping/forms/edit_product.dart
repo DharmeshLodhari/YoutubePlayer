@@ -19,8 +19,10 @@ import 'package:Slydo/widget/customized_checkbox_field.dart';
 import 'package:Slydo/widget/customized_dropdown_field.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/delete_product_and_service_confirm_alert.dart';
+import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/image_crop.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
+import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -31,7 +33,7 @@ import '../shopping_auth.dart';
 
 // ignore: must_be_immutable
 class EditProduct extends StatefulWidget {
-  final dynamic arguments;
+  var arguments;
 
   EditProduct({Key? key, this.arguments}) : super(key: key);
 
@@ -40,9 +42,9 @@ class EditProduct extends StatefulWidget {
 }
 
 class _EditProductState extends State<EditProduct> {
-  Map<String, dynamic> arguments;
+  var arguments;
 
-  _EditProductState({required this.arguments});
+  _EditProductState({this.arguments});
 
   final _auth = ShoppingAuthService();
   UserBloc? userBloc;
@@ -59,6 +61,7 @@ class _EditProductState extends State<EditProduct> {
   String? productName = "";
   String? productDescription = "";
   String? productShortDescription = "";
+  String? searchKeyword = "";
   String? productCategory = "";
   String productSubCategory = "";
   ProductCategory? pressedCustomCategory;
@@ -104,14 +107,15 @@ class _EditProductState extends State<EditProduct> {
   TextEditingController weightController = TextEditingController();
   TextEditingController heightController = TextEditingController();
   TextEditingController widthController = TextEditingController();
+  TextEditingController searchKeywordController = TextEditingController();
   TextEditingController inventoryCountController = TextEditingController();
   int inventoryCount = 0;
   List<Variant> productVariantList = [];
   List<AddOns> productAddOnsList = [];
   bool inventoryIsAvailable = false;
-  List<String> weightSi = ['Grams', 'Kilograms'];
-  List<String> widthSi = ['Centimetres', 'Metres'];
-  List<String> heightSi = ['Centimetres', 'Metres'];
+  var weightSi = ['Grams', 'Kilograms'];
+  var widthSi = ['Centimetres', 'Metres'];
+  var heightSi = ['Centimetres', 'Metres'];
   List<String> measurementList = ['Weight', 'Height', 'Width'];
   Map<String, bool> measurementCheckMark = {};
   List<String> pickedMeasurementList = [];
@@ -191,9 +195,9 @@ class _EditProductState extends State<EditProduct> {
           currentProduct = value;
 
           // assigning to our edit controllers
-          productTitleController.text = currentProduct.name!;
+          productTitleController.text = currentProduct.name ?? "";
           productDescriptionController.text =
-              messageDecoderWithEmoji(currentProduct.description!)!;
+              messageDecoderWithEmoji(currentProduct.description) ?? "";
 
           productPriceController.text = moneyNormalizer(currentProduct.price!);
 
@@ -204,7 +208,7 @@ class _EditProductState extends State<EditProduct> {
               currentProduct.customCategory?.name ?? "";
 
           productShortDescriptionController.text =
-              messageDecoderWithEmoji(currentProduct.shortDescription!)!;
+              messageDecoderWithEmoji(currentProduct.shortDescription) ?? "";
 
           productImagesFromServer.addAll(currentProduct.serverImages!);
           productName = currentProduct.name;
@@ -272,20 +276,25 @@ class _EditProductState extends State<EditProduct> {
           selectedSubCategory = currentProduct.subCategory;
           selectedCustomCategory = currentProduct.customCategory;
           userTags = currentProduct.tags!;
+          searchKeyword = messageDecoderWithEmoji(
+              currentProduct.searchKeywords?.join(", "));
+          searchKeywordController.text = messageDecoderWithEmoji(
+                  currentProduct.searchKeywords?.join(", ")) ??
+              "";
 
           debugPrint(
               'CURRENT PRODUCT NAME :::: ${selectedProductCategory?.name}');
 
-          for (var condition in conditions) {
+          conditions.forEach((condition) {
             if (condition.name == currentProduct.condition) {
               selectedProductCondition = condition;
             }
-          }
-          for (var preparation in deliverTimeCondition) {
+          });
+          deliverTimeCondition.forEach((preparation) {
             if (preparation.name == currentProduct.preparationTime.toString()) {
               selectedPreparationCondition = preparation;
             }
-          }
+          });
 
           if (weight != 0.0) {
             pickedMeasurementList.add('Weight');
@@ -406,7 +415,7 @@ class _EditProductState extends State<EditProduct> {
     if (mounted) setState(() {});
   }
 
-  void getSubCategories(dynamic id) async {
+  void getSubCategories(id) async {
     if (mounted) setState(() {});
 
     try {
@@ -523,7 +532,8 @@ class _EditProductState extends State<EditProduct> {
                       getProductShortDescription(),
                       const SizedBox(height: 10),
                       getProductDescription(),
-
+                      const SizedBox(height: 10),
+                      getSearchEngineKeyword(),
                       const SizedBox(height: 20),
                       getIsAvailableField(),
                       const SizedBox(height: 16),
@@ -616,7 +626,8 @@ class _EditProductState extends State<EditProduct> {
                       getEnableInSuperStoreField(),
                       const SizedBox(height: 16),
 
-                      if (productVariantList.isEmpty) ...[
+                      if (productVariantList == null ||
+                          productVariantList.isEmpty) ...[
                         // getAddVariationFormField(),
                         productVariation(),
                       ] else ...[
@@ -624,7 +635,8 @@ class _EditProductState extends State<EditProduct> {
                       ],
                       const SizedBox(height: 16),
 
-                      if (productAddOnsList.isEmpty) ...[
+                      if (productAddOnsList == null ||
+                          productAddOnsList.isEmpty) ...[
                         productAddOns(),
                       ] else ...[
                         displaySelectedAddOn(),
@@ -652,7 +664,7 @@ class _EditProductState extends State<EditProduct> {
   }
 
   Widget addLocalImages() {
-    return SizedBox(
+    return Container(
       height: 100,
       child: ListView.builder(
         controller: _scrollController,
@@ -672,7 +684,7 @@ class _EditProductState extends State<EditProduct> {
   }
 
   Widget viewServerImages() {
-    return SizedBox(
+    return Container(
       height: 100,
       child: ListView.builder(
         controller: _scrollController,
@@ -882,7 +894,7 @@ class _EditProductState extends State<EditProduct> {
   }
 
   Widget showServerImage(int index) {
-    return SizedBox(
+    return Container(
       height: 100,
       child: Stack(
         children: <Widget>[
@@ -939,7 +951,7 @@ class _EditProductState extends State<EditProduct> {
                     }
                   }
                 }).catchError((error) {
-                  debugPrint("ERROR $error");
+                  debugPrint("ERROR " + error.toString());
                 });
               },
             ),
@@ -965,7 +977,7 @@ class _EditProductState extends State<EditProduct> {
   bool checkImageLimitForServerImage() {
     if (productLocalImages.length + productImagesFromServer.length !=
             imageCount ||
-        productImagesFromServer.isNotEmpty) {
+        productImagesFromServer.length != 0) {
       return true;
     }
     return false;
@@ -975,7 +987,7 @@ class _EditProductState extends State<EditProduct> {
   bool checkImageLimitForLocalImage() {
     if (productLocalImages.length + productImagesFromServer.length !=
             imageCount ||
-        productLocalImages.isNotEmpty) {
+        productLocalImages.length != 0) {
       return true;
     }
     return false;
@@ -1428,6 +1440,29 @@ class _EditProductState extends State<EditProduct> {
     );
   }
 
+  Widget getSearchEngineKeyword() {
+    return Column(
+      children: [
+        CustomizedTextFormField(
+          controller: searchKeywordController,
+          labelText: "Search Keyword - SEO (Optional)",
+          onChanged: (val) {
+            searchKeyword = val;
+          },
+        ),
+        Text(
+          'These words will help customer see your product online when they search it.',
+          style: TextStyle(
+            color: darkGrey,
+            fontSize: 12,
+            fontWeight: FontWeight.w400,
+            fontFamily: "Inter",
+          ),
+        )
+      ],
+    );
+  }
+
   Widget getCategoryField() {
     return CustomizedDropDownField(
       title: AppLocalization.of(context)!.category,
@@ -1486,7 +1521,7 @@ class _EditProductState extends State<EditProduct> {
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: SizedBox(
+              content: Container(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   margin: EdgeInsets.zero,
@@ -1646,7 +1681,7 @@ class _EditProductState extends State<EditProduct> {
             Expanded(
               child: Text(
                 selectedProductCondition != null
-                    ? " (${selectedProductCondition!.description})"
+                    ? " (" + selectedProductCondition!.description + ")"
                     : "",
                 maxLines: 1,
                 style: const TextStyle(
@@ -2068,7 +2103,7 @@ class _EditProductState extends State<EditProduct> {
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: SizedBox(
+              content: Container(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   margin: EdgeInsets.zero,
@@ -2097,7 +2132,10 @@ class _EditProductState extends State<EditProduct> {
                                     Expanded(
                                       child: Text(
                                         selectedProductCondition != null
-                                            ? " (${selectedProductCondition!.description})"
+                                            ? " (" +
+                                                selectedProductCondition!
+                                                    .description +
+                                                ")"
                                             : "",
                                         maxLines: 1,
                                         style: TextStyle(
@@ -2131,7 +2169,7 @@ class _EditProductState extends State<EditProduct> {
                                 ),
                                 Expanded(
                                   child: Text(
-                                    " (${condition.description})",
+                                    " (" + condition.description + ")",
                                     maxLines: 1,
                                     style: TextStyle(
                                         fontSize: 16, color: blackFont),
@@ -2218,7 +2256,7 @@ class _EditProductState extends State<EditProduct> {
                 text: AppLocalization.of(context)!.delete,
                 onPressed: () async {
                   FocusScope.of(context).unfocus();
-                  deleteProduct();
+                  deleteProductDialog();
                 }),
           ),
           const SizedBox(width: 8),
@@ -2244,6 +2282,29 @@ class _EditProductState extends State<EditProduct> {
           ),
         ],
       ),
+    );
+  }
+
+  void deleteProductDialog() {
+    showDialogBox(
+      context: context,
+      actionOneTextColor: blackFont,
+      actionOneBgColor: greyBorderColor,
+      actionTwoTextColor: white,
+      actionTwoBgColor: mateRed,
+      title: 'Delete Product',
+      actionOneText: AppLocalization.of(context)!.discard,
+      actionTwoText: AppLocalization.of(context)!.continueMsg,
+      description: 'Are you sure you want to delete this product?',
+      roundedBackgroundIcon: RoundedBackgroundIcon(
+        enableMargin: false,
+        width: 90,
+        height: 90,
+        image: Image.asset('assets/images/delete_dialog_icon.png'),
+      ),
+      rightButtonOnPressed: () {
+        deleteProduct();
+      },
     );
   }
 
@@ -2307,9 +2368,10 @@ class _EditProductState extends State<EditProduct> {
                   ? 'm'
                   : '';
           currentProduct.discount = selectedDiscount;
-          currentProduct.trackInventory = trackInventory;
+          currentProduct.trackInventory = trackInventoryView;
           currentProduct.quantity = inventoryCount;
           currentProduct.addressId = defaultAddress?.id;
+          currentProduct.searchKeywords = searchKeyword?.split(", ");
           await _auth
               .editProduct(currentProduct, productAddOnsList)
               .then((value) {
@@ -2382,20 +2444,22 @@ class _EditProductState extends State<EditProduct> {
       },
       child: CustomizedDropDownField(
         title: "Available from",
-        child: ListTile(
-          dense: true,
-          title: Text(
-            formatDate(productAvailableFrom!),
-            style: TextStyle(
-              color: blackFont,
-              fontWeight: FontWeight.w600,
-              fontSize: 16,
+        child: Container(
+          child: ListTile(
+            dense: true,
+            title: Text(
+              formatDate(productAvailableFrom!),
+              style: TextStyle(
+                color: blackFont,
+                fontWeight: FontWeight.w600,
+                fontSize: 16,
+              ),
             ),
-          ),
-          trailing: Icon(
-            SlydoAppIcon.date,
-            size: 16,
-            color: darkGrey,
+            trailing: Icon(
+              SlydoAppIcon.date,
+              size: 16,
+              color: darkGrey,
+            ),
           ),
         ),
       ),
@@ -2879,24 +2943,26 @@ class _EditProductState extends State<EditProduct> {
           if (mounted) setState(() {});
         }
       },
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            'Add Product Variation',
-            maxLines: 1,
-            style: TextStyle(
-                color: productAddOnsList.isNotEmpty ? darkGrey : navyBlue,
-                fontFamily: "Inter",
-                fontWeight: FontWeight.w500,
-                fontSize: 14),
-          ),
-          Icon(
-            Icons.arrow_forward_ios,
-            size: 16,
-            color: blackFont,
-          ),
-        ],
+      child: Container(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Add Product Variation',
+              maxLines: 1,
+              style: TextStyle(
+                  color: productAddOnsList.isNotEmpty ? darkGrey : navyBlue,
+                  fontFamily: "Inter",
+                  fontWeight: FontWeight.w500,
+                  fontSize: 14),
+            ),
+            Icon(
+              Icons.arrow_forward_ios,
+              size: 16,
+              color: blackFont,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -2991,7 +3057,7 @@ class _EditProductState extends State<EditProduct> {
   Widget _buildAddOnList() {
     return isLoading && productAddOnsList.isEmpty
         ? buildLoadingIndicator(isLoading: isLoading)
-        : SizedBox(
+        : Container(
             // height: 200,
             height: 80 * productAddOnsList.length.toDouble(),
             child: ListView.builder(
@@ -3061,6 +3127,7 @@ class _EditProductState extends State<EditProduct> {
     productPriceController.dispose();
     _scrollController.dispose();
     scrollControllerVariant.dispose();
+    searchKeywordController.dispose();
     _myController.dispose();
 
     super.dispose();

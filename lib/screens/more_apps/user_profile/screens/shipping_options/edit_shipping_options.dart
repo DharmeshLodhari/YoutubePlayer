@@ -14,7 +14,7 @@ import 'package:provider/provider.dart';
 import '../../../payment_and_banking/payment_and_banking_auth.dart';
 
 class EditShippingOptions extends StatefulWidget {
-  final dynamic arguments;
+  var arguments;
   final Function(bool)? callback;
 
   EditShippingOptions({this.callback, this.arguments});
@@ -117,22 +117,20 @@ class _EditShippingOptionsState extends State<EditShippingOptions> {
                               const SizedBox(
                                 height: 20,
                               ),
-                              if (errorMessage == "")
-                                Container()
-                              else
-                                Text(
-                                  errorMessage,
-                                  style: TextStyle(
-                                      color: mateRed,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16),
-                                ),
-                              if (errorMessage == "")
-                                Container()
-                              else
-                                const SizedBox(
-                                  height: 20,
-                                ),
+                              errorMessage == ""
+                                  ? Container()
+                                  : Text(
+                                      errorMessage,
+                                      style: TextStyle(
+                                          color: mateRed,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16),
+                                    ),
+                              errorMessage == ""
+                                  ? Container()
+                                  : const SizedBox(
+                                      height: 20,
+                                    ),
                             ],
                           ),
                         ),

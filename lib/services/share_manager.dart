@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_handler.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/db_socket_message_handler.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_conversation.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatMessage.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/SocketQueueChatMessage.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/share_in_chat/ShareInChat.dart';
@@ -33,7 +33,7 @@ class ShareManager {
   List<SharedMediaFile>? _sharedFiles;
   String? _sharedText;
   Timer? _timerForSharingDataListen;
-  final Duration _refreshDurationInterval = const Duration(seconds: 1);
+  Duration _refreshDurationInterval = const Duration(seconds: 1);
 
   void initializeShareManager() {
     _initializeMediaStream();
@@ -45,14 +45,18 @@ class ShareManager {
     // For sharing images coming from outside the app while the app is in the memory
     _intentDataStreamSubscription = ReceiveSharingIntent.getMediaStream()
         .listen((List<SharedMediaFile> value) {
+      debugPrint("ReceiveSharedMedia1:" + value.map((f) => f.path).join(","));
       _sharedFiles = value;
       if (_sharedFiles != null && _sharedFiles!.isNotEmpty) {
         initializeNavigationTimer();
       }
-    }, onError: (err) {});
+    }, onError: (err) {
+      debugPrint("getIntentDataStream error: $err");
+    });
 
     // For sharing images coming from outside the app while the app is closed
     ReceiveSharingIntent.getInitialMedia().then((List<SharedMediaFile> value) {
+      debugPrint("ReceiveSharedMedia2:" + (value.map((f) => f.path).join(",")));
       _sharedFiles = value;
       if (_sharedFiles != null && _sharedFiles!.isNotEmpty) {
         initializeNavigationTimer();
@@ -65,14 +69,18 @@ class ShareManager {
     // For sharing or opening urls/text coming from outside the app while the app is in the memory
     _intentDataStreamSubscription =
         ReceiveSharingIntent.getTextStream().listen((String value) {
+      debugPrint("ReceiveSharedText1: $value");
       _sharedText = value;
       if (_sharedText != null && _sharedText != "" && _sharedText != "null") {
         initializeNavigationTimer();
       }
-    }, onError: (err) {});
+    }, onError: (err) {
+      debugPrint("getLinkStream error: $err");
+    });
 
     // For sharing or opening urls/text coming from outside the app while the app is closed
     ReceiveSharingIntent.getInitialText().then((String? value) {
+      debugPrint("ReceiveSharedText2: $value");
       _sharedText = value;
       if (_sharedText != null && _sharedText != "" && _sharedText != "null") {
         initializeNavigationTimer();
@@ -100,6 +108,7 @@ class ShareManager {
       try {
         if (myGlobals.navigationKey.currentContext != null) {
           _timerForSharingDataListen!.cancel();
+          debugPrint("<====== Opening user list ======>");
           final RouteProvider routeProvider = Provider.of<RouteProvider>(
               myGlobals.navigationKey.currentContext!,
               listen: false);
@@ -110,7 +119,7 @@ class ShareManager {
           }
         }
       } catch (e) {
-        debugPrint("Error $e");
+        debugPrint("ShareContextException===>$e");
       }
     });
   }
@@ -195,14 +204,14 @@ class ShareManager {
   }
 
   Future<void> sendTextMessage(
-      String message, ChatConversation? chatConversation) async {
+      String message, ChatConversation chatConversation) async {
     final UserBloc userBloc = Provider.of<UserBloc>(
         myGlobals.navigationKey.currentContext!,
         listen: false);
 
     final Map<String, dynamic> data = {
       "check_id": const Uuid().v4(),
-      "conversation_id": chatConversation?.conversationId,
+      "conversation_id": chatConversation.conversationId,
       "author": userBloc.user.userName,
       "author_full_name": userBloc.user.fullName,
       "author_avatar": userBloc.user.avatar,
@@ -218,7 +227,7 @@ class ShareManager {
     debugPrint("ShareContentTextData====> $data");
 
     debugPrint(
-        "recipientUser = $chatConversation  recipientUser.conversationId = ${chatConversation?.conversationId}");
+        "recipientUser = $chatConversation  recipientUser.conversationId = ${chatConversation.conversationId}");
     if (chatConversation != null && chatConversation.conversationId != null) {
       DBSocketMessageHandler()
           .saveMessageToDb(message: SocketQueueChatMessage.fromJson(data));

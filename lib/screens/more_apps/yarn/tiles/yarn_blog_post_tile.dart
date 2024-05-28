@@ -27,9 +27,9 @@ import '../../../../widget/dialog.dart';
 import '../../../../widget/rounded_background_icon.dart';
 
 class YarnBlogPostTile extends StatefulWidget {
-  late final UserPost? post;
-  final bool? isNavigable;
-  final Function onDeleteBlog;
+  UserPost? post;
+  bool? isNavigable;
+  Function onDeleteBlog;
   final bool showAuthorDetails;
   final TileRenderPlace tileRenderPlace;
 
@@ -122,240 +122,244 @@ class _YarnBlogPostTileState extends State<YarnBlogPostTile> {
         child: Container(
           // width: getItemWidth(),
           decoration: decorateBox(borderColor: greySecondaryYarn),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Stack(
-                children: [
-                  Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      ClipRRect(
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(10),
-                          topRight: Radius.circular(10),
+          child: Container(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Stack(
+                  children: [
+                    Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        ClipRRect(
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(10),
+                            topRight: Radius.circular(10),
+                          ),
+                          child: widget.post?.video != null &&
+                                  widget.post!.video!.isNotEmpty
+                              ? SizedBox(
+                                  height: getContainerHeight(
+                                      widget.tileRenderPlace, context),
+                                  child: Chewie(
+                                    posterUrl: widget.post?.image,
+                                    controller: _chewieMainController!,
+                                  ),
+                                )
+                              : CachedNetworkImage(
+                                  height: getContainerHeight(
+                                      widget.tileRenderPlace, context),
+                                  width: double.infinity,
+                                  fit: BoxFit.cover,
+                                  errorWidget: imageErrorWidget,
+                                  imageUrl: widget.post?.image ?? ""),
                         ),
-                        child: widget.post?.video != null &&
-                                widget.post!.video!.isNotEmpty
-                            ? SizedBox(
-                                height: getContainerHeight(
-                                    widget.tileRenderPlace, context),
-                                child: Chewie(
-                                  posterUrl: widget.post?.image,
-                                  controller: _chewieMainController!,
-                                ),
-                              )
-                            : CachedNetworkImage(
-                                height: getContainerHeight(
-                                    widget.tileRenderPlace, context),
-                                width: double.infinity,
-                                fit: BoxFit.cover,
-                                errorWidget: imageErrorWidget,
-                                imageUrl: widget.post?.image ?? ""),
-                      ),
-                      if (widget.showAuthorDetails)
-                        Positioned(
-                          left: 10,
-                          bottom: 10,
-                          child: InkWell(
-                            onTap: () {
-                              Navigator.pushNamed(
-                                  context, Routes.USER_PROFILE, arguments: {
-                                "searchedUserName": widget.post!.authorUsername
-                              });
-                            },
-                            child: Row(
-                              children: [
-                                SizedBox(
-                                  width: 25,
-                                  height: 25,
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(50),
-                                    child: CachedNetworkImage(
-                                      fit: BoxFit.cover,
-                                      imageUrl: widget.post!.authorAvatar!,
-                                      errorWidget: imageErrorWidget,
+                        if (widget.showAuthorDetails)
+                          Positioned(
+                            left: 10,
+                            bottom: 10,
+                            child: InkWell(
+                              onTap: () {
+                                Navigator.pushNamed(
+                                    context, Routes.USER_PROFILE, arguments: {
+                                  "searchedUserName":
+                                      widget.post!.authorUsername
+                                });
+                              },
+                              child: Row(
+                                children: [
+                                  SizedBox(
+                                    width: 25,
+                                    height: 25,
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(50),
+                                      child: CachedNetworkImage(
+                                        fit: BoxFit.cover,
+                                        imageUrl: widget.post!.authorAvatar!,
+                                        errorWidget: imageErrorWidget,
+                                      ),
                                     ),
                                   ),
-                                ),
-                                const SizedBox(width: 8),
-                                userNameWithVerifiedIcon(
-                                  name: widget.post?.authorName ?? '',
-                                  isVerified: false,
-                                  textStyle: TextStyle(
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: getFontSize(
-                                        widget.tileRenderPlace, context),
-                                    color: Colors.white,
-                                    shadows: [
-                                      Shadow(
-                                        blurRadius: 2.0,
-                                        color: blackFont,
-                                        offset: const Offset(0.0, 0),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        )
-                      else
-                        const SizedBox.shrink(),
-                      if (widget.post!.isPublished!)
-                        const SizedBox.shrink()
-                      else
-                        Positioned(
-                          left: 10,
-                          top: 10,
-                          child: CustomChip(
-                            textColor: blackFont,
-                            color: starYellow,
-                            text: 'Unpublished',
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 4, vertical: 4),
-                          ),
-                        ),
-                      // Center(child: SvgPicture.asset('play_icon'.toSVG())),
-                    ],
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 22, vertical: 19),
-                    child: Align(
-                      alignment: Alignment.topRight,
-                      child: SvgPicture.asset('heart'.toSVG()),
-                    ),
-                  ),
-                  ClipRRect(
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(10),
-                      topRight: Radius.circular(10),
-                    ),
-                    child: widget.post?.video != null &&
-                            widget.post!.video!.isNotEmpty
-                        ? SizedBox(
-                            height: getContainerHeight(
-                                widget.tileRenderPlace, context),
-                            child: Chewie(
-                              posterUrl: widget.post?.image,
-                              controller: _chewieMainController!,
-                            ),
-                          )
-                        : CachedNetworkImage(
-                            height: getContainerHeight(
-                                widget.tileRenderPlace, context),
-                            width: double.infinity,
-                            fit: BoxFit.cover,
-                            errorWidget: imageErrorWidget,
-                            imageUrl: widget.post?.image ?? "",
-                          ),
-                  ),
-                  if (widget.showAuthorDetails)
-                    Positioned(
-                      left: 10,
-                      bottom: 10,
-                      child: InkWell(
-                        onTap: () {
-                          Navigator.pushNamed(context, Routes.USER_PROFILE,
-                              arguments: {
-                                "searchedUserName": widget.post!.authorUsername
-                              });
-                        },
-                        child: Row(
-                          children: [
-                            SizedBox(
-                              width: 25,
-                              height: 25,
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(50),
-                                child: CachedNetworkImage(
-                                  fit: BoxFit.cover,
-                                  imageUrl: widget.post!.authorAvatar!,
-                                  errorWidget: imageErrorWidget,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            userNameWithVerifiedIcon(
-                              name: widget.post!.authorName ?? "",
-                              isVerified: false,
-                              textStyle: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                fontSize: getFontSize(
-                                    widget.tileRenderPlace, context),
-                                color: Colors.white,
-                                shadows: [
-                                  Shadow(
-                                    blurRadius: 2.0,
-                                    color: blackFont,
-                                    offset: const Offset(0.0, 0),
+                                  const SizedBox(width: 8),
+                                  userNameWithVerifiedIcon(
+                                    name: widget.post?.authorName ?? '',
+                                    isVerified: false,
+                                    textStyle: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: getFontSize(
+                                          widget.tileRenderPlace, context),
+                                      color: Colors.white,
+                                      shadows: [
+                                        Shadow(
+                                          blurRadius: 2.0,
+                                          color: blackFont,
+                                          offset: const Offset(0.0, 0),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ],
                               ),
                             ),
-                          ],
-                        ),
-                      ),
-                    )
-                  else
-                    const SizedBox.shrink(),
-                  if (widget.post!.isPublished!)
-                    const SizedBox.shrink()
-                  else
-                    Positioned(
-                      left: 10,
-                      top: 10,
-                      child: CustomChip(
-                        textColor: blackFont,
-                        color: starYellow,
-                        text: 'Unpublished',
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 4, vertical: 4),
-                      ),
-                    ),
-                ],
-              ),
-              Container(
-                padding: const EdgeInsets.only(left: 15, top: 10, bottom: 10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            messageDecoderWithEmoji(widget.post?.title) ?? "",
-                            style: TextStyle(
-                              fontSize:
-                                  getFontSize(widget.tileRenderPlace, context),
-                              fontWeight: FontWeight.w700,
-                              color: blackFont,
+                          )
+                        else
+                          const SizedBox.shrink(),
+                        if (widget.post!.isPublished!)
+                          const SizedBox.shrink()
+                        else
+                          Positioned(
+                            left: 10,
+                            top: 10,
+                            child: CustomChip(
+                              textColor: blackFont,
+                              color: starYellow,
+                              text: 'Unpublished',
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 4, vertical: 4),
                             ),
-                            maxLines: 2,
-                            softWrap: true,
-                            overflow: TextOverflow.clip,
                           ),
-                        ),
+                        // Center(child: SvgPicture.asset('play_icon'.toSVG())),
                       ],
                     ),
-                    const SizedBox(height: 8),
-                    Text(
-                      messageDecoderWithEmoji(widget.post?.tagLine) ?? "",
-                      style: TextStyle(
-                        fontSize: getFontSize(widget.tileRenderPlace, context),
-                        fontWeight: FontWeight.w400,
-                        color: darkGrey,
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 22, vertical: 19),
+                      child: Align(
+                        alignment: Alignment.topRight,
+                        child: SvgPicture.asset('heart'.toSVG()),
                       ),
-                      maxLines: 3,
-                      softWrap: false,
-                      overflow: TextOverflow.ellipsis,
                     ),
+                    ClipRRect(
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(10),
+                        topRight: Radius.circular(10),
+                      ),
+                      child: widget.post?.video != null &&
+                              widget.post!.video!.isNotEmpty
+                          ? SizedBox(
+                              height: getContainerHeight(
+                                  widget.tileRenderPlace, context),
+                              child: Chewie(
+                                posterUrl: widget.post?.image,
+                                controller: _chewieMainController!,
+                              ),
+                            )
+                          : CachedNetworkImage(
+                              height: getContainerHeight(
+                                  widget.tileRenderPlace, context),
+                              width: double.infinity,
+                              fit: BoxFit.cover,
+                              errorWidget: imageErrorWidget,
+                              imageUrl: widget.post?.image ?? "",
+                            ),
+                    ),
+                    if (widget.showAuthorDetails)
+                      Positioned(
+                        left: 10,
+                        bottom: 10,
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.pushNamed(
+                                context, Routes.USER_PROFILE, arguments: {
+                              "searchedUserName": widget.post!.authorUsername
+                            });
+                          },
+                          child: Row(
+                            children: [
+                              SizedBox(
+                                width: 25,
+                                height: 25,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(50),
+                                  child: CachedNetworkImage(
+                                    fit: BoxFit.cover,
+                                    imageUrl: widget.post!.authorAvatar!,
+                                    errorWidget: imageErrorWidget,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              userNameWithVerifiedIcon(
+                                name: widget.post!.authorName ?? "",
+                                isVerified: false,
+                                textStyle: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: getFontSize(
+                                      widget.tileRenderPlace, context),
+                                  color: Colors.white,
+                                  shadows: [
+                                    Shadow(
+                                      blurRadius: 2.0,
+                                      color: blackFont,
+                                      offset: const Offset(0.0, 0),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    else
+                      const SizedBox.shrink(),
+                    if (widget.post!.isPublished!)
+                      const SizedBox.shrink()
+                    else
+                      Positioned(
+                        left: 10,
+                        top: 10,
+                        child: CustomChip(
+                          textColor: blackFont,
+                          color: starYellow,
+                          text: 'Unpublished',
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 4, vertical: 4),
+                        ),
+                      ),
                   ],
                 ),
-              ),
-            ],
+                Container(
+                  padding: const EdgeInsets.only(left: 15, top: 10, bottom: 10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              messageDecoderWithEmoji(widget.post?.title) ?? "",
+                              style: TextStyle(
+                                fontSize: getFontSize(
+                                    widget.tileRenderPlace, context),
+                                fontWeight: FontWeight.w700,
+                                color: blackFont,
+                              ),
+                              maxLines: 2,
+                              softWrap: true,
+                              overflow: TextOverflow.clip,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        messageDecoderWithEmoji(widget.post?.tagLine) ?? "",
+                        style: TextStyle(
+                          fontSize:
+                              getFontSize(widget.tileRenderPlace, context),
+                          fontWeight: FontWeight.w400,
+                          color: darkGrey,
+                        ),
+                        maxLines: 3,
+                        softWrap: false,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -387,7 +391,7 @@ class _YarnBlogPostTileState extends State<YarnBlogPostTile> {
   }
 
   List<Widget> generateBottomSheetItem() {
-    final List<Widget> list = [];
+    List<Widget> list = [];
 
     list.add(
       bottomSheetItem(
@@ -395,7 +399,7 @@ class _YarnBlogPostTileState extends State<YarnBlogPostTile> {
         iconData: SlydoAppIcon.share,
         onTap: () {
           Navigator.pop(context);
-          final shareBody =
+          var shareBody =
               "https://slydo.co/store/${widget.post!.authorUsername}/blogs/${widget.post!.id}";
           Share.share(shareBody, subject: "${widget.post!.authorName}");
         },
@@ -439,13 +443,13 @@ class _YarnBlogPostTileState extends State<YarnBlogPostTile> {
             Navigator.pop(context);
             showDialogBox(
               context: context,
-              actionOneTextColor: white,
-              actionOneBgColor: mateRed,
-              actionTwoTextColor: blackFont,
-              actionTwoBgColor: greyBorderColor,
-              title: AppLocalization.of(context)!.delete,
-              actionTwoText: AppLocalization.of(context)!.cancel,
-              actionOneText: AppLocalization.of(context)!.delete,
+              actionOneTextColor: blackFont,
+              actionOneBgColor: greyBorderColor,
+              actionTwoTextColor: white,
+              actionTwoBgColor: mateRed,
+              title: 'Delete Blog Post',
+              actionOneText: AppLocalization.of(context)!.discard,
+              actionTwoText: AppLocalization.of(context)!.continueMsg,
               description: 'Are you sure you want to delete this blog post?',
               roundedBackgroundIcon: RoundedBackgroundIcon(
                 width: 90,
@@ -453,7 +457,7 @@ class _YarnBlogPostTileState extends State<YarnBlogPostTile> {
                 enableMargin: false,
                 image: Image.asset('assets/images/delete_dialog_icon.png'),
               ),
-              leftButtonOnPressed: () {
+              rightButtonOnPressed: () {
                 UserPostUtils.deleteBlogPost(
                   context: context,
                   blogId: widget.post!.id!,
@@ -469,58 +473,58 @@ class _YarnBlogPostTileState extends State<YarnBlogPostTile> {
     return list;
   }
 
-  // Widget _buildLikeUnLikeReportTile() {
-  //   if (!widget.post!.enableLike!) {
-  //     return const SizedBox.shrink();
-  //   }
-  //
-  //   return Row(
-  //     mainAxisSize: MainAxisSize.min,
-  //     children: [
-  //       Row(
-  //         children: [
-  //           _buildReviewLike(),
-  //           const SizedBox(width: 16),
-  //           _buildPostUnLike(),
-  //         ],
-  //       ),
-  //
-  //       // Expanded(child: Container())
-  //
-  //       // _buildReviewReport(),
-  //     ],
-  //   );
-  // }
+  Widget _buildLikeUnLikeReportTile() {
+    if (!widget.post!.enableLike!) {
+      return const SizedBox.shrink();
+    }
 
-  // Widget _buildReviewLike() {
-  //   return GestureDetector(
-  //     onTap: isAuthor
-  //         ? () => showToast(message: 'You cannot like your post')
-  //         : likeUnlikePost,
-  //     child: Container(
-  //       child: Row(
-  //         children: [
-  //           Icon(
-  //             widget.post?.userLiked == true
-  //                 ? Icons.thumb_up_alt_rounded
-  //                 : Icons.thumb_up_alt_outlined,
-  //             size: 16,
-  //             color: widget.post?.userLiked == true ? navyBlue : blackFont,
-  //           ),
-  //           const SizedBox(width: 4),
-  //           Text(
-  //             widget.post?.likes != null ? widget.post!.likes!.toString() : '0',
-  //             style: TextStyle(
-  //               color: blackFont,
-  //               fontWeight: FontWeight.w400,
-  //               fontSize: 14,
-  //             ),
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Row(
+          children: [
+            _buildReviewLike(),
+            const SizedBox(width: 16),
+            _buildPostUnLike(),
+          ],
+        ),
+
+        // Expanded(child: Container())
+
+        // _buildReviewReport(),
+      ],
+    );
+  }
+
+  Widget _buildReviewLike() {
+    return GestureDetector(
+      onTap: isAuthor
+          ? () => showToast(message: 'You cannot like your post')
+          : likeUnlikePost,
+      child: Container(
+        child: Row(
+          children: [
+            Icon(
+              widget.post?.userLiked == true
+                  ? Icons.thumb_up_alt_rounded
+                  : Icons.thumb_up_alt_outlined,
+              size: 16,
+              color: widget.post?.userLiked == true ? navyBlue : blackFont,
+            ),
+            const SizedBox(width: 4),
+            Text(
+              widget.post?.likes != null ? widget.post!.likes!.toString() : '0',
+              style: TextStyle(
+                color: blackFont,
+                fontWeight: FontWeight.w400,
+                fontSize: 14,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   void likeUnlikePost() async {
     await UserPostAuth().likeUserPost(widget.post!).then((value) {
@@ -556,35 +560,35 @@ class _YarnBlogPostTileState extends State<YarnBlogPostTile> {
     // });
   }
 
-  // Widget _buildPostUnLike() {
-  //   return GestureDetector(
-  //     onTap: isAuthor
-  //         ? () => showToast(message: 'You cannot dislike your post')
-  //         : dislikeUnlikePost,
-  //     child: Container(
-  //       child: Row(
-  //         children: [
-  //           Icon(
-  //             widget.post?.userDisLiked == true
-  //                 ? Icons.thumb_down_alt_rounded
-  //                 : Icons.thumb_down_alt_outlined,
-  //             size: 16,
-  //             color: widget.post?.userDisLiked! == true ? mateRed : blackFont,
-  //           ),
-  //           const SizedBox(width: 4),
-  //           Text(
-  //             widget.post?.dislikes != null
-  //                 ? widget.post!.dislikes!.toString()
-  //                 : '0',
-  //             style: TextStyle(
-  //               color: blackFont,
-  //               fontWeight: FontWeight.w400,
-  //               fontSize: 14,
-  //             ),
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
+  Widget _buildPostUnLike() {
+    return GestureDetector(
+      onTap: isAuthor
+          ? () => showToast(message: 'You cannot dislike your post')
+          : dislikeUnlikePost,
+      child: Container(
+        child: Row(
+          children: [
+            Icon(
+              widget.post?.userDisLiked == true
+                  ? Icons.thumb_down_alt_rounded
+                  : Icons.thumb_down_alt_outlined,
+              size: 16,
+              color: widget.post?.userDisLiked! == true ? mateRed : blackFont,
+            ),
+            const SizedBox(width: 4),
+            Text(
+              widget.post?.dislikes != null
+                  ? widget.post!.dislikes!.toString()
+                  : '0',
+              style: TextStyle(
+                color: blackFont,
+                fontWeight: FontWeight.w400,
+                fontSize: 14,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }

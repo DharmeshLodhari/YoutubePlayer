@@ -36,6 +36,7 @@ List<String> serviceCategoryList = [
   "Alarms – Security & Fire",
   "Appliance Repairs",
   "Architect",
+  "Barber",
   "Block laye",
   "Brick layer",
   "Builder - General",
@@ -77,6 +78,7 @@ List<String> serviceCategoryList = [
   "Removal & Storage",
   "Roofer",
   "Slabbing Contractor",
+  "Software Development",
   "Solar Panels",
   "Steel Erector",
   "Stone Mason",
@@ -285,7 +287,6 @@ class Product extends PurchasableItem {
   DiscountModel? discount;
   int? quantity;
   double? pricePercentageChange;
-  bool isSelected;
   int? discountValue;
   String? discountType;
   bool? discountIsActive;
@@ -293,6 +294,8 @@ class Product extends PurchasableItem {
   int? oldPrice;
   bool? isShippable;
   String? addressId;
+  List<String>? searchKeywords;
+  bool isChecked = false;
 
   // DateTime? createdAt;
   // bool? enableInSuperstore;
@@ -359,7 +362,6 @@ class Product extends PurchasableItem {
     this.quantity,
     this.pricePercentageChange,
     this.canRate = false,
-    this.isSelected = false,
     this.discountValue,
     this.discountType,
     this.discountIsActive,
@@ -368,6 +370,8 @@ class Product extends PurchasableItem {
     this.isShippable,
     this.addressId,
     this.itemAddedBy,
+    this.searchKeywords,
+    this.isChecked = false,
     // this.itemUpdatedBy,
     // this.qty,
   });
@@ -412,6 +416,8 @@ class Product extends PurchasableItem {
       'is_shippable': isShippable,
       'address_id': addressId,
       'added_by': itemAddedBy,
+      'search_keywords': searchKeywords,
+      'is_checked': isChecked,
       // 'item_updated_by': itemUpdatedBy,
       // 'qty': qty,
     };
@@ -465,6 +471,10 @@ class Product extends PurchasableItem {
       'is_shippable': isShippable,
       'address_id': addressId,
       "added_by": itemAddedBy?.map((v) => v.toJson()).toList(),
+      "search_keywords": searchKeywords == null
+          ? []
+          : List<String>.from(searchKeywords!.map((x) => x)),
+      'is_checked': isChecked,
       // "item_updated_by": itemUpdatedBy?.toJson(),
       // 'qty': qty,
     };
@@ -582,7 +592,10 @@ class Product extends PurchasableItem {
       itemAddedBy: object["added_by"] == null
           ? []
           : List<AddedBy>.from(
-              object["added_by"]!.map((x) => AddedBy.fromJson(x))),
+              object["added_by"].map((x) => AddedBy.fromJson(x))),
+      searchKeywords: object["search_keywords"] == null
+          ? <String>[]
+          : List<String>.from(object["search_keywords"].map((x) => x)),
       // itemUpdatedBy: object["item_updated_by"] == null
       //     ? null
       //     : UserFollowers.fromJson(object["item_updated_by"]),
@@ -603,7 +616,8 @@ class Product extends PurchasableItem {
   bool isProductAvailableNow() {
     if ((isAvailable ?? false) &&
         quantity! >= 1 &&
-        (availableFrom?.isBefore(DateTime.now()) ?? false)) {
+        ((availableFrom?.isBefore(DateTime.now()) ?? false) ||
+            (availableFrom?.isAtSameMomentAs(DateTime.now()) ?? false))) {
       return true;
     }
     return false;
@@ -636,7 +650,7 @@ class Product extends PurchasableItem {
     return images;
   }
 
-  DateTime getProductDateTime(String? date) {
+  DateTime getProductDateTime(var date) {
     if (date != null) {
       final DateTime dateTime = DateTime.parse(date);
       return dateTime;
@@ -646,7 +660,7 @@ class Product extends PurchasableItem {
 
   // ignore: missing_return
   String getImageId(String? imageUrl) {
-    debugPrint("$serverImages");
+    debugPrint("${serverImages}");
     for (var data in pictureMap!) {
       if (data.path == imageUrl) {
         return data.id.toString();
@@ -670,53 +684,54 @@ class Product extends PurchasableItem {
 
   Product copyWith({int? quantity, bool withSelectedAddOn = false}) {
     final Product product = Product(
-      id: id,
-      name: name ?? "",
-      description: description ?? "",
-      shortDescription: shortDescription ?? "",
-      price: price,
-      enableInSuperStore: enableInSuperStore ?? false,
-      localImages: localImages ?? [],
-      serverImages: serverImages,
-      cover: cover ?? "",
-      seller: seller ?? "",
-      sellerAvatar: sellerAvatar ?? "",
-      sellerFullName: sellerFullName ?? "",
-      qrCode: qrCode ?? "",
-      condition: condition ?? "",
-      category: category,
-      subCategory: subCategory,
-      customCategory: customCategory,
-      tags: tags ?? [],
-      preparationTime: preparationTime ?? 0,
-      manufacturer: manufacturer ?? "",
-      isAvailable: isAvailable ?? true,
-      availableFrom: availableFrom,
-      currency: currency ?? "NGN",
-      pictureMap: pictureMap ?? [],
-      rating: rating,
-      canRate: canRate ?? false,
+      id: this.id,
+      name: this.name ?? "",
+      description: this.description ?? "",
+      shortDescription: this.shortDescription ?? "",
+      price: this.price,
+      enableInSuperStore: this.enableInSuperStore ?? false,
+      localImages: this.localImages ?? [],
+      serverImages: this.serverImages,
+      cover: this.cover ?? "",
+      seller: this.seller ?? "",
+      sellerAvatar: this.sellerAvatar ?? "",
+      sellerFullName: this.sellerFullName ?? "",
+      qrCode: this.qrCode ?? "",
+      condition: this.condition ?? "",
+      category: this.category,
+      subCategory: this.subCategory,
+      customCategory: this.customCategory,
+      tags: this.tags ?? [],
+      preparationTime: this.preparationTime ?? 0,
+      manufacturer: this.manufacturer ?? "",
+      isAvailable: this.isAvailable ?? true,
+      availableFrom: this.availableFrom,
+      currency: this.currency ?? "NGN",
+      pictureMap: this.pictureMap ?? [],
+      rating: this.rating,
+      canRate: this.canRate ?? false,
       // variant: this.variant,
-      variantModels: variantModels?.map((e) => e.copyWith()).toList(),
+      variantModels: this.variantModels?.map((e) => e.copyWith()).toList(),
       // addOns: this.addOns,
-      addOnsModels: addOnsModels?.map((e) => e.copyWith()).toList(),
-      weight: weight,
-      weightSiUnit: widthSiUnit,
-      height: height,
-      heightSiUnit: heightSiUnit,
-      widthSiUnit: widthSiUnit,
-      trackInventory: trackInventory,
+      addOnsModels: this.addOnsModels?.map((e) => e.copyWith()).toList(),
+      weight: this.weight,
+      weightSiUnit: this.widthSiUnit,
+      height: this.height,
+      heightSiUnit: this.heightSiUnit,
+      widthSiUnit: this.widthSiUnit,
+      trackInventory: this.trackInventory,
       quantity: quantity ?? this.quantity,
-      pricePercentageChange: pricePercentageChange ?? 0.0,
+      pricePercentageChange: this.pricePercentageChange ?? 0.0,
       // isSelected: this.isSelected ?? 0.0,
       // discountedPrice: object["discounted_price"],
       // discountIsActive: object["discount_is_active"],
       // discountType: object["discount_type"],
       // discountValue: object["discount_value"],
-      oldPrice: oldPrice,
-      isShippable: isShippable,
-      addressId: addressId,
-      itemAddedBy: itemAddedBy,
+      oldPrice: this.oldPrice,
+      isShippable: this.isShippable,
+      addressId: this.addressId,
+      itemAddedBy: this.itemAddedBy,
+      searchKeywords: this.searchKeywords,
       // itemUpdatedBy: this.itemUpdatedBy,
       // qty: qty ?? this.qty,
     );
@@ -918,7 +933,6 @@ extension StringOperations on VariantTypes {
 class Variant {
   String? id;
   String? title;
-  String? size;
   String? colour;
   VariantTypes? type;
   String? price;
@@ -927,7 +941,7 @@ class Variant {
   List<String?>? serverImages;
   int? quantity;
   bool? isAvailable;
-  DateTime? availableFrom;
+  String? availableFrom;
   String? currency;
   bool? trackInventory;
   List<AddedBy>? addedBy;
@@ -944,7 +958,6 @@ class Variant {
   Variant({
     this.id,
     this.title,
-    this.size,
     this.colour,
     this.trackInventory,
     this.type,
@@ -967,7 +980,6 @@ class Variant {
     }
     data.addAll({
       "title": title,
-      "size": size,
       "colour": colour,
       "price": price,
       "type": type?.toName(),
@@ -986,14 +998,13 @@ class Variant {
     return {
       "id": id,
       "title": title,
-      "size": size,
       "colour": colour,
       "price": price,
       "type": type,
       "value": value,
       "quantity": quantity,
       "is_available": isAvailable,
-      "available_from": availableFrom.toString(),
+      "available_from": availableFrom,
       "track_inventory": trackInventory,
       "currency": currency,
       "added_by": addedBy,
@@ -1033,7 +1044,7 @@ class Variant {
       localImages: object["localImages"] ?? [],
       serverImages: getProductImages(object["pictures"]),
       isAvailable: object["is_available"] ?? true,
-      availableFrom: getProductDateTime(object["available_from"]),
+      availableFrom: object["available_from"],
       currency: object["currency"] ?? "NGN",
       addedBy: object["added_by"] == null
           ? []
@@ -1105,7 +1116,7 @@ class Variant {
     return images;
   }
 
-  static DateTime getProductDateTime(String? date) {
+  static DateTime getProductDateTime(var date) {
     if (date != null) {
       final DateTime dateTime = DateTime.parse(date);
       return dateTime;
@@ -1115,7 +1126,7 @@ class Variant {
 
   // ignore: missing_return
   String getImageId(String? imageUrl) {
-    debugPrint("$serverImages");
+    debugPrint("${serverImages}");
     // for (var data in this.pictureMap!) {
     //   if (data['file'] == imageUrl) {
     //     return data['id'].toString();
@@ -1146,7 +1157,7 @@ class Variant {
 
   String getSize() {
     if (value != null && value != "") {
-      return value ?? "";
+      return messageDecoderWithEmoji(value) ?? "";
     }
     return "";
   }
@@ -1192,7 +1203,6 @@ class Variant {
     return Variant(
       id: id ?? this.id,
       title: title ?? this.title,
-      size: size ?? this.size,
       colour: colour ?? this.colour,
       type: type ?? this.type,
       price: price ?? this.price,
@@ -1201,7 +1211,7 @@ class Variant {
       serverImages: serverImages ?? this.serverImages,
       quantity: quantity ?? this.quantity,
       isAvailable: isAvailable ?? this.isAvailable,
-      availableFrom: availableFrom ?? this.availableFrom,
+      availableFrom: this.availableFrom,
       currency: currency ?? this.currency,
       addedBy: addedBy ?? this.addedBy,
       trackInventory: trackInventory ?? this.trackInventory,
@@ -1302,7 +1312,7 @@ class AddOnOption {
     );
   }
 
-  static DateTime getProductDateTime(String? date) {
+  static DateTime getProductDateTime(var date) {
     if (date != null) {
       final DateTime dateTime = DateTime.parse(date);
       return dateTime;
@@ -1311,19 +1321,19 @@ class AddOnOption {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['id'] = id;
-    data['picture'] = picture;
-    data['name'] = name;
-    data['description'] = description;
-    data['merchant'] = merchant;
-    data['select_type'] = selectType;
-    data['currency'] = currency;
-    data['price'] = price;
-    data['is_available'] = isAvailable;
-    data['created_at'] = createdAt;
-    data['quantity'] = quantity;
-    data['added_by'] = addedBy;
+    final Map<String, dynamic> data = Map<String, dynamic>();
+    data['id'] = this.id;
+    data['picture'] = this.picture;
+    data['name'] = this.name;
+    data['description'] = this.description;
+    data['merchant'] = this.merchant;
+    data['select_type'] = this.selectType;
+    data['currency'] = this.currency;
+    data['price'] = this.price;
+    data['is_available'] = this.isAvailable;
+    data['created_at'] = this.createdAt;
+    data['quantity'] = this.quantity;
+    data['added_by'] = this.addedBy;
     return data;
   }
 
@@ -1467,7 +1477,7 @@ class AddOns {
     return selectedAddOnsList;
   }
 
-  static DateTime getProductDateTime(String? date) {
+  static DateTime getProductDateTime(var date) {
     if (date != null) {
       final DateTime dateTime = DateTime.parse(date);
       return dateTime;
@@ -1476,21 +1486,21 @@ class AddOns {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['id'] = id;
-    if (options != null) {
-      data['options'] = options!.map((v) => v.toJson()).toList();
+    final Map<String, dynamic> data = Map<String, dynamic>();
+    data['id'] = this.id;
+    if (this.options != null) {
+      data['options'] = this.options!.map((v) => v.toJson()).toList();
     }
-    data['merchant'] = merchant;
-    data['name'] = name;
-    data['description'] = description;
-    data['input_type'] = inputType;
-    data['select_type'] = selectType;
-    data['is_required'] = isRequired;
+    data['merchant'] = this.merchant;
+    data['name'] = this.name;
+    data['description'] = this.description;
+    data['input_type'] = this.inputType;
+    data['select_type'] = this.selectType;
+    data['is_required'] = this.isRequired;
     // if(data['is_checked'] == null){
     //   isRequired = data['is_checked'] ?? false;
     // }
-    data['created_at'] = createdAt;
+    data['created_at'] = this.createdAt;
     return data;
   }
 
@@ -1548,9 +1558,9 @@ class Tags {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['id'] = id;
-    data['name'] = name;
+    final Map<String, dynamic> data = Map<String, dynamic>();
+    data['id'] = this.id;
+    data['name'] = this.name;
     return data;
   }
 }
@@ -1630,27 +1640,32 @@ class Service extends PurchasableItem {
   List<dynamic>? pictureMap;
   double? rating;
   bool? canRate = false;
+  List<String>? searchKeywords;
+  bool isChecked = false;
 
-  Service(
-      {super.id,
-      this.name,
-      this.description,
-      this.shortDescription,
-      this.price,
-      this.localImages,
-      this.serverImages,
-      this.cover = "",
-      this.provider,
-      this.providerAvatar,
-      this.providerFullName,
-      this.qrCode,
-      this.category,
-      this.isAvailable,
-      this.availableFrom,
-      this.currency,
-      this.pictureMap,
-      this.rating = 0.0,
-      this.canRate});
+  Service({
+    super.id,
+    this.name,
+    this.description,
+    this.shortDescription,
+    this.price,
+    this.localImages,
+    this.serverImages,
+    this.cover = "",
+    this.provider,
+    this.providerAvatar,
+    this.providerFullName,
+    this.qrCode,
+    this.category,
+    this.isAvailable,
+    this.availableFrom,
+    this.currency,
+    this.pictureMap,
+    this.rating = 0.0,
+    this.canRate,
+    this.searchKeywords,
+    this.isChecked = false,
+  });
 
   String? getMerchantUserName() {
     return provider;
@@ -1700,7 +1715,9 @@ class Service extends PurchasableItem {
       "is_available": isAvailable,
       "available_from": availableFrom,
       "provider_avatar": providerAvatar,
-      "provider_fullname": providerFullName
+      "provider_fullname": providerFullName,
+      "search_keywords": searchKeywords,
+      "is_checked": isChecked,
     };
   }
 
@@ -1720,7 +1737,11 @@ class Service extends PurchasableItem {
       "currency": currency,
       'rating': rating,
       "provider_avatar": providerAvatar,
-      "provider_fullname": providerFullName
+      "provider_fullname": providerFullName,
+      "search_keywords": searchKeywords == null
+          ? []
+          : List<String>.from(searchKeywords!.map((x) => x)),
+      "is_checked": isChecked,
     };
   }
 
@@ -1744,6 +1765,21 @@ class Service extends PurchasableItem {
     pictureMap = object["pictureMap"] ?? [];
     rating = formatRating(double.parse(object['rating']?.toString() ?? "0"));
     canRate = object["can_rate"] ?? false;
+    // searchKeywords = object["search_keywords"] ?? <String>[];
+    searchKeywords:
+    object["search_keywords"] == null
+        ? <String>[]
+        : List<String>.from(object["search_keywords"].map((x) => x));
+    isChecked = object["is_checked"] ?? false;
+  }
+
+  bool isServiceAvailableNow() {
+    if ((isAvailable ?? false) &&
+        ((availableFrom?.isBefore(DateTime.now()) ?? false) ||
+            (availableFrom?.isAtSameMomentAs(DateTime.now()) ?? false))) {
+      return true;
+    }
+    return false;
   }
 
   List<String> getServiceImages(List? data) {
@@ -1759,7 +1795,7 @@ class Service extends PurchasableItem {
     return images;
   }
 
-  DateTime getServiceDateTime(String? date) {
+  DateTime getServiceDateTime(var date) {
     if (date != null) {
       final DateTime dateTime = DateTime.parse(date);
       return dateTime;

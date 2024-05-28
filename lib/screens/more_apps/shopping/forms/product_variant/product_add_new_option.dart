@@ -15,6 +15,7 @@ import 'package:Slydo/widget/image_crop.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../../widget/rounded_background_icon.dart';
@@ -46,19 +47,20 @@ class _ProductAddNewOptionState extends State<ProductAddNewOption> {
   bool productIsAvailable = false;
   bool inventoryIsAvailable = false;
   bool trackInventory = false;
-  DateTime productAvailableFrom = DateTime.now();
+  DateTime todayDate = DateTime.now();
+  String? productAvailableFrom;
   bool isLoading = false;
   bool isAPILoading = false;
-  int inventoryCount = 0;
+  int inventoryCount = 1;
   List<VariantTypes> typeList = [
     VariantTypes.Size,
     VariantTypes.Color,
     VariantTypes.ColorAndSize
   ];
   VariantTypes? selectedType;
-  String title = "";
-  String value = "";
-  String optionOnWhatToDo = "";
+  String? title;
+  String? value;
+  String? optionOnWhatToDo;
 
   @override
   void deactivate() {
@@ -70,6 +72,7 @@ class _ProductAddNewOptionState extends State<ProductAddNewOption> {
   void initState() {
     //get value if its form edit or add product
     optionOnWhatToDo = widget.arguments["option"];
+    productAvailableFrom = DateFormat('yyyy-MM-dd').format(todayDate);
     super.initState();
   }
 
@@ -471,7 +474,9 @@ class _ProductAddNewOptionState extends State<ProductAddNewOption> {
               DateTime.now().year, DateTime.now().month, DateTime.now().day),
           lastDate: DateTime(2101),
         ).then((value) {
-          productAvailableFrom = DateTime(value!.year, value.month, value.day);
+          DateTime selectedDate = DateTime(value!.year, value.month, value.day);
+
+          productAvailableFrom = DateFormat('yyyy-MM-dd').format(selectedDate);
           setState(() {});
         }).catchError((error) {});
       },
@@ -481,7 +486,7 @@ class _ProductAddNewOptionState extends State<ProductAddNewOption> {
           child: ListTile(
             dense: true,
             title: Text(
-              formatDate(productAvailableFrom),
+              productAvailableFrom ?? "",
               style: TextStyle(
                 color: blackFont,
                 fontWeight: FontWeight.w600,
@@ -719,7 +724,7 @@ class _ProductAddNewOptionState extends State<ProductAddNewOption> {
         variant.price = moneyInputNormalizer(variantPrice).toString();
         variant.isAvailable = productIsAvailable;
         variant.availableFrom = productAvailableFrom;
-        variant.trackInventory = trackInventory;
+        variant.trackInventory = inventoryIsAvailable;
         variant.currency = 'NGN';
         if (optionOnWhatToDo == 'new') {
           //send the variant detail back to the previous page

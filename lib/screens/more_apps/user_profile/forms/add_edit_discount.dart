@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/discount/discount_model.dart';
@@ -6,9 +9,15 @@ import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
+import 'package:Slydo/widget/custom_box_shadow.dart';
 import 'package:Slydo/widget/customized_dropdown_field.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
+import 'package:Slydo/widget/dialog.dart';
+import 'package:Slydo/widget/image_crop.dart';
+import 'package:Slydo/widget/rounded_background_icon.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 class AddEditDiscount extends StatefulWidget {
   AddEditDiscount({Key? key, this.discountModel}) : super(key: key);
@@ -42,19 +51,26 @@ class _AddEditDiscountState extends State<AddEditDiscount> {
   bool isSelectAll = false;
   bool isItemSelected = false;
 
+  List<PickedFile> discountImages = [];
+  final ScrollController _scrollController = ScrollController();
+  int imageCount = 1;
+  String poster = "";
+  int productCount = 0;
+
   @override
   void initState() {
     if (widget.discountModel != null) {
       isEdit = true;
     }
     discountModel = widget.discountModel?.copyWith() ?? DiscountModel();
-
+    poster = widget.discountModel?.poster ?? "";
     // TODO: CHECK
     // discountModel.merchant ??= widget.user.userName ?? "";
     startFrom = discountModel.startDate;
     endTo = discountModel.endDate;
     startTimeFrom = discountModel.onlyFrom;
     endTimeTo = discountModel.onlyTo;
+    productCount = discountModel.productCount ?? 0;
 
     super.initState();
   }
@@ -110,6 +126,11 @@ class _AddEditDiscountState extends State<AddEditDiscount> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
+                if (poster.isNotEmpty) showServerImage() else Container(),
+                if (poster.isEmpty) ...[
+                  const SizedBox(height: 20),
+                  addImages(),
+                ],
                 const SizedBox(height: 20),
                 addTitleField(),
                 const SizedBox(
@@ -147,6 +168,206 @@ class _AddEditDiscountState extends State<AddEditDiscount> {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget showServerImage() {
+    return Container(
+      height: 170,
+      child: Stack(
+        children: <Widget>[
+          CustomBoxShadow(
+            child: Card(
+              elevation: 3,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              shadowColor: boxShadowTwo,
+              margin:
+                  const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: CachedNetworkImage(
+                  width: MediaQuery.of(context).size.width - 40,
+                  imageUrl: poster,
+                  fit: BoxFit.fill,
+                  errorWidget: productAndServiceBigErrorWidget,
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            right: 0,
+            top: 0,
+            child: IconButton(
+              padding: const EdgeInsets.only(right: 6, top: 6),
+              alignment: Alignment.topRight,
+              icon: Container(
+                padding: const EdgeInsets.all(2.0),
+                decoration: BoxDecoration(
+                  color: iconBtnGrey,
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                child: Icon(
+                  SlydoAppIcon.remove,
+                  color: blackFont,
+                  size: 15,
+                ),
+              ),
+              onPressed: () {
+                poster = "";
+                if (mounted) setState(() {});
+              },
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget addImages() {
+    return Container(
+      height: 170,
+      child: ListView.builder(
+        controller: _scrollController,
+        scrollDirection: Axis.horizontal,
+        itemCount: discountImages.length + 1,
+        itemBuilder: (context, index) => Container(
+          padding: const EdgeInsets.only(right: 6),
+          child: index != discountImages.length
+              ? showImage(index)
+              : discountImages.length != imageCount
+                  ? addImageButton()
+                  : null,
+        ),
+      ),
+    );
+  }
+
+  Widget addImageButton() {
+    return CustomBoxShadow(
+      child: Card(
+        elevation: 3,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        shadowColor: boxShadowTwo,
+        margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+        child: Container(
+          width: MediaQuery.of(context).size.width - 40,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: InkWell(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Icon(
+                  SlydoAppIcon.add_image,
+                  color: darkGrey,
+                ),
+                const SizedBox(
+                  height: 4,
+                ),
+                Text(
+                  AppLocalization.of(context)!.addImage,
+                  style: TextStyle(
+                      color: darkGrey, fontFamily: "Inter", fontSize: 14),
+                ),
+              ],
+            ),
+            onTap: () {
+              pickImage();
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  void pickImage() async {
+    final imageSource = await showDialog<ImageSource>(
+        context: context,
+        builder: (context) => AlertDialog(
+              title: Text(AppLocalization.of(context)!.selectTheImageSource),
+              actions: <Widget>[
+                MaterialButton(
+                  child: Text(AppLocalization.of(context)!.camera),
+                  onPressed: () => Navigator.pop(context, ImageSource.camera),
+                ),
+                MaterialButton(
+                  child: Text(AppLocalization.of(context)!.gallery),
+                  onPressed: () => Navigator.pop(context, ImageSource.gallery),
+                )
+              ],
+            ));
+
+    if (imageSource != null) {
+      ImagePicker().pickImage(source: imageSource).then((value) async {
+        if (value != null) {
+          /// for cropping the image
+          final String? croppedImage = await ImageCrop().cropImage(value.path);
+          if (croppedImage == null) {
+            return;
+          }
+
+          discountImages.add(PickedFile(croppedImage));
+          discountModel.poster = croppedImage;
+          if (mounted) setState(() {});
+        }
+      });
+    }
+  }
+
+  Widget showImage(int index) {
+    return Container(
+      height: 170,
+      child: Stack(
+        children: <Widget>[
+          Card(
+            elevation: 2,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            shadowColor: dividerColor,
+            margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+            child: Container(
+              width: MediaQuery.of(context).size.width - 40,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                image: DecorationImage(
+                    image: FileImage(
+                      File(discountImages[index].path),
+                    ),
+                    fit: BoxFit.fill),
+              ),
+            ),
+          ),
+          Positioned(
+            right: 0,
+            top: 0,
+            child: IconButton(
+              padding: const EdgeInsets.only(right: 6, top: 6),
+              alignment: Alignment.topRight,
+              icon: Container(
+                padding: const EdgeInsets.all(2.0),
+                decoration: BoxDecoration(
+                  color: iconBtnGrey,
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                child: Icon(
+                  SlydoAppIcon.remove,
+                  color: blackFont,
+                  size: 15,
+                ),
+              ),
+              onPressed: () {
+                setState(() {
+                  discountImages.removeAt(index);
+                });
+              },
+            ),
+          )
+        ],
       ),
     );
   }
@@ -304,13 +525,7 @@ class _AddEditDiscountState extends State<AddEditDiscount> {
                   ? () {}
                   : () async {
                       FocusScope.of(context).unfocus();
-                      isDeleteLoading = true;
-                      if (mounted) setState(() {});
-
-                      await deleteItem();
-
-                      isDeleteLoading = false;
-                      if (mounted) setState(() {});
+                      deleteDiscountDialog();
                     },
               backgroundColor: red,
               textColor: Colors.white,
@@ -365,6 +580,35 @@ class _AddEditDiscountState extends State<AddEditDiscount> {
     );
   }
 
+  void deleteDiscountDialog() {
+    showDialogBox(
+      context: context,
+      actionOneTextColor: blackFont,
+      actionOneBgColor: greyBorderColor,
+      actionTwoTextColor: white,
+      actionTwoBgColor: mateRed,
+      title: 'Delete Discount',
+      actionOneText: AppLocalization.of(context)!.discard,
+      actionTwoText: AppLocalization.of(context)!.continueMsg,
+      description: 'Are you sure you want to delete this discount?',
+      roundedBackgroundIcon: RoundedBackgroundIcon(
+        enableMargin: false,
+        width: 90,
+        height: 90,
+        image: Image.asset('assets/images/delete_dialog_icon.png'),
+      ),
+      rightButtonOnPressed: () async {
+        isDeleteLoading = true;
+        if (mounted) setState(() {});
+
+        await deleteItem();
+
+        isDeleteLoading = false;
+        if (mounted) setState(() {});
+      },
+    );
+  }
+
   Future<void> addEditItem() async {
     if (_formKey.currentState?.validate() ?? false) {
       //the api call will first create the product then use the id from the
@@ -373,12 +617,18 @@ class _AddEditDiscountState extends State<AddEditDiscount> {
       await ShoppingAuthService()
           .addUpdateDiscount(discountModel, isEdit: isEdit)
           .then((value) async {
-        Navigator.pop(context, true);
-        showToast(
-          message: isEdit
-              ? "Discount updated successfully"
-              : "Discount added successfully",
-        );
+        if (value != null) {
+          Navigator.pop(context, true);
+          showToast(
+            message: isEdit
+                ? "Discount updated successfully"
+                : "Discount added successfully",
+          );
+        } else {
+          showToast(
+            message: "Error",
+          );
+        }
       }).catchError((error) {
         debugPrint("Product check::: ${error.toString()}");
         showToast(message: error.toString());
@@ -439,8 +689,9 @@ class _AddEditDiscountState extends State<AddEditDiscount> {
                 discountModel.addProductsToDiscount(["*"]);
                 isSelectAll = true;
               } else {
-                discountModel.addProductsToDiscount(result["ids"]);
+                discountModel.addServicesToDiscount(result["ids"]);
                 selectedProducts = result["products"];
+                productCount = selectedProducts.length;
               }
               if (mounted) setState(() {});
             }
@@ -487,7 +738,8 @@ class _AddEditDiscountState extends State<AddEditDiscount> {
                 height: 16,
               ),
               Text(
-                "This discount will apply on ${isSelectAll ? "all" : isEdit ? (discountModel.consumables?.product?.length ?? 0) : selectedProducts.length} items",
+                // "This discount will apply on ${isSelectAll ? "all" : isEdit ? (discountModel.productCount ?? 0) : selectedProducts.length} items",
+                "This discount will apply on ${isSelectAll ? "all" : productCount} items",
                 style: TextStyle(
                     fontSize: 12, color: navyBlue, fontWeight: FontWeight.w600),
               ),
@@ -678,5 +930,11 @@ class _AddEditDiscountState extends State<AddEditDiscount> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 }

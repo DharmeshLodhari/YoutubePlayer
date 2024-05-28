@@ -13,9 +13,10 @@ import 'package:percent_indicator/circular_percent_indicator.dart';
 import '../messaging/chat/utils.dart';
 import 'music_player.dart';
 
+// ignore: must_be_immutable
 class MusicTile extends StatelessWidget {
-  final String? imageUrl;
-  const MusicTile({super.key, this.imageUrl});
+  String? imageUrl;
+  MusicTile({this.imageUrl});
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -43,7 +44,7 @@ class MusicTile extends StatelessWidget {
                   width: 16,
                 ),
                 Expanded(
-                  child: SizedBox(
+                  child: Container(
                     height: 86,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -114,7 +115,7 @@ class _MusicTileWithHeartState extends State<MusicTileWithHeart> {
           child: ListTile(
             contentPadding:
                 const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
-            leading: SizedBox(
+            leading: Container(
               height: 68,
               width: 68,
               child: ClipRRect(
@@ -209,7 +210,7 @@ class _MusicTileGeneralState extends State<MusicTileGeneral> {
           child: ListTile(
             contentPadding:
                 const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
-            leading: SizedBox(
+            leading: Container(
               height: 68,
               width: 68,
               child: ClipRRect(
@@ -274,8 +275,7 @@ class AlbumSongTile extends StatefulWidget {
   musicAlbum.Audio? audio;
   int? count;
   int? index;
-  AlbumSongTile(
-      {super.key, this.audio, this.count, this.musicPlayer, this.index});
+  AlbumSongTile({this.audio, this.count, this.musicPlayer, this.index});
 
   @override
   _AlbumSongTileState createState() => _AlbumSongTileState();

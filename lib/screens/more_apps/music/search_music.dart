@@ -16,7 +16,7 @@ import 'music_tile.dart';
 
 class SearchMusic extends StatefulWidget {
   @override
-  State<SearchMusic> createState() => _SearchMusicState();
+  _SearchMusicState createState() => _SearchMusicState();
 }
 
 class _SearchMusicState extends State<SearchMusic> {
@@ -37,7 +37,7 @@ class _SearchMusicState extends State<SearchMusic> {
   RangeValues selectedPriceValue = const RangeValues(5, 56);
 
   List<PartialMusicItem> musicList = [];
-  final RefreshController _refreshController =
+  RefreshController _refreshController =
       RefreshController(initialRefresh: false);
   bool isLoading = false;
   @override
@@ -58,7 +58,7 @@ class _SearchMusicState extends State<SearchMusic> {
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      final connectionResult = value;
+      var connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         getResult();
@@ -137,50 +137,51 @@ class _SearchMusicState extends State<SearchMusic> {
   }
 
   Widget scaffoldBody() {
-    return Column(
-      children: [
-        const SizedBox(
-          height: 6,
-        ),
-        searchBox(),
-        const SizedBox(
-          height: 12,
-        ),
-        if (isLoading)
-          Expanded(
-            child: Center(
-              child: CircularLoadingIndicator(),
-            ),
-          )
-        else
-          musicList.isEmpty
-              ? Expanded(child: searchBackground())
-              : Expanded(
-                  child: SmartRefresher(
-                    enablePullDown: true,
-                    header: WaterDropHeader(
-                      complete: Container(),
-                      waterDropColor: navyBlue,
-                    ),
-                    controller: _refreshController,
-                    onRefresh: _onRefresh,
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: musicList
-                            .map(
-                              (musicItem) => Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 8, horizontal: 16),
-                                  child: MusicTileWithHeart(
-                                    musicItem: musicItem,
-                                  )),
-                            )
-                            .toList(),
+    return Container(
+      child: Column(
+        children: [
+          const SizedBox(
+            height: 6,
+          ),
+          searchBox(),
+          const SizedBox(
+            height: 12,
+          ),
+          isLoading
+              ? Expanded(
+                  child: Center(
+                    child: CircularLoadingIndicator(),
+                  ),
+                )
+              : musicList.isEmpty
+                  ? Expanded(child: searchBackground())
+                  : Expanded(
+                      child: SmartRefresher(
+                        enablePullDown: true,
+                        header: WaterDropHeader(
+                          complete: Container(),
+                          waterDropColor: navyBlue,
+                        ),
+                        controller: _refreshController,
+                        onRefresh: _onRefresh,
+                        child: SingleChildScrollView(
+                          child: Column(
+                            children: musicList
+                                .map(
+                                  (musicItem) => Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 8, horizontal: 16),
+                                      child: MusicTileWithHeart(
+                                        musicItem: musicItem,
+                                      )),
+                                )
+                                .toList(),
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -373,7 +374,7 @@ class _SearchMusicState extends State<SearchMusic> {
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: SizedBox(
+              content: Container(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   elevation: 2,
@@ -494,7 +495,7 @@ class _SearchMusicState extends State<SearchMusic> {
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: SizedBox(
+              content: Container(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   elevation: 2,
@@ -641,7 +642,7 @@ class _SearchMusicState extends State<SearchMusic> {
     );
   }
 
-  Widget getPriceSelection(StateSetter bottomSheetSetState) {
+  Widget getPriceSelection(bottomSheetSetState) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Text(
         "Price",

@@ -1,3 +1,4 @@
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/flash_tags/flash_tag_alert_model.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
@@ -6,6 +7,8 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_dropdown_field.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
+import 'package:Slydo/widget/dialog.dart';
+import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
 
 class AddEditFlashTagAlert extends StatefulWidget {
@@ -281,15 +284,9 @@ class _AddEditFlashTagAlertState extends State<AddEditFlashTagAlert> {
             child: CurvedButton(
               onPressed: isDeleteLoading
                   ? () {}
-                  : () async {
+                  : () {
                       FocusScope.of(context).unfocus();
-                      isDeleteLoading = true;
-                      if (mounted) setState(() {});
-
-                      await deleteItem();
-
-                      isDeleteLoading = false;
-                      if (mounted) setState(() {});
+                      deleteFlashTagDialog();
                     },
               backgroundColor: red,
               textColor: Colors.white,
@@ -341,6 +338,35 @@ class _AddEditFlashTagAlertState extends State<AddEditFlashTagAlert> {
       textColor: Colors.white,
       text: "Save",
       isLoading: isAPILoading,
+    );
+  }
+
+  void deleteFlashTagDialog() {
+    showDialogBox(
+      context: context,
+      actionOneTextColor: blackFont,
+      actionOneBgColor: greyBorderColor,
+      actionTwoTextColor: white,
+      actionTwoBgColor: mateRed,
+      title: 'Delete Flashtag',
+      actionOneText: AppLocalization.of(context)!.discard,
+      actionTwoText: AppLocalization.of(context)!.continueMsg,
+      description: 'Are you sure you want to delete this flashtag?',
+      roundedBackgroundIcon: RoundedBackgroundIcon(
+        enableMargin: false,
+        width: 90,
+        height: 90,
+        image: Image.asset('assets/images/delete_dialog_icon.png'),
+      ),
+      rightButtonOnPressed: () async {
+        isDeleteLoading = true;
+        if (mounted) setState(() {});
+
+        await deleteItem();
+
+        isDeleteLoading = false;
+        if (mounted) setState(() {});
+      },
     );
   }
 

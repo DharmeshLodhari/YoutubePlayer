@@ -30,36 +30,38 @@ class _MomentDashViewState extends State<MomentDashView>
   late AnimationController controller;
   Timer? timer;
   double widthFactor = 0;
-  PageController? _pageController;
-  double? v;
+  late PageController _pageController;
 
   @override
   void initState() {
-    controller = AnimationController(vsync: this);
     _pageController = widget.pageController;
-    v = widget.value;
-    if (widget.value == 1.0) {
-      controller = widget.controller;
-    } else {
-      controller.lowerBound;
-    }
+    controller = widget.controller;
+
+    controller.addListener(controllerListener);
 
     super.initState();
   }
 
-  // @override
-  // void dispose() {
-  //   widget.videoPlayerControllers![0].dispose();
-  //   super.dispose();
-  // }
+  void controllerListener() {
+    if (controller.isCompleted) {
+      if (widget.currentPageViewIndex == widget.lengthOfMoment - 1) {
+        if (mounted) Navigator.pop(context);
+      } else {
+        _pageController.nextPage(
+            duration: const Duration(milliseconds: 50), curve: Curves.easeIn);
+        controller.reset();
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    controller.addListener(controllerListener);
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    v = widget.value;
-
-    if (widget.value == 1.0) {
-      controller = widget.controller;
-    }
     return SizedBox(
       height: 50,
       child: Row(
@@ -86,15 +88,6 @@ class _MomentDashViewState extends State<MomentDashView>
         ),
       );
       widgets.add(widget);
-
-      if (controller.value == 1.0) {
-        _pageController?.nextPage(
-            duration: const Duration(milliseconds: 50), curve: Curves.easeIn);
-        controller.reset();
-        if (currentIndex == lengthOfMoment) {
-          break;
-        }
-      }
     }
 
     return widgets;

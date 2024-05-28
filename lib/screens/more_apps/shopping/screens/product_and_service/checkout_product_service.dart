@@ -101,7 +101,7 @@ class _CheckoutProductServiceState extends State<CheckoutProductService> {
     );
   }
 
-  Widget _scaffoldBody() {
+  _scaffoldBody() {
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(12.0),
@@ -235,7 +235,7 @@ class _CheckoutProductServiceState extends State<CheckoutProductService> {
     return variant;
   }
 
-  int? getSubTotalPrice() {
+  getSubTotalPrice() {
     final Map<dynamic, dynamic>? variant = getVariantAsMap();
     final Map<dynamic, dynamic>? addOn = getAddOnAsMap();
 
@@ -320,7 +320,7 @@ class _CheckoutProductServiceState extends State<CheckoutProductService> {
     );
   }
 
-  void onNextClicked() {
+  onNextClicked() {
     if (shippingOption == null) {
       userSelectedShippingOption[merchantUsername!] = null;
     }
@@ -334,7 +334,7 @@ class _CheckoutProductServiceState extends State<CheckoutProductService> {
         screen: UserAddressProductService(fromCheckoutScreen: true));
   }
 
-  void resetData() {
+  resetData() {
     deliveryOption = null;
     merchantFullName = null;
     shippingOptions.clear();
@@ -342,7 +342,7 @@ class _CheckoutProductServiceState extends State<CheckoutProductService> {
     if (mounted) setState(() {});
   }
 
-  Future<void> pickDeliveryOptions() async {
+  pickDeliveryOptions() async {
     final String? pickedDeliveryOption = await showPickItemDialog<String>(
       context: context,
       items: deliveryOptions,
@@ -386,7 +386,7 @@ class _CheckoutProductServiceState extends State<CheckoutProductService> {
 
   void selectCategory() async {}
 
-  Future<void> pickShippingOptions() async {
+  pickShippingOptions() async {
     final ShippingOptionsModel? pickedShippingOption =
         await showDialog<ShippingOptionsModel>(
             context: context,
@@ -396,7 +396,7 @@ class _CheckoutProductServiceState extends State<CheckoutProductService> {
                   contentPadding: EdgeInsets.zero,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10)),
-                  content: SizedBox(
+                  content: Container(
                     width: MediaQuery.of(context).size.width - 40,
                     child: Card(
                       elevation: 2,
