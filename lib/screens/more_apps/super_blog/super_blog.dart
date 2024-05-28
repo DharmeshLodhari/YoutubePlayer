@@ -1,17 +1,16 @@
 import 'dart:async';
 
+import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/routes/route_constants.dart';
+import 'package:Slydo/screens/more_apps/user_post/models/user_post.dart';
+import 'package:Slydo/screens/more_apps/user_post/tile/user_post_tile.dart';
+import 'package:Slydo/screens/more_apps/user_post/user_post_auth.dart';
+import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-
-import '../../../locale/app_localization.dart';
-import '../../../routes/route_constants.dart';
-import '../../../utils/slydo_app_icon_icons.dart';
-import '../../../utils/util.dart';
-import '../../../widget/no_item_in_list.dart';
-import '../user_post/models/user_post.dart';
-import '../user_post/tile/user_post_tile.dart';
-import '../user_post/user_post_auth.dart';
 
 class SuperBlog extends StatefulWidget {
   const SuperBlog({Key? key}) : super(key: key);
@@ -34,10 +33,10 @@ class _SuperBlogState extends State<SuperBlog> {
   bool isFirstTime = true;
   bool isPostLoading = false;
   List<UserPost> postList = [];
-  ScrollController _postScrollController = ScrollController();
+  final ScrollController _postScrollController = ScrollController();
 
-  GlobalKey<ScaffoldState> _postScaffoldKey = GlobalKey<ScaffoldState>();
-  RefreshController _postRefreshController =
+  final GlobalKey<ScaffoldState> _postScaffoldKey = GlobalKey<ScaffoldState>();
+  final RefreshController _postRefreshController =
       RefreshController(initialRefresh: false);
 
   resetAndGetListOfBlogs(String value) {
@@ -446,10 +445,10 @@ class _SlydoBlogsListState extends State<SlydoBlogsList> {
   bool isFirstTime = true;
   bool isPostLoading = false;
   List<UserPost> postList = [];
-  ScrollController _postScrollController = ScrollController();
+  final ScrollController _postScrollController = ScrollController();
 
-  GlobalKey<ScaffoldState> _postScaffoldKey = GlobalKey<ScaffoldState>();
-  RefreshController _postRefreshController =
+  final GlobalKey<ScaffoldState> _postScaffoldKey = GlobalKey<ScaffoldState>();
+  final RefreshController _postRefreshController =
       RefreshController(initialRefresh: false);
 
   resetAndGetListOfBlogs(String value) {

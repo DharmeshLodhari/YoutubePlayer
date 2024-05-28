@@ -1,15 +1,15 @@
 import 'dart:convert';
 
+import 'package:Slydo/data/state_notifiers/user_bloc.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/share_in_chat/ShareInChat.dart';
 import 'package:Slydo/screens/more_apps/user_post/user_post_auth.dart';
+import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
-import '../../../data/state_notifier.dart';
-import '../../../utils/util.dart';
-import '../../../widget/loading_indicator.dart';
-import '../messaging/chat/models/ChatConversation.dart';
-import '../messaging/chat/share_in_chat/ShareInChat.dart';
 import 'models/user_post.dart';
 
 class UserPostUtils {

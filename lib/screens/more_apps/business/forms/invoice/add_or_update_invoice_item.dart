@@ -2,18 +2,17 @@ import 'dart:io';
 
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/business/bloc/invoice_bloc.dart';
 import 'package:Slydo/screens/more_apps/business/business_auth.dart';
 import 'package:Slydo/screens/more_apps/business/models/Item.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-import '../../../../../widget/loading_indicator.dart';
-import '../../bloc/invoice_bloc.dart';
 
 // ignore: must_be_immutable
 class AddOrUpdateInvoiceItem extends StatefulWidget {

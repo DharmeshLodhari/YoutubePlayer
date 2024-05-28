@@ -2,7 +2,9 @@ import 'dart:io';
 
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
+import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/shopping/tiles/form_add_on_tile.dart';
 import 'package:Slydo/screens/more_apps/shopping/tiles/form_variants_tile.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/add_edit_shipping_address.dart';
@@ -27,9 +29,6 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:textfield_tags/textfield_tags.dart';
-
-import '../../../../routes/route_constants.dart';
-import '../shopping_auth.dart';
 
 // ignore: must_be_immutable
 class EditProduct extends StatefulWidget {
@@ -487,10 +486,11 @@ class _EditProductState extends State<EditProduct> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       const SizedBox(height: 10),
-                      if (checkImageLimitForServerImage())
-                        viewServerImages()
-                      else
-                        Container(),
+                      if (productImagesFromServer.isNotEmpty)
+                        if (checkImageLimitForServerImage())
+                          viewServerImages()
+                        else
+                          Container(),
                       // checkImageLimitForServerImage()
                       //     ? SizedBox(
                       //         height: 8,

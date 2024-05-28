@@ -945,8 +945,7 @@ class Variant {
   String? currency;
   bool? trackInventory;
   List<AddedBy>? addedBy;
-
-  // List<Pictures>? pictures;
+  List<Picture>? pictures;
   // DateTime? createdAt;
   // String? merchant;
   // int? oldPrice;
@@ -970,6 +969,7 @@ class Variant {
     this.availableFrom,
     this.currency,
     this.addedBy,
+    this.pictures,
   });
 
   Map toMap() {
@@ -989,7 +989,8 @@ class Variant {
       "available_from": availableFrom,
       "track_inventory": trackInventory,
       "currency": currency,
-      "added_by": "blackstriker"
+      "added_by": "blackstriker",
+      "pictures": pictures,
     });
     return data;
   }
@@ -1008,11 +1009,12 @@ class Variant {
       "track_inventory": trackInventory,
       "currency": currency,
       "added_by": addedBy,
+      "pictures": pictures,
     };
   }
 
   factory Variant.fromJson(object) {
-    List<String> getProductImages(List? data) {
+    List<String> getVariantImages(List? data) {
       final List<String> images = [];
 
       if (data != null) {
@@ -1042,7 +1044,7 @@ class Variant {
       price: object["price"].toString(),
       trackInventory: object["track_inventory"] ?? false,
       localImages: object["localImages"] ?? [],
-      serverImages: getProductImages(object["pictures"]),
+      serverImages: getVariantImages(object["pictures"]),
       isAvailable: object["is_available"] ?? true,
       availableFrom: object["available_from"],
       currency: object["currency"] ?? "NGN",
@@ -1050,6 +1052,10 @@ class Variant {
           ? []
           : List<AddedBy>.from(
               object["added_by"]!.map((x) => AddedBy.fromJson(x))),
+      pictures: object['pictures'] == null
+          ? []
+          : List<Picture>.from(
+              object['pictures'].map((i) => Picture.fromJson(i))),
       type: getVariantType(object),
     );
   }
@@ -1127,11 +1133,11 @@ class Variant {
   // ignore: missing_return
   String getImageId(String? imageUrl) {
     debugPrint("${serverImages}");
-    // for (var data in this.pictureMap!) {
-    //   if (data['file'] == imageUrl) {
-    //     return data['id'].toString();
-    //   }
-    // }
+    for (Picture data in pictures ?? []) {
+      if (data.path == imageUrl) {
+        return data.id.toString();
+      }
+    }
     return "";
   }
 

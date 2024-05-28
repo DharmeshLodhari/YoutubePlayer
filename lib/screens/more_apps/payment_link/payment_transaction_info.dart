@@ -1,19 +1,20 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
+import 'package:Slydo/services/app_tutorial_controller.dart';
+import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/extensions.dart';
+import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/curved_btn.dart';
+import 'package:Slydo/widget/customized_passcode_sheet/bottomsheet_passcode.dart';
 import 'package:custom_qr_generator/custom_qr_generator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 
-import '../../../locale/app_localization.dart';
-import '../../../services/app_tutorial_controller.dart';
-import '../../../utils/slydo_app_icon_icons.dart';
-import '../../../utils/util.dart';
-import '../../../widget/curved_btn.dart';
-import '../../../widget/customized_passcode_sheet/bottomsheet_passcode.dart';
-import '../payment_and_banking/payment_and_banking_auth.dart';
 import '../service_hub/screens/my_job_details.dart';
 
 class TransactionPaymentLink extends StatefulWidget {

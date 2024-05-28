@@ -1,13 +1,13 @@
 import 'dart:convert';
 
 import 'package:Slydo/data/database_helper.dart';
+import 'package:Slydo/data/state_notifiers/user_bloc.dart';
+import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/curved_btn.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../data/state_notifier.dart';
-import '../../../utils/navigation_util.dart';
-import '../../../widget/curved_btn.dart';
 import 'models/ask_categories_model.dart';
 import 'widgets/category_chip.dart';
 import 'yarn_auth.dart';

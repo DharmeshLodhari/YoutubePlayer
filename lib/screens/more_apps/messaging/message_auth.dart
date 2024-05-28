@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:Slydo/data/environment.dart';
+import 'package:Slydo/screens/moments/models/comment_model.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/AddGroupModel.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/GroupDetailModel.dart';
@@ -15,7 +16,6 @@ import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-import '../../moments/models/comment_model.dart';
 import 'chat/models/channel_model.dart';
 
 class MessageAuth extends AuthService {

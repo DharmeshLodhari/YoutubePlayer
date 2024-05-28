@@ -573,7 +573,11 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
       onChanged: (val) {
         if (mounted) {
           setState(() {
-            amount = int.parse(val.replaceAll(",", "").split(".")[0]);
+            if (val.isNotEmpty) {
+              amount = int.parse(val.replaceAll(",", "").split(".")[0]);
+            } else {
+              amount = 0;
+            }
           });
         }
       },

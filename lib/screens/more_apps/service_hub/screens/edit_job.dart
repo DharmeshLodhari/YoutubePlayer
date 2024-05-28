@@ -717,10 +717,11 @@ class _EditJobState extends State<EditJob> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 const SizedBox(height: 20),
-                if (checkImageLimitForServerImage())
-                  viewServerImages()
-                else
-                  Container(),
+                if (jobImagesFromServer.isNotEmpty)
+                  if (checkImageLimitForServerImage())
+                    viewServerImages()
+                  else
+                    Container(),
                 // checkImageLimitForServerImage()
                 //     ? const SizedBox(
                 //         height: 8,

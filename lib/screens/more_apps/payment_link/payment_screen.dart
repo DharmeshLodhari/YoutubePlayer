@@ -1,33 +1,32 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:Slydo/data/currency.dart';
+import 'package:Slydo/data/database_helper.dart';
+import 'package:Slydo/data/state_notifiers/user_bloc.dart';
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/models/VirtualAccount.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
 import 'package:Slydo/screens/more_apps/payment_link/payment_link.dart';
 import 'package:Slydo/screens/more_apps/payment_loading_screen.dart';
+import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
+import 'package:Slydo/services/app_tutorial_controller.dart';
 import 'package:Slydo/utils/extensions.dart';
+import 'package:Slydo/utils/navigation_util.dart';
+import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/curved_btn.dart';
+import 'package:Slydo/widget/customized_passcode_sheet/bottomsheet_passcode.dart';
+import 'package:Slydo/widget/customized_textform_field.dart';
+import 'package:Slydo/widget/dialog.dart';
+import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:custom_qr_generator/custom_qr_generator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-
-import '../../../data/currency.dart';
-import '../../../data/database_helper.dart';
-import '../../../data/state_notifier.dart';
-import '../../../locale/app_localization.dart';
-import '../../../services/app_tutorial_controller.dart';
-import '../../../utils/navigation_util.dart';
-import '../../../utils/slydo_app_icon_icons.dart';
-import '../../../utils/util.dart';
-import '../../../widget/curved_btn.dart';
-import '../../../widget/customized_passcode_sheet/bottomsheet_passcode.dart';
-import '../../../widget/customized_textform_field.dart';
-import '../../../widget/dialog.dart';
-import '../../../widget/rounded_background_icon.dart';
-import '../payment_and_banking/models/VirtualAccount.dart';
-import '../payment_and_banking/payment_and_banking_auth.dart';
-import '../shopping/models/store.dart';
 
 class PaymentLinkScreen extends StatefulWidget {
   const PaymentLinkScreen({Key? key}) : super(key: key);

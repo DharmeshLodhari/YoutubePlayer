@@ -1,5 +1,6 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/credit_card/tiles/color_selector.dart';
 import 'package:Slydo/screens/more_apps/credit_card/utils/utils.dart';
 import 'package:Slydo/utils/cache_manager.dart';
@@ -13,8 +14,6 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
-
-import '../../../routes/route_constants.dart';
 
 class DesignVirtualCard extends StatefulWidget {
   var arguments;

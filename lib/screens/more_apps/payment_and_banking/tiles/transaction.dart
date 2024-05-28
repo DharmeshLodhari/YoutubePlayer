@@ -1,5 +1,8 @@
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/routes/route_constants.dart';
+import 'package:Slydo/screens/more_apps/credit_card/models/card_transactions.dart';
+import 'package:Slydo/screens/more_apps/credit_card/utils/utils.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
 import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/util.dart';
@@ -8,10 +11,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-
-import '../../../../routes/route_constants.dart';
-import '../../credit_card/models/card_transactions.dart';
-import '../../credit_card/utils/utils.dart';
 
 // ignore: must_be_immutable
 class PaymentRequestTile extends StatelessWidget {

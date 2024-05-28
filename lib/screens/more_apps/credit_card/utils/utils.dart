@@ -1,9 +1,8 @@
 import 'dart:ui';
 
+import 'package:Slydo/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-
-import '../../../../utils/colors.dart';
 
 String formatAsDollar(double amount) {
   final currencyFormat = NumberFormat.currency(locale: 'en_US', symbol: '\$');

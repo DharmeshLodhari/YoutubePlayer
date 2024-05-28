@@ -45,7 +45,7 @@ class _EditServiceState extends State<EditService> {
   Service currentService = Service();
 
   int imageCount = 5;
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
   List<PickedFile> serviceLocalImages = [];
   List<String?> serviceImagesFromServer = [];
   String? serviceName = "";
@@ -203,15 +203,18 @@ class _EditServiceState extends State<EditService> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       const SizedBox(height: 10),
-                      checkImageLimitForServerImage()
-                          ? viewServerImages()
-                          : Container(),
-                      checkImageLimitForServerImage()
-                          ? const SizedBox(height: 8)
-                          : Container(),
-                      checkImageLimitForLocalImage()
-                          ? addLocalImages()
-                          : Container(),
+                      if (serviceImagesFromServer.isNotEmpty)
+                        checkImageLimitForServerImage()
+                            ? viewServerImages()
+                            : Container(),
+                      if (checkImageLimitForServerImage())
+                        const SizedBox(height: 8)
+                      else
+                        Container(),
+                      if (checkImageLimitForLocalImage())
+                        addLocalImages()
+                      else
+                        Container(),
                       const SizedBox(
                         height: 10,
                       ),

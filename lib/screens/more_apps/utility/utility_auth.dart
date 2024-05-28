@@ -1,14 +1,14 @@
 import 'dart:convert';
 
+import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/screens/more_apps/utility/models/bill_payment_model.dart';
 import 'package:Slydo/screens/more_apps/utility/models/provider_product_model.dart';
 import 'package:Slydo/screens/more_apps/utility/models/utility_transaction_model.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:Slydo/utils/enums.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/cupertino.dart';
 
-import '../../../data/environment.dart';
-import '../../../utils/enums.dart';
 import 'models/provider_model.dart';
 
 class UtilityAuth extends AuthService {

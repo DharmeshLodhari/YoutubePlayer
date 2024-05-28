@@ -1,8 +1,7 @@
 import 'package:Slydo/screens/more_apps/business/business_auth.dart';
+import 'package:Slydo/screens/more_apps/business/models/Invoice.dart';
+import 'package:Slydo/utils/enums.dart';
 import 'package:flutter/material.dart';
-
-import '../../../../utils/enums.dart';
-import '../models/Invoice.dart';
 
 class InvoiceBloc extends ChangeNotifier {
   bool endOfList = false;

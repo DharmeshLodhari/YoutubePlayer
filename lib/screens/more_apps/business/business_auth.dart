@@ -3,10 +3,10 @@ import 'dart:convert';
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:Slydo/utils/enums.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 
-import '../../../utils/enums.dart';
-import '../../../utils/util.dart';
 import 'models/Contract.dart';
 import 'models/Invoice.dart';
 import 'models/Item.dart';

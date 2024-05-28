@@ -1,8 +1,7 @@
 import 'package:Slydo/screens/more_apps/animated_logo.dart';
+import 'package:Slydo/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-
-import '../../utils/colors.dart';
 
 class PaymentLoadingScreen extends StatelessWidget {
   final String text;

@@ -4,7 +4,7 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/discount/discount_model.dart';
-import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_product_list_for_discount.dart';
+import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_product_service_discount.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -15,7 +15,6 @@ import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/image_crop.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -48,7 +47,9 @@ class _AddEditDiscountState extends State<AddEditDiscount> {
   bool isEdit = false;
 
   List<Product> selectedProducts = [];
-  bool isSelectAll = false;
+  List<Service> selectedServices = [];
+  bool isAllProductSelected = false;
+  bool isAllServiceSelected = false;
   bool isItemSelected = false;
 
   List<PickedFile> discountImages = [];
@@ -56,6 +57,7 @@ class _AddEditDiscountState extends State<AddEditDiscount> {
   int imageCount = 1;
   String poster = "";
   int productCount = 0;
+  int serviceCount = 0;
 
   @override
   void initState() {
@@ -71,6 +73,7 @@ class _AddEditDiscountState extends State<AddEditDiscount> {
     startTimeFrom = discountModel.onlyFrom;
     endTimeTo = discountModel.onlyTo;
     productCount = discountModel.productCount ?? 0;
+    serviceCount = discountModel.serviceCount ?? 0;
 
     super.initState();
   }
@@ -186,13 +189,14 @@ class _AddEditDiscountState extends State<AddEditDiscount> {
               shadowColor: boxShadowTwo,
               margin:
                   const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: CachedNetworkImage(
-                  width: MediaQuery.of(context).size.width - 40,
-                  imageUrl: poster,
-                  fit: BoxFit.fill,
-                  errorWidget: productAndServiceBigErrorWidget,
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  image: DecorationImage(
+                      image: NetworkImage(
+                        poster,
+                      ),
+                      fit: BoxFit.fill),
                 ),
               ),
             ),
@@ -542,13 +546,29 @@ class _AddEditDiscountState extends State<AddEditDiscount> {
                   ? () {}
                   : () async {
                       FocusScope.of(context).unfocus();
-                      isAPILoading = true;
-                      if (mounted) setState(() {});
+                      if (startTimeFrom != null) {
+                        if (endTimeTo != null) {
+                          FocusScope.of(context).unfocus();
+                          isAPILoading = true;
+                          if (mounted) setState(() {});
 
-                      await addEditItem();
+                          await addEditItem();
 
-                      isAPILoading = false;
-                      if (mounted) setState(() {});
+                          isAPILoading = false;
+                          if (mounted) setState(() {});
+                        } else {
+                          showToast(message: 'Select end time');
+                        }
+                      } else {
+                        FocusScope.of(context).unfocus();
+                        isAPILoading = true;
+                        if (mounted) setState(() {});
+
+                        await addEditItem();
+
+                        isAPILoading = false;
+                        if (mounted) setState(() {});
+                      }
                     },
               backgroundColor: navyBlue,
               textColor: Colors.white,
@@ -564,14 +584,29 @@ class _AddEditDiscountState extends State<AddEditDiscount> {
       onPressed: isAPILoading
           ? () {}
           : () async {
-              FocusScope.of(context).unfocus();
-              isAPILoading = true;
-              if (mounted) setState(() {});
+              if (startTimeFrom != null) {
+                if (endTimeTo != null) {
+                  FocusScope.of(context).unfocus();
+                  isAPILoading = true;
+                  if (mounted) setState(() {});
 
-              await addEditItem();
+                  await addEditItem();
 
-              isAPILoading = false;
-              if (mounted) setState(() {});
+                  isAPILoading = false;
+                  if (mounted) setState(() {});
+                } else {
+                  showToast(message: 'Select end time');
+                }
+              } else {
+                FocusScope.of(context).unfocus();
+                isAPILoading = true;
+                if (mounted) setState(() {});
+
+                await addEditItem();
+
+                isAPILoading = false;
+                if (mounted) setState(() {});
+              }
             },
       backgroundColor: navyBlue,
       textColor: Colors.white,
@@ -664,7 +699,9 @@ class _AddEditDiscountState extends State<AddEditDiscount> {
           activeColor: Theme.of(context).primaryColor,
         ),
         Text(
-          "Toggle to activate this discount",
+          discountModel.isActive
+              ? "Toggle to deactivate this discount"
+              : "Toggle to activate this discount",
           style: TextStyle(
               fontSize: 14, color: blackFont, fontWeight: FontWeight.w600),
         ),
@@ -680,18 +717,29 @@ class _AddEditDiscountState extends State<AddEditDiscount> {
           onTap: () async {
             final result = await NavigationUtil.push(
               context,
-              screen: UserProductListForDiscount(item: discountModel),
+              screen: UserProductServiceDiscount(item: discountModel),
             );
 
             if (result != null && result is Map<String, dynamic>) {
               isItemSelected = true;
-              if (result["isSelectAll"] as bool == true) {
+              if (result["isAllProductSelected"] != null &&
+                  result["isAllProductSelected"] as bool == true) {
                 discountModel.addProductsToDiscount(["*"]);
-                isSelectAll = true;
+                isAllProductSelected = true;
+              } else if (result["isAllServiceSelected"] != null &&
+                  result["isAllServiceSelected"] as bool == true) {
+                discountModel.addServicesToDiscount(["*"]);
+                isAllServiceSelected = true;
               } else {
-                discountModel.addServicesToDiscount(result["ids"]);
-                selectedProducts = result["products"];
-                productCount = selectedProducts.length;
+                if (result["products"] != null) {
+                  discountModel.addProductsToDiscount(result["ids"]);
+                  selectedProducts = result["products"];
+                  productCount = selectedProducts.length;
+                } else if (result["services"] != null) {
+                  discountModel.addServicesToDiscount(result["ids"]);
+                  selectedServices = result["services"];
+                  serviceCount = selectedServices.length;
+                }
               }
               if (mounted) setState(() {});
             }
@@ -700,20 +748,20 @@ class _AddEditDiscountState extends State<AddEditDiscount> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "Product",
+                "Attach Items",
                 style: TextStyle(
                     fontSize: 16,
                     color: blackFont,
                     fontWeight: FontWeight.w600),
               ),
               const SizedBox(
-                height: 18,
+                height: 15,
               ),
               Row(
                 children: [
                   Expanded(
                     child: Text(
-                      "Attach product to this discount",
+                      "Attach products or services to this discount",
                       style: TextStyle(
                           fontSize: 14,
                           color: darkGrey,
@@ -735,16 +783,59 @@ class _AddEditDiscountState extends State<AddEditDiscount> {
           Column(
             children: [
               const SizedBox(
-                height: 16,
+                height: 10,
               ),
-              Text(
-                // "This discount will apply on ${isSelectAll ? "all" : isEdit ? (discountModel.productCount ?? 0) : selectedProducts.length} items",
-                "This discount will apply on ${isSelectAll ? "all" : productCount} items",
-                style: TextStyle(
-                    fontSize: 12, color: navyBlue, fontWeight: FontWeight.w600),
+              Container(
+                color: selectedListItemBackgroundBlue,
+                child: ListTile(
+                  visualDensity:
+                      const VisualDensity(horizontal: 0, vertical: -4),
+                  leading: Text(
+                    "Products",
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: navyBlue,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  trailing: Text(
+                    "${isAllProductSelected ? "all" : productCount} item selected",
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: navyBlue,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              Container(
+                color: selectedListItemBackgroundBlue,
+                child: ListTile(
+                  visualDensity:
+                      const VisualDensity(horizontal: 0, vertical: -4),
+                  leading: Text(
+                    "Services",
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: navyBlue,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  trailing: Text(
+                    "${isAllServiceSelected ? "all" : serviceCount} item selected",
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: navyBlue,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
               ),
             ],
-          )
+          ),
       ],
     );
   }
@@ -753,7 +844,24 @@ class _AddEditDiscountState extends State<AddEditDiscount> {
     return GestureDetector(
       onTap: () {
         showTimePicker(
-          builder: customThemeBuilder,
+          builder: (BuildContext context, Widget? child) {
+            return MediaQuery(
+              data: MediaQuery.of(context).copyWith(
+                alwaysUse24HourFormat: true, // Forces 24-hour format
+              ),
+              child: Theme(
+                data: ThemeData(
+                  colorScheme: ColorScheme.light(
+                    primary:
+                        navyBlue, // Sets the color for the time picker clock
+                    onSurface:
+                        Colors.black, // Sets the color for the time numbers
+                  ),
+                ),
+                child: child!,
+              ),
+            );
+          },
           context: context,
           initialTime: TimeOfDay.now(),
         ).then((value) {
@@ -805,7 +913,24 @@ class _AddEditDiscountState extends State<AddEditDiscount> {
     return GestureDetector(
       onTap: () {
         showTimePicker(
-          builder: customThemeBuilder,
+          builder: (BuildContext context, Widget? child) {
+            return MediaQuery(
+              data: MediaQuery.of(context).copyWith(
+                alwaysUse24HourFormat: true, // Forces 24-hour format
+              ),
+              child: Theme(
+                data: ThemeData(
+                  colorScheme: ColorScheme.light(
+                    primary:
+                        navyBlue, // Sets the color for the time picker clock
+                    onSurface:
+                        Colors.black, // Sets the color for the time numbers
+                  ),
+                ),
+                child: child!,
+              ),
+            );
+          },
           context: context,
           initialTime: TimeOfDay.now(),
         ).then((value) {

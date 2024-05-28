@@ -1,11 +1,10 @@
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/credit_card/auth/debit_card_auth.dart';
 import 'package:Slydo/screens/more_apps/credit_card/models/card_transactions.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/tiles/transaction.dart';
+import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:flutter/material.dart';
-
-import '../../../../../utils/util.dart';
-import '../payment_and_banking/tiles/transaction.dart';
 
 class SearchTransactionCard extends StatefulWidget {
   var arguments;

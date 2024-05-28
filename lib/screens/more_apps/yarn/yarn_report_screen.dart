@@ -1,14 +1,14 @@
 import 'dart:developer';
 
+import 'package:Slydo/data/state_notifiers/user_bloc.dart';
+import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/curved_btn.dart';
+import 'package:Slydo/widget/customized_dropdown_field.dart';
+import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../data/state_notifier.dart';
-import '../../../utils/slydo_app_icon_icons.dart';
-import '../../../utils/util.dart';
-import '../../../widget/curved_btn.dart';
-import '../../../widget/customized_dropdown_field.dart';
-import '../../../widget/customized_textform_field.dart';
 import 'yarn_auth.dart';
 import 'yarn_dashboard_bloc.dart';
 
