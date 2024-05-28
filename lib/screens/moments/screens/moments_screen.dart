@@ -224,8 +224,8 @@ class _MomentsScreenState extends State<MomentsScreen> {
         //       listOfMoments?.add(exploreMomentsList[i].moments![j]);
         //     });
         //   }
-        //   print('beeetttttt....${exploreMomentsList[i].moments!.length}');
-        //   print('list of momentssss....${listOfMoments!.length}');
+        //   debugPrint('beeetttttt....${exploreMomentsList[i].moments!.length}');
+        //   debugPrint('list of momentssss....${listOfMoments!.length}');
         // }
         if (mounted) setState(() {});
 

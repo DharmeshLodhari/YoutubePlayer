@@ -34,7 +34,7 @@ class BusinessAuth extends AuthService {
       url = getSecureUrl(url: next);
     }
 
-    print('GET CONTRACT LIST URL :: $url');
+    debugPrint('GET CONTRACT LIST URL :: $url');
 
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);

@@ -525,7 +525,7 @@ class _RequestPaymentState extends State<RequestPayment> {
             if (amount > 0.0) {
               return null;
             } else {
-              print('throw invalid');
+              debugPrint('throw invalid');
 
               throw Exception("Invalid amount");
             }

@@ -40,7 +40,7 @@ class _SearchUserState extends State<SearchUser> {
           isLoading = true;
           setState(() {});
         }
-        Map<String, dynamic>? result = await _auth
+        final Map<String, dynamic>? result = await _auth
             .searchEndpointPagination(
                 getSearchUrl(searchItemTextController.text), next, previous)
             .catchError((error) {
@@ -55,7 +55,7 @@ class _SearchUserState extends State<SearchUser> {
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
-        List? tempList = result['results'];
+        final List? tempList = result['results'];
         if (mounted) {
           isLoading = false;
           results.clear();
@@ -84,15 +84,15 @@ class _SearchUserState extends State<SearchUser> {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 500),
         ));
       }
     }
   }
 
   Widget getUserTile(var object) {
-    print('object::::$object');
-    CustomerProfile user = CustomerProfile.fromJson(object);
+    debugPrint('object::::$object');
+    final CustomerProfile user = CustomerProfile.fromJson(object);
 
     if (user.userName.toString().toLowerCase() == "slydo" ||
         user.userName.toString().toLowerCase() == "slydo_envelope") {
@@ -103,7 +103,7 @@ class _SearchUserState extends State<SearchUser> {
   }
 
   Widget userCard(CustomerProfile user) {
-    UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
+    final UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
     return InkWell(
       onTap: () {
         if (userBloc.user.userName == user.userName) {
@@ -113,7 +113,7 @@ class _SearchUserState extends State<SearchUser> {
         }
       },
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 4, horizontal: 16),
+        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
         child: Card(
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -125,7 +125,7 @@ class _SearchUserState extends State<SearchUser> {
             child: Column(
               children: <Widget>[
                 Padding(
-                  padding: EdgeInsets.symmetric(vertical: 8),
+                  padding: const EdgeInsets.symmetric(vertical: 8),
                   child: ListTile(
                     dense: true,
                     title: Text(
@@ -155,7 +155,7 @@ class _SearchUserState extends State<SearchUser> {
   }
 
   Widget getUserLeading(CustomerProfile user) {
-    Color borderColor = getUserTypeColor(user: user);
+    final Color borderColor = getUserTypeColor(user: user);
 
     return GestureDetector(
       onTap: () {
@@ -237,9 +237,9 @@ class _SearchUserState extends State<SearchUser> {
       appBar: appBar() as PreferredSizeWidget?,
       body: Column(
         children: [
-          SizedBox(height: 6),
+          const SizedBox(height: 6),
           searchBox(),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           Expanded(
             child: _buildResultList(),
           ),
@@ -280,7 +280,7 @@ class _SearchUserState extends State<SearchUser> {
   Widget searchBox() {
     try {
       return Container(
-        padding: EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Theme(
           data: Theme.of(context).copyWith(
             textSelectionTheme: TextSelectionThemeData(
@@ -301,8 +301,8 @@ class _SearchUserState extends State<SearchUser> {
               hintText: AppLocalization.of(context)!.searchPageTextFieldHint,
               fillColor: Colors.white,
               filled: true,
-              contentPadding: EdgeInsets.symmetric(vertical: 10),
-              prefix: Padding(
+              contentPadding: const EdgeInsets.symmetric(vertical: 10),
+              prefix: const Padding(
                 padding: EdgeInsets.only(left: 12),
               ),
               suffixIcon: searchIcon(),

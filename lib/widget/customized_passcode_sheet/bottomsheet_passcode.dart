@@ -24,8 +24,9 @@ class BottomSheetPassCode {
     showModalBottomSheet(
         elevation: 2,
         backgroundColor: Colors.white,
+        // ignore: prefer_const_constructors
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
+          borderRadius: const BorderRadius.only(
             topRight: Radius.circular(20),
             topLeft: Radius.circular(20),
           ),

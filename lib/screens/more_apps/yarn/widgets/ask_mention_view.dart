@@ -80,7 +80,7 @@ class _AskMentionViewState extends State<AskMentionView> {
         cleanList();
       },
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
           color: white,
@@ -88,7 +88,7 @@ class _AskMentionViewState extends State<AskMentionView> {
         child: Row(
           children: [
             getUserLeading(customerProfile),
-            SizedBox(
+            const SizedBox(
               width: 10,
             ),
             Column(
@@ -118,7 +118,7 @@ class _AskMentionViewState extends State<AskMentionView> {
   }
 
   Widget getUserLeading(CustomerProfile customerProfile) {
-    Color borderColor = getUserTypeColor(user: customerProfile);
+    final Color borderColor = getUserTypeColor(user: customerProfile);
 
     return Container(
       height: 32,
@@ -157,7 +157,7 @@ class _AskMentionViewState extends State<AskMentionView> {
         isLoading = true;
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result =
+        final Map<String, dynamic>? result =
             await YarnAuth().searchUser(next, previous ?? '', searchText);
 
         debugPrint("RESULTS:- $result");
@@ -174,7 +174,7 @@ class _AskMentionViewState extends State<AskMentionView> {
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
-        var tempList = result['results'];
+        final tempList = result['results'];
         // yarnTopicList = [];
         if (mounted) {
           setState(() {

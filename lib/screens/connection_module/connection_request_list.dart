@@ -26,21 +26,21 @@ class ConnectionRequestList extends StatefulWidget {
 
 class _ConnectionRequestListState extends State<ConnectionRequestList> {
   final GlobalKey<ScaffoldState> _scaffoldContactRequestListKey =
-      new GlobalKey<ScaffoldState>();
+      GlobalKey<ScaffoldState>();
   final GlobalKey<ScaffoldMessengerState>
       _scaffoldMessengerContactRequestListKey =
-      new GlobalKey<ScaffoldMessengerState>();
+      GlobalKey<ScaffoldMessengerState>();
   late UserBloc userBloc;
   SlidableController? _slideController;
   int? count = 0;
   String? next = "";
   String? previous = "";
   List connectionRequestList = [];
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
   bool isLoading = false;
   bool noItemInList = false;
-  ScrollController _scrollController = new ScrollController();
+  final ScrollController _scrollController = ScrollController();
 
   @protected
   void initState() {
@@ -110,7 +110,7 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
       child: Column(
         children: [
           Expanded(child: _buildFriendsList()),
-          SizedBox(height: 80),
+          const SizedBox(height: 80),
         ],
       ),
     );
@@ -126,7 +126,7 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
         : isLoading && connectionRequestList.isEmpty
             ? buildLoadingIndicator(isLoading: isLoading)
             : ListView.builder(
-                padding: EdgeInsets.only(bottom: 80.0),
+                padding: const EdgeInsets.only(bottom: 80.0),
                 //+1 for progressbar
                 itemCount: connectionRequestList.length + 1,
                 itemBuilder: (BuildContext context, int index) {
@@ -179,7 +179,7 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
             ?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 500),
         ));
       }
     }
@@ -350,7 +350,7 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
       key: Key(data["id"].toString()),
       controller: _slideController,
       direction: Axis.horizontal,
-      actionPane: SlidableBehindActionPane(),
+      actionPane: const SlidableBehindActionPane(),
       actionExtentRatio: 0.25,
       child: VerticalListItem(data),
       actions: listActionSlideActions(data, index),
@@ -398,7 +398,7 @@ class VerticalListItem extends StatelessWidget {
             arguments: {"searchedUserName": user.userName});
       },
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 2),
+        padding: const EdgeInsets.symmetric(vertical: 2),
         child: UserTile(user: user),
       ),
     );

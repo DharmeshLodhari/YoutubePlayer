@@ -82,18 +82,18 @@ class _DeliveryCompletedState extends State<DeliveryCompleted> {
 
   Widget _buildBody() {
     return isLoading
-        ? Center(child: CircularProgressIndicator())
+        ? const Center(child: CircularProgressIndicator())
         : Padding(
-            padding: EdgeInsets.all(20.0),
+            padding: const EdgeInsets.all(20.0),
             child: SingleChildScrollView(
               child: Column(
                 children: [
                   _buildDeliveryText(),
                   _buildImageOrderComplete(),
                   _buildRideNumber(),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   _buildEarningText(),
-                  SizedBox(height: 7),
+                  const SizedBox(height: 7),
                   _buildEarningAmount(),
                   _buildDivider(),
                   _buildIconAndAddressAndPickup(),
@@ -101,13 +101,13 @@ class _DeliveryCompletedState extends State<DeliveryCompleted> {
                   _buildCircleImageAndName(),
                   _buildDivider(),
                   _buildDistance(),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   _buildDuration(),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   _buildItems(),
-                  SizedBox(height: 30),
+                  const SizedBox(height: 30),
                   _buildShareYourExperience(),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   _buildShareLater(),
                 ],
               ),
@@ -191,7 +191,7 @@ class _DeliveryCompletedState extends State<DeliveryCompleted> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         _buildIconImage(),
-        SizedBox(width: 7.0),
+        const SizedBox(width: 7.0),
         Expanded(child: _buildMainAddressColumn())
       ],
     );
@@ -242,7 +242,7 @@ class _DeliveryCompletedState extends State<DeliveryCompleted> {
             ),
           ),
         ),
-        SizedBox(width: 10),
+        const SizedBox(width: 10),
         Text(
           userBloc.user.nickName ?? "",
           style: TextStyle(
@@ -270,7 +270,7 @@ class _DeliveryCompletedState extends State<DeliveryCompleted> {
           ),
           overflow: TextOverflow.ellipsis,
         ),
-        SizedBox(height: 3),
+        const SizedBox(height: 3),
         Text(
             'Pickup by ${riderDeliveryBloc.deliveryDetails?.convertDateFormat(riderDeliveryBloc.deliveryDetails?.expectedPickupTime.toString() ?? "")}',
             style: TextStyle(
@@ -279,7 +279,7 @@ class _DeliveryCompletedState extends State<DeliveryCompleted> {
               fontWeight: FontWeight.w400,
               fontFamily: "Inter",
             )),
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
         Text(
           '${riderDeliveryBloc.deliveryDetails?.deliveryAddress?.addressLineOne}, ${riderDeliveryBloc.deliveryDetails?.deliveryAddress?.addressLineTwo}',
           style: TextStyle(
@@ -302,7 +302,7 @@ class _DeliveryCompletedState extends State<DeliveryCompleted> {
                 fontFamily: "Inter",
               ),
             ),
-            Padding(
+            const Padding(
               padding: EdgeInsets.only(right: 10.0),
               child: Icon(
                 Icons.keyboard_arrow_right_outlined,

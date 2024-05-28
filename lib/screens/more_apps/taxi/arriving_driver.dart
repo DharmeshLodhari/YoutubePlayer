@@ -28,7 +28,7 @@ class _ArrivingDriverState extends State<ArrivingDriver> {
 
   bool startRide = false;
 
-  Key key = Key("map");
+  Key key = const Key("map");
 
   @override
   void initState() {
@@ -53,7 +53,7 @@ class _ArrivingDriverState extends State<ArrivingDriver> {
     //     });
     //   });
     // });
-    Future.delayed(Duration(seconds: 5)).then((value) {
+    Future.delayed(const Duration(seconds: 5)).then((value) {
       isDriverStartedMoving = false;
       isDriverArrived = false;
       isTripStarted = false;
@@ -110,13 +110,14 @@ class _ArrivingDriverState extends State<ArrivingDriver> {
                     shadowColor: dividerColor,
                     elevation: 5,
                     borderOnForeground: true,
-                    margin: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    margin: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 12),
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(50)),
                     child: Container(
                       // margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 16),
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(50),
                           color: Colors.white),
@@ -129,10 +130,10 @@ class _ArrivingDriverState extends State<ArrivingDriver> {
                                 borderRadius: BorderRadius.circular(50),
                                 color: navyBlue),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 8,
                           ),
-                          Text(
+                          const Text(
                             "Your ride has arrived",
                             style: TextStyle(
                                 fontSize: 16, fontWeight: FontWeight.w400),
@@ -146,32 +147,33 @@ class _ArrivingDriverState extends State<ArrivingDriver> {
             isNavigationStarted
                 ? Container(
                     // margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 16),
                     decoration: BoxDecoration(color: blackFont),
                     child: Row(
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.arrow_upward_rounded,
                           color: Colors.white,
                           size: 30,
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 16,
                         ),
                         Expanded(
                           child: Row(
                             children: [
-                              Text(
+                              const Text(
                                 "500 miles",
                                 style: TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w600,
                                     color: Colors.white),
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 width: 4,
                               ),
-                              Text("Head southwest on Madison St",
+                              const Text("Head southwest on Madison St",
                                   style: TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w400,
@@ -256,14 +258,14 @@ class _ArrivingDriverState extends State<ArrivingDriver> {
           shadowColor: dividerColor,
           color: Colors.white,
           margin: EdgeInsets.zero,
-          shape: RoundedRectangleBorder(
+          shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(20), topRight: Radius.circular(20))),
           child: AnimatedContainer(
-            duration: Duration(milliseconds: 500),
+            duration: const Duration(milliseconds: 500),
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              decoration: BoxDecoration(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              decoration: const BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.only(
                   topRight: Radius.circular(20),
@@ -274,23 +276,23 @@ class _ArrivingDriverState extends State<ArrivingDriver> {
                   ? getNavigationUI()
                   : Column(
                       children: [
-                        SizedBox(
+                        const SizedBox(
                           height: 10,
                         ),
                         getDriverInfo(),
                         isDriverStartedMoving
                             ? Column(
                                 children: [
-                                  SizedBox(height: 10),
+                                  const SizedBox(height: 10),
                                   getRideInfo(),
                                 ],
                               )
                             : Container(),
-                        SizedBox(
+                        const SizedBox(
                           height: 10,
                         ),
                         getDriverActions(),
-                        SizedBox(
+                        const SizedBox(
                           height: 20,
                         ),
                       ],
@@ -302,11 +304,11 @@ class _ArrivingDriverState extends State<ArrivingDriver> {
 
   Widget getNavigationUI() {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 16),
+      padding: const EdgeInsets.symmetric(vertical: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          const Text(
             "18 mins / 2.2km",
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
           ),
@@ -328,11 +330,11 @@ class _ArrivingDriverState extends State<ArrivingDriver> {
                 child: ClipOval(
                   child: Container(
                       color: dividerColor,
-                      padding: EdgeInsets.all(8),
-                      child: Icon(Icons.alt_route)),
+                      padding: const EdgeInsets.all(8),
+                      child: const Icon(Icons.alt_route)),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 width: 8,
               ),
               GestureDetector(
@@ -342,8 +344,9 @@ class _ArrivingDriverState extends State<ArrivingDriver> {
                 child: Container(
                   decoration: BoxDecoration(
                       color: mateRed, borderRadius: BorderRadius.circular(10)),
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                  child: Text(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                  child: const Text(
                     "Exit",
                     style: TextStyle(
                         fontSize: 16,
@@ -362,7 +365,7 @@ class _ArrivingDriverState extends State<ArrivingDriver> {
   Widget getDriverInfo() {
     UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -375,7 +378,7 @@ class _ArrivingDriverState extends State<ArrivingDriver> {
               fit: BoxFit.fill,
             ),
           ),
-          SizedBox(
+          const SizedBox(
             width: 20,
           ),
           Expanded(
@@ -389,11 +392,12 @@ class _ArrivingDriverState extends State<ArrivingDriver> {
                       fontSize: 22,
                       fontWeight: FontWeight.w700),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 8,
                 ),
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(50),
                       color: darkGrey.withOpacity(0.3)),
@@ -405,7 +409,7 @@ class _ArrivingDriverState extends State<ArrivingDriver> {
                         fontWeight: FontWeight.w700),
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 4,
                 ),
                 Text(
@@ -433,7 +437,7 @@ class _ArrivingDriverState extends State<ArrivingDriver> {
     }
 
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 32),
+      padding: const EdgeInsets.symmetric(horizontal: 32),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -457,7 +461,7 @@ class _ArrivingDriverState extends State<ArrivingDriver> {
             text: "Contact driver",
           ),
         ),
-        SizedBox(
+        const SizedBox(
           width: 8,
         ),
         GestureDetector(
@@ -498,7 +502,7 @@ class _ArrivingDriverState extends State<ArrivingDriver> {
             text: "Rate driver",
           ),
         ),
-        SizedBox(
+        const SizedBox(
           width: 16,
         ),
         Expanded(
@@ -552,7 +556,7 @@ class _ArrivingDriverState extends State<ArrivingDriver> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       shadowColor: dividerColor.withAlpha(125),
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         child: Row(
           children: [
             Column(
@@ -564,7 +568,7 @@ class _ArrivingDriverState extends State<ArrivingDriver> {
                       fontSize: 14,
                       color: blackFont),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 8,
                 ),
                 Text(
@@ -576,14 +580,14 @@ class _ArrivingDriverState extends State<ArrivingDriver> {
                 ),
               ],
             ),
-            SizedBox(
+            const SizedBox(
               width: 12,
             ),
             Image.asset(
               "assets/images/taxi/route.png",
               height: 50,
             ),
-            SizedBox(
+            const SizedBox(
               width: 12,
             ),
             Expanded(
@@ -597,7 +601,7 @@ class _ArrivingDriverState extends State<ArrivingDriver> {
                         fontSize: 14,
                         color: blackFont),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 8,
                   ),
                   Text(

@@ -832,7 +832,7 @@ class _CreateOrEditPostScreenState extends State<CreateOrEditPostScreen> {
     return GestureDetector(
       onTap: () {
         showMoreOptions = !showMoreOptions;
-        print('SHOW MORE OPTIONS ::: $showMoreOptions');
+        debugPrint('SHOW MORE OPTIONS ::: $showMoreOptions');
         if (showMoreOptions == true) {
           titleFocusNode.unfocus();
           headerMediaIsVisible = false;
@@ -840,7 +840,7 @@ class _CreateOrEditPostScreenState extends State<CreateOrEditPostScreen> {
         } else {
           headerMediaIsVisible = true;
         }
-        print('HEADER IS VISIBLE :::: $headerMediaIsVisible');
+        debugPrint('HEADER IS VISIBLE :::: $headerMediaIsVisible');
         if (mounted) setState(() {});
       },
       child: Container(
@@ -951,7 +951,8 @@ class _CreateOrEditPostScreenState extends State<CreateOrEditPostScreen> {
                       timePicked!.minute);
                 }
 
-                print('FINAL DATE TIME -----> ${publishedDateTime.toString()}');
+                debugPrint(
+                    'FINAL DATE TIME -----> ${publishedDateTime.toString()}');
                 setState(() => publishedDateTime = publishedDateTime);
                 // '2022-02-28T13:35:43.590377+01:00'
               },

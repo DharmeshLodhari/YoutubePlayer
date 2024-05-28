@@ -35,7 +35,7 @@ class _OrderTileForProductState extends State<OrderTileForProduct> {
     try {
       return Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
         shadowColor: boxShadowTwo,
         elevation: 0,
         child: Container(
@@ -43,7 +43,7 @@ class _OrderTileForProductState extends State<OrderTileForProduct> {
           child: Column(
             children: <Widget>[
               Padding(
-                padding: EdgeInsets.symmetric(vertical: 8),
+                padding: const EdgeInsets.symmetric(vertical: 8),
                 child: ListTile(
                   leading: getLeading(),
                   title: getTitle(),
@@ -68,14 +68,14 @@ class _OrderTileForProductState extends State<OrderTileForProduct> {
     return badges.Badge(
       badgeContent: Text(
         qty.toString(),
-        style: TextStyle(
+        style: const TextStyle(
           fontWeight: FontWeight.bold,
           fontSize: 10,
           color: Colors.white,
         ),
       ),
       position: badges.BadgePosition.topEnd(end: -6, top: -6),
-      badgeAnimation: badges.BadgeAnimation.rotation(
+      badgeAnimation: const badges.BadgeAnimation.rotation(
         animationDuration: Duration(seconds: 1),
         colorChangeAnimationDuration: Duration(seconds: 1),
         loopAnimation: false,
@@ -85,8 +85,9 @@ class _OrderTileForProductState extends State<OrderTileForProduct> {
       badgeStyle: badges.BadgeStyle(
         shape: badges.BadgeShape.circle,
         badgeColor: naturalGreen,
-        padding:
-            qty.toString().length == 0 ? EdgeInsets.all(0) : EdgeInsets.all(4),
+        padding: qty.toString().length == 0
+            ? const EdgeInsets.all(0)
+            : const EdgeInsets.all(4),
         elevation: 0,
       ),
       // ignore: required onPressed
@@ -102,7 +103,7 @@ class _OrderTileForProductState extends State<OrderTileForProduct> {
           errorWidget: productAndServiceErrorWidget,
           filterQuality: FilterQuality.high,
           placeholder: (context, url) => product!.serverImages!.isNotEmpty
-              ? Icon(Icons.widgets)
+              ? const Icon(Icons.widgets)
               : CircularLoadingIndicator(),
         ),
       ),
@@ -152,7 +153,7 @@ class _OrderTileForProductState extends State<OrderTileForProduct> {
   }
 
   String getTotalPrice() {
-    var price = qty! * product!.price!;
+    final price = qty! * product!.price!;
     return price.toString();
   }
 
@@ -160,7 +161,7 @@ class _OrderTileForProductState extends State<OrderTileForProduct> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        SizedBox(
+        const SizedBox(
           height: 2,
         ),
         getSellerName(context),
@@ -226,7 +227,7 @@ class _OrderTileForServiceState extends State<OrderTileForService> {
     try {
       return Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
         shadowColor: boxShadowTwo,
         elevation: 0,
         child: Container(
@@ -234,7 +235,7 @@ class _OrderTileForServiceState extends State<OrderTileForService> {
           child: Column(
             children: <Widget>[
               Padding(
-                padding: EdgeInsets.symmetric(vertical: 8),
+                padding: const EdgeInsets.symmetric(vertical: 8),
                 child: ListTile(
                   leading: getLeading(),
                   title: getTitle(),
@@ -259,14 +260,14 @@ class _OrderTileForServiceState extends State<OrderTileForService> {
     return badges.Badge(
       badgeContent: Text(
         qty.toString(),
-        style: TextStyle(
+        style: const TextStyle(
           fontWeight: FontWeight.bold,
           fontSize: 10,
           color: Colors.white,
         ),
       ),
       position: badges.BadgePosition.topEnd(end: -6, top: -6),
-      badgeAnimation: badges.BadgeAnimation.rotation(
+      badgeAnimation: const badges.BadgeAnimation.rotation(
         animationDuration: Duration(seconds: 1),
         colorChangeAnimationDuration: Duration(seconds: 1),
         loopAnimation: false,
@@ -276,8 +277,9 @@ class _OrderTileForServiceState extends State<OrderTileForService> {
       badgeStyle: badges.BadgeStyle(
         shape: badges.BadgeShape.circle,
         badgeColor: naturalGreen,
-        padding:
-            qty.toString().length == 0 ? EdgeInsets.all(0) : EdgeInsets.all(4),
+        padding: qty.toString().length == 0
+            ? const EdgeInsets.all(0)
+            : const EdgeInsets.all(4),
         elevation: 0,
       ),
       // ignore: required onPressed
@@ -293,7 +295,7 @@ class _OrderTileForServiceState extends State<OrderTileForService> {
           errorWidget: productAndServiceErrorWidget,
           filterQuality: FilterQuality.high,
           placeholder: (context, url) => service!.serverImages!.isNotEmpty
-              ? Icon(Icons.widgets)
+              ? const Icon(Icons.widgets)
               : CircularLoadingIndicator(),
         ),
       ),
@@ -343,7 +345,7 @@ class _OrderTileForServiceState extends State<OrderTileForService> {
   }
 
   String getTotalPrice() {
-    var price = qty! * int.parse(service!.price!);
+    final price = qty! * int.parse(service!.price!);
     return price.toString();
   }
 
@@ -351,7 +353,7 @@ class _OrderTileForServiceState extends State<OrderTileForService> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        SizedBox(
+        const SizedBox(
           height: 2,
         ),
         getSellerName(context),

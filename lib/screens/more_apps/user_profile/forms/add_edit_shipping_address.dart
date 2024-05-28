@@ -91,7 +91,7 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
         // currentLocation = await location.getLocation();
         currentLocation = await Future.any([
           Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high),
-          Future.delayed(Duration(seconds: 5), () => null),
+          Future.delayed(const Duration(seconds: 5), () => null),
         ]);
         if (currentLocation == null) {
           currentLocation = await Geolocator.getCurrentPosition(
@@ -102,10 +102,10 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
       if (currentLocation != null) {
         currentLocationMarker = {
           Marker(
-            markerId: MarkerId('currentLocation'),
+            markerId: const MarkerId('currentLocation'),
             position: LatLng(currentLocation?.latitude ?? 0,
                 currentLocation?.longitude ?? 0),
-            infoWindow: InfoWindow(title: 'Current Location'),
+            infoWindow: const InfoWindow(title: 'Current Location'),
           )
         };
       }
@@ -120,9 +120,9 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
   //   try {
   //     currentLocation = await location.getLocation();
   //     double? accuracy = currentLocation.accuracy;
-  //     print('Location Accuracy: $accuracy meters');
+  //     debugPrint('Location Accuracy: $accuracy meters');
   //   } catch (e) {
-  //     print('Error getting location: $e');
+  //     debugPrint('Error getting location: $e');
   //   }
   //   // final LocationData location = await _locationTracker.getLocation();
   //   return currentLocation;
@@ -147,9 +147,9 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
           'getChangeLocation: ${currentLocation.latitude}, ${currentLocation.longitude}');
       currentLocationMarker = {
         Marker(
-          markerId: MarkerId('currentLocation'),
+          markerId: const MarkerId('currentLocation'),
           position: newLocation,
-          infoWindow: InfoWindow(title: 'Current Location'),
+          infoWindow: const InfoWindow(title: 'Current Location'),
         )
       };
     });
@@ -165,7 +165,7 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
       isLoading = true;
       if (mounted) setState(() {});
 
-      Map<String, dynamic>? result =
+      final Map<String, dynamic>? result =
           await ShoppingAuthService().getShippingStates();
 
       if (result == null) {
@@ -176,7 +176,7 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
         return;
       }
 
-      List<StatesModel> tempList = result['results'];
+      final List<StatesModel> tempList = result['results'];
       // tempList.forEach((element) {
       //   states.add(element.name!);
       // });
@@ -210,7 +210,7 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
       isLoading = true;
       if (mounted) setState(() {});
 
-      Map<String, dynamic>? result =
+      final Map<String, dynamic>? result =
           await ShoppingAuthService().getShippingCities(code);
 
       if (result == null) {
@@ -221,7 +221,7 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
         return;
       }
 
-      List<Cities> tempList = result['results'];
+      final List<Cities> tempList = result['results'];
       cityList = [];
       if (mounted) {
         setState(() {
@@ -304,7 +304,7 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
                   'Country',
                   style: TextStyle(color: darkGrey, fontSize: 14),
                 ),
-                SizedBox(height: 6),
+                const SizedBox(height: 6),
                 countryDropdown(),
                 const SizedBox(
                   height: 16,
@@ -313,7 +313,7 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
                   'State',
                   style: TextStyle(color: darkGrey, fontSize: 14),
                 ),
-                SizedBox(height: 6),
+                const SizedBox(height: 6),
                 stateDropdownSearch(),
                 const SizedBox(
                   height: 16,
@@ -322,7 +322,7 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
                   'City',
                   style: TextStyle(color: darkGrey, fontSize: 14),
                 ),
-                SizedBox(height: 6),
+                const SizedBox(height: 6),
                 cityDropdownSearch(),
                 const SizedBox(
                   height: 16,
@@ -358,7 +358,7 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
         color: greyBorderColor,
       ),
       child: currentLocation == null && isEdit == false
-          ? Center(
+          ? const Center(
               child: CircularProgressIndicator(),
             )
           : GoogleMap(
@@ -519,7 +519,7 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
         fontWeight: FontWeight.w600,
       ),
       decoration: InputDecoration(
-        contentPadding: EdgeInsets.symmetric(horizontal: 0),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 0),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
           borderSide: BorderSide(
@@ -703,7 +703,7 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
       ),
       onChanged: (String? value) {
         setState(() async {
-          StatesModel picked =
+          final StatesModel picked =
               itemList.firstWhere((element) => element.name == value);
           selectedCity = null;
           await getShippingCities(picked.isoCode);
@@ -731,7 +731,7 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
         fontWeight: FontWeight.w600,
       ),
       decoration: InputDecoration(
-        contentPadding: EdgeInsets.symmetric(horizontal: 0),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 0),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
           borderSide: BorderSide(
@@ -935,7 +935,7 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
         fontWeight: FontWeight.w600,
       ),
       decoration: InputDecoration(
-        contentPadding: EdgeInsets.symmetric(horizontal: 0),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 0),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
           borderSide: BorderSide(
@@ -999,7 +999,7 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
                 isLoading: isDeleteLoading,
               ),
             ),
-            SizedBox(
+            const SizedBox(
               width: 20,
             ),
           ],

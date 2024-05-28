@@ -13,7 +13,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class LogoutHelper {
   Future<void> logoutUser() async {
-    BackgroundFetchStopBloc backgroundFetchBloc =
+    final BackgroundFetchStopBloc backgroundFetchBloc =
         Provider.of<BackgroundFetchStopBloc>(
             myGlobals.navigationKey.currentContext!,
             listen: false);
@@ -25,15 +25,15 @@ class LogoutHelper {
 
     MainSocketMessageHandler().dispose();
 
-    print("logout===>start");
+    debugPrint("logout===>start");
     await AuthService().logOut().catchError((error) {
       debugPrint("ERROR:- while logging out the user");
     });
-    print("logout===>stop");
+    debugPrint("logout===>stop");
 
     CacheManager().deleteCache(clearAll: true);
 
-    MainSocketProvider socketProvider = Provider.of<MainSocketProvider>(
+    final MainSocketProvider socketProvider = Provider.of<MainSocketProvider>(
         myGlobals.navigationKey.currentContext!,
         listen: false);
 
@@ -41,10 +41,10 @@ class LogoutHelper {
 
     PushNotificationService().logout();
 
-    BankAccountBloc bankAccountBlocPart = Provider.of<BankAccountBloc>(
+    final BankAccountBloc bankAccountBlocPart = Provider.of<BankAccountBloc>(
         myGlobals.navigationKey.currentContext!,
         listen: false);
-    DashboardBloc dashboardBloc = Provider.of<DashboardBloc>(
+    final DashboardBloc dashboardBloc = Provider.of<DashboardBloc>(
         myGlobals.navigationKey.currentContext!,
         listen: false);
 
@@ -70,7 +70,7 @@ class LogoutHelper {
   }
 
   void emptyBasketCart() {
-    BasketBloc basketBloc = Provider.of<BasketBloc>(
+    final BasketBloc basketBloc = Provider.of<BasketBloc>(
         myGlobals.navigationKey.currentContext!,
         listen: false);
 

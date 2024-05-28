@@ -57,7 +57,7 @@ class _YarnQuotePreviewState extends State<YarnQuotePreview> {
   @override
   void initState() {
     _yarnSettings = Provider.of<YarnDashboardBloc>(context, listen: false);
-    Map<String, dynamic> linkData =
+    final Map<String, dynamic> linkData =
         detectLinkInText(messageDecoderWithEmoji(widget.yarn.body)!);
 
     if (linkData["hasLink"]) {
@@ -124,41 +124,41 @@ class _YarnQuotePreviewState extends State<YarnQuotePreview> {
       children: [
         _buildUserInfoRow(),
 
-        SizedBox(
+        const SizedBox(
           height: 4,
         ),
 
         if (shouldShowYarnText() == true) ...[
           if (widget.yarn.body.toString().isNotEmpty) ...[
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
             _buildPostDescription(),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
           ]
         ] else
-          SizedBox(
+          const SizedBox(
             height: 8,
           ),
         if (isReYarnPresent && widget.yarn.reYarn != null) ...[
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           getDisplayWidget(_buildReYarnTile),
-          SizedBox(
+          const SizedBox(
             height: 8,
           ),
         ],
         if (isAttachmentPresent &&
             widget.yarn.attachment != null &&
             widget.yarn.attachment?.isEmpty == false) ...[
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           getDisplayWidget(_buildAttachment),
-          SizedBox(
+          const SizedBox(
             height: 8,
           ),
         ],
@@ -175,18 +175,18 @@ class _YarnQuotePreviewState extends State<YarnQuotePreview> {
         //   ),
         // ],
         if (isMediaPresent) ...[
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           getDisplayWidget(_buildImagesRow),
-          SizedBox(
+          const SizedBox(
             height: 8,
           ),
         ],
         widget.yarn.factChecked == true
             ? _buildFactCheckWidget()
-            : SizedBox.shrink(),
-        SizedBox(height: 6),
+            : const SizedBox.shrink(),
+        const SizedBox(height: 6),
         // _buildTopActions(),
       ],
     );
@@ -196,24 +196,24 @@ class _YarnQuotePreviewState extends State<YarnQuotePreview> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(
+        const SizedBox(
           height: 4,
         ),
         if (widget.yarn.category != null) ...[
           _buildCategoryTypeChip(),
-          SizedBox(
+          const SizedBox(
             height: 8,
           ),
         ],
         if (widget.yarn.isQuestion) ...[
           _buildPostTitle(),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
         ],
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildUserAvatar(),
-            SizedBox(
+            const SizedBox(
               width: 10,
             ),
             Expanded(
@@ -231,7 +231,7 @@ class _YarnQuotePreviewState extends State<YarnQuotePreview> {
                             color: yarnBlack,
                             fontWeight: FontWeight.w700),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 4,
                       ),
                       ClipOval(
@@ -241,7 +241,7 @@ class _YarnQuotePreviewState extends State<YarnQuotePreview> {
                           color: yarnBlack,
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 4,
                       ),
                       Expanded(
@@ -278,7 +278,7 @@ class _YarnQuotePreviewState extends State<YarnQuotePreview> {
     return Container(
       height: 34,
       width: 34,
-      decoration: BoxDecoration(shape: BoxShape.circle),
+      decoration: const BoxDecoration(shape: BoxShape.circle),
       child: ClipOval(
         child: CachedNetworkImage(
           imageUrl: widget.yarn.authorAvatar!,
@@ -308,7 +308,7 @@ class _YarnQuotePreviewState extends State<YarnQuotePreview> {
   Widget _checkCategoryTypeChip() {
     if (widget.yarn.category != null) {
       return Container(
-        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
           color: yarnBlack,
@@ -320,7 +320,7 @@ class _YarnQuotePreviewState extends State<YarnQuotePreview> {
         ),
       );
     } else {
-      return SizedBox();
+      return const SizedBox();
     }
   }
 
@@ -344,24 +344,24 @@ class _YarnQuotePreviewState extends State<YarnQuotePreview> {
   Widget _buildAttachment() {
     Widget childWidget;
     if (widget.yarn.attachmentType == 'service') {
-      Service service = Service.fromJson(widget.yarn.attachment);
+      final Service service = Service.fromJson(widget.yarn.attachment);
       childWidget = YarnServiceTile(
         service: service,
       );
     } else if (widget.yarn.attachmentType == 'product') {
-      Product product = Product.fromJson(widget.yarn.attachment);
+      final Product product = Product.fromJson(widget.yarn.attachment);
       childWidget = YarnProductTile(
         product: product,
       );
     } else if (widget.yarn.attachmentType == 'blog') {
-      UserPost post = UserPost.fromJson(widget.yarn.attachment);
+      final UserPost post = UserPost.fromJson(widget.yarn.attachment);
       childWidget = YarnBlogPostTile(
         post: post,
         showAuthorDetails: true,
         onDeleteBlog: () {},
       );
     } else if (widget.yarn.attachmentType == 'profile') {
-      CustomerProfile customerProfile =
+      final CustomerProfile customerProfile =
           CustomerProfile.fromJson(widget.yarn.attachment ?? {});
       childWidget = YarnCustomerPostTile(
         customerProfile: customerProfile,
@@ -369,18 +369,18 @@ class _YarnQuotePreviewState extends State<YarnQuotePreview> {
         onDeleteBlog: () {},
       );
     } else {
-      childWidget = SizedBox();
+      childWidget = const SizedBox();
     }
     return childWidget;
   }
 
   Widget _buildPostDescription() {
     var newString = '';
-    var list = [];
+    final list = [];
 
     widget.yarn.body.toString().split(' ').forEach((ch) {
       list.add(ch);
-      // print(ch);
+      // debugPrint(ch);
     });
 
     list.forEach((data) {
@@ -402,7 +402,7 @@ class _YarnQuotePreviewState extends State<YarnQuotePreview> {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
+          const SizedBox(
             height: 5,
           ),
           YarnSmartText(
@@ -412,13 +412,13 @@ class _YarnQuotePreviewState extends State<YarnQuotePreview> {
             onTagClick: (tag) {},
             onUrlClicked: (open) {
               // launch  url
-              print("opened $open");
+              debugPrint("opened $open");
             },
             onAtClick: (at) {
-              print("at is  $at");
+              debugPrint("at is  $at");
             },
           ),
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           Container(
@@ -439,8 +439,8 @@ class _YarnQuotePreviewState extends State<YarnQuotePreview> {
                       launchUrl(Uri.parse(linkToBePreview!));
                     },
                     child: Container(
-                      margin:
-                          EdgeInsets.only(left: 10.0, top: 10.0, bottom: 10.0),
+                      margin: const EdgeInsets.only(
+                          left: 10.0, top: 10.0, bottom: 10.0),
                       child: Text(
                         linkToBePreview!,
                         maxLines: 1,
@@ -469,7 +469,7 @@ class _YarnQuotePreviewState extends State<YarnQuotePreview> {
                     color: Colors.white,
                   ),
                   padding: const EdgeInsets.all(10),
-                  margin: EdgeInsets.only(bottom: 4, top: 8),
+                  margin: const EdgeInsets.only(bottom: 4, top: 8),
                   child: Column(
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -500,7 +500,7 @@ class _YarnQuotePreviewState extends State<YarnQuotePreview> {
 
   Widget _buildFactCheckWidget() {
     return Container(
-      padding: EdgeInsets.all(5),
+      padding: const EdgeInsets.all(5),
       //margin: EdgeInsets.only(right: 64),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16.5),
@@ -511,10 +511,10 @@ class _YarnQuotePreviewState extends State<YarnQuotePreview> {
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           SvgPicture.asset('assets/images/yarn/yell_icon.svg'),
-          SizedBox(
+          const SizedBox(
             width: 2,
           ),
-          Text(
+          const Text(
             'We doubt the information in the Yarn is correct.',
             style: TextStyle(
                 color: Color.fromARGB(255, 187, 118, 27), fontSize: 10),
@@ -527,7 +527,7 @@ class _YarnQuotePreviewState extends State<YarnQuotePreview> {
   Widget _buildSensitiveContentWidget() {
     return Container(
       width: MediaQuery.of(context).size.width,
-      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 18),
+      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 18),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(15),
           border: Border.all(color: deepPink),
@@ -540,7 +540,7 @@ class _YarnQuotePreviewState extends State<YarnQuotePreview> {
             style: TextStyle(
                 color: blackFont, fontSize: 13, fontWeight: FontWeight.w600),
           ),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
           Text(
@@ -548,7 +548,7 @@ class _YarnQuotePreviewState extends State<YarnQuotePreview> {
             style: TextStyle(
                 color: blackFont, fontSize: 12, fontWeight: FontWeight.w400),
           ),
-          SizedBox(
+          const SizedBox(
             height: 15,
           ),
           Row(
@@ -561,13 +561,13 @@ class _YarnQuotePreviewState extends State<YarnQuotePreview> {
                   });
                 },
               ),
-              SizedBox(
+              const SizedBox(
                 width: 10,
               ),
               clickWidget(
                 text: 'Always show me sensitive media',
                 onClick: () {
-                  print('sensitive');
+                  debugPrint('sensitive');
                 },
               )
             ],
@@ -580,11 +580,11 @@ class _YarnQuotePreviewState extends State<YarnQuotePreview> {
   Widget _buildAdultContentWidget() {
     return Container(
       width: MediaQuery.of(context).size.width,
-      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 18),
+      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 18),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(15),
-          border: Border.all(color: Color.fromARGB(255, 187, 118, 27)),
-          color: Color.fromARGB(255, 249, 242, 222)),
+          border: Border.all(color: const Color.fromARGB(255, 187, 118, 27)),
+          color: const Color.fromARGB(255, 249, 242, 222)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -593,7 +593,7 @@ class _YarnQuotePreviewState extends State<YarnQuotePreview> {
             style: TextStyle(
                 color: blackFont, fontSize: 13, fontWeight: FontWeight.w600),
           ),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
           Text(
@@ -601,7 +601,7 @@ class _YarnQuotePreviewState extends State<YarnQuotePreview> {
             style: TextStyle(
                 color: blackFont, fontSize: 12, fontWeight: FontWeight.w400),
           ),
-          SizedBox(
+          const SizedBox(
             height: 15,
           ),
           Row(
@@ -614,13 +614,13 @@ class _YarnQuotePreviewState extends State<YarnQuotePreview> {
                   });
                 },
               ),
-              SizedBox(
+              const SizedBox(
                 width: 10,
               ),
               clickWidget(
                 text: 'Always show me sensitive media',
                 onClick: () {
-                  print('sensitive');
+                  debugPrint('sensitive');
                 },
               )
             ],
@@ -645,7 +645,7 @@ class _YarnQuotePreviewState extends State<YarnQuotePreview> {
   Widget clickWidget({String? text, Function()? onClick}) => GestureDetector(
         onTap: onClick,
         child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 14, vertical: 5),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(15), color: blackFont),
           child: Text(

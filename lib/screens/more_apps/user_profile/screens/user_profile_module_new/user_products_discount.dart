@@ -334,7 +334,7 @@ class _UserProductsDiscountState extends State<UserProductDiscount> {
             ),
           )
         : ListView.builder(
-            physics: AlwaysScrollableScrollPhysics(),
+            physics: const AlwaysScrollableScrollPhysics(),
             controller: _productScrollController,
             shrinkWrap: true,
             itemCount: productList.length + 1,

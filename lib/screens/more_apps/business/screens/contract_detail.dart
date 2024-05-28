@@ -99,7 +99,7 @@ class _ContractDetailState extends State<ContractDetail> {
 
   Widget showBackArrow() {
     return IconButton(
-      icon: Icon(Icons.arrow_back_ios),
+      icon: const Icon(Icons.arrow_back_ios),
       onPressed: () {
         Navigator.pop(context);
       },
@@ -143,16 +143,17 @@ class _ContractDetailState extends State<ContractDetail> {
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
       actions: <Widget>[
-        isLoading
-            ? SizedBox.shrink()
-            : IconButton(
-                icon: getDownloadIconWidget(),
-                onPressed: () {
-                  _downloadContract();
-                },
-              ),
+        if (isLoading)
+          const SizedBox.shrink()
+        else
+          IconButton(
+            icon: getDownloadIconWidget(),
+            onPressed: () {
+              _downloadContract();
+            },
+          ),
         // transactionHistoryBtn(),
-        SizedBox(width: 16),
+        const SizedBox(width: 16),
       ],
     );
   }
@@ -225,7 +226,7 @@ class _ContractDetailState extends State<ContractDetail> {
                   (AppBar().preferredSize.height +
                       MediaQuery.of(context).padding.top),
               width: MediaQuery.of(context).size.width,
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
               child: Column(
                 children: [
                   displayContractInfo(),
@@ -289,7 +290,7 @@ class _ContractDetailState extends State<ContractDetail> {
         fit: BoxFit.cover,
         filterQuality: FilterQuality.high,
         placeholder: (context, url) => contract.contractorAvatar == ""
-            ? Icon(Icons.person)
+            ? const Icon(Icons.person)
             : CircularLoadingIndicator(),
       ),
     );

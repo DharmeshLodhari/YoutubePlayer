@@ -15,7 +15,7 @@ class EmptyPage extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        SizedBox(height: 50),
+        const SizedBox(height: 50),
         SvgPicture.asset(
           'assets/images/no_item.svg',
           colorBlendMode: BlendMode.color,

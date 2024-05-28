@@ -22,7 +22,7 @@ class JobDescriptionCard extends StatelessWidget {
     var difference =
         DateTime.now().difference(DateTime.parse(job!.creationDate!));
     String time = '';
-    print(difference.toString() + '-----');
+    debugPrint(difference.toString() + '-----');
     if (difference > const Duration(hours: 24)) {
       time = difference.inDays.toString() + ' days';
     } else if (difference > const Duration(hours: 1)) {
@@ -87,7 +87,7 @@ class JobDescriptionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     user = Provider.of<UserBloc>(context).user.userName;
-    print('$user && ${job?.owner}');
+    debugPrint('$user && ${job?.owner}');
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
       decoration: BoxDecoration(

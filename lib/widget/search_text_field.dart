@@ -31,7 +31,7 @@ class _SearchTextFieldState extends State<SearchTextField> {
 
   Widget getSearchTextField() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 0),
+      padding: const EdgeInsets.symmetric(horizontal: 0),
       child: Stack(
         alignment: Alignment.centerRight,
         children: [
@@ -56,11 +56,11 @@ class _SearchTextFieldState extends State<SearchTextField> {
                   hintText: widget.hintText,
                   fillColor: Colors.white,
                   filled: true,
-                  contentPadding: EdgeInsets.symmetric(vertical: 10),
-                  prefix: Padding(
+                  contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                  prefix: const Padding(
                     padding: EdgeInsets.only(left: 12),
                   ),
-                  suffix: Padding(
+                  suffix: const Padding(
                     padding: EdgeInsets.only(right: 36),
                   ),
                   enabledBorder: OutlineInputBorder(

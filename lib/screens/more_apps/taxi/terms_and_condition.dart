@@ -54,7 +54,7 @@ class _TermsAndConditionState extends State<TermsAndCondition> {
   Widget getScaffoldBody() {
     return SingleChildScrollView(
         child: Container(
-      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -66,7 +66,7 @@ class _TermsAndConditionState extends State<TermsAndCondition> {
                   color: blackFont, fontSize: 22, fontWeight: FontWeight.w700),
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 8,
           ),
           Align(
@@ -77,7 +77,7 @@ class _TermsAndConditionState extends State<TermsAndCondition> {
                   color: blackFont, fontSize: 16, fontWeight: FontWeight.w400),
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 40,
           ),
           Align(
@@ -88,7 +88,7 @@ class _TermsAndConditionState extends State<TermsAndCondition> {
                   color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 30,
           ),
           Text(
@@ -96,7 +96,7 @@ class _TermsAndConditionState extends State<TermsAndCondition> {
             style: TextStyle(
                 color: blackFont, fontSize: 14, fontWeight: FontWeight.w400),
           ),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
           Text(
@@ -104,7 +104,7 @@ class _TermsAndConditionState extends State<TermsAndCondition> {
             style: TextStyle(
                 color: blackFont, fontSize: 14, fontWeight: FontWeight.w400),
           ),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
           Text(
@@ -112,7 +112,7 @@ class _TermsAndConditionState extends State<TermsAndCondition> {
             style: TextStyle(
                 color: blackFont, fontSize: 14, fontWeight: FontWeight.w400),
           ),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
           Text(
@@ -120,7 +120,7 @@ class _TermsAndConditionState extends State<TermsAndCondition> {
             style: TextStyle(
                 color: blackFont, fontSize: 14, fontWeight: FontWeight.w400),
           ),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
           Text(

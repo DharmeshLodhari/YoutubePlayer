@@ -37,16 +37,16 @@ class _YarnCommentDetailScreenState extends State<YarnCommentDetailScreen> {
   bool isLoading = false;
 
   final TextEditingController controller = TextEditingController();
-  RefreshController _postRefreshController =
+  final RefreshController _postRefreshController =
       RefreshController(initialRefresh: false);
   bool isAPILoading = false;
-  ScrollController _commentScrollController = new ScrollController();
+  final ScrollController _commentScrollController = ScrollController();
   GlobalKey<ScaffoldState> yarnCommentScreenKey = GlobalKey<ScaffoldState>();
   bool? enableComment = false, enablePayment = false;
   bool? enableAdult = false, viewerAdvice = false;
   var ageRating;
 
-  ScrollController scrollController = new ScrollController();
+  ScrollController scrollController = ScrollController();
   List<YarnMedia> selectedMedia = [];
   bool isScrolling = false;
   Product? productValue;
@@ -99,7 +99,7 @@ class _YarnCommentDetailScreenState extends State<YarnCommentDetailScreen> {
         Row(
           children: [
             _buildProfileImage(),
-            SizedBox(
+            const SizedBox(
               width: 16,
             )
           ],
@@ -152,7 +152,7 @@ class _YarnCommentDetailScreenState extends State<YarnCommentDetailScreen> {
         child: ListView(
           controller: scrollController,
           children: [
-            if (isLoading) YarnShimmer(),
+            if (isLoading) const YarnShimmer(),
             if (!isLoading) _buildMain(),
           ],
         ),
@@ -164,7 +164,7 @@ class _YarnCommentDetailScreenState extends State<YarnCommentDetailScreen> {
     return Column(
       children: [
         Container(
-            padding: EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: YarnCommentTile(
                 yarn: widget.yarn,
                 yarnComment: widget.yarnComment,
@@ -241,7 +241,7 @@ class _YarnCommentDetailScreenState extends State<YarnCommentDetailScreen> {
   }
 
   Future addReplyComment() async {
-    Map<String, dynamic> data = {
+    final Map<String, dynamic> data = {
       "comment": controller.text,
       "author_username": userName,
       "is_reply": true,
@@ -261,7 +261,7 @@ class _YarnCommentDetailScreenState extends State<YarnCommentDetailScreen> {
 
     //create multipart request for POST or PATCH method
     try {
-      YarnComment? commentDetail =
+      final YarnComment? commentDetail =
           await YarnAuth().addReplyToComment(widget.yarnComment.id!, data);
       if (commentDetail != null) {
         widget.yarnComment.replyCount = widget.yarnComment.replyCount! + 1;
@@ -281,7 +281,7 @@ class _YarnCommentDetailScreenState extends State<YarnCommentDetailScreen> {
 
   void _onPostRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         yarnCommentScreenKey = GlobalKey<ScaffoldState>();

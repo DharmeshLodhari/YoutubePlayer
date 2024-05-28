@@ -268,7 +268,7 @@ class _QrCodePageState extends State<QrCodePage> {
                   fontWeight: FontWeight.w600),
             )
           else
-            SizedBox.shrink(),
+            const SizedBox.shrink(),
           Text(
             appendStringDot(virtualAccount!.accountNumber!, 15),
             maxLines: 1,
@@ -357,7 +357,7 @@ class _QrCodePageState extends State<QrCodePage> {
                   fontSize: 16, color: white, fontWeight: FontWeight.w600),
             )
           else
-            SizedBox.shrink(),
+            const SizedBox.shrink(),
           Text(
             appendStringDot(virtualAccount!.accountNumber!, 15),
             maxLines: 1,

@@ -208,7 +208,7 @@ class NormalCartScreenState extends State<NormalCartScreen> {
       onPressed: () {
         if (appConfigurationModel?.enableCheckout == true &&
             basketBloc.getTotalPrice() != 0) {
-          ShippingProcessBloc shippingProcessBloc =
+          final ShippingProcessBloc shippingProcessBloc =
               Provider.of<ShippingProcessBloc>(context, listen: false);
           shippingProcessBloc.currentSelectedIndex = null;
 
@@ -350,7 +350,7 @@ class NormalCartScreenState extends State<NormalCartScreen> {
     for (var item in basketBloc.items) {
       int itemTotal = 0;
       int AddOnTotal = 0;
-      var product = item["item"];
+      final product = item["item"];
 
       if (product is Product) {
         if (product.addOnsModels != null) {
@@ -361,14 +361,14 @@ class NormalCartScreenState extends State<NormalCartScreen> {
               //       List<Map<String, dynamic>>.from(itemAddOn.options);
 
               for (var option in itemAddOn.options!) {
-                int AddOnOptionPrice = int.parse(option.price.toString());
-                int quantity = option.quantity;
+                final int AddOnOptionPrice = int.parse(option.price.toString());
+                final int quantity = option.quantity;
                 AddOnTotal += AddOnOptionPrice * quantity;
               }
 
-              int? price = product.getProductRealPrice();
-              int quantity = item['qty'] ?? 0;
-              int priceQuantity = price * quantity;
+              final int? price = product.getProductRealPrice();
+              final int quantity = item['qty'] ?? 0;
+              final int priceQuantity = price! * quantity;
               totalPrice += AddOnTotal + priceQuantity;
               // }
             }
@@ -380,8 +380,8 @@ class NormalCartScreenState extends State<NormalCartScreen> {
           if (product.variantModels!.isNotEmpty) {
             for (var variant in product.variantModels!) {
               // if(variant['quantity'] != null || variant['price'] != null){
-              int variantPrice = int.parse(variant.price.toString());
-              int quantity = variant.quantity ?? 0;
+              final int variantPrice = int.parse(variant.price.toString());
+              final int quantity = variant.quantity ?? 0;
               itemTotal += variantPrice * quantity;
               // }
 
@@ -414,13 +414,13 @@ class NormalCartScreenState extends State<NormalCartScreen> {
   }
 
   void removeVariantItem(int index, int variantId) async {
-    String type =
+    final String type =
         basketBloc.items[index]["item"] is Product ? "product" : "service";
 
-    Product selectedProduct = basketBloc.items[index]["item"];
+    final Product selectedProduct = basketBloc.items[index]["item"];
     basketBloc.removeOrReduceVariant(selectedProduct.id.toString(), variantId);
 
-    Map<String, dynamic> dataInfo =
+    final Map<String, dynamic> dataInfo =
         getUpdatedCartItem(type, basketBloc.items[index]["item"].id);
 
     debugPrint('fola chat one fourrrr::: ${dataInfo}');
@@ -429,7 +429,7 @@ class NormalCartScreenState extends State<NormalCartScreen> {
     if (dataInfo["variants"] == null) {
       basketBloc.removeItemFromCart(basketBloc.items[index]["item"]);
 
-      Map<String, dynamic> data = {
+      final Map<String, dynamic> data = {
         "id": ["productId"],
         "type": dataInfo["type"],
         "qty": 0,
@@ -444,11 +444,11 @@ class NormalCartScreenState extends State<NormalCartScreen> {
     Map<String, dynamic> dataInfo = {};
 
     for (var element in basketBloc.items) {
-      Product item = element["item"];
+      final Product item = element["item"];
       int totalVariantQuantity = 0;
 
       if (item.variantModels != null && productId == item.id) {
-        List<Variant> variantsList = item.variantModels ?? [];
+        final List<Variant> variantsList = item.variantModels ?? [];
 
         // debugPrint("Data From Product Page v-id 5 : ${variantsList}");
         // debugPrint("Data From Product Page v-id 6 : ${element["item"].variant}");
@@ -462,13 +462,13 @@ class NormalCartScreenState extends State<NormalCartScreen> {
 
         // Check if variantsList is not empty
         if (variantsList.isNotEmpty) {
-          List<Map<String, dynamic>> variantDataList = [];
+          final List<Map<String, dynamic>> variantDataList = [];
 
           // Iterate through the variants and add each variant to the variantDataList
           for (var variant in variantsList) {
             if (variant.id != null) {
-              int variantId = int.parse(variant.id.toString());
-              int? variantQuantity = variant.quantity;
+              final int variantId = int.parse(variant.id.toString());
+              final int? variantQuantity = variant.quantity;
 
               variantDataList.add({
                 "id": variantId,
@@ -510,7 +510,7 @@ class NormalCartScreenState extends State<NormalCartScreen> {
     if (variantsList!.isNotEmpty) {
       // Iterate through the productView and add them to dataInfo
       for (var variant in variantsList) {
-        int variantQuantity = int.parse(variant['quantity'].toString());
+        final int variantQuantity = int.parse(variant['quantity'].toString());
         totalQuantity += variantQuantity;
       }
     }
@@ -519,7 +519,7 @@ class NormalCartScreenState extends State<NormalCartScreen> {
   }
 
   void addItem(int index) async {
-    String type =
+    final String type =
         basketBloc.items[index]["item"] is Product ? "product" : "service";
 
     basketBloc.addItemToCart(
@@ -535,7 +535,7 @@ class NormalCartScreenState extends State<NormalCartScreen> {
         return;
       }
     });
-    Map<String, dynamic> data = {
+    final Map<String, dynamic> data = {
       "type": type,
       "id": mapData["item"].id,
       "qty": mapData["qty"],
@@ -545,23 +545,23 @@ class NormalCartScreenState extends State<NormalCartScreen> {
   }
 
   void addVariantItem(int index, int variantId) async {
-    String type =
+    final String type =
         basketBloc.items[index]["item"] is Product ? "product" : "service";
 
     // debugPrint('fola cart:::: ${variantId}');
-    Product selectedProduct = basketBloc.items[index]["item"];
+    final Product selectedProduct = basketBloc.items[index]["item"];
 
     basketBloc.increaseVariantQuantity(
         selectedProduct.id.toString(), variantId);
 
-    Map<String, dynamic> dataInfo =
+    final Map<String, dynamic> dataInfo =
         getUpdatedCartItem(type, basketBloc.items[index]["item"].id);
 
     await ShoppingAuthService().addOrUpdateItemToShoppingCart(dataInfo);
   }
 
   void removeItem(int index) async {
-    String type =
+    final String type =
         basketBloc.items[index]["item"] is Product ? "product" : "service";
 
     late var mapData;
@@ -571,7 +571,7 @@ class NormalCartScreenState extends State<NormalCartScreen> {
         return;
       }
     });
-    Map data = {
+    final Map data = {
       "type": type,
       "id": mapData["item"].id,
       "qty": mapData["qty"] - 1,
@@ -584,7 +584,7 @@ class NormalCartScreenState extends State<NormalCartScreen> {
 
   void addItemAddOn(int index) async {
     late var mapData;
-    String type =
+    final String type =
         basketBloc.items[index]["item"] is Product ? "product" : "service";
     basketBloc.items.forEach((element) {
       if (element["item"].id == basketBloc.items[index]["item"].id) {
@@ -595,10 +595,10 @@ class NormalCartScreenState extends State<NormalCartScreen> {
     });
     if (mounted) setState(() {});
     //update to server
-    var addOn = mapData['add_ons'];
+    final addOn = mapData['add_ons'];
 
-    List<dynamic> transformedList = addOn?.map((item) {
-          List<dynamic> options = item['options']?.map((option) {
+    final List<dynamic> transformedList = addOn?.map((item) {
+          final List<dynamic> options = item['options']?.map((option) {
                 return {"id": option['id'], "quantity": option['quantity']};
               })?.toList() ??
               [];
@@ -607,7 +607,7 @@ class NormalCartScreenState extends State<NormalCartScreen> {
         })?.toList() ??
         [];
 
-    Map<String, dynamic> data = {
+    final Map<String, dynamic> data = {
       "type": type,
       "id": mapData["item"].id,
       "qty": mapData["qty"],
@@ -619,7 +619,7 @@ class NormalCartScreenState extends State<NormalCartScreen> {
 
   void removeItemAddOn(int index) async {
     late var mapData;
-    String type =
+    final String type =
         basketBloc.items[index]["item"] is Product ? "product" : "service";
     basketBloc.items.forEach((element) async {
       if (element["item"].id == basketBloc.items[index]["item"].id) {
@@ -632,7 +632,7 @@ class NormalCartScreenState extends State<NormalCartScreen> {
 
     if (mapData['qty'] == 0 || mapData['qty'] == -1) {
       //remove item from cart and local
-      Map<String, dynamic> data = {
+      final Map<String, dynamic> data = {
         "type": type,
         "id": mapData["item"].id,
         "qty": mapData["qty"],
@@ -645,10 +645,10 @@ class NormalCartScreenState extends State<NormalCartScreen> {
       if (mapData['qty'] != 0) {
         // debugPrint('add-on add three::: ${mapData['add_ons']}');
 
-        var addOn = mapData['add_ons'];
+        final addOn = mapData['add_ons'];
 
-        List<dynamic> transformedList = addOn?.map((item) {
-              List<dynamic> options = item['options']?.map((option) {
+        final List<dynamic> transformedList = addOn?.map((item) {
+              final List<dynamic> options = item['options']?.map((option) {
                     return {"id": option['id'], "quantity": option['quantity']};
                   })?.toList() ??
                   [];
@@ -657,7 +657,7 @@ class NormalCartScreenState extends State<NormalCartScreen> {
             })?.toList() ??
             [];
 
-        Map<String, dynamic> data = {
+        final Map<String, dynamic> data = {
           "type": type,
           "id": mapData["item"].id,
           "qty": mapData["qty"],
@@ -671,7 +671,7 @@ class NormalCartScreenState extends State<NormalCartScreen> {
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         //clear old items

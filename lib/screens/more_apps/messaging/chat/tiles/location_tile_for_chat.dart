@@ -192,9 +192,9 @@ class LocationTileForChatMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    UserBloc userBloc = Provider.of<UserBloc>(context);
+    final UserBloc userBloc = Provider.of<UserBloc>(context);
 
-    bool isSend = message!["author"] == userBloc.user.userName;
+    final bool isSend = message!["author"] == userBloc.user.userName;
 
     late UserLocation location;
 
@@ -204,7 +204,7 @@ class LocationTileForChatMessage extends StatelessWidget {
           longitude: message!['text']["longitude"]);
     }
     if (message!['text'] is String) {
-      Map<String, dynamic> decodedLocation = jsonDecode(message!['text']);
+      final Map<String, dynamic> decodedLocation = jsonDecode(message!['text']);
       location = UserLocation(
           latitude: decodedLocation["latitude"],
           longitude: decodedLocation["longitude"]);
@@ -217,11 +217,12 @@ class LocationTileForChatMessage extends StatelessWidget {
               isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            isSend
-                ? Container()
-                : Container(
-                    width: 20,
-                  ),
+            if (isSend)
+              Container()
+            else
+              Container(
+                width: 20,
+              ),
             GestureDetector(
               onTap: () async {
                 await MapsLauncher.launchCoordinates(
@@ -245,8 +246,8 @@ class LocationTileForChatMessage extends StatelessWidget {
                   borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(!isSend ? 0 : 10),
                     bottomRight: Radius.circular(isSend ? 0 : 10),
-                    topLeft: Radius.circular(10),
-                    topRight: Radius.circular(10),
+                    topLeft: const Radius.circular(10),
+                    topRight: const Radius.circular(10),
                   ),
                 ),
                 padding: EdgeInsets.symmetric(
@@ -264,39 +265,41 @@ class LocationTileForChatMessage extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    chatConversation!.isGroupConversation!
-                        ? message!['author'] != userBloc.user.userName
-                            ? Column(
-                                children: [
-                                  Text(
-                                    message!['author_full_name'] ??
-                                        message!['author'],
-                                    style: TextStyle(
-                                        color: isSend ? Colors.white : navyBlue,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w700),
-                                  ),
-                                  SizedBox(
-                                    height: 4,
-                                  ),
-                                ],
-                              )
-                            : Container(
-                                width: 0,
-                              )
-                        : Container(
-                            width: 0,
-                          ),
+                    if (chatConversation!.isGroupConversation!)
+                      message!['author'] != userBloc.user.userName
+                          ? Column(
+                              children: [
+                                Text(
+                                  message!['author_full_name'] ??
+                                      message!['author'],
+                                  style: TextStyle(
+                                      color: isSend ? Colors.white : navyBlue,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w700),
+                                ),
+                                const SizedBox(
+                                  height: 4,
+                                ),
+                              ],
+                            )
+                          : Container(
+                              width: 0,
+                            )
+                    else
+                      Container(
+                        width: 0,
+                      ),
                     Container(
                       height: MediaQuery.of(context).size.width / 2.5,
                       // width: MediaQuery.of(context).size.width / 1.8,
-                      padding: EdgeInsets.all(3),
+                      padding: const EdgeInsets.all(3),
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
                           border: Border.all(
                               width: 3,
                               color: isSend ? navyBlue : Colors.white)),
                       child: ClipRRect(
+                        borderRadius: BorderRadius.circular(3),
                         child: IgnorePointer(
                           ignoring: true,
                           child: FlutterMap(
@@ -310,7 +313,7 @@ class LocationTileForChatMessage extends StatelessWidget {
                             layers: [
                               TileLayerOptions(
                                 subdomains: ['a', 'b', 'c'],
-                                errorImage: NetworkImage(
+                                errorImage: const NetworkImage(
                                     "https://i.dlpng.com/static/png/6635948_preview.png"),
                                 overrideTilesWhenUrlChanges: true,
                                 urlTemplate:
@@ -333,47 +336,49 @@ class LocationTileForChatMessage extends StatelessWidget {
                             ],
                           ),
                         ),
-                        borderRadius: BorderRadius.circular(3),
                       ),
                     ),
                   ],
                 ),
               ),
             ),
-            isSend
-                ? Container(
-                    width: 20,
-                    child: isSend
-                        ? Center(
-                            child: getMessageTick(message: message!),
-                          )
-                        : Container(),
-                  )
-                : Container(),
+            if (isSend)
+              Container(
+                width: 20,
+                child: isSend
+                    ? Center(
+                        child: getMessageTick(message: message!),
+                      )
+                    : Container(),
+              )
+            else
+              Container(),
           ],
         ),
-        SizedBox(
+        const SizedBox(
           height: 1,
         ),
         Row(
           mainAxisAlignment:
               isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
           children: [
-            isSend
-                ? Container()
-                : SizedBox(
-                    width: 20,
-                  ),
+            if (isSend)
+              Container()
+            else
+              const SizedBox(
+                width: 20,
+              ),
             Text(
               formatTime(message!['created_at']),
               style: TextStyle(
                   color: darkGrey, fontSize: 10, fontWeight: FontWeight.w500),
             ),
-            isSend
-                ? SizedBox(
-                    width: 20,
-                  )
-                : Container(),
+            if (isSend)
+              const SizedBox(
+                width: 20,
+              )
+            else
+              Container(),
           ],
         )
       ],

@@ -16,16 +16,16 @@ class CustomizeCategory extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       shadowColor: boxShadowTwo,
       elevation: 0,
       child: Container(
         decoration: decorateBox(),
         child: ListTile(
-          visualDensity: VisualDensity(vertical: 0, horizontal: 0),
+          visualDensity: const VisualDensity(vertical: 0, horizontal: 0),
           title: Text(
             askCategory!.name!,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w500,
             ),

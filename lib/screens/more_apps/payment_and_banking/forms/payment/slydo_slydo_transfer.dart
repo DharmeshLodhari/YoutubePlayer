@@ -442,10 +442,10 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
 
   String generateAsteriskMask(String amount) {
     // Determine the length of the amount
-    int amountLength = amount.length;
+    final int amountLength = amount.length;
 
     // Generate a string of asterisks of the same length as the amount
-    String asteriskMask = '*' * amountLength;
+    final String asteriskMask = '*' * amountLength;
 
     // Trim the trailing space and return the asterisk mask
     return asteriskMask.trim();
@@ -1485,10 +1485,10 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
     value = currentBalance!.toInt() * 100 - 1000;
 
     if (value < 0) {
-      // print("The number is negative.");
+      // debugPrint("The number is negative.");
       return 0;
     } else {
-      // print("The number is non-negative.");
+      // debugPrint("The number is non-negative.");
       return value;
     }
   }

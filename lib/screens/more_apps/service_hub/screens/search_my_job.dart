@@ -98,7 +98,7 @@ class _SearchMyJobsState extends State<SearchMyJobs> {
           setState(() {});
         }
 
-        var result = await ServiceHubAuthService().searchMyJobListing(
+        final result = await ServiceHubAuthService().searchMyJobListing(
           next,
           previous,
           username,
@@ -113,7 +113,7 @@ class _SearchMyJobsState extends State<SearchMyJobs> {
         count = result.count;
         next = result.next;
         previous = result.previous;
-        var tempList = result.results;
+        final tempList = result.results;
 
         if (mounted) {
           isLoading = false;

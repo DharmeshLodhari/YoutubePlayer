@@ -470,7 +470,7 @@ class _TransactionGraphState extends State<TransactionGraph> {
   }
 
   Widget getSelectedData() {
-    List<Widget> widgets = [];
+    final List<Widget> widgets = [];
     if (_measures != null) {
       _measures!.forEach((String? series, num? value) {
         if (series == "Income") {

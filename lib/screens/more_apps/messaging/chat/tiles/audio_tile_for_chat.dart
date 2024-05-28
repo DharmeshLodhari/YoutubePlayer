@@ -58,7 +58,7 @@ class _AudioTileForChatState extends State<AudioTileForChat> {
               isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            isSend ? Container() : Container(width: 20),
+            if (isSend) Container() else Container(width: 20),
             Container(
               constraints: BoxConstraints(
                   maxWidth: MediaQuery.of(context).size.width / 1.30,
@@ -73,43 +73,45 @@ class _AudioTileForChatState extends State<AudioTileForChat> {
                 borderRadius: BorderRadius.only(
                   bottomLeft: Radius.circular(!isSend ? 0 : 6),
                   bottomRight: Radius.circular(isSend ? 0 : 6),
-                  topLeft: Radius.circular(6),
-                  topRight: Radius.circular(6),
+                  topLeft: const Radius.circular(6),
+                  topRight: const Radius.circular(6),
                 ),
               ),
-              padding: EdgeInsets.only(left: 4, right: 4, top: 4, bottom: 0),
+              padding:
+                  const EdgeInsets.only(left: 4, right: 4, top: 4, bottom: 0),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  widget.chatConversation!.isGroupConversation!
-                      ? widget.message!['author'] != userBloc.user.userName
-                          ? Container(
-                              padding: EdgeInsets.only(left: 12),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    widget.message!['author_full_name'] ??
-                                        widget.message!['author'],
-                                    style: TextStyle(
-                                        color: isSend ? Colors.white : navyBlue,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w700),
-                                  ),
-                                ],
-                              ),
-                            )
-                          : Container(
-                              width: 0,
-                            )
-                      : Container(
-                          width: 0,
-                        ),
+                  if (widget.chatConversation!.isGroupConversation!)
+                    widget.message!['author'] != userBloc.user.userName
+                        ? Container(
+                            padding: const EdgeInsets.only(left: 12),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  widget.message!['author_full_name'] ??
+                                      widget.message!['author'],
+                                  style: TextStyle(
+                                      color: isSend ? Colors.white : navyBlue,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w700),
+                                ),
+                              ],
+                            ),
+                          )
+                        : Container(
+                            width: 0,
+                          )
+                  else
+                    Container(
+                      width: 0,
+                    ),
                   Row(
                     children: [
                       Container(
-                        padding: EdgeInsets.only(top: 6, left: 4),
+                        padding: const EdgeInsets.only(top: 6, left: 4),
                         child: _audioPlayer!.builderRealtimePlayingInfos(
                             builder: (context, info) {
                           if (info == null) {
@@ -152,7 +154,7 @@ class _AudioTileForChatState extends State<AudioTileForChat> {
                                   duration: Duration.zero,
                                   seekTo: (to) {},
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   height: 6,
                                 )
                               ],
@@ -169,7 +171,7 @@ class _AudioTileForChatState extends State<AudioTileForChat> {
                                   _audioPlayer?.seek(to!);
                                 },
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 6,
                               )
                             ],
@@ -181,40 +183,43 @@ class _AudioTileForChatState extends State<AudioTileForChat> {
                 ],
               ),
             ),
-            isSend
-                ? Container(
-                    width: 20,
-                    child: isSend
-                        ? Center(
-                            child: getMessageTick(message: widget.message!),
-                          )
-                        : Container(),
-                  )
-                : Container(),
+            if (isSend)
+              Container(
+                width: 20,
+                child: isSend
+                    ? Center(
+                        child: getMessageTick(message: widget.message!),
+                      )
+                    : Container(),
+              )
+            else
+              Container(),
           ],
         ),
-        SizedBox(
+        const SizedBox(
           height: 1,
         ),
         Row(
           mainAxisAlignment:
               isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
           children: [
-            isSend
-                ? Container()
-                : SizedBox(
-                    width: 20,
-                  ),
+            if (isSend)
+              Container()
+            else
+              const SizedBox(
+                width: 20,
+              ),
             Text(
               formatTime(widget.message!['created_at']),
               style: TextStyle(
                   color: darkGrey, fontSize: 10, fontWeight: FontWeight.w500),
             ),
-            isSend
-                ? SizedBox(
-                    width: 20,
-                  )
-                : Container(),
+            if (isSend)
+              const SizedBox(
+                width: 20,
+              )
+            else
+              Container(),
           ],
         )
       ],

@@ -192,7 +192,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
   getProductIndustries() async {
     loading = true;
     if (mounted) setState(() {});
-    var result = await AuthService().listOfIndustries();
+    final result = await AuthService().listOfIndustries();
     if (result != null) {
       industries = result["product"];
       loading = false;
@@ -207,7 +207,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
   Future<void> getAddress() async {
     // if (mounted) setState(() {});
 
-    Map<String, dynamic>? result =
+    final Map<String, dynamic>? result =
         await ShoppingAuthService().listOfDispatchAddress("", null);
 
     // if (mounted) setState(() {});
@@ -218,21 +218,24 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
       return;
     }
 
-    List<ShippingAddress> tempList = result['results'];
+    final List<ShippingAddress> tempList = result['results'];
 
-    if (mounted) {
-      setState(() {
-        isLoading = false;
-        defaultAddress = tempList.firstWhere((element) => element.is_default!);
-      });
+    if (tempList.isNotEmpty) {
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+          defaultAddress =
+              tempList.firstWhere((element) => element.is_default!);
+        });
+      }
     }
   }
 
   void addUserAddedOpeningHour() {
-    List<String?> updatedDays = [];
+    final List<String?> updatedDays = [];
     userBioDetail!.openingHours.forEach((element) {
-      String time = element.time!.trim();
-      List<String> openingAndClosingTime = time.split("-");
+      final String time = element.time!.trim();
+      final List<String> openingAndClosingTime = time.split("-");
 
       userAddedOpeningHours.forEach((existing) {
         if (element.day == existing["day"]) {
@@ -287,14 +290,14 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
   Widget scaffoldBody() {
     return SingleChildScrollView(
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
           children: [
             getUserPersonalDetail(),
             isUserIsSimpleUser ? Container() : getUserBioDetails(),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             getSubmitButton(),
-            SizedBox(height: 40),
+            const SizedBox(height: 40),
           ],
         ),
       ),
@@ -307,27 +310,27 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           addBioField(),
           if (userBloc.user.type == "Business") industryDropdown(),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           getSearchEngineKeyword(),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           addContactNumberField(),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           addAddressLine1Field(),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           addAddressLine2Field(),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           cityField(),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           PickStateWidget(
             afterOnChanged: (stateId, stateValue) {
               pickedStateId = stateId;
               pickedStateValue = stateValue;
             },
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           addOpeningHour(),
         ],
       ),
@@ -338,7 +341,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
         Text(
           'Industry',
           style: TextStyle(
@@ -348,7 +351,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
             fontWeight: FontWeight.w400,
           ),
         ),
-        SizedBox(height: 6),
+        const SizedBox(height: 6),
         DropdownSearch<String>(
           popupProps: PopupProps.dialog(
               showSearchBox: true,
@@ -428,7 +431,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
           onChanged: (String? value) {
             setState(() {
               industryName = value!;
-              var selectedIndustry =
+              final selectedIndustry =
                   industries.firstWhere((industry) => industry.name == value);
               industryId = selectedIndustry.id;
             });
@@ -511,19 +514,19 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
       child: Column(
         children: [
           addBioField(),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           nickNameField(),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
         ],
       ),
     );
   }
 
   String? fullNameValidator(String enteredName) {
-    List<String> nameList = enteredName.split(" ");
+    final List<String> nameList = enteredName.split(" ");
 
     /// For not allowing user to put any profession title
-    List<String> notValidProfessionTitles = [
+    final List<String> notValidProfessionTitles = [
       "mr",
       "mrs",
       "miss",
@@ -535,7 +538,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
       "evang",
     ];
 
-    RegExp regExp = RegExp(r"^[A-Za-z\s]{1,}[A-Za-z\s]{0,}$");
+    final RegExp regExp = RegExp(r"^[A-Za-z\s]{1,}[A-Za-z\s]{0,}$");
 
     if (!regExp.hasMatch(enteredName)) {
       return "Please enter valid name";
@@ -555,7 +558,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
 
   String? userNameValidator(String username) {
     // alphanumeric,-, and _.
-    RegExp validCharacters =
+    final RegExp validCharacters =
         RegExp(r'^[a-z0-9]([._-](?![._-])|[a-z0-9]){3,18}[a-z0-9]$');
 
     if (!validCharacters.hasMatch(username)) {
@@ -593,7 +596,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
           pinned: true,
           floating: true,
           leading: IconButton(
-            icon: Icon(
+            icon: const Icon(
               Icons.keyboard_arrow_left,
               color: Colors.white,
               size: 26,
@@ -605,12 +608,12 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
               });
             },
           ),
-          actions: [editProfileCoverIcon(), SizedBox(width: 16)],
+          actions: [editProfileCoverIcon(), const SizedBox(width: 16)],
           title: Container(
             child: userNameWithVerifiedIcon(
               name: userBloc.user.displayName()!,
               isVerified: userBloc.user.isVerified,
-              textStyle: TextStyle(
+              textStyle: const TextStyle(
                 color: Colors.white,
                 fontSize: 22,
                 fontWeight: FontWeight.w600,
@@ -625,7 +628,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
               StretchMode.blurBackground
             ],
             background: isLoading
-                ? SizedBox.shrink()
+                ? const SizedBox.shrink()
                 : Stack(
                     alignment: Alignment.topCenter,
                     children: <Widget>[
@@ -728,7 +731,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
   }
 
   Widget getProfilePhoto() {
-    Color borderColor = getUserTypeColorByType(type: userBloc.user.type!);
+    final Color borderColor = getUserTypeColorByType(type: userBloc.user.type!);
 
     return Container(
       alignment: Alignment.bottomLeft,
@@ -738,7 +741,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
           Stack(
             children: [
               AnimatedContainer(
-                duration: Duration(milliseconds: 500),
+                duration: const Duration(milliseconds: 500),
                 decoration: BoxDecoration(
                     border: Border.all(color: borderColor, width: 3),
                     shape: BoxShape.circle),
@@ -765,7 +768,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
                       color: Colors.white,
                       width: 32,
                       height: 32,
-                      child: Icon(
+                      child: const Icon(
                         Icons.camera_alt,
                         size: 18,
                       ),
@@ -782,7 +785,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
   }
 
   void selectProfilePictureAction() async {
-    String? result = await selectImageAction(imageName: "avatar");
+    final String? result = await selectImageAction(imageName: "avatar");
     if (result != null) {
       if (result == "update") {
         debugPrint('UPDATE ---> ');
@@ -791,7 +794,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
       } else if (result == "remove") {
         isUserAvatarLoading = true;
         if (mounted) setState(() {});
-        bool result = await UserAuth().deleteUserAvatar();
+        final bool result = await UserAuth().deleteUserAvatar();
 
         isUserAvatarLoading = false;
         if (mounted) setState(() {});
@@ -837,7 +840,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
           await ImagePicker().pickImage(source: imageSource, imageQuality: 70);
       if (file != null) {
         /// for cropping the image
-        String? croppedImage =
+        final String? croppedImage =
             await ImageCrop().cropImage(file.path, isProfilePicture: true);
         if (croppedImage == null) {
           return;
@@ -850,7 +853,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
           if (mounted) setState(() {});
 
           // Upload Image new image
-          CustomerProfile customerProfile =
+          final CustomerProfile customerProfile =
               await UserAuth().updateUserAvatar(File(croppedImage));
 
           isUserAvatarLoading = false;
@@ -968,7 +971,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
           style: TextStyle(
               color: darkGrey, fontSize: 14, fontWeight: FontWeight.w400),
         ),
-        SizedBox(
+        const SizedBox(
           height: 10,
         ),
         getOpeningHoursList()
@@ -978,7 +981,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
 
   void addOpeningHourItem() {
     if (userAddedOpeningHours.length < 7) {
-      Map<String, dynamic> newItem = {
+      final Map<String, dynamic> newItem = {
         "day": openingHoursDays[userAddedOpeningHours.length],
         "starting_hour": "10:00 AM",
         "closing_hour": "6:00 PM"
@@ -1000,14 +1003,14 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
 
   Widget getOneOpeningHourTile(Map<String, dynamic> element) {
     return Container(
-      padding: EdgeInsets.only(bottom: 6),
+      padding: const EdgeInsets.only(bottom: 6),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Expanded(child: getOpeningHourDay(element: element)),
-          SizedBox(width: 10),
+          const SizedBox(width: 10),
           getOpeningHourStartingTime(element: element),
-          SizedBox(width: 10),
+          const SizedBox(width: 10),
           getOpeningHourClosingTime(element: element)
         ],
       ),
@@ -1021,7 +1024,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
       ),
-      margin: EdgeInsets.all(0),
+      margin: const EdgeInsets.all(0),
       borderOnForeground: true,
       child: DropdownButtonHideUnderline(
         child: ButtonTheme(
@@ -1032,7 +1035,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
                   GestureDetector(
                     child: ClipRRect(
                       clipBehavior: Clip.antiAliasWithSaveLayer,
-                      borderRadius: BorderRadius.all(Radius.circular(4)),
+                      borderRadius: const BorderRadius.all(Radius.circular(4)),
                       child: SizedBox(
                         width: Checkbox.width,
                         height: Checkbox.width,
@@ -1066,7 +1069,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
                       setState(() {});
                     },
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 8,
                   ),
                   Expanded(
@@ -1097,10 +1100,10 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
             side: BorderSide(color: greyBorderColor)),
-        margin: EdgeInsets.all(0),
+        margin: const EdgeInsets.all(0),
         borderOnForeground: true,
         child: Container(
-          padding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
           child: Text(
             "${element["starting_hour"]}",
             style: TextStyle(
@@ -1122,10 +1125,10 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
             side: BorderSide(color: greyBorderColor)),
-        margin: EdgeInsets.all(0),
+        margin: const EdgeInsets.all(0),
         borderOnForeground: true,
         child: Container(
-          padding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
           child: Text(
             "${element["closing_hour"]}",
             style: TextStyle(
@@ -1141,7 +1144,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
 
   void selectTime(
       {Map<String, dynamic>? element, bool isOpening = true}) async {
-    TimeOfDay? selectedTimeRTL = await showTimePicker(
+    final TimeOfDay? selectedTimeRTL = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.now(),
       builder: (BuildContext context, Widget? child) {
@@ -1156,7 +1159,8 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
               dialBackgroundColor: iconBtnGrey,
               dayPeriodBorderSide: BorderSide(color: dividerColor),
             ),
-            buttonTheme: ButtonThemeData(textTheme: ButtonTextTheme.primary),
+            buttonTheme:
+                const ButtonThemeData(textTheme: ButtonTextTheme.primary),
             colorScheme: ColorScheme.light(primary: navyBlue)
                 .copyWith(secondary: navyBlue),
           ),
@@ -1201,12 +1205,13 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
   }
 
   void selectProfileCoverAction() async {
-    String? result = await selectImageAction(imageName: "profile cover");
+    final String? result = await selectImageAction(imageName: "profile cover");
     if (result != null) {
       if (result == "update") {
         pickImage();
       } else if (result == "remove") {
-        bool result = await UserAuth().deleteImageCover(isUserNormalUser: true);
+        final bool result =
+            await UserAuth().deleteImageCover(isUserNormalUser: true);
         if (result) {
           userBloc.removeProfileCover();
         }
@@ -1247,7 +1252,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
           await ImagePicker().pickImage(source: imageSource, imageQuality: 70);
       if (file != null) {
         /// for cropping the image
-        String? croppedImage = await ImageCrop().cropImage(file.path);
+        final String? croppedImage = await ImageCrop().cropImage(file.path);
         if (croppedImage == null) {
           return;
         }
@@ -1257,11 +1262,12 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
         } else {
           isSearchedUserAboutLoading = true;
           if (mounted) setState(() {});
-          String nickName = _nicknameController?.text.trim() ?? "";
+          final String nickName = _nicknameController?.text.trim() ?? "";
 
-          UserBloc tempUserBloc = Provider.of<UserBloc>(context, listen: false);
+          final UserBloc tempUserBloc =
+              Provider.of<UserBloc>(context, listen: false);
 
-          UserAbout userAbout = tempUserBloc.userAbout!;
+          final UserAbout userAbout = tempUserBloc.userAbout!;
           userAbout.wallpaper = croppedImage;
           await UserAuth()
               .addOrUpdateUserBio(userAbout: userAbout, nickName: nickName)
@@ -1310,13 +1316,13 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
         ),
       );
 
-      String nickName = _nicknameController!.text.trim();
-      String bio = bioController!.text.trim();
+      final String nickName = _nicknameController!.text.trim();
+      final String bio = bioController!.text.trim();
       await UserAuth()
           .updateSimpleUserDetail(
               nickName: nickName, bio: bio, wallpaper: wallpaper)
           .then((value) async {
-        UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
+        final UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
         userBloc.updateNickName = value['nickname'];
         userBloc.user.bio = value['bio'];
         userBloc.user.wallpaper = value['wallpaper'];
@@ -1361,7 +1367,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
         addressLine2: userBloc.userAbout?.userAddress?.addressLine2,
       );
 
-      String nickName = _nicknameController!.text.trim();
+      final String nickName = _nicknameController!.text.trim();
       await UserAuth()
           .addOrUpdateUserBio(userAbout: userBioDetail, nickName: nickName)
           .then((value) async {
@@ -1408,7 +1414,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
 
     userAddedOpeningHours.forEach((element) {
       if (element["is_open"]) {
-        OpeningHourForDay openingHour = OpeningHourForDay();
+        final OpeningHourForDay openingHour = OpeningHourForDay();
 
         openingHour.day = element["day"];
         openingHour.time =
@@ -1427,12 +1433,12 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
   }
 
   Future<String?> selectImageAction({String? imageName}) async {
-    String? result = await showModalBottomSheet<String>(
+    final String? result = await showModalBottomSheet<String>(
         backgroundColor: Colors.transparent,
         context: context,
         builder: (BuildContext context) {
           return Card(
-              shape: RoundedRectangleBorder(
+              shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(20),
                     topRight: Radius.circular(20)),
@@ -1440,7 +1446,8 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
               color: Colors.white,
               margin: EdgeInsets.zero,
               child: Container(
-                padding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: generateBottomSheetItem(imageName),
@@ -1451,7 +1458,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
   }
 
   List<Widget> generateBottomSheetItem(String? imageName) {
-    List<Widget> list = [];
+    final List<Widget> list = [];
 
     list.add(
       bottomSheetItem(

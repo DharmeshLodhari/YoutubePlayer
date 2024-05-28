@@ -245,10 +245,10 @@ class _YarnOptionsState extends State<YarnOptions> {
   }
 
   Widget _buildMoreOptionForOwner() {
-    DateTime messageCreatedTime =
+    final DateTime messageCreatedTime =
         DateTime.parse(widget.yarnTopic!.createdAt!).toLocal();
 
-    DateTime currentTime = DateTime.now();
+    final DateTime currentTime = DateTime.now();
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -316,7 +316,7 @@ class _YarnOptionsState extends State<YarnOptions> {
                 ? 'Disable commenting on this post.'
                 : 'Enable commenting on this post.',
             onTap: () async {
-              bool mstatus = widget.yarnTopic!.enableCommenting =
+              final bool mstatus = widget.yarnTopic!.enableCommenting =
                   !widget.yarnTopic!.enableCommenting!;
               Navigator.pop(context);
               await YarnAuth().toggleCommenting(widget.yarnTopic!.id!, mstatus);
@@ -462,13 +462,13 @@ class _YarnOptionsState extends State<YarnOptions> {
               title: 'Block Account',
               subTitle: 'Block this account',
               onTap: () {
-                var user = CustomerProfile();
+                final user = CustomerProfile();
                 user.userName = widget.yarnTopic!.author;
                 user.fullName = widget.yarnTopic!.authorName;
                 user.type = "";
                 user.nickName = "";
 
-                Future<bool?> check = blockUserAlert(context, user);
+                final Future<bool?> check = blockUserAlert(context, user);
                 if (check == true) {
                   widget.reloadView!(true);
                   Navigator.pop(context);
@@ -560,13 +560,13 @@ class _YarnOptionsState extends State<YarnOptions> {
               title: 'Block Account',
               subTitle: '',
               onTap: () {
-                var user = CustomerProfile();
+                final user = CustomerProfile();
                 user.userName = widget.commentDetail!.authorUsername;
                 user.fullName = widget.commentDetail!.authorName;
                 user.type = "";
                 user.nickName = "";
 
-                Future<bool?> check = blockUserAlert(context, user);
+                final Future<bool?> check = blockUserAlert(context, user);
                 if (check == true) {
                   // widget.onUpdate!(widget.yarnTopic!);
                   widget.onUpdateMomentComment!(widget.commentDetail!, true);
@@ -696,7 +696,7 @@ class _YarnOptionsState extends State<YarnOptions> {
   }
 
   Future<void> sendMomentToUserInChat({required Yarn yarnTopic}) async {
-    List<ChatConversation?> listOfRecipient =
+    final List<ChatConversation?> listOfRecipient =
         await ShareInChat().selectShareCustomer(context);
     debugPrint("Selected users = ${listOfRecipient.length}");
 
@@ -710,9 +710,9 @@ class _YarnOptionsState extends State<YarnOptions> {
     required Yarn yarnTopic,
     String? url,
   }) async {
-    UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
+    final UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
 
-    Map<String, dynamic> metaData = yarnTopic.toJson();
+    final Map<String, dynamic> metaData = yarnTopic.toJson();
     // {
     //   "id": yarnTopic.id,
     //   "author_avatar": yarnTopic.authorAvatar,
@@ -735,7 +735,7 @@ class _YarnOptionsState extends State<YarnOptions> {
     //     break;
     // }
 
-    Map<String, dynamic> data = {
+    final Map<String, dynamic> data = {
       "meta_data": jsonEncode(metaData),
       "check_id": const Uuid().v4(),
       "conversation_id": recipientUser.conversationId,
@@ -751,7 +751,7 @@ class _YarnOptionsState extends State<YarnOptions> {
   }
 
   Future addUserVisibilityOption(String status) async {
-    bool? data =
+    final bool? data =
         await YarnAuth().addStatusInPost(widget.yarnTopic!.id!, status);
     if (data != null) {
       if (data) {
@@ -762,12 +762,12 @@ class _YarnOptionsState extends State<YarnOptions> {
   }
 
   Future deleteYarnAndQuestion() async {
-    bool? isQuestion = widget.yarnTopic!.isQuestion;
-    bool? data =
+    final bool? isQuestion = widget.yarnTopic!.isQuestion;
+    final bool? data =
         await YarnAuth().deleteSingleTopics(yarnId: widget.yarnTopic!.id);
     if (data != null && data) {
       showToast(
-          message: isQuestion
+          message: isQuestion ?? false
               ? "Question Deleted Successfully"
               : "Yarn Deleted Successfully");
       if (widget.yarnTopic != null) {
@@ -778,7 +778,7 @@ class _YarnOptionsState extends State<YarnOptions> {
   }
 
   Future removeSavedYarn(String yarnId) async {
-    bool? data = await YarnAuth().deleteSavedYarn(savedYarnID: yarnId);
+    final bool? data = await YarnAuth().deleteSavedYarn(savedYarnID: yarnId);
     if (data != null && data) {
       showToast(message: "Removed Saved Yarn Successfully");
       if (widget.yarnTopic != null) {
@@ -789,7 +789,8 @@ class _YarnOptionsState extends State<YarnOptions> {
   }
 
   Future deleteComment() async {
-    bool? data = await YarnAuth().deleteComment(widget.commentDetail!.id!);
+    final bool? data =
+        await YarnAuth().deleteComment(widget.commentDetail!.id!);
     if (data != null && data) {
       showToast(message: "Comment deleted successfully");
       if (widget.commentDetail != null) {
@@ -801,7 +802,7 @@ class _YarnOptionsState extends State<YarnOptions> {
 
   Future<void> pinComment(String? yarnId, String? commentId,
       {bool isComment = false}) async {
-    bool? data =
+    final bool? data =
         await YarnAuth().pinComment(yarnId!, commentId!, isComment: isComment);
     if (data != null && data) {
       showToast(message: "Comment pinned successfully");
@@ -821,7 +822,7 @@ class _YarnOptionsState extends State<YarnOptions> {
 
   Future<void> deletePinnedComment(String? yarnId, String? commentId,
       {bool isComment = false}) async {
-    bool? data = await YarnAuth()
+    final bool? data = await YarnAuth()
         .deletePinnedComment(yarnId!, commentId!, isComment: isComment);
     if (data != null && data) {
       showToast(message: "Pinned Comment remove successfully");

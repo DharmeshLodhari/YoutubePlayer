@@ -1138,7 +1138,7 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
                         if (bankList.length >= 1) ...[
                           bankCardDisplay(bankList[index]),
                         ] else ...[
-                          // print('The array does not have a second element.');
+                          // debugPrint('The array does not have a second element.');
                         ]
                       ],
                     ));

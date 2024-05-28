@@ -107,9 +107,9 @@ class _SuperStoreHomeState extends State<SuperStoreHome> {
             height: 12,
             width: 12,
           )),
-      SizedBox(width: 20),
+      const SizedBox(width: 20),
       _cartBtn(),
-      SizedBox(width: 20),
+      const SizedBox(width: 20),
     ];
   }
 
@@ -127,7 +127,7 @@ class _SuperStoreHomeState extends State<SuperStoreHome> {
             height: 12,
             width: 12,
           )),
-      SizedBox(width: 15),
+      const SizedBox(width: 15),
       RoundedBackgroundIcon(
           backgroundColor: Colors.transparent,
           onTap: () {
@@ -143,7 +143,7 @@ class _SuperStoreHomeState extends State<SuperStoreHome> {
             height: 15,
             width: 15,
           )),
-      SizedBox(width: 15),
+      const SizedBox(width: 15),
 
       // RoundedBackgroundIcon(
       //     backgroundColor: Colors.transparent,
@@ -188,7 +188,7 @@ class _SuperStoreHomeState extends State<SuperStoreHome> {
       },
       child: Column(
         children: [
-          SizedBox(
+          const SizedBox(
             height: 8,
           ),
           // _buildCategoryAndTabs(),
@@ -288,7 +288,7 @@ class _SuperStoreHomeState extends State<SuperStoreHome> {
     return Container(
       width: 75,
       height: 75,
-      padding: EdgeInsets.all(5),
+      padding: const EdgeInsets.all(5),
       decoration: BoxDecoration(
           color: Colors.white, borderRadius: BorderRadius.circular(5)),
       child: Column(
@@ -339,7 +339,7 @@ class _SuperStoreHomeState extends State<SuperStoreHome> {
       width: 30,
       icon: badges.Badge(
         badgeContent: getBadgeContent(),
-        badgeAnimation: badges.BadgeAnimation.rotation(
+        badgeAnimation: const badges.BadgeAnimation.rotation(
           animationDuration: Duration(seconds: 1),
           colorChangeAnimationDuration: Duration(seconds: 1),
           loopAnimation: false,
@@ -350,7 +350,7 @@ class _SuperStoreHomeState extends State<SuperStoreHome> {
           shape: badges.BadgeShape.circle,
           badgeColor: naturalGreen,
           padding: basketBloc.basketItems.length == 0
-              ? EdgeInsets.all(0)
+              ? const EdgeInsets.all(0)
               : EdgeInsets.only(
                   left: getBadgeCount().length == 1 ? 6 : 8,
                   right: 6,
@@ -380,7 +380,7 @@ class _SuperStoreHomeState extends State<SuperStoreHome> {
     }
     return Text(
       getBadgeCount(),
-      style: TextStyle(
+      style: const TextStyle(
           fontSize: 10,
           fontFamily: "Inter",
           color: Colors.white,

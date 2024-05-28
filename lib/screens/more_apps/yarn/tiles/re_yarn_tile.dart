@@ -50,7 +50,7 @@ class _ReYarnTileState extends State<ReYarnTile> {
   @override
   void initState() {
     if (widget.yarn.body != null) {
-      Map<String, dynamic> linkData =
+      final Map<String, dynamic> linkData =
           detectLinkInText(messageDecoderWithEmoji(widget.yarn.body)!);
 
       if (linkData["hasLink"]) {
@@ -92,19 +92,19 @@ class _ReYarnTileState extends State<ReYarnTile> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildUserInfoRow(),
-        SizedBox(
+        const SizedBox(
           height: 10,
         ),
         if (widget.yarn.isQuestion) ...[
           _buildPostTitle(),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
         ],
         _buildPostDescription(),
-        SizedBox(
+        const SizedBox(
           height: 9,
         ),
         if (isAttachmentPresent && widget.yarn.attachment != null) ...[
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           _buildAttachment(),
         ],
         if (isMediaPresent) ...[
@@ -118,14 +118,14 @@ class _ReYarnTileState extends State<ReYarnTile> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(
+        const SizedBox(
           height: 4,
         ),
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildUserAvatar(),
-            SizedBox(
+            const SizedBox(
               width: 10,
             ),
             Expanded(
@@ -149,7 +149,7 @@ class _ReYarnTileState extends State<ReYarnTile> {
                               color: yarnBlack,
                               fontWeight: FontWeight.w700),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 4,
                         ),
                         ClipOval(
@@ -159,7 +159,7 @@ class _ReYarnTileState extends State<ReYarnTile> {
                             color: yarnBlack,
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 4,
                         ),
                         Expanded(
@@ -227,7 +227,7 @@ class _ReYarnTileState extends State<ReYarnTile> {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
+          const SizedBox(
             height: 5,
           ),
           YarnSmartText(
@@ -244,7 +244,7 @@ class _ReYarnTileState extends State<ReYarnTile> {
               });
             },
           ),
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           Container(
@@ -265,8 +265,8 @@ class _ReYarnTileState extends State<ReYarnTile> {
                       launchUrl(Uri.parse(linkToBePreview!));
                     },
                     child: Container(
-                      margin:
-                          EdgeInsets.only(left: 10.0, top: 10.0, bottom: 10.0),
+                      margin: const EdgeInsets.only(
+                          left: 10.0, top: 10.0, bottom: 10.0),
                       child: Text(
                         linkToBePreview!,
                         maxLines: 1,
@@ -295,7 +295,7 @@ class _ReYarnTileState extends State<ReYarnTile> {
                     color: Colors.white,
                   ),
                   padding: const EdgeInsets.all(10),
-                  margin: EdgeInsets.only(bottom: 4, top: 8),
+                  margin: const EdgeInsets.only(bottom: 4, top: 8),
                   child: Column(
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -332,24 +332,24 @@ class _ReYarnTileState extends State<ReYarnTile> {
   Widget _buildAttachment() {
     Widget childWidget;
     if (widget.yarn.attachmentType == 'service') {
-      Service service = Service.fromJson(widget.yarn.attachment);
+      final Service service = Service.fromJson(widget.yarn.attachment);
       childWidget = YarnServiceTile(
         service: service,
       );
     } else if (widget.yarn.attachmentType == 'product') {
-      Product product = Product.fromJson(widget.yarn.attachment);
+      final Product product = Product.fromJson(widget.yarn.attachment);
       childWidget = YarnProductTile(
         product: product,
       );
     } else if (widget.yarn.attachmentType == 'blog') {
-      UserPost post = UserPost.fromJson(widget.yarn.attachment);
+      final UserPost post = UserPost.fromJson(widget.yarn.attachment);
       childWidget = YarnBlogPostTile(
         post: post,
         showAuthorDetails: true,
         onDeleteBlog: () {},
       );
     } else if (widget.yarn.attachmentType == 'profile') {
-      CustomerProfile customerProfile =
+      final CustomerProfile customerProfile =
           CustomerProfile.fromJson(widget.yarn.attachment ?? {});
       childWidget = YarnCustomerPostTile(
         customerProfile: customerProfile,
@@ -357,7 +357,7 @@ class _ReYarnTileState extends State<ReYarnTile> {
         onDeleteBlog: () {},
       );
     } else {
-      childWidget = SizedBox();
+      childWidget = const SizedBox();
     }
     return childWidget;
   }

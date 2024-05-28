@@ -145,7 +145,7 @@ class _JobsSearchState extends State<JobsSearch> {
           onTap: () => Navigator.pushNamed(context, Routes.JOB_SEARCH_FILTER)
               .then((value) {
             Map<String, dynamic> filterData = value as Map<String, dynamic>;
-            print('stores map ${searchController.text}');
+            debugPrint('stores map ${searchController.text}');
 
             category = filterData['category'];
             if (filterData['sortby'] != '') {
@@ -170,7 +170,7 @@ class _JobsSearchState extends State<JobsSearch> {
             color: blackFont,
           ),
         ),
-        SizedBox(width: 16),
+        const SizedBox(width: 16),
       ],
     );
   }
@@ -180,81 +180,83 @@ class _JobsSearchState extends State<JobsSearch> {
       child: Column(
         children: [
           // showSortByBox ? sortByDropDown() : SizedBox.shrink(),
-          SizedBox(height: 6),
+          const SizedBox(height: 6),
           searchBox(),
-          SizedBox(height: 12),
-          isLoading
-              ? Shimmer.fromColors(
-                  baseColor: Colors.white,
-                  highlightColor: greyBorderColor,
-                  child: GridView.builder(
-                    shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                      mainAxisSpacing: 14,
-                      mainAxisExtent: 180,
-                      crossAxisSpacing: 15,
-                      maxCrossAxisExtent: 200,
+          const SizedBox(height: 12),
+          if (isLoading)
+            Shimmer.fromColors(
+              baseColor: Colors.white,
+              highlightColor: greyBorderColor,
+              child: GridView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                  mainAxisSpacing: 14,
+                  mainAxisExtent: 180,
+                  crossAxisSpacing: 15,
+                  maxCrossAxisExtent: 200,
+                ),
+                itemCount: 2,
+                itemBuilder: (context, index) {
+                  return Card(
+                    color: Colors.grey,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                    itemCount: 2,
-                    itemBuilder: (context, index) {
-                      return Card(
-                        color: Colors.grey,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      );
-                    },
-                  ),
-                )
-              : SizedBox.shrink(),
-          isSearchIsEmpty
-              ? Expanded(
-                  child: NoItemInList(
-                    msg: AppLocalization.of(context)!
-                        .pleaseTypeSomethingToGetResult,
-                    isResult: false,
-                  ),
-                )
-              : noItemInList
-                  ? Expanded(
-                      child: NoItemInList(
-                        msg: AppLocalization.of(context)!.noResultFound,
-                      ),
-                    )
-                  : Expanded(
-                      child: ListView(
-                          children: jobsList
-                              .map(
-                                (job) => Container(
-                                  padding: EdgeInsets.symmetric(
-                                      vertical: 8, horizontal: 16),
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      userBloc.user.userName == job.job!.owner
-                                          ? Navigator.pushNamed(
-                                              context, Routes.MY_JOB_DETAILS,
-                                              arguments: {
-                                                  'jobId': job.job!.id,
-                                                  'listingId': job.id,
-                                                  'job': job.job
-                                                })
-                                          : Navigator.pushNamed(context,
-                                              Routes.JOBS_PREVIEW_DETAIL,
-                                              arguments: {
-                                                  'jobId': job.job!.id,
-                                                  'listingId': job.id,
-                                                  'job': job.job
-                                                });
-                                    },
-                                    child: JobDescriptionCard(
-                                      job: job.job,
-                                    ),
+                  );
+                },
+              ),
+            )
+          else
+            const SizedBox.shrink(),
+          if (isSearchIsEmpty)
+            Expanded(
+              child: NoItemInList(
+                msg:
+                    AppLocalization.of(context)!.pleaseTypeSomethingToGetResult,
+                isResult: false,
+              ),
+            )
+          else
+            noItemInList
+                ? Expanded(
+                    child: NoItemInList(
+                      msg: AppLocalization.of(context)!.noResultFound,
+                    ),
+                  )
+                : Expanded(
+                    child: ListView(
+                        children: jobsList
+                            .map(
+                              (job) => Container(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 8, horizontal: 16),
+                                child: GestureDetector(
+                                  onTap: () {
+                                    userBloc.user.userName == job.job!.owner
+                                        ? Navigator.pushNamed(
+                                            context, Routes.MY_JOB_DETAILS,
+                                            arguments: {
+                                                'jobId': job.job!.id,
+                                                'listingId': job.id,
+                                                'job': job.job
+                                              })
+                                        : Navigator.pushNamed(
+                                            context, Routes.JOBS_PREVIEW_DETAIL,
+                                            arguments: {
+                                                'jobId': job.job!.id,
+                                                'listingId': job.id,
+                                                'job': job.job
+                                              });
+                                  },
+                                  child: JobDescriptionCard(
+                                    job: job.job,
                                   ),
                                 ),
-                              )
-                              .toList()),
-                    ),
+                              ),
+                            )
+                            .toList()),
+                  ),
         ],
       ),
     );
@@ -262,7 +264,7 @@ class _JobsSearchState extends State<JobsSearch> {
 
   Widget searchBox() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Theme(
         data: Theme.of(context).copyWith(
           textSelectionTheme: TextSelectionThemeData(
@@ -270,7 +272,7 @@ class _JobsSearchState extends State<JobsSearch> {
           ),
         ),
         child: TextFormField(
-          key: ValueKey('Search'),
+          key: const ValueKey('Search'),
           controller: searchController,
           onChanged: (value) {
             if (value.length >= 3) {
@@ -306,8 +308,8 @@ class _JobsSearchState extends State<JobsSearch> {
             hintText: "",
             fillColor: Colors.white,
             filled: true,
-            contentPadding: EdgeInsets.symmetric(vertical: 10),
-            prefix: Padding(
+            contentPadding: const EdgeInsets.symmetric(vertical: 10),
+            prefix: const Padding(
               padding: EdgeInsets.only(left: 16),
             ),
             enabledBorder: OutlineInputBorder(

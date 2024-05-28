@@ -7,19 +7,25 @@ import 'models/music_album.dart';
 
 class MusicAuthService extends AuthService {
   Future<List<String>> getLocation() async {
-    List<String> list = ["Lagos", "Kano", "Ibadan", "Benin City", "Abuja"];
+    final List<String> list = [
+      "Lagos",
+      "Kano",
+      "Ibadan",
+      "Benin City",
+      "Abuja"
+    ];
     return list;
   }
 
   Future<List<PartialMusicItem>> getMusicItemList() async {
-    List<String> imgList = [
+    final List<String> imgList = [
       "https://storage.googleapis.com/assets-pam-blog/2018/12/Dj-Neptune-Greatness.jpg",
       "https://www.naijaloaded.com.ng/wp-content/uploads/2019/10/erigga.jpg",
       "https://i.ytimg.com/vi/MuXtUDQ8Sug/maxresdefault.jpg",
       "https://www.musicinafrica.net/sites/default/files/styles/article_slider_large/public/images/article/202008/djcuppy21.jpg?itok=ruxfue_g"
     ];
 
-    var partialMusicItem = imgList
+    final partialMusicItem = imgList
         .map(
           (image) => PartialMusicItem.fromJson({
             "id": 1,
@@ -30,12 +36,12 @@ class MusicAuthService extends AuthService {
           }),
         )
         .toList();
-    await Future.delayed(Duration(seconds: 1));
+    await Future.delayed(const Duration(seconds: 1));
     return partialMusicItem;
   }
 
   Future<List<PartialCelebrityItem>> getCelebrity() async {
-    List<Map<String, String>> singerList = [
+    final List<Map<String, String>> singerList = [
       {
         "name": "Wizkid",
         "image":
@@ -58,18 +64,18 @@ class MusicAuthService extends AuthService {
       },
     ];
 
-    var partialCelebrityItem = singerList
+    final partialCelebrityItem = singerList
         .map(
           (element) => PartialCelebrityItem.fromJson(
               {"name": element["name"], "image": element["image"]}),
         )
         .toList();
-    await Future.delayed(Duration(seconds: 1));
+    await Future.delayed(const Duration(seconds: 1));
     return partialCelebrityItem;
   }
 
   Future<List<PartialMusicAlbum>> getPartialMusicAlbumList() async {
-    var partialMusicAlbum = List.generate(
+    final partialMusicAlbum = List.generate(
       10,
       (index) => PartialMusicAlbum.fromJson({
         "id": 1,
@@ -78,12 +84,12 @@ class MusicAuthService extends AuthService {
             "https://www.naijaloaded.com.ng/wp-content/uploads/2019/10/erigga.jpg",
       }),
     ).toList();
-    await Future.delayed(Duration(seconds: 1));
+    await Future.delayed(const Duration(seconds: 1));
     return partialMusicAlbum;
   }
 
   Future<MusicAlbum> getMusicAlbum() async {
-    var map = {
+    final map = {
       "id": 1,
       "title": "Twice As Tall Album",
       "image":
@@ -150,14 +156,14 @@ class MusicAuthService extends AuthService {
       ]
     };
 
-    MusicAlbum album = MusicAlbum.fromJson(map);
+    final MusicAlbum album = MusicAlbum.fromJson(map);
 
-    await Future.delayed(Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 2));
     return album;
   }
 
   Future<void> addToWishList() async {
-    await Future.delayed(Duration(milliseconds: 500));
+    await Future.delayed(const Duration(milliseconds: 500));
     return;
   }
 }

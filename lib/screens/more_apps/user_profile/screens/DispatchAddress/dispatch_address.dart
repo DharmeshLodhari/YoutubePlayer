@@ -74,7 +74,7 @@ class _DispatchAddressState extends State<DispatchAddress> {
 
   void _onProductRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         itemCount = 0;
@@ -106,7 +106,7 @@ class _DispatchAddressState extends State<DispatchAddress> {
         isLoading = true;
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result =
+        final Map<String, dynamic>? result =
             await ShoppingAuthService().listOfDispatchAddress(next, previous);
 
         if (result == null) {
@@ -121,7 +121,7 @@ class _DispatchAddressState extends State<DispatchAddress> {
         itemCount = result['count'];
         next = result['next'];
         previous = result['previous'];
-        var tempList = result['results'];
+        final tempList = result['results'];
 
         noItemInList = false;
         isLoading = false;
@@ -158,7 +158,7 @@ class _DispatchAddressState extends State<DispatchAddress> {
         _messengerScaffoldKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 500),
         ));
       }
     }
@@ -170,7 +170,7 @@ class _DispatchAddressState extends State<DispatchAddress> {
       setState(() {});
     }
 
-    Map<String, dynamic>? result =
+    final Map<String, dynamic>? result =
         await ShoppingAuthService().setDefaultAddress(id);
 
     if (result == null) {
@@ -183,7 +183,7 @@ class _DispatchAddressState extends State<DispatchAddress> {
     itemCount = result['count'];
     next = result['next'];
     previous = result['previous'];
-    var tempList = result['results'];
+    final tempList = result['results'];
 
     itemList.addAll(tempList);
 
@@ -218,7 +218,7 @@ class _DispatchAddressState extends State<DispatchAddress> {
       _messengerScaffoldKey.currentState?.showSnackBar(SnackBar(
         content:
             Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-        duration: Duration(milliseconds: 500),
+        duration: const Duration(milliseconds: 500),
       ));
     }
   }
@@ -232,7 +232,7 @@ class _DispatchAddressState extends State<DispatchAddress> {
         appBar: _buildAppBar() as PreferredSizeWidget,
         body: Container(
           color: white,
-          padding: EdgeInsets.symmetric(horizontal: 4),
+          padding: const EdgeInsets.symmetric(horizontal: 4),
           child: SmartRefresher(
             enablePullDown: true,
             header: WaterDropHeader(
@@ -277,7 +277,7 @@ class _DispatchAddressState extends State<DispatchAddress> {
       highlightColor: greyBorderColor,
       child: ListView.builder(
         shrinkWrap: true,
-        physics: NeverScrollableScrollPhysics(),
+        physics: const NeverScrollableScrollPhysics(),
         padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 20.0),
         itemCount: 5,
         itemBuilder: (context, index) {
@@ -296,8 +296,8 @@ class _DispatchAddressState extends State<DispatchAddress> {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(10),
                     child: Container(
-                      padding:
-                          EdgeInsets.symmetric(vertical: 20, horizontal: 12),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 20, horizontal: 12),
                       child: Row(
                         children: [
                           Expanded(
@@ -309,7 +309,7 @@ class _DispatchAddressState extends State<DispatchAddress> {
                                   width: 50,
                                   color: Colors.blueGrey,
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   height: 12,
                                 ),
                                 Container(
@@ -373,7 +373,7 @@ class _DispatchAddressState extends State<DispatchAddress> {
       RoundedBackgroundIcon(
           backgroundColor: Colors.transparent,
           onTap: () async {
-            var result = await NavigationUtil.push(
+            final result = await NavigationUtil.push(
               context,
               screen: AddEditShippingAddress(),
             );
@@ -388,20 +388,20 @@ class _DispatchAddressState extends State<DispatchAddress> {
             height: 12,
             width: 12,
           )),
-      SizedBox(width: 30),
+      const SizedBox(width: 30),
     ];
   }
 
   Widget _buildItemList() {
     return next == "" && isLoading
-        ? SizedBox.shrink()
+        ? const SizedBox.shrink()
         : Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: ListView.builder(
               shrinkWrap: true,
               padding: EdgeInsets.zero,
               controller: _scrollController,
-              physics: NeverScrollableScrollPhysics(),
+              physics: const NeverScrollableScrollPhysics(),
               itemCount: itemList.length,
               itemBuilder: (context, index) {
                 return itemTile(index);
@@ -426,7 +426,7 @@ class _DispatchAddressState extends State<DispatchAddress> {
           margin: EdgeInsets.zero,
           color: white,
           child: Container(
-            padding: EdgeInsets.only(top: 23, left: 15, right: 15),
+            padding: const EdgeInsets.only(top: 23, left: 15, right: 15),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -444,7 +444,7 @@ class _DispatchAddressState extends State<DispatchAddress> {
                       softWrap: false,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    Spacer(),
+                    const Spacer(),
                     if (isForSelection)
                       Radio<ShippingAddress>(
                           materialTapTargetSize:
@@ -464,7 +464,7 @@ class _DispatchAddressState extends State<DispatchAddress> {
                           })
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 Text(
@@ -479,7 +479,7 @@ class _DispatchAddressState extends State<DispatchAddress> {
                   softWrap: false,
                   overflow: TextOverflow.ellipsis,
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 Row(
                   children: [
                     if (!isForSelection)
@@ -505,10 +505,10 @@ class _DispatchAddressState extends State<DispatchAddress> {
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                    Spacer(),
+                    const Spacer(),
                     IconButton(
                       onPressed: () async {
-                        var result = await NavigationUtil.push(
+                        final result = await NavigationUtil.push(
                           context,
                           screen: AddEditShippingAddress(
                             shippingAddress: itemList[index],
@@ -518,7 +518,7 @@ class _DispatchAddressState extends State<DispatchAddress> {
                           getList(fetchFresh: true);
                         }
                       },
-                      icon: Icon(Icons.edit),
+                      icon: const Icon(Icons.edit),
                       visualDensity: const VisualDensity(
                         horizontal: VisualDensity.minimumDensity,
                         vertical: VisualDensity.minimumDensity,
@@ -526,7 +526,7 @@ class _DispatchAddressState extends State<DispatchAddress> {
                     )
                   ],
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
               ],
             ),
           ),

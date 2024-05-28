@@ -30,6 +30,7 @@ class BottomSheetItemWithCheck extends StatelessWidget {
       bool isLast = false,
       required bool isChecked}) {
     return GestureDetector(
+      onTap: onTap as void Function()?,
       child: Padding(
         padding: EdgeInsets.only(bottom: isLast ? 0 : 10),
         child: Row(
@@ -44,7 +45,7 @@ class BottomSheetItemWithCheck extends StatelessWidget {
               width: 32,
               height: 32,
             ),
-            SizedBox(
+            const SizedBox(
               width: 16,
             ),
             Text(
@@ -52,17 +53,17 @@ class BottomSheetItemWithCheck extends StatelessWidget {
               style: TextStyle(fontSize: 16, color: blackFont),
             ),
             flexibleSpace(),
-            isChecked
-                ? Icon(
-                    SlydoAppIcon.checked,
-                    color: navyBlue,
-                    size: 14,
-                  )
-                : Container()
+            if (isChecked)
+              Icon(
+                SlydoAppIcon.checked,
+                color: navyBlue,
+                size: 14,
+              )
+            else
+              Container()
           ],
         ),
       ),
-      onTap: onTap as void Function()?,
     );
   }
 }

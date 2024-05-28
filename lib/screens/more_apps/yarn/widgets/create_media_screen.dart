@@ -74,10 +74,10 @@ class _CreateMediaScreenState extends State<CreateMediaScreen> {
       if (e is CameraException) {
         switch (e.code) {
           case 'CameraAccessDenied':
-            print('User denied camera access.');
+            debugPrint('User denied camera access.');
             break;
           default:
-            print('Handle other errors.');
+            debugPrint('Handle other errors.');
             break;
         }
       }
@@ -88,7 +88,7 @@ class _CreateMediaScreenState extends State<CreateMediaScreen> {
   Widget build(BuildContext context) {
     if (cameraController == null ||
         !(cameraController?.value.isInitialized ?? false)) {
-      return Scaffold(
+      return const Scaffold(
         body: Center(
           child: Text(
             'Camera permissions have not been granted yet',
@@ -102,21 +102,22 @@ class _CreateMediaScreenState extends State<CreateMediaScreen> {
       );
     }
 
-    double wt = MediaQuery.of(context).size.width;
+    final double wt = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: Colors.black,
       body: Stack(
         children: <Widget>[
-          mediaCaptured()
-              ? showCapturedMedia()
-              : Center(
-                  child: AspectRatio(
-                    aspectRatio: 9 / 16,
-                    child: CameraPreview(
-                      cameraController!,
-                    ),
-                  ),
+          if (mediaCaptured())
+            showCapturedMedia()
+          else
+            Center(
+              child: AspectRatio(
+                aspectRatio: 9 / 16,
+                child: CameraPreview(
+                  cameraController!,
                 ),
+              ),
+            ),
           Positioned(
             width: wt,
             bottom: 48,
@@ -131,12 +132,12 @@ class _CreateMediaScreenState extends State<CreateMediaScreen> {
                                   false) &&
                               !(cameraController?.value.isRecordingVideo ??
                                   false)) {
-                            bool isPermissionGranted =
+                            final bool isPermissionGranted =
                                 await requestGalleryPermission();
                             if (isPermissionGranted) {
                               await pickFileFromMedia();
                             } else {
-                              bool isPermissionIsDenied =
+                              final bool isPermissionIsDenied =
                                   await isPermanentlyDeniedPermission();
                               if (isPermissionIsDenied) {
                                 await openAppSettings();
@@ -161,16 +162,17 @@ class _CreateMediaScreenState extends State<CreateMediaScreen> {
                 ),
                 Column(
                   children: [
-                    videoTimer != 30
-                        ? Text(
-                            videoTimer.toString(),
-                            style: TextStyle(
-                                color: navyBlue,
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600),
-                          )
-                        : SizedBox.shrink(),
-                    SizedBox(height: 4),
+                    if (videoTimer != 30)
+                      Text(
+                        videoTimer.toString(),
+                        style: TextStyle(
+                            color: navyBlue,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600),
+                      )
+                    else
+                      const SizedBox.shrink(),
+                    const SizedBox(height: 4),
                     GestureDetector(
                       onLongPressStart: mediaCaptured()
                           ? null
@@ -265,14 +267,14 @@ class _CreateMediaScreenState extends State<CreateMediaScreen> {
           onTap: () {
             _toggleCameraLens();
           },
-          child: Icon(
+          child: const Icon(
             Icons.flip_camera_android_outlined,
             color: Colors.white,
           ),
         ),
       );
     }
-    return SizedBox.shrink();
+    return const SizedBox.shrink();
   }
 
   Widget _buildBackButton() {
@@ -285,7 +287,7 @@ class _CreateMediaScreenState extends State<CreateMediaScreen> {
           videoPlayerController?.dispose();
           Navigator.of(context).pop();
         },
-        child: Icon(
+        child: const Icon(
           Icons.arrow_back_ios_new_rounded,
           color: Colors.white,
         ),
@@ -299,7 +301,7 @@ class _CreateMediaScreenState extends State<CreateMediaScreen> {
       if (file != null) {
         debugPrint('IMAGE PATH XFILE -> $file');
 
-        String? croppedImagePath = await ImageCrop().cropImage(file.path);
+        final String? croppedImagePath = await ImageCrop().cropImage(file.path);
         if (croppedImagePath != null) {
           imagePath = croppedImagePath;
           if (mounted) setState(() {});
@@ -333,7 +335,7 @@ class _CreateMediaScreenState extends State<CreateMediaScreen> {
         }
       } else {
         cameraController?.startVideoRecording();
-        timer = Timer.periodic(Duration(seconds: 1), (timer) {
+        timer = Timer.periodic(const Duration(seconds: 1), (timer) {
           if (mounted) {
             setState(() {
               videoTimer--;
@@ -387,7 +389,7 @@ class _CreateMediaScreenState extends State<CreateMediaScreen> {
                   videoPlayerController?.dispose();
                 });
               },
-              icon: Icon(Icons.close, size: 25, color: Colors.red),
+              icon: const Icon(Icons.close, size: 25, color: Colors.red),
             ),
           ),
         ],
@@ -418,7 +420,7 @@ class _CreateMediaScreenState extends State<CreateMediaScreen> {
                     imagePath = null;
                   });
                 },
-                icon: Icon(Icons.close, size: 25, color: Colors.red)),
+                icon: const Icon(Icons.close, size: 25, color: Colors.red)),
           ),
         ],
       );
@@ -443,19 +445,19 @@ class _CreateMediaScreenState extends State<CreateMediaScreen> {
     //   ),
     // );
 
-    List<XFile> res = await selectMultipleImageVideo();
-    print("imageCount = ${widget.imageCount}");
+    final List<XFile> res = await selectMultipleImageVideo();
+    debugPrint("imageCount = ${widget.imageCount}");
     if (res == null || res.isEmpty) return;
     if ((widget.imageCount ?? 0) + res.length > 4) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text('You can select only 4 images or videos'),
       ));
       return;
     }
 
     for (var item in res) {
-      File file = File(item.path);
-      String? mediaType = getFileTypeByPath(path: file.path);
+      final File file = File(item.path);
+      final String? mediaType = getFileTypeByPath(path: file.path);
 
       if (mediaType == null) return;
 
@@ -464,12 +466,13 @@ class _CreateMediaScreenState extends State<CreateMediaScreen> {
         selectedMedia
             .add(YarnMedia(mediaFile: File(imagePath!), mediaType: mediaType));
       } else if (mediaType == 'video') {
-        var videoFilePath =
+        final videoFilePath =
             await NavigationUtil.push(context, screen: TrimmerView(file: file));
         if (videoFilePath is String) {
           videoPath = videoFilePath;
-          Uint8List? uInt8List = await getVideoThumbnailFromUrl(videoPath!);
-          String? thumbnailImage =
+          final Uint8List? uInt8List =
+              await getVideoThumbnailFromUrl(videoPath!);
+          final String? thumbnailImage =
               await generateThumbNailFromVideo(videoPath: videoPath!);
 
           selectedMedia.add(YarnMedia(
@@ -514,7 +517,7 @@ class _CreateMediaScreenState extends State<CreateMediaScreen> {
     // get current lens direction (front / rear)
     final lensDirection = cameraController?.description.lensDirection ??
         CameraLensDirection.front;
-    List<CameraDescription> _availableCameras = await availableCameras();
+    final List<CameraDescription> _availableCameras = await availableCameras();
     CameraDescription? newDescription;
     if (lensDirection == CameraLensDirection.front) {
       newDescription = _availableCameras.firstWhere((description) =>
@@ -534,19 +537,19 @@ class _CreateMediaScreenState extends State<CreateMediaScreen> {
     if (videoPath != null) {
       debugPrint('VIDEO SIZE -> ::: ${File(videoPath!).lengthSync()}');
 
-      String? mediaType = getFileTypeByPath(path: videoPath.toString());
+      final String? mediaType = getFileTypeByPath(path: videoPath.toString());
 
       if (videoPath is String) {
-        File file = File(videoPath.toString());
+        final File file = File(videoPath.toString());
 
         videoPlayerController!.pause();
 
-        var videoFilePath =
+        final videoFilePath =
             await NavigationUtil.push(context, screen: TrimmerView(file: file));
         if (videoFilePath is String) {
           videoPath = videoFilePath;
 
-          String? thumbnailImage =
+          final String? thumbnailImage =
               await generateThumbNailFromVideo(videoPath: videoPath!);
 
           selectedMedia.add(YarnMedia(
@@ -567,7 +570,7 @@ class _CreateMediaScreenState extends State<CreateMediaScreen> {
     debugPrint('IMAGE PATH -> ::: $imagePath');
 
     if (imagePath != null) {
-      String? mediaType = getFileTypeByPath(path: imagePath.toString());
+      final String? mediaType = getFileTypeByPath(path: imagePath.toString());
 
       selectedMedia
           .add(YarnMedia(mediaFile: File(imagePath!), mediaType: mediaType));

@@ -131,38 +131,38 @@ class _AddServiceState extends State<AddService> {
           )
         : SingleChildScrollView(
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Center(
                 child: Form(
                   key: _formKey,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       addImages(),
-                      SizedBox(
+                      const SizedBox(
                         height: 10,
                       ),
                       addTitleField(),
-                      SizedBox(
+                      const SizedBox(
                         height: 10,
                       ),
                       getAmountField(),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       getCategoryField(),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
                       getIsAvailableField(),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
                       getAvailableFromField(),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       getServiceShortDescription(),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       getServiceDescription(),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       getSearchEngineKeyword(),
-                      SizedBox(height: 40),
+                      const SizedBox(height: 40),
                       getSubmitButton(),
-                      SizedBox(height: 40),
+                      const SizedBox(height: 40),
                     ],
                   ),
                 ),
@@ -173,7 +173,7 @@ class _AddServiceState extends State<AddService> {
 
   Widget showBackArrow() {
     return IconButton(
-      icon: Icon(Icons.arrow_back_ios),
+      icon: const Icon(Icons.arrow_back_ios),
       onPressed: () {
         Navigator.pop(context);
       },
@@ -188,7 +188,7 @@ class _AddServiceState extends State<AddService> {
         scrollDirection: Axis.horizontal,
         itemCount: serviceImages.length + 1,
         itemBuilder: (context, index) => Container(
-          padding: EdgeInsets.only(right: 6),
+          padding: const EdgeInsets.only(right: 6),
           child: index != serviceImages.length
               ? showImage(index)
               : serviceImages.length != imageCount
@@ -205,7 +205,7 @@ class _AddServiceState extends State<AddService> {
         elevation: 3,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         shadowColor: boxShadowTwo,
-        margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+        margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
         child: Container(
           width: 100,
           decoration: BoxDecoration(
@@ -219,7 +219,7 @@ class _AddServiceState extends State<AddService> {
                   SlydoAppIcon.add_image,
                   color: darkGrey,
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 4,
                 ),
                 Text(
@@ -262,7 +262,7 @@ class _AddServiceState extends State<AddService> {
       ImagePicker().pickImage(source: imageSource).then((value) async {
         if (value != null) {
           /// for cropping the image
-          String? croppedImage = await ImageCrop().cropImage(value.path);
+          final String? croppedImage = await ImageCrop().cropImage(value.path);
           if (croppedImage == null) {
             return;
           }
@@ -283,7 +283,7 @@ class _AddServiceState extends State<AddService> {
             borderRadius: BorderRadius.circular(10),
           ),
           shadowColor: dividerColor,
-          margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+          margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
           child: Container(
             width: 100,
             decoration: BoxDecoration(
@@ -300,10 +300,10 @@ class _AddServiceState extends State<AddService> {
           right: 0,
           top: 0,
           child: IconButton(
-            padding: EdgeInsets.only(right: 6, top: 6),
+            padding: const EdgeInsets.only(right: 6, top: 6),
             alignment: Alignment.topRight,
             icon: Container(
-              padding: EdgeInsets.all(2.0),
+              padding: const EdgeInsets.all(2.0),
               decoration: BoxDecoration(
                 color: iconBtnGrey,
                 borderRadius: BorderRadius.circular(5),
@@ -448,13 +448,14 @@ class _AddServiceState extends State<AddService> {
                     }
                   },
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 Expanded(
                   child: ListView.builder(
                     shrinkWrap: true,
                     itemCount: serviceCategories!.length,
                     itemBuilder: (context, index) {
-                      ServiceCategory category = serviceCategories![index];
+                      final ServiceCategory category =
+                          serviceCategories![index];
                       if (selectedServiceCategory == category) {
                         return Container(
                           color: selectedListItemBackgroundBlue,
@@ -524,7 +525,8 @@ class _AddServiceState extends State<AddService> {
     final pressedCategory = await showDialog<ServiceCategory>(
         context: context,
         builder: (context) => AlertDialog(
-              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              insetPadding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
@@ -601,7 +603,7 @@ class _AddServiceState extends State<AddService> {
   Widget getAmountField() {
     return CustomizedTextFormField(
       keyboardType: Platform.isIOS
-          ? TextInputType.numberWithOptions(decimal: true)
+          ? const TextInputType.numberWithOptions(decimal: true)
           : TextInputType.number,
       isAmountField: true,
       labelText: "Price of service",
@@ -653,7 +655,7 @@ class _AddServiceState extends State<AddService> {
     if (_formKey.currentState!.validate()) {
       if (serviceImages.length >= 1) {
         if (validateDropdown()) {
-          Service service = Service();
+          final Service service = Service();
           service.localImages =
               serviceImages.map((file) => File(file.path)).toList();
           service.name = serviceName;

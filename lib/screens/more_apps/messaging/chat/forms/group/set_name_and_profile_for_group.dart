@@ -36,7 +36,7 @@ class SetNameAndProfileOfGroup extends StatefulWidget {
 
 class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
   final GlobalKey<ScaffoldState> _scaffoldSetNameAndProfileKey =
-      new GlobalKey<ScaffoldState>();
+      GlobalKey<ScaffoldState>();
 
   List<CustomerProfile> selectedConnectionList = [];
 
@@ -56,7 +56,7 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
   bool? createPaidChannel = false;
   bool? limitGroupMembers = false;
   AppConfigurationModel? appConfigurationModel;
-  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   String createTitle = "";
 
   @protected
@@ -362,7 +362,7 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
           await ImagePicker().pickImage(source: imageSource, imageQuality: 70);
       if (file != null) {
         /// for cropping the image
-        String? croppedImage = await ImageCrop().cropImage(file.path);
+        final String? croppedImage = await ImageCrop().cropImage(file.path);
         if (croppedImage == null) {
           return;
         }
@@ -406,7 +406,7 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
           await ImagePicker().pickImage(source: imageSource, imageQuality: 70);
       if (file != null) {
         /// for cropping the image
-        String? croppedImage = await ImageCrop().cropImage(file.path);
+        final String? croppedImage = await ImageCrop().cropImage(file.path);
         if (croppedImage == null) {
           return;
         }
@@ -500,7 +500,8 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
                   onChanged: (value) {},
                   validator: (val) {
                     try {
-                      double userAmount = double.parse(val.replaceAll(',', ''));
+                      final double userAmount =
+                          double.parse(val.replaceAll(',', ''));
                       // if (userAmount > amountLimit) {
                       //   return 'You cannot fund more than $amountLimit';
                       // }
@@ -690,11 +691,12 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
         .createGroupChat(group: groupModel, type: widget.arguments["create"])
         .then((value) async {
       Navigator.pop(context);
-      ChatUserModel chatUserModel = ChatUserModel.fromChatConversation(value);
+      final ChatUserModel chatUserModel =
+          ChatUserModel.fromChatConversation(value);
       ChatUserManager().addUser(conversationId: chatUserModel.conversationId);
       if (mounted) setState(() {});
 
-      ConnectionListBloc connectionListBloc =
+      final ConnectionListBloc connectionListBloc =
           Provider.of<ConnectionListBloc>(context, listen: false);
       connectionListBloc.addConnectionUser(chatConversation: value);
 

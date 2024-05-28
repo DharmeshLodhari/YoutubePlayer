@@ -66,10 +66,10 @@ class _ChannelProfileScreenState extends State<ChannelProfileScreen>
     result = channelDetail!['owner']['profile_menu'];
 
     // Initialize a map to store boolean values
-    var boolMap = <String, bool>{};
+    final boolMap = <String, bool>{};
 
     // Initialize a list to store the keys in the desired order
-    var orderedKeys = <String>[];
+    final orderedKeys = <String>[];
 
     // Iterate through the 'ordering' array and add keys that exist in boolMap to orderedKeys
     if (result != null) {
@@ -90,7 +90,7 @@ class _ChannelProfileScreenState extends State<ChannelProfileScreen>
     }
 
     // Create a list of keys not in 'ordering'
-    var remainingKeys =
+    final remainingKeys =
         boolMap.keys.where((key) => !orderedKeys.contains(key)).toList();
 
     // Add the remaining keys to orderedKeys to ensure they are at the end
@@ -111,7 +111,7 @@ class _ChannelProfileScreenState extends State<ChannelProfileScreen>
     addTab('event', capitalizeAndRemoveUnderscores('event'));
 
     // Define the UserTabView using the created userTabs list
-    UserTabView channelView = UserTabView(
+    final UserTabView channelView = UserTabView(
       name: "channel",
       tabs: userTabs,
     );
@@ -211,7 +211,7 @@ class _ChannelProfileScreenState extends State<ChannelProfileScreen>
 
   @override
   Widget build(BuildContext context) {
-    String? userType = 'channel';
+    final String? userType = 'channel';
     return NestedScrollView(
       controller: scrollController,
       headerSliverBuilder: (BuildContext context, bool boxIsScrolled) {
@@ -223,24 +223,25 @@ class _ChannelProfileScreenState extends State<ChannelProfileScreen>
               scrollController: scrollController,
               userType: userType,
               channelDetail: channelDetail),
-          channelDetail!['is_member'] == true
-              ? SliverPersistentHeader(
-                  key: UniqueKey(),
-                  floating: true,
-                  pinned: true,
-                  delegate: SliverAppBarDelegate(
-                    TabBar(
-                      controller: _tabController,
-                      isScrollable: true,
-                      indicator: const BoxDecoration(),
-                      onTap: (int index) {
-                        changeIndex(index);
-                      },
-                      tabs: getTabsWidget(),
-                    ),
-                  ),
-                )
-              : emptyView(),
+          if (channelDetail!['is_member'] == true)
+            SliverPersistentHeader(
+              key: UniqueKey(),
+              floating: true,
+              pinned: true,
+              delegate: SliverAppBarDelegate(
+                TabBar(
+                  controller: _tabController,
+                  isScrollable: true,
+                  indicator: const BoxDecoration(),
+                  onTap: (int index) {
+                    changeIndex(index);
+                  },
+                  tabs: getTabsWidget(),
+                ),
+              ),
+            )
+          else
+            emptyView(),
         ];
       },
       body: channelDetail!['is_member'] == true
@@ -343,7 +344,7 @@ class _ChannelProfileScreenState extends State<ChannelProfileScreen>
   }
 
   List<Widget> getTabs() {
-    List<Widget> tabs = [];
+    final List<Widget> tabs = [];
     int index = 0;
 
     _currentUser.tabs.where((tab) => tab.apiCall != null).map((tab) {
@@ -408,7 +409,7 @@ class _ChannelProfileScreenState extends State<ChannelProfileScreen>
       addTab('event', capitalizeAndRemoveUnderscores('event'));
 
       // Define the UserTabView using the created userTabs list
-      UserTabView channelView = UserTabView(
+      final UserTabView channelView = UserTabView(
         name: "channel",
         tabs: userTabs,
       );

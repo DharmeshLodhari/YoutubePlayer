@@ -80,7 +80,7 @@ class GifImage extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    return new GifImageState();
+    return GifImageState();
   }
 
   static GifCache cache = GifCache();
@@ -158,7 +158,7 @@ class GifImageState extends State<GifImage> {
 
   @override
   Widget build(BuildContext context) {
-    final RawImage image = new RawImage(
+    final RawImage image = RawImage(
       image: _imageInfo?.image,
       width: widget.width,
       height: widget.height,
@@ -172,7 +172,7 @@ class GifImageState extends State<GifImage> {
       matchTextDirection: widget.matchTextDirection,
     );
     if (widget.excludeFromSemantics) return image;
-    return new Semantics(
+    return Semantics(
       container: widget.semanticLabel != null,
       image: true,
       label: widget.semanticLabel == null ? '' : widget.semanticLabel,
@@ -196,7 +196,7 @@ HttpClient get _httpClient {
 Future<List<ImageInfo>?> fetchGif(ImageProvider provider) async {
   List<ImageInfo>? infos = [];
   late dynamic data;
-  String key = provider is NetworkImage
+  final String key = provider is NetworkImage
       ? provider.url
       : provider is AssetImage
           ? provider.assetName
@@ -218,7 +218,8 @@ Future<List<ImageInfo>?> fetchGif(ImageProvider provider) async {
       response,
     );
   } else if (provider is AssetImage) {
-    AssetBundleImageKey key = await provider.obtainKey(ImageConfiguration());
+    final AssetBundleImageKey key =
+        await provider.obtainKey(const ImageConfiguration());
     data = await key.bundle.load(key.name);
   } else if (provider is FileImage) {
     data = await provider.file.readAsBytes();
@@ -226,11 +227,11 @@ Future<List<ImageInfo>?> fetchGif(ImageProvider provider) async {
     data = provider.bytes;
   }
 
-  ui.Codec codec = await PaintingBinding.instance
+  final ui.Codec codec = await PaintingBinding.instance
       .instantiateImageCodec(data.buffer.asUint8List());
   infos = [];
   for (int i = 0; i < codec.frameCount; i++) {
-    FrameInfo frameInfo = await codec.getNextFrame();
+    final FrameInfo frameInfo = await codec.getNextFrame();
     //scale ??
     infos.add(ImageInfo(image: frameInfo.image));
   }

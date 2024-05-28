@@ -33,19 +33,19 @@ class _AskStartScreenState extends State<AskStartScreen> {
   DatabaseHelper _db = DatabaseHelper();
 
   List<Color> categoryColors = [
-    Color(0xFFF07097),
-    Color(0xFF030F36),
-    Color(0xFF8829C1),
-    Color(0xFF8B008B),
-    Color(0xFF3F61DB),
-    Color(0xFFB22727),
-    Color(0xFFFFCC00),
-    Color(0xFF8B008B),
-    Color(0xFFFFA500),
-    Color(0xFF46CE7C),
-    Color(0xFF964B00),
-    Color(0xFFF35B46),
-    Color(0xFF243A73),
+    const Color(0xFFF07097),
+    const Color(0xFF030F36),
+    const Color(0xFF8829C1),
+    const Color(0xFF8B008B),
+    const Color(0xFF3F61DB),
+    const Color(0xFFB22727),
+    const Color(0xFFFFCC00),
+    const Color(0xFF8B008B),
+    const Color(0xFFFFA500),
+    const Color(0xFF46CE7C),
+    const Color(0xFF964B00),
+    const Color(0xFFF35B46),
+    const Color(0xFF243A73),
   ];
 
   @override
@@ -61,7 +61,7 @@ class _AskStartScreenState extends State<AskStartScreen> {
         isAskCategoriesLoading = true;
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result = await YarnAuth()
+        final Map<String, dynamic>? result = await YarnAuth()
             .getAllCategories(categoriesNext, categoriesPrevious!);
 
         if (result == null) {
@@ -77,7 +77,7 @@ class _AskStartScreenState extends State<AskStartScreen> {
         categoryCount = result['count'];
         categoriesNext = result['next'];
         categoriesPrevious = result['previous'];
-        var tempList = result['results'];
+        final tempList = result['results'];
         if (mounted) {
           noCategoriesList = false;
           isAskCategoriesLoading = false;
@@ -105,11 +105,14 @@ class _AskStartScreenState extends State<AskStartScreen> {
   }
 
   Future<void> saveUsersCategories(String body) async {
-    Map<String, dynamic>? result = await YarnAuth().saveUsersCategories(body);
-    UsersCategories usersCategories = result!['results'] as UsersCategories;
-    UserCategoriesStructure userCategoriesStructure = UserCategoriesStructure(
-        userId: userBloc.user.uuid,
-        userSelectedCategory: jsonEncode(usersCategories.categories));
+    final Map<String, dynamic>? result =
+        await YarnAuth().saveUsersCategories(body);
+    final UsersCategories usersCategories =
+        result!['results'] as UsersCategories;
+    final UserCategoriesStructure userCategoriesStructure =
+        UserCategoriesStructure(
+            userId: userBloc.user.uuid,
+            userSelectedCategory: jsonEncode(usersCategories.categories));
     _db.saveUserSelectedYarnCategories(userCategoriesStructure);
   }
 
@@ -146,16 +149,16 @@ class _AskStartScreenState extends State<AskStartScreen> {
             ),
           ),
           body: ListView(
-            padding: EdgeInsets.only(left: 26, right: 26, bottom: 20),
+            padding: const EdgeInsets.only(left: 26, right: 26, bottom: 20),
             children: [
-              SizedBox(
+              const SizedBox(
                 height: 15,
               ),
               _buildTitleAndDescription(
                   title: 'What are you interested?',
                   fontSize: 16,
                   fontWeight: FontWeight.w600),
-              SizedBox(
+              const SizedBox(
                 height: 15,
               ),
               _buildTitleAndDescription(
@@ -163,11 +166,11 @@ class _AskStartScreenState extends State<AskStartScreen> {
                       'Select 3 or more interest to continue. We’ll use this to recommend topics you may like.',
                   fontSize: 12,
                   fontWeight: FontWeight.w400),
-              SizedBox(
+              const SizedBox(
                 height: 30,
               ),
               _buildCategoryList(model),
-              SizedBox(
+              const SizedBox(
                 height: 65,
               ),
               _buildSaveButton(model),
@@ -213,7 +216,7 @@ class _AskStartScreenState extends State<AskStartScreen> {
         }).toList(),
       );
     }
-    return Center(
+    return const Center(
       child: CircularProgressIndicator(),
     );
   }
@@ -225,7 +228,7 @@ class _AskStartScreenState extends State<AskStartScreen> {
       children: [
         Container(
           alignment: Alignment.center,
-          padding: EdgeInsets.symmetric(horizontal: 24),
+          padding: const EdgeInsets.symmetric(horizontal: 24),
           constraints:
               BoxConstraints(maxWidth: MediaQuery.of(context).size.width - 60),
           child: CurvedButton(

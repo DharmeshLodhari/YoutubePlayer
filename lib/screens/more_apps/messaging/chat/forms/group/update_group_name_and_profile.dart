@@ -245,7 +245,7 @@ class _UpdateGroupNameAndProfileState extends State<UpdateGroupNameAndProfile> {
           await ImagePicker().pickImage(source: imageSource, imageQuality: 70);
       if (file != null) {
         /// for cropping the image
-        String? croppedImage = await ImageCrop().cropImage(file.path);
+        final String? croppedImage = await ImageCrop().cropImage(file.path);
         if (croppedImage == null) {
           return;
         }
@@ -321,7 +321,8 @@ class _UpdateGroupNameAndProfileState extends State<UpdateGroupNameAndProfile> {
                   onChanged: (value) {},
                   validator: (val) {
                     try {
-                      double userAmount = double.parse(val.replaceAll(',', ''));
+                      final double userAmount =
+                          double.parse(val.replaceAll(',', ''));
                       // if (userAmount > amountLimit) {
                       //   return 'You cannot fund more than $amountLimit';
                       // }
@@ -368,7 +369,8 @@ class _UpdateGroupNameAndProfileState extends State<UpdateGroupNameAndProfile> {
                   onChanged: (value) {},
                   validator: (val) {
                     try {
-                      double userAmount = double.parse(val.replaceAll(',', ''));
+                      final double userAmount =
+                          double.parse(val.replaceAll(',', ''));
                       if (userAmount > amountLimit) {
                         return 'You cannot fund more than $amountLimit';
                       }
@@ -657,7 +659,7 @@ class _UpdateGroupNameAndProfileState extends State<UpdateGroupNameAndProfile> {
           await ImagePicker().pickImage(source: imageSource, imageQuality: 70);
       if (file != null) {
         /// for cropping the image
-        String? croppedImage = await ImageCrop().cropImage(file.path);
+        final String? croppedImage = await ImageCrop().cropImage(file.path);
         if (croppedImage == null) {
           return;
         }
@@ -754,7 +756,7 @@ class _UpdateGroupNameAndProfileState extends State<UpdateGroupNameAndProfile> {
           showToast(message: "Group detail updated successfully !!");
 
           log("Group detail updated successfully !! $value");
-          Map<String, dynamic> data = value;
+          final Map<String, dynamic> data = value;
 
           groupDetail!.avatar = data["avatar"];
           groupDetail!.banner = data["banner"];

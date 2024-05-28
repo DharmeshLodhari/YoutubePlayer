@@ -569,7 +569,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           if (isValidCustomer) {
             if (product?.variantModels?.isNotEmpty ?? false) {
               if (colorGroups.isNotEmpty && sizeGroups.isNotEmpty) {
-                // print("Both color and size lists are showing.");
+                // debugPrint("Both color and size lists are showing.");
                 if (selectedVariant != null) {
                   showBottomSheetDialog();
                 } else {
@@ -578,7 +578,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                           AppLocalization.of(context)!.selectVariantColorSize);
                 }
               } else if (sizeGroups.isNotEmpty && colorGroups.isEmpty) {
-                // print("color list is showing.");
+                // debugPrint("color list is showing.");
                 if (selectedVariant != null) {
                   showBottomSheetDialog();
                 } else {
@@ -586,7 +586,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                       message: AppLocalization.of(context)!.selectVariantSize);
                 }
               } else if (sizeGroups.isEmpty && colorGroups.isNotEmpty) {
-                // print("size list is showing.");
+                // debugPrint("size list is showing.");
                 if (selectedVariant != null) {
                   showBottomSheetDialog();
                 } else {
@@ -622,7 +622,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
             if (isValidCustomer) {
               if (product?.variantModels?.isNotEmpty ?? false) {
                 if (colorGroups.isNotEmpty && sizeGroups.isNotEmpty) {
-                  // print("Both color and size lists are showing.");
+                  // debugPrint("Both color and size lists are showing.");
                   if (selectedVariant != null) {
                     addToCart();
                   } else {
@@ -631,7 +631,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                             .selectVariantColorSize);
                   }
                 } else if (sizeGroups.isNotEmpty && colorGroups.isEmpty) {
-                  // print("color list is showing.");
+                  // debugPrint("color list is showing.");
                   if (selectedVariant != null) {
                     addToCart();
                   } else {
@@ -640,7 +640,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                             AppLocalization.of(context)!.selectVariantSize);
                   }
                 } else if (sizeGroups.isEmpty && colorGroups.isNotEmpty) {
-                  // print("size list is showing.");
+                  // debugPrint("size list is showing.");
                   if (selectedVariant != null) {
                     addToCart();
                   } else {
@@ -705,7 +705,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   Future<void> addToCart() async {
     final String type = "product";
 
-    print("BASKETBLOC:- ${basketBloc.basketItems}");
+    debugPrint("BASKETBLOC:- ${basketBloc.basketItems}");
     final Product products =
         product!.copyWith(quantity: 1, withSelectedAddOn: true);
 
@@ -2406,7 +2406,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
               //check if product has variant
               if (product?.variantModels?.isNotEmpty ?? false) {
                 if (colorGroups.isNotEmpty && sizeGroups.isNotEmpty) {
-                  // print("Both color and size lists are showing.");
+                  // debugPrint("Both color and size lists are showing.");
                   if (selectedVariant != null) {
                     processCartBuyNow(context);
                   } else {
@@ -2415,9 +2415,9 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                             .selectVariantColorSize);
                   }
                 } else if (colorGroups.isNotEmpty && sizeGroups.isEmpty) {
-                  // print("color list is showing.");
+                  // debugPrint("color list is showing.");
                   if (selectedVariant != null) {
-                    // print("Color list is showing.");
+                    // debugPrint("Color list is showing.");
                     processCartBuyNow(context);
                   } else {
                     showToast(
@@ -2425,9 +2425,9 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                             AppLocalization.of(context)!.selectVariantColor);
                   }
                 } else if (colorGroups.isEmpty && sizeGroups.isNotEmpty) {
-                  // print("size list is showing.");
+                  // debugPrint("size list is showing.");
                   if (selectedVariant != null) {
-                    // print("Size list is showing.");
+                    // debugPrint("Size list is showing.");
                     processCartBuyNow(context);
                   } else {
                     showToast(

@@ -18,7 +18,7 @@ class ShareInChat {
         backgroundColor: Colors.transparent,
         context: context,
         builder: (BuildContext context) {
-          ShareMessageToChatBloc shareMessageToChatBloc =
+          final ShareMessageToChatBloc shareMessageToChatBloc =
               Provider.of<ShareMessageToChatBloc>(context);
 
           return Card(
@@ -102,9 +102,9 @@ class ShareInChat {
 
   Future<List<ChatConversation?>> selectShareCustomer(
       BuildContext context) async {
-    var result = await selectUsersToShare(context);
+    final result = await selectUsersToShare(context);
 
-    ShareMessageToChatBloc shareMessageToChatBloc =
+    final ShareMessageToChatBloc shareMessageToChatBloc =
         Provider.of<ShareMessageToChatBloc>(context, listen: false);
 
     debugPrint("Result = $result");
@@ -112,9 +112,10 @@ class ShareInChat {
       shareMessageToChatBloc.clearRecipient();
       return [];
     } else {
-      List<ChatConversation?> tempList = shareMessageToChatBloc.getRecipients();
+      final List<ChatConversation?> tempList =
+          shareMessageToChatBloc.getRecipients();
 
-      List<ChatConversation?> recipientList = [];
+      final List<ChatConversation?> recipientList = [];
 
       if (tempList != null && tempList.isNotEmpty) {
         for (ChatConversation? conversation in tempList) {

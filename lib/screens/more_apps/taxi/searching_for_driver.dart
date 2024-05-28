@@ -24,7 +24,7 @@ class _SearchingForRideState extends State<SearchingForRide> {
   }
 
   void navigateToArrivingDriver() async {
-    driverFindingTimer = Timer(Duration(seconds: 5), () {
+    driverFindingTimer = Timer(const Duration(seconds: 5), () {
       bool isDriverFound = true;
       if (isDriverFound) {
         Navigator.of(context).pushNamed("/driver-arriving");
@@ -116,7 +116,7 @@ class _SearchingForRideState extends State<SearchingForRide> {
       left: 8,
       child: SafeArea(
         child: InkWell(
-          child: Icon(
+          child: const Icon(
             Icons.close_rounded,
             color: Colors.white,
             size: 26,
@@ -137,12 +137,12 @@ class _SearchingForRideState extends State<SearchingForRide> {
         child: Card(
           color: Colors.white,
           margin: EdgeInsets.zero,
-          shape: RoundedRectangleBorder(
+          shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(20), topRight: Radius.circular(20))),
           child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            decoration: BoxDecoration(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            decoration: const BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.only(
                 topRight: Radius.circular(20),
@@ -151,15 +151,15 @@ class _SearchingForRideState extends State<SearchingForRide> {
             ),
             child: Column(
               children: [
-                SizedBox(
+                const SizedBox(
                   height: 40,
                 ),
                 getRideInfo(),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
                 getCancelBookingBtn(),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
               ],
@@ -172,7 +172,7 @@ class _SearchingForRideState extends State<SearchingForRide> {
     return Card(
       shadowColor: dividerColor,
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         child: Row(
           children: [
             Column(
@@ -184,7 +184,7 @@ class _SearchingForRideState extends State<SearchingForRide> {
                       fontSize: 14,
                       color: blackFont),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 8,
                 ),
                 Text(
@@ -196,14 +196,14 @@ class _SearchingForRideState extends State<SearchingForRide> {
                 ),
               ],
             ),
-            SizedBox(
+            const SizedBox(
               width: 12,
             ),
             Image.asset(
               "assets/images/taxi/route.png",
               height: 50,
             ),
-            SizedBox(
+            const SizedBox(
               width: 12,
             ),
             Expanded(
@@ -217,7 +217,7 @@ class _SearchingForRideState extends State<SearchingForRide> {
                         fontSize: 14,
                         color: blackFont),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 8,
                   ),
                   Text(
@@ -258,7 +258,7 @@ class _SearchingForRideState extends State<SearchingForRide> {
       color: blackFont.withAlpha(225),
       child: Column(
         children: [
-          Expanded(
+          const Expanded(
             child: SizedBox(
               height: 10,
             ),
@@ -268,15 +268,15 @@ class _SearchingForRideState extends State<SearchingForRide> {
             fit: BoxFit.fitWidth,
             width: MediaQuery.of(context).size.width / 1.5,
           ),
-          SizedBox(
+          const SizedBox(
             height: 40,
           ),
-          Text(
+          const Text(
             "Searching for a driver",
             style: TextStyle(
                 color: Colors.white, fontSize: 18, fontWeight: FontWeight.w700),
           ),
-          Expanded(
+          const Expanded(
             flex: 2,
             child: SizedBox(
               height: 10,

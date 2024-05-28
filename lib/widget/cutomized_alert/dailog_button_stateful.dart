@@ -41,7 +41,7 @@ class _DialogButtonStateFulState extends State<DialogButtonStateFul> {
       width: double.infinity,
       height: 42,
       child: Material(
-        shape: RoundedRectangleBorder(
+        shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(7))),
         color: widget.backgroundColor,
         child: InkWell(

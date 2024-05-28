@@ -61,7 +61,7 @@ class _SelectAddressForTaxiState extends State<SelectAddressForTaxi> {
             maxChildSize: _initialSheetChildSize,
             minChildSize: _initialSheetChildSize,
             builder: (context, scrollController) => ClipRRect(
-              borderRadius: BorderRadius.only(
+              borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(20), topRight: Radius.circular(20)),
               child: Container(
                   color: Colors.white,
@@ -76,7 +76,7 @@ class _SelectAddressForTaxiState extends State<SelectAddressForTaxi> {
 
   Widget getSearchDestination({ScrollController? scrollController}) {
     return Container(
-        padding: EdgeInsets.only(left: 16, right: 16, top: 8),
+        padding: const EdgeInsets.only(left: 16, right: 16, top: 8),
         child: Column(
           children: [
             Container(
@@ -87,7 +87,7 @@ class _SelectAddressForTaxiState extends State<SelectAddressForTaxi> {
                 color: blackFont.withOpacity(0.08),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
             Expanded(
@@ -95,7 +95,7 @@ class _SelectAddressForTaxiState extends State<SelectAddressForTaxi> {
                 controller: scrollController,
                 children: [
                   getDestination(),
-                  SizedBox(
+                  const SizedBox(
                     height: 20,
                   ),
                   Row(
@@ -114,7 +114,7 @@ class _SelectAddressForTaxiState extends State<SelectAddressForTaxi> {
                       ),
                     ],
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 24,
                   ),
                   Text(
@@ -126,8 +126,8 @@ class _SelectAddressForTaxiState extends State<SelectAddressForTaxi> {
                   ),
                   for (int i = 0; i < places.length; i++)
                     ListTile(
-                      contentPadding:
-                          EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 0, vertical: 0),
                       leading: RoundedBackgroundIcon(
                         backgroundColor: lightGrey,
                         height: 32,
@@ -168,7 +168,7 @@ class _SelectAddressForTaxiState extends State<SelectAddressForTaxi> {
       child: Container(
         width: double.infinity,
         child: Container(
-          padding: EdgeInsets.only(bottom: 16, left: 16, right: 16),
+          padding: const EdgeInsets.only(bottom: 16, left: 16, right: 16),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
@@ -179,7 +179,7 @@ class _SelectAddressForTaxiState extends State<SelectAddressForTaxi> {
                   height: 100,
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 width: 10,
               ),
               Expanded(
@@ -209,7 +209,7 @@ class _SelectAddressForTaxiState extends State<SelectAddressForTaxi> {
                           fontWeight: FontWeight.w600,
                           color: blackFont),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 10,
                     ),
                   ],

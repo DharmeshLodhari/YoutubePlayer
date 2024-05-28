@@ -286,7 +286,7 @@ class _DashboardState extends State<Dashboard> {
         notification['type'] == "nudge_user") {
       final String? recipientUsername =
           notification['actions'].replaceAll("/chat-screen/", "");
-      print("Recipient user name = $recipientUsername");
+      debugPrint("Recipient user name = $recipientUsername");
 
       if (recipientUsername != null) {
         showDialog(

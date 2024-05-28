@@ -119,7 +119,7 @@ class _ViewAskMediaState extends State<ViewAskMedia> {
                     child: Container(
                       height: 36,
                       width: 36,
-                      child: Icon(
+                      child: const Icon(
                         Icons.arrow_back_ios_rounded,
                         color: Colors.white,
                         size: 18,

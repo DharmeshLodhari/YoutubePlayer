@@ -142,17 +142,17 @@ class _RequireStepsState extends State<RequireSteps> {
 
   Widget _buildBody() {
     return Padding(
-      padding: EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(16.0),
       child: Column(
         children: [
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(height: 10.0),
+                const SizedBox(height: 10.0),
                 _buildRequireSteps(),
                 _buildHereWhatYouNeed(),
-                SizedBox(
+                const SizedBox(
                   height: 40.0,
                 ),
                 if (riderRegistrationBloc.registrationModel?.rideTypeOptions ==
@@ -200,7 +200,7 @@ class _RequireStepsState extends State<RequireSteps> {
   Widget _buildList(List checkListItems) {
     return ListView.builder(
       shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
+      physics: const NeverScrollableScrollPhysics(),
       itemCount: checkListItems.length,
       itemBuilder: (context, index) {
         return KYCProofTile(item: checkListItems[index]);

@@ -90,7 +90,7 @@ class _UserKycState extends State<UserKyc> {
                       Card(
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10)),
-                        margin: EdgeInsets.all(8.0),
+                        margin: const EdgeInsets.all(8.0),
                         shadowColor: dividerColor,
                         child: Container(
                           decoration: BoxDecoration(
@@ -119,20 +119,21 @@ class _UserKycState extends State<UserKyc> {
                           ),
                         ),
                       ),
-                      userTier == '3' &&
-                              widget.kycModel.bvnResult == 'Successful' &&
-                              widget.kycModel.documentResult == 'Successful'
-                          ? SizedBox.shrink()
-                          : Padding(
-                              padding: const EdgeInsets.all(12.0),
-                              child: CurvedButton(
-                                text: 'Upgrade Account',
-                                onPressed: () {
-                                  Navigator.pushNamed(
-                                      context, Routes.UPGRADE_ACCOUNT);
-                                },
-                              ),
-                            ),
+                      if (userTier == '3' &&
+                          widget.kycModel.bvnResult == 'Successful' &&
+                          widget.kycModel.documentResult == 'Successful')
+                        const SizedBox.shrink()
+                      else
+                        Padding(
+                          padding: const EdgeInsets.all(12.0),
+                          child: CurvedButton(
+                            text: 'Upgrade Account',
+                            onPressed: () {
+                              Navigator.pushNamed(
+                                  context, Routes.UPGRADE_ACCOUNT);
+                            },
+                          ),
+                        ),
                     ],
                   )
             : Center(child: CircularLoadingIndicator()),
@@ -144,8 +145,8 @@ class _UserKycState extends State<UserKyc> {
     return Container(
       width: MediaQuery.of(context).size.width,
       decoration: decorateBox(),
-      padding: EdgeInsets.all(16),
-      margin: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
+      margin: const EdgeInsets.all(16),
       child: Text(
         "You do not have a Virtual account.\nCheck back later.",
         style: TextStyle(

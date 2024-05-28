@@ -288,19 +288,20 @@ class _SearchMomentSingleWidgetState extends State<SearchMomentSingleWidget> {
                 ),
               ),
             ),
-            isLoading
-                ? Align(
-                    alignment: Alignment.topRight,
-                    child: SizedBox(
-                        width: 40,
-                        height: 40,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 8.0, vertical: 8),
-                          child: CircularLoadingIndicator(),
-                        )),
-                  )
-                : const SizedBox.shrink(),
+            if (isLoading)
+              Align(
+                alignment: Alignment.topRight,
+                child: SizedBox(
+                    width: 40,
+                    height: 40,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8.0, vertical: 8),
+                      child: CircularLoadingIndicator(),
+                    )),
+              )
+            else
+              const SizedBox.shrink(),
             Align(
               alignment: Alignment.bottomLeft,
               child: Padding(

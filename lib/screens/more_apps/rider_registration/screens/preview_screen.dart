@@ -58,7 +58,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
   Widget _buildBody() {
     return Scaffold(
       body: Padding(
-        padding: EdgeInsets.all(25.0),
+        padding: const EdgeInsets.all(25.0),
         child: Column(
           children: [
             Expanded(
@@ -73,7 +73,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
                             File(riderRegistrationBloc.tempPicture!.path),
                           ),
                         ),
-                        SizedBox(height: 20.0),
+                        const SizedBox(height: 20.0),
                         Text(
                           'Want to use this photo?',
                           style: TextStyle(
@@ -83,7 +83,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
                             fontFamily: "Inter",
                           ),
                         ),
-                        SizedBox(height: 10.0),
+                        const SizedBox(height: 10.0),
                         Text(
                           'For safety reasons, riders will see your old picture until we can confirm that this is you.',
                           style: TextStyle(
@@ -106,7 +106,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
                     ),
               // SizedBox(height: 10.0),,
             ),
-            SizedBox(height: 20.0),
+            const SizedBox(height: 20.0),
             _buildButton()
           ],
         ),
@@ -128,7 +128,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
             backgroundColor: white,
           ),
         ),
-        SizedBox(width: 15.0),
+        const SizedBox(width: 15.0),
         Expanded(
           child: CurvedButton(
             onPressed: () {

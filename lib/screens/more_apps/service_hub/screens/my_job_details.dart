@@ -106,7 +106,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
       isLoading = true;
       if (mounted) setState(() {});
 
-      var result = await ServiceHubAuthService().retreiveJob(jobId: jobId);
+      final result = await ServiceHubAuthService().retreiveJob(jobId: jobId);
       log('tor bad......${result?.toJson()}');
 
       if (result == null) {
@@ -120,7 +120,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
         return;
       }
 
-      var tempList = result;
+      final tempList = result;
       if (mounted) {
         setState(() {
           // noJobsInList = false;
@@ -134,7 +134,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
   }
 
   void deleteJob() async {
-    bool done = await ServiceHubAuthService().deleteMyJob(jobId);
+    final bool done = await ServiceHubAuthService().deleteMyJob(jobId);
     if (done) {
       Navigator.pushReplacementNamed(context, Routes.MY_JOBS);
       showSnackbar(context, message: 'Job Deleted Successfully');
@@ -164,35 +164,36 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
           child: Column(
             children: [
               getJobDetails(),
-              isLoading
-                  ? Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Shimmer.fromColors(
-                        baseColor: Colors.white,
-                        highlightColor: greyBorderColor,
-                        child: GridView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          gridDelegate:
-                              const SliverGridDelegateWithMaxCrossAxisExtent(
-                            mainAxisSpacing: 14,
-                            mainAxisExtent: 180,
-                            crossAxisSpacing: 15,
-                            maxCrossAxisExtent: 200,
-                          ),
-                          itemCount: 2,
-                          itemBuilder: (context, index) {
-                            return Card(
-                              color: Colors.grey,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            );
-                          },
-                        ),
+              if (isLoading)
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Shimmer.fromColors(
+                    baseColor: Colors.white,
+                    highlightColor: greyBorderColor,
+                    child: GridView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      gridDelegate:
+                          const SliverGridDelegateWithMaxCrossAxisExtent(
+                        mainAxisSpacing: 14,
+                        mainAxisExtent: 180,
+                        crossAxisSpacing: 15,
+                        maxCrossAxisExtent: 200,
                       ),
-                    )
-                  : const SizedBox.shrink(),
+                      itemCount: 2,
+                      itemBuilder: (context, index) {
+                        return Card(
+                          color: Colors.grey,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                )
+              else
+                const SizedBox.shrink(),
               Visibility(
                 visible: !isLoading && job == null,
                 child: Center(
@@ -401,655 +402,601 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
                     ),
                   ),
                   getJobActivityStatusRow(),
-                  job!.applicants!.contains(userBloc.user.userName)
-                      ? Column(
-                          children: [
-                            job?.status?.toLowerCase() == 'open'
-                                ? Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 8.0, horizontal: 16),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        const CustomText(
-                                          title: 'Job Activity',
-                                          fontSize: 14,
-                                          fontweight: FontWeight.w700,
-                                        ),
-                                        const SizedBox(
-                                          height: 10,
-                                        ),
-                                        Column(
-                                          children: [
-                                            Row(
-                                              children: [
-                                                Container(
-                                                    padding: const EdgeInsets
-                                                        .fromLTRB(10, 4, 10, 4),
-                                                    decoration: BoxDecoration(
-                                                        border: Border.all(
-                                                            color:
-                                                                greyBorderColor),
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(12)),
-                                                    child: Text(
-                                                      'Application Submitted',
-                                                      style: TextStyle(
-                                                          color: black,
-                                                          fontFamily: "Inter",
-                                                          fontSize: 12),
-                                                    )),
-                                                const SizedBox(
-                                                  width: 10,
-                                                ),
-                                                job!.applicants!.contains(
-                                                        userBloc.user.userName)
-                                                    ? Container(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .all(2),
-                                                        decoration: BoxDecoration(
-                                                            color: navyBlue,
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        10)),
-                                                        child: Icon(
-                                                          Icons.check,
-                                                          color: white,
-                                                          size: 7,
-                                                        ))
-                                                    : Container(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .all(5),
-                                                        decoration: BoxDecoration(
-                                                            color: darkGrey,
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        10)),
-                                                        child: Container())
-                                              ],
-                                            ),
-                                            const SizedBox(
-                                              height: 5,
-                                            ),
-                                            Row(
-                                              children: [
-                                                Container(
-                                                    padding: const EdgeInsets
-                                                        .fromLTRB(10, 4, 10, 4),
-                                                    decoration: BoxDecoration(
-                                                        border: Border.all(
-                                                            color:
-                                                                greyBorderColor),
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(12)),
-                                                    child: Text(
-                                                      'Application viewed',
-                                                      style: TextStyle(
-                                                          color: black,
-                                                          fontFamily: "Inter",
-                                                          fontSize: 12),
-                                                    )),
-                                                const SizedBox(
-                                                  width: 25,
-                                                ),
-                                                Container(
-                                                  padding:
-                                                      const EdgeInsets.all(5),
-                                                  decoration: BoxDecoration(
-                                                      color: darkGrey,
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              10)),
-                                                  child: Container(),
-                                                )
-                                              ],
-                                            ),
-                                            const SizedBox(
-                                              height: 5,
-                                            ),
-                                            Row(
-                                              children: [
-                                                Container(
-                                                    padding: const EdgeInsets
-                                                        .fromLTRB(10, 4, 10, 4),
-                                                    decoration: BoxDecoration(
-                                                        border: Border.all(
-                                                            color:
-                                                                greyBorderColor),
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(12)),
-                                                    child: Text(
-                                                      'Application Accepted',
-                                                      style: TextStyle(
-                                                          color: black,
-                                                          fontFamily: "Inter",
-                                                          fontSize: 12),
-                                                    )),
-                                                const SizedBox(
-                                                  width: 12,
-                                                ),
-                                                Container(
-                                                  padding:
-                                                      const EdgeInsets.all(5),
-                                                  decoration: BoxDecoration(
-                                                      color: darkGrey,
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              10)),
-                                                  child: Container(),
-                                                )
-                                              ],
-                                            ),
-                                          ],
-                                        )
-                                      ],
-                                    ),
-                                  )
-                                : Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 8.0, horizontal: 16),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        const CustomText(
-                                          title: 'Job Activity',
-                                          fontSize: 14,
-                                          fontweight: FontWeight.w700,
-                                        ),
-                                        const SizedBox(
-                                          height: 10,
-                                        ),
-                                        Column(
-                                          children: [
-                                            Row(
-                                              children: [
-                                                Container(
-                                                    padding: const EdgeInsets
-                                                        .fromLTRB(10, 4, 10, 4),
-                                                    decoration: BoxDecoration(
-                                                        border: Border.all(
-                                                            color:
-                                                                greyBorderColor),
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(12)),
-                                                    child: Text(
-                                                      'Application Submitted',
-                                                      style: TextStyle(
-                                                          color: black,
-                                                          fontFamily: "Inter",
-                                                          fontSize: 12),
-                                                    )),
-                                                const SizedBox(
-                                                  width: 10,
-                                                ),
-                                                Container(
-                                                    padding:
-                                                        const EdgeInsets.all(2),
-                                                    decoration: BoxDecoration(
-                                                        color: navyBlue,
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(10)),
-                                                    child: Icon(
-                                                      Icons.check,
-                                                      color: white,
-                                                      size: 7,
-                                                    ))
-                                              ],
-                                            ),
-                                            const SizedBox(
-                                              height: 5,
-                                            ),
-                                            job?.status?.toLowerCase() ==
-                                                    'canceled'
-                                                ? Row(
-                                                    children: [
-                                                      Container(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                      .fromLTRB(
-                                                                  10, 4, 10, 4),
-                                                          decoration: BoxDecoration(
-                                                              border: Border.all(
-                                                                  color:
-                                                                      greyBorderColor),
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          12)),
-                                                          child: Text(
-                                                            'Application Canceled',
-                                                            style: TextStyle(
-                                                                color: black,
-                                                                fontFamily:
-                                                                    "Inter",
-                                                                fontSize: 12),
-                                                          )),
-                                                      const SizedBox(
-                                                        width: 12,
-                                                      ),
-                                                      Container(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .all(2),
-                                                          decoration: BoxDecoration(
-                                                              color: mateRed,
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          10)),
-                                                          child: Icon(
-                                                            Icons.check,
-                                                            color: white,
-                                                            size: 7,
-                                                          ))
-                                                    ],
-                                                  )
-                                                : Column(
-                                                    children: [
-                                                      Row(
-                                                        children: [
-                                                          Container(
-                                                              padding:
-                                                                  const EdgeInsets
-                                                                          .fromLTRB(
-                                                                      10,
-                                                                      4,
-                                                                      10,
-                                                                      4),
-                                                              decoration: BoxDecoration(
-                                                                  border: Border
-                                                                      .all(
-                                                                          color:
-                                                                              greyBorderColor),
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .circular(
-                                                                              12)),
-                                                              child: Text(
-                                                                'Application viewed',
-                                                                style: TextStyle(
-                                                                    color:
-                                                                        black,
-                                                                    fontFamily:
-                                                                        "Inter",
-                                                                    fontSize:
-                                                                        12),
-                                                              )),
-                                                          const SizedBox(
-                                                            width: 25,
-                                                          ),
-                                                          Container(
-                                                            padding: job?.status
-                                                                            ?.toLowerCase() ==
-                                                                        'in-progress' ||
-                                                                    job?.status
-                                                                            ?.toLowerCase() ==
-                                                                        'closed'
-                                                                ? const EdgeInsets
-                                                                    .all(2)
-                                                                : const EdgeInsets
-                                                                    .all(5),
-                                                            decoration: BoxDecoration(
-                                                                color: job?.status?.toLowerCase() ==
-                                                                            'in-progress' ||
-                                                                        job?.status?.toLowerCase() ==
-                                                                            'closed'
-                                                                    ? navyBlue
-                                                                    : darkGrey,
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                            10)),
-                                                            child: job?.status
-                                                                            ?.toLowerCase() ==
-                                                                        'in-progress' ||
-                                                                    job?.status
-                                                                            ?.toLowerCase() ==
-                                                                        'closed'
-                                                                ? Icon(
-                                                                    Icons.check,
-                                                                    color:
-                                                                        white,
-                                                                    size: 7,
-                                                                  )
-                                                                : Container(),
-                                                          )
-                                                        ],
-                                                      ),
-                                                      const SizedBox(
-                                                        height: 5,
-                                                      ),
-                                                      Row(
-                                                        children: [
-                                                          Container(
-                                                              padding:
-                                                                  const EdgeInsets
-                                                                          .fromLTRB(
-                                                                      10,
-                                                                      4,
-                                                                      10,
-                                                                      4),
-                                                              decoration: BoxDecoration(
-                                                                  border: Border
-                                                                      .all(
-                                                                          color:
-                                                                              greyBorderColor),
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .circular(
-                                                                              12)),
-                                                              child: Text(
-                                                                'Application Accepted',
-                                                                style: TextStyle(
-                                                                    color:
-                                                                        black,
-                                                                    fontFamily:
-                                                                        "Inter",
-                                                                    fontSize:
-                                                                        12),
-                                                              )),
-                                                          const SizedBox(
-                                                            width: 12,
-                                                          ),
-                                                          Container(
-                                                            padding: job?.status
-                                                                            ?.toLowerCase() ==
-                                                                        'in-progress' ||
-                                                                    job?.status
-                                                                            ?.toLowerCase() ==
-                                                                        'closed'
-                                                                ? const EdgeInsets
-                                                                    .all(2)
-                                                                : const EdgeInsets
-                                                                    .all(5),
-                                                            decoration: BoxDecoration(
-                                                                color: job?.status?.toLowerCase() ==
-                                                                            'in-progress' ||
-                                                                        job?.status?.toLowerCase() ==
-                                                                            'closed'
-                                                                    ? navyBlue
-                                                                    : darkGrey,
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                            10)),
-                                                            child: job?.status
-                                                                            ?.toLowerCase() ==
-                                                                        'in-progress' ||
-                                                                    job?.status
-                                                                            ?.toLowerCase() ==
-                                                                        'closed'
-                                                                ? Icon(
-                                                                    Icons.check,
-                                                                    color:
-                                                                        white,
-                                                                    size: 7,
-                                                                  )
-                                                                : Container(),
-                                                          )
-                                                        ],
-                                                      ),
-                                                    ],
-                                                  )
-                                          ],
-                                        )
-                                      ],
-                                    ),
-                                  )
-                          ],
-                        )
-                      : getJobActivity(job!.status!),
-                  getJobOnlineRow(),
-                  job?.status?.toLowerCase() == 'in-progress' ||
-                          job?.status?.toLowerCase() == 'completed'
-                      ? getPaymentStatusRow()
-                      : const SizedBox.shrink(),
-                  const Divider(),
-                  job!.assignee != null
-                      ? Padding(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 8.0, horizontal: 16),
-                          child: userBloc.user.userName ==
-                                      job!.ownerName!.toLowerCase() ||
-                                  userBloc.user.fullName?.toLowerCase() ==
-                                      job!.ownerName!.toLowerCase()
-                              ? Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                  if (job!.applicants!.contains(userBloc.user.userName))
+                    Column(
+                      children: [
+                        if (job?.status?.toLowerCase() == 'open')
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 8.0, horizontal: 16),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const CustomText(
+                                  title: 'Job Activity',
+                                  fontSize: 14,
+                                  fontweight: FontWeight.w700,
+                                ),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                Column(
                                   children: [
-                                    const CustomText(
-                                      title: "Contractor",
-                                      fontSize: 14,
-                                      fontweight: FontWeight.w700,
-                                    ),
-                                    GestureDetector(
-                                      onTap: () => Navigator.pushNamed(
-                                          context, Routes.USER_PROFILE,
-                                          arguments: {
-                                            "searchedUserName": job!.assignee
-                                          }),
-                                      child: Row(
-                                        children: [
-                                          CachedNetworkImage(
-                                            imageUrl: "${job!.assigneeAvatar}",
-                                            imageBuilder:
-                                                (context, imageProvider) =>
-                                                    Container(
-                                              width: 23.0,
-                                              height: 23.0,
+                                    Row(
+                                      children: [
+                                        Container(
+                                            padding: const EdgeInsets.fromLTRB(
+                                                10, 4, 10, 4),
+                                            decoration: BoxDecoration(
+                                                border: Border.all(
+                                                    color: greyBorderColor),
+                                                borderRadius:
+                                                    BorderRadius.circular(12)),
+                                            child: Text(
+                                              'Application Submitted',
+                                              style: TextStyle(
+                                                  color: black,
+                                                  fontFamily: "Inter",
+                                                  fontSize: 12),
+                                            )),
+                                        const SizedBox(
+                                          width: 10,
+                                        ),
+                                        if (job!.applicants!
+                                            .contains(userBloc.user.userName))
+                                          Container(
+                                              padding: const EdgeInsets.all(2),
                                               decoration: BoxDecoration(
-                                                shape: BoxShape.circle,
-                                                image: DecorationImage(
-                                                    image: imageProvider,
-                                                    fit: BoxFit.cover),
-                                              ),
-                                            ),
-                                            errorWidget:
-                                                productAndServiceBigErrorWidget,
-                                          ),
-                                          const SizedBox(
-                                            width: 10,
-                                          ),
-                                          userNameWithVerifiedIcon(
-                                            name: job?.assignee ?? '',
-                                            isVerified: job!.isVerified,
-                                            verifiedIconColor: verifyGreen,
-                                            textStyle: TextStyle(
-                                                fontSize: 14,
-                                                fontFamily: "Inter",
-                                                fontWeight: FontWeight.w500,
-                                                color: HexColor("#151515")),
-                                          ),
-                                        ],
-                                      ),
+                                                  color: navyBlue,
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          10)),
+                                              child: Icon(
+                                                Icons.check,
+                                                color: white,
+                                                size: 7,
+                                              ))
+                                        else
+                                          Container(
+                                              padding: const EdgeInsets.all(5),
+                                              decoration: BoxDecoration(
+                                                  color: darkGrey,
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          10)),
+                                              child: Container())
+                                      ],
+                                    ),
+                                    const SizedBox(
+                                      height: 5,
+                                    ),
+                                    Row(
+                                      children: [
+                                        Container(
+                                            padding: const EdgeInsets.fromLTRB(
+                                                10, 4, 10, 4),
+                                            decoration: BoxDecoration(
+                                                border: Border.all(
+                                                    color: greyBorderColor),
+                                                borderRadius:
+                                                    BorderRadius.circular(12)),
+                                            child: Text(
+                                              'Application viewed',
+                                              style: TextStyle(
+                                                  color: black,
+                                                  fontFamily: "Inter",
+                                                  fontSize: 12),
+                                            )),
+                                        const SizedBox(
+                                          width: 25,
+                                        ),
+                                        Container(
+                                          padding: const EdgeInsets.all(5),
+                                          decoration: BoxDecoration(
+                                              color: darkGrey,
+                                              borderRadius:
+                                                  BorderRadius.circular(10)),
+                                          child: Container(),
+                                        )
+                                      ],
+                                    ),
+                                    const SizedBox(
+                                      height: 5,
+                                    ),
+                                    Row(
+                                      children: [
+                                        Container(
+                                            padding: const EdgeInsets.fromLTRB(
+                                                10, 4, 10, 4),
+                                            decoration: BoxDecoration(
+                                                border: Border.all(
+                                                    color: greyBorderColor),
+                                                borderRadius:
+                                                    BorderRadius.circular(12)),
+                                            child: Text(
+                                              'Application Accepted',
+                                              style: TextStyle(
+                                                  color: black,
+                                                  fontFamily: "Inter",
+                                                  fontSize: 12),
+                                            )),
+                                        const SizedBox(
+                                          width: 12,
+                                        ),
+                                        Container(
+                                          padding: const EdgeInsets.all(5),
+                                          decoration: BoxDecoration(
+                                              color: darkGrey,
+                                              borderRadius:
+                                                  BorderRadius.circular(10)),
+                                          child: Container(),
+                                        )
+                                      ],
                                     ),
                                   ],
                                 )
-                              : Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    const CustomText(
-                                      title: "Posted By",
-                                      fontSize: 14,
-                                      fontweight: FontWeight.w700,
-                                    ),
-                                    GestureDetector(
-                                      onTap: () => Navigator.pushNamed(
-                                          context, Routes.USER_PROFILE,
-                                          arguments: {
-                                            "searchedUserName": job!.owner
-                                          }),
-                                      child: Row(
-                                        children: [
-                                          CachedNetworkImage(
-                                            imageUrl: "${job!.ownerAvatar}",
-                                            imageBuilder:
-                                                (context, imageProvider) =>
-                                                    Container(
-                                              width: 23.0,
-                                              height: 23.0,
-                                              decoration: BoxDecoration(
-                                                shape: BoxShape.circle,
-                                                image: DecorationImage(
-                                                    image: imageProvider,
-                                                    fit: BoxFit.cover),
-                                              ),
-                                            ),
-                                            errorWidget:
-                                                productAndServiceBigErrorWidget,
-                                          ),
-                                          const SizedBox(
-                                            width: 10,
-                                          ),
-                                          userNameWithVerifiedIcon(
-                                            name: job!.ownerName!,
-                                            isVerified:
-                                                userBloc.user.isVerified,
-                                            verifiedIconColor: verifyGreen,
-                                            textStyle: TextStyle(
-                                                fontSize: 14,
-                                                fontFamily: "Inter",
-                                                fontWeight: FontWeight.w500,
-                                                color: HexColor("#151515")),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
+                              ],
+                            ),
+                          )
+                        else
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 8.0, horizontal: 16),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const CustomText(
+                                  title: 'Job Activity',
+                                  fontSize: 14,
+                                  fontweight: FontWeight.w700,
                                 ),
-                        )
-                      : SizedBox.shrink(),
-                  job!.assignee != null ? Divider() : SizedBox.shrink(),
-                  myList.isEmpty
-                      ? SizedBox.shrink()
-                      : Padding(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 8.0, horizontal: 16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const CustomText(
-                                title: "Review",
-                                fontSize: 14,
-                                fontweight: FontWeight.w700,
-                              ),
-                              SizedBox(
-                                height: 20,
-                              ),
-                              ...myList
-                                  .map((e) => Column(
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                Column(
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Container(
+                                            padding: const EdgeInsets.fromLTRB(
+                                                10, 4, 10, 4),
+                                            decoration: BoxDecoration(
+                                                border: Border.all(
+                                                    color: greyBorderColor),
+                                                borderRadius:
+                                                    BorderRadius.circular(12)),
+                                            child: Text(
+                                              'Application Submitted',
+                                              style: TextStyle(
+                                                  color: black,
+                                                  fontFamily: "Inter",
+                                                  fontSize: 12),
+                                            )),
+                                        const SizedBox(
+                                          width: 10,
+                                        ),
+                                        Container(
+                                            padding: const EdgeInsets.all(2),
+                                            decoration: BoxDecoration(
+                                                color: navyBlue,
+                                                borderRadius:
+                                                    BorderRadius.circular(10)),
+                                            child: Icon(
+                                              Icons.check,
+                                              color: white,
+                                              size: 7,
+                                            ))
+                                      ],
+                                    ),
+                                    const SizedBox(
+                                      height: 5,
+                                    ),
+                                    if (job?.status?.toLowerCase() ==
+                                        'canceled')
+                                      Row(
                                         children: [
                                           Container(
-                                            padding: EdgeInsets.symmetric(
-                                                vertical: 10, horizontal: 10),
-                                            decoration: BoxDecoration(
-                                              border: Border.all(
-                                                  color: greyBorderColor),
-                                              borderRadius:
-                                                  BorderRadius.circular(6),
-                                            ),
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Row(
-                                                  children: [
-                                                    CachedNetworkImage(
-                                                      imageUrl:
-                                                          "${e.ownerAvatar}",
-                                                      imageBuilder: (context,
-                                                              imageProvider) =>
-                                                          Container(
-                                                        width: 23.0,
-                                                        height: 23.0,
-                                                        decoration:
-                                                            BoxDecoration(
-                                                          shape:
-                                                              BoxShape.circle,
-                                                          image: DecorationImage(
-                                                              image:
-                                                                  imageProvider,
-                                                              fit:
-                                                                  BoxFit.cover),
-                                                        ),
-                                                      ),
-                                                      errorWidget:
-                                                          productAndServiceBigErrorWidget,
-                                                    ),
-                                                    const SizedBox(
-                                                      width: 10,
-                                                    ),
-                                                    userNameWithVerifiedIcon(
-                                                      name:
-                                                          e.jobOwnerName ?? '',
-                                                      isVerified:
-                                                          job!.isVerified,
-                                                      verifiedIconColor:
-                                                          verifyGreen,
-                                                      textStyle: TextStyle(
-                                                          fontSize: 14,
-                                                          fontFamily: "Inter",
-                                                          fontWeight:
-                                                              FontWeight.w500,
-                                                          color: HexColor(
-                                                              "#151515")),
-                                                    ),
-                                                  ],
-                                                ),
-                                                SizedBox(
-                                                  height: 6,
-                                                ),
-                                                RatingBar.builder(
-                                                  initialRating:
-                                                      e.score!.toDouble(),
-                                                  minRating: 1,
-                                                  direction: Axis.horizontal,
-                                                  allowHalfRating: false,
-                                                  itemCount: 5,
-                                                  itemSize: 20,
-                                                  itemPadding:
-                                                      EdgeInsets.symmetric(
-                                                          horizontal: 3.0),
-                                                  itemBuilder: (context, _) =>
-                                                      Icon(
-                                                    Icons.star,
-                                                    size: 10,
-                                                    color: Colors.amber,
-                                                  ),
-                                                  onRatingUpdate: (rating) {},
-                                                ),
-                                                SizedBox(
-                                                  height: 12,
-                                                ),
-                                                Text(
-                                                  e.review ?? '',
-                                                  style: TextStyle(
-                                                      fontSize: 14.4,
-                                                      fontFamily: "Inter",
-                                                      fontWeight:
-                                                          FontWeight.w500),
-                                                )
-                                              ],
-                                            ),
+                                              padding:
+                                                  const EdgeInsets.fromLTRB(
+                                                      10, 4, 10, 4),
+                                              decoration: BoxDecoration(
+                                                  border: Border.all(
+                                                      color: greyBorderColor),
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          12)),
+                                              child: Text(
+                                                'Application Canceled',
+                                                style: TextStyle(
+                                                    color: black,
+                                                    fontFamily: "Inter",
+                                                    fontSize: 12),
+                                              )),
+                                          const SizedBox(
+                                            width: 12,
+                                          ),
+                                          Container(
+                                              padding: const EdgeInsets.all(2),
+                                              decoration: BoxDecoration(
+                                                  color: mateRed,
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          10)),
+                                              child: Icon(
+                                                Icons.check,
+                                                color: white,
+                                                size: 7,
+                                              ))
+                                        ],
+                                      )
+                                    else
+                                      Column(
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Container(
+                                                  padding:
+                                                      const EdgeInsets.fromLTRB(
+                                                          10, 4, 10, 4),
+                                                  decoration: BoxDecoration(
+                                                      border: Border.all(
+                                                          color:
+                                                              greyBorderColor),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              12)),
+                                                  child: Text(
+                                                    'Application viewed',
+                                                    style: TextStyle(
+                                                        color: black,
+                                                        fontFamily: "Inter",
+                                                        fontSize: 12),
+                                                  )),
+                                              const SizedBox(
+                                                width: 25,
+                                              ),
+                                              Container(
+                                                padding: job?.status
+                                                                ?.toLowerCase() ==
+                                                            'in-progress' ||
+                                                        job?.status
+                                                                ?.toLowerCase() ==
+                                                            'closed'
+                                                    ? const EdgeInsets.all(2)
+                                                    : const EdgeInsets.all(5),
+                                                decoration: BoxDecoration(
+                                                    color: job?.status
+                                                                    ?.toLowerCase() ==
+                                                                'in-progress' ||
+                                                            job?.status
+                                                                    ?.toLowerCase() ==
+                                                                'closed'
+                                                        ? navyBlue
+                                                        : darkGrey,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            10)),
+                                                child: job?.status
+                                                                ?.toLowerCase() ==
+                                                            'in-progress' ||
+                                                        job?.status
+                                                                ?.toLowerCase() ==
+                                                            'closed'
+                                                    ? Icon(
+                                                        Icons.check,
+                                                        color: white,
+                                                        size: 7,
+                                                      )
+                                                    : Container(),
+                                              )
+                                            ],
+                                          ),
+                                          const SizedBox(
+                                            height: 5,
+                                          ),
+                                          Row(
+                                            children: [
+                                              Container(
+                                                  padding:
+                                                      const EdgeInsets.fromLTRB(
+                                                          10, 4, 10, 4),
+                                                  decoration: BoxDecoration(
+                                                      border: Border.all(
+                                                          color:
+                                                              greyBorderColor),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              12)),
+                                                  child: Text(
+                                                    'Application Accepted',
+                                                    style: TextStyle(
+                                                        color: black,
+                                                        fontFamily: "Inter",
+                                                        fontSize: 12),
+                                                  )),
+                                              const SizedBox(
+                                                width: 12,
+                                              ),
+                                              Container(
+                                                padding: job?.status
+                                                                ?.toLowerCase() ==
+                                                            'in-progress' ||
+                                                        job?.status
+                                                                ?.toLowerCase() ==
+                                                            'closed'
+                                                    ? const EdgeInsets.all(2)
+                                                    : const EdgeInsets.all(5),
+                                                decoration: BoxDecoration(
+                                                    color: job?.status
+                                                                    ?.toLowerCase() ==
+                                                                'in-progress' ||
+                                                            job?.status
+                                                                    ?.toLowerCase() ==
+                                                                'closed'
+                                                        ? navyBlue
+                                                        : darkGrey,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            10)),
+                                                child: job?.status
+                                                                ?.toLowerCase() ==
+                                                            'in-progress' ||
+                                                        job?.status
+                                                                ?.toLowerCase() ==
+                                                            'closed'
+                                                    ? Icon(
+                                                        Icons.check,
+                                                        color: white,
+                                                        size: 7,
+                                                      )
+                                                    : Container(),
+                                              )
+                                            ],
                                           ),
                                         ],
-                                      ))
-                                  .toList()
-                            ],
+                                      )
+                                  ],
+                                )
+                              ],
+                            ),
+                          )
+                      ],
+                    )
+                  else
+                    getJobActivity(job!.status!),
+                  getJobOnlineRow(),
+                  if (job?.status?.toLowerCase() == 'in-progress' ||
+                      job?.status?.toLowerCase() == 'completed')
+                    getPaymentStatusRow()
+                  else
+                    const SizedBox.shrink(),
+                  const Divider(),
+                  if (job!.assignee != null)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 8.0, horizontal: 16),
+                      child: userBloc.user.userName ==
+                                  job!.ownerName!.toLowerCase() ||
+                              userBloc.user.fullName?.toLowerCase() ==
+                                  job!.ownerName!.toLowerCase()
+                          ? Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const CustomText(
+                                  title: "Contractor",
+                                  fontSize: 14,
+                                  fontweight: FontWeight.w700,
+                                ),
+                                GestureDetector(
+                                  onTap: () => Navigator.pushNamed(
+                                      context, Routes.USER_PROFILE, arguments: {
+                                    "searchedUserName": job!.assignee
+                                  }),
+                                  child: Row(
+                                    children: [
+                                      CachedNetworkImage(
+                                        imageUrl: "${job!.assigneeAvatar}",
+                                        imageBuilder:
+                                            (context, imageProvider) =>
+                                                Container(
+                                          width: 23.0,
+                                          height: 23.0,
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            image: DecorationImage(
+                                                image: imageProvider,
+                                                fit: BoxFit.cover),
+                                          ),
+                                        ),
+                                        errorWidget:
+                                            productAndServiceBigErrorWidget,
+                                      ),
+                                      const SizedBox(
+                                        width: 10,
+                                      ),
+                                      userNameWithVerifiedIcon(
+                                        name: job?.assignee ?? '',
+                                        isVerified: job!.isVerified,
+                                        verifiedIconColor: verifyGreen,
+                                        textStyle: TextStyle(
+                                            fontSize: 14,
+                                            fontFamily: "Inter",
+                                            fontWeight: FontWeight.w500,
+                                            color: HexColor("#151515")),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            )
+                          : Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const CustomText(
+                                  title: "Posted By",
+                                  fontSize: 14,
+                                  fontweight: FontWeight.w700,
+                                ),
+                                GestureDetector(
+                                  onTap: () => Navigator.pushNamed(
+                                      context, Routes.USER_PROFILE, arguments: {
+                                    "searchedUserName": job!.owner
+                                  }),
+                                  child: Row(
+                                    children: [
+                                      CachedNetworkImage(
+                                        imageUrl: "${job!.ownerAvatar}",
+                                        imageBuilder:
+                                            (context, imageProvider) =>
+                                                Container(
+                                          width: 23.0,
+                                          height: 23.0,
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            image: DecorationImage(
+                                                image: imageProvider,
+                                                fit: BoxFit.cover),
+                                          ),
+                                        ),
+                                        errorWidget:
+                                            productAndServiceBigErrorWidget,
+                                      ),
+                                      const SizedBox(
+                                        width: 10,
+                                      ),
+                                      userNameWithVerifiedIcon(
+                                        name: job!.ownerName!,
+                                        isVerified: userBloc.user.isVerified,
+                                        verifiedIconColor: verifyGreen,
+                                        textStyle: TextStyle(
+                                            fontSize: 14,
+                                            fontFamily: "Inter",
+                                            fontWeight: FontWeight.w500,
+                                            color: HexColor("#151515")),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                    )
+                  else
+                    const SizedBox.shrink(),
+                  if (job!.assignee != null)
+                    const Divider()
+                  else
+                    const SizedBox.shrink(),
+                  if (myList.isEmpty)
+                    const SizedBox.shrink()
+                  else
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 8.0, horizontal: 16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const CustomText(
+                            title: "Review",
+                            fontSize: 14,
+                            fontweight: FontWeight.w700,
                           ),
-                        ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          ...myList
+                              .map((e) => Column(
+                                    children: [
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 10, horizontal: 10),
+                                        decoration: BoxDecoration(
+                                          border: Border.all(
+                                              color: greyBorderColor),
+                                          borderRadius:
+                                              BorderRadius.circular(6),
+                                        ),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Row(
+                                              children: [
+                                                CachedNetworkImage(
+                                                  imageUrl: "${e.ownerAvatar}",
+                                                  imageBuilder: (context,
+                                                          imageProvider) =>
+                                                      Container(
+                                                    width: 23.0,
+                                                    height: 23.0,
+                                                    decoration: BoxDecoration(
+                                                      shape: BoxShape.circle,
+                                                      image: DecorationImage(
+                                                          image: imageProvider,
+                                                          fit: BoxFit.cover),
+                                                    ),
+                                                  ),
+                                                  errorWidget:
+                                                      productAndServiceBigErrorWidget,
+                                                ),
+                                                const SizedBox(
+                                                  width: 10,
+                                                ),
+                                                userNameWithVerifiedIcon(
+                                                  name: e.jobOwnerName ?? '',
+                                                  isVerified: job!.isVerified,
+                                                  verifiedIconColor:
+                                                      verifyGreen,
+                                                  textStyle: TextStyle(
+                                                      fontSize: 14,
+                                                      fontFamily: "Inter",
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                      color:
+                                                          HexColor("#151515")),
+                                                ),
+                                              ],
+                                            ),
+                                            const SizedBox(
+                                              height: 6,
+                                            ),
+                                            RatingBar.builder(
+                                              initialRating:
+                                                  e.score!.toDouble(),
+                                              minRating: 1,
+                                              direction: Axis.horizontal,
+                                              allowHalfRating: false,
+                                              itemCount: 5,
+                                              itemSize: 20,
+                                              itemPadding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 3.0),
+                                              itemBuilder: (context, _) =>
+                                                  const Icon(
+                                                Icons.star,
+                                                size: 10,
+                                                color: Colors.amber,
+                                              ),
+                                              onRatingUpdate: (rating) {},
+                                            ),
+                                            const SizedBox(
+                                              height: 12,
+                                            ),
+                                            Text(
+                                              e.review ?? '',
+                                              style: const TextStyle(
+                                                  fontSize: 14.4,
+                                                  fontFamily: "Inter",
+                                                  fontWeight: FontWeight.w500),
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ))
+                              .toList()
+                        ],
+                      ),
+                    ),
                   const SizedBox(
                     height: 55,
                   ),
@@ -1160,7 +1107,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
   }
 
   Column getJobActivityStatusRow() {
-    print(userBloc.user.userName! + ' oooo');
+    debugPrint(userBloc.user.userName! + ' oooo');
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1178,47 +1125,48 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
               const SizedBox(
                 height: 10,
               ),
-              userBloc.user.userName != job?.assignee &&
-                      job!.isListed == false &&
-                      job!.applicants!.contains(userBloc.user.userName)
-                  ? Container(
-                      width: 54,
-                      // height: 20,
-                      alignment: Alignment.center,
-                      padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: red),
-                        color: red.withOpacity(0.1),
-                      ),
-                      child: Text(
-                        'closed',
-                        style: TextStyle(
-                          color: red,
-                          fontSize: 10.80,
-                          fontFamily: "Inter",
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    )
-                  : Container(
-                      alignment: Alignment.center,
-                      padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: colorStatus(job!.status!)),
-                        color: colorStatus(job!.status!).withOpacity(0.1),
-                      ),
-                      child: Text(
-                        textStatus(job!.status!),
-                        style: TextStyle(
-                          color: colorStatus(job!.status!),
-                          fontSize: 10.80,
-                          fontFamily: "Inter",
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
+              if (userBloc.user.userName != job?.assignee &&
+                  job!.isListed == false &&
+                  job!.applicants!.contains(userBloc.user.userName))
+                Container(
+                  width: 54,
+                  // height: 20,
+                  alignment: Alignment.center,
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: red),
+                    color: red.withOpacity(0.1),
+                  ),
+                  child: Text(
+                    'closed',
+                    style: TextStyle(
+                      color: red,
+                      fontSize: 10.80,
+                      fontFamily: "Inter",
+                      fontWeight: FontWeight.w600,
                     ),
+                  ),
+                )
+              else
+                Container(
+                  alignment: Alignment.center,
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: colorStatus(job!.status!)),
+                    color: colorStatus(job!.status!).withOpacity(0.1),
+                  ),
+                  child: Text(
+                    textStatus(job!.status!),
+                    style: TextStyle(
+                      color: colorStatus(job!.status!),
+                      fontSize: 10.80,
+                      fontFamily: "Inter",
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
             ],
           ),
         ),
@@ -1384,42 +1332,42 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
             ],
           ),
         ),
-        userBloc.user.userName == job!.ownerName!.toLowerCase() ||
-                userBloc.user.fullName?.toLowerCase() ==
-                    job!.ownerName!.toLowerCase()
-            ? job?.status!.toLowerCase() == 'closed' &&
-                    job?.transactionId == null
-                ? payButton()
-                : const SizedBox.shrink()
-            : searchedChatConnection.isNotEmpty &&
-                    searchedChatConnection[0].userName!.toLowerCase() ==
-                        job!.ownerName!.toLowerCase()
-                ? InkWell(
-                    onTap: () {
-                      Navigator.pushNamed(context, '/chat-screen', arguments: {
-                        "recipientUserName": job!.ownerName!.toLowerCase(),
-                      });
-                    },
-                    child: SvgPicture.asset(
-                      'yarn/chaticon'.toSVG(),
-                      height: 35,
-                      width: 35,
-                    ),
-                  )
-                : InkWell(
-                    onTap: () {
-                      Navigator.of(context)
-                          .pushNamed(Routes.COMPOSE_MESSAGE, arguments: {
-                        'recipient': job!.owner,
-                        "subject": job!.title,
-                      });
-                    },
-                    child: SvgPicture.asset(
-                      'yarn/messageicon'.toSVG(),
-                      height: 35,
-                      width: 35,
-                    ),
+        if (userBloc.user.userName == job!.ownerName!.toLowerCase() ||
+            userBloc.user.fullName?.toLowerCase() ==
+                job!.ownerName!.toLowerCase())
+          job?.status!.toLowerCase() == 'closed' && job?.transactionId == null
+              ? payButton()
+              : const SizedBox.shrink()
+        else
+          searchedChatConnection.isNotEmpty &&
+                  searchedChatConnection[0].userName!.toLowerCase() ==
+                      job!.ownerName!.toLowerCase()
+              ? InkWell(
+                  onTap: () {
+                    Navigator.pushNamed(context, '/chat-screen', arguments: {
+                      "recipientUserName": job!.ownerName!.toLowerCase(),
+                    });
+                  },
+                  child: SvgPicture.asset(
+                    'yarn/chaticon'.toSVG(),
+                    height: 35,
+                    width: 35,
                   ),
+                )
+              : InkWell(
+                  onTap: () {
+                    Navigator.of(context)
+                        .pushNamed(Routes.COMPOSE_MESSAGE, arguments: {
+                      'recipient': job!.owner,
+                      "subject": job!.title,
+                    });
+                  },
+                  child: SvgPicture.asset(
+                    'yarn/messageicon'.toSVG(),
+                    height: 35,
+                    width: 35,
+                  ),
+                ),
       ],
     );
   }
@@ -1430,7 +1378,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
           arguments: job),
       child: Container(
         alignment: Alignment.center,
-        padding: EdgeInsets.symmetric(vertical: 8, horizontal: 30),
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 30),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: navyBlue),
@@ -1505,7 +1453,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
 
   endJob() async {
     await ServiceHubAuthService().endJob(job!.id).then((value) {
-      print(value);
+      debugPrint("$value");
       if (value == true) {
         Navigator.pushNamed(context, Routes.CONTRACTOR_SCREEN, arguments: job);
       } else {
@@ -1656,7 +1604,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
     await ServiceHubAuthService().createListing({
       "job": job!.id,
     }).then((value) {
-      print('${value}Create Listing');
+      debugPrint('${value}Create Listing');
       Navigator.pushNamed(context, Routes.SUPER_HUB, arguments: {'page': 1});
       showToast(message: AppLocalization.of(context)!.jobListSuccessfully);
     }).catchError((error) {
@@ -1731,7 +1679,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
         ),
       ),
       actions: [
-        !isLoading ? _moreOptionsBtn() : const SizedBox.shrink(),
+        if (!isLoading) _moreOptionsBtn() else const SizedBox.shrink(),
         const SizedBox(width: 12),
       ],
     );
@@ -1780,39 +1728,40 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
   }
 
   List<Widget> getDropDownWidget() {
-    var menu = [
-      job!.assignee != null
-          ? SizedBox.shrink()
-          : InkWell(
-              onTap: () =>
-                  Navigator.pushNamed(context, Routes.EDIT_JOB, arguments: job),
-              child: Row(
-                children: [
-                  Container(
-                      height: 34,
-                      width: 34,
-                      alignment: Alignment.center,
-                      decoration: const BoxDecoration(
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(10),
-                        ),
-                        color: Color(0xfffafbff),
-                      ),
-                      child: SvgPicture.asset("assets/images/edit_job.svg")),
-                  const SizedBox(
-                    width: 20,
+    final menu = [
+      if (job!.assignee != null)
+        const SizedBox.shrink()
+      else
+        InkWell(
+          onTap: () =>
+              Navigator.pushNamed(context, Routes.EDIT_JOB, arguments: job),
+          child: Row(
+            children: [
+              Container(
+                  height: 34,
+                  width: 34,
+                  alignment: Alignment.center,
+                  decoration: const BoxDecoration(
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(10),
+                    ),
+                    color: Color(0xfffafbff),
                   ),
-                  Text(
-                    'Edit Job',
-                    style: TextStyle(
-                        fontSize: 16,
-                        fontFamily: "Inter",
-                        color: black,
-                        fontWeight: FontWeight.bold),
-                  ),
-                ],
+                  child: SvgPicture.asset("assets/images/edit_job.svg")),
+              const SizedBox(
+                width: 20,
               ),
-            ),
+              Text(
+                'Edit Job',
+                style: TextStyle(
+                    fontSize: 16,
+                    fontFamily: "Inter",
+                    color: black,
+                    fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+        ),
       const SizedBox(
         height: 12,
       ),
@@ -1880,37 +1829,38 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
       const SizedBox(
         height: 12,
       ),
-      job!.assignee != null
-          ? SizedBox.shrink()
-          : InkWell(
-              onTap: () => deleteJob(),
-              child: Row(
-                children: [
-                  Container(
-                      height: 34,
-                      width: 34,
-                      alignment: Alignment.center,
-                      decoration: const BoxDecoration(
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(10),
-                        ),
-                        color: Color(0xfffafbff),
-                      ),
-                      child: SvgPicture.asset("assets/images/delete.svg")),
-                  const SizedBox(
-                    width: 20,
+      if (job!.assignee != null)
+        const SizedBox.shrink()
+      else
+        InkWell(
+          onTap: () => deleteJob(),
+          child: Row(
+            children: [
+              Container(
+                  height: 34,
+                  width: 34,
+                  alignment: Alignment.center,
+                  decoration: const BoxDecoration(
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(10),
+                    ),
+                    color: Color(0xfffafbff),
                   ),
-                  Text(
-                    'Delete',
-                    style: TextStyle(
-                        fontSize: 16,
-                        color: black,
-                        fontFamily: "Inter",
-                        fontWeight: FontWeight.bold),
-                  ),
-                ],
+                  child: SvgPicture.asset("assets/images/delete.svg")),
+              const SizedBox(
+                width: 20,
               ),
-            ),
+              Text(
+                'Delete',
+                style: TextStyle(
+                    fontSize: 16,
+                    color: black,
+                    fontFamily: "Inter",
+                    fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+        ),
     ];
 
     if (job!.owner != userBloc.user.userName) {
@@ -1994,11 +1944,12 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
       menu.add(
         Column(
           children: [
-            job!.assignee != null
-                ? SizedBox.shrink()
-                : SizedBox(
-                    height: 12,
-                  ),
+            if (job!.assignee != null)
+              const SizedBox.shrink()
+            else
+              const SizedBox(
+                height: 12,
+              ),
             InkWell(
               onTap: () => Navigator.pushNamed(
                   context, Routes.JOBS_APPLICANT_LIST,
@@ -2051,7 +2002,8 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
                 ..attachment = {
                   "job": job?.toJson().cast<String, dynamic>() ?? {}
                 };
-              bool data = await YarnAuth().addYarnAndQuestion(params, '', '');
+              final bool data =
+                  await YarnAuth().addYarnAndQuestion(params, '', '');
               if (data) {
                 showToast(message: "Shared in Yarn successfully");
                 Navigator.pop(context);
@@ -2060,14 +2012,14 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
   }
 
   void sendItemToUsersInChat() async {
-    List<ChatConversation?> listOfRecipient =
+    final List<ChatConversation?> listOfRecipient =
         await ShareInChat().selectShareCustomer(context);
     debugPrint("Selected users = ${listOfRecipient.length}");
 
-    String url =
+    final String url =
         "${AppConfig.baseUrl}/api/v1/job-service/${job is JobModel ? "job" : "services"}/${job!.id!}/";
 
-    Map<String, dynamic>? itemData =
+    final Map<String, dynamic>? itemData =
         await ServiceHubAuthService().getJobOrService(url);
 
     listOfRecipient.forEach((recipient) {
@@ -2081,7 +2033,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
       required ChatConversation recipientUser,
       String? url,
       dynamic item}) async {
-    Map<String, dynamic> data = {
+    final Map<String, dynamic> data = {
       "meta_data": jsonEncode(itemData),
       "check_id": const Uuid().v4(),
       "conversation_id": recipientUser.conversationId,

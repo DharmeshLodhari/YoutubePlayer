@@ -70,7 +70,7 @@ class _ListCategoryProductState extends State<ListCategoryProduct> {
         isProductLoading = true;
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result = await ShoppingAuthService()
+        final Map<String, dynamic>? result = await ShoppingAuthService()
             .listOfProduct(nextUrl, productPrevious, "", false,
                 otherDeals: false);
 
@@ -86,7 +86,7 @@ class _ListCategoryProductState extends State<ListCategoryProduct> {
         nextUrl = result['next'];
         productCount = result['count'];
         productPrevious = result['previous'];
-        var tempList = result['results'];
+        final tempList = result['results'];
 
         productEmpty = false;
         isProductLoading = false;
@@ -124,7 +124,7 @@ class _ListCategoryProductState extends State<ListCategoryProduct> {
 
   Widget superStoreProducts() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -145,7 +145,7 @@ class _ListCategoryProductState extends State<ListCategoryProduct> {
               ),
             ),
           CustomScrollView(
-            physics: ScrollPhysics(),
+            physics: const ScrollPhysics(),
             controller: _productScrollController,
             shrinkWrap: true,
             slivers: <Widget>[

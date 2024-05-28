@@ -114,14 +114,14 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
         body: SingleChildScrollView(
           scrollDirection: Axis.vertical,
           child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
             child: Column(
               children: <Widget>[
-                SizedBox(
+                const SizedBox(
                   height: 30,
                 ),
                 displayUserInfo(),
-                SizedBox(height: 30),
+                const SizedBox(height: 30),
                 // displayPaymentButtons(),
               ],
             ),
@@ -133,7 +133,7 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
 
   Widget displayUserNameAndConnect() {
     return Card(
-      margin: EdgeInsets.symmetric(vertical: 0, horizontal: 8),
+      margin: const EdgeInsets.symmetric(vertical: 0, horizontal: 8),
       child: ListTile(
           leading: ClipOval(
             child: Container(
@@ -185,8 +185,8 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
         child: Column(
           children: <Widget>[
             Container(
-              padding:
-                  EdgeInsets.only(right: 40, left: 40, top: 40, bottom: 10),
+              padding: const EdgeInsets.only(
+                  right: 40, left: 40, top: 40, bottom: 10),
               child: CachedNetworkImage(
                 imageUrl: widget.user!.qrCode!,
                 colorBlendMode: BlendMode.darken,
@@ -197,69 +197,70 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
               ),
             ),
             displayUserType(),
-            SizedBox(
+            const SizedBox(
               height: 12,
             ),
-            userBloc.user.userName != widget.user!.userName
-                ? Divider(
-                    color: dividerColor,
-                    height: 0,
-                    thickness: 1,
-                  )
-                : Container(),
-            userBloc.user.userName != widget.user!.userName &&
-                    widget.user?.userName?.toLowerCase() != 'slydo'
-                ? Container(
-                    height: 45,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: <Widget>[
-                        Expanded(
-                            child: isLoading
-                                ? CircularLoadingIndicator()
-                                : contactActionButtons()),
-                        Container(
-                          width: 1,
-                          height: double.infinity,
-                          color: dividerColor,
-                        ),
-                        Expanded(
-                          child: Container(
-                            height: double.infinity,
-                            child: InkWell(
-                              onTap: () async {
-                                blockUserAlert(widget.user!);
-                              },
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
-                                  RoundedBackgroundIcon(
-                                    height: 28,
-                                    width: 28,
-                                    icon: Icon(
-                                      SlydoAppIcon.block,
-                                      color: mateRed,
-                                      size: 14,
-                                    ),
-                                    backgroundColor: mateRed.withOpacity(0.1),
-                                  ),
-                                  SizedBox(
-                                    width: 8,
-                                  ),
-                                  Text(
-                                    AppLocalization.of(context)!.blockUser,
-                                    style:
-                                        TextStyle(color: mateRed, fontSize: 14),
-                                  ),
-                                ],
+            if (userBloc.user.userName != widget.user!.userName)
+              Divider(
+                color: dividerColor,
+                height: 0,
+                thickness: 1,
+              )
+            else
+              Container(),
+            if (userBloc.user.userName != widget.user!.userName &&
+                widget.user?.userName?.toLowerCase() != 'slydo')
+              Container(
+                height: 45,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    Expanded(
+                        child: isLoading
+                            ? CircularLoadingIndicator()
+                            : contactActionButtons()),
+                    Container(
+                      width: 1,
+                      height: double.infinity,
+                      color: dividerColor,
+                    ),
+                    Expanded(
+                      child: Container(
+                        height: double.infinity,
+                        child: InkWell(
+                          onTap: () async {
+                            blockUserAlert(widget.user!);
+                          },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              RoundedBackgroundIcon(
+                                height: 28,
+                                width: 28,
+                                icon: Icon(
+                                  SlydoAppIcon.block,
+                                  color: mateRed,
+                                  size: 14,
+                                ),
+                                backgroundColor: mateRed.withOpacity(0.1),
                               ),
-                            ),
+                              const SizedBox(
+                                width: 8,
+                              ),
+                              Text(
+                                AppLocalization.of(context)!.blockUser,
+                                style: TextStyle(color: mateRed, fontSize: 14),
+                              ),
+                            ],
                           ),
                         ),
-                      ],
+                      ),
                     ),
-                  )
-                : SizedBox.shrink(),
+                  ],
+                ),
+              )
+            else
+              const SizedBox.shrink(),
           ],
         ),
       ),
@@ -267,7 +268,7 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
   }
 
   void blockUserAlert(CustomerProfile user) async {
-    bool? result = await showDialogBox(
+    final bool? result = await showDialogBox(
       context: context,
       roundedBackgroundIcon: RoundedBackgroundIcon(
         backgroundColor: mateRed.withOpacity(0.08),
@@ -292,13 +293,13 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
       actionTwoText: AppLocalization.of(context)!.cancel,
     );
     if (result != null && result) {
-      bool done = await UserAuth().blockUser(user);
+      final bool done = await UserAuth().blockUser(user);
       if (done) {
         showSnackbar(context,
             message: "${user.displayName()} " +
                 AppLocalization.of(context)!.isBlockedSuccessfully);
 
-        ConnectionListBloc connectionListBloc =
+        final ConnectionListBloc connectionListBloc =
             Provider.of<ConnectionListBloc>(context, listen: false);
         connectionListBloc.deleteChatConversation(
             conversationId: user.conversationId);
@@ -315,7 +316,7 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
 
   Widget displayUserType() {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 4, horizontal: 12),
+      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 12),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(30),
           color: widget.user!.type != "User"
@@ -325,7 +326,7 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
               : navyBlue),
       child: Text(
         widget.user!.type!,
-        style: TextStyle(
+        style: const TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.w600,
           color: Colors.white,
@@ -348,7 +349,7 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
       return Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          SizedBox(width: 8),
+          const SizedBox(width: 8),
           RoundedBackgroundIcon(
             height: 28,
             width: 28,
@@ -359,7 +360,7 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
             ),
             backgroundColor: mateRed.withOpacity(0.1),
           ),
-          SizedBox(width: 8),
+          const SizedBox(width: 8),
           Expanded(
             child: Text(
               "Disconnect",
@@ -375,7 +376,7 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
       return Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          SizedBox(width: 8),
+          const SizedBox(width: 8),
           RoundedBackgroundIcon(
             height: 28,
             width: 28,
@@ -386,7 +387,7 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
             ),
             backgroundColor: mateRed.withOpacity(0.1),
           ),
-          SizedBox(
+          const SizedBox(
             width: 8,
           ),
           Expanded(
@@ -401,7 +402,7 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        SizedBox(
+        const SizedBox(
           width: 8,
         ),
         RoundedBackgroundIcon(
@@ -414,7 +415,7 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
           ),
           backgroundColor: naturalGreen.withOpacity(0.1),
         ),
-        SizedBox(width: 8),
+        const SizedBox(width: 8),
         Expanded(
           child: Text(
             "Add Connection",
@@ -475,13 +476,13 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
     return Card(
       elevation: 4,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      shadowColor: Color.fromARGB(51, 50, 55, 140),
+      shadowColor: const Color.fromARGB(51, 50, 55, 140),
       margin: EdgeInsets.zero,
       child: Container(
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
             border: Border.all(color: dividerColor, width: 0.5)),
-        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
         child: Row(
           children: <Widget>[
             Expanded(
@@ -530,10 +531,10 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
                 ),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               width: 12,
             ),
-            Text(
+            const Text(
               "Request",
               style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
             ),
@@ -543,7 +544,7 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
           UserAuth()
               .fetchCustomerProfile(widget.user!.userName)
               .then((fetchedUser) {
-            CustomerProfileBloc customerProfileBloc =
+            final CustomerProfileBloc customerProfileBloc =
                 Provider.of<CustomerProfileBloc>(
                     myGlobals.navigationKey.currentContext!,
                     listen: false);
@@ -585,10 +586,10 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
                 ),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               width: 12,
             ),
-            Text(
+            const Text(
               "Send",
               style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
             ),
@@ -598,7 +599,7 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
           UserAuth()
               .fetchCustomerProfile(widget.user!.userName)
               .then((fetchedUser) {
-            CustomerProfileBloc customerProfileBloc =
+            final CustomerProfileBloc customerProfileBloc =
                 Provider.of<CustomerProfileBloc>(
                     myGlobals.navigationKey.currentContext!,
                     listen: false);
@@ -617,7 +618,7 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
       child: InkWell(
         onTap: () {
           Connectivity().checkConnectivity().then((value) {
-            var connectionResult = value;
+            final connectionResult = value;
             if (connectionResult == ConnectivityResult.wifi ||
                 connectionResult == ConnectivityResult.mobile) {
               Navigator.of(context)
@@ -653,7 +654,7 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
             errorWidget: imageErrorWidget,
             filterQuality: FilterQuality.high,
             placeholder: (context, url) => userBloc.user.avatar == ""
-                ? Icon(Icons.person)
+                ? const Icon(Icons.person)
                 : CircularLoadingIndicator(),
           ),
         ),
@@ -668,8 +669,8 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
         builder: (context) => Center(child: CircularLoadingIndicator()));
 
     await PaymentAndBankingAuth().getAccountBalance().then((value) {
-      var data = value!;
-      var spendableBalance = data["spendable_balance"];
+      final data = value!;
+      final spendableBalance = data["spendable_balance"];
       debugPrint("DATA:- $value");
       accountBalance = spendableBalance;
       Navigator.of(context).pop();

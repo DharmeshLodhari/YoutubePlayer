@@ -132,7 +132,7 @@ class _YarnBlogPostTileState extends State<YarnBlogPostTile> {
                       alignment: Alignment.center,
                       children: [
                         ClipRRect(
-                          borderRadius: BorderRadius.only(
+                          borderRadius: const BorderRadius.only(
                             topLeft: Radius.circular(10),
                             topRight: Radius.circular(10),
                           ),
@@ -154,108 +154,8 @@ class _YarnBlogPostTileState extends State<YarnBlogPostTile> {
                                   errorWidget: imageErrorWidget,
                                   imageUrl: widget.post?.image ?? ""),
                         ),
-                        widget.showAuthorDetails
-                            ? Positioned(
-                                left: 10,
-                                bottom: 10,
-                                child: InkWell(
-                                  onTap: () {
-                                    Navigator.pushNamed(
-                                        context, Routes.USER_PROFILE,
-                                        arguments: {
-                                          "searchedUserName":
-                                              widget.post!.authorUsername
-                                        });
-                                  },
-                                  child: Row(
-                                    children: [
-                                      SizedBox(
-                                        width: 25,
-                                        height: 25,
-                                        child: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(50),
-                                          child: CachedNetworkImage(
-                                            fit: BoxFit.cover,
-                                            imageUrl:
-                                                widget.post!.authorAvatar!,
-                                            errorWidget: imageErrorWidget,
-                                          ),
-                                        ),
-                                      ),
-                                      SizedBox(width: 8),
-                                      userNameWithVerifiedIcon(
-                                        name: widget.post?.authorName ?? '',
-                                        isVerified: false,
-                                        textStyle: TextStyle(
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: getFontSize(
-                                              widget.tileRenderPlace, context),
-                                          color: Colors.white,
-                                          shadows: [
-                                            Shadow(
-                                              blurRadius: 2.0,
-                                              color: blackFont,
-                                              offset: Offset(0.0, 0),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              )
-                            : SizedBox.shrink(),
-                        widget.post!.isPublished!
-                            ? SizedBox.shrink()
-                            : Positioned(
-                                left: 10,
-                                top: 10,
-                                child: CustomChip(
-                                  textColor: blackFont,
-                                  color: starYellow,
-                                  text: 'Unpublished',
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 4, vertical: 4),
-                                ),
-                              ),
-                        // Center(child: SvgPicture.asset('play_icon'.toSVG())),
-                      ],
-                    ),
-                    Container(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 22, vertical: 19),
-                      child: Align(
-                        alignment: Alignment.topRight,
-                        child: SvgPicture.asset('heart'.toSVG()),
-                      ),
-                    ),
-                    ClipRRect(
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(10),
-                        topRight: Radius.circular(10),
-                      ),
-                      child: widget.post?.video != null &&
-                              widget.post!.video!.isNotEmpty
-                          ? SizedBox(
-                              height: getContainerHeight(
-                                  widget.tileRenderPlace, context),
-                              child: Chewie(
-                                posterUrl: widget.post?.image,
-                                controller: _chewieMainController!,
-                              ),
-                            )
-                          : CachedNetworkImage(
-                              height: getContainerHeight(
-                                  widget.tileRenderPlace, context),
-                              width: double.infinity,
-                              fit: BoxFit.cover,
-                              errorWidget: imageErrorWidget,
-                              imageUrl: widget.post?.image ?? "",
-                            ),
-                    ),
-                    widget.showAuthorDetails
-                        ? Positioned(
+                        if (widget.showAuthorDetails)
+                          Positioned(
                             left: 10,
                             bottom: 10,
                             child: InkWell(
@@ -280,9 +180,9 @@ class _YarnBlogPostTileState extends State<YarnBlogPostTile> {
                                       ),
                                     ),
                                   ),
-                                  SizedBox(width: 8),
+                                  const SizedBox(width: 8),
                                   userNameWithVerifiedIcon(
-                                    name: widget.post!.authorName ?? "",
+                                    name: widget.post?.authorName ?? '',
                                     isVerified: false,
                                     textStyle: TextStyle(
                                       fontWeight: FontWeight.w600,
@@ -293,7 +193,7 @@ class _YarnBlogPostTileState extends State<YarnBlogPostTile> {
                                         Shadow(
                                           blurRadius: 2.0,
                                           color: blackFont,
-                                          offset: Offset(0.0, 0),
+                                          offset: const Offset(0.0, 0),
                                         ),
                                       ],
                                     ),
@@ -302,24 +202,124 @@ class _YarnBlogPostTileState extends State<YarnBlogPostTile> {
                               ),
                             ),
                           )
-                        : SizedBox.shrink(),
-                    widget.post!.isPublished!
-                        ? SizedBox.shrink()
-                        : Positioned(
+                        else
+                          const SizedBox.shrink(),
+                        if (widget.post!.isPublished!)
+                          const SizedBox.shrink()
+                        else
+                          Positioned(
                             left: 10,
                             top: 10,
                             child: CustomChip(
                               textColor: blackFont,
                               color: starYellow,
                               text: 'Unpublished',
-                              padding: EdgeInsets.symmetric(
+                              padding: const EdgeInsets.symmetric(
                                   horizontal: 4, vertical: 4),
                             ),
                           ),
+                        // Center(child: SvgPicture.asset('play_icon'.toSVG())),
+                      ],
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 22, vertical: 19),
+                      child: Align(
+                        alignment: Alignment.topRight,
+                        child: SvgPicture.asset('heart'.toSVG()),
+                      ),
+                    ),
+                    ClipRRect(
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(10),
+                        topRight: Radius.circular(10),
+                      ),
+                      child: widget.post?.video != null &&
+                              widget.post!.video!.isNotEmpty
+                          ? SizedBox(
+                              height: getContainerHeight(
+                                  widget.tileRenderPlace, context),
+                              child: Chewie(
+                                posterUrl: widget.post?.image,
+                                controller: _chewieMainController!,
+                              ),
+                            )
+                          : CachedNetworkImage(
+                              height: getContainerHeight(
+                                  widget.tileRenderPlace, context),
+                              width: double.infinity,
+                              fit: BoxFit.cover,
+                              errorWidget: imageErrorWidget,
+                              imageUrl: widget.post?.image ?? "",
+                            ),
+                    ),
+                    if (widget.showAuthorDetails)
+                      Positioned(
+                        left: 10,
+                        bottom: 10,
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.pushNamed(
+                                context, Routes.USER_PROFILE, arguments: {
+                              "searchedUserName": widget.post!.authorUsername
+                            });
+                          },
+                          child: Row(
+                            children: [
+                              SizedBox(
+                                width: 25,
+                                height: 25,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(50),
+                                  child: CachedNetworkImage(
+                                    fit: BoxFit.cover,
+                                    imageUrl: widget.post!.authorAvatar!,
+                                    errorWidget: imageErrorWidget,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              userNameWithVerifiedIcon(
+                                name: widget.post!.authorName ?? "",
+                                isVerified: false,
+                                textStyle: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: getFontSize(
+                                      widget.tileRenderPlace, context),
+                                  color: Colors.white,
+                                  shadows: [
+                                    Shadow(
+                                      blurRadius: 2.0,
+                                      color: blackFont,
+                                      offset: const Offset(0.0, 0),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    else
+                      const SizedBox.shrink(),
+                    if (widget.post!.isPublished!)
+                      const SizedBox.shrink()
+                    else
+                      Positioned(
+                        left: 10,
+                        top: 10,
+                        child: CustomChip(
+                          textColor: blackFont,
+                          color: starYellow,
+                          text: 'Unpublished',
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 4, vertical: 4),
+                        ),
+                      ),
                   ],
                 ),
                 Container(
-                  padding: EdgeInsets.only(left: 15, top: 10, bottom: 10),
+                  padding: const EdgeInsets.only(left: 15, top: 10, bottom: 10),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
@@ -342,7 +342,7 @@ class _YarnBlogPostTileState extends State<YarnBlogPostTile> {
                           ),
                         ],
                       ),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       Text(
                         messageDecoderWithEmoji(widget.post?.tagLine) ?? "",
                         style: TextStyle(
@@ -372,7 +372,7 @@ class _YarnBlogPostTileState extends State<YarnBlogPostTile> {
         context: context,
         builder: (BuildContext context) {
           return Card(
-              shape: RoundedRectangleBorder(
+              shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(20),
                     topRight: Radius.circular(20)),
@@ -380,7 +380,8 @@ class _YarnBlogPostTileState extends State<YarnBlogPostTile> {
               color: Colors.white,
               margin: EdgeInsets.zero,
               child: Container(
-                padding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: generateBottomSheetItem(),
@@ -474,7 +475,7 @@ class _YarnBlogPostTileState extends State<YarnBlogPostTile> {
 
   Widget _buildLikeUnLikeReportTile() {
     if (!widget.post!.enableLike!) {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     }
 
     return Row(
@@ -483,7 +484,7 @@ class _YarnBlogPostTileState extends State<YarnBlogPostTile> {
         Row(
           children: [
             _buildReviewLike(),
-            SizedBox(width: 16),
+            const SizedBox(width: 16),
             _buildPostUnLike(),
           ],
         ),
@@ -510,7 +511,7 @@ class _YarnBlogPostTileState extends State<YarnBlogPostTile> {
               size: 16,
               color: widget.post?.userLiked == true ? navyBlue : blackFont,
             ),
-            SizedBox(width: 4),
+            const SizedBox(width: 4),
             Text(
               widget.post?.likes != null ? widget.post!.likes!.toString() : '0',
               style: TextStyle(
@@ -574,7 +575,7 @@ class _YarnBlogPostTileState extends State<YarnBlogPostTile> {
               size: 16,
               color: widget.post?.userDisLiked! == true ? mateRed : blackFont,
             ),
-            SizedBox(width: 4),
+            const SizedBox(width: 4),
             Text(
               widget.post?.dislikes != null
                   ? widget.post!.dislikes!.toString()

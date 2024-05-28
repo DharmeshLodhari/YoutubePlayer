@@ -22,14 +22,14 @@ class ShippingProcessAuthService extends AuthService {
         url += "/api/v1/shopping-cart/shared-cart/$cartId/item-addresses/";
       }
 
-      var headers = await getAuthHeaders();
-      var response = await httpGet(url, headers: headers);
-      var jsonData = jsonDecode(response.body);
+      final headers = await getAuthHeaders();
+      final response = await httpGet(url, headers: headers);
+      final jsonData = jsonDecode(response.body);
       debugPrint('Fetch Package Details BODY ---> ${response.body}');
-      print("response ${response.body}");
-      print(response.statusCode);
+      debugPrint("response ${response.body}");
+      debugPrint("${response.statusCode}");
       if (response.statusCode == 200 || response.statusCode == 201) {
-        List jsonDataResult = jsonData;
+        final List jsonDataResult = jsonData;
         return jsonDataResult
             .map((json) => PackageDetailsModel.fromJson(json))
             .toList();
@@ -44,7 +44,7 @@ class ShippingProcessAuthService extends AuthService {
       throw e;
     } catch (err) {
       showToast(message: err.toString());
-      print(err);
+      debugPrint("$err");
       throw err;
     }
   }
@@ -66,9 +66,9 @@ class ShippingProcessAuthService extends AuthService {
           "&anonymous=false&cart_id=$cartId&currency=NGN&merchant=${packageDetailsModel.merchant}/";
     }
 
-    var headers = await getAuthHeaders();
-    var response = await httpGet(url, headers: headers);
-    var jsonData = jsonDecode(response.body);
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers);
+    final jsonData = jsonDecode(response.body);
 
     debugPrint('URL :: $url');
     debugPrint('BODY shipping:: ${response.body}');
@@ -76,12 +76,12 @@ class ShippingProcessAuthService extends AuthService {
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       if (packageDetailsModel.shippingType == ShippingTypes.courier) {
-        List jsonDataResult = json.decode(response.body);
+        final List jsonDataResult = json.decode(response.body);
         return jsonDataResult
             .map((json) => CourierModel.fromJson(json).toShippingOptionModel())
             .toList();
       }
-      List jsonDataResult = jsonData['results'];
+      final List jsonDataResult = jsonData['results'];
       return jsonDataResult
           .map((json) => ShippingOptionModel.fromJson(json))
           .toList();
@@ -107,12 +107,12 @@ class ShippingProcessAuthService extends AuthService {
     } else {
       url += "/api/v1/shopping-cart/buy-now/";
     }
-    var _data = jsonEncode(data);
+    final _data = jsonEncode(data);
     debugPrint('Order details ::: $_data');
 
-    var headers = await getAuthHeaders();
-    var response = await httpPost(url, headers: headers, body: _data);
-    var jsonData = jsonDecode(response.body);
+    final headers = await getAuthHeaders();
+    final response = await httpPost(url, headers: headers, body: _data);
+    final jsonData = jsonDecode(response.body);
 
     debugPrint(
         "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
@@ -138,24 +138,24 @@ class ShippingProcessAuthService extends AuthService {
       url = getSecureUrl(url: next);
     }
 
-    var _data = jsonEncode(data);
+    final _data = jsonEncode(data);
     debugPrint('My Job URL ---> $url');
 
-    var headers = await getAuthHeaders();
-    var response = await httpPost(url, headers: headers, body: _data);
+    final headers = await getAuthHeaders();
+    final response = await httpPost(url, headers: headers, body: _data);
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      List<ShippingAddress> addresses = [];
-      var jsonData = json.decode(response.body);
+      final List<ShippingAddress> addresses = [];
+      final jsonData = json.decode(response.body);
 
       for (var item in jsonData["results"]) {
-        ShippingAddress categories = ShippingAddress.fromJson(item);
+        final ShippingAddress categories = ShippingAddress.fromJson(item);
         addresses.add(categories);
       }
 
-      Map<String, dynamic> result = {
+      final Map<String, dynamic> result = {
         "count": jsonData["count"],
         "next": jsonData["next"],
         "previous": jsonData["previous"],
@@ -171,10 +171,10 @@ class ShippingProcessAuthService extends AuthService {
   }
 
   Future<String> getCartId() async {
-    String url = "${AppConfig.baseUrl}/api/v1/shopping-cart/?id=true";
+    final String url = "${AppConfig.baseUrl}/api/v1/shopping-cart/?id=true";
 
-    var headers = await getAuthHeaders();
-    var response = await httpGet(url, headers: headers);
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers);
     // var jsonData = jsonDecode(response.body);
 
     debugPrint('URL :: $url');
@@ -184,7 +184,7 @@ class ShippingProcessAuthService extends AuthService {
     if (response.statusCode == 200 || response.statusCode == 201) {
       final Map<String, dynamic> data = json.decode(response.body);
 
-      String id = data['id'];
+      final String id = data['id'];
 
       return id;
     } else {

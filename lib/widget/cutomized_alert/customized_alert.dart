@@ -56,7 +56,7 @@ class CustomizedAlert {
     return Center(
       child: ConstrainedBox(
         constraints: style.constraints ??
-            BoxConstraints.expand(
+            const BoxConstraints.expand(
                 width: double.infinity, height: double.infinity),
         child: Center(
           child: SingleChildScrollView(
@@ -65,7 +65,7 @@ class CustomizedAlert {
                 backgroundColor: style.backgroundColor ??
                     Theme.of(context).dialogBackgroundColor,
                 shape: style.alertBorder ?? _defaultShape(),
-                titlePadding: EdgeInsets.all(0.0),
+                titlePadding: const EdgeInsets.all(0.0),
                 title: Container(
                   width: MediaQuery.of(context).size.width - 40,
                   child: Center(
@@ -75,7 +75,7 @@ class CustomizedAlert {
                           children: <Widget>[
                             Column(
                               children: <Widget>[
-                                SizedBox(
+                                const SizedBox(
                                   height: 20,
                                 ),
                                 _getImage() ?? Container(),
@@ -91,22 +91,23 @@ class CustomizedAlert {
                                 SizedBox(
                                   height: image != null ? 15 : 20,
                                 ),
-                                desc == null
-                                    ? Container()
-                                    : Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 40),
-                                        child: Text(
-                                          desc ?? "",
-                                          style: TextStyle(
-                                              color: darkGrey,
-                                              fontSize: 14.0,
-                                              fontWeight: FontWeight.w400,
-                                              fontFamily: "Inter"),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                      ),
-                                SizedBox(
+                                if (desc == null)
+                                  Container()
+                                else
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 40),
+                                    child: Text(
+                                      desc ?? "",
+                                      style: TextStyle(
+                                          color: darkGrey,
+                                          fontSize: 14.0,
+                                          fontWeight: FontWeight.w400,
+                                          fontFamily: "Inter"),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                const SizedBox(
                                   height: 10,
                                 ),
                               ],
@@ -135,19 +136,19 @@ class CustomizedAlert {
 
   // Returns defined buttons. Default: Cancel Button
   List<Widget> _getButtons() {
-    List<Widget> expandedButtons = [];
+    final List<Widget> expandedButtons = [];
     if (buttons != null) {
-      var btnOne = Expanded(
+      final btnOne = Expanded(
         child: Padding(
-          padding: EdgeInsets.only(right: 8.0),
+          padding: const EdgeInsets.only(right: 8.0),
           child: buttons?[0] ?? Container(),
         ),
       );
       expandedButtons.add(btnOne);
       if ((buttons?.length ?? 0) > 1) {
-        var btnTwo = Expanded(
+        final btnTwo = Expanded(
           child: Padding(
-            padding: EdgeInsets.only(left: 8.0),
+            padding: const EdgeInsets.only(left: 8.0),
             child: buttons?[1] ?? Container(),
           ),
         );

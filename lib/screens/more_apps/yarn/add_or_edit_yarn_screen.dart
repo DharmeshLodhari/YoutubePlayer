@@ -133,12 +133,12 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
   int? productOrServiceCount = 0;
   String? productOrServiceNext = "";
   String? productOrServicePrevious = "";
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
-  ScrollController _scrollController = new ScrollController();
+  final ScrollController _scrollController = new ScrollController();
 
   TextEditingController? searchItemTextController;
-  GlobalKey _key = LabeledGlobalKey("itemSearchTypeSelectionKey");
+  final GlobalKey _key = LabeledGlobalKey("itemSearchTypeSelectionKey");
   CustomizedPopUpMenu? itemSearchTypeSelectionMenu;
   int selectedMenuItemIndex = 0;
   bool isPopMenuOpen = false;
@@ -155,7 +155,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
 
   bool _isGIFLoading = false;
 
-  TextEditingController _gifController = TextEditingController();
+  final TextEditingController _gifController = TextEditingController();
 
   List<GIFModel> _gifs = [];
 
@@ -241,27 +241,28 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
       if (widget.yarn != null) {
         if (widget.yarn!.attachment.toString() != 'null') {
           if (widget.yarn!.attachmentType == 'product') {
-            Product product = Product.fromJson(widget.yarn!.attachment);
-            var attachment = {'product': product.toJson()};
+            final Product product = Product.fromJson(widget.yarn!.attachment);
+            final attachment = {'product': product.toJson()};
             yarnDashboardBloc!.productService = attachment;
             productMode = product;
             productServicePreview = product;
           } else if (widget.yarn!.attachmentType == 'service') {
-            Service service = Service.fromJson(widget.yarn!.attachment);
-            var attachment = {'service': service.toJson()};
+            final Service service = Service.fromJson(widget.yarn!.attachment);
+            final attachment = {'service': service.toJson()};
             yarnDashboardBloc!.productService = attachment;
             serviceMode = service;
             productServicePreview = service;
           } else if (widget.yarn!.attachmentType == 'blog') {
-            UserPost userPost = UserPost.fromJson(widget.yarn!.attachment);
-            var attachment = {'blog': userPost.toJson()};
+            final UserPost userPost =
+                UserPost.fromJson(widget.yarn!.attachment);
+            final attachment = {'blog': userPost.toJson()};
             yarnDashboardBloc!.productService = attachment;
             userPostMode = userPost;
             productServicePreview = userPost;
           } else if (widget.yarn!.attachmentType == 'profile') {
-            CustomerProfile customerProfile =
+            final CustomerProfile customerProfile =
                 CustomerProfile.fromJson(widget.yarn!.attachment!);
-            var attachment = {'profile': customerProfile.toJson()};
+            final attachment = {'profile': customerProfile.toJson()};
             yarnDashboardBloc!.productService = attachment;
             customerProfileMode = customerProfile;
             productServicePreview = customerProfile;
@@ -411,7 +412,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
   Widget _buildQuestionFiled() {
     return Container(
       height: 45,
-      padding: EdgeInsets.only(left: 16),
+      padding: const EdgeInsets.only(left: 16),
       decoration: BoxDecoration(
         border: Border(bottom: BorderSide(color: HexColor("#D9D9D9"))),
       ),
@@ -447,7 +448,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
               top: BorderSide(color: HexColor("#D9D9D9")))),
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
-        padding: EdgeInsets.only(left: 8, bottom: 20, top: 15),
+        padding: const EdgeInsets.only(left: 8, bottom: 20, top: 15),
         child: Row(
           children: [
             //check if image is not selected
@@ -471,7 +472,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
                   child: SvgPicture.asset("yarn/images".toSVG())),
             ],
 
-            SizedBox(
+            const SizedBox(
               width: 8,
             ),
             InkWell(
@@ -496,27 +497,27 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
                 "yarn/yarn_gif".toSVG(),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               width: 8,
             ),
             _buildCategory(),
-            SizedBox(
+            const SizedBox(
               width: 4,
             ),
             _buildRatingCategory(),
-            SizedBox(
+            const SizedBox(
               width: 4,
             ),
             _buildEnableComment(),
-            SizedBox(
+            const SizedBox(
               width: 4,
             ),
             _buildEnablePayme(),
-            SizedBox(
+            const SizedBox(
               width: 4,
             ),
             _buildEnableViewerAdvice(),
-            SizedBox(width: 4),
+            const SizedBox(width: 4),
             _buildEnableAdultsOnly(),
           ],
         ),
@@ -540,10 +541,10 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
   }
 
   List<Widget> getSearchBarItems() {
-    List<Widget> items = [];
+    final List<Widget> items = [];
 
     items.add(Container(
-      constraints: BoxConstraints(minHeight: 54, maxHeight: 100),
+      constraints: const BoxConstraints(minHeight: 54, maxHeight: 100),
       child: Row(
         children: <Widget>[
           getSearchGIFCancelBtn(),
@@ -562,10 +563,10 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     return InkWell(
       onTap: getGIFs,
       child: Container(
-        padding: EdgeInsets.all(2),
+        padding: const EdgeInsets.all(2),
         child: Row(
           children: [
-            SizedBox(
+            const SizedBox(
               width: 10,
             ),
             Icon(
@@ -573,7 +574,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
               color: navyBlue,
               size: 22,
             ),
-            SizedBox(
+            const SizedBox(
               width: 12,
             ),
           ],
@@ -590,7 +591,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
         child: Theme(
             data: ThemeData(highlightColor: navyBlue.withOpacity(0.3)),
             child: Scrollbar(
-              radius: Radius.circular(12),
+              radius: const Radius.circular(12),
               thickness: 2.5,
               child: TextFormField(
                 controller: _gifController,
@@ -603,7 +604,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
                 cursorWidth: 1,
                 cursorHeight: 20,
                 maxLines: null,
-                cursorRadius: Radius.circular(16),
+                cursorRadius: const Radius.circular(16),
                 decoration: InputDecoration(
                   hintText: "Search GIF",
                   hintStyle: TextStyle(
@@ -611,13 +612,13 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
                   ),
-                  prefix: Padding(
+                  prefix: const Padding(
                     padding: EdgeInsets.only(left: 16),
                   ),
-                  suffix: Padding(
+                  suffix: const Padding(
                     padding: EdgeInsets.only(right: 36),
                   ),
-                  contentPadding: EdgeInsets.symmetric(vertical: 10),
+                  contentPadding: const EdgeInsets.symmetric(vertical: 10),
                   isDense: true,
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(3),
@@ -674,8 +675,8 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
       child: _isGIFLoading
           ? Center(child: CircularLoadingIndicator())
           : GridView.builder(
-              padding: EdgeInsets.symmetric(horizontal: 4),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
                 childAspectRatio: 2,
                 mainAxisSpacing: 4,
@@ -746,7 +747,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     return InkWell(
       onTap: () => ratingCategory(),
       child: Container(
-        padding: EdgeInsets.all(8),
+        padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
             color: HexColor("#F8F8F8"),
             border: Border.all(color: HexColor("#E9E9E9")),
@@ -758,7 +759,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
               _shareAsYarnModel?.name ?? '',
               style: TextStyle(fontSize: 10, color: HexColor("#7A7A7A")),
             ),
-            SizedBox(
+            const SizedBox(
               width: 4,
             ),
             Icon(Icons.expand_more_outlined,
@@ -830,13 +831,13 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
                     }
                   },
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 Expanded(
                   child: ListView.builder(
                     shrinkWrap: true,
                     itemCount: widget.shareAsYarnModel!.length,
                     itemBuilder: (context, index) {
-                      ShareAsYarnModel category =
+                      final ShareAsYarnModel category =
                           widget.shareAsYarnModel![index];
 
                       return ListTile(
@@ -874,7 +875,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
         categoryAndroidSheet();
       },
       child: Container(
-        padding: EdgeInsets.all(4),
+        padding: const EdgeInsets.all(4),
         decoration: BoxDecoration(
             color: HexColor("#F8F8F8"),
             border: Border.all(color: HexColor("#E9E9E9")),
@@ -886,7 +887,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
               checkCategory(),
               style: TextStyle(fontSize: 10, color: HexColor("#ACAEB4")),
             ),
-            SizedBox(
+            const SizedBox(
               width: 4,
             ),
             Icon(Icons.expand_more_outlined,
@@ -928,7 +929,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
               children: [
                 if (showAddMediaButton) ...[
                   addImageButton(),
-                  SizedBox(
+                  const SizedBox(
                     width: 8,
                   )
                 ],
@@ -950,7 +951,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
         //     ),
         //   ),
         // ),
-        SizedBox(
+        const SizedBox(
           height: 20,
         ),
       ],
@@ -991,7 +992,8 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
                     borderRadius: BorderRadius.circular(10),
                     side: BorderSide(color: HexColor("#E9E9E9"), width: 1.5)),
                 shadowColor: dividerColor,
-                margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+                margin:
+                    const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
                 child: Container(
                   width: 100,
                   decoration: BoxDecoration(
@@ -1012,7 +1014,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
                   child: Container(
                     height: 25,
                     width: 25,
-                    margin: EdgeInsets.only(right: 6, top: 6),
+                    margin: const EdgeInsets.only(right: 6, top: 6),
                     decoration: BoxDecoration(
                         color: HexColor("#000000"), shape: BoxShape.circle),
                     child: Icon(
@@ -1026,7 +1028,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
             ],
           ),
         ),
-        SizedBox(
+        const SizedBox(
           width: 8,
         )
       ],
@@ -1047,7 +1049,8 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
                     borderRadius: BorderRadius.circular(10),
                     side: BorderSide(color: HexColor("#E9E9E9"), width: 1.5)),
                 shadowColor: dividerColor,
-                margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+                margin:
+                    const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
                 child: Container(
                   width: 100,
                   decoration: BoxDecoration(
@@ -1072,7 +1075,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
                   child: Container(
                     height: 25,
                     width: 25,
-                    margin: EdgeInsets.only(right: 6, top: 6),
+                    margin: const EdgeInsets.only(right: 6, top: 6),
                     decoration: BoxDecoration(
                         color: HexColor("#000000"), shape: BoxShape.circle),
                     child: Icon(
@@ -1086,7 +1089,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
             ],
           ),
         ),
-        SizedBox(
+        const SizedBox(
           width: 8,
         )
       ],
@@ -1133,7 +1136,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
             borderRadius: BorderRadius.circular(10),
             side: BorderSide(color: HexColor("#E9E9E9"), width: 1.5)),
         shadowColor: boxShadowTwo,
-        margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+        margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
         child: Container(
           width: 100,
           decoration: BoxDecoration(
@@ -1147,7 +1150,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
                   Icons.camera_alt_outlined,
                   color: HexColor("#130F26"),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 4,
                 ),
                 Text(
@@ -1172,14 +1175,14 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
   }
 
   void onValueChange(String value) {
-    List<String> listOfWords = value.split(" ");
+    final List<String> listOfWords = value.split(" ");
 
     if (listOfWords.isNotEmpty) {
       if ((listOfWords.last.contains("@") &&
           !value.endsWith(" ") &&
           !value.endsWith("@"))) {
         isMentionName = true;
-        List<String> mentionString = getAllMentions(value);
+        final List<String> mentionString = getAllMentions(value);
 
         if (mentionString.isNotEmpty) {
           searchString = mentionString.last.substring(1);
@@ -1224,7 +1227,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     }
     return Column(
       children: [
-        SizedBox(
+        const SizedBox(
           height: 20,
         ),
         CustomizedDropDownField(
@@ -1255,7 +1258,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     return textController!.text.isNotEmpty && textController!.text.length <= 400
         ? Container(
             alignment: Alignment.center,
-            padding: EdgeInsets.symmetric(horizontal: 24),
+            padding: const EdgeInsets.symmetric(horizontal: 24),
             constraints: BoxConstraints(
                 maxWidth: MediaQuery.of(context).size.width - 240),
             child: CurvedButton(
@@ -1304,7 +1307,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     showPlatformDialog(
       context: context,
       builder: (_) => BasicDialogAlert(
-        title: Text("Select a Photo"),
+        title: const Text("Select a Photo"),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -1316,7 +1319,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
         ),
         actions: <Widget>[
           BasicDialogAction(
-            title: Text("Cancel"),
+            title: const Text("Cancel"),
             onPressed: () {
               Navigator.pop(context);
             },
@@ -1331,13 +1334,14 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
       children: [
         GestureDetector(
           onTap: () async {
-            bool isPermissionGranted = await requestGalleryPermission();
+            final bool isPermissionGranted = await requestGalleryPermission();
             if (isPermissionGranted) {
               title == 'Take Photo...'
                   ? await openCamera()
                   : await pickFileFromMedia();
             } else {
-              bool isPermissionIsDenied = await isPermanentlyDeniedPermission();
+              final bool isPermissionIsDenied =
+                  await isPermanentlyDeniedPermission();
               if (isPermissionIsDenied) {
                 await openAppSettings();
               } else {
@@ -1373,14 +1377,14 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     //   // ),
     //   maxTime: 15,
     // );
-    // print(res);
+    // debugPrint(res);
 
-    XFile? res = await selectSingleImageVideo();
+    final XFile? res = await selectSingleImageVideo();
 
     if (res == null) return;
 
-    File file = File(res.path);
-    String? mediaType = getFileTypeByPath(path: file.path);
+    final File file = File(res.path);
+    final String? mediaType = getFileTypeByPath(path: file.path);
 
     if (mediaType == null) return;
 
@@ -1391,11 +1395,11 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
           .add(YarnMedia(mediaFile: File(imagePath!), mediaType: mediaType));
       if (mounted) setState(() {});
     } else if (mediaType == 'video') {
-      var videoFilePath =
+      final videoFilePath =
           await NavigationUtil.push(context, screen: TrimmerView(file: file));
       if (videoFilePath is String) {
         videoPath = videoFilePath;
-        File? thumbnailImage =
+        final File? thumbnailImage =
             await generateThumbnailFromVideo(videoPath: videoPath!);
         // setUpVideoPlayer();
         // generateThumbNailFromVideo(videoPath: videoPath!).then((thumbnail) {
@@ -1413,7 +1417,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
       }
     }
 
-    // print(res[0].path);
+    // debugPrint(res[0].path);
     // setState(() {
     //   path = res[0].thumbPath;
     // });
@@ -1430,13 +1434,13 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     //   ),
     // );
 
-    List<XFile> res = await selectMultipleImageVideo();
+    final List<XFile> res = await selectMultipleImageVideo();
 
     if (res == null || res.isEmpty) return;
 
     for (var item in res) {
-      File file = File(item.path);
-      String? mediaType = getFileTypeByPath(path: file.path);
+      final File file = File(item.path);
+      final String? mediaType = getFileTypeByPath(path: file.path);
 
       if (mediaType == null) return;
 
@@ -1447,11 +1451,11 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
             .add(YarnMedia(mediaFile: File(imagePath!), mediaType: mediaType));
         if (mounted) setState(() {});
       } else if (mediaType == 'video') {
-        var videoFilePath =
+        final videoFilePath =
             await NavigationUtil.push(context, screen: TrimmerView(file: file));
         if (videoFilePath is String) {
           videoPath = videoFilePath;
-          File? thumbnailImage =
+          final File? thumbnailImage =
               await generateThumbnailFromVideo(videoPath: videoPath!);
           // setUpVideoPlayer();
           // generateThumbNailFromVideo(videoPath: videoPath!).then((thumbnail) {
@@ -1504,13 +1508,14 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
                     }
                   },
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 Expanded(
                   child: ListView.builder(
                     shrinkWrap: true,
                     itemCount: widget.askCategories!.length,
                     itemBuilder: (context, index) {
-                      YarnCategories category = widget.askCategories![index];
+                      final YarnCategories category =
+                          widget.askCategories![index];
                       if (selectedAskCategory == category) {
                         return Container(
                           color: selectedListItemBackgroundBlue,
@@ -1647,7 +1652,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
   }
 
   Future<void> editYarnAndQuestion() async {
-    Yarn yarnEdit = Yarn(media: existingMediaList + newMediaList);
+    final Yarn yarnEdit = Yarn(media: existingMediaList + newMediaList);
     yarnEdit.id = yarn!['id'];
     yarnEdit.body = textController!.text;
     yarnEdit.enableCommenting = enableCommenting;
@@ -1686,7 +1691,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
   }
 
   Future<void> addYarnAndQuestion() async {
-    Yarn yarn = Yarn();
+    final Yarn yarn = Yarn();
     yarn.media = newMediaList;
     yarn.tags = userTags;
     yarn.title = yarnController.text;
@@ -1706,7 +1711,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
 
     logger.d(yarn.toAddMap());
 
-    Yarn? data =
+    final Yarn? data =
         await YarnAuth().addYarnAndQuestion(yarn, 'Add', widget.channel ?? "");
 
     if (data != null) {
@@ -1756,10 +1761,10 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
   }
 
   List<Widget> getPlusBarItems() {
-    List<Widget> items = [];
+    final List<Widget> items = [];
 
     items.add(Container(
-      constraints: BoxConstraints(minHeight: 40, maxHeight: 100),
+      constraints: const BoxConstraints(minHeight: 40, maxHeight: 100),
       child: Row(
         children: <Widget>[
           moreActionBtn(),
@@ -1818,7 +1823,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
   }
 
   void showSearchProductAndServiceBottomSheet() async {
-    var result = await showModalBottomSheet<String>(
+    final result = await showModalBottomSheet<String>(
         backgroundColor: Colors.transparent,
         context: context,
         useRootNavigator: true,
@@ -1837,7 +1842,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
             });
 
             return Card(
-                shape: RoundedRectangleBorder(
+                shape: const RoundedRectangleBorder(
                   borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(20),
                       topRight: Radius.circular(20)),
@@ -1846,14 +1851,14 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
                 margin: EdgeInsets.zero,
                 child: Container(
                   height: MediaQuery.of(context).size.height * 0.88,
-                  padding: EdgeInsets.symmetric(vertical: 16),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Container(
-                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
                           child: searchBox()),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       Expanded(child: bottomSheetTabBar())
                     ],
                   ),
@@ -1872,8 +1877,8 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     return Container(
       child: Theme(
         data: Theme.of(context).copyWith(
-          textSelectionTheme:
-              TextSelectionThemeData().copyWith(selectionHandleColor: navyBlue),
+          textSelectionTheme: const TextSelectionThemeData()
+              .copyWith(selectionHandleColor: navyBlue),
         ),
         child: TextFormField(
           key: searchItemTextFormField,
@@ -1889,9 +1894,9 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
             hintText: checkHintText(selectedMenuItemIndex),
             fillColor: Colors.white,
             filled: true,
-            contentPadding: EdgeInsets.symmetric(vertical: 10),
+            contentPadding: const EdgeInsets.symmetric(vertical: 10),
             prefixIcon: searchTypeSelection(),
-            prefix: Padding(
+            prefix: const Padding(
               padding: EdgeInsets.only(left: 12),
             ),
             suffixIcon: searchIcon(),
@@ -1937,7 +1942,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
   Widget searchTypeSelection() {
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.only(
+        borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(10), bottomLeft: Radius.circular(10)),
         color: navyBlue,
       ),
@@ -2002,7 +2007,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
   }
 
   void getProductOrServiceList() async {
-    String url = getSearchUrl();
+    final String url = getSearchUrl();
 
     if (!isItemLoading) {
       if (productOrServiceNext != null && !isItemLoading) {
@@ -2012,7 +2017,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
           bottomSheetStateSetterGlobal!(() {});
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result = await MessageAuth()
+        final Map<String, dynamic>? result = await MessageAuth()
             .searchProductAndServiceOfUser(
                 url, productOrServiceNext, productOrServicePrevious);
         if (result == null) {
@@ -2022,7 +2027,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
         productOrServiceCount = result['count'];
         productOrServiceNext = result['next'];
         productOrServicePrevious = result['previous'];
-        List tempList = result['results'];
+        final List tempList = result['results'];
 
         isItemLoading = false;
         if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
@@ -2086,7 +2091,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
         // Container(
         //     padding: EdgeInsets.symmetric(horizontal: 20),
         //     child: bottomSheetTabBars()),
-        SizedBox(
+        const SizedBox(
           height: 8,
         ),
         Expanded(child: bottomSheetTabViews())
@@ -2096,7 +2101,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
 
   Widget bottomSheetTabBars() {
     return PreferredSize(
-        preferredSize: Size.fromHeight(50.0),
+        preferredSize: const Size.fromHeight(50.0),
         child: Row(
           children: [
             GestureDetector(
@@ -2108,7 +2113,8 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
                 searchProductOrService();
               },
               child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 40, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 40, vertical: 8),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
                   shape: BoxShape.rectangle,
@@ -2137,7 +2143,8 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
                 searchProductOrService();
               },
               child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 40, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 40, vertical: 8),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
                   shape: BoxShape.rectangle,
@@ -2167,7 +2174,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         productOrServiceCount = 0;
@@ -2212,7 +2219,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
             isResult: true,
           )
         : ListView.builder(
-            padding: EdgeInsets.symmetric(vertical: 4),
+            padding: const EdgeInsets.symmetric(vertical: 4),
             //+1 for progressbar
             itemCount: searchedProductAndService.length + 1,
             itemBuilder: (BuildContext context, int index) {
@@ -2225,27 +2232,32 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
 
                       if (productServicePreview.runtimeType.toString() ==
                           'Product') {
-                        Product product = searchedProductAndService[index];
-                        var attachment = {'product': product.toJson()};
+                        final Product product =
+                            searchedProductAndService[index];
+                        final attachment = {'product': product.toJson()};
                         yarnDashboardBloc!.productService = attachment;
                         productMode = searchedProductAndService[index];
                       } else if (productServicePreview.runtimeType.toString() ==
                           'Service') {
-                        Service service = searchedProductAndService[index];
-                        var attachment = {'service': service.toJson()};
+                        final Service service =
+                            searchedProductAndService[index];
+                        final attachment = {'service': service.toJson()};
                         yarnDashboardBloc!.productService = attachment;
                         serviceMode = searchedProductAndService[index];
                       } else if (productServicePreview.runtimeType.toString() ==
                           'CustomerProfile') {
-                        CustomerProfile customerProfile =
+                        final CustomerProfile customerProfile =
                             searchedProductAndService[index];
-                        var attachment = {'profile': customerProfile.toJson()};
+                        final attachment = {
+                          'profile': customerProfile.toJson()
+                        };
                         yarnDashboardBloc!.productService = attachment;
                         customerProfileMode = searchedProductAndService[index];
                       } else if (productServicePreview.runtimeType.toString() ==
                           'UserPost') {
-                        UserPost userPost = searchedProductAndService[index];
-                        var attachment = {'blog': userPost.toJson()};
+                        final UserPost userPost =
+                            searchedProductAndService[index];
+                        final attachment = {'blog': userPost.toJson()};
                         yarnDashboardBloc!.productService = attachment;
                         userPostMode = searchedProductAndService[index];
                       }
@@ -2301,7 +2313,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     if (isBlogSearch) {
       if (result is UserPost) {
         return Container(
-          margin: EdgeInsets.only(left: 20.0, right: 20.0),
+          margin: const EdgeInsets.only(left: 20.0, right: 20.0),
           child: PostTile(
               post: result,
               showAuthorDetails: true,
@@ -2316,7 +2328,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
 
   Widget userCard(CustomerProfile user) {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 4, horizontal: 16),
+      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         margin: EdgeInsets.zero,
@@ -2327,7 +2339,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
           child: Column(
             children: <Widget>[
               Padding(
-                padding: EdgeInsets.symmetric(vertical: 8),
+                padding: const EdgeInsets.symmetric(vertical: 8),
                 child: ListTile(
                   dense: true,
                   title: userNameWithVerifiedIcon(
@@ -2350,7 +2362,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
   }
 
   Widget getUserLeading(CustomerProfile user) {
-    Color borderColor = getUserTypeColor(user: user);
+    final Color borderColor = getUserTypeColor(user: user);
 
     return GestureDetector(
       onTap: () {
@@ -2403,7 +2415,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
                   child: Container(
                     height: 25,
                     width: 25,
-                    margin: EdgeInsets.only(right: 6, top: 6),
+                    margin: const EdgeInsets.only(right: 6, top: 6),
                     decoration: BoxDecoration(
                         color: HexColor("#000000"), shape: BoxShape.circle),
                     child: Icon(
@@ -2425,7 +2437,8 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     //display services
     if (productServicePreview.runtimeType.toString() == 'Service') {
       return Container(
-        margin: EdgeInsets.only(left: 20.0, right: 20.0, top: 5.0, bottom: 5.0),
+        margin: const EdgeInsets.only(
+            left: 20.0, right: 20.0, top: 5.0, bottom: 5.0),
         child: YarnServiceTile(
           service: serviceMode,
           tileRenderPlace: TileRenderPlace.YarnProductService,
@@ -2435,7 +2448,8 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     //display product
     else if (productServicePreview.runtimeType.toString() == 'Product') {
       return Container(
-        margin: EdgeInsets.only(left: 20.0, right: 20.0, top: 5.0, bottom: 5.0),
+        margin: const EdgeInsets.only(
+            left: 20.0, right: 20.0, top: 5.0, bottom: 5.0),
         child: YarnProductTile(
           product: productMode,
           tileRenderPlace: TileRenderPlace.YarnProductService,
@@ -2446,7 +2460,8 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     else if (productServicePreview.runtimeType.toString() ==
         'CustomerProfile') {
       return Container(
-        margin: EdgeInsets.only(left: 20.0, right: 20.0, top: 5.0, bottom: 5.0),
+        margin: const EdgeInsets.only(
+            left: 20.0, right: 20.0, top: 5.0, bottom: 5.0),
         child: YarnCustomerPostTile(
           customerProfile: customerProfileMode,
           showAuthorDetails: true,
@@ -2457,7 +2472,8 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     //display blog post
     else if (productServicePreview.runtimeType.toString() == 'UserPost') {
       return Container(
-        margin: EdgeInsets.only(left: 20.0, right: 20.0, top: 5.0, bottom: 5.0),
+        margin: const EdgeInsets.only(
+            left: 20.0, right: 20.0, top: 5.0, bottom: 5.0),
         child: PostTile(
           post: userPostMode,
           showAuthorDetails: true,
@@ -2493,7 +2509,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
                     mediaType: media.mediaType));
                 if (mounted) setState(() {});
               } else if (media.mediaType == 'video') {
-                File? thumbnailImage = await generateThumbnailFromVideo(
+                final File? thumbnailImage = await generateThumbnailFromVideo(
                     videoPath: media.mediaFile!.path);
 
                 newMediaList.add(YarnMedia(
@@ -2515,7 +2531,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
         textController!.text.isNotEmpty ||
         newMediaList.isNotEmpty ||
         selectedAskCategory!.name != null) {
-      bool? result = await showDialogBox(
+      final bool? result = await showDialogBox(
         context: context,
         actionOneBgColor: greyBorderColor,
         actionOneTextColor: blackFont,

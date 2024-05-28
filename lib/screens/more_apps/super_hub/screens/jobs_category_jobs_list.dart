@@ -28,7 +28,7 @@ class _JobsCategoryJobsListState extends State<JobsCategoryJobsList> {
                   child: GestureDetector(
                     onTap: () =>
                         Navigator.pushNamed(context, Routes.JOB_DETAILS),
-                    child: JobDescriptionCard(),
+                    child: const JobDescriptionCard(),
                   ),
                 );
               }),
@@ -62,7 +62,7 @@ class _JobsCategoryJobsListState extends State<JobsCategoryJobsList> {
       ),
       actions: [
         _filterBtn(),
-        SizedBox(
+        const SizedBox(
           width: 12,
         )
       ],

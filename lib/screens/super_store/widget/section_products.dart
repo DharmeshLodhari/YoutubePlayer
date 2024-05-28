@@ -49,7 +49,7 @@ class _SectionProductsState extends State<SectionProducts> {
         children: [
           Container(
             color: Colors.white,
-            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
             child: Column(
               children: [
                 Row(
@@ -66,12 +66,12 @@ class _SectionProductsState extends State<SectionProducts> {
                     _buildViewMore(context)
                   ],
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 SizedBox(
                   height: 260,
                   child: ListView.separated(
                     separatorBuilder: (BuildContext context, int index) {
-                      return SizedBox(width: 16);
+                      return const SizedBox(width: 16);
                     },
                     shrinkWrap: true,
                     physics: const ScrollPhysics(),
@@ -96,7 +96,7 @@ class _SectionProductsState extends State<SectionProducts> {
         ],
       );
     } else {
-      return SizedBox();
+      return const SizedBox();
     }
     // return FutureBuilder(
     //     future: getRowTitle(widget.headers),
@@ -179,7 +179,7 @@ class _SectionProductsState extends State<SectionProducts> {
               fontWeight: FontWeight.w600,
             ),
           ),
-          SizedBox(width: 8),
+          const SizedBox(width: 8),
           Icon(
             Icons.arrow_forward_ios_sharp,
             color: navyBlue,

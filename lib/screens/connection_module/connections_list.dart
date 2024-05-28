@@ -40,15 +40,15 @@ class ConnectionList extends StatefulWidget {
 
 class _ConnectionListState extends State<ConnectionList> {
   final GlobalKey<ScaffoldState> _scaffoldContactsListKey =
-      new GlobalKey<ScaffoldState>();
+      GlobalKey<ScaffoldState>();
   final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerContactsListKey =
-      new GlobalKey<ScaffoldMessengerState>();
+      GlobalKey<ScaffoldMessengerState>();
   SlidableController? _slideController;
   int? count = 0;
   String? next = "";
   String? previous = "";
   List connectionsList = [];
-  final ScrollController _scrollController = new ScrollController();
+  final ScrollController _scrollController = ScrollController();
 
   bool isLoading = false;
   bool noItemInList = false;
@@ -145,7 +145,7 @@ class _ConnectionListState extends State<ConnectionList> {
         backgroundColor: Colors.white,
         body: GestureDetector(
           onTap: () {
-            FocusScope.of(context).requestFocus(new FocusNode());
+            FocusScope.of(context).requestFocus(FocusNode());
           },
           child: Column(
             children: [

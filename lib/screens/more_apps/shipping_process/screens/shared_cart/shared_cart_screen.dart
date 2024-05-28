@@ -70,7 +70,7 @@ class SharedCartScreenState extends State<SharedCartScreen> {
         isLoading = true;
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result = await SharedCartAuthService()
+        final Map<String, dynamic>? result = await SharedCartAuthService()
             .getSharedCartList(listNext, listPrevious);
 
         if (result == null) {
@@ -87,7 +87,7 @@ class SharedCartScreenState extends State<SharedCartScreen> {
         listCount = result['count'];
         listNext = result['next'];
         listPrevious = result['previous'];
-        var tempList = result['results'];
+        final tempList = result['results'];
         if (mounted) {
           setState(() {
             noDataInList = false;
@@ -182,7 +182,7 @@ class SharedCartScreenState extends State<SharedCartScreen> {
                   onTap: () async {
                     sharedCartBloc.currentSelectedIndex = index;
 
-                    var result = await Navigator.of(context)
+                    final result = await Navigator.of(context)
                         .pushNamed(Routes.SHARED_CARD_DETAILS);
 
                     // var result = await Navigator.of(context)
@@ -251,7 +251,7 @@ class SharedCartScreenState extends State<SharedCartScreen> {
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         listCount = 0;

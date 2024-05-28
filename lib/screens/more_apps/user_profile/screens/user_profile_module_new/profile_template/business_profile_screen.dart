@@ -85,10 +85,10 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
     isOwner = widget.isOwner;
 
     // Initialize a map to store boolean values
-    var boolMap = <String, bool>{};
+    final boolMap = <String, bool>{};
 
     // Initialize a list to store the keys in the desired order
-    var orderedKeys = <String>[];
+    final orderedKeys = <String>[];
 
     // Iterate through the 'ordering' array and add keys that exist in boolMap to orderedKeys
     if (result is Map<String, dynamic>) {
@@ -108,7 +108,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
     }
 
     // Create a list of keys not in 'ordering'
-    var remainingKeys =
+    final remainingKeys =
         boolMap.keys.where((key) => !orderedKeys.contains(key)).toList();
 
     // Add the remaining keys to orderedKeys to ensure they are at the end
@@ -127,7 +127,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
     });
 
     // Define the UserTabView using the created userTabs list
-    UserTabView businessView = UserTabView(
+    final UserTabView businessView = UserTabView(
       name: "business",
       tabs: userTabs,
     );
@@ -157,12 +157,12 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
   }
 
   Future<void> getAlertTagData() async {
-    print("============================>");
+    debugPrint("============================>");
     if (flashTagNext != null && !isFlashTagLoading) {
       isFlashTagLoading = true;
       if (mounted) setState(() {});
 
-      Map<String, dynamic>? result = await ShoppingAuthService()
+      final Map<String, dynamic>? result = await ShoppingAuthService()
           .listOfFlashTags(
               flashTagNext, flashTagPrevious, widget.searchedUser?.userName);
 
@@ -178,7 +178,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
       flashTagCount = result['count'];
       flashTagNext = result['next'];
       flashTagPrevious = result['previous'];
-      var tempList = result['results'];
+      final tempList = result['results'];
 
       isFlashTagLoading = false;
       flashTagAlerts.addAll(tempList);
@@ -201,7 +201,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
                 element.type?.toValue() == FlashTagCategory("Pop-up").toValue())
             .toList()
             .first;
-        bool check = _sharedPreferences.getBool("showFlash") ?? false;
+        final bool check = _sharedPreferences.getBool("showFlash") ?? false;
         if (!check) {
           showFlashTagAlertPopUp();
           _sharedPreferences.setBool("showFlash", true);
@@ -289,9 +289,9 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
 
   void obtainCustomCategory(user) async {
     try {
-      List<ProductCategory> result =
+      final List<ProductCategory> result =
           await ShoppingAuthService().obtainCustomCategory(user!);
-      List<ProductCategory> initial = [];
+      final List<ProductCategory> initial = [];
       initial.add(const ProductCategory("Explore", id: "main"));
       initial.add(const ProductCategory("All", id: "all"));
 
@@ -645,7 +645,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
   }
 
   List<Widget> getTabs() {
-    List<Widget> tabs = [];
+    final List<Widget> tabs = [];
     int index = 0;
 
     _currentUser.tabs.where((tab) => tab.apiCall != null).map((tab) {
@@ -709,7 +709,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
       });
 
       // Define the UserTabView using the created userTabs list
-      UserTabView businessView = UserTabView(
+      final UserTabView businessView = UserTabView(
         name: "business",
         tabs: userTabs,
       );
@@ -753,7 +753,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
     });
 
     // Define the UserTabView using the created userTabs list
-    UserTabView businessView = UserTabView(
+    final UserTabView businessView = UserTabView(
       name: "business",
       tabs: userTabs,
     );

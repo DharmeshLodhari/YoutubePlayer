@@ -70,7 +70,7 @@ class _RidersUpdateState extends State<RidersUpdate> {
   Widget _buildBody() {
     return Scaffold(
       body: Padding(
-        padding: EdgeInsets.all(25.0),
+        padding: const EdgeInsets.all(25.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -89,15 +89,16 @@ class _RidersUpdateState extends State<RidersUpdate> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  userBloc.user.rider?.isStatusApproved() == true
-                      ? Image.asset(
-                          'assets/images/rider_status_approve.png',
-                          fit: BoxFit.fill,
-                        )
-                      : Image.asset(
-                          'assets/images/rider_status_pending.png',
-                          fit: BoxFit.fill,
-                        ),
+                  if (userBloc.user.rider?.isStatusApproved() == true)
+                    Image.asset(
+                      'assets/images/rider_status_approve.png',
+                      fit: BoxFit.fill,
+                    )
+                  else
+                    Image.asset(
+                      'assets/images/rider_status_pending.png',
+                      fit: BoxFit.fill,
+                    ),
                   Text(
                     userBloc.user.rider?.isStatusApproved() == true
                         ? 'Your account has been verified to be a slydo rider, you can now start accepting request for delivery in service hub.'
@@ -114,7 +115,7 @@ class _RidersUpdateState extends State<RidersUpdate> {
               ),
             ),
             if (userBloc.user.rider?.isStatusApproved() == true) _buildButton(),
-            SizedBox(height: 30.0),
+            const SizedBox(height: 30.0),
           ],
         ),
       ),

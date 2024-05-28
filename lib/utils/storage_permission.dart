@@ -9,7 +9,7 @@ Future<bool> requestGalleryPermission() async {
   if (Platform.isAndroid) {
     final deviceInfo = await DeviceInfoPlugin().androidInfo;
 
-    int? sdkVersion = deviceInfo.version.sdkInt;
+    final int? sdkVersion = deviceInfo.version.sdkInt;
 
     if (sdkVersion != null && sdkVersion >= 33) {
       permissionStatus = await Permission.photos.request().isGranted;
@@ -28,7 +28,7 @@ Future<bool> isPermanentlyDeniedPermission() async {
   if (Platform.isAndroid) {
     final deviceInfo = await DeviceInfoPlugin().androidInfo;
 
-    int? sdkVersion = deviceInfo.version.sdkInt;
+    final int? sdkVersion = deviceInfo.version.sdkInt;
     if (sdkVersion != null && sdkVersion >= 33) {
       permissionStatus = await Permission.photos.isPermanentlyDenied;
     } else {

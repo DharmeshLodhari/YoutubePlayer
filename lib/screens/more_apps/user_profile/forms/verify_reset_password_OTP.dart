@@ -63,7 +63,7 @@ class _VerifyResetPasswordOTPScreenState
         ),
         body: SingleChildScrollView(
           child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 20),
+            padding: const EdgeInsets.symmetric(horizontal: 20),
             height: MediaQuery.of(context).size.height -
                 (AppBar().preferredSize.height +
                     MediaQuery.of(context).padding.top),
@@ -125,7 +125,7 @@ class _VerifyResetPasswordOTPScreenState
                 "This code will expired in",
                 style: TextStyle(fontSize: 14, color: darkGrey),
               ),
-              Text(
+              const Text(
                 " 00:30 ",
                 style: TextStyle(fontSize: 14, color: Colors.red),
               ),
@@ -141,14 +141,14 @@ class _VerifyResetPasswordOTPScreenState
   }
 
   Widget otpFillUpField() {
-    BoxDecoration navyBlueBorder = BoxDecoration(
+    final BoxDecoration navyBlueBorder = BoxDecoration(
       border: Border(
           bottom: BorderSide(
         color: navyBlue,
         width: 2,
       )),
     );
-    BoxDecoration grayBorder = BoxDecoration(
+    final BoxDecoration grayBorder = BoxDecoration(
       border: Border(
           bottom: BorderSide(
         color: HexColor("#E6E5EB"),
@@ -162,7 +162,7 @@ class _VerifyResetPasswordOTPScreenState
           side: BorderSide(color: whiteBackground)),
       shadowColor: whiteBackground,
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 28),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 28),
         child: PinPut(
           eachFieldWidth: 40,
           eachFieldHeight: 45,
@@ -197,13 +197,13 @@ class _VerifyResetPasswordOTPScreenState
 
   void verifyOTP() {
     if (_verifyOtpFormKey.currentState!.validate()) {
-      String enteredOTP = otpController!.text.trim();
-      String passwordToken = "true";
+      final String enteredOTP = otpController!.text.trim();
+      final String passwordToken = "true";
 
       UserAuth()
           .verifyPhoneNumber(phoneNumber, enteredOTP, passwordToken)
           .then((value) {
-        String? resetToken = value;
+        final String? resetToken = value;
         Navigator.of(context).popAndPushNamed('/reset-password',
             arguments: {'phoneNumber': phoneNumber, "resetToken": resetToken});
       });

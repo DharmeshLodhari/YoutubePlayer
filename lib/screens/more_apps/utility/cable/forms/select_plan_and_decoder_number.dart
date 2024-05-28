@@ -75,11 +75,11 @@ class _SelectPlanAndDecoderNumberState
     return SingleChildScrollView(
         child: Column(
       children: [
-        SizedBox(
+        const SizedBox(
           height: 20,
         ),
         Container(
-          padding: EdgeInsets.symmetric(horizontal: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Card(
             elevation: 2,
             margin: EdgeInsets.zero,
@@ -94,29 +94,29 @@ class _SelectPlanAndDecoderNumberState
               child: Container(
                 child: Column(
                   children: [
-                    SizedBox(
+                    const SizedBox(
                       height: 10,
                     ),
                     Container(
-                        padding: EdgeInsets.symmetric(horizontal: 20),
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: getProvider()),
                     Divider(
                       color: dividerColor,
                       thickness: 1.5,
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 30,
                     ),
                     Container(
-                        padding: EdgeInsets.symmetric(horizontal: 20),
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: selectPlanDropDown()),
-                    SizedBox(
+                    const SizedBox(
                       height: 20,
                     ),
                     Container(
-                        padding: EdgeInsets.symmetric(horizontal: 20),
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: getDecoderNumber()),
-                    SizedBox(
+                    const SizedBox(
                       height: 50,
                     ),
                   ],
@@ -125,7 +125,7 @@ class _SelectPlanAndDecoderNumberState
             ),
           ),
         ),
-        SizedBox(
+        const SizedBox(
           height: 40,
         ),
         Padding(
@@ -145,12 +145,12 @@ class _SelectPlanAndDecoderNumberState
           height: 80,
           width: 80,
         ),
-        SizedBox(
+        const SizedBox(
           width: 8,
         ),
         Text(
           provider!['name'],
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
         ),
       ],
     );
@@ -164,14 +164,14 @@ class _SelectPlanAndDecoderNumberState
           "Select a plan",
           style: TextStyle(color: darkGrey, fontSize: 14),
         ),
-        SizedBox(height: 6),
+        const SizedBox(height: 6),
         Card(
           elevation: 0,
           color: Colors.white,
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
               side: BorderSide(color: greyBorderColor)),
-          margin: EdgeInsets.all(0),
+          margin: const EdgeInsets.all(0),
           borderOnForeground: true,
           child: ListTile(
             dense: true,
@@ -186,7 +186,7 @@ class _SelectPlanAndDecoderNumberState
                       fontSize: 16,
                       fontWeight: FontWeight.w600),
                 ),
-                Expanded(
+                const Expanded(
                   child: SizedBox(
                     width: 2,
                   ),
@@ -236,7 +236,7 @@ class _SelectPlanAndDecoderNumberState
       onPressed: () async {
         FocusScope.of(context).unfocus();
 
-        await Future.delayed(Duration(milliseconds: 500));
+        await Future.delayed(const Duration(milliseconds: 500));
 
         BottomSheetPassCode(
             context: context,
@@ -246,7 +246,7 @@ class _SelectPlanAndDecoderNumberState
                   builder: (context) =>
                       Center(child: CircularLoadingIndicator()));
 
-              await Future.delayed(Duration(seconds: 2)).then((value) {
+              await Future.delayed(const Duration(seconds: 2)).then((value) {
                 showToast(message: "Payment Completed Successfully !");
 
                 Navigator.popUntil(

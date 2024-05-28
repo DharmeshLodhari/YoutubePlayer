@@ -28,9 +28,9 @@ class OrdersList extends StatefulWidget {
 
 class _OrdersListState extends State<OrdersList> {
   final GlobalKey<ScaffoldState> _scaffoldOrderListKey =
-      new GlobalKey<ScaffoldState>();
+      GlobalKey<ScaffoldState>();
   final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerOrderListKey =
-      new GlobalKey<ScaffoldMessengerState>();
+      GlobalKey<ScaffoldMessengerState>();
   final _auth = ShoppingAuthService();
   SlidableController? _slideController;
   int? count = 0;
@@ -41,8 +41,8 @@ class _OrdersListState extends State<OrdersList> {
   late UserBloc userBloc;
   bool isFirstTime = true;
 
-  ScrollController _scrollController = new ScrollController();
-  RefreshController _refreshController =
+  final ScrollController _scrollController = ScrollController();
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
   bool isLoading = false;
   bool noItemInList = false;
@@ -51,7 +51,7 @@ class _OrdersListState extends State<OrdersList> {
   String filterValue = "";
   DateTimeRange? newDateTimeRange;
 
-  GlobalKey _key = LabeledGlobalKey("orderListPopUpMenu");
+  final GlobalKey _key = LabeledGlobalKey("orderListPopUpMenu");
   late CustomizedPopUpMenu menu;
   int selectedMenuItemIndex = 0;
   bool isPopMenuOpen = false;
@@ -80,7 +80,7 @@ class _OrdersListState extends State<OrdersList> {
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         _refresh();
@@ -180,7 +180,7 @@ class _OrdersListState extends State<OrdersList> {
     return newDateTimeRange != null
         ? Container(
             color: greyBorderColor.withOpacity(0.2),
-            margin: EdgeInsets.symmetric(vertical: 5),
+            margin: const EdgeInsets.symmetric(vertical: 5),
             child: Text(
               '${dateFormat.format(newDateTimeRange!.start)} - ${dateFormat.format(newDateTimeRange!.end)}',
               textAlign: TextAlign.center,
@@ -190,7 +190,7 @@ class _OrdersListState extends State<OrdersList> {
               ),
             ),
           )
-        : SizedBox.shrink();
+        : const SizedBox.shrink();
   }
 
   Widget appBar() {
@@ -221,11 +221,11 @@ class _OrdersListState extends State<OrdersList> {
       ),
       actions: <Widget>[
         getSwitchBtn(),
-        SizedBox(width: 8),
+        const SizedBox(width: 8),
         dateFilterIcon(),
-        SizedBox(width: 8),
+        const SizedBox(width: 8),
         popUpMenuButton(),
-        SizedBox(width: 16),
+        const SizedBox(width: 16),
       ],
     );
   }
@@ -234,8 +234,10 @@ class _OrdersListState extends State<OrdersList> {
     return userBloc.user.type != 'User'
         ? Switch(
             value: isMerchant,
-            activeThumbImage: AssetImage('assets/images/incoming_arrow.png'),
-            inactiveThumbImage: AssetImage('assets/images/outgoing_arrow.png'),
+            activeThumbImage:
+                const AssetImage('assets/images/incoming_arrow.png'),
+            inactiveThumbImage:
+                const AssetImage('assets/images/outgoing_arrow.png'),
             activeColor: Colors.grey.withOpacity(0.9),
             onChanged: (value) {
               if (!isLoading) {
@@ -253,7 +255,7 @@ class _OrdersListState extends State<OrdersList> {
                 _refresh();
               }
             })
-        : SizedBox.shrink();
+        : const SizedBox.shrink();
   }
 
   Widget dateFilterIcon() {
@@ -263,12 +265,12 @@ class _OrdersListState extends State<OrdersList> {
       child: Card(
         color: iconBtnGrey,
         elevation: 0,
-        margin: EdgeInsets.symmetric(vertical: 10),
+        margin: const EdgeInsets.symmetric(vertical: 10),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
         ),
         child: IconButton(
-          icon: Icon(
+          icon: const Icon(
             Icons.date_range_rounded,
             color: Colors.black,
             size: 20,
@@ -299,7 +301,7 @@ class _OrdersListState extends State<OrdersList> {
       child: Card(
         color: isPopMenuOpen ? navyBlue : iconBtnGrey,
         elevation: 0,
-        margin: EdgeInsets.symmetric(vertical: 10),
+        margin: const EdgeInsets.symmetric(vertical: 10),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
         ),
@@ -337,7 +339,7 @@ class _OrdersListState extends State<OrdersList> {
                 controller: _refreshController,
                 onRefresh: _onRefresh,
                 child: ListView.builder(
-                  padding: EdgeInsets.symmetric(vertical: 4),
+                  padding: const EdgeInsets.symmetric(vertical: 4),
                   //+1 for progressbar
                   itemCount: orderList.length + 1,
                   itemBuilder: (BuildContext context, int index) {
@@ -354,7 +356,7 @@ class _OrdersListState extends State<OrdersList> {
   }
 
   void getList() async {
-    bool isNormalUser =
+    final bool isNormalUser =
         Provider.of<UserBloc>(context, listen: false).user.type == 'User';
     if (!isLoading) {
       if (next != null && !isLoading) {
@@ -364,7 +366,7 @@ class _OrdersListState extends State<OrdersList> {
           });
         }
 
-        var result = await _auth.listOrders(
+        final result = await _auth.listOrders(
           next,
           previous,
           filterValue,
@@ -378,7 +380,7 @@ class _OrdersListState extends State<OrdersList> {
         next = result['next'];
         count = result['count'];
         previous = result['previous'];
-        var tempList = result['results'];
+        final tempList = result['results'];
 
         isLoading = false;
         orderList.addAll(tempList);
@@ -409,7 +411,7 @@ class _OrdersListState extends State<OrdersList> {
         _scaffoldMessengerOrderListKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 500),
         ));
       }
     }
@@ -421,7 +423,7 @@ class _OrdersListState extends State<OrdersList> {
       child: InkWell(
         onTap: () {
           Connectivity().checkConnectivity().then((value) {
-            var connectionResult = value;
+            final connectionResult = value;
             if (connectionResult == ConnectivityResult.wifi ||
                 connectionResult == ConnectivityResult.mobile) {
               Navigator.of(context).pushNamed(Routes.REQUEST_PAYMENT,
@@ -436,7 +438,7 @@ class _OrdersListState extends State<OrdersList> {
             }
           });
         },
-        child: Icon(Icons.add, color: Colors.white),
+        child: const Icon(Icons.add, color: Colors.white),
       ),
     );
   }
@@ -446,7 +448,7 @@ class _OrdersListState extends State<OrdersList> {
   void handleSlideIsOpenChanged(bool? isOpen) {}
 
   List<Widget> listSecondaryActions(Order order, int index) {
-    bool canPay = order.status == 'Awaiting Payment' &&
+    final bool canPay = order.status == 'Awaiting Payment' &&
         userBloc.user.userName != order.merchant;
 
     return canPay
@@ -458,7 +460,7 @@ class _OrdersListState extends State<OrdersList> {
                   showDialog(
                       context: context,
                       builder: (dialogLoadingContext) => LoadingIndicator());
-                  var data = {
+                  final data = {
                     "orders": [order.id]
                   };
                   PaymentAndBankingAuth().makePaymentForCartOrder(data).then(
@@ -491,7 +493,7 @@ class _OrdersListState extends State<OrdersList> {
           backgroundColor: naturalGreen,
           icon: SlydoAppIcon.text_message,
           onTap: () {
-            var recipient = userBloc.user.userName == order.merchant
+            final recipient = userBloc.user.userName == order.merchant
                 ? order.customerName
                 : order.merchant;
 
@@ -513,7 +515,7 @@ class _OrdersListState extends State<OrdersList> {
       key: Key(order.customerName!),
       controller: _slideController,
       direction: Axis.horizontal,
-      actionPane: SlidableBehindActionPane(),
+      actionPane: const SlidableBehindActionPane(),
       actionExtentRatio: 0.25,
       child: VerticalListItem(
         order,
@@ -555,7 +557,7 @@ class VerticalListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () async {
-        var reloadPage = await Navigator.pushNamed(
+        final reloadPage = await Navigator.pushNamed(
             context, Routes.ORDER_DETAIL_PAGE,
             arguments: {"order": order});
         if (reloadPage != null && reloadPage == true) {
@@ -563,7 +565,7 @@ class VerticalListItem extends StatelessWidget {
         }
       },
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 2),
+        padding: const EdgeInsets.symmetric(vertical: 2),
         child: OrderTile(
           order: order,
           key: Key(

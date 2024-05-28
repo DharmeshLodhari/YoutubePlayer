@@ -29,7 +29,7 @@ class YarnCommentReplyActions extends StatefulWidget {
 
 class _YarnCommentReplyActionsState extends State<YarnCommentReplyActions> {
   Future addLikeToReplyComment() async {
-    Map<String, dynamic>? data =
+    final Map<String, dynamic>? data =
         await YarnAuth().addLikeComment(widget.replyCommentDetail!.id!);
     if (data != null) {
       setState(() {
@@ -40,7 +40,7 @@ class _YarnCommentReplyActionsState extends State<YarnCommentReplyActions> {
   }
 
   Future addDisLikeToReplyComment() async {
-    Map<String, dynamic>? data =
+    final Map<String, dynamic>? data =
         await YarnAuth().addDisLikeComment(widget.replyCommentDetail!.id!);
     if (data != null) {
       setState(() {
@@ -71,7 +71,7 @@ class _YarnCommentReplyActionsState extends State<YarnCommentReplyActions> {
   }
 
   Widget _buildActionableList() {
-    List<Widget> finalActionList = [];
+    final List<Widget> finalActionList = [];
 
     finalActionList.addAll([
       Expanded(child: _buildCommentButton()),
@@ -94,7 +94,7 @@ class _YarnCommentReplyActionsState extends State<YarnCommentReplyActions> {
       child: Row(
         children: [
           SvgPicture.asset("ask/reply".toSVG()),
-          SizedBox(
+          const SizedBox(
             width: 6,
           ),
           Text(
@@ -117,7 +117,7 @@ class _YarnCommentReplyActionsState extends State<YarnCommentReplyActions> {
       child: Row(
         children: [
           SvgPicture.asset("ask/like".toSVG()),
-          SizedBox(
+          const SizedBox(
             width: 6,
           ),
           Text(
@@ -140,7 +140,7 @@ class _YarnCommentReplyActionsState extends State<YarnCommentReplyActions> {
       child: Row(
         children: [
           SvgPicture.asset("ask/dislike".toSVG()),
-          SizedBox(
+          const SizedBox(
             width: 6,
           ),
           Text(
@@ -274,7 +274,7 @@ class _YarnCommentReplyActionsState extends State<YarnCommentReplyActions> {
   }
 
   Future<void> sendMomentToUserInChat({required Yarn yarnTopic}) async {
-    List<ChatConversation?> listOfRecipient =
+    final List<ChatConversation?> listOfRecipient =
         await ShareInChat().selectShareCustomer(context);
     debugPrint("Selected users = ${listOfRecipient.length}");
 
@@ -288,9 +288,9 @@ class _YarnCommentReplyActionsState extends State<YarnCommentReplyActions> {
     required Yarn yarnTopic,
     String? url,
   }) async {
-    UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
+    final UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
 
-    Map<String, dynamic> metaData = {
+    final Map<String, dynamic> metaData = {
       "id": yarnTopic.id,
       "author_avatar": yarnTopic.authorAvatar,
       "author_name": messageDecoderWithEmoji(yarnTopic.authorName),
@@ -311,9 +311,9 @@ class _YarnCommentReplyActionsState extends State<YarnCommentReplyActions> {
     //     break;
     // }
 
-    Map<String, dynamic> data = {
+    final Map<String, dynamic> data = {
       "meta_data": jsonEncode(metaData),
-      "check_id": Uuid().v4(),
+      "check_id": const Uuid().v4(),
       "conversation_id": recipientUser.conversationId,
       "author": userBloc.user.userName,
       "message": 'yarn',

@@ -65,9 +65,10 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
   }
 
   void getLanguage() async {
-    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    final SharedPreferences sharedPreferences =
+        await SharedPreferences.getInstance();
     if (sharedPreferences.containsKey("language")) {
-      String? languageCode = sharedPreferences.getString("language");
+      final String? languageCode = sharedPreferences.getString("language");
       setState(() {
         language = getLanguageByLanguageCode(languageCode);
         debugPrint("Set language: => ${language?.name}");
@@ -195,7 +196,7 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
   }
 
   void deactivateAccountDialogue() async {
-    bool? result = await showDialogBox(
+    final bool? result = await showDialogBox(
       context: context,
       actionOneTextColor: white,
       actionOneBgColor: mateRed,
@@ -213,7 +214,7 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
       ),
     );
     if (result != null && result) {
-      bool? result1 = await showDialogBox(
+      final bool? result1 = await showDialogBox(
         context: myGlobals.navigationKey.currentContext!,
         actionOneTextColor: white,
         actionOneBgColor: mateRed,
@@ -240,7 +241,7 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
   }
 
   Future<void> deactivateAccount() async {
-    bool result = await UserAuth().deactivateUserAccount();
+    final bool result = await UserAuth().deactivateUserAccount();
     if (result) {
       showDialog(
           context: (context),
@@ -358,7 +359,8 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
             child: Switch(
               value: userBloc.chatMessageSettings.playIncomingMessageSound!,
               onChanged: (value) {
-                ChatMessageSettings chatMessageSettings = ChatMessageSettings();
+                final ChatMessageSettings chatMessageSettings =
+                    ChatMessageSettings();
                 chatMessageSettings.playOutgoingMessageSound =
                     userBloc.chatMessageSettings.playOutgoingMessageSound;
                 chatMessageSettings.playIncomingMessageSound = value;
@@ -569,7 +571,8 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
             child: Switch(
               value: userBloc.chatMessageSettings.playOutgoingMessageSound!,
               onChanged: (value) {
-                ChatMessageSettings chatMessageSettings = ChatMessageSettings();
+                final ChatMessageSettings chatMessageSettings =
+                    ChatMessageSettings();
                 chatMessageSettings.playIncomingMessageSound =
                     userBloc.chatMessageSettings.playIncomingMessageSound;
                 chatMessageSettings.playOutgoingMessageSound = value;
@@ -617,7 +620,7 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
                 BottomSheetPassCode(
                   context: context,
                   isValidCallback: () {
-                    ChatMessageSettings chatMessageSettings =
+                    final ChatMessageSettings chatMessageSettings =
                         ChatMessageSettings();
                     chatMessageSettings.accountBalanceVisibility =
                         userBloc.chatMessageSettings.accountBalanceVisibility;
@@ -694,14 +697,15 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
 
   //to save language in shared preference when user change the language
   void saveIntoSharedPreference(Language? language) async {
-    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    final SharedPreferences sharedPreferences =
+        await SharedPreferences.getInstance();
     if (sharedPreferences.containsKey("language")) {
-      bool result =
+      final bool result =
           await sharedPreferences.setString("language", language!.languageCode);
       debugPrint(
           "${language.name} Language is updated in sharedPreference => $result");
     } else {
-      bool result =
+      final bool result =
           await sharedPreferences.setString("language", language!.languageCode);
       debugPrint(
           "${language.name} Language is set in sharedPreference => $result");

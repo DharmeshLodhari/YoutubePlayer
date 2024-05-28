@@ -52,7 +52,7 @@ class _ContractTransactionHistoryState
             isLoading = true;
           });
         }
-        Map<String, dynamic>? result = await BusinessAuth()
+        final Map<String, dynamic>? result = await BusinessAuth()
             .getContractTransactions(next, previous, false, false);
         if (result == null) {
           isLoading = false;
@@ -61,7 +61,7 @@ class _ContractTransactionHistoryState
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
-        var tempList = result['results'];
+        final tempList = result['results'];
         if (mounted) {
           setState(() {
             isLoading = false;
@@ -79,7 +79,7 @@ class _ContractTransactionHistoryState
         _scaffoldMessengerKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 500),
         ));
       }
     }
@@ -161,7 +161,7 @@ class _ContractTransactionHistoryState
         : isLoading && transactionList.isEmpty
             ? buildLoadingIndicator(isLoading: isLoading)
             : ListView.builder(
-                padding: EdgeInsets.symmetric(vertical: 4),
+                padding: const EdgeInsets.symmetric(vertical: 4),
                 //+1 for progressbar
                 itemCount: transactionList.length + 1,
                 itemBuilder: (BuildContext context, int index) {

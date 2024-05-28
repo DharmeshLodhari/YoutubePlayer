@@ -11,14 +11,14 @@ import 'package:flutter/material.dart';
 class SharedCartAuthService extends AuthService {
   // Create Shared Shopping cart group
   Future<bool> createCartGroup({Map? data}) async {
-    String url =
+    final String url =
         "${AppConfig.baseUrl}/api/v1/shopping-cart/create-shared-shopping-cart/";
-    var _data = jsonEncode(data);
+    final _data = jsonEncode(data);
     debugPrint('Order details ::: $_data');
 
-    var headers = await getAuthHeaders();
-    var response = await httpPost(url, headers: headers, body: _data);
-    var jsonData = jsonDecode(response.body);
+    final headers = await getAuthHeaders();
+    final response = await httpPost(url, headers: headers, body: _data);
+    final jsonData = jsonDecode(response.body);
 
     debugPrint(
         "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
@@ -42,14 +42,14 @@ class SharedCartAuthService extends AuthService {
       url = getSecureUrl(url: next);
     }
 
-    var headers = await getAuthHeaders();
-    var response = await httpGet(url, headers: headers)
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers)
         .timeout(timeOutDuration, onTimeout: () => timeOutFunction());
 
-    print('List of cart group ::: ${response.body}');
+    debugPrint('List of cart group ::: ${response.body}');
     if (response.statusCode == 200 || response.statusCode == 201) {
-      List<SharedCartModel> sharedCart = [];
-      var jsonData = json.decode(response.body);
+      final List<SharedCartModel> sharedCart = [];
+      final jsonData = json.decode(response.body);
 
       // Map<String, dynamic> jsonData = {
       //   "results": [
@@ -153,11 +153,11 @@ class SharedCartAuthService extends AuthService {
       // };
 
       for (var item in jsonData["results"]) {
-        SharedCartModel categories = SharedCartModel.fromJson(item);
+        final SharedCartModel categories = SharedCartModel.fromJson(item);
         sharedCart.add(categories);
       }
 
-      Map<String, dynamic> result = {
+      final Map<String, dynamic> result = {
         "count": jsonData["count"],
         "next": jsonData["next"],
         "previous": jsonData["previous"],
@@ -173,13 +173,13 @@ class SharedCartAuthService extends AuthService {
   }
 
   Future<SharedCartModel> getCartDetails(String? cartId) async {
-    String url = "${AppConfig.baseUrl}/api/v1/shopping-cart/$cartId/";
+    final String url = "${AppConfig.baseUrl}/api/v1/shopping-cart/$cartId/";
 
-    var headers = await getAuthHeaders();
-    var response = await httpGet(url, headers: headers)
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers)
         .timeout(timeOutDuration, onTimeout: () => timeOutFunction());
 
-    print('List of cart group ::: ${response.body}');
+    debugPrint('List of cart group ::: ${response.body}');
     if (response.statusCode == 200 || response.statusCode == 201) {
       final Map<String, dynamic> jsonData = json.decode(response.body);
       return SharedCartModel.fromJson(jsonData);
@@ -202,14 +202,14 @@ class SharedCartAuthService extends AuthService {
       url = getSecureUrl(url: next);
     }
 
-    var headers = await getAuthHeaders();
-    var response = await httpGet(url, headers: headers)
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers)
         .timeout(timeOutDuration, onTimeout: () => timeOutFunction());
 
-    print('List of cart group ::: ${response.body}');
+    debugPrint('List of cart group ::: ${response.body}');
     if (response.statusCode == 200 || response.statusCode == 201) {
       // List cartItem = [];
-      var jsonData = json.decode(response.body);
+      final jsonData = json.decode(response.body);
 
       // Map<String, dynamic> jsonData = {
       //   "results": [
@@ -299,7 +299,7 @@ class SharedCartAuthService extends AuthService {
       //   cartItem.add(item);
       // }
 
-      Map<String, dynamic> result = {
+      final Map<String, dynamic> result = {
         "count": jsonData["count"],
         "next": jsonData["next"],
         "previous": jsonData["previous"],
@@ -315,13 +315,13 @@ class SharedCartAuthService extends AuthService {
   }
 
   List<dynamic> getCartItems(var jsonResponse) {
-    List items = [];
-    var data = jsonResponse["results"];
+    final List items = [];
+    final data = jsonResponse["results"];
 
     for (int i = 0; i < data.length; i++) {
       if (data[i]["type"] == "product") {
         // for (int j = 0; j < data[i]["qty"]; j++) {
-        var product = Product.fromJson(data[i]);
+        final product = Product.fromJson(data[i]);
         items.add(product);
 
         // debugPrint('fola one jsonData:::: ${product.name}');
@@ -329,7 +329,7 @@ class SharedCartAuthService extends AuthService {
       }
       if (data[i]["type"] == "service") {
         for (int j = 0; j < data[i]["qty"]; j++) {
-          var service = Service.fromJson(data[i]);
+          final service = Service.fromJson(data[i]);
           items.add(service);
         }
       }
@@ -341,13 +341,14 @@ class SharedCartAuthService extends AuthService {
     if (cartId == null) {
       return false;
     }
-    String url = AppConfig.baseUrl +
+    final String url = AppConfig.baseUrl +
         "/api/v1/shopping-cart/add-item-to-shared-cart/$cartId/";
-    var requestData = jsonEncode(data);
-    var headers = await getAuthHeaders();
+    final requestData = jsonEncode(data);
+    final headers = await getAuthHeaders();
 
     try {
-      var response = await httpPatch(url, headers: headers, body: requestData);
+      final response =
+          await httpPatch(url, headers: headers, body: requestData);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
@@ -355,7 +356,7 @@ class SharedCartAuthService extends AuthService {
         return false;
       }
     } catch (e) {
-      print("Error: $e");
+      debugPrint("Error: $e");
       return false;
     }
   }
@@ -364,13 +365,14 @@ class SharedCartAuthService extends AuthService {
     if (cartId == null) {
       return false;
     }
-    String url = AppConfig.baseUrl +
+    final String url = AppConfig.baseUrl +
         "/api/v1/shopping-cart/remove-item-from-shared-cart/$cartId/";
-    var requestData = jsonEncode(data);
-    var headers = await getAuthHeaders();
+    final requestData = jsonEncode(data);
+    final headers = await getAuthHeaders();
 
     try {
-      var response = await httpPatch(url, headers: headers, body: requestData);
+      final response =
+          await httpPatch(url, headers: headers, body: requestData);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
@@ -378,7 +380,7 @@ class SharedCartAuthService extends AuthService {
         return false;
       }
     } catch (e) {
-      print("Error: $e");
+      debugPrint("Error: $e");
       return false;
     }
   }
@@ -387,13 +389,14 @@ class SharedCartAuthService extends AuthService {
     if (cartId == null) {
       return false;
     }
-    String url = AppConfig.baseUrl +
+    final String url = AppConfig.baseUrl +
         "/api/v1/shopping-cart/add-members-to-shared-shopping-cart/$cartId/";
-    var requestData = jsonEncode(data);
-    var headers = await getAuthHeaders();
+    final requestData = jsonEncode(data);
+    final headers = await getAuthHeaders();
 
     try {
-      var response = await httpPatch(url, headers: headers, body: requestData);
+      final response =
+          await httpPatch(url, headers: headers, body: requestData);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
@@ -401,7 +404,7 @@ class SharedCartAuthService extends AuthService {
         return false;
       }
     } catch (e) {
-      print("Error: $e");
+      debugPrint("Error: $e");
       return false;
     }
   }
@@ -411,14 +414,15 @@ class SharedCartAuthService extends AuthService {
       return false;
     }
 
-    String url = AppConfig.baseUrl +
+    final String url = AppConfig.baseUrl +
         "/api/v1/shopping-cart/remove-members-from-shared-shopping-cart/$cartId/";
 
-    var requestData = jsonEncode(data);
-    var headers = await getAuthHeaders();
+    final requestData = jsonEncode(data);
+    final headers = await getAuthHeaders();
 
     try {
-      var response = await httpPatch(url, headers: headers, body: requestData);
+      final response =
+          await httpPatch(url, headers: headers, body: requestData);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
@@ -426,7 +430,7 @@ class SharedCartAuthService extends AuthService {
         return false;
       }
     } catch (e) {
-      print("Error: $e");
+      debugPrint("Error: $e");
       return false;
     }
   }
@@ -435,13 +439,14 @@ class SharedCartAuthService extends AuthService {
     if (cartId == null) {
       return false;
     }
-    String url = AppConfig.baseUrl +
+    final String url = AppConfig.baseUrl +
         "/api/v1/shopping-cart/update-cart-meta-data-shared-shopping-cart/$cartId/";
-    var requestData = jsonEncode(data);
-    var headers = await getAuthHeaders();
+    final requestData = jsonEncode(data);
+    final headers = await getAuthHeaders();
 
     try {
-      var response = await httpPatch(url, headers: headers, body: requestData);
+      final response =
+          await httpPatch(url, headers: headers, body: requestData);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
@@ -449,7 +454,7 @@ class SharedCartAuthService extends AuthService {
         return false;
       }
     } catch (e) {
-      print("Error: $e");
+      debugPrint("Error: $e");
       return false;
     }
   }

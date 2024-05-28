@@ -96,7 +96,7 @@ class _CommentListWidgetState extends State<CommentListWidget> {
       });
     }
 
-    Map<String, dynamic>? result =
+    final Map<String, dynamic>? result =
         await MomentsService().getMomentComments(nextUrl, widget.momentID);
 
     if (result == null) {
@@ -111,7 +111,7 @@ class _CommentListWidgetState extends State<CommentListWidget> {
 
     count = result['count'] ?? 0;
     nextUrl = result['next'] ?? "";
-    var tempList = result['results'];
+    final tempList = result['results'];
     yarnComments = [];
     if (mounted) {
       setState(() {
@@ -158,27 +158,28 @@ class _CommentListWidgetState extends State<CommentListWidget> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          isCommentsLoading
-              ? const SizedBox.shrink()
-              : Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Row(
-                    children: [
-                      const Text(
-                        "Comments",
-                      ),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      Text(
-                        '$count',
-                        style: const TextStyle(
-                          color: Color(0xff75818F),
-                        ),
-                      ),
-                    ],
+          if (isCommentsLoading)
+            const SizedBox.shrink()
+          else
+            Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Row(
+                children: [
+                  const Text(
+                    "Comments",
                   ),
-                ),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  Text(
+                    '$count',
+                    style: const TextStyle(
+                      color: Color(0xff75818F),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           Expanded(
             child: isCommentsLoading && yarnComments.isEmpty
                 ? buildLoadingIndicator(isLoading: isCommentsLoading)
@@ -327,7 +328,7 @@ class _CommentListWidgetState extends State<CommentListWidget> {
         debugPrint('Fola gif:::: ${selectedGif!.images!.original!.url}');
 
         //mimic image selected for the gif and send as comment
-        String? mediaType = 'gif';
+        final String? mediaType = 'gif';
 
         // selectedMedia.add(YarnMedia(mediaFile: File(selectedGif!.images!.original!.url!), mediaType: mediaType));
         // isAPILoading = true;
@@ -351,7 +352,7 @@ class _CommentListWidgetState extends State<CommentListWidget> {
   }
 
   Future addComment() async {
-    Map<String, dynamic> data = {
+    final Map<String, dynamic> data = {
       "comment": controller.text,
       "author_username": getLoggedInUserName(context),
       "is_reply": true,
@@ -369,7 +370,7 @@ class _CommentListWidgetState extends State<CommentListWidget> {
 
     //create multipart request for POST or PATCH method
     try {
-      YarnComment? yarnComment =
+      final YarnComment? yarnComment =
           await MomentsService().addCommentToMoment(widget.momentID, data);
       if (yarnComment != null) {
         //increase count for comment

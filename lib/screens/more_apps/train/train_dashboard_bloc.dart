@@ -13,7 +13,7 @@ class TrainDashboardBloc extends ChangeNotifier {
   set index(int value) {
     _index = value;
     _pageController.animateToPage(_index,
-        duration: Duration(milliseconds: 300), curve: Curves.linear);
+        duration: const Duration(milliseconds: 300), curve: Curves.linear);
     notifyListeners();
   }
 }

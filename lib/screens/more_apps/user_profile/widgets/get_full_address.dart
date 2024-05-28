@@ -24,7 +24,7 @@ class _GetFullAddressWidgetState extends State<GetFullAddressWidget> {
   void initState() {
     super.initState();
 
-    UserAbout? userAbout =
+    final UserAbout? userAbout =
         Provider.of<UserBloc>(context, listen: false).userAbout;
 
     if (userAbout?.userAddress?.state != null) {
@@ -47,8 +47,8 @@ class _GetFullAddressWidgetState extends State<GetFullAddressWidget> {
   }
 
   String getFullAddress() {
-    UserAddress? userAddress = widget.userAbout.userAddress;
-    List<String> addresses = [];
+    final UserAddress? userAddress = widget.userAbout.userAddress;
+    final List<String> addresses = [];
 
     if (userAddress?.addressLine1 != null &&
         userAddress!.addressLine1!.isNotEmpty) {

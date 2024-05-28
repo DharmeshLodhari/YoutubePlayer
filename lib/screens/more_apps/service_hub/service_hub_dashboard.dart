@@ -290,7 +290,7 @@ class _ServiceHubDashboardState extends State<ServiceHubDashboard> {
           badgeColor: naturalGreen,
           padding: basketBloc.basketItems.length == 0
               ? const EdgeInsets.all(0)
-              : EdgeInsets.all(4),
+              : const EdgeInsets.all(4),
           elevation: 0,
         ),
         badgeAnimation: const badges.BadgeAnimation.rotation(
@@ -342,7 +342,7 @@ class _ServiceHubDashboardState extends State<ServiceHubDashboard> {
         },
         controller: _pageViewController,
         children: [
-          SuperHub(),
+          const SuperHub(),
           getJobList(),
         ],
       ),
@@ -367,7 +367,7 @@ class _ServiceHubDashboardState extends State<ServiceHubDashboard> {
         userBloc.user.rider?.isStatusApproved() == true) {
       return FindJobsTab();
     } else {
-      return JobsDashboard();
+      return const JobsDashboard();
     }
   }
 

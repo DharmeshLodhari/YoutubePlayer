@@ -4,7 +4,7 @@ String formatDuration(Duration position) {
   int seconds = ms ~/ 1000;
   final int hours = seconds ~/ 3600;
   seconds = seconds % 3600;
-  var minutes = seconds ~/ 60;
+  final minutes = seconds ~/ 60;
   seconds = seconds % 60;
 
   final hoursString = hours >= 10

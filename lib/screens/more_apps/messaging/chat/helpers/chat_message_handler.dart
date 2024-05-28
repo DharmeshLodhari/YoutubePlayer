@@ -14,14 +14,14 @@ class ChatMessageHandler {
       {required List<String> messages}) async {
     debugPrint('SAVE CHAT MESSAGE --->');
 
-    List<ChatMessage> chatMessages = [];
+    final List<ChatMessage> chatMessages = [];
 
     /// Converting CustomerProfile in to Chat Users
     messages.forEach((message) =>
         chatMessages.add(ChatMessage.fromJson(jsonDecode(message))));
 
     /// adding Chat User into DataBase
-    List<ChatMessage> insertedMessages =
+    final List<ChatMessage> insertedMessages =
         await _db.saveChatMessage(chatMessages);
 
     return insertedMessages;
@@ -88,7 +88,7 @@ class ChatMessageHandler {
 
   Future<bool> checkIfMessageExist(
       {required String checkId, required String conversationId}) async {
-    List<ChatMessage> messages =
+    final List<ChatMessage> messages =
         await _db.getChatMessagesByConversationIdAndCheckId(
       checkId: checkId,
       conversationId: conversationId,
@@ -111,7 +111,7 @@ class ChatMessageHandler {
 
   Future<ChatMessagePagination> getChatMessagePagination(
       {String? conversationId}) async {
-    ChatMessagePagination chatMessagePagination =
+    final ChatMessagePagination chatMessagePagination =
         await _db.getChatMessagePagination(conversationId);
     return chatMessagePagination;
   }

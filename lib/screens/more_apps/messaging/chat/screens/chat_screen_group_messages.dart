@@ -683,13 +683,13 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     messageListPositionListener!.itemPositions.addListener(() {
       try {
         if (messageList.length > 0) {
-          // print('test' +
+          // debugPrint('test' +
           //     messageListPositionListener.itemPositions.value.last.itemTrailingEdge
           //         .toString());
           // if (messageListPositionListener
           //         .itemPositions.value.last.itemTrailingEdge <
           //     1) {
-          //   print("bottom?" +
+          //   debugPrint("bottom?" +
           //       messageListPositionListener
           //           .itemPositions.value.last.itemTrailingEdge
           //           .toString() +
@@ -697,7 +697,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
           //       messageListPositionListener.itemPositions.value.last.index
           //           .toString());
           //   if (messageListPositionListener.itemPositions.value.last.index > 1) {
-          //     print('fetch ');
+          //     debugPrint('fetch ');
           //   }
           // }
 
@@ -705,7 +705,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
           if (messageListPositionListener!
                   .itemPositions.value.first.itemTrailingEdge <
               1) {
-            // print("top?" +
+            // debugPrint("top?" +
             //     messageListPositionListener
             //         .itemPositions.value.first.itemTrailingEdge
             //         .toString() +
@@ -1072,7 +1072,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   }
 
   void checkMessageToAdd({required String message}) {
-    print('CHECK MESSAGE TO ADD :: $message');
+    debugPrint('CHECK MESSAGE TO ADD :: $message');
     final Map<String, dynamic>? newMessage = jsonDecode(message);
 
     if (messageList.length > 0) {
@@ -1112,7 +1112,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
   void addMessageToChat({String? message}) {
     messageList.insert(0, message);
-    print('ADDED MESSAGE :::: $message');
+    debugPrint('ADDED MESSAGE :::: $message');
 
     ///PlaySoundAccordingToMessageType
     MessageSoundPlayer(message: message).playSound();
@@ -1915,7 +1915,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       constraints: const BoxConstraints(minHeight: 54, maxHeight: 100),
       child: Row(
         children: <Widget>[
-          isAudioMessage ? getAudioCancelBtn() : moreActionBtn(),
+          if (isAudioMessage) getAudioCancelBtn() else moreActionBtn(),
           Expanded(
             child: isAudioMessage ? getAudioRecordingUi() : textMessageField(),
           ),
@@ -3717,8 +3717,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
               ? Center(child: CircularLoadingIndicator())
               : messageListBuilder(),
         ),
-        isEditingMessage ? getEditingMessageWidget() : Container(),
-        isReplyingMessage ? getReplyingMessageWidget() : Container(),
+        if (isEditingMessage) getEditingMessageWidget() else Container(),
+        if (isReplyingMessage) getReplyingMessageWidget() else Container(),
         messageActionBar()
       ],
     );
@@ -5002,7 +5002,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       final String payload = convertServerPayload(data);
 
       addMessageToChat(message: payload);
-      print('MESSAGE PAYLOAD :: $payload');
+      debugPrint('MESSAGE PAYLOAD :: $payload');
 
       messageController!.text = "";
       if (mounted) setState(() {});

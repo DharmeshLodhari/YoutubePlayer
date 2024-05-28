@@ -27,11 +27,11 @@ class PayoutTransactionDetail extends StatefulWidget {
 class _PayoutTransactionDetailState extends State<PayoutTransactionDetail> {
   var arguments;
   Payout? payout;
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey =
-      new GlobalKey<ScaffoldMessengerState>();
+      GlobalKey<ScaffoldMessengerState>();
 
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
   bool isLoading = false;
 
@@ -78,7 +78,7 @@ class _PayoutTransactionDetailState extends State<PayoutTransactionDetail> {
   void _onRefresh() async {
     //check network connectivity and if true then refresh the list
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         payout = null;
@@ -122,7 +122,7 @@ class _PayoutTransactionDetailState extends State<PayoutTransactionDetail> {
       ),
       actions: <Widget>[
         showMap(),
-        SizedBox(width: 16),
+        const SizedBox(width: 16),
       ],
     );
   }
@@ -149,7 +149,7 @@ class _PayoutTransactionDetailState extends State<PayoutTransactionDetail> {
             (AppBar().preferredSize.height +
                 MediaQuery.of(context).padding.top),
         width: MediaQuery.of(context).size.width,
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         child: Column(
           children: [
             displayPayoutInfo(),
@@ -178,9 +178,9 @@ class _PayoutTransactionDetailState extends State<PayoutTransactionDetail> {
   }
 
   Widget getSubtitle() {
-    DateTime transactionTime = DateTime.parse(payout!.timeStamp!);
-    String date = DateFormat("dd/MM/yyyy").format(transactionTime);
-    String time = DateFormat("hh:mm a").format(transactionTime);
+    final DateTime transactionTime = DateTime.parse(payout!.timeStamp!);
+    final String date = DateFormat("dd/MM/yyyy").format(transactionTime);
+    final String time = DateFormat("hh:mm a").format(transactionTime);
 
     return Text(
       "$date • $time",
@@ -191,9 +191,9 @@ class _PayoutTransactionDetailState extends State<PayoutTransactionDetail> {
   }
 
   Widget getLeading() {
-    String? url = payout!.bankLogo;
+    final String? url = payout!.bankLogo;
 
-    String imageUrl = url!.replaceAll('https//', 'https://');
+    final String imageUrl = url!.replaceAll('https//', 'https://');
 
     if (url == "") {
       return CircleAvatar(
@@ -220,7 +220,7 @@ class _PayoutTransactionDetailState extends State<PayoutTransactionDetail> {
             fit: BoxFit.cover,
             filterQuality: FilterQuality.high,
             placeholder: (context, url) => imageUrl == ""
-                ? Icon(Icons.person)
+                ? const Icon(Icons.person)
                 : CircularLoadingIndicator(),
           ),
         ),

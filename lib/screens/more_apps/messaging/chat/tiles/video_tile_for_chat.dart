@@ -19,11 +19,11 @@ class VideoTileForChat extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    UserBloc userBloc = Provider.of<UserBloc>(context);
+    final UserBloc userBloc = Provider.of<UserBloc>(context);
 
-    bool isSend = message!["author"] == userBloc.user.userName;
+    final bool isSend = message!["author"] == userBloc.user.userName;
     String? messageText = message!['text'] ?? "";
-    bool isMessageEmpty = messageText == "";
+    final bool isMessageEmpty = messageText == "";
     messageText = messageDecoderWithEmoji(messageText);
 
     if (message!["media"] == null) {
@@ -38,14 +38,15 @@ class VideoTileForChat extends StatelessWidget {
               isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            isSend
-                ? Container()
-                : Container(
-                    width: 20,
-                  ),
+            if (isSend)
+              Container()
+            else
+              Container(
+                width: 20,
+              ),
             GestureDetector(
               onTap: () {
-                var result = Navigator.of(context).pushNamed(
+                final result = Navigator.of(context).pushNamed(
                   Routes.VIEW_CHAT_MEDIA,
                   arguments: {
                     "type": "video",
@@ -77,8 +78,8 @@ class VideoTileForChat extends StatelessWidget {
                   borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(!isSend ? 0 : 10),
                     bottomRight: Radius.circular(isSend ? 0 : 10),
-                    topLeft: Radius.circular(10),
-                    topRight: Radius.circular(10),
+                    topLeft: const Radius.circular(10),
+                    topRight: const Radius.circular(10),
                   ),
                 ),
                 padding: EdgeInsets.only(
@@ -112,62 +113,62 @@ class VideoTileForChat extends StatelessWidget {
                       ? CrossAxisAlignment.end
                       : CrossAxisAlignment.start,
                   children: [
-                    chatConversation!.isGroupConversation!
-                        ? message!['author'] != userBloc.user.userName
-                            ? Column(
-                                children: [
-                                  Text(
-                                    message!['author_full_name'] ??
-                                        message!['author'],
-                                    style: TextStyle(
-                                        color: isSend ? Colors.white : navyBlue,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w700),
-                                  ),
-                                  SizedBox(
-                                    height: isMessageEmpty ? 4 : 2,
-                                  ),
-                                ],
-                              )
-                            : Container(
-                                width: 0,
-                              )
-                        : Container(
-                            width: 0,
-                          ),
-                    isMessageEmpty
-                        ? Container()
-                        : Container(
-                            padding: EdgeInsets.symmetric(
-                                horizontal:
-                                    chatConversation!.isGroupConversation!
-                                        ? 0
-                                        : 8),
-                            child: Row(
+                    if (chatConversation!.isGroupConversation!)
+                      message!['author'] != userBloc.user.userName
+                          ? Column(
                               children: [
-                                Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text(
-                                      messageText!,
-                                      style: TextStyle(
-                                          color:
-                                              isSend ? Colors.white : blackFont,
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w400),
-                                    ),
-                                  ),
+                                Text(
+                                  message!['author_full_name'] ??
+                                      message!['author'],
+                                  style: TextStyle(
+                                      color: isSend ? Colors.white : navyBlue,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w700),
+                                ),
+                                SizedBox(
+                                  height: isMessageEmpty ? 4 : 2,
                                 ),
                               ],
+                            )
+                          : Container(
+                              width: 0,
+                            )
+                    else
+                      Container(
+                        width: 0,
+                      ),
+                    if (isMessageEmpty)
+                      Container()
+                    else
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                            horizontal:
+                                chatConversation!.isGroupConversation! ? 0 : 8),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(
+                                  messageText!,
+                                  style: TextStyle(
+                                      color: isSend ? Colors.white : blackFont,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w400),
+                                ),
+                              ),
                             ),
-                          ),
-                    isMessageEmpty
-                        ? Container()
-                        : SizedBox(
-                            height: 8,
-                          ),
+                          ],
+                        ),
+                      ),
+                    if (isMessageEmpty)
+                      Container()
+                    else
+                      const SizedBox(
+                        height: 8,
+                      ),
                     Container(
-                      padding: EdgeInsets.all(8),
+                      padding: const EdgeInsets.all(8),
                       child: Stack(
                         children: [
                           ClipRRect(
@@ -206,7 +207,7 @@ class VideoTileForChat extends StatelessWidget {
                                   height: 40,
                                   width: 40,
                                   color: Colors.white.withOpacity(0.2),
-                                  child: Center(
+                                  child: const Center(
                                     child: Icon(
                                       Icons.play_arrow_rounded,
                                       color: Colors.white,
@@ -224,47 +225,50 @@ class VideoTileForChat extends StatelessWidget {
                 ),
               ),
             ),
-            isSend
-                ? Container(
-                    width: 20,
-                    child: isSend
-                        ? Center(
-                            child: getMessageTick(message: message!),
-                          )
-                        : Container(),
-                  )
-                : Container(),
+            if (isSend)
+              Container(
+                width: 20,
+                child: isSend
+                    ? Center(
+                        child: getMessageTick(message: message!),
+                      )
+                    : Container(),
+              )
+            else
+              Container(),
           ],
         ),
-        SizedBox(height: 1),
+        const SizedBox(height: 1),
         Row(
           mainAxisAlignment:
               isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
           children: [
-            isSend
-                ? Container()
-                : SizedBox(
-                    width: 20,
-                  ),
+            if (isSend)
+              Container()
+            else
+              const SizedBox(
+                width: 20,
+              ),
             Text(
               formatTime(message!['created_at']),
               style: TextStyle(
                   color: darkGrey, fontSize: 10, fontWeight: FontWeight.w500),
             ),
-            isSend
-                ? SizedBox(
-                    width: 20,
-                  )
-                : Container(),
+            if (isSend)
+              const SizedBox(
+                width: 20,
+              )
+            else
+              Container(),
           ],
         ),
-        SizedBox(height: 4),
+        const SizedBox(height: 4),
       ],
     );
   }
 
   Future<Uint8List?> getVideoThumbnail(String url) async {
-    Uint8List? uInt8list = await VideoThumbnail.thumbnailData(
+    final Uint8List? uInt8list = await VideoThumbnail.thumbnailData(
       video: url,
       imageFormat: ImageFormat.JPEG,
       maxWidth:

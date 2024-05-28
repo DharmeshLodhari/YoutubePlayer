@@ -38,7 +38,7 @@ class _PickStateWidgetState extends State<PickStateWidget> {
 
     if (widget.initialStateValue == null) {
       if (userBioDetail?.userAddress?.state != null) {
-        dynamic state = userBioDetail!.userAddress!.state;
+        final dynamic state = userBioDetail!.userAddress!.state;
         if (state is Map) {
           stateId = state['id'];
           debugPrint('Fola states 0000::: ${state['id']}');
@@ -121,7 +121,7 @@ class _PickStateWidgetState extends State<PickStateWidget> {
                   }).toList(),
                   onChanged: (String? value) {
                     pickedStateValue = value;
-                    int id = statesMap.keys
+                    final int id = statesMap.keys
                         .firstWhere((element) => statesMap[element] == value);
                     stateId = id;
                     if (mounted) setState(() {});

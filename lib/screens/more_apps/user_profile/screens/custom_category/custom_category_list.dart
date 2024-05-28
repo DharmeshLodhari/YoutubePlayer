@@ -43,7 +43,7 @@ class _CustomCategoryListState extends State<CustomCategoryList> {
   TextEditingController _controller = TextEditingController();
   @override
   void initState() {
-    Future.delayed(Duration(seconds: 1), () {
+    Future.delayed(const Duration(seconds: 1), () {
       this.getList();
     });
     _scrollController.addListener(() {
@@ -131,7 +131,7 @@ class _CustomCategoryListState extends State<CustomCategoryList> {
         _messengerScaffoldKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 500),
         ));
       }
     }
@@ -148,28 +148,28 @@ class _CustomCategoryListState extends State<CustomCategoryList> {
       content: Column(
         children: [
           Container(
-            margin: EdgeInsets.only(right: 10),
+            margin: const EdgeInsets.only(right: 10),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                Spacer(),
+                const Spacer(),
                 Text("Add Custom Category",
                     style: TextStyle(
                         color: blackFont,
                         fontWeight: FontWeight.bold,
                         fontSize: 16.0),
                     textAlign: TextAlign.center),
-                Spacer(),
+                const Spacer(),
                 IconButton(
                     onPressed: () {
                       Navigator.pop(context);
                     },
-                    icon: Icon(Icons.highlight_off_rounded))
+                    icon: const Icon(Icons.highlight_off_rounded))
               ],
             ),
           ),
           Container(
-            margin: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+            margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
             child: CustomizedTextFormField(
               labelText: "Name",
               controller: _controller,
@@ -212,27 +212,27 @@ class _CustomCategoryListState extends State<CustomCategoryList> {
         content: Column(
           children: [
             Container(
-              margin: EdgeInsets.only(right: 10),
+              margin: const EdgeInsets.only(right: 10),
               child: Row(
                 children: [
-                  Spacer(),
+                  const Spacer(),
                   Text("Edit Custom Category",
                       style: TextStyle(
                           color: blackFont,
                           fontWeight: FontWeight.bold,
                           fontSize: 16.0),
                       textAlign: TextAlign.center),
-                  Spacer(),
+                  const Spacer(),
                   IconButton(
                       onPressed: () {
                         Navigator.pop(context);
                       },
-                      icon: Icon(Icons.highlight_off_rounded))
+                      icon: const Icon(Icons.highlight_off_rounded))
                 ],
               ),
             ),
             Container(
-              margin: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+              margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
               child: CustomizedTextFormField(
                 labelText: "Name",
                 controller: _controller,
@@ -248,7 +248,7 @@ class _CustomCategoryListState extends State<CustomCategoryList> {
                 },
               ),
             ),
-            SizedBox(height: 5)
+            const SizedBox(height: 5)
           ],
         ),
         leftButtonOnPressed: () async {
@@ -298,7 +298,7 @@ class _CustomCategoryListState extends State<CustomCategoryList> {
         appBar: _buildAppBar() as PreferredSizeWidget,
         body: Container(
           color: white,
-          padding: EdgeInsets.symmetric(horizontal: 4),
+          padding: const EdgeInsets.symmetric(horizontal: 4),
           child: SmartRefresher(
             enablePullDown: true,
             header: WaterDropHeader(
@@ -326,7 +326,7 @@ class _CustomCategoryListState extends State<CustomCategoryList> {
       highlightColor: greyBorderColor,
       child: ListView.builder(
         shrinkWrap: true,
-        physics: NeverScrollableScrollPhysics(),
+        physics: const NeverScrollableScrollPhysics(),
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 0),
         itemCount: 5,
         itemBuilder: (context, index) {
@@ -343,7 +343,7 @@ class _CustomCategoryListState extends State<CustomCategoryList> {
                 shadowColor: boxShadowTwo,
                 color: white,
                 child: Container(
-                  padding: EdgeInsets.only(top: 23, left: 16),
+                  padding: const EdgeInsets.only(top: 23, left: 16),
                   child: Row(
                     children: [
                       Expanded(
@@ -355,7 +355,7 @@ class _CustomCategoryListState extends State<CustomCategoryList> {
                               width: 50,
                               color: Colors.blueGrey,
                             ),
-                            SizedBox(
+                            const SizedBox(
                               height: 12,
                             ),
                             Container(
@@ -415,7 +415,7 @@ class _CustomCategoryListState extends State<CustomCategoryList> {
   List<Widget> _buildAppBarActions() {
     return [
       RoundedBackgroundIcon(
-          backgroundColor: Color.fromRGBO(0, 0, 0, 0),
+          backgroundColor: const Color.fromRGBO(0, 0, 0, 0),
           onTap: () async {
             addCategory();
           },
@@ -426,20 +426,20 @@ class _CustomCategoryListState extends State<CustomCategoryList> {
             height: 12,
             width: 12,
           )),
-      SizedBox(width: 30),
+      const SizedBox(width: 30),
     ];
   }
 
   Widget _buildItemList() {
     return next == "" && isLoading
-        ? SizedBox.shrink()
+        ? const SizedBox.shrink()
         : Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: ListView.builder(
               shrinkWrap: true,
               padding: EdgeInsets.zero,
               controller: _scrollController,
-              physics: NeverScrollableScrollPhysics(),
+              physics: const NeverScrollableScrollPhysics(),
               itemCount: itemList.length,
               itemBuilder: (context, index) {
                 return itemTile(index);
@@ -463,7 +463,7 @@ class _CustomCategoryListState extends State<CustomCategoryList> {
           margin: EdgeInsets.zero,
           color: white,
           child: Padding(
-            padding: EdgeInsets.all(15.0),
+            padding: const EdgeInsets.all(15.0),
             child: Text(
               messageDecoderWithEmoji(itemList[index].name) ??
                   itemList[index].name,

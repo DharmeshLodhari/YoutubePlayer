@@ -62,7 +62,7 @@ class _VerifyRegistrationOTPScreenState
       _isRunning = true;
     });
 
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
         if (_duration > 0) {
           _duration--;
@@ -90,10 +90,10 @@ class _VerifyRegistrationOTPScreenState
   }
 
   String getTimerText() {
-    int minutes = _duration ~/ 60;
-    int seconds = _duration % 60;
-    String minutesStr = (minutes < 10) ? '0$minutes' : '$minutes';
-    String secondsStr = (seconds < 10) ? '0$seconds' : '$seconds';
+    final int minutes = _duration ~/ 60;
+    final int seconds = _duration % 60;
+    final String minutesStr = (minutes < 10) ? '0$minutes' : '$minutes';
+    final String secondsStr = (seconds < 10) ? '0$seconds' : '$seconds';
     return '$minutesStr:$secondsStr';
   }
 
@@ -129,7 +129,7 @@ class _VerifyRegistrationOTPScreenState
         ),
         body: SingleChildScrollView(
           child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 20),
+            padding: const EdgeInsets.symmetric(horizontal: 20),
             height: MediaQuery.of(context).size.height -
                 (AppBar().preferredSize.height +
                     MediaQuery.of(context).padding.top),
@@ -153,9 +153,9 @@ class _VerifyRegistrationOTPScreenState
                                 if (phoneNumber == null ||
                                     phoneNumber == "") ...[
                                   selectCountryField(),
-                                  SizedBox(height: 12),
+                                  const SizedBox(height: 12),
                                   phoneNumberField(),
-                                  SizedBox(height: 12),
+                                  const SizedBox(height: 12),
                                 ],
                                 otpFillUpField(),
                                 flexibleSpace(flex: 1),
@@ -210,7 +210,7 @@ class _VerifyRegistrationOTPScreenState
                 ),
                 Text(
                   getTimerText(),
-                  style: TextStyle(fontSize: 14, color: Colors.red),
+                  style: const TextStyle(fontSize: 14, color: Colors.red),
                 ),
                 Text(
                   " minutes.",
@@ -230,25 +230,25 @@ class _VerifyRegistrationOTPScreenState
         showResend == false ? null : reSendOtpCode();
       },
       child: Container(
-        padding: EdgeInsets.all(10.0),
+        padding: const EdgeInsets.all(10.0),
         decoration: BoxDecoration(
             color: showResend == true ? navyBlue : greySecondaryYarn,
-            borderRadius: BorderRadius.all(Radius.circular(10))),
-        child: Text('Resend OTP',
+            borderRadius: const BorderRadius.all(Radius.circular(10))),
+        child: const Text('Resend OTP',
             style: TextStyle(fontSize: 14, color: Colors.white)),
       ),
     );
   }
 
   Widget otpFillUpField() {
-    BoxDecoration navyBlueBorder = BoxDecoration(
+    final BoxDecoration navyBlueBorder = BoxDecoration(
       border: Border(
           bottom: BorderSide(
         color: navyBlue,
         width: 2,
       )),
     );
-    BoxDecoration grayBorder = BoxDecoration(
+    final BoxDecoration grayBorder = BoxDecoration(
       border: Border(
           bottom: BorderSide(
         color: HexColor("#E6E5EB"),
@@ -262,7 +262,7 @@ class _VerifyRegistrationOTPScreenState
           side: BorderSide(color: whiteBackground)),
       shadowColor: whiteBackground,
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 28),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 28),
         child: PinPut(
           eachFieldWidth: 40,
           eachFieldHeight: 45,
@@ -329,8 +329,8 @@ class _VerifyRegistrationOTPScreenState
     debugPrint('Phone number fola -> $phoneNumberWithCountryCode');
 
     if (_verifyOtpFormKey.currentState!.validate()) {
-      String enteredOTP = otpController!.text.trim();
-      String passwordToken = "false";
+      final String enteredOTP = otpController!.text.trim();
+      final String passwordToken = "false";
       showDialog(context: context, builder: (context) => LoadingIndicator());
 
       await UserAuth()
@@ -412,7 +412,7 @@ class _VerifyRegistrationOTPScreenState
   void reSendOtpCode() {
     UserAuth().registerPhoneNumber(phoneNumber!).then((value) {
       // Navigator.of(context).pop();
-      Future.delayed(Duration(seconds: 2), () {
+      Future.delayed(const Duration(seconds: 2), () {
         startTimer();
         showResend = false;
         showToast(message: "OTP resent to $phoneNumber");
@@ -490,7 +490,7 @@ class _VerifyRegistrationOTPScreenState
           AppLocalization.of(context)!.selectYourCountry,
           style: TextStyle(color: darkGrey, fontSize: 14),
         ),
-        SizedBox(
+        const SizedBox(
           height: 6,
         ),
         Card(
@@ -499,7 +499,7 @@ class _VerifyRegistrationOTPScreenState
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
               side: BorderSide(color: greyBorderColor)),
-          margin: EdgeInsets.all(0),
+          margin: const EdgeInsets.all(0),
           borderOnForeground: true,
           child: ListTile(
             dense: true,
@@ -521,7 +521,7 @@ class _VerifyRegistrationOTPScreenState
         builder: (context) => Theme(
           data: Theme.of(context).copyWith(primaryColor: Colors.pink),
           child: CountryPickerDialog(
-            titlePadding: EdgeInsets.all(8.0),
+            titlePadding: const EdgeInsets.all(8.0),
             searchCursorColor: Colors.pinkAccent,
             searchInputDecoration:
                 InputDecoration(hintText: AppLocalization.of(context)!.search),
@@ -538,13 +538,13 @@ class _VerifyRegistrationOTPScreenState
     return Row(
       children: <Widget>[
         CountryPickerUtils.getDefaultFlagImage(country),
-        SizedBox(width: 8.0),
+        const SizedBox(width: 8.0),
         Text(
           "+${country.phoneCode}",
           style: TextStyle(
               fontSize: 16, fontWeight: FontWeight.w600, color: blackFont),
         ),
-        SizedBox(width: 8.0),
+        const SizedBox(width: 8.0),
         Flexible(
             child: Text(
           country.name!,

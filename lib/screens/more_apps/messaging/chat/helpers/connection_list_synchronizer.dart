@@ -51,7 +51,7 @@ class ConnectionSynchronizer {
       tempList
           .forEach((element) => users.add(ChatConversation.fromJson(element)));
 
-      print('USERS ::: $users');
+      debugPrint('USERS ::: $users');
 
       await connectionListBloc.setConnectionUsers(users: users);
 

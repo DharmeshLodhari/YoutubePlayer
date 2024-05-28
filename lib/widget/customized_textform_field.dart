@@ -329,7 +329,7 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
   }
 
   TextInputType getKeyBoardType(TextInputType textInputType) {
-    TextInputType numberInputType = Platform.isIOS
+    final TextInputType numberInputType = Platform.isIOS
         ? const TextInputType.numberWithOptions(decimal: true)
         : TextInputType.number;
     if (widget.isAmountField == true) {
@@ -345,7 +345,8 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
   Future _verifyInputFromServer() async {
     setState(() => verifyingInput = true);
 
-    bool? verifyInputFromServerFunc = await widget.verifyInputFromServerFunc!();
+    final bool? verifyInputFromServerFunc =
+        await widget.verifyInputFromServerFunc!();
     if (verifyInputFromServerFunc == true) {
       setState(() {
         inputVerified = true;

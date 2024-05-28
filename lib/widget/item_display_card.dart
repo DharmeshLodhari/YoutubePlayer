@@ -206,7 +206,7 @@ class _DisplayProductState extends State<DisplayProduct> {
                                     ),
                                   ],
                                 ),
-                                SizedBox(height: 4),
+                                const SizedBox(height: 4),
                                 widget.product.discountedPrice != null
                                     ? (checkDiscount(
                                             widget.product.discountIsActive!,
@@ -239,8 +239,8 @@ class _DisplayProductState extends State<DisplayProduct> {
                                               ),
                                             ],
                                           )
-                                        : SizedBox()
-                                    : SizedBox(),
+                                        : const SizedBox()
+                                    : const SizedBox(),
                               ],
                             ),
                             displayShoppingAddingToCartControl()
@@ -281,7 +281,7 @@ class _DisplayProductState extends State<DisplayProduct> {
   }
 
   List<Widget> generateBottomSheetItem() {
-    List<Widget> list = [];
+    final List<Widget> list = [];
 
     list.add(
       bottomSheetItem(
@@ -307,7 +307,7 @@ class _DisplayProductState extends State<DisplayProduct> {
         onTap: () async {
           Navigator.pop(context);
 
-          var result = await Navigator.of(context).pushNamed(
+          final result = await Navigator.of(context).pushNamed(
             '/edit-product',
             arguments: {
               "productId": widget.product.id.toString(),
@@ -353,7 +353,8 @@ class _DisplayProductState extends State<DisplayProduct> {
                 ..attachment = {
                   "product": widget.product.toJson().cast<String, dynamic>()
                 };
-              bool data = await YarnAuth().addYarnAndQuestion(params, '', '');
+              final bool data =
+                  await YarnAuth().addYarnAndQuestion(params, '', '');
               if (data) {
                 showToast(message: "Shared in Yarn successfully");
               }
@@ -386,7 +387,7 @@ class _DisplayProductState extends State<DisplayProduct> {
           message: AppLocalization.of(context)!.cantPurchaseYourOwnServices);
     }
     if (widget.product.isProductAvailableNow()) {
-      String type = "product";
+      final String type = "product";
       if (widget.product.variantModels?.isNotEmpty ?? false) {
         showToast(message: AppLocalization.of(context)!.selectVariantColorSize);
         Navigator.pushNamed(context, '/product',
@@ -408,9 +409,9 @@ class _DisplayProductState extends State<DisplayProduct> {
   }
 
   Future<void> addToSharedCart(SharedCartModel result) async {
-    String type = "product";
+    final String type = "product";
 
-    Product products =
+    final Product products =
         widget.product.copyWith(quantity: 1, withSelectedAddOn: true);
 
     sharedCartBloc.addItemToSharedCart(
@@ -443,7 +444,7 @@ class _DisplayProductState extends State<DisplayProduct> {
             widget.product.pricePercentageChange != 0.0)) {
       return buildDiscountPrice();
     } else {
-      return SizedBox();
+      return const SizedBox();
     }
   }
 
@@ -458,10 +459,10 @@ class _DisplayProductState extends State<DisplayProduct> {
             child: showDiscountValue(widget.product.discountType!,
                 widget.product.discountValue!, widget.product.currency));
       } else {
-        return SizedBox();
+        return const SizedBox();
       }
     } else {
-      return SizedBox();
+      return const SizedBox();
     }
     // if ((widget.product.pricePercentageChange != null) &
     // (widget.product.pricePercentageChange != 0.0)) ...[
@@ -637,10 +638,10 @@ class _DisplayProductState extends State<DisplayProduct> {
   }
 
   showBottomSheetDialog() async {
-    var result = await androidBottomSheet(
+    final result = await androidBottomSheet(
       enableDrag: true,
       context: context,
-      child: AllActiveCart(),
+      child: const AllActiveCart(),
     );
     if (result != null && result is SharedCartModel) {
       if (result.id == 'my-cart') {
@@ -673,7 +674,7 @@ class _DisplayProductState extends State<DisplayProduct> {
   }
 
   void removeProductFromCartOld() async {
-    String type = "product";
+    final String type = "product";
 
     late var mapData;
     basketBloc.items.forEach((element) {
@@ -682,7 +683,7 @@ class _DisplayProductState extends State<DisplayProduct> {
         return;
       }
     });
-    Map data = {
+    final Map data = {
       "type": type,
       "id": mapData["item"].id,
       "qty": int.parse(mapData["qty"].toString()) - 1,
@@ -738,7 +739,7 @@ class _DisplayServiceState extends State<DisplayService> {
           return;
         }
 
-        Service currentService = Service();
+        final Service currentService = Service();
         currentService.name = widget.service.name;
         currentService.id = widget.service.id;
         currentService.shortDescription = widget.service.shortDescription;
@@ -834,16 +835,13 @@ class _DisplayServiceState extends State<DisplayService> {
                         height: 4,
                       ),
                       Text(
-                        messageDecoderWithEmoji(
-                              truncateString(
-                                str: messageDecoderWithEmoji(
-                                        widget.service.shortDescription) ??
-                                    "",
-                                lengthToTruncateAt: 45,
-                                showEllipsis: true,
-                              ),
-                            ) ??
-                            "",
+                        truncateString(
+                          str: messageDecoderWithEmoji(
+                                  widget.service.shortDescription) ??
+                              "",
+                          lengthToTruncateAt: 45,
+                          showEllipsis: true,
+                        ),
                         style: TextStyle(
                           fontFamily: "Inter",
                           fontWeight: FontWeight.w300,
@@ -902,7 +900,7 @@ class _DisplayServiceState extends State<DisplayService> {
             text: AppLocalization.of(context)!.outOfStock, color: red),
       );
     } else {
-      return SizedBox();
+      return const SizedBox();
     }
   }
 
@@ -1041,7 +1039,7 @@ class _DisplayServiceState extends State<DisplayService> {
   }
 
   List<Widget> generateBottomSheetItem() {
-    List<Widget> list = [];
+    final List<Widget> list = [];
 
     list.add(
       bottomSheetItem(
@@ -1067,7 +1065,7 @@ class _DisplayServiceState extends State<DisplayService> {
         onTap: () async {
           Navigator.pop(context);
 
-          var result = await Navigator.of(context).pushNamed(
+          final result = await Navigator.of(context).pushNamed(
             '/edit-service',
             arguments: {
               "serviceId": widget.service.id.toString(),
@@ -1103,7 +1101,7 @@ class _DisplayServiceState extends State<DisplayService> {
   }
 
   void removeServiceFromCart() async {
-    String type = "service";
+    final String type = "service";
 
     late var mapData;
     basketBloc.items.forEach((element) {
@@ -1112,7 +1110,7 @@ class _DisplayServiceState extends State<DisplayService> {
         return;
       }
     });
-    Map data = {
+    final Map data = {
       "type": type,
       "id": mapData["item"].id,
       "qty": mapData["qty"] - 1,
@@ -1129,7 +1127,7 @@ class _DisplayServiceState extends State<DisplayService> {
           message: AppLocalization.of(context)!.cantPurchaseYourOwnServices);
     }
     if (widget.service.isAvailable!) {
-      String type = "service";
+      final String type = "service";
       basketBloc.addItemToCart(
         item: widget.service,
         type: type,
@@ -1141,7 +1139,7 @@ class _DisplayServiceState extends State<DisplayService> {
           return;
         }
       });
-      Map<String, dynamic> data = {
+      final Map<String, dynamic> data = {
         "type": type,
         "id": mapData["item"].id,
         "qty": mapData["qty"],
@@ -1164,7 +1162,8 @@ class _DisplayServiceState extends State<DisplayService> {
                 ..attachment = {
                   "service": widget.service.toJson().cast<String, dynamic>()
                 };
-              bool data = await YarnAuth().addYarnAndQuestion(params, '', '');
+              final bool data =
+                  await YarnAuth().addYarnAndQuestion(params, '', '');
               if (data) {
                 showToast(message: "Shared in Yarn successfully");
               }

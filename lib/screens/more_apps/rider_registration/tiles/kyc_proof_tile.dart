@@ -23,13 +23,13 @@ class KYCProofTile extends StatelessWidget {
         shape: RoundedRectangleBorder(
             side: BorderSide(color: selectedListItemBackgroundBlue),
             borderRadius: BorderRadius.circular(10)),
-        margin: EdgeInsets.symmetric(vertical: 5),
+        margin: const EdgeInsets.symmetric(vertical: 5),
         shadowColor: boxShadowTwo,
         color: white,
         child: Container(
           decoration: decorateBox(),
           child: Padding(
-            padding: EdgeInsets.all(10.0),
+            padding: const EdgeInsets.all(10.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -46,7 +46,7 @@ class KYCProofTile extends StatelessWidget {
                       ),
                     ),
                     Checkbox(
-                      shape: RoundedRectangleBorder(
+                      shape: const RoundedRectangleBorder(
                           borderRadius:
                               BorderRadius.all(Radius.circular(25.0))),
                       focusColor: navyBlue,
@@ -66,7 +66,7 @@ class KYCProofTile extends StatelessWidget {
                     fontFamily: "Inter",
                   ),
                 ),
-                SizedBox(height: 10.0),
+                const SizedBox(height: 10.0),
               ],
             ),
           ),

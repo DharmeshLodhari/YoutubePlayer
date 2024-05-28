@@ -118,7 +118,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   }
 
   void checkCurrentUserIsInRequestList() async {
-    UserBloc _userBloc = Provider.of<UserBloc>(context, listen: false);
+    final UserBloc _userBloc = Provider.of<UserBloc>(context, listen: false);
     debugPrint("is In Request List -");
 
     if (_userBloc.user.userName != searchedUser?.userName) {
@@ -195,9 +195,9 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
   Widget checkView() {
     if (arguments['channel'] != null) {
-      String name = channelDetail['owner']['full_name'];
+      final String name = channelDetail['owner']['full_name'];
 
-      CustomerProfile profile = CustomerProfile(
+      final CustomerProfile profile = CustomerProfile(
         fullName: name,
         userName: channelDetail['group_name'] ?? '',
         nickName: channelDetail['username'] ?? '',

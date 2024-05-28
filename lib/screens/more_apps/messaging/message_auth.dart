@@ -1104,7 +1104,7 @@ class MessageAuth extends AuthService {
   Future<Map<String, dynamic>?> getChatWallpapers(
       String? next, String? previous,
       {String? filter}) async {
-    await Future.delayed(Duration(seconds: 1));
+    await Future.delayed(const Duration(seconds: 1));
 
     final String url = "";
 

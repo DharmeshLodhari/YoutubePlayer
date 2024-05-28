@@ -55,17 +55,17 @@ class _YarnCommentActionsState extends State<YarnCommentActions> {
   }
 
   Widget _buildActionableList() {
-    List<Widget> finalActionList = [];
+    final List<Widget> finalActionList = [];
 
     finalActionList.addAll([
       Expanded(child: _buildCommentButton()),
-      Spacer(),
+      const Spacer(),
       Expanded(child: _buildLikeButton()),
-      Spacer(),
+      const Spacer(),
       Expanded(child: _buildDisLikeButton()),
-      Spacer(),
+      const Spacer(),
       Expanded(child: _buildShareButton()),
-      Spacer(),
+      const Spacer(),
       Expanded(child: _buildPayButton()),
     ]);
 
@@ -115,7 +115,7 @@ class _YarnCommentActionsState extends State<YarnCommentActions> {
             );
           },
         ),
-        SizedBox(
+        const SizedBox(
           width: 6,
         ),
         Text(getCommentCount())
@@ -153,7 +153,7 @@ class _YarnCommentActionsState extends State<YarnCommentActions> {
       },
       likeCount: getLikeCount(),
       countBuilder: (_, __, ___) {
-        int count = getLikeCount();
+        final int count = getLikeCount();
         return Text(
           count == 0 ? '' : count.toString(),
           style: TextStyle(
@@ -188,7 +188,7 @@ class _YarnCommentActionsState extends State<YarnCommentActions> {
       },
       likeCount: getDisLikeCount(),
       countBuilder: (_, __, ___) {
-        int count = getDisLikeCount();
+        final int count = getDisLikeCount();
         return Text(
           count == 0 ? '' : count.toString(),
           style: TextStyle(
@@ -228,7 +228,7 @@ class _YarnCommentActionsState extends State<YarnCommentActions> {
             height: 17,
             width: 17,
           ),
-          SizedBox(
+          const SizedBox(
             height: 2,
           )
         ],
@@ -306,7 +306,7 @@ class _YarnCommentActionsState extends State<YarnCommentActions> {
 
   Future<void> sendYarnCommentToUserInChat(
       {required YarnComment yarnComment}) async {
-    List<ChatConversation?> listOfRecipient =
+    final List<ChatConversation?> listOfRecipient =
         await ShareInChat().selectShareCustomer(context);
     debugPrint("Selected users = ${listOfRecipient.length}");
 
@@ -324,9 +324,9 @@ class _YarnCommentActionsState extends State<YarnCommentActions> {
     String? url,
     String? commentType,
   }) async {
-    UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
+    final UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
 
-    Map<String, dynamic> metaData = yarnComment.toJson();
+    final Map<String, dynamic> metaData = yarnComment.toJson();
 
     if (commentType != null) {
       metaData['comment_type'] = commentType; //options(comment,yarn)
@@ -335,10 +335,10 @@ class _YarnCommentActionsState extends State<YarnCommentActions> {
       metaData['related_object_id'] = widget.yarn.id;
     }
 
-    Map<String, dynamic> data = {
+    final Map<String, dynamic> data = {
       "meta_data": messageDecoderWithEmoji(jsonEncode(metaData)),
       // "meta_data": jsonEncode(metaData),
-      "check_id": Uuid().v4(),
+      "check_id": const Uuid().v4(),
       "conversation_id": recipientUser.conversationId,
       "author": userBloc.user.userName,
       "message": 'comment',
@@ -351,7 +351,7 @@ class _YarnCommentActionsState extends State<YarnCommentActions> {
   }
 
   Future<bool> addLikeToComment() async {
-    Map<String, dynamic>? data =
+    final Map<String, dynamic>? data =
         await YarnAuth().addLikeComment(widget.comment.id!);
     setState(() {
       widget.comment.userLike = !widget.comment.userLike!;
@@ -368,7 +368,7 @@ class _YarnCommentActionsState extends State<YarnCommentActions> {
   }
 
   Future<bool> addDisLikeToComment() async {
-    Map<String, dynamic>? data =
+    final Map<String, dynamic>? data =
         await YarnAuth().addDisLikeComment(widget.comment.id!);
 
     setState(() {

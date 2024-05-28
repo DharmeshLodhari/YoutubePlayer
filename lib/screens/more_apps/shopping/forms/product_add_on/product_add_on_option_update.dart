@@ -249,7 +249,7 @@ class _ProductAddOnOptionUpdateState extends State<ProductAddOnOptionUpdate> {
       ImagePicker().pickImage(source: imageSource).then((value) async {
         if (value != null) {
           /// for cropping the image
-          String? croppedImage = await ImageCrop().cropImage(value.path);
+          final String? croppedImage = await ImageCrop().cropImage(value.path);
           if (croppedImage == null) {
             return;
           }
@@ -329,7 +329,8 @@ class _ProductAddOnOptionUpdateState extends State<ProductAddOnOptionUpdate> {
                 borderRadius: BorderRadius.circular(10),
               ),
               shadowColor: boxShadowTwo,
-              margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+              margin:
+                  const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
               child: Container(
                 width: 100,
                 decoration: BoxDecoration(
@@ -347,10 +348,10 @@ class _ProductAddOnOptionUpdateState extends State<ProductAddOnOptionUpdate> {
             right: 0,
             top: 0,
             child: IconButton(
-              padding: EdgeInsets.only(right: 6, top: 6),
+              padding: const EdgeInsets.only(right: 6, top: 6),
               alignment: Alignment.topRight,
               icon: Container(
-                padding: EdgeInsets.all(2.0),
+                padding: const EdgeInsets.all(2.0),
                 decoration: BoxDecoration(
                   color: iconBtnGrey,
                   borderRadius: BorderRadius.circular(5),

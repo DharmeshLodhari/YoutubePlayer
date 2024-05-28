@@ -8,17 +8,17 @@ import 'package:flutter/material.dart';
 class SubscriptionsAuth extends AuthService {
   Future<List<SubscriptionsModel>> getSubscriptionList(
       {required String accountType}) async {
-    String url = AppConfig.baseUrl + "/api/v1/user/profile-pricing/";
+    final String url = AppConfig.baseUrl + "/api/v1/user/profile-pricing/";
 
-    var headers = getNonAuthHeader();
-    var response =
+    final headers = getNonAuthHeader();
+    final response =
         await httpGet(url, headers: headers as Map<String, dynamic>?);
-    print('GET SUBSCRIPTION LIST');
+    debugPrint('GET SUBSCRIPTION LIST');
     debugPrint(
         "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
     if (response.statusCode == 200 || response.statusCode == 201) {
-      List results = jsonDecode(response.body)['results'];
-      List<SubscriptionsModel> subscriptionModelList =
+      final List results = jsonDecode(response.body)['results'];
+      final List<SubscriptionsModel> subscriptionModelList =
           results.map((json) => SubscriptionsModel.fromJson(json)).toList();
 
       return subscriptionModelList
@@ -30,11 +30,11 @@ class SubscriptionsAuth extends AuthService {
   }
 
   Future<bool> verifyBusinessName({required String businessName}) async {
-    String url = AppConfig.baseUrl +
+    final String url = AppConfig.baseUrl +
         "/api/v1/user/verify-business-name/?business_name=${Uri.encodeComponent(businessName)}";
 
-    var headers = await getAuthHeaders();
-    var response = await httpGet(url, headers: headers);
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers);
     debugPrint(
         "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
     if (response.statusCode == 200 || response.statusCode == 201) {
@@ -53,19 +53,19 @@ class SubscriptionsAuth extends AuthService {
       required String accountType,
       required String businessName}) async {
     bool? userAccountUpgraded;
-    String url = AppConfig.baseUrl + "/api/v1/user/upgrade-user-account/";
+    final String url = AppConfig.baseUrl + "/api/v1/user/upgrade-user-account/";
 
-    var headers = await getAuthHeaders();
-    print(accountType);
-    print(businessName);
-    var data = {
+    final headers = await getAuthHeaders();
+    debugPrint(accountType);
+    debugPrint(businessName);
+    final data = {
       'id': subscriptionsId,
       "account_type": accountType,
       "business_name": businessName,
     };
-    var response =
+    final response =
         await httpPost(url, headers: headers, body: jsonEncode(data));
-    print('USER ACCOUNT UPGRADED');
+    debugPrint('USER ACCOUNT UPGRADED');
     debugPrint(
         "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
     if (response.statusCode == 201 && response.statusCode == 201) {

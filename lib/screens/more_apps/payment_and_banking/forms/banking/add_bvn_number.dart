@@ -183,7 +183,7 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
   }
 
   bool validateDOB() {
-    DateTime dateTime = DateTime.now();
+    final DateTime dateTime = DateTime.now();
 
     if (dob.add(const Duration(days: 4745)).isBefore(dateTime)) {
       isValidAge = true;
@@ -335,7 +335,7 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
   }
 
   Widget buildBusinessRegistrationLicense() {
-    UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
+    final UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
 
     if (selectedTier == "3" &&
         virtualAccount!.accountTier!.tierType! == "1" &&
@@ -527,7 +527,7 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
       ImagePicker().pickImage(source: imageSource).then((value) async {
         if (value != null) {
           /// for cropping the image
-          String? croppedImage = await ImageCrop().cropImage(value.path);
+          final String? croppedImage = await ImageCrop().cropImage(value.path);
           if (croppedImage == null) {
             return;
           }
@@ -605,7 +605,7 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
       ImagePicker().pickImage(source: imageSource).then((value) async {
         if (value != null) {
           /// for cropping the image
-          String? croppedImage = await ImageCrop().cropImage(value.path);
+          final String? croppedImage = await ImageCrop().cropImage(value.path);
           if (croppedImage == null) {
             return;
           }

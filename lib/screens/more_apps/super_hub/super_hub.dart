@@ -72,7 +72,7 @@ class _SuperHubState extends State<SuperHub> {
       ),
       actions: [
         _cartBtn(),
-        SizedBox(width: 12),
+        const SizedBox(width: 12),
       ],
     );
   }
@@ -89,7 +89,7 @@ class _SuperHubState extends State<SuperHub> {
         isProductLoading = true;
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result = await ShoppingAuthService()
+        final Map<String, dynamic>? result = await ShoppingAuthService()
             .listOfServices(productNext, productPrevious, otherDeals: true);
 
         if (result == null) {
@@ -105,7 +105,7 @@ class _SuperHubState extends State<SuperHub> {
         productCount = result['count'];
         productNext = result['next'];
         productPrevious = result['previous'];
-        var tempList = result['results'];
+        final tempList = result['results'];
         if (mounted) {
           setState(() {
             noProductInList = false;
@@ -124,7 +124,7 @@ class _SuperHubState extends State<SuperHub> {
         _productScaffoldMessengerKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 500),
         ));
       }
     }
@@ -132,7 +132,7 @@ class _SuperHubState extends State<SuperHub> {
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         _refreshPage();
@@ -189,32 +189,33 @@ class _SuperHubState extends State<SuperHub> {
                   const SizedBox(height: 22),
                   superStoreProducts(),
                   const SizedBox(height: 16),
-                  isProductLoading
-                      ? Shimmer.fromColors(
-                          baseColor: Colors.white,
-                          highlightColor: greyBorderColor,
-                          child: GridView.builder(
-                            shrinkWrap: true,
-                            physics: NeverScrollableScrollPhysics(),
-                            gridDelegate:
-                                SliverGridDelegateWithMaxCrossAxisExtent(
-                              mainAxisSpacing: 14,
-                              mainAxisExtent: 180,
-                              crossAxisSpacing: 15,
-                              maxCrossAxisExtent: 200,
+                  if (isProductLoading)
+                    Shimmer.fromColors(
+                      baseColor: Colors.white,
+                      highlightColor: greyBorderColor,
+                      child: GridView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        gridDelegate:
+                            const SliverGridDelegateWithMaxCrossAxisExtent(
+                          mainAxisSpacing: 14,
+                          mainAxisExtent: 180,
+                          crossAxisSpacing: 15,
+                          maxCrossAxisExtent: 200,
+                        ),
+                        itemCount: 2,
+                        itemBuilder: (context, index) {
+                          return Card(
+                            color: Colors.grey,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
                             ),
-                            itemCount: 2,
-                            itemBuilder: (context, index) {
-                              return Card(
-                                color: Colors.grey,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              );
-                            },
-                          ),
-                        )
-                      : SizedBox.shrink(),
+                          );
+                        },
+                      ),
+                    )
+                  else
+                    const SizedBox.shrink(),
                   Visibility(
                     visible: !isProductLoading &&
                         !isTodayDealLoading &&
@@ -223,8 +224,8 @@ class _SuperHubState extends State<SuperHub> {
                       child: Column(
                         children: [
                           Lottie.asset('assets/lottie/no_moment_lottie.json'),
-                          SizedBox(height: 20),
-                          Text('No items at the moment'),
+                          const SizedBox(height: 20),
+                          const Text('No items at the moment'),
                         ],
                       ),
                     ),
@@ -240,17 +241,17 @@ class _SuperHubState extends State<SuperHub> {
 
   Widget superStoreProducts() {
     if (productList.isEmpty) {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     }
     return productNext == "" && isProductLoading
-        ? SizedBox.shrink()
+        ? const SizedBox.shrink()
         : Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               GridView.builder(
                 shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                physics: const NeverScrollableScrollPhysics(),
+                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
                   mainAxisSpacing: 22,
                   mainAxisExtent: 260,
                   crossAxisSpacing: 15,
@@ -494,8 +495,8 @@ class _SuperHubState extends State<SuperHub> {
                 hintText: "Search",
                 fillColor: Colors.white,
                 filled: true,
-                contentPadding: EdgeInsets.symmetric(vertical: 10),
-                prefix: Padding(
+                contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                prefix: const Padding(
                   padding: EdgeInsets.only(left: 16),
                 ),
                 enabledBorder: OutlineInputBorder(
@@ -542,7 +543,7 @@ class _SuperHubState extends State<SuperHub> {
         badgeContent: getBadgeContent(),
         position: badges.BadgePosition.topEnd(
             end: getBadgeCount().length == 1 ? -5 : -10, top: 0),
-        badgeAnimation: badges.BadgeAnimation.rotation(
+        badgeAnimation: const badges.BadgeAnimation.rotation(
           animationDuration: Duration(seconds: 1),
           colorChangeAnimationDuration: Duration(seconds: 1),
           loopAnimation: false,
@@ -553,7 +554,7 @@ class _SuperHubState extends State<SuperHub> {
           shape: badges.BadgeShape.circle,
           badgeColor: naturalGreen,
           padding: basketBloc.basketItems.length == 0
-              ? EdgeInsets.all(0)
+              ? const EdgeInsets.all(0)
               : EdgeInsets.only(
                   left: getBadgeCount().length == 1 ? 6 : 8,
                   right: 6,
@@ -583,7 +584,7 @@ class _SuperHubState extends State<SuperHub> {
     }
     return Text(
       getBadgeCount(),
-      style: TextStyle(
+      style: const TextStyle(
           fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold),
     );
   }

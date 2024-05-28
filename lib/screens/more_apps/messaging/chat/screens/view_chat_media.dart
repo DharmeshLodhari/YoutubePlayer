@@ -125,7 +125,7 @@ class _ViewChatMediaState extends State<ViewChatMedia> {
                     child: Container(
                       height: 36,
                       width: 36,
-                      child: Icon(
+                      child: const Icon(
                         Icons.arrow_back_ios_rounded,
                         color: Colors.white,
                         size: 18,
@@ -137,36 +137,38 @@ class _ViewChatMediaState extends State<ViewChatMedia> {
                   },
                 ),
               ),
-              (message != "")
-                  ? Positioned(
-                      bottom: 0,
-                      child: Container(
-                        width: MediaQuery.of(context).size.width,
-                        color: Colors.black38,
-                        constraints: BoxConstraints(
-                            maxHeight: MediaQuery.of(context).size.height / 5),
-                        padding: EdgeInsets.symmetric(vertical: 16),
-                        child: SingleChildScrollView(
-                          child: Row(
-                            children: [
-                              Expanded(
-                                  child: Center(
-                                child: Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 16),
-                                  child: Text(
-                                    message!,
-                                    style: TextStyle(
-                                        color: Colors.white, fontSize: 16),
-                                    textAlign: TextAlign.justify,
-                                  ),
-                                ),
-                              )),
-                            ],
-                          ),
-                        ),
+              if (message != "")
+                Positioned(
+                  bottom: 0,
+                  child: Container(
+                    width: MediaQuery.of(context).size.width,
+                    color: Colors.black38,
+                    constraints: BoxConstraints(
+                        maxHeight: MediaQuery.of(context).size.height / 5),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    child: SingleChildScrollView(
+                      child: Row(
+                        children: [
+                          Expanded(
+                              child: Center(
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 16),
+                              child: Text(
+                                message!,
+                                style: const TextStyle(
+                                    color: Colors.white, fontSize: 16),
+                                textAlign: TextAlign.justify,
+                              ),
+                            ),
+                          )),
+                        ],
                       ),
-                    )
-                  : Container(),
+                    ),
+                  ),
+                )
+              else
+                Container(),
             ],
           )),
         ],

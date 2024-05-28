@@ -37,7 +37,7 @@ class SlideActionButton extends StatelessWidget {
                 size: 16,
                 color: iconColor,
               ),
-              SizedBox(
+              const SizedBox(
                 height: 6,
               ),
               Text(

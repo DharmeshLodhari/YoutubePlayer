@@ -113,7 +113,7 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
           setState(() {});
         }
 
-        Map<String, dynamic>? result =
+        final Map<String, dynamic>? result =
             await ShoppingAuthService().searchMerchant(
           next,
           previous,
@@ -132,7 +132,7 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
-        List? tempList = result['results'];
+        final List? tempList = result['results'];
         debugPrint('TEMP LIST --> $tempList');
         if (mounted) {
           isLoading = false;
@@ -243,24 +243,25 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
             fontWeight: FontWeight.bold),
       ),
       actions: <Widget>[
-        nearByBusiness.isNotEmpty
-            ? RoundedBackgroundIcon(
-                height: 34,
-                width: 34,
-                icon: Icon(
-                  SlydoAppIcon.filter,
-                  size: 16,
-                  color: blackFont,
-                ),
-                onTap: () {
-                  setState(() {
-                    showSortByBox = !showSortByBox;
-                  });
-                },
-                backgroundColor: iconBtnGrey,
-                enableMargin: true,
-              )
-            : const SizedBox.shrink(),
+        if (nearByBusiness.isNotEmpty)
+          RoundedBackgroundIcon(
+            height: 34,
+            width: 34,
+            icon: Icon(
+              SlydoAppIcon.filter,
+              size: 16,
+              color: blackFont,
+            ),
+            onTap: () {
+              setState(() {
+                showSortByBox = !showSortByBox;
+              });
+            },
+            backgroundColor: iconBtnGrey,
+            enableMargin: true,
+          )
+        else
+          const SizedBox.shrink(),
         const SizedBox(width: 16),
       ],
     );
@@ -273,61 +274,62 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
           const SizedBox(height: 6),
           searchBox(),
           const SizedBox(height: 12),
-          isLoading
-              ? const CircularProgressIndicator()
-              : const SizedBox.shrink(),
-          isSearchIsEmpty
-              ? Expanded(
-                  child: NoItemInList(
-                    msg: AppLocalization.of(context)!
-                        .pleaseTypeSomethingToGetResult,
-                    isResult: false,
-                  ),
-                )
-              : noItemInList
-                  ? Expanded(
-                      child: NoItemInList(
-                        msg: AppLocalization.of(context)!.noResultFound,
-                      ),
-                    )
-                  : Expanded(
-                      child: ListView(
-                          children: nearByBusiness
-                              .map(
-                                (product) => Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 8, horizontal: 16),
-                                  child: Container(
-                                    margin: const EdgeInsets.all(8.0),
-                                    child: FindBusiness(
-                                      customerProfile: product,
-                                      tileRenderPlace:
-                                          TileRenderPlace.YarnProductService,
-                                      callback: (username, value) {
-                                        //create a list to edit
-                                        List<CustomerProfile>
-                                            customerProfileList =
-                                            nearByBusiness;
-                                        // modify customerProfileList for the username and refresh the list
-                                        // set the isFollowing for that particular user
-                                        customerProfileList.forEach((customer) {
-                                          if (customer.userName == username) {
-                                            customer.isFollowing =
-                                                value; // Modify the isFollowing property
-                                          }
-                                        });
+          if (isLoading)
+            const CircularProgressIndicator()
+          else
+            const SizedBox.shrink(),
+          if (isSearchIsEmpty)
+            Expanded(
+              child: NoItemInList(
+                msg:
+                    AppLocalization.of(context)!.pleaseTypeSomethingToGetResult,
+                isResult: false,
+              ),
+            )
+          else
+            noItemInList
+                ? Expanded(
+                    child: NoItemInList(
+                      msg: AppLocalization.of(context)!.noResultFound,
+                    ),
+                  )
+                : Expanded(
+                    child: ListView(
+                        children: nearByBusiness
+                            .map(
+                              (product) => Container(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 8, horizontal: 16),
+                                child: Container(
+                                  margin: const EdgeInsets.all(8.0),
+                                  child: FindBusiness(
+                                    customerProfile: product,
+                                    tileRenderPlace:
+                                        TileRenderPlace.YarnProductService,
+                                    callback: (username, value) {
+                                      //create a list to edit
+                                      final List<CustomerProfile>
+                                          customerProfileList = nearByBusiness;
+                                      // modify customerProfileList for the username and refresh the list
+                                      // set the isFollowing for that particular user
+                                      customerProfileList.forEach((customer) {
+                                        if (customer.userName == username) {
+                                          customer.isFollowing =
+                                              value; // Modify the isFollowing property
+                                        }
+                                      });
 
-                                        nearByBusiness = [];
-                                        nearByBusiness = customerProfileList;
+                                      nearByBusiness = [];
+                                      nearByBusiness = customerProfileList;
 
-                                        if (mounted) setState(() {});
-                                      },
-                                    ),
+                                      if (mounted) setState(() {});
+                                    },
                                   ),
                                 ),
-                              )
-                              .toList()),
-                    ),
+                              ),
+                            )
+                            .toList()),
+                  ),
         ],
       ),
     );
@@ -578,7 +580,8 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
                     shrinkWrap: true,
                     itemCount: productCategories!.length,
                     itemBuilder: (context, index) {
-                      ProductCategory category = productCategories![index];
+                      final ProductCategory category =
+                          productCategories![index];
                       return CheckboxListTile(
                         value: categoryCheckMark[category.name] ?? false,
                         onChanged: (isChecked) {

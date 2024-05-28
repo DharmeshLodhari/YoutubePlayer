@@ -177,7 +177,7 @@ class MainSocketProvider extends ChangeNotifier {
           _lastSent = DateTime.now();
 
           if (AppConfig.enableLogs.value)
-            print(
+            debugPrint(
                 "ping sent ${++pingCount} Status Code:  ${_channel?.closeCode} Reason: ${_channel?.closeReason}!!");
           _isConnected = false;
         } else {

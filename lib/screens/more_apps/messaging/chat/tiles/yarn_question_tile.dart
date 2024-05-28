@@ -864,7 +864,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
 
     yarn.body.toString().split(' ').forEach((ch) {
       list.add(ch);
-      // print(ch);
+      // debugPrint(ch);
     });
 
     list.forEach((data) {
@@ -1095,7 +1095,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
               clickWidget(
                 text: 'Always show me sensitive media',
                 onClick: () {
-                  print('sensitive');
+                  debugPrint('sensitive');
                 },
               )
             ],
@@ -1148,7 +1148,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
               clickWidget(
                 text: 'Always show me sensitive media',
                 onClick: () {
-                  print('sensitive');
+                  debugPrint('sensitive');
                 },
               )
             ],

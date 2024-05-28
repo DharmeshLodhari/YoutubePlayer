@@ -50,7 +50,7 @@ class _ResponseReceivedState extends State<ResponseReceived> {
   Widget _buildBody() {
     return SafeArea(
       child: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
             Expanded(
@@ -60,7 +60,7 @@ class _ResponseReceivedState extends State<ResponseReceived> {
                 children: [
                   _buildSuccessImage(),
                   _buildText(),
-                  SizedBox(height: 10.0),
+                  const SizedBox(height: 10.0),
                   _buildSubText(),
                 ],
               ),

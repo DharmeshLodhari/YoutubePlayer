@@ -56,7 +56,7 @@ class CustomizedAlertColumnButton {
     return Center(
       child: ConstrainedBox(
         constraints: style.constraints ??
-            BoxConstraints.expand(
+            const BoxConstraints.expand(
                 width: double.infinity, height: double.infinity),
         child: Center(
           child: SingleChildScrollView(
@@ -67,7 +67,7 @@ class CustomizedAlertColumnButton {
                   backgroundColor: style.backgroundColor ??
                       Theme.of(context).dialogBackgroundColor,
                   shape: style.alertBorder ?? _defaultShape(),
-                  titlePadding: EdgeInsets.all(0.0),
+                  titlePadding: const EdgeInsets.all(0.0),
                   title: Container(
                     width: MediaQuery.of(context).size.width - 40,
                     child: Center(
@@ -77,7 +77,7 @@ class CustomizedAlertColumnButton {
                             children: <Widget>[
                               Column(
                                 children: <Widget>[
-                                  SizedBox(
+                                  const SizedBox(
                                     height: 20,
                                   ),
                                   _getImage() ?? Container(),
@@ -93,22 +93,23 @@ class CustomizedAlertColumnButton {
                                   SizedBox(
                                     height: image != null ? 15 : 20,
                                   ),
-                                  desc == null
-                                      ? Container()
-                                      : Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 40),
-                                          child: Text(
-                                            desc ?? "",
-                                            style: TextStyle(
-                                                color: darkGrey,
-                                                fontSize: 14.0,
-                                                fontWeight: FontWeight.w400,
-                                                fontFamily: "Inter"),
-                                            textAlign: TextAlign.center,
-                                          ),
-                                        ),
-                                  SizedBox(
+                                  if (desc == null)
+                                    Container()
+                                  else
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 40),
+                                      child: Text(
+                                        desc ?? "",
+                                        style: TextStyle(
+                                            color: darkGrey,
+                                            fontSize: 14.0,
+                                            fontWeight: FontWeight.w400,
+                                            fontFamily: "Inter"),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                  const SizedBox(
                                     height: 10,
                                   ),
                                 ],
@@ -137,16 +138,16 @@ class CustomizedAlertColumnButton {
 
   // Returns defined buttons. Default: Cancel Button
   List<Widget> _getButtons() {
-    List<Widget> expandedButtons = [];
+    final List<Widget> expandedButtons = [];
     if (buttons != null) {
-      var btnOne = Padding(
-        padding: EdgeInsets.only(left: 10.0, right: 10.0),
+      final btnOne = Padding(
+        padding: const EdgeInsets.only(left: 10.0, right: 10.0),
         child: buttons?[0] ?? Container(),
       );
       expandedButtons.add(btnOne);
       if ((buttons?.length ?? 0) > 1) {
-        var btnTwo = Padding(
-          padding: EdgeInsets.all(10.0),
+        final btnTwo = Padding(
+          padding: const EdgeInsets.all(10.0),
           child: buttons?[1] ?? Container(),
         );
         expandedButtons.add(btnTwo);

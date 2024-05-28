@@ -58,7 +58,7 @@ class _AllActiveCartState extends State<AllActiveCart> {
                   ),
                 ),
               ),
-              SizedBox(height: 25),
+              const SizedBox(height: 25),
               Divider(
                 color: dividerColor,
                 thickness: 1,
@@ -73,14 +73,15 @@ class _AllActiveCartState extends State<AllActiveCart> {
                 )
               else
                 ListView.builder(
-                  physics: NeverScrollableScrollPhysics(),
+                  physics: const NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
                   controller: _scrollController,
                   itemCount: cartList.length,
                   itemBuilder: (context, index) {
                     return RadioListTile<SharedCartModel>(
                       contentPadding: EdgeInsets.zero,
-                      visualDensity: VisualDensity(horizontal: 0, vertical: -3),
+                      visualDensity:
+                          const VisualDensity(horizontal: 0, vertical: -3),
                       value: cartList[index],
                       groupValue: selectedCart,
                       onChanged: (value) {
@@ -88,7 +89,7 @@ class _AllActiveCartState extends State<AllActiveCart> {
                           selectedCart = value!;
                         });
 
-                        Future.delayed(Duration(milliseconds: 500), () {
+                        Future.delayed(const Duration(milliseconds: 500), () {
                           Navigator.pop(context, selectedCart);
                         });
                       },

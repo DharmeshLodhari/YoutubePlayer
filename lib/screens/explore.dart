@@ -59,7 +59,7 @@ class _ExploreListState extends State<ExploreList> {
         appBar: AppBar(
           backgroundColor: navyBlue,
           title: AnimatedSwitcher(
-            duration: Duration(milliseconds: 500),
+            duration: const Duration(milliseconds: 500),
             transitionBuilder: (Widget child, Animation<double> animation) =>
                 ScaleTransition(
               child: child,
@@ -103,13 +103,13 @@ class _ExploreListState extends State<ExploreList> {
   }
 
   List<Widget> getServiceList() {
-    List<Widget> lst = [];
+    final List<Widget> lst = [];
     services.sort((a, b) => a[0].compareTo(b[0]));
     for (final service in services) {
-      var card = Padding(
-        padding: EdgeInsets.only(top: 8.0),
+      final card = Padding(
+        padding: const EdgeInsets.only(top: 8.0),
         child: Card(
-          margin: EdgeInsets.fromLTRB(20.0, 6.0, 20.0, 0.0),
+          margin: const EdgeInsets.fromLTRB(20.0, 6.0, 20.0, 0.0),
           child: ListTile(
             title: Text(service[0],
                 style: TextStyle(
@@ -139,7 +139,7 @@ class _ExploreListState extends State<ExploreList> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           IconButton(
-            icon: Icon(
+            icon: const Icon(
               Icons.keyboard,
               size: 30,
             ),
@@ -151,19 +151,19 @@ class _ExploreListState extends State<ExploreList> {
               }
             },
           ),
-          SizedBox(
+          const SizedBox(
             width: 15,
           ),
           Expanded(
             child: Center(
               child: TextFormField(
                 textAlignVertical: TextAlignVertical.center,
-                style: TextStyle(fontSize: 15),
+                style: const TextStyle(fontSize: 15),
                 textInputAction: TextInputAction.search,
                 focusNode: searchFocus,
                 controller: searchController,
                 decoration: InputDecoration(
-                  contentPadding: EdgeInsets.all(10),
+                  contentPadding: const EdgeInsets.all(10),
                   hintText: AppLocalization.of(context)!.search,
                   isDense: true,
                   fillColor: Colors.white,

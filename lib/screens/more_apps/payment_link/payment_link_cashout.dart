@@ -158,150 +158,150 @@ class _PaymentLinkCashOutState extends State<PaymentLinkCashOut> {
               const SizedBox(
                 height: 10,
               ),
-              loading && _paymentLinkModel == null
-                  ? const SizedBox.shrink()
-                  : RichText(
-                      textAlign: TextAlign.center,
-                      text: TextSpan(
-                        text: 'A sum of ',
-                        style: TextStyle(
-                            color: blackFont,
-                            fontWeight: FontWeight.w500,
-                            fontSize: 18),
-                        children: <TextSpan>[
-                          TextSpan(
-                              text:
-                                  '${worldCurrencies[_paymentLinkModel?.currency]}${moneyDisplayNormalizer(_paymentLinkModel?.amount)}',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                  color: navyBlue,
-                                  fontSize: 18)),
-                          TextSpan(
-                              text:
-                                  ' was sent to you, enter details to cashout.',
-                              style: TextStyle(
-                                  color: blackFont,
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 18)),
-                        ],
-                      ),
-                    ),
+              if (loading && _paymentLinkModel == null)
+                const SizedBox.shrink()
+              else
+                RichText(
+                  textAlign: TextAlign.center,
+                  text: TextSpan(
+                    text: 'A sum of ',
+                    style: TextStyle(
+                        color: blackFont,
+                        fontWeight: FontWeight.w500,
+                        fontSize: 18),
+                    children: <TextSpan>[
+                      TextSpan(
+                          text:
+                              '${worldCurrencies[_paymentLinkModel?.currency]}${moneyDisplayNormalizer(_paymentLinkModel?.amount)}',
+                          style: TextStyle(
+                              fontWeight: FontWeight.w700,
+                              color: navyBlue,
+                              fontSize: 18)),
+                      TextSpan(
+                          text: ' was sent to you, enter details to cashout.',
+                          style: TextStyle(
+                              color: blackFont,
+                              fontWeight: FontWeight.w500,
+                              fontSize: 18)),
+                    ],
+                  ),
+                ),
               const SizedBox(
                 height: 24,
               ),
-              loading
-                  ? Padding(
-                      padding: const EdgeInsets.only(top: 20),
-                      child: Center(
-                          child: CircularProgressIndicator(
-                        color: navyBlue,
-                      )),
-                    )
-                  : Card(
-                      elevation: 2,
-                      margin: EdgeInsets.zero,
-                      shape: RoundedRectangleBorder(
+              if (loading)
+                Padding(
+                  padding: const EdgeInsets.only(top: 20),
+                  child: Center(
+                      child: CircularProgressIndicator(
+                    color: navyBlue,
+                  )),
+                )
+              else
+                Card(
+                  elevation: 2,
+                  margin: EdgeInsets.zero,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  shadowColor: iconBtnGrey,
+                  child: Container(
+                    decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(12),
-                      ),
-                      shadowColor: iconBtnGrey,
+                        border: Border.all(color: iconBtnGrey, width: 1)),
+                    child: Form(
+                      key: _formKey,
                       child: Container(
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: iconBtnGrey, width: 1)),
-                        child: Form(
-                          key: _formKey,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            child: Column(
-                              children: <Widget>[
-                                const SizedBox(
-                                  height: 30,
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Column(
+                          children: <Widget>[
+                            const SizedBox(
+                              height: 30,
+                            ),
+                            const SizedBox(
+                              height: 30,
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Recipient\'s Bank Name',
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      color: blackFont,
+                                      fontWeight: FontWeight.w600),
                                 ),
-                                const SizedBox(
-                                  height: 30,
-                                ),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Recipient\'s Bank Name',
-                                      style: TextStyle(
-                                          fontSize: 16,
-                                          color: blackFont,
-                                          fontWeight: FontWeight.w600),
-                                    ),
-                                    const SizedBox(height: 5),
-                                    InkWell(
-                                      onTap: () {
-                                        FocusScope.of(context).unfocus();
-                                        clearSearchedListItems();
-                                        showSearchBankBottomSheet();
-                                      },
-                                      child: TextFormField(
-                                        controller: bankController,
-                                        enabled: false,
-                                        style: TextStyle(
-                                            fontSize: 18,
-                                            color: blackFont,
-                                            fontWeight: FontWeight.w600),
-                                        decoration: InputDecoration(
-                                          filled: true,
-                                          fillColor: transparent,
-                                          contentPadding: const EdgeInsets.only(
-                                              left: 8,
-                                              bottom: 0,
-                                              top: 0,
-                                              right: 15),
-                                          suffixIcon: Icon(
-                                            Icons.arrow_drop_down_outlined,
-                                            color: blackFont,
-                                          ),
-                                          border: OutlineInputBorder(
-                                            borderSide: BorderSide(
-                                              width: 0.7,
-                                              color: greyBorderColor,
-                                              style: BorderStyle.none,
-                                            ),
-                                            borderRadius:
-                                                const BorderRadius.all(
-                                              Radius.circular(8.0),
-                                            ),
-                                          ),
+                                const SizedBox(height: 5),
+                                InkWell(
+                                  onTap: () {
+                                    FocusScope.of(context).unfocus();
+                                    clearSearchedListItems();
+                                    showSearchBankBottomSheet();
+                                  },
+                                  child: TextFormField(
+                                    controller: bankController,
+                                    enabled: false,
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        color: blackFont,
+                                        fontWeight: FontWeight.w600),
+                                    decoration: InputDecoration(
+                                      filled: true,
+                                      fillColor: transparent,
+                                      contentPadding: const EdgeInsets.only(
+                                          left: 8,
+                                          bottom: 0,
+                                          top: 0,
+                                          right: 15),
+                                      suffixIcon: Icon(
+                                        Icons.arrow_drop_down_outlined,
+                                        color: blackFont,
+                                      ),
+                                      border: OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                          width: 0.7,
+                                          color: greyBorderColor,
+                                          style: BorderStyle.none,
+                                        ),
+                                        borderRadius: const BorderRadius.all(
+                                          Radius.circular(8.0),
                                         ),
                                       ),
                                     ),
-                                  ],
-                                ),
-                                const SizedBox(
-                                  height: 20,
-                                ),
-                                getAccountNumber(),
-                                const SizedBox(
-                                  height: 20,
-                                ),
-                                getAccountName(),
-                                const SizedBox(
-                                  height: 20,
-                                ),
-                                passwordPinFiled(),
-                                const SizedBox(
-                                  height: 60,
-                                ),
-                                CurvedButton(
-                                  onPressed: () => cashOut(),
-                                  backgroundColor: navyBlue,
-                                  textColor: Colors.white,
-                                  text: "Cash Out",
-                                ),
-                                const SizedBox(
-                                  height: 60,
+                                  ),
                                 ),
                               ],
                             ),
-                          ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            getAccountNumber(),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            getAccountName(),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            passwordPinFiled(),
+                            const SizedBox(
+                              height: 60,
+                            ),
+                            CurvedButton(
+                              onPressed: () => cashOut(),
+                              backgroundColor: navyBlue,
+                              textColor: Colors.white,
+                              text: "Cash Out",
+                            ),
+                            const SizedBox(
+                              height: 60,
+                            ),
+                          ],
                         ),
                       ),
                     ),
+                  ),
+                ),
             ],
           ));
     } else if (isStatusState.toLowerCase() == 'paid') {
@@ -762,7 +762,7 @@ class _PaymentLinkCashOutState extends State<PaymentLinkCashOut> {
                         if (bankList.length >= 1) ...[
                           getResultTile(bankList[index]),
                         ] else ...[
-                          // print('The array does not have a second element.');
+                          // debugPrint('The array does not have a second element.');
                         ]
                       ],
                     ));

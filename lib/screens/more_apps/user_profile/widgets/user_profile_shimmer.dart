@@ -17,11 +17,11 @@ class UserProfileShimmer extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(height: 50),
+                const SizedBox(height: 50),
                 ShimmerProfile(),
-                SizedBox(height: 30),
+                const SizedBox(height: 30),
                 ShimmerTab(),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 ShimmerProductList(),
               ],
             ),
@@ -41,18 +41,18 @@ class ShimmerProfile extends StatelessWidget {
         Container(
           width: 60,
           height: 60,
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             color: Colors.white,
             shape: BoxShape.circle,
           ),
         ),
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
         Container(
           width: 80,
           height: 15,
           color: Colors.white,
         ),
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
         Container(
           width: 120,
           height: 15,
@@ -85,11 +85,12 @@ class ShimmerTab extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: List.generate(5, (index) {
-        return Container(
-          width: 60,
-          height: 30,
-          color: Colors.white,
-          margin: EdgeInsets.symmetric(horizontal: 5),
+        return Flexible(
+          child: Container(
+            height: 30,
+            color: Colors.white,
+            margin: const EdgeInsets.symmetric(horizontal: 5),
+          ),
         );
       }),
     );
@@ -107,19 +108,19 @@ class ShimmerProductList extends StatelessWidget {
           height: 150,
           color: Colors.white,
         ),
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
         Container(
           width: 100,
           height: 20,
           color: Colors.white,
         ),
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         Container(
           width: double.infinity,
           height: 100,
           color: Colors.white,
         ),
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         Container(
           width: double.infinity,
           height: 100,

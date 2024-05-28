@@ -67,13 +67,12 @@ class JobModel {
     if (json['pictures'] != null) {
       pictures = <Pictures>[];
       json['pictures'].forEach((v) {
-        pictures!.add(new Pictures.fromJson(v));
+        pictures!.add(Pictures.fromJson(v));
       });
     }
-    video = json['video'] != null ? new Video.fromJson(json['video']) : null;
-    category = json['category'] != null
-        ? new Category.fromJson(json['category'])
-        : null;
+    video = json['video'] != null ? Video.fromJson(json['video']) : null;
+    category =
+        json['category'] != null ? Category.fromJson(json['category']) : null;
     ownerAvatar = json['owner_avatar'];
     ownerName = json['owner_name'];
     applicantsCount = json['applicants_count'];
@@ -102,7 +101,7 @@ class JobModel {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = Map<String, dynamic>();
     data['id'] = this.id;
     data['tags'] = this.tags;
     if (this.pictures != null) {
@@ -165,7 +164,7 @@ class Pictures {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = Map<String, dynamic>();
     data['id'] = this.id;
     data['image'] = this.image;
     data['caption'] = this.caption;
@@ -187,7 +186,7 @@ class Category {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = Map<String, dynamic>();
     data['slug'] = this.slug;
     data['image'] = this.image;
     data['name'] = this.name;
@@ -211,7 +210,7 @@ class Video {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = Map<String, dynamic>();
     data['id'] = this.id;
     data['file'] = this.file;
     data['image_poster'] = this.imagePoster;

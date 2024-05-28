@@ -106,7 +106,7 @@ class _SelectVideoCoverPageState extends State<SelectVideoCoverPage> {
                   CircularProgressIndicator(
                     color: navyBlue,
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   Text(
                     "Extracting images, This may take up to 20 seconds.",
                     textAlign: TextAlign.center,
@@ -272,14 +272,14 @@ class _SelectVideoCoverPageState extends State<SelectVideoCoverPage> {
           if (await file.exists()) {
             file.delete();
           } else {
-            print('Error');
+            debugPrint('Error');
           }
         }
       }
 
-      print('Files deleted successfully');
+      debugPrint('Files deleted successfully');
     } catch (e) {
-      print('Error deleting files: $e');
+      debugPrint('Error deleting files: $e');
     }
   }
 }

@@ -16,14 +16,14 @@ class _DeliveryOrderTileState extends State<DeliveryOrderTile> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 12.0),
+      padding: const EdgeInsets.only(left: 10.0, right: 10.0, bottom: 12.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // _buildOrderId(),
           _buildLogoAndDeliveryAndAmount(),
           _buildItemsAndKg(),
-          SizedBox(height: 10.0),
+          const SizedBox(height: 10.0),
           _buildIconAndAddressAndPickup(),
         ],
       ),
@@ -163,7 +163,7 @@ class _DeliveryOrderTileState extends State<DeliveryOrderTile> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         _buildIconImage(),
-        SizedBox(width: 7.0),
+        const SizedBox(width: 7.0),
         Expanded(child: _buildMainAddressColumn())
       ],
     );
@@ -190,7 +190,7 @@ class _DeliveryOrderTileState extends State<DeliveryOrderTile> {
           ),
           overflow: TextOverflow.ellipsis,
         ),
-        SizedBox(height: 3),
+        const SizedBox(height: 3),
         Text(
             'Pickup by ${widget.jobListing?.convertDateFormat(widget.jobListing?.expectedPickupTime.toString() ?? "")}',
             style: TextStyle(
@@ -199,7 +199,7 @@ class _DeliveryOrderTileState extends State<DeliveryOrderTile> {
               fontWeight: FontWeight.w400,
               fontFamily: "Inter",
             )),
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
         Text(
           '${widget.jobListing?.deliveryAddress?.addressLineOne}, ${widget.jobListing?.deliveryAddress?.addressLineTwo}',
           style: TextStyle(
@@ -222,7 +222,7 @@ class _DeliveryOrderTileState extends State<DeliveryOrderTile> {
                 fontFamily: "Inter",
               ),
             ),
-            Padding(
+            const Padding(
               padding: EdgeInsets.only(right: 10.0),
               child: Icon(
                 Icons.keyboard_arrow_right_outlined,

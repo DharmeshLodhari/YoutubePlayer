@@ -54,7 +54,7 @@ class _EditProductState extends State<EditProduct> {
   Product currentProduct = Product();
 
   int imageCount = 5;
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
   ScrollController scrollControllerVariant = ScrollController();
   List<PickedFile> productLocalImages = [];
   List<String?> productImagesFromServer = [];
@@ -90,7 +90,7 @@ class _EditProductState extends State<EditProduct> {
   bool isLoading = false;
   bool isAPILoading = false;
   bool productEnableInSuperStore = false;
-  TextfieldTagsController _myController = TextfieldTagsController();
+  final TextfieldTagsController _myController = TextfieldTagsController();
   List<Tags> userTags = [];
 
   // List<Tags> allTags = [];
@@ -145,7 +145,7 @@ class _EditProductState extends State<EditProduct> {
   DiscountModel? selectedDiscount;
   String discountName = "";
   final GlobalKey<ScaffoldMessengerState> _messengerScaffoldKey =
-      new GlobalKey<ScaffoldMessengerState>();
+      GlobalKey<ScaffoldMessengerState>();
 
   @override
   void deactivate() {
@@ -157,7 +157,7 @@ class _EditProductState extends State<EditProduct> {
   void initState() {
     productId = arguments['productId'];
     getCategories();
-    Future.delayed(Duration(seconds: 2), () {
+    Future.delayed(const Duration(seconds: 2), () {
       getDiscountList();
       obtainCategories();
       obtainCustomCategory();
@@ -282,7 +282,8 @@ class _EditProductState extends State<EditProduct> {
                   currentProduct.searchKeywords?.join(", ")) ??
               "";
 
-          print('CURRENT PRODUCT NAME :::: ${selectedProductCategory?.name}');
+          debugPrint(
+              'CURRENT PRODUCT NAME :::: ${selectedProductCategory?.name}');
 
           conditions.forEach((condition) {
             if (condition.name == currentProduct.condition) {
@@ -318,7 +319,7 @@ class _EditProductState extends State<EditProduct> {
         isDiscountLoading = true;
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result = await ShoppingAuthService()
+        final Map<String, dynamic>? result = await ShoppingAuthService()
             .listOfDiscounts(discountNext, discountPrevious);
 
         if (result == null) {
@@ -333,7 +334,7 @@ class _EditProductState extends State<EditProduct> {
         discountItemCount = result['count'];
         discountNext = result['next'];
         discountPrevious = result['previous'];
-        var tempList = result['results'];
+        final tempList = result['results'];
         if (mounted) {
           setState(() {
             noItemInList = false;
@@ -354,7 +355,7 @@ class _EditProductState extends State<EditProduct> {
         _messengerScaffoldKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 500),
         ));
       }
     }
@@ -363,7 +364,7 @@ class _EditProductState extends State<EditProduct> {
   void getAddressList() async {
     if (mounted) setState(() {});
 
-    Map<String, dynamic>? result =
+    final Map<String, dynamic>? result =
         await ShoppingAuthService().listOfDispatchAddress("", null);
 
     if (result == null) {
@@ -373,7 +374,7 @@ class _EditProductState extends State<EditProduct> {
       return;
     }
 
-    List<ShippingAddress> tempList = result['results'];
+    final List<ShippingAddress> tempList = result['results'];
 
     if (mounted) {
       setState(() {
@@ -478,40 +479,42 @@ class _EditProductState extends State<EditProduct> {
           )
         : SingleChildScrollView(
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Center(
                 child: Form(
                   key: _formKey,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      SizedBox(height: 10),
-                      checkImageLimitForServerImage()
-                          ? viewServerImages()
-                          : Container(),
+                      const SizedBox(height: 10),
+                      if (checkImageLimitForServerImage())
+                        viewServerImages()
+                      else
+                        Container(),
                       // checkImageLimitForServerImage()
                       //     ? SizedBox(
                       //         height: 8,
                       //       )
                       //     : Container(),
-                      checkImageLimitForLocalImage()
-                          ? addLocalImages()
-                          : Container(),
-                      SizedBox(
+                      if (checkImageLimitForLocalImage())
+                        addLocalImages()
+                      else
+                        Container(),
+                      const SizedBox(
                         height: 10,
                       ),
                       addTitleField(),
-                      SizedBox(
+                      const SizedBox(
                         height: 10,
                       ),
                       getManufacturerField(),
-                      SizedBox(
+                      const SizedBox(
                         height: 10,
                       ),
                       getAmountField(),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       getCategoryField(),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       getSubCategoryField(),
                       const SizedBox(height: 10),
                       getCustomCategoryField(),
@@ -524,14 +527,14 @@ class _EditProductState extends State<EditProduct> {
                           userBloc!.userAbout!.industry!.name! ==
                               "Pharmaceutical") ...[
                         getProductDeliveryTimeField(),
-                        SizedBox(height: 10),
+                        const SizedBox(height: 10),
                       ],
                       getProductShortDescription(),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       getProductDescription(),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       getSearchEngineKeyword(),
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       getIsAvailableField(),
                       const SizedBox(height: 16),
                       if (productIsAvailable == true) ...[
@@ -557,7 +560,7 @@ class _EditProductState extends State<EditProduct> {
                                 flex: 1,
                                 child: getWeightField(),
                               ),
-                              SizedBox(width: 5.0),
+                              const SizedBox(width: 5.0),
                               Flexible(
                                 flex: 1,
                                 child: getWeightSiUnitField(),
@@ -575,7 +578,7 @@ class _EditProductState extends State<EditProduct> {
                                 flex: 1,
                                 child: getHeightField(),
                               ),
-                              SizedBox(width: 5.0),
+                              const SizedBox(width: 5.0),
                               Flexible(
                                 flex: 1,
                                 child: getHeightSiUnitField(),
@@ -593,7 +596,7 @@ class _EditProductState extends State<EditProduct> {
                                 flex: 1,
                                 child: getWidthField(),
                               ),
-                              SizedBox(width: 5.0),
+                              const SizedBox(width: 5.0),
                               Flexible(
                                 flex: 1,
                                 child: getWidthSiUnitField(),
@@ -640,9 +643,9 @@ class _EditProductState extends State<EditProduct> {
                       ],
                       const SizedBox(height: 16),
                       address(),
-                      SizedBox(height: 30),
+                      const SizedBox(height: 30),
                       getSubmitButton(),
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                     ],
                   ),
                 ),
@@ -653,7 +656,7 @@ class _EditProductState extends State<EditProduct> {
 
   Widget showBackArrow() {
     return IconButton(
-      icon: Icon(Icons.arrow_back_ios),
+      icon: const Icon(Icons.arrow_back_ios),
       onPressed: () {
         Navigator.pop(context);
       },
@@ -668,7 +671,7 @@ class _EditProductState extends State<EditProduct> {
         scrollDirection: Axis.horizontal,
         itemCount: productLocalImages.length + 1,
         itemBuilder: (context, index) => Container(
-          padding: EdgeInsets.only(right: 6),
+          padding: const EdgeInsets.only(right: 6),
           child: index != productLocalImages.length
               ? showLocalImage(index)
               : productLocalImages.length + productImagesFromServer.length !=
@@ -688,7 +691,7 @@ class _EditProductState extends State<EditProduct> {
         scrollDirection: Axis.horizontal,
         itemCount: productImagesFromServer.length,
         itemBuilder: (context, index) => Container(
-          padding: EdgeInsets.only(right: 6),
+          padding: const EdgeInsets.only(right: 6),
           child: showServerImage(index),
         ),
       ),
@@ -701,7 +704,7 @@ class _EditProductState extends State<EditProduct> {
         elevation: 3,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         shadowColor: boxShadowTwo,
-        margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+        margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
         child: Container(
           width: 100,
           decoration: BoxDecoration(
@@ -715,7 +718,7 @@ class _EditProductState extends State<EditProduct> {
                   SlydoAppIcon.add_image,
                   color: darkGrey,
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 4,
                 ),
                 Text(
@@ -750,7 +753,7 @@ class _EditProductState extends State<EditProduct> {
                   fontFamily: "Inter",
                   fontSize: 14),
             ),
-            SizedBox(height: 6),
+            const SizedBox(height: 6),
           ],
           GestureDetector(
             behavior: HitTestBehavior.opaque,
@@ -790,7 +793,7 @@ class _EditProductState extends State<EditProduct> {
                         fontSize: 14),
                   ),
                 ),
-                SizedBox(width: 20),
+                const SizedBox(width: 20),
                 Icon(
                   Icons.arrow_forward_ios,
                   size: 16,
@@ -825,7 +828,7 @@ class _EditProductState extends State<EditProduct> {
       ImagePicker().pickImage(source: imageSource).then((value) async {
         if (value != null) {
           /// for cropping the image
-          String? croppedImage = await ImageCrop().cropImage(value.path);
+          final String? croppedImage = await ImageCrop().cropImage(value.path);
           if (croppedImage == null) {
             return;
           }
@@ -846,7 +849,7 @@ class _EditProductState extends State<EditProduct> {
             borderRadius: BorderRadius.circular(10),
           ),
           shadowColor: dividerColor,
-          margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+          margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
           child: Container(
             width: 100,
             decoration: BoxDecoration(
@@ -863,10 +866,10 @@ class _EditProductState extends State<EditProduct> {
           right: 0,
           top: 0,
           child: IconButton(
-            padding: EdgeInsets.only(right: 6, top: 6),
+            padding: const EdgeInsets.only(right: 6, top: 6),
             alignment: Alignment.topRight,
             icon: Container(
-              padding: EdgeInsets.all(2.0),
+              padding: const EdgeInsets.all(2.0),
               decoration: BoxDecoration(
                 color: iconBtnGrey,
                 borderRadius: BorderRadius.circular(5),
@@ -902,7 +905,8 @@ class _EditProductState extends State<EditProduct> {
                 borderRadius: BorderRadius.circular(10),
               ),
               shadowColor: boxShadowTwo,
-              margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+              margin:
+                  const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
               child: Container(
                 width: 100,
                 decoration: BoxDecoration(
@@ -920,10 +924,10 @@ class _EditProductState extends State<EditProduct> {
             right: 0,
             top: 0,
             child: IconButton(
-              padding: EdgeInsets.only(right: 6, top: 6),
+              padding: const EdgeInsets.only(right: 6, top: 6),
               alignment: Alignment.topRight,
               icon: Container(
-                padding: EdgeInsets.all(2.0),
+                padding: const EdgeInsets.all(2.0),
                 decoration: BoxDecoration(
                   color: iconBtnGrey,
                   borderRadius: BorderRadius.circular(5),
@@ -935,7 +939,7 @@ class _EditProductState extends State<EditProduct> {
                 ),
               ),
               onPressed: () {
-                var imageId =
+                final imageId =
                     currentProduct.getImageId(productImagesFromServer[index]);
                 debugPrint("imageId:- $imageId");
                 _auth.deleteProductOrServiceImage(imageId).then((value) {
@@ -1164,7 +1168,7 @@ class _EditProductState extends State<EditProduct> {
                     shrinkWrap: true,
                     itemCount: weightSi.length,
                     itemBuilder: (context, index) {
-                      var category = weightSi[index];
+                      final category = weightSi[index];
                       if (selectedWeight == category) {
                         return Container(
                           color: selectedListItemBackgroundBlue,
@@ -1242,7 +1246,7 @@ class _EditProductState extends State<EditProduct> {
                     shrinkWrap: true,
                     itemCount: heightSi.length,
                     itemBuilder: (context, index) {
-                      var height = heightSi[index];
+                      final height = heightSi[index];
                       if (selectedHeight == height) {
                         return Container(
                           color: selectedListItemBackgroundBlue,
@@ -1320,7 +1324,7 @@ class _EditProductState extends State<EditProduct> {
                     shrinkWrap: true,
                     itemCount: widthSi.length,
                     itemBuilder: (context, index) {
-                      var category = widthSi[index];
+                      final category = widthSi[index];
                       if (selectedWidth == category) {
                         return Container(
                           color: selectedListItemBackgroundBlue,
@@ -1609,7 +1613,7 @@ class _EditProductState extends State<EditProduct> {
             ),
             GestureDetector(
               onTap: () async {
-                var result = await Navigator.of(context).pushNamed(
+                final result = await Navigator.of(context).pushNamed(
                     Routes.ADD_TAGS,
                     arguments: {"tagList": userTags});
                 if (result != null && result is List<Tags>) {
@@ -1624,7 +1628,7 @@ class _EditProductState extends State<EditProduct> {
 
                       _myController.addTag = tags.name ?? "";
 
-                      Tags tagData = Tags(id: tags.id, name: tags.name);
+                      final Tags tagData = Tags(id: tags.id, name: tags.name);
                       userTags.add(tagData);
                     }
                   }
@@ -1643,7 +1647,7 @@ class _EditProductState extends State<EditProduct> {
             )
           ],
         ),
-        SizedBox(
+        const SizedBox(
           height: 6,
         ),
         CustomTextFieldTag(
@@ -1680,7 +1684,7 @@ class _EditProductState extends State<EditProduct> {
                     ? " (" + selectedProductCondition!.description + ")"
                     : "",
                 maxLines: 1,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 16,
                 ),
                 softWrap: false,
@@ -1701,7 +1705,7 @@ class _EditProductState extends State<EditProduct> {
   }
 
   String getCustomCategoryLabel() {
-    String industryName = userBloc!.userAbout!.industry!.name!;
+    final String industryName = userBloc!.userAbout!.industry!.name!;
     switch (industryName) {
       case 'Electronics Store':
         return "Aisle";
@@ -1802,7 +1806,8 @@ class _EditProductState extends State<EditProduct> {
                           shrinkWrap: true,
                           itemCount: subCategories?.length,
                           itemBuilder: (context, index) {
-                            ProductCategory category = subCategories![index];
+                            final ProductCategory category =
+                                subCategories![index];
                             if (selectedSubCategory == category) {
                               return Container(
                                 color: selectedListItemBackgroundBlue,
@@ -1858,7 +1863,7 @@ class _EditProductState extends State<EditProduct> {
                             );
                           },
                         )
-                      : Center(
+                      : const Center(
                           child: Text(
                             "No Data",
                           ),
@@ -1906,7 +1911,8 @@ class _EditProductState extends State<EditProduct> {
                           shrinkWrap: true,
                           itemCount: customCategories?.length,
                           itemBuilder: (context, index) {
-                            ProductCategory category = customCategories![index];
+                            final ProductCategory category =
+                                customCategories![index];
                             if (selectedCustomCategory == category) {
                               return Container(
                                 color: selectedListItemBackgroundBlue,
@@ -1965,7 +1971,7 @@ class _EditProductState extends State<EditProduct> {
                             );
                           },
                         )
-                      : Center(
+                      : const Center(
                           child: Text(
                             "No Data",
                           ),
@@ -2013,7 +2019,7 @@ class _EditProductState extends State<EditProduct> {
                           shrinkWrap: true,
                           itemCount: productCategories?.length,
                           itemBuilder: (context, index) {
-                            ProductCategory category =
+                            final ProductCategory category =
                                 productCategories![index];
                             if (selectedProductCategory == category) {
                               return Container(
@@ -2074,7 +2080,7 @@ class _EditProductState extends State<EditProduct> {
                             );
                           },
                         )
-                      : Center(
+                      : const Center(
                           child: Text(
                             "No Data",
                           ),
@@ -2092,7 +2098,8 @@ class _EditProductState extends State<EditProduct> {
     final pressedCondition = await showDialog<ProductCondition>(
         context: context,
         builder: (context) => AlertDialog(
-              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              insetPadding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
@@ -2212,7 +2219,7 @@ class _EditProductState extends State<EditProduct> {
       labelText: AppLocalization.of(context)!.price,
       controller: productPriceController,
       keyboardType: Platform.isIOS
-          ? TextInputType.numberWithOptions(decimal: true)
+          ? const TextInputType.numberWithOptions(decimal: true)
           : TextInputType.number,
       isAmountField: true,
       onChanged: (val) {
@@ -2252,7 +2259,7 @@ class _EditProductState extends State<EditProduct> {
                   deleteProductDialog();
                 }),
           ),
-          SizedBox(width: 8),
+          const SizedBox(width: 8),
           Expanded(
             child: CurvedButton(
               textColor: Colors.white,
@@ -2460,7 +2467,7 @@ class _EditProductState extends State<EditProduct> {
   }
 
   void deleteProduct() async {
-    bool result = await showDialog(
+    final bool result = await showDialog(
       context: context,
       builder: (context) => ConfirmDelete(),
     );
@@ -2582,7 +2589,7 @@ class _EditProductState extends State<EditProduct> {
                     shrinkWrap: true,
                     itemCount: measurementList.length,
                     itemBuilder: (context, index) {
-                      String measurement = measurementList[index];
+                      final String measurement = measurementList[index];
                       return CheckboxListTile(
                         value: measurementCheckMark[measurement] ?? false,
                         activeColor: navyBlue,
@@ -2705,7 +2712,7 @@ class _EditProductState extends State<EditProduct> {
                     shrinkWrap: true,
                     itemCount: discountList.length,
                     itemBuilder: (context, index) {
-                      DiscountModel discount = discountList[index];
+                      final DiscountModel discount = discountList[index];
                       if (selectedDiscount == discount) {
                         return Container(
                           color: selectedListItemBackgroundBlue,
@@ -2890,7 +2897,7 @@ class _EditProductState extends State<EditProduct> {
             ),
           ],
         ),
-        SizedBox(height: 5.0),
+        const SizedBox(height: 5.0),
         _buildProductVariantList(),
       ],
     );
@@ -2902,7 +2909,7 @@ class _EditProductState extends State<EditProduct> {
         : ListView.builder(
             padding: EdgeInsets.zero,
             controller: scrollControllerVariant,
-            physics: NeverScrollableScrollPhysics(),
+            physics: const NeverScrollableScrollPhysics(),
             shrinkWrap: true,
             itemCount: productVariantList.length,
             itemBuilder: (BuildContext context, int index) {
@@ -3041,7 +3048,7 @@ class _EditProductState extends State<EditProduct> {
             ),
           ],
         ),
-        SizedBox(height: 5.0),
+        const SizedBox(height: 5.0),
         _buildAddOnList(),
       ],
     );
@@ -3054,7 +3061,7 @@ class _EditProductState extends State<EditProduct> {
             // height: 200,
             height: 80 * productAddOnsList.length.toDouble(),
             child: ListView.builder(
-              physics: NeverScrollableScrollPhysics(),
+              physics: const NeverScrollableScrollPhysics(),
               padding: const EdgeInsets.symmetric(vertical: 10),
               //+1 for progressbar
               itemCount: productAddOnsList.length + 1,

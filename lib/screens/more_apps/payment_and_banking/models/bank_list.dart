@@ -53,7 +53,7 @@ class BankModel {
     shortName = json['short_name'];
     providerCode = json['provider_code'];
     if (json['logo_url'].isNotEmpty) {
-      String url = json['logo_url'];
+      final String url = json['logo_url'];
       logoUrl = url.replaceAll('https//', 'https://');
     } else {
       logoUrl = json['logo_url'];

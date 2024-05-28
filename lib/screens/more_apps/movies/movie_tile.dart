@@ -22,7 +22,8 @@ class MovieTile extends StatelessWidget {
         child: Container(
           decoration: decorateBox(),
           child: ListTile(
-            contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
             leading: Container(
               height: 68,
               width: 68,
@@ -55,7 +56,7 @@ class MovieTile extends StatelessWidget {
                       color: starYellow,
                       size: 12,
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 4,
                     ),
                     Text(
@@ -114,7 +115,8 @@ class _MovieTileWithHeartState extends State<MovieTileWithHeart> {
         child: Container(
           decoration: decorateBox(),
           child: ListTile(
-            contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
             leading: Container(
               height: 68,
               width: 68,
@@ -147,7 +149,7 @@ class _MovieTileWithHeartState extends State<MovieTileWithHeart> {
                       color: starYellow,
                       size: 12,
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 4,
                     ),
                     Text(
@@ -214,7 +216,8 @@ class _MovieTileGeneralState extends State<MovieTileGeneral> {
         child: Container(
           decoration: decorateBox(),
           child: ListTile(
-            contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
             leading: Container(
               height: 68,
               width: 68,
@@ -247,7 +250,7 @@ class _MovieTileGeneralState extends State<MovieTileGeneral> {
                       color: starYellow,
                       size: 12,
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 4,
                     ),
                     Text(

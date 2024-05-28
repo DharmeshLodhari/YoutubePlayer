@@ -121,7 +121,7 @@ class _SharedCartDetailsState extends State<SharedCartDetails> {
       actions: [
         InkWell(
           onTap: () async {
-            var result = await Navigator.of(context)
+            final result = await Navigator.of(context)
                 .pushNamed(Routes.SHARED_CART_MEMBERS);
 
             if (result != null && result is bool && result == true) {
@@ -240,7 +240,7 @@ class _SharedCartDetailsState extends State<SharedCartDetails> {
       elevation: 4,
       child: Container(
         decoration: decorateBox(),
-        margin: EdgeInsets.symmetric(horizontal: 16.0),
+        margin: const EdgeInsets.symmetric(horizontal: 16.0),
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -323,7 +323,7 @@ class _SharedCartDetailsState extends State<SharedCartDetails> {
           } else {
             if (sharedCartBloc.getSharedCartModel().customerUsername ==
                 userBloc.user.userName) {
-              ShippingProcessBloc shippingProcessBloc =
+              final ShippingProcessBloc shippingProcessBloc =
                   Provider.of<ShippingProcessBloc>(context, listen: false);
               shippingProcessBloc.currentSelectedIndex = null;
 
@@ -382,7 +382,7 @@ class _SharedCartDetailsState extends State<SharedCartDetails> {
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) async {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         if (mounted) setState(() {});

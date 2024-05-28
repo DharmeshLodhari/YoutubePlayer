@@ -79,7 +79,7 @@ class _ProductVariantListState extends State<ProductVariantList> {
           isLoading = true;
         });
       }
-      Map<String, dynamic>? result =
+      final Map<String, dynamic>? result =
           await _auth.getVariantList(productId!, next, previous);
       if (result == null) {
         isLoading = false;
@@ -89,7 +89,7 @@ class _ProductVariantListState extends State<ProductVariantList> {
       // count = result['count'];
       // next = result['next'];
       // previous = result['previous'];
-      var tempList = result['results'];
+      final tempList = result['results'];
 
       // productVariantList = Variant.convertToVariantList(tempList);
       // productVariantList = tempList;
@@ -112,7 +112,7 @@ class _ProductVariantListState extends State<ProductVariantList> {
         _scaffoldMessengerKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 500),
         ));
       }
     }
@@ -122,7 +122,7 @@ class _ProductVariantListState extends State<ProductVariantList> {
   void _onRefresh() async {
     //check network connectivity and if true then refresh the list
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         count = 0;
@@ -198,7 +198,7 @@ class _ProductVariantListState extends State<ProductVariantList> {
       ),
       actions: <Widget>[
         addOptionBtn(),
-        SizedBox(
+        const SizedBox(
           width: 16,
         ),
       ],
@@ -269,7 +269,7 @@ class _ProductVariantListState extends State<ProductVariantList> {
       elevation: 0,
       child: Container(
         decoration: decorateBox(),
-        padding: EdgeInsets.symmetric(vertical: 7.0),
+        padding: const EdgeInsets.symmetric(vertical: 7.0),
         child: ListTile(
           title: Column(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -284,7 +284,7 @@ class _ProductVariantListState extends State<ProductVariantList> {
                     fontFamily: "Inter",
                     fontSize: 14),
               ),
-              SizedBox(height: 3.0),
+              const SizedBox(height: 3.0),
               Text(
                 'Available . ${variant.quantity!}',
                 maxLines: 1,
@@ -294,7 +294,7 @@ class _ProductVariantListState extends State<ProductVariantList> {
                     fontFamily: "Inter",
                     fontSize: 12),
               ),
-              SizedBox(height: 3.0),
+              const SizedBox(height: 3.0),
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
@@ -319,7 +319,7 @@ class _ProductVariantListState extends State<ProductVariantList> {
           ),
           leading: GestureDetector(
             onTap: () {
-              String? url = variant.serverImages![0]!;
+              final String? url = variant.serverImages![0]!;
               Navigator.of(context).pushNamed("/photo-viewer", arguments: url);
             },
             child: checkProductImage(variant),
@@ -338,7 +338,7 @@ class _ProductVariantListState extends State<ProductVariantList> {
       url = item;
     }
 
-    String imageUrl = url!.replaceAll('https//', 'https://');
+    final String imageUrl = url!.replaceAll('https//', 'https://');
     if (url == "") {
       return CircleAvatar(
         backgroundColor: navyBlue,
@@ -368,7 +368,7 @@ class _ProductVariantListState extends State<ProductVariantList> {
     return Slidable(
       controller: _slideController,
       direction: Axis.horizontal,
-      actionPane: SlidableBehindActionPane(),
+      actionPane: const SlidableBehindActionPane(),
       actionExtentRatio: 0.25,
       child: VerticalListItem(bankAccountTile),
       actions: listActionSlideActions(variant: variant),

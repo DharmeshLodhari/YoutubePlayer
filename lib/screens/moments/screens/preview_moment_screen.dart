@@ -343,7 +343,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
                             onChanged: (value) {
                               setState(() {
                                 isPublic = !isPublic;
-                                print(value.toString());
+                                debugPrint(value.toString());
                               });
                             },
                           ),
@@ -394,22 +394,23 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
                           ),
                         ),
                         const SizedBox(height: 30),
-                        appConfigurationModel?.enablePayment == true
-                            ? previewMomentSwitchOptions(
-                                icon: 'yarn/black_logo',
-                                title: 'Enable Payment',
-                                description:
-                                    'Enable this to allow other users to support your work by making a donation.',
-                                switchBtn: Switch(
-                                  value: enablePayMe,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      enablePayMe = value;
-                                    });
-                                  },
-                                ),
-                              )
-                            : const SizedBox.shrink(),
+                        if (appConfigurationModel?.enablePayment == true)
+                          previewMomentSwitchOptions(
+                            icon: 'yarn/black_logo',
+                            title: 'Enable Payment',
+                            description:
+                                'Enable this to allow other users to support your work by making a donation.',
+                            switchBtn: Switch(
+                              value: enablePayMe,
+                              onChanged: (value) {
+                                setState(() {
+                                  enablePayMe = value;
+                                });
+                              },
+                            ),
+                          )
+                        else
+                          const SizedBox.shrink(),
                         const SizedBox(height: 20),
                         dropDownPickItemWidget(
                           label: 'Pick attachment',
@@ -698,56 +699,56 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
         ),
       ),
       actions: [
-        isText == false
-            ? const SizedBox.shrink()
-            : Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: CurvedButton(
-                  width: 100,
-                  height: 10,
-                  borderRadius: 20,
-                  text: 'Submit',
-                  fontSize: 14,
-                  onPressed: () async {
-                    if (enablePayMe && payMeCtrl.text.isEmpty) {
-                      showToast(message: 'Payment label cannot be empty');
-                      return;
-                    }
+        if (isText == false)
+          const SizedBox.shrink()
+        else
+          Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: CurvedButton(
+              width: 100,
+              height: 10,
+              borderRadius: 20,
+              text: 'Submit',
+              fontSize: 14,
+              onPressed: () async {
+                if (enablePayMe && payMeCtrl.text.isEmpty) {
+                  showToast(message: 'Payment label cannot be empty');
+                  return;
+                }
 
-                    if (pickedAttachmentType == 'Url' &&
-                        (urlTextCtrl.text.isEmpty ||
-                            (!await canLaunchUrl(
-                                Uri.parse(urlTextCtrl.text))))) {
-                      showToast(message: 'Please enter a valid url');
-                      return;
-                    }
-                    showDialogBox(
-                      context: context,
-                      actionOneTextColor: blackFont,
-                      actionTwoBgColor: navyBlue,
-                      actionTwoTextColor: Colors.white,
-                      actionOneBgColor: greyBorderColor,
-                      title: AppLocalization.of(context)!.post,
-                      actionTwoText: AppLocalization.of(context)!.post,
-                      actionOneText: AppLocalization.of(context)!.notNow,
-                      description:
-                          'Are you sure you want to post\nyour moment now?',
-                      roundedBackgroundIcon: RoundedBackgroundIcon(
-                        enableMargin: false,
-                        width: 90,
-                        height: 90,
-                        image: Image.asset(
-                          'assets/images/accept_dialog_icon.png',
-                          color: navyBlue,
-                        ),
-                      ),
-                      rightButtonOnPressed: () {
-                        postMoment();
-                      },
-                    );
+                if (pickedAttachmentType == 'Url' &&
+                    (urlTextCtrl.text.isEmpty ||
+                        (!await canLaunchUrl(Uri.parse(urlTextCtrl.text))))) {
+                  showToast(message: 'Please enter a valid url');
+                  return;
+                }
+                showDialogBox(
+                  context: context,
+                  actionOneTextColor: blackFont,
+                  actionTwoBgColor: navyBlue,
+                  actionTwoTextColor: Colors.white,
+                  actionOneBgColor: greyBorderColor,
+                  title: AppLocalization.of(context)!.post,
+                  actionTwoText: AppLocalization.of(context)!.post,
+                  actionOneText: AppLocalization.of(context)!.notNow,
+                  description:
+                      'Are you sure you want to post\nyour moment now?',
+                  roundedBackgroundIcon: RoundedBackgroundIcon(
+                    enableMargin: false,
+                    width: 90,
+                    height: 90,
+                    image: Image.asset(
+                      'assets/images/accept_dialog_icon.png',
+                      color: navyBlue,
+                    ),
+                  ),
+                  rightButtonOnPressed: () {
+                    postMoment();
                   },
-                ),
-              ),
+                );
+              },
+            ),
+          ),
       ],
     );
   }
@@ -807,16 +808,17 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
                                 fit: BoxFit.cover,
                               ),
                             ),
-                          isTapped == false
-                              ? Align(
-                                  alignment: Alignment.center,
-                                  child: SvgPicture.asset(
-                                    "yarn/cam_vec".toSVG(),
-                                    height: 50,
-                                    width: 50,
-                                  ),
-                                )
-                              : const SizedBox.shrink(),
+                          if (isTapped == false)
+                            Align(
+                              alignment: Alignment.center,
+                              child: SvgPicture.asset(
+                                "yarn/cam_vec".toSVG(),
+                                height: 50,
+                                width: 50,
+                              ),
+                            )
+                          else
+                            const SizedBox.shrink(),
                         ]),
                       ),
                     ),

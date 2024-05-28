@@ -156,7 +156,7 @@ class _HotelTileWithHeartState extends State<HotelTileWithHeart> {
                               crossAxisAlignment: CrossAxisAlignment.end,
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: widget.hotelRoom!.images!.map((url) {
-                                int index =
+                                final int index =
                                     widget.hotelRoom!.images!.indexOf(url);
                                 return Container(
                                   width: 5.0,
@@ -362,7 +362,8 @@ class _HotelRoomImagesTileState extends State<HotelRoomImagesTile> {
                           crossAxisAlignment: CrossAxisAlignment.end,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: widget.hotelRoom!.images!.map((url) {
-                            int index = widget.hotelRoom!.images!.indexOf(url);
+                            final int index =
+                                widget.hotelRoom!.images!.indexOf(url);
                             return Container(
                               width: 5.0,
                               height: 5.0,

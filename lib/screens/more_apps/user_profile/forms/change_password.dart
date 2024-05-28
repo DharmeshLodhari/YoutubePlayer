@@ -51,7 +51,7 @@ class _ChangePasswordState extends State<ChangePassword> {
             body: SingleChildScrollView(
               scrollDirection: Axis.vertical,
               child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 20),
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 height: MediaQuery.of(context).size.height -
                     (AppBar().preferredSize.height +
                         MediaQuery.of(context).padding.top),
@@ -61,19 +61,19 @@ class _ChangePasswordState extends State<ChangePassword> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      SizedBox(
+                      const SizedBox(
                         height: 20,
                       ),
                       oldPasswordWidget(),
-                      SizedBox(
+                      const SizedBox(
                         height: 20,
                       ),
                       newPasswordWidget(),
-                      SizedBox(
+                      const SizedBox(
                         height: 20,
                       ),
                       confirmPasswordWidget(),
-                      SizedBox(
+                      const SizedBox(
                         height: 40,
                       ),
                       changePasswordBtn(),
@@ -163,7 +163,7 @@ class _ChangePasswordState extends State<ChangePassword> {
 
   String? validateEnteredPassword(String val) {
     ///regexp for repeated number
-    var matcher = RegExp(
+    final matcher = RegExp(
       r'^(.)\1{1,}$',
       caseSensitive: true,
     );
@@ -181,7 +181,7 @@ class _ChangePasswordState extends State<ChangePassword> {
 
   // validate confirm password
   String? validateEnteredConfirmPassword(String val) {
-    var matcher = RegExp(
+    final matcher = RegExp(
       r'^(.)\1{1,}$',
       caseSensitive: true,
     );
@@ -214,14 +214,14 @@ class _ChangePasswordState extends State<ChangePassword> {
       FocusScope.of(context).unfocus();
     }
 
-    UserBloc userBloc = Provider.of<UserBloc>(
+    final UserBloc userBloc = Provider.of<UserBloc>(
         myGlobals.navigationKey.currentContext!,
         listen: false);
 
     if (_formKey.currentState!.validate()) {
       debugPrint("userBloc.user.password ${userBloc.user.password}");
       if (userBloc.user.password == oldPassword) {
-        var data = {
+        final data = {
           "new_password1": newPassword,
           "new_password2": confirmPassword,
           "old_password": oldPassword,
@@ -260,16 +260,16 @@ class _ChangePasswordState extends State<ChangePassword> {
   }
 
   Future<void> storePasswordInSecureStorage({String? password}) async {
-    SharedPreferences _sharedPreferences =
+    final SharedPreferences _sharedPreferences =
         await SharedPreferences.getInstance();
-    bool? isRemember = _sharedPreferences.getBool('isChecked');
+    final bool? isRemember = _sharedPreferences.getBool('isChecked');
     if (isRemember != null && isRemember) {
       await SecureStorage().updateUserPassword(password: password);
     }
   }
 
   Future<void> storePasswordInDB({String? password}) async {
-    int result = await DatabaseHelper().updateUserPassword(password!);
+    final int result = await DatabaseHelper().updateUserPassword(password!);
     debugPrint("RESULT:- Password update:- $result");
   }
 }

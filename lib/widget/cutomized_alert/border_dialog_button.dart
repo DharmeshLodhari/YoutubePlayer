@@ -37,11 +37,11 @@ class BorderDialogButton extends StatelessWidget {
       child: Material(
         shape: outlineBorder
             ? OutlineInputBorder(
-                borderRadius: BorderRadius.all(
+                borderRadius: const BorderRadius.all(
                   Radius.circular(10),
                 ),
                 borderSide: BorderSide(color: textColor!))
-            : RoundedRectangleBorder(
+            : const RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(7))),
         color: backgroundColor,
         child: InkWell(

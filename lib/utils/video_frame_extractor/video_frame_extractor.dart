@@ -22,9 +22,9 @@ class VideoFrameExtractor {
       required String destinationDirectoryPath}) async {
     try {
       await _isDestinationPathValid(destinationDirectoryPath);
-      var videoPlayerController = VideoPlayerController.file(video);
+      final videoPlayerController = VideoPlayerController.file(video);
       await videoPlayerController.initialize();
-      var frames = await _generateFrames(
+      final frames = await _generateFrames(
           videoPlayerController: videoPlayerController,
           to: to,
           from: from,
@@ -61,7 +61,7 @@ class VideoFrameExtractor {
       videoPlayerController = VideoPlayerController.network(videoUrl);
       await videoPlayerController.initialize();
 
-      var frames = await _generateFrames(
+      final frames = await _generateFrames(
           videoPlayerController: videoPlayerController,
           to: to,
           from: from,
@@ -82,7 +82,8 @@ class VideoFrameExtractor {
   /// to check provided destination path is valid or invalid
   static Future<void> _isDestinationPathValid(
       String destinationDirectoryPath) async {
-    bool isDirectoryExists = await Directory(destinationDirectoryPath).exists();
+    final bool isDirectoryExists =
+        await Directory(destinationDirectoryPath).exists();
     if (!isDirectoryExists) {
       throw Exception('Directory Not Found: $destinationDirectoryPath');
     }
@@ -102,12 +103,13 @@ class VideoFrameExtractor {
       required int maxWidth,
       required String destinationDirectoryPath}) async {
     try {
-      List<String> frames = [];
+      final List<String> frames = [];
       int totalMilliSecs = 0;
       int endDuration = 0;
 
       /// getting total video duration from video initialized
-      int totalDuration = videoPlayerController.value.duration.inMilliseconds;
+      final int totalDuration =
+          videoPlayerController.value.duration.inMilliseconds;
 
       /// preparing start / end duration
       if (to == Duration.zero || to.inMilliseconds > totalDuration) {
@@ -126,14 +128,15 @@ class VideoFrameExtractor {
       for (int i = 0; i < imagesCount; i++) {
         /// given output image count
         /// calculating time in milliseconds at which frame to be generated
-        int ms = ((totalMilliSecs ~/ imagesCount) * i) + from.inMilliseconds;
+        final int ms =
+            ((totalMilliSecs ~/ imagesCount) * i) + from.inMilliseconds;
 
         if (ms.isNegative || ms > endDuration) {
           continue;
         }
 
         /// [VideoThumbnail] used to generate frame
-        String? currentFrame = await VideoThumbnail.thumbnailFile(
+        final String? currentFrame = await VideoThumbnail.thumbnailFile(
           video: video,
           timeMs: ms,
           imageFormat: _getImageFormat(frameFormat),
@@ -147,7 +150,7 @@ class VideoFrameExtractor {
           frames.add(currentFrame);
         }
 
-        double progress =
+        final double progress =
             double.parse(((i + 1) / imagesCount).toStringAsFixed(2));
         onProgress?.call(progress);
       }

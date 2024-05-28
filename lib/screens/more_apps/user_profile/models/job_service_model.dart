@@ -48,7 +48,7 @@ class JobServiceToChatModel {
   });
 
   factory JobServiceToChatModel.fromJson(Map<String, dynamic> json) {
-    JobServiceToChatModel jobModel = JobServiceToChatModel(
+    final JobServiceToChatModel jobModel = JobServiceToChatModel(
         id: json['id'],
         tags: json['tags'],
         pictures: json['pictures'] != null
@@ -56,7 +56,6 @@ class JobServiceToChatModel {
                 .map((i) => Picture.fromJson(i))
                 .toList()
             : [],
-
         ownerAvatar: json['owner_avatar'],
         ownerName: json['owner_name'],
         applicantsCount: json['applicant_count'],
@@ -70,7 +69,7 @@ class JobServiceToChatModel {
         isNegotiable: json['is_negotiable'],
         description: json['description'],
         dueDate: json['due_dated'],
-        creationDate: json['creation_date'] ,
+        creationDate: json['creation_date'],
         location: json['location']);
 
     if (json['category'] != null) {

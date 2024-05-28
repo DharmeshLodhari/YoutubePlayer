@@ -110,7 +110,7 @@ class OutlineCurvedButton extends StatelessWidget {
       height: 42,
       child: MaterialButton(
         shape: OutlineInputBorder(
-            borderRadius: BorderRadius.all(
+            borderRadius: const BorderRadius.all(
               Radius.circular(10),
             ),
             borderSide: BorderSide(color: textColor!)),

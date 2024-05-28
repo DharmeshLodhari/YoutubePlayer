@@ -89,7 +89,7 @@ class _PropertyTileWithHeartState extends State<PropertyTileWithHeart> {
                               crossAxisAlignment: CrossAxisAlignment.end,
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: hotelImgList.map((url) {
-                                int index = hotelImgList.indexOf(url);
+                                final int index = hotelImgList.indexOf(url);
                                 return Container(
                                   width: 5.0,
                                   height: 5.0,
@@ -295,7 +295,8 @@ class _PropertyImagesTileState extends State<PropertyImagesTile> {
                           crossAxisAlignment: CrossAxisAlignment.end,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: widget.property!.images!.map((url) {
-                            int index = widget.property!.images!.indexOf(url);
+                            final int index =
+                                widget.property!.images!.indexOf(url);
                             return Container(
                               width: 5.0,
                               height: 5.0,
@@ -480,7 +481,7 @@ class _RentPropertyTileState extends State<RentPropertyTile> {
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: widget.property!.images!.map((url) {
-                                  int index =
+                                  final int index =
                                       widget.property!.images!.indexOf(url);
                                   return Container(
                                     width: 5.0,
@@ -935,7 +936,7 @@ class _RentPropertyTileWithoutHeartState
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: widget.property!.images!.map((url) {
-                                  int index =
+                                  final int index =
                                       widget.property!.images!.indexOf(url);
                                   return Container(
                                     width: 5.0,

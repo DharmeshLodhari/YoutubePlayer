@@ -56,7 +56,7 @@ class _EnvelopeTileForChatState extends State<EnvelopeTileForChat> {
               isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            isSend ? Container() : Container(width: 20),
+            if (isSend) Container() else Container(width: 20),
             Container(
               constraints: BoxConstraints(
                   maxWidth: MediaQuery.of(context).size.width / 1.30,
@@ -65,40 +65,43 @@ class _EnvelopeTileForChatState extends State<EnvelopeTileForChat> {
               child: getEnvelopeUI(
                   message: message, envelope: envelope, isSend: isSend),
             ),
-            isSend
-                ? Container(
-                    width: 20,
-                    child: isSend
-                        ? Center(
-                            child: getMessageTick(message: widget.message!),
-                          )
-                        : Container(),
-                  )
-                : Container(),
+            if (isSend)
+              Container(
+                width: 20,
+                child: isSend
+                    ? Center(
+                        child: getMessageTick(message: widget.message!),
+                      )
+                    : Container(),
+              )
+            else
+              Container(),
           ],
         ),
-        SizedBox(
+        const SizedBox(
           height: 1,
         ),
         Row(
           mainAxisAlignment:
               isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
           children: [
-            isSend
-                ? Container()
-                : SizedBox(
-                    width: 20,
-                  ),
+            if (isSend)
+              Container()
+            else
+              const SizedBox(
+                width: 20,
+              ),
             Text(
               formatTime(widget.message!['created_at']),
               style: TextStyle(
                   color: darkGrey, fontSize: 10, fontWeight: FontWeight.w500),
             ),
-            isSend
-                ? SizedBox(
-                    width: 20,
-                  )
-                : Container(),
+            if (isSend)
+              const SizedBox(
+                width: 20,
+              )
+            else
+              Container(),
           ],
         )
       ],
@@ -127,11 +130,11 @@ class _EnvelopeTileForChatState extends State<EnvelopeTileForChat> {
           borderRadius: BorderRadius.only(
             bottomLeft: Radius.circular(!isSend ? 0 : 10),
             bottomRight: Radius.circular(isSend ? 0 : 10),
-            topLeft: Radius.circular(10),
-            topRight: Radius.circular(10),
+            topLeft: const Radius.circular(10),
+            topRight: const Radius.circular(10),
           ),
         ),
-        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -148,7 +151,7 @@ class _EnvelopeTileForChatState extends State<EnvelopeTileForChat> {
                   width: MediaQuery.of(context).size.width / 7,
                   fit: BoxFit.fill,
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 12,
                 ),
                 Expanded(
@@ -204,58 +207,58 @@ class _EnvelopeTileForChatState extends State<EnvelopeTileForChat> {
                     ],
                   ),
                 ),
-                widget.chatConversation!.isGroupConversation!
-                    ? Container(
-                        width: 60,
-                        child: Stack(
-                          children: [
-                            Positioned(
-                              left: 26,
+                if (widget.chatConversation!.isGroupConversation!)
+                  Container(
+                    width: 60,
+                    child: Stack(
+                      children: [
+                        Positioned(
+                          left: 26,
+                          child: Container(
+                            height: 34,
+                            width: 34,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(100),
+                                border: Border.all(color: navyBlue, width: 2)),
+                            child: ClipOval(
                               child: Container(
+                                color: Colors.white,
+                                child: CachedNetworkImage(
+                                  height: 34,
+                                  width: 34,
+                                  fit: BoxFit.fill,
+                                  imageUrl: message!['to_customer_avatar'],
+                                  errorWidget: imageErrorWidget,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          height: 34,
+                          width: 34,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(100),
+                              border:
+                                  Border.all(color: naturalGreen, width: 2)),
+                          child: ClipOval(
+                            child: Container(
+                              color: Colors.white,
+                              child: CachedNetworkImage(
                                 height: 34,
                                 width: 34,
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(100),
-                                    border:
-                                        Border.all(color: navyBlue, width: 2)),
-                                child: ClipOval(
-                                  child: Container(
-                                    color: Colors.white,
-                                    child: CachedNetworkImage(
-                                      height: 34,
-                                      width: 34,
-                                      fit: BoxFit.fill,
-                                      imageUrl: message!['to_customer_avatar'],
-                                      errorWidget: imageErrorWidget,
-                                    ),
-                                  ),
-                                ),
+                                fit: BoxFit.fill,
+                                errorWidget: imageErrorWidget,
+                                imageUrl: message['from_customer_avatar'],
                               ),
                             ),
-                            Container(
-                              height: 34,
-                              width: 34,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(100),
-                                  border: Border.all(
-                                      color: naturalGreen, width: 2)),
-                              child: ClipOval(
-                                child: Container(
-                                  color: Colors.white,
-                                  child: CachedNetworkImage(
-                                    height: 34,
-                                    width: 34,
-                                    fit: BoxFit.fill,
-                                    errorWidget: imageErrorWidget,
-                                    imageUrl: message['from_customer_avatar'],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
-                      )
-                    : Container(),
+                      ],
+                    ),
+                  )
+                else
+                  Container(),
               ],
             ),
           ],

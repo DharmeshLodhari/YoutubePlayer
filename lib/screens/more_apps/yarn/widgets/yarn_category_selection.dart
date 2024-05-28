@@ -44,7 +44,7 @@ class _YarnCategorySelectionState extends State<YarnCategorySelection> {
       scrollDirection: Axis.horizontal,
       child: Row(
         children: [
-          SizedBox(
+          const SizedBox(
             width: 16,
           ),
           CategoryChip(
@@ -59,7 +59,7 @@ class _YarnCategorySelectionState extends State<YarnCategorySelection> {
             (i) {
               return Row(
                 children: [
-                  SizedBox(
+                  const SizedBox(
                     width: 5,
                   ),
                   CategoryChip(
@@ -94,7 +94,7 @@ class _YarnCategorySelectionState extends State<YarnCategorySelection> {
         isLoading = true;
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result =
+        final Map<String, dynamic>? result =
             await YarnAuth().getAllCategories(next, previous!);
 
         if (result == null) {
@@ -110,7 +110,7 @@ class _YarnCategorySelectionState extends State<YarnCategorySelection> {
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
-        var tempList = result['results'];
+        final tempList = result['results'];
         if (mounted) {
           noCategoriesList = false;
           isLoading = false;

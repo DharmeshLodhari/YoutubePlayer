@@ -98,7 +98,7 @@ class GenerateDebitCardState extends State<GenerateDebitCard> {
   }
 
   Widget scaffoldBody() {
-    bool isScreenIsSmall = MediaQuery.of(context).size.height < 600;
+    final bool isScreenIsSmall = MediaQuery.of(context).size.height < 600;
 
     return isLoading
         ? Center(
@@ -344,7 +344,7 @@ class GenerateDebitCardState extends State<GenerateDebitCard> {
             isAPILoading = true;
             if (mounted) setState(() {});
 
-            Map<String, dynamic> result = {
+            final Map<String, dynamic> result = {
               "first_name": widget.arguments["data"]['first_name'],
               "last_name": widget.arguments["data"]['last_name'],
               "address1": widget.arguments["data"]['address1'],
@@ -389,9 +389,9 @@ class GenerateDebitCardState extends State<GenerateDebitCard> {
 
   Future<void> getAccountBalance() async {
     await PaymentAndBankingAuth().getAccountBalance().then((value) {
-      var data = value!;
-      var spendableBalance = data["spendable_balance"];
-      var actualBalance = data["balance"];
+      final data = value!;
+      final spendableBalance = data["spendable_balance"];
+      final actualBalance = data["balance"];
 
       balance = spendableBalance;
       // isLoading = false;

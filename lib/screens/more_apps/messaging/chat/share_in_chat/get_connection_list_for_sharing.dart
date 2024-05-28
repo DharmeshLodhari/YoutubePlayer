@@ -43,7 +43,7 @@ class _GetUserConnectionListState extends State<GetUserConnectionList> {
         : isLoading && connectionsList.isEmpty
             ? buildLoadingIndicator(isLoading: isLoading)
             : ListView.builder(
-                padding: EdgeInsets.symmetric(
+                padding: const EdgeInsets.symmetric(
                   vertical: 4,
                 ),
                 //+1 for progressbar
@@ -168,7 +168,7 @@ class _ShareToUserTileState extends State<ShareToUserTile> {
   Widget getTile() {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       shadowColor: boxShadowTwo,
       elevation: 0,
       child: GestureDetector(

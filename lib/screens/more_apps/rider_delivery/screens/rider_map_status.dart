@@ -168,7 +168,7 @@ class _RiderMapStatusState extends State<RiderMapStatus> {
 
   Widget getArrivingDetails() {
     return Container(
-      padding: EdgeInsets.only(left: 16, right: 16, top: 8),
+      padding: const EdgeInsets.only(left: 16, right: 16, top: 8),
       child: Column(
         children: [
           Container(
@@ -179,12 +179,12 @@ class _RiderMapStatusState extends State<RiderMapStatus> {
               color: greyBorderColor,
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               _buildArrivingPartner(),
-              SizedBox(height: 30),
+              const SizedBox(height: 30),
               _buildPartnerContactIcon(),
             ],
           ),
@@ -216,7 +216,7 @@ class _RiderMapStatusState extends State<RiderMapStatus> {
             ),
           ),
         ),
-        SizedBox(width: 20),
+        const SizedBox(width: 20),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -229,7 +229,7 @@ class _RiderMapStatusState extends State<RiderMapStatus> {
                 fontFamily: "Inter",
               ),
             ),
-            SizedBox(height: 5),
+            const SizedBox(height: 5),
             Text(
               deliveryModel?.dispatcher ?? "",
               style: TextStyle(

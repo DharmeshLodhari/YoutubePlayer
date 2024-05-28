@@ -753,7 +753,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
   }
 
   Widget dateAndTimeTile(String type, String date) {
-    bool isSelected = Random().nextBool();
+    final bool isSelected = Random().nextBool();
     return Container(
       clipBehavior: Clip.hardEdge,
       decoration: BoxDecoration(

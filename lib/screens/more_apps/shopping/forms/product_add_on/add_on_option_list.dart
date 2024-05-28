@@ -85,7 +85,7 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
           isLoading = true;
         });
       }
-      Map<String, dynamic>? result =
+      final Map<String, dynamic>? result =
           await _auth.getAddOnOptionsList(productId!, next, previous);
       if (result == null) {
         isLoading = false;
@@ -96,7 +96,7 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
       count = result['count'];
       next = result['next'];
       previous = result['previous'];
-      var tempList = result['results'];
+      final tempList = result['results'];
 
       addOnOptionList.addAll(tempList);
 
@@ -117,7 +117,7 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
         _scaffoldMessengerKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 500),
         ));
       }
     }
@@ -127,7 +127,7 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
   void _onRefresh() async {
     //check network connectivity and if true then refresh the list
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         count = 0;
@@ -195,7 +195,7 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
           size: 24,
         ),
         onPressed: () {
-          List<AddOnOption> addOnOption = addOnOptionList
+          final List<AddOnOption> addOnOption = addOnOptionList
               .where((addOnOption) => addOnOption.isSelected == true)
               .toList();
           Navigator.pop(context, addOnOption);
@@ -209,7 +209,7 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
       ),
       actions: <Widget>[
         addOptionBtn(),
-        SizedBox(
+        const SizedBox(
           width: 16,
         ),
       ],
@@ -295,11 +295,11 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
   Widget addOnOptionTile({required AddOnOption addOnOption, int? index}) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
       shadowColor: boxShadowTwo,
       elevation: 0,
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 10),
+        padding: const EdgeInsets.symmetric(vertical: 10),
         decoration: decorateBox(),
         child: ListTile(
           // dense: variant.isDefault! ? true : false,
@@ -317,7 +317,7 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
                   fontFamily: "Inter",
                 ),
               ),
-              SizedBox(height: 10.0),
+              const SizedBox(height: 10.0),
               Text(
                 'Created: ${addOnOption.createdAt} ',
                 maxLines: 1,
@@ -407,7 +407,7 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
   }
 
   Widget loadAllCheckedAddOn() {
-    List<AddOnOption> addOnOption = addOnOptionList
+    final List<AddOnOption> addOnOption = addOnOptionList
         .where((addOnOption) => addOnOption.isSelected == true)
         .toList();
 
@@ -421,7 +421,7 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
 
     url = addOnOption.picture;
 
-    String imageUrl = url!.replaceAll('https//', 'https://');
+    final String imageUrl = url!.replaceAll('https//', 'https://');
     if (url == "") {
       return CircleAvatar(
         backgroundColor: navyBlue,
@@ -454,7 +454,7 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
     return Slidable(
       controller: _slideController,
       direction: Axis.horizontal,
-      actionPane: SlidableBehindActionPane(),
+      actionPane: const SlidableBehindActionPane(),
       actionExtentRatio: 0.25,
       child: VerticalListItem(bankAccountTile),
       actions: listActionSlideActions(addOnOption: addOnOption),

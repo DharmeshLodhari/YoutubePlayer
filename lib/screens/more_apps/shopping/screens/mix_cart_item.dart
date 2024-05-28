@@ -49,7 +49,7 @@ class _MixCartItemState extends State<MixCartItem> {
   void _onRefresh() async {
     //check network connectivity and if true then refresh the list
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         //clear old items
@@ -69,9 +69,9 @@ class _MixCartItemState extends State<MixCartItem> {
 
   void initializeShoppingCart() async {
     debugPrint("initializeShoppingCart called");
-    List items = await ShoppingAuthService().getShoppingCart();
+    final List items = await ShoppingAuthService().getShoppingCart();
     items.forEach((element) {
-      String type = element is Product ? "product" : "service";
+      final String type = element is Product ? "product" : "service";
       basketBloc.addItemToCart(
         item: element,
         type: type,
@@ -128,7 +128,7 @@ class _MixCartItemState extends State<MixCartItem> {
       ),
       actions: <Widget>[
         scanQRCodeBtn(),
-        SizedBox(
+        const SizedBox(
           width: 16,
         ),
       ],
@@ -169,15 +169,15 @@ class _MixCartItemState extends State<MixCartItem> {
                         .values
                         .toList()),
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Column(
                     children: [
                       getAlbumTile(),
-                      SizedBox(
+                      const SizedBox(
                         height: 8,
                       ),
                       audioTile,
-                      SizedBox(
+                      const SizedBox(
                         height: 8,
                       ),
                       getMovieTile(),
@@ -190,7 +190,7 @@ class _MixCartItemState extends State<MixCartItem> {
   }
 
   Widget getAlbumTile() {
-    MusicAlbum album = MusicAlbum.fromJson({
+    final MusicAlbum album = MusicAlbum.fromJson({
       "id": 1,
       "title": "Twice As Tall Album",
       "image":
@@ -257,7 +257,7 @@ class _MixCartItemState extends State<MixCartItem> {
       ]
     });
 
-    Audio audio = album.audio![1];
+    final Audio audio = album.audio![1];
     audioTile = CartMusicTile(audio: audio);
 
     return CartAlbumTile(
@@ -266,7 +266,7 @@ class _MixCartItemState extends State<MixCartItem> {
   }
 
   Widget getMovieTile() {
-    MovieItem movie = MovieItem.fromJson({
+    final MovieItem movie = MovieItem.fromJson({
       "id": 1,
       "name": "The Cloud Of Northland",
       "poster": "https://m.media-amazon.com/images/I/A1o+mUmviOL._SS500_.jpg",
@@ -284,12 +284,12 @@ class _MixCartItemState extends State<MixCartItem> {
   Widget checkoutWidget() {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.symmetric(horizontal: 16),
+      margin: const EdgeInsets.symmetric(horizontal: 16),
       shadowColor: boxShadowTwo,
       elevation: 4,
       child: Container(
         decoration: decorateBox(),
-        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
@@ -301,18 +301,19 @@ class _MixCartItemState extends State<MixCartItem> {
                 ),
                 Text(
                   worldCurrencies[userBloc.user.currency!]!,
-                  style: TextStyle(
+                  style: const TextStyle(
                       fontFamily: "Inter",
                       fontSize: 16,
                       fontWeight: FontWeight.bold),
                 ),
                 Text(
                   basketBloc.total.toString(),
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ],
             ),
-            Expanded(
+            const Expanded(
                 child: SizedBox(
               width: 10,
             )),
@@ -322,7 +323,7 @@ class _MixCartItemState extends State<MixCartItem> {
                 color: navyBlue,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10)),
-                child: Text(
+                child: const Text(
                   "Pay",
                   style: TextStyle(
                       color: Colors.white,
@@ -395,7 +396,7 @@ class _MixCartItemState extends State<MixCartItem> {
   }
 
   void addItem(int index) async {
-    String type =
+    final String type =
         basketBloc.items[index]["item"] is Product ? "product" : "service";
     basketBloc.addItemToCart(
       item: basketBloc.items[index]["item"],
@@ -410,7 +411,7 @@ class _MixCartItemState extends State<MixCartItem> {
         return;
       }
     });
-    Map<String, dynamic> data = {
+    final Map<String, dynamic> data = {
       "type": type,
       "id": mapData["item"].conversationID,
       "qty": mapData["qty"],
@@ -420,7 +421,7 @@ class _MixCartItemState extends State<MixCartItem> {
   }
 
   void removeItem(int index) async {
-    String type =
+    final String type =
         basketBloc.items[index]["item"] is Product ? "product" : "service";
 
     late var mapData;
@@ -431,7 +432,7 @@ class _MixCartItemState extends State<MixCartItem> {
         return;
       }
     });
-    Map data = {
+    final Map data = {
       "type": type,
       "id": mapData["item"].conversationID,
       "qty": mapData["qty"] - 1,
@@ -501,7 +502,7 @@ class _MixCartItemState extends State<MixCartItem> {
   // }
 
   List<Widget> listActionSlideActions(int index) {
-    String caption1 = AppLocalization.of(context)!.remove;
+    final String caption1 = AppLocalization.of(context)!.remove;
 
     return [
       IconSlideAction(
@@ -536,8 +537,10 @@ class _MixCartItemState extends State<MixCartItem> {
           return false;
         },
         child: AlertDialog(
-          titlePadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          titlePadding:
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           title: Text(
@@ -594,7 +597,7 @@ class _MixCartItemState extends State<MixCartItem> {
     ).then<void>((T? value) async {
       // The value passed to Navigator.pop() or null.
       if (value != null) {
-        var data = {"note": value};
+        final data = {"note": value};
         if (value != "cancel") {
           BottomSheetPassCode(
               context: context,
@@ -607,7 +610,7 @@ class _MixCartItemState extends State<MixCartItem> {
                 );
 
                 // Create the orders
-                var userOrder =
+                final userOrder =
                     await ShoppingAuthService().placeOrderOfShoppingCart(data);
 
                 if (userOrder != null) {
@@ -618,7 +621,7 @@ class _MixCartItemState extends State<MixCartItem> {
                   for (int i = 0; i < userOrder.length; i++) {
                     orders.add(userOrder[i]["id"]);
                   }
-                  var response =
+                  final response =
                       await _auth.makePaymentForCartOrder({"orders": orders});
                   if (response.statusCode == 200 ||
                       response.statusCode == 201) {
@@ -681,12 +684,12 @@ class VerticalListItem extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         if (type == "product") {
-          Product? product = item;
+          final Product? product = item;
           Navigator.pushNamed(context, Routes.PRODUCT,
               arguments: {"product": product});
         }
         if (type == "service") {
-          Service? service = item;
+          final Service? service = item;
           Navigator.pushNamed(context, Routes.SERVICE_DETAIL,
               arguments: {"service": service});
         }

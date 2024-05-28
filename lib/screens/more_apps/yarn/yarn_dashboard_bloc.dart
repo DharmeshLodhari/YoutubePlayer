@@ -28,12 +28,11 @@ class YarnDashboardBloc extends ChangeNotifier {
   List<Yarn> get reYarnTopicList => _reYarnTopicList;
 
   List<Yarn> _createYarnTopicList = [];
-  List<Yarn> _deleteYarnTopicList = [];
+  final List<Yarn> _deleteYarnTopicList = [];
   List<Yarn> _reYarnTopicList = [];
 
   List<ProductCategory> _productCategories = [];
   List<ProductCategory> get productCategories => _productCategories;
-
 
   void addCreateYarnTopicList(List<Yarn> yarn) {
     _createYarnTopicList.addAll(yarn);
@@ -84,11 +83,12 @@ class YarnDashboardBloc extends ChangeNotifier {
 
   void addProductCategories(List<ProductCategory> cat) {
     refreshProductCategories();
-    _productCategories.add(ProductCategory("All", id: ""));
+    _productCategories.add(const ProductCategory("All", id: ""));
     _productCategories.addAll(cat);
-  
+
     notifyListeners();
   }
+
   void refreshProductCategories() {
     _productCategories = [];
     _productCategories.clear();
@@ -142,19 +142,19 @@ class YarnDashboardBloc extends ChangeNotifier {
   ];
 
   List<Color> categoryColors = [
-    Color(0xFFF07097),
-    Color(0xFF030F36),
-    Color(0xFF8829C1),
-    Color(0xFF8B008B),
-    Color(0xFF3F61DB),
-    Color(0xFFB22727),
-    Color(0xFFFFCC00),
-    Color(0xFF8B008B),
-    Color(0xFFFFA500),
-    Color(0xFF46CE7C),
-    Color(0xFF964B00),
-    Color(0xFFF35B46),
-    Color(0xFF243A73),
+    const Color(0xFFF07097),
+    const Color(0xFF030F36),
+    const Color(0xFF8829C1),
+    const Color(0xFF8B008B),
+    const Color(0xFF3F61DB),
+    const Color(0xFFB22727),
+    const Color(0xFFFFCC00),
+    const Color(0xFF8B008B),
+    const Color(0xFFFFA500),
+    const Color(0xFF46CE7C),
+    const Color(0xFF964B00),
+    const Color(0xFFF35B46),
+    const Color(0xFF243A73),
   ];
 
   List<String> selectedCategoryList = [];

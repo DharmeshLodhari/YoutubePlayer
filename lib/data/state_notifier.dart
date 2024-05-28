@@ -178,7 +178,7 @@ class TaxiBloc extends ChangeNotifier {
 }
 
 class DashboardBloc extends ChangeNotifier {
-  PageController _pageController = PageController(initialPage: 0);
+  final PageController _pageController = PageController(initialPage: 0);
   int _index = 0;
 
   int get index => _index;
@@ -253,7 +253,7 @@ class AddInvoiceBloc extends ChangeNotifier {
 }
 
 class ShareMessageToChatBloc extends ChangeNotifier {
-  List<ChatConversation?> _recipientUsers = [];
+  final List<ChatConversation?> _recipientUsers = [];
 
   void addRecipient({ChatConversation? chatConversation}) {
     bool isAlreadyPresent = false;

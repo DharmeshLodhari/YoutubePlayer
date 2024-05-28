@@ -102,7 +102,7 @@ class RiderRegistrationModel {
   }
 
   Future<List<MultipartFile>> getMultipartFiles() async {
-    List<http.MultipartFile> files = [];
+    final List<http.MultipartFile> files = [];
     http.MultipartFile? selfie;
     http.MultipartFile? governmentId;
     http.MultipartFile? vehicleInsuranceId;
@@ -151,7 +151,7 @@ class RiderRegistrationModel {
   }
 
   Future<List<MultipartFile>> updateMultipartFiles() async {
-    List<http.MultipartFile> files = [];
+    final List<http.MultipartFile> files = [];
     http.MultipartFile? selfie;
     http.MultipartFile? governmentId;
     http.MultipartFile? vehicleInsuranceId;

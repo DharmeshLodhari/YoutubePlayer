@@ -187,7 +187,7 @@ class _SearchGroupMemberState extends State<SearchGroupMember> {
 
   Widget getSearchTextField() {
     return Container(
-      padding: EdgeInsets.only(right: 16),
+      padding: const EdgeInsets.only(right: 16),
       child: SearchTextField(
         hintText: "Search...",
         onSubmit: () {
@@ -221,7 +221,7 @@ class _SearchGroupMemberState extends State<SearchGroupMember> {
             : isLoading && groupMember.isEmpty
                 ? buildLoadingIndicator(isLoading: isLoading)
                 : ListView.builder(
-                    padding: EdgeInsets.symmetric(
+                    padding: const EdgeInsets.symmetric(
                       vertical: 4,
                     ),
                     //+1 for progressbar
@@ -280,7 +280,7 @@ class _SearchGroupMemberState extends State<SearchGroupMember> {
             ?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 500),
         ));
       }
     }
@@ -313,7 +313,7 @@ class _SearchGroupMemberState extends State<SearchGroupMember> {
       key: UniqueKey(),
       controller: _slideController,
       direction: Axis.horizontal,
-      actionPane: SlidableBehindActionPane(),
+      actionPane: const SlidableBehindActionPane(),
       actionExtentRatio: 0.20,
       fastThreshold: 1,
       showAllActionsThreshold: 0.6,
@@ -676,7 +676,7 @@ class _VerticalListItemState extends State<VerticalListItem> {
             : Slidable.of(context)?.close();
       },
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 2),
+        padding: const EdgeInsets.symmetric(vertical: 2),
         child: UserTileForGroupDetail(
           user: widget.user,
           groupDetail: widget.groupDetail,

@@ -24,10 +24,10 @@ class UniLinksService {
       _uniLinkHandler(uri: uri);
     } on PlatformException {
       if (kDebugMode)
-        print("(PlatformException) Failed to receive initial uri.");
+        debugPrint("(PlatformException) Failed to receive initial uri.");
     } on FormatException catch (error) {
       if (kDebugMode)
-        print(
+        debugPrint(
             "(FormatException) Malformed Initial URI received. Error: $error");
     }
 
@@ -35,7 +35,7 @@ class UniLinksService {
     uriLinkStream.listen((Uri? uri) async {
       _uniLinkHandler(uri: uri);
     }, onError: (error) {
-      if (kDebugMode) print('UniLinks onUriLink error: $error');
+      if (kDebugMode) debugPrint('UniLinks onUriLink error: $error');
     });
   }
 
@@ -45,15 +45,15 @@ class UniLinksService {
     // String receivedPromoId = params['searchedUserName'] ?? '';
     // debugPrint("receivedPromoId : $receivedPromoId");
     if (uri == null) return;
-    Map<String, String> params = uri.queryParameters;
+    final Map<String, String> params = uri.queryParameters;
 
     // Split the URL by '/'
-    List<String> parts = uri.toString().split('/');
+    final List<String> parts = uri.toString().split('/');
 
     if (parts[2] == "slydo.co") {
-      SharedPreferences _sharedPreferences =
+      final SharedPreferences _sharedPreferences =
           await SharedPreferences.getInstance();
-      var result = _sharedPreferences.getBool('isLoggedOut');
+      final result = _sharedPreferences.getBool('isLoggedOut');
 
       if (result != null && result == true) return;
 

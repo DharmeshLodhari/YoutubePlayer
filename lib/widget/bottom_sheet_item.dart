@@ -19,30 +19,32 @@ Widget bottomSheetItem(
         child: Row(
           mainAxisSize: MainAxisSize.max,
           children: [
-            iconData != null
-                ? RoundedBackgroundIcon(
-                    icon: Icon(
-                      iconData,
-                      size: iconSize,
-                      color: blackFont,
-                    ),
-                    backgroundColor: lightGrey,
-                    width: 32,
-                    height: 32,
-                  )
-                : Padding(
-                    padding: const EdgeInsets.only(left: 7.4),
-                    child: RoundedBackgroundIcon(
-                      icon: icon,
-                      backgroundColor: lightGrey,
-                      width: 12,
-                      height: 12,
-                    ),
-                  ),
+            if (iconData != null)
+              RoundedBackgroundIcon(
+                icon: Icon(
+                  iconData,
+                  size: iconSize,
+                  color: blackFont,
+                ),
+                backgroundColor: lightGrey,
+                width: 32,
+                height: 32,
+              )
+            else
+              Padding(
+                padding: const EdgeInsets.only(left: 7.4),
+                child: RoundedBackgroundIcon(
+                  icon: icon,
+                  backgroundColor: lightGrey,
+                  width: 12,
+                  height: 12,
+                ),
+              ),
             SizedBox(width: icon != null ? 28 : 16),
             Text(
               title,
-              style: TextStyle(fontSize: 16, color: blackFont, fontWeight: FontWeight.w600),
+              style: TextStyle(
+                  fontSize: 16, color: blackFont, fontWeight: FontWeight.w600),
             ),
             extraWidget ?? const SizedBox.shrink(),
           ],

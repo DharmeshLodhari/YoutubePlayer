@@ -18,7 +18,7 @@ class FlightAuthService extends AuthService {
               "travel_time": "15 minutes",
               "currency": "NGN"
             }));
-    await Future.delayed(Duration(seconds: 1));
+    await Future.delayed(const Duration(seconds: 1));
     return transport;
   }
 
@@ -36,7 +36,7 @@ class FlightAuthService extends AuthService {
               "qr_code":
                   "https://www.pixavi.com/wp-content/uploads/2015/10/apb-qr-code.png"
             }));
-    await Future.delayed(Duration(seconds: 1));
+    await Future.delayed(const Duration(seconds: 1));
     return ticket;
   }
 }

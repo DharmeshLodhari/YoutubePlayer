@@ -26,7 +26,7 @@ class ApplicantList extends StatefulWidget {
 }
 
 class _ApplicantListState extends State<ApplicantList> {
-  SlidableController _slideController = SlidableController();
+  final SlidableController _slideController = SlidableController();
   JobApplicantModel? applicants;
 
   bool isLoading = false;
@@ -40,7 +40,7 @@ class _ApplicantListState extends State<ApplicantList> {
   List<JobApplicantModel> applicantList = [];
 
   // late UserBloc userBloc;
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
   void getApplicantList() async {
@@ -49,11 +49,11 @@ class _ApplicantListState extends State<ApplicantList> {
         isLoading = true;
         if (mounted) setState(() {});
 
-        var result = await ServiceHubAuthService().getApplicantListData(
+        final result = await ServiceHubAuthService().getApplicantListData(
             listNext, listPrevious,
             jobId: widget.job!.id);
 
-        print("message::$result");
+        debugPrint("message::$result");
 
         if (result == null) {
           noApplicantInList = true;
@@ -89,7 +89,7 @@ class _ApplicantListState extends State<ApplicantList> {
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         _refreshPage();
@@ -137,32 +137,33 @@ class _ApplicantListState extends State<ApplicantList> {
             mainAxisSize: MainAxisSize.min,
             children: [
               getAppicantListView(),
-              isLoading
-                  ? Shimmer.fromColors(
-                      baseColor: Colors.white,
-                      highlightColor: greyBorderColor,
-                      child: GridView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        gridDelegate:
-                            const SliverGridDelegateWithMaxCrossAxisExtent(
-                          mainAxisSpacing: 14,
-                          mainAxisExtent: 180,
-                          crossAxisSpacing: 15,
-                          maxCrossAxisExtent: 200,
+              if (isLoading)
+                Shimmer.fromColors(
+                  baseColor: Colors.white,
+                  highlightColor: greyBorderColor,
+                  child: GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate:
+                        const SliverGridDelegateWithMaxCrossAxisExtent(
+                      mainAxisSpacing: 14,
+                      mainAxisExtent: 180,
+                      crossAxisSpacing: 15,
+                      maxCrossAxisExtent: 200,
+                    ),
+                    itemCount: 2,
+                    itemBuilder: (context, index) {
+                      return Card(
+                        color: Colors.grey,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
                         ),
-                        itemCount: 2,
-                        itemBuilder: (context, index) {
-                          return Card(
-                            color: Colors.grey,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          );
-                        },
-                      ),
-                    )
-                  : const SizedBox.shrink(),
+                      );
+                    },
+                  ),
+                )
+              else
+                const SizedBox.shrink(),
               Visibility(
                 visible: !isLoading && applicantList.isEmpty,
                 child: Center(
@@ -226,7 +227,7 @@ class _ApplicantListState extends State<ApplicantList> {
   }
 
   Future<void> acceptApplicantAlert(int index) async {
-    bool? result = await showDialogBox(
+    final bool? result = await showDialogBox(
       context: context,
       roundedBackgroundIcon: RoundedBackgroundIcon(
         backgroundColor: const Color(0xff46ce7c).withOpacity(0.08),
@@ -250,7 +251,7 @@ class _ApplicantListState extends State<ApplicantList> {
       actionTwoText: AppLocalization.of(context)!.cancel,
     );
     if (result != null && result) {
-      bool done = await ServiceHubAuthService()
+      final bool done = await ServiceHubAuthService()
           .acceptJobApplicant(jobId: widget.job!.id, data: {
         'applicant': applicantList[index].applicantUsername,
       });
@@ -274,7 +275,7 @@ class _ApplicantListState extends State<ApplicantList> {
   }
 
   Future<void> rejectApplicantAlert(int index) async {
-    bool? result = await showDialogBox(
+    final bool? result = await showDialogBox(
       context: context,
       roundedBackgroundIcon: RoundedBackgroundIcon(
         backgroundColor: mateRed.withOpacity(0.08),
@@ -298,7 +299,7 @@ class _ApplicantListState extends State<ApplicantList> {
       actionTwoText: AppLocalization.of(context)!.cancel,
     );
     if (result != null && result) {
-      bool done = await ServiceHubAuthService()
+      final bool done = await ServiceHubAuthService()
           .rejectJobApplicant(jobId: widget.job!.id, data: {
         'applicant': applicantList[index].applicantUsername,
       });

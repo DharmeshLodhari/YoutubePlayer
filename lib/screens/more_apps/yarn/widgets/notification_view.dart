@@ -30,12 +30,12 @@ class AskNotificationView extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildUserInfoRow(context: context),
-        SizedBox(
+        const SizedBox(
           height: 10,
         ),
         if (notification!.body != null) ...[
           _buildPostDescription(),
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
         ],
@@ -47,14 +47,14 @@ class AskNotificationView extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(
+        const SizedBox(
           height: 4,
         ),
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildUserAvatar(context: context),
-            SizedBox(
+            const SizedBox(
               width: 10,
             ),
             Expanded(
@@ -76,7 +76,7 @@ class AskNotificationView extends StatelessWidget {
                               "",
                           style: TextStyle(fontSize: 12, color: yarnBlack),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 4,
                         ),
                         ClipOval(
@@ -86,7 +86,7 @@ class AskNotificationView extends StatelessWidget {
                             color: yarnBlack,
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 4,
                         ),
                         Expanded(

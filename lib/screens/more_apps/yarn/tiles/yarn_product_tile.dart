@@ -114,7 +114,7 @@ class _YarnProductTileState extends State<YarnProductTile> {
                                       ),
                                     ),
                                   ),
-                                  SizedBox(width: 8),
+                                  const SizedBox(width: 8),
                                   userNameWithVerifiedIcon(
                                     name: widget.product?.sellerFullName ?? '',
                                     isVerified: false,
@@ -127,7 +127,7 @@ class _YarnProductTileState extends State<YarnProductTile> {
                                         Shadow(
                                           blurRadius: 2.0,
                                           color: blackFont,
-                                          offset: Offset(0.0, 0),
+                                          offset: const Offset(0.0, 0),
                                         ),
                                       ],
                                     ),
@@ -139,8 +139,8 @@ class _YarnProductTileState extends State<YarnProductTile> {
                         ]),
                       ),
                       Container(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 8),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -210,14 +210,14 @@ class _YarnProductTileState extends State<YarnProductTile> {
                                 : Container(
                                     child: Column(
                                       children: [
-                                        SizedBox(
+                                        const SizedBox(
                                           height: 5,
                                         ),
                                         Row(
                                           children: [
                                             addToCartWidget(
                                                 item: widget.product),
-                                            SizedBox(
+                                            const SizedBox(
                                               width: 8,
                                             ),
                                             Expanded(
@@ -234,7 +234,7 @@ class _YarnProductTileState extends State<YarnProductTile> {
                                                   // if (appConfigurationModel
                                                   //         ?.enablePayment ==
                                                   //     true) {
-                                                  bool result =
+                                                  final bool result =
                                                       await showDisclaimerDialogueForGoods(
                                                           context);
                                                   if (result) {
@@ -288,7 +288,7 @@ class _YarnProductTileState extends State<YarnProductTile> {
       ),
       backgroundColor: navyBlue.withOpacity(0.08),
       onTap: () async {
-        String type = item is Product ? "product" : "service";
+        final String type = item is Product ? "product" : "service";
         debugPrint("item $item type:- $type");
         basketBloc.addItemToCart(
             item: item, type: type, currentUser: userBloc.user.convertToUser());
@@ -299,7 +299,7 @@ class _YarnProductTileState extends State<YarnProductTile> {
             return;
           }
         });
-        Map<String, dynamic> data = {
+        final Map<String, dynamic> data = {
           "type": type,
           "id": mapData["item"].id,
           "qty": mapData["qty"],

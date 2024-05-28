@@ -837,7 +837,7 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
 
     yarnComment.comment.toString().split(' ').forEach((ch) {
       list.add(ch);
-      // print(ch);
+      // debugPrint(ch);
     });
 
     list.forEach((data) {

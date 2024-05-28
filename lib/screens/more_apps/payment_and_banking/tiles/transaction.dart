@@ -115,17 +115,23 @@ class PaymentRequestTile extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        paymentRequest?.description != "" && paymentRequest?.description != null
-            ? Text(
-                messageDecoderWithEmoji(paymentRequest?.description) ?? "",
-                style: TextStyle(color: darkGrey, fontSize: 12),
-                maxLines: 1,
-              )
-            : Container(),
-        paymentRequest!.amount! >= amountLimit ? getTrailing() : Container(),
-        paymentRequest!.createdAt == null
-            ? const SizedBox()
-            : getDateTime(context)
+        if (paymentRequest?.description != "" &&
+            paymentRequest?.description != null)
+          Text(
+            messageDecoderWithEmoji(paymentRequest?.description) ?? "",
+            style: TextStyle(color: darkGrey, fontSize: 12),
+            maxLines: 1,
+          )
+        else
+          Container(),
+        if (paymentRequest!.amount! >= amountLimit)
+          getTrailing()
+        else
+          Container(),
+        if (paymentRequest!.createdAt == null)
+          const SizedBox()
+        else
+          getDateTime(context)
       ],
     );
   }
@@ -154,9 +160,10 @@ class PaymentRequestTile extends StatelessWidget {
   }
 
   Widget getDateTime(BuildContext context) {
-    DateTime requestTime = DateTime.parse(paymentRequest!.createdAt!).toLocal();
-    String date = DateFormat("dd/MM/yyyy").format(requestTime);
-    String time = DateFormat("hh:mm a").format(requestTime);
+    final DateTime requestTime =
+        DateTime.parse(paymentRequest!.createdAt!).toLocal();
+    final String date = DateFormat("dd/MM/yyyy").format(requestTime);
+    final String time = DateFormat("hh:mm a").format(requestTime);
     return Text(
       "$date • $time",
       softWrap: false,
@@ -265,23 +272,24 @@ class CardTransactionTile extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        transaction!.description != "" && transaction!.description != null
-            ? Text(
-                "${transaction!.description}",
-                style: TextStyle(color: darkGrey, fontSize: 12),
-                maxLines: 1,
-              )
-            : Container(),
+        if (transaction!.description != "" && transaction!.description != null)
+          Text(
+            "${transaction!.description}",
+            style: TextStyle(color: darkGrey, fontSize: 12),
+            maxLines: 1,
+          )
+        else
+          Container(),
         getDateTime(context),
       ],
     );
   }
 
   Widget getDateTime(BuildContext context) {
-    DateTime transactionTime =
+    final DateTime transactionTime =
         DateTime.parse(transaction!.providerCreatedAt!).toLocal();
-    String date = DateFormat("dd/MM/yyyy").format(transactionTime);
-    String time = DateFormat("hh:mm a").format(transactionTime);
+    final String date = DateFormat("dd/MM/yyyy").format(transactionTime);
+    final String time = DateFormat("hh:mm a").format(transactionTime);
     return Text(
       "$date • $time",
       softWrap: false,
@@ -331,7 +339,7 @@ class TransactionTile extends StatelessWidget {
                 },
               ),
             ),
-            transaction!.isAnonymous! ? Container() : expandedWidget!,
+            if (transaction!.isAnonymous!) Container() else expandedWidget!,
           ],
         ),
       ),
@@ -399,26 +407,28 @@ class TransactionTile extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        transaction!.description != "" && transaction!.description != null
-            ? Text(
-                messageDecoderWithEmoji(transaction?.description) ?? "",
-                style: TextStyle(color: darkGrey, fontSize: 12),
-                maxLines: 1,
-              )
-            : Container(),
-        transaction!.amount.toString().length >= amountLimit
-            ? getAmount()
-            : Container(),
+        if (transaction!.description != "" && transaction!.description != null)
+          Text(
+            messageDecoderWithEmoji(transaction?.description) ?? "",
+            style: TextStyle(color: darkGrey, fontSize: 12),
+            maxLines: 1,
+          )
+        else
+          Container(),
+        if (transaction!.amount.toString().length >= amountLimit)
+          getAmount()
+        else
+          Container(),
         getDateTime(context),
       ],
     );
   }
 
   Widget getDateTime(BuildContext context) {
-    DateTime transactionTime =
+    final DateTime transactionTime =
         DateTime.parse(transaction!.createdAt!).toLocal();
-    String date = DateFormat("dd/MM/yyyy").format(transactionTime);
-    String time = DateFormat("hh:mm a").format(transactionTime);
+    final String date = DateFormat("dd/MM/yyyy").format(transactionTime);
+    final String time = DateFormat("hh:mm a").format(transactionTime);
     return Text(
       "$date • $time",
       softWrap: false,
@@ -542,18 +552,20 @@ class _ContractTransactionTileState extends State<ContractTransactionTile> {
           style: TextStyle(color: darkGrey, fontSize: 12),
           maxLines: 1,
         ),
-        widget.transaction!.amount.toString().length > 6
-            ? getAmount()
-            : Container(),
+        if (widget.transaction!.amount.toString().length > 6)
+          getAmount()
+        else
+          Container(),
         getDateTime(context),
       ],
     );
   }
 
   Widget getDateTime(BuildContext context) {
-    DateTime transactionTime = DateTime.parse(widget.transaction!.createdAt!);
-    String date = DateFormat("dd/MM/yyyy").format(transactionTime);
-    String time = DateFormat("hh:mm a").format(transactionTime);
+    final DateTime transactionTime =
+        DateTime.parse(widget.transaction!.createdAt!);
+    final String date = DateFormat("dd/MM/yyyy").format(transactionTime);
+    final String time = DateFormat("hh:mm a").format(transactionTime);
     return Text(
       "$date • $time",
       softWrap: false,

@@ -57,15 +57,15 @@ class _YarnActionsState extends State<YarnActions> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Expanded(child: _buildActionableList()),
-        SizedBox(
+        const SizedBox(
           width: 22,
         ),
         _buildShareButton(),
-        SizedBox(
+        const SizedBox(
           width: 45,
         ),
         _buildPayButton(),
-        SizedBox(
+        const SizedBox(
           width: 10,
         )
       ],
@@ -73,7 +73,7 @@ class _YarnActionsState extends State<YarnActions> {
   }
 
   Widget _buildActionableList() {
-    List<Widget> finalActionList = [];
+    final List<Widget> finalActionList = [];
 
     finalActionList.addAll([
       Expanded(child: _buildCommentButton()),
@@ -103,7 +103,7 @@ class _YarnActionsState extends State<YarnActions> {
             height: 15,
             width: 15,
           ),
-          SizedBox(
+          const SizedBox(
             width: 6,
           ),
           Text(
@@ -119,7 +119,7 @@ class _YarnActionsState extends State<YarnActions> {
   Widget _buildLikeButton() {
     return LikeButton(
       mainAxisAlignment: MainAxisAlignment.start,
-      padding: EdgeInsets.only(left: 5),
+      padding: const EdgeInsets.only(left: 5),
       size: 15,
       circleColor: CircleColor(start: red, end: red),
       bubblesColor: BubblesColor(
@@ -141,7 +141,7 @@ class _YarnActionsState extends State<YarnActions> {
       },
       likeCount: getLikeCount(),
       countBuilder: (_, __, ___) {
-        int count = getLikeCount();
+        final int count = getLikeCount();
         return Text(
           count == 0 ? '' : count.toString(),
           style: TextStyle(
@@ -155,7 +155,7 @@ class _YarnActionsState extends State<YarnActions> {
 
   Widget _buildDisLikeButton() {
     return LikeButton(
-      padding: EdgeInsets.only(left: 10),
+      padding: const EdgeInsets.only(left: 10),
       // crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,
       size: 15,
@@ -179,7 +179,7 @@ class _YarnActionsState extends State<YarnActions> {
       },
       likeCount: getDisLikeCount(),
       countBuilder: (_, __, ___) {
-        int count = getDisLikeCount();
+        final int count = getDisLikeCount();
         return Text(
           count == 0 ? '' : count.toString(),
           style: TextStyle(
@@ -194,7 +194,7 @@ class _YarnActionsState extends State<YarnActions> {
   Widget _buildReYarnButton() {
     bool canReYarn = true;
     bool canReYarnTemp = true;
-    bool canReYarnMain = true;
+    final bool canReYarnMain = true;
     if (widget.yarn.reYarn != null) {
       canReYarn = false;
     }
@@ -237,7 +237,7 @@ class _YarnActionsState extends State<YarnActions> {
       },
       child: Row(
         children: [
-          SizedBox(
+          const SizedBox(
             width: 20,
           ),
           SvgPicture.asset(
@@ -246,7 +246,7 @@ class _YarnActionsState extends State<YarnActions> {
             height: 15,
             width: 15,
           ),
-          SizedBox(
+          const SizedBox(
             width: 6,
           ),
           Text(
@@ -289,7 +289,7 @@ class _YarnActionsState extends State<YarnActions> {
             height: 17,
             width: 17,
           ),
-          SizedBox(
+          const SizedBox(
             height: 2,
           )
         ],
@@ -341,7 +341,7 @@ class _YarnActionsState extends State<YarnActions> {
             },
       child: Column(
         children: [
-          SizedBox(
+          const SizedBox(
             height: 2,
           ),
           SvgPicture.asset(
@@ -411,7 +411,8 @@ class _YarnActionsState extends State<YarnActions> {
   }
 
   Future<bool> addLikeToYarnAndQuestion() async {
-    Map<String, dynamic>? data = await YarnAuth().addLike(widget.yarn.id!);
+    final Map<String, dynamic>? data =
+        await YarnAuth().addLike(widget.yarn.id!);
     setState(() {
       widget.yarn.userUpvoted = !widget.yarn.userUpvoted;
       widget.yarn.userDownVoted = false;
@@ -427,7 +428,8 @@ class _YarnActionsState extends State<YarnActions> {
   }
 
   Future<bool> addDisLikeToYarnAndQuestion() async {
-    Map<String, dynamic>? data = await YarnAuth().addDisLike(widget.yarn.id!);
+    final Map<String, dynamic>? data =
+        await YarnAuth().addDisLike(widget.yarn.id!);
     setState(() {
       widget.yarn.userDownVoted = !widget.yarn.userDownVoted;
       widget.yarn.userUpvoted = false;
@@ -445,7 +447,7 @@ class _YarnActionsState extends State<YarnActions> {
   Future createReYarn(Yarn yarn) async {
     yarn.reYarn = widget.yarn;
 
-    Yarn? data = await YarnAuth().addReYarn(yarn);
+    final Yarn? data = await YarnAuth().addReYarn(yarn);
     setState(() {
       widget.yarn.userReyarned = !widget.yarn.userReyarned;
     });
@@ -458,7 +460,7 @@ class _YarnActionsState extends State<YarnActions> {
   }
 
   Future<void> sendMomentToUserInChat({required Yarn yarnTopic}) async {
-    List<ChatConversation?> listOfRecipient =
+    final List<ChatConversation?> listOfRecipient =
         await ShareInChat().selectShareCustomer(context);
     debugPrint("Selected users = ${listOfRecipient.length}");
 
@@ -472,13 +474,13 @@ class _YarnActionsState extends State<YarnActions> {
     required Yarn yarnTopic,
     String? url,
   }) async {
-    UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
+    final UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
 
-    Map<String, dynamic> metaData = yarnTopic.toJson();
+    final Map<String, dynamic> metaData = yarnTopic.toJson();
 
-    Map<String, dynamic> data = {
+    final Map<String, dynamic> data = {
       "meta_data": jsonEncode(metaData),
-      "check_id": Uuid().v4(),
+      "check_id": const Uuid().v4(),
       "conversation_id": recipientUser.conversationId,
       "author": userBloc.user.userName,
       "message": 'yarn',

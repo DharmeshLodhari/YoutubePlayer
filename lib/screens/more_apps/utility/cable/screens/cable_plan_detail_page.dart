@@ -41,7 +41,7 @@ class _CablePlanDetailState extends State<CablePlanDetail> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SizedBox(
+            const SizedBox(
               height: 16,
             ),
             Text(
@@ -69,19 +69,20 @@ class _CablePlanDetailState extends State<CablePlanDetail> {
                 ),
               ],
             ),
-            SizedBox(
+            const SizedBox(
               height: 36,
             ),
             Card(
               elevation: 0,
               color: lightGrey,
-              margin: EdgeInsets.symmetric(horizontal: 20),
+              margin: const EdgeInsets.symmetric(horizontal: 20),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
               shadowColor: lightGrey,
               child: Container(
-                padding: EdgeInsets.symmetric(vertical: 24, horizontal: 36),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 24, horizontal: 36),
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(color: lightGrey, width: 0.2)),
@@ -90,7 +91,7 @@ class _CablePlanDetailState extends State<CablePlanDetail> {
                 ),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 36,
             ),
             getSubscribeBtn()
@@ -126,7 +127,7 @@ class _CablePlanDetailState extends State<CablePlanDetail> {
     for (int i = 0; i < plan.features!.length; i++) {
       items.add(
         Container(
-          padding: EdgeInsets.symmetric(vertical: 8),
+          padding: const EdgeInsets.symmetric(vertical: 8),
           child: Row(
             children: [
               Icon(
@@ -134,7 +135,7 @@ class _CablePlanDetailState extends State<CablePlanDetail> {
                 size: 24,
                 color: naturalGreen,
               ),
-              SizedBox(
+              const SizedBox(
                 width: 12,
               ),
               Text(

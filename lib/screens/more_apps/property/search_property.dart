@@ -159,7 +159,7 @@ class _SearchPropertyState extends State<SearchProperty> {
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         getResult("");
@@ -559,7 +559,7 @@ class _SearchPropertyState extends State<SearchProperty> {
   }
 
   Widget getDurationRequirement({StateSetter? bottomSheetSetState}) {
-    bool isForRent = isForBuyOrRent[1];
+    final bool isForRent = isForBuyOrRent[1];
     return !isForRent
         ? Container()
         : Column(
@@ -836,7 +836,7 @@ class _SearchPropertyState extends State<SearchProperty> {
   }
 
   Widget getRoommatesRequirement({StateSetter? bottomSheetSetState}) {
-    bool isForRent = isForBuyOrRent[1];
+    final bool isForRent = isForBuyOrRent[1];
     return !isForRent
         ? Container()
         : Column(
@@ -873,7 +873,7 @@ class _SearchPropertyState extends State<SearchProperty> {
   }
 
   Widget getPetPolicyRequirement({StateSetter? bottomSheetSetState}) {
-    bool isForRent = isForBuyOrRent[1];
+    final bool isForRent = isForBuyOrRent[1];
     return !isForRent
         ? Container()
         : Column(

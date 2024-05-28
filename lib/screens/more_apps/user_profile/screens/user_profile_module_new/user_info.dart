@@ -109,37 +109,39 @@ class _UserInfoState extends State<UserInfo> {
         body: SingleChildScrollView(
           scrollDirection: Axis.vertical,
           child: Container(
-            padding: EdgeInsets.only(bottom: 40),
+            padding: const EdgeInsets.only(bottom: 40),
             child: Column(
               children: [
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                   child: Column(
                     children: <Widget>[
                       Column(
                         children: getUserAboutSection(),
                       ),
-                      (widget.user!.type!.toLowerCase() != "user")
-                          ? Column(
-                              children: [
-                                SizedBox(height: 16),
-                                Divider(
-                                  height: 0,
-                                  color: dividerColor,
-                                  thickness: 1,
-                                ),
-                                SizedBox(height: 16),
-                              ],
-                            )
-                          : Container(),
+                      if (widget.user!.type!.toLowerCase() != "user")
+                        Column(
+                          children: [
+                            const SizedBox(height: 16),
+                            Divider(
+                              height: 0,
+                              color: dividerColor,
+                              thickness: 1,
+                            ),
+                            const SizedBox(height: 16),
+                          ],
+                        )
+                      else
+                        Container(),
                     ],
                   ),
                 ),
-                isProductItemIsEmpty ? Container() : _buildProductList(),
-                SizedBox(
+                if (isProductItemIsEmpty) Container() else _buildProductList(),
+                const SizedBox(
                   height: 20,
                 ),
-                isServiceItemIsEmpty ? Container() : _buildServiceList(),
+                if (isServiceItemIsEmpty) Container() else _buildServiceList(),
               ],
             ),
           ),
@@ -155,7 +157,7 @@ class _UserInfoState extends State<UserInfo> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 20),
+            padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
@@ -182,10 +184,10 @@ class _UserInfoState extends State<UserInfo> {
               ],
             ),
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           Expanded(
             child: ListView.builder(
-              padding: EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               itemCount: popularProductItem.length,
               scrollDirection: Axis.horizontal,
               itemBuilder: (context, index) => DisplayProduct(
@@ -206,7 +208,7 @@ class _UserInfoState extends State<UserInfo> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 20),
+            padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
@@ -233,12 +235,12 @@ class _UserInfoState extends State<UserInfo> {
               ],
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 16,
           ),
           Expanded(
             child: ListView.builder(
-              padding: EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               itemCount: popularServiceItem.length,
               scrollDirection: Axis.horizontal,
               itemBuilder: (context, index) => DisplayService(

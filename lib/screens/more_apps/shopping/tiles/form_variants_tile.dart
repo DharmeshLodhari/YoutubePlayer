@@ -26,7 +26,7 @@ class FormVariantsTile extends StatelessWidget {
       elevation: 0,
       child: Container(
         decoration: decorateBox(),
-        padding: EdgeInsets.symmetric(vertical: 7.0),
+        padding: const EdgeInsets.symmetric(vertical: 7.0),
         child: ListTile(
           title: Column(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -41,7 +41,7 @@ class FormVariantsTile extends StatelessWidget {
                     fontFamily: "Inter",
                     fontSize: 14),
               ),
-              SizedBox(height: 3.0),
+              const SizedBox(height: 3.0),
               Text(
                 'Available . ${productVariantList[index].quantity!}',
                 maxLines: 1,

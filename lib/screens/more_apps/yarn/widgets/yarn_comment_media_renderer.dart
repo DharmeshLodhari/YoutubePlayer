@@ -41,7 +41,7 @@ class _YarnCommentMediaRenderState extends State<YarnCommentMediaRender> {
     } else if (widget.yarnTopic.media.length == 4) {
       return _buildFourImageView();
     }
-    return SizedBox();
+    return const SizedBox();
   }
 
   Widget _buildSingleImageView() {
@@ -63,7 +63,7 @@ class _YarnCommentMediaRenderState extends State<YarnCommentMediaRender> {
                 mediaType: widget.yarnTopic.media[0].mediaType ?? '',
                 imagePoster: widget.yarnTopic.media[0].mediaPoster ?? ''),
           ),
-          SizedBox(
+          const SizedBox(
             width: 8,
           ),
           Expanded(
@@ -88,7 +88,7 @@ class _YarnCommentMediaRenderState extends State<YarnCommentMediaRender> {
                 mediaType: widget.yarnTopic.media[0].mediaType ?? '',
                 imagePoster: widget.yarnTopic.media[0].mediaPoster ?? ''),
           ),
-          SizedBox(
+          const SizedBox(
             width: 8,
           ),
           Expanded(
@@ -97,7 +97,7 @@ class _YarnCommentMediaRenderState extends State<YarnCommentMediaRender> {
                 mediaType: widget.yarnTopic.media[1].mediaType ?? '',
                 imagePoster: widget.yarnTopic.media[1].mediaPoster ?? ''),
           ),
-          SizedBox(
+          const SizedBox(
             width: 8,
           ),
           Expanded(
@@ -126,7 +126,7 @@ class _YarnCommentMediaRenderState extends State<YarnCommentMediaRender> {
                       mediaType: widget.yarnTopic.media[0].mediaType ?? '',
                       imagePoster: widget.yarnTopic.media[0].mediaPoster ?? ''),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 8,
                 ),
                 Expanded(
@@ -138,7 +138,7 @@ class _YarnCommentMediaRenderState extends State<YarnCommentMediaRender> {
               ],
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 8,
           ),
           Container(
@@ -151,7 +151,7 @@ class _YarnCommentMediaRenderState extends State<YarnCommentMediaRender> {
                       mediaType: widget.yarnTopic.media[2].mediaType ?? '',
                       imagePoster: widget.yarnTopic.media[2].mediaPoster ?? ''),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 8,
                 ),
                 Expanded(
@@ -192,7 +192,7 @@ class _YarnCommentMediaRenderState extends State<YarnCommentMediaRender> {
           //   arguments: imageUrl,
           // );
 
-          List<Widget> imageList = [];
+          final List<Widget> imageList = [];
           for (var item in widget.yarnTopic.media) {
             imageList.add(Image.network('${item.mediaUrl.toString()}'));
           }

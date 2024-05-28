@@ -39,7 +39,7 @@ class _MyWishListState extends State<MyWishList> {
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         getResult();
@@ -72,12 +72,12 @@ class _MyWishListState extends State<MyWishList> {
               onRefresh: _onRefresh,
               child: SingleChildScrollView(
                 child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Column(
                     children: movieItem
                         .map(
                           (movie) => Container(
-                              padding: EdgeInsets.symmetric(vertical: 8),
+                              padding: const EdgeInsets.symmetric(vertical: 8),
                               child: MovieTileWithHeart(movieItem: movie)),
                         )
                         .toList(),

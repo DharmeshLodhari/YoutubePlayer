@@ -63,19 +63,19 @@ class _RateAndTipDriverState extends State<RateAndTipDriver> {
 
   Widget scaffoldBody() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          SizedBox(height: 100),
+          const SizedBox(height: 100),
           getRatingUI(),
-          SizedBox(height: 40),
+          const SizedBox(height: 40),
           getTipUI(),
-          Expanded(
+          const Expanded(
             child: SizedBox(height: 30),
           ),
           getDriverActions(),
-          SizedBox(height: 30),
+          const SizedBox(height: 30),
         ],
       ),
     );
@@ -98,7 +98,7 @@ class _RateAndTipDriverState extends State<RateAndTipDriver> {
                 color: rating >= 1 ? navyBlue : dividerColor,
               ),
             ),
-            SizedBox(width: 10),
+            const SizedBox(width: 10),
             GestureDetector(
               onTap: () {
                 rating = 2;
@@ -110,7 +110,7 @@ class _RateAndTipDriverState extends State<RateAndTipDriver> {
                 color: rating >= 2 ? navyBlue : dividerColor,
               ),
             ),
-            SizedBox(width: 10),
+            const SizedBox(width: 10),
             GestureDetector(
               onTap: () {
                 rating = 3;
@@ -122,7 +122,7 @@ class _RateAndTipDriverState extends State<RateAndTipDriver> {
                 color: rating >= 3 ? navyBlue : dividerColor,
               ),
             ),
-            SizedBox(width: 10),
+            const SizedBox(width: 10),
             GestureDetector(
               onTap: () {
                 rating = 4;
@@ -134,7 +134,7 @@ class _RateAndTipDriverState extends State<RateAndTipDriver> {
                 color: rating >= 4 ? navyBlue : dividerColor,
               ),
             ),
-            SizedBox(width: 10),
+            const SizedBox(width: 10),
             GestureDetector(
               onTap: () {
                 rating = 5;
@@ -148,8 +148,8 @@ class _RateAndTipDriverState extends State<RateAndTipDriver> {
             ),
           ],
         ),
-        SizedBox(height: 8),
-        Text(
+        const SizedBox(height: 8),
+        const Text(
           "Excellent",
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
         )
@@ -171,13 +171,13 @@ class _RateAndTipDriverState extends State<RateAndTipDriver> {
             fit: BoxFit.fill,
           ),
         ),
-        SizedBox(height: 40),
+        const SizedBox(height: 40),
         Text(
           "Add a tip?",
           style: TextStyle(
               fontSize: 22, fontWeight: FontWeight.w700, color: blackFont),
         ),
-        SizedBox(height: 30),
+        const SizedBox(height: 30),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -194,7 +194,8 @@ class _RateAndTipDriverState extends State<RateAndTipDriver> {
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(15)),
                 child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                   child: Row(
                     children: [
                       Text(
@@ -231,7 +232,8 @@ class _RateAndTipDriverState extends State<RateAndTipDriver> {
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(15)),
                 child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                   child: Row(
                     children: [
                       Text(
@@ -268,7 +270,8 @@ class _RateAndTipDriverState extends State<RateAndTipDriver> {
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(15)),
                 child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                   child: Row(
                     children: [
                       Text(
@@ -305,7 +308,8 @@ class _RateAndTipDriverState extends State<RateAndTipDriver> {
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(15)),
                 child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                   child: Row(
                     children: [
                       Text(
@@ -331,7 +335,7 @@ class _RateAndTipDriverState extends State<RateAndTipDriver> {
             ),
           ],
         ),
-        SizedBox(height: 30),
+        const SizedBox(height: 30),
         Text(
           "Tipping is welcome, but not required.\nThe amount is always up to you.",
           textAlign: TextAlign.center,
@@ -344,7 +348,7 @@ class _RateAndTipDriverState extends State<RateAndTipDriver> {
 
   Widget getDriverInfo() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
       child: Text(
         "Your trip has ended",
         style: TextStyle(
@@ -372,7 +376,7 @@ class _RateAndTipDriverState extends State<RateAndTipDriver> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       shadowColor: dividerColor.withAlpha(125),
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -386,7 +390,7 @@ class _RateAndTipDriverState extends State<RateAndTipDriver> {
                     color: blackFont,
                   ),
                 ),
-                SizedBox(height: 40),
+                const SizedBox(height: 40),
                 Text(
                   "11:38",
                   style: TextStyle(
@@ -397,12 +401,12 @@ class _RateAndTipDriverState extends State<RateAndTipDriver> {
                 ),
               ],
             ),
-            SizedBox(width: 12),
+            const SizedBox(width: 12),
             Image.asset(
               "assets/images/taxi/route.png",
               height: 80,
             ),
-            SizedBox(width: 12),
+            const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -415,7 +419,7 @@ class _RateAndTipDriverState extends State<RateAndTipDriver> {
                       color: blackFont,
                     ),
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   Text(
                     "Tafawa Balewa Square, Lagos Island, Lagos",
                     style: TextStyle(

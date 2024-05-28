@@ -94,7 +94,7 @@ class _OverlayContainerState extends State<OverlayContainer>
 
   void _show() {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await Future.delayed(Duration(milliseconds: 280));
+      await Future.delayed(const Duration(milliseconds: 280));
       if (_opened) {
         _overlayEntry.remove();
       }
@@ -122,7 +122,7 @@ class _OverlayContainerState extends State<OverlayContainer>
   }
 
   OverlayEntry _buildOverlayEntry() {
-    RenderBox renderBox = context.findRenderObject() as RenderBox;
+    final RenderBox renderBox = context.findRenderObject() as RenderBox;
     final size = renderBox.size;
     final offset = renderBox.localToGlobal(Offset.zero);
     return OverlayEntry(
@@ -132,8 +132,8 @@ class _OverlayContainerState extends State<OverlayContainer>
           top: offset.dy - widget.position.bottom,
           width: widget.asWideAsParent ? size.width : null,
           child: Material(
-            child: widget.child,
             color: widget.materialColor,
+            child: widget.child,
           ),
         );
       },

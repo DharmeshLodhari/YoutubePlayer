@@ -110,7 +110,7 @@ class _MyBusTicketListState extends State<MyBusTicketList> {
             )
           : SingleChildScrollView(
               child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Column(
                   children: transports
                       .map(
@@ -119,7 +119,7 @@ class _MyBusTicketListState extends State<MyBusTicketList> {
                             Navigator.of(context).pushNamed("/ticket-detail");
                           },
                           child: Container(
-                              padding: EdgeInsets.symmetric(vertical: 8),
+                              padding: const EdgeInsets.symmetric(vertical: 8),
                               child: BusTicketTile(
                                 transport: element,
                               )),

@@ -156,7 +156,7 @@ class _AddTagsState extends State<AddTags> {
   //             // });
   //             // FocusScope.of(context).requestFocus();
   //             //
-  //             // // print(userTags);print("______________");
+  //             // // debugPrint(userTags);print("______________");
   //             // userTags.removeWhere((tag) => tag.isEmpty);
   //           },
   //         );
@@ -167,7 +167,7 @@ class _AddTagsState extends State<AddTags> {
 
   Widget _buildBody() {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 20.0),
+      padding: const EdgeInsets.symmetric(horizontal: 20.0),
       child: Column(
         children: [
           CustomizedTextFormField(
@@ -200,7 +200,7 @@ class _AddTagsState extends State<AddTags> {
                       itemCount: tagList.length + 1,
                       itemBuilder: (context, index) {
                         if (index == tagList.length) {
-                          return SizedBox.shrink();
+                          return const SizedBox.shrink();
                         } else {
                           return Card(
                             elevation: 0,
@@ -208,13 +208,13 @@ class _AddTagsState extends State<AddTags> {
                                 side: BorderSide(
                                     color: selectedListItemBackgroundBlue),
                                 borderRadius: BorderRadius.circular(10)),
-                            margin: EdgeInsets.symmetric(vertical: 2),
+                            margin: const EdgeInsets.symmetric(vertical: 2),
                             shadowColor: boxShadowTwo,
                             color: white,
                             child: Container(
                               decoration: decorateBox(),
                               child: Padding(
-                                padding: EdgeInsets.all(5.0),
+                                padding: const EdgeInsets.all(5.0),
                                 child: _buildTagList(index),
                               ),
                             ),
@@ -314,7 +314,7 @@ class _AddTagsState extends State<AddTags> {
           fontFamily: "Inter",
         ),
       ),
-      shape: RoundedRectangleBorder(
+      shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.all(Radius.circular(25.0)),
       ),
       activeColor: navyBlue,

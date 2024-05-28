@@ -108,14 +108,15 @@ class Transaction {
       this.isCredit});
 
   factory Transaction.fromJson(Map<String, dynamic> json) {
-    bool isCredit = json["is_credit"];
-    var payee = (isCredit ? json["from_customer"] : json['to_customer']) ?? "";
+    final bool isCredit = json["is_credit"];
+    final payee =
+        (isCredit ? json["from_customer"] : json['to_customer']) ?? "";
 
-    var avatar = (isCredit
+    final avatar = (isCredit
             ? json["from_customer_avatar"]
             : json['to_customer_avatar']) ??
         "";
-    String displayCustomer = (isCredit
+    final String displayCustomer = (isCredit
             ? json["display_from_customer"]
             : json['display_to_customer']) ??
         "";
@@ -142,7 +143,6 @@ class Transaction {
         isAnonymous: json['is_anonymous'] ?? false,
         isCredit: isCredit);
   }
-
 }
 
 class PaymentRequest {
@@ -190,20 +190,20 @@ class PaymentRequest {
       this.isCredit});
 
   factory PaymentRequest.fromJson(Map<String, dynamic> json) {
-    UserBloc currentUser =
+    final UserBloc currentUser =
         Provider.of(MyGlobals().navigationKey.currentContext!, listen: false);
 
     //
-    bool isRequested =
+    final bool isRequested =
         (json["from_customer"] == currentUser.user.userName) ? false : true;
 
-    var payee =
+    final payee =
         (isRequested ? json["from_customer"] : json['to_customer']) ?? "";
-    var avatar = (isRequested
+    final avatar = (isRequested
             ? json["from_customer_avatar"]
             : json['to_customer_avatar']) ??
         "";
-    String displayCustomer = (isRequested
+    final String displayCustomer = (isRequested
             ? json["display_from_customer"]
             : json['display_to_customer']) ??
         "";

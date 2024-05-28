@@ -76,7 +76,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   DeliveryModel? deliveryModel;
 
   String? getCustomerOrMerchant() {
-    var customerOrMerchant = order?.customerName == userBloc.user.userName
+    final customerOrMerchant = order?.customerName == userBloc.user.userName
         ? order?.merchant
         : order?.customerName;
     return customerOrMerchant;
@@ -401,7 +401,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   }
 
   Widget _buildBody() {
-    bool canPay = order?.status == 'Awaiting Payment' &&
+    final bool canPay = order?.status == 'Awaiting Payment' &&
         userBloc.user.userName != order?.merchant;
 
     return isLoading
@@ -412,15 +412,15 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
             ),
           )
         : Container(
-            margin: EdgeInsets.symmetric(horizontal: 14, vertical: 20),
-            padding: EdgeInsets.only(top: 12, bottom: 12),
+            margin: const EdgeInsets.symmetric(horizontal: 14, vertical: 20),
+            padding: const EdgeInsets.only(top: 12, bottom: 12),
             decoration: BoxDecoration(
                 border: Border.all(color: greyBackground),
                 borderRadius: BorderRadius.circular(10)),
             child: Column(
               children: <Widget>[
                 _buildUserProfile(),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 Divider(
@@ -448,7 +448,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
         child: Row(
           children: [
             getLeading(),
-            SizedBox(
+            const SizedBox(
               width: 20,
             ),
             Column(
@@ -461,7 +461,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                       fontSize: 17.4,
                       fontWeight: FontWeight.w600),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 6,
                 ),
                 Text(
@@ -482,9 +482,9 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   Widget _buildOrderSummary() {
     if (!onTap) {
       return Padding(
-        padding: EdgeInsets.all(20),
+        padding: const EdgeInsets.all(20),
         child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 10),
           decoration: BoxDecoration(
             border: Border.all(color: blackFont.withOpacity(.12)),
             borderRadius: BorderRadius.circular(8),
@@ -511,7 +511,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
       );
     } else {
       return Padding(
-        padding: EdgeInsets.all(20),
+        padding: const EdgeInsets.all(20),
         child: Container(
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8),
@@ -548,11 +548,11 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                     getItemTile(index),
               ),
               Divider(color: blackFont.withOpacity(.12)),
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
               getOrderDetail(),
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
 
@@ -618,9 +618,9 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   Widget _buildTrackStatus() {
     if (!onTapStatus) {
       return Padding(
-        padding: EdgeInsets.all(20),
+        padding: const EdgeInsets.all(20),
         child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 10),
           decoration: BoxDecoration(
             border: Border.all(color: blackFont.withOpacity(.12)),
             borderRadius: BorderRadius.circular(8),
@@ -647,7 +647,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
       );
     } else {
       return Padding(
-        padding: EdgeInsets.all(20),
+        padding: const EdgeInsets.all(20),
         child: Container(
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8),
@@ -676,7 +676,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                           ))
                     ]),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
               stepperBody()
@@ -757,7 +757,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   }
 
   Widget getBodyOfNoteBottomSheet() {
-    bool result =
+    final bool result =
         order?.note == "" && order?.customerName == userBloc.user.userName;
     if (!result) {
       return Expanded(
@@ -1013,7 +1013,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
           setState!(() {
             updateStatus(value);
             statusOfOrder = value;
-            print(value);
+            debugPrint(value);
           });
         }
       },
@@ -1209,8 +1209,8 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   }
 
   List<Widget> listSecondaryActions(int index) {
-    var item = items[index];
-    var conditionForUser =
+    final item = items[index];
+    final conditionForUser =
         item["type"] == "product" ? item["item"].seller : item["item"].provider;
 
     bool isValid = true;
@@ -1298,7 +1298,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   Widget stepperBody() {
     return track.OrderTrackerStepper(
         type: track.StepperType.vertical,
-        physics: NeverScrollableScrollPhysics(),
+        physics: const NeverScrollableScrollPhysics(),
         currentStep: _currentStep,
         onStepTapped: (step) => tapped(step),
         onStepContinue: continued,
@@ -1311,9 +1311,9 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
         },
         steps: order?.statusTimeStamp?.map(
               (element) {
-                String statusTitle =
+                final String statusTitle =
                     element.keys.first; // Get the key (status title)
-                String statusTimeStamp =
+                final String statusTimeStamp =
                     element.values.first; // Get the value (timestamp)
                 return track.Step(
                   title: Column(
@@ -1323,12 +1323,12 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                       Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          new Text(statusTitle,
+                          Text(statusTitle,
                               style: TextStyle(
                                   color: blackFont,
                                   fontSize: 14,
                                   fontWeight: FontWeight.w500)),
-                          SizedBox(width: 10),
+                          const SizedBox(width: 10),
                           if (statusTitle == 'Order Picked Up')
                             SvgPicture.asset(
                               'assets/images/bike_front.svg',
@@ -1340,25 +1340,25 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                               color: blackFont,
                               fontSize: 10,
                               fontWeight: FontWeight.w400)),
-                      new Text(statusTimeStamp,
+                      Text(statusTimeStamp,
                           style: TextStyle(
                               color: blackFont,
                               fontSize: 10,
                               fontWeight: FontWeight.w400)),
-                      SizedBox(height: 5),
+                      const SizedBox(height: 5),
                       if (statusTitle == 'Order Picked Up' &&
                           deliveryModel?.isInProgress == true)
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             _buildCircleImageAndName(),
-                            SizedBox(width: 10),
+                            const SizedBox(width: 10),
                             _buildPartnerContactIcon(),
                           ],
                         ),
                     ],
                   ),
-                  content: SizedBox.shrink(),
+                  content: const SizedBox.shrink(),
                   isActive: true,
                   state: getOrderStatus(statusTitle)[1],
                   // state: getActiveOrderStatus(order, "New Order")
@@ -1393,7 +1393,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
             ),
           ),
         ),
-        SizedBox(width: 5),
+        const SizedBox(width: 5),
         Text(
           appendStringDot(deliveryModel?.dispatcherFullName ?? "", 10),
           style: TextStyle(
@@ -1420,14 +1420,14 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
           child:
               RoundedElevatedButton(svgImg: 'assets/images/location_icon.svg'),
         ),
-        SizedBox(width: 3),
+        const SizedBox(width: 3),
         GestureDetector(
             onTap: () {
               _makePhoneCall();
             },
             child:
                 RoundedElevatedButton(svgImg: 'assets/images/call_icon.svg')),
-        SizedBox(width: 3),
+        const SizedBox(width: 3),
         badges.Badge(
           position: badges.BadgePosition.topEnd(top: 0, end: 0),
           badgeStyle: badges.BadgeStyle(
@@ -1516,7 +1516,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
           children: [
             track.OrderTrackerStepper(
               type: track.StepperType.vertical,
-              physics: AlwaysScrollableScrollPhysics(),
+              physics: const AlwaysScrollableScrollPhysics(),
               currentStep: _currentStep,
               onStepTapped: (step) => tapped(step),
               onStepContinue: continued,
@@ -1533,7 +1533,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      new Text('Order Placed',
+                      Text('Order Placed',
                           style: TextStyle(
                               color: blackFont,
                               fontSize: 14,
@@ -1546,14 +1546,14 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                               color: blackFont,
                               fontSize: 10,
                               fontWeight: FontWeight.w400)),
-                      new Text(getOrderStatusTime(order, "New Order"),
+                      Text(getOrderStatusTime(order, "New Order"),
                           style: TextStyle(
                               color: blackFont,
                               fontSize: 10,
                               fontWeight: FontWeight.w400)),
                     ],
                   ),
-                  content: SizedBox.shrink(),
+                  content: const SizedBox.shrink(),
                   isActive: getActiveOrderStatus(order, "New Order"),
                   state: getActiveOrderStatus(order, "New Order")
                       ? track.StepState.complete
@@ -1563,7 +1563,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                   title: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      new Text('Awaiting Payment',
+                      Text('Awaiting Payment',
                           style: TextStyle(
                               color: blackFont,
                               fontSize: 14,
@@ -1576,14 +1576,14 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                               color: blackFont,
                               fontSize: 10,
                               fontWeight: FontWeight.w400)),
-                      new Text(getOrderStatusTime(order, "Awaiting Payment"),
+                      Text(getOrderStatusTime(order, "Awaiting Payment"),
                           style: TextStyle(
                               color: blackFont,
                               fontSize: 10,
                               fontWeight: FontWeight.w400)),
                     ],
                   ),
-                  content: SizedBox.shrink(),
+                  content: const SizedBox.shrink(),
                   isActive: getActiveOrderStatus(order, "Awaiting Payment"),
                   state: getActiveOrderStatus(order, "Awaiting Payment")
                       ? track.StepState.editing
@@ -1593,7 +1593,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                   title: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      new Text('Payment Successful',
+                      Text('Payment Successful',
                           style: TextStyle(
                               color: blackFont,
                               fontSize: 14,
@@ -1606,14 +1606,14 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                               color: blackFont,
                               fontSize: 10,
                               fontWeight: FontWeight.w400)),
-                      new Text(getOrderStatusTime(order, "Payment Received"),
+                      Text(getOrderStatusTime(order, "Payment Received"),
                           style: TextStyle(
                               color: blackFont,
                               fontSize: 10,
                               fontWeight: FontWeight.w400)),
                     ],
                   ),
-                  content: SizedBox.shrink(),
+                  content: const SizedBox.shrink(),
                   isActive: getActiveOrderStatus(order, "Payment Received"),
                   state: getActiveOrderStatus(order, "Payment Received")
                       ? track.StepState.complete
@@ -1623,7 +1623,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                   title: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      new Text('Processing',
+                      Text('Processing',
                           style: TextStyle(
                               color: blackFont,
                               fontSize: 14,
@@ -1636,14 +1636,14 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                               color: blackFont,
                               fontSize: 10,
                               fontWeight: FontWeight.w400)),
-                      new Text(getOrderStatusTime(order, "Processing"),
+                      Text(getOrderStatusTime(order, "Processing"),
                           style: TextStyle(
                               color: blackFont,
                               fontSize: 10,
                               fontWeight: FontWeight.w400)),
                     ],
                   ),
-                  content: SizedBox.shrink(),
+                  content: const SizedBox.shrink(),
                   isActive: getActiveOrderStatus(order, "Processing"),
                   state: getActiveOrderStatus(order, "Processing")
                       ? track.StepState.complete
@@ -1666,14 +1666,14 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                               color: blackFont,
                               fontSize: 10,
                               fontWeight: FontWeight.w400)),
-                      new Text(getOrderStatusTime(order, "Order Picked Up"),
+                      Text(getOrderStatusTime(order, "Order Picked Up"),
                           style: TextStyle(
                               color: blackFont,
                               fontSize: 10,
                               fontWeight: FontWeight.w400)),
                     ],
                   ),
-                  content: SizedBox.shrink(),
+                  content: const SizedBox.shrink(),
                   isActive: getActiveOrderStatus(order, "Order Picked Up"),
                   state: getActiveOrderStatus(order, "Order Picked Up")
                       ? track.StepState.complete
@@ -1697,7 +1697,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                               color: blackFont,
                               fontSize: 10,
                               fontWeight: FontWeight.w400)),
-                      new Text(
+                      Text(
                           getOrderStatusTime(order, "On Hold") ??
                               getOrderStatusTime(order, "Pending"),
                           style: TextStyle(
@@ -1706,7 +1706,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                               fontWeight: FontWeight.w400)),
                     ],
                   ),
-                  content: SizedBox.shrink(),
+                  content: const SizedBox.shrink(),
                   isActive: getActiveOrderStatus(order, "On Hold"),
                   state: getActiveOrderStatus(order, "On Hold")
                       ? track.StepState.editing
@@ -1729,14 +1729,14 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                               color: blackFont,
                               fontSize: 10,
                               fontWeight: FontWeight.w400)),
-                      new Text(getOrderStatusTime(order, "Out For Delivery"),
+                      Text(getOrderStatusTime(order, "Out For Delivery"),
                           style: TextStyle(
                               color: blackFont,
                               fontSize: 10,
                               fontWeight: FontWeight.w400)),
                     ],
                   ),
-                  content: SizedBox.shrink(),
+                  content: const SizedBox.shrink(),
                   isActive: getActiveOrderStatus(order, "Out For Delivery"),
                   state: getActiveOrderStatus(order, "Out For Delivery")
                       ? track.StepState.complete
@@ -1759,14 +1759,14 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                               color: blackFont,
                               fontSize: 10,
                               fontWeight: FontWeight.w400)),
-                      new Text(getOrderStatusTime(order, "Canceled"),
+                      Text(getOrderStatusTime(order, "Canceled"),
                           style: TextStyle(
                               color: blackFont,
                               fontSize: 10,
                               fontWeight: FontWeight.w400)),
                     ],
                   ),
-                  content: SizedBox.shrink(),
+                  content: const SizedBox.shrink(),
                   isActive: getActiveOrderStatus(order, "Canceled"),
                   state: getActiveOrderStatus(order, "Canceled")
                       ? track.StepState.error
@@ -1789,14 +1789,14 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                               color: blackFont,
                               fontSize: 10,
                               fontWeight: FontWeight.w400)),
-                      new Text(getOrderStatusTime(order, "Complete"),
+                      Text(getOrderStatusTime(order, "Complete"),
                           style: TextStyle(
                               color: blackFont,
                               fontSize: 10,
                               fontWeight: FontWeight.w400)),
                     ],
                   ),
-                  content: SizedBox.shrink(),
+                  content: const SizedBox.shrink(),
                   isActive: getActiveOrderStatus(order, "Complete"),
                   state: getActiveOrderStatus(order, "Complete")
                       ? track.StepState.complete
@@ -1828,12 +1828,12 @@ class VerticalListItem extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         if (type == "product") {
-          Product? product = item;
+          final Product? product = item;
           Navigator.pushNamed(context, "/product",
               arguments: {"product": product});
         }
         if (type == "service") {
-          Service? service = item;
+          final Service? service = item;
           Navigator.pushNamed(context, "/service-detail",
               arguments: {"service": service});
         }

@@ -57,7 +57,7 @@ class MyFeedViewState extends State<MyFeedView> {
         isLoading = true;
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result = await YarnAuth().getAllYarn(
+        final Map<String, dynamic>? result = await YarnAuth().getAllYarn(
             next, previous ?? "",
             type: type,
             isType: isType,
@@ -78,7 +78,7 @@ class MyFeedViewState extends State<MyFeedView> {
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
-        var tempList = result['results'];
+        final tempList = result['results'];
 
         ///check if refresh list doesn't contain deleted yarn
 
@@ -149,8 +149,8 @@ class MyFeedViewState extends State<MyFeedView> {
   Widget _buildListView() {
     if (!noList) {
       return ListView.separated(
-        physics: ClampingScrollPhysics(),
-        padding: EdgeInsets.only(left: 16, right: 16, bottom: 16),
+        physics: const ClampingScrollPhysics(),
+        padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
         itemCount: yarnTopicList.length + 1,
         itemBuilder: (BuildContext context, int index) {
           if (index == yarnTopicList.length) {
@@ -191,7 +191,7 @@ class MyFeedViewState extends State<MyFeedView> {
         separatorBuilder: (context, index) {
           return Column(
             children: [
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
               Divider(
@@ -211,7 +211,7 @@ class MyFeedViewState extends State<MyFeedView> {
 
   void _onPostRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         count = 0;

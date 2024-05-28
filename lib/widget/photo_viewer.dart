@@ -56,7 +56,7 @@ class _PhotoViewerState extends State<PhotoViewer> {
     } else {
       return PhotoView(
         imageProvider: NetworkImage(imageUrl!),
-        backgroundDecoration: BoxDecoration(color: Colors.black),
+        backgroundDecoration: const BoxDecoration(color: Colors.black),
         loadingBuilder: (context, event) {
           if (event != null) {
             return Container(

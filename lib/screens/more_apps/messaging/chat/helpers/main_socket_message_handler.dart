@@ -45,7 +45,7 @@ class MainSocketMessageHandler {
   static List<String> _hashedNudgingMessages = [];
 
   static Timer? _nudgeAlertTimer;
-  static Duration nudgeAlertDuration = Duration(seconds: 10);
+  static Duration nudgeAlertDuration = const Duration(seconds: 10);
 
   bool isFCMMessage = false;
 
@@ -478,7 +478,7 @@ class MainSocketMessageHandler {
       required UserBloc currentUser,
       String? type}) {
     final Map<String, dynamic> data = {
-      "check_id": Uuid().v4(),
+      "check_id": const Uuid().v4(),
       "conversation_id": author.conversationId,
       "author": currentUser.user.userName,
       "author_avatar": currentUser.user.avatar,

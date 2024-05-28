@@ -65,7 +65,7 @@ class _CustomTextFieldTagState extends State<CustomTextFieldTag> {
                         // Map<String, dynamic> tagData = jsonDecode(tag);
                         return Container(
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(
+                            borderRadius: const BorderRadius.all(
                               Radius.circular(20.0),
                             ),
                             border: Border.all(color: darkGrey, width: 1.0),
@@ -83,7 +83,7 @@ class _CustomTextFieldTagState extends State<CustomTextFieldTag> {
                                   style: TextStyle(color: blackFont),
                                 ),
                                 onTap: () {
-                                  print("$tag selected");
+                                  debugPrint("$tag selected");
                                 },
                               ),
                               const SizedBox(width: 4.0),

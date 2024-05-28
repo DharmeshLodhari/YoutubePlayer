@@ -27,9 +27,9 @@ class _UtilityDashboardState extends State<UtilityDashboard> {
         children: [
           Expanded(
             child: ListView(
-              padding: EdgeInsets.only(left: 16, right: 16),
+              padding: const EdgeInsets.only(left: 16, right: 16),
               children: [
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 firstRowItems(),
                 secondRowItems(),
               ],
@@ -63,7 +63,7 @@ class _UtilityDashboardState extends State<UtilityDashboard> {
       ),
       actions: [
         utilityHistoryBtn(),
-        SizedBox(
+        const SizedBox(
           width: 16,
         )
       ],
@@ -98,7 +98,7 @@ class _UtilityDashboardState extends State<UtilityDashboard> {
           iconColor: HexColor("#3F61DB"),
           height: 126,
         )),
-        SizedBox(width: 12),
+        const SizedBox(width: 12),
         Expanded(
           child: UtilityDashboardItemTile(
             icon: SlydoAppIcon.utility_svg,
@@ -108,7 +108,7 @@ class _UtilityDashboardState extends State<UtilityDashboard> {
             height: 126,
           ),
         ),
-        SizedBox(width: 12),
+        const SizedBox(width: 12),
         Expanded(
           child: UtilityDashboardItemTile(
             icon: SlydoAppIcon.utility_electricity,
@@ -118,7 +118,7 @@ class _UtilityDashboardState extends State<UtilityDashboard> {
             height: 126,
           ),
         ),
-        SizedBox(width: 12),
+        const SizedBox(width: 12),
         Expanded(
           child: UtilityDashboardItemTile(
             icon: Icons.tap_and_play_outlined,
@@ -144,7 +144,7 @@ class _UtilityDashboardState extends State<UtilityDashboard> {
           iconColor: HexColor("#46CECE"),
           height: 126,
         )),
-        SizedBox(width: 12),
+        const SizedBox(width: 12),
         Expanded(
           child: UtilityDashboardItemTile(
             icon: SlydoAppIcon.utility_betting,
@@ -154,7 +154,7 @@ class _UtilityDashboardState extends State<UtilityDashboard> {
             height: 126,
           ),
         ),
-        SizedBox(width: 12),
+        const SizedBox(width: 12),
         Expanded(
           child: UtilityDashboardItemTile(
             icon: SlydoAppIcon.utility_toll,
@@ -164,7 +164,7 @@ class _UtilityDashboardState extends State<UtilityDashboard> {
             height: 126,
           ),
         ),
-        SizedBox(width: 12),
+        const SizedBox(width: 12),
         Expanded(child: Container()),
       ],
     );

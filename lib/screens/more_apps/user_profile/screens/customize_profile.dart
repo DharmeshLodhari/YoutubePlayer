@@ -79,8 +79,9 @@ class CustomizeProfileScreenState extends State<CustomizeProfileScreen> {
       );
     }
 
-    List<MapEntry<String, bool>> entries = reorderedBoolMap.entries.toList();
-    bool isScreenIsSmall = MediaQuery.of(context).size.height < 600;
+    final List<MapEntry<String, bool>> entries =
+        reorderedBoolMap.entries.toList();
+    final bool isScreenIsSmall = MediaQuery.of(context).size.height < 600;
 
     return SingleChildScrollView(
       child: Container(
@@ -91,8 +92,8 @@ class CustomizeProfileScreenState extends State<CustomizeProfileScreen> {
               shrinkWrap: true,
               itemCount: entries.length,
               itemBuilder: (context, index) {
-                String key = entries[index].key;
-                bool value = entries[index].value;
+                final String key = entries[index].key;
+                final bool value = entries[index].value;
 
                 return ReorderableDragStartListener(
                   key: ValueKey(key), // Assign a key based on the 'key' string
@@ -184,7 +185,7 @@ class CustomizeProfileScreenState extends State<CustomizeProfileScreen> {
   }) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       shadowColor: boxShadowTwo,
       elevation: 0,
       child: Container(
@@ -226,7 +227,7 @@ class CustomizeProfileScreenState extends State<CustomizeProfileScreen> {
 
   Widget addProductLabelField() {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       child: CustomizedTextFormField(
         labelText: AppLocalization.of(context)!.productLabel,
         controller: productLabelController,
@@ -245,7 +246,7 @@ class CustomizeProfileScreenState extends State<CustomizeProfileScreen> {
 
   Widget addServiceLabelField() {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       child: CustomizedTextFormField(
         labelText: AppLocalization.of(context)!.serviceLabel,
         controller: serviceLabelController,
@@ -263,7 +264,7 @@ class CustomizeProfileScreenState extends State<CustomizeProfileScreen> {
   }
 
   Future<void> getCustomizeProfile() async {
-    Map<String, dynamic>? result = await _auth.customizeProfile();
+    final Map<String, dynamic>? result = await _auth.customizeProfile();
 
     if (result == null || result.isEmpty) {
       isLoading = false;
@@ -295,7 +296,7 @@ class CustomizeProfileScreenState extends State<CustomizeProfileScreen> {
     });
 
     // Create a list of keys not in 'ordering'
-    var remainingKeys =
+    final remainingKeys =
         boolMap.keys.where((key) => !orderedKeys.contains(key)).toList();
 
     // Add the remaining keys to orderedKeys to ensure they are at the end
@@ -306,7 +307,7 @@ class CustomizeProfileScreenState extends State<CustomizeProfileScreen> {
         Map.fromEntries(orderedKeys.map((key) => MapEntry(key, boolMap[key]!)));
 
     if (widget.arguments['business'] == 'no') {
-      List<String> keysToRemove = [
+      final List<String> keysToRemove = [
         'product',
         'service',
         'reviews',
@@ -353,12 +354,12 @@ class CustomizeProfileScreenState extends State<CustomizeProfileScreen> {
       isLoading = true;
       if (mounted) setState(() {});
 
-      Map<String, bool> currentArrangement = getCurrentBoolArrangement();
-      List<String> orderingList = currentArrangement.keys
+      final Map<String, bool> currentArrangement = getCurrentBoolArrangement();
+      final List<String> orderingList = currentArrangement.keys
           .where((key) => key != 'reviews' && key != 'opening_hours')
           .toList();
 
-      Map<String, dynamic> result = {
+      final Map<String, dynamic> result = {
         "ordering": orderingList,
         "product_label": productLabel,
         "service_label": serviceLabel,
@@ -390,16 +391,15 @@ class CustomizeProfileScreenState extends State<CustomizeProfileScreen> {
     }
 
     if (_formKey.currentState!.validate()) {
-
       isLoading = true;
       if (mounted) setState(() {});
 
-      Map<String, bool> currentArrangement = getCurrentBoolArrangement();
-      List<String> orderingList = currentArrangement.keys
+      final Map<String, bool> currentArrangement = getCurrentBoolArrangement();
+      final List<String> orderingList = currentArrangement.keys
           .where((key) => key != 'reviews' && key != 'opening_hours')
           .toList();
 
-      Map<String, dynamic> result = {
+      final Map<String, dynamic> result = {
         "ordering": orderingList,
         "product_label": productLabel,
         "service_label": serviceLabel,
@@ -443,7 +443,7 @@ class CustomizeProfileScreenState extends State<CustomizeProfileScreen> {
   Widget saveBtn() {
     return Container(
       alignment: Alignment.center,
-      padding: EdgeInsets.symmetric(horizontal: 34),
+      padding: const EdgeInsets.symmetric(horizontal: 34),
       constraints:
           BoxConstraints(maxWidth: MediaQuery.of(context).size.width - 240),
       child: CurvedButton(

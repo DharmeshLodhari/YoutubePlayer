@@ -203,14 +203,16 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
         ),
 
         /// Banner image
-        widget.userType == 'channel'
-            ? getProfileCoverChannel()
-            : getProfileCover(),
+        if (widget.userType == 'channel')
+          getProfileCoverChannel()
+        else
+          getProfileCover(),
 
         /// UserModel avatar, message icon, profile edit
-        widget.userType == 'channel'
-            ? getUserDetailsChannel()
-            : getUserDetails(),
+        if (widget.userType == 'channel')
+          getUserDetailsChannel()
+        else
+          getUserDetails(),
       ],
     );
   }
@@ -352,11 +354,11 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
 
   Widget getUserDetailsChannel() {
     ///get the list of user subscribe to channel
-    List<UserFollowers> userFollowers = [];
+    final List<UserFollowers> userFollowers = [];
 
     channelDetail!['members'].forEach((k, v) {
       // debugPrint("Fola Key : $k, Value : $v");
-      UserFollowers user = UserFollowers(
+      final UserFollowers user = UserFollowers(
         avatar: v,
         userName: '',
         fullName: '',
@@ -366,7 +368,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
       userFollowers.add(user);
     });
 
-    String channelUsername = getGroupUsername(
+    final String channelUsername = getGroupUsername(
         channelDetail!['group_username'] ?? channelDetail!['group_name']);
 
     return Positioned(
@@ -528,7 +530,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
                       ? Column(
                           children: [
                             Center(child: getUserProfilePic()),
-                            SizedBox(height: 2),
+                            const SizedBox(height: 2),
                             Container(
                               decoration: BoxDecoration(
                                 color: Colors.white,
@@ -637,7 +639,8 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
   }
 
   Widget getUserProfilePic() {
-    Color borderColor = getUserTypeColorByType(type: searchedUser?.type ?? "");
+    final Color borderColor =
+        getUserTypeColorByType(type: searchedUser?.type ?? "");
 
     if (widget.userType == 'channel') {
       if (widget.channelDetail!['avatar'] == null) {
@@ -935,10 +938,10 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
     if (date.isEmpty) {
       return '';
     }
-    DateTime dateTime = DateTime.parse(date).toLocal();
+    final DateTime dateTime = DateTime.parse(date).toLocal();
 
-    String month = DateFormat("MMMM").format(dateTime);
-    String year = DateFormat("y").format(dateTime);
+    final String month = DateFormat("MMMM").format(dateTime);
+    final String year = DateFormat("y").format(dateTime);
 
     return widget.userType == 'channel'
         ? 'Created $month $year'
@@ -1072,7 +1075,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
   }
 
   void checkCurrentUserIsInRequestList() async {
-    UserBloc _userBloc = Provider.of<UserBloc>(context, listen: false);
+    final UserBloc _userBloc = Provider.of<UserBloc>(context, listen: false);
     debugPrint("is In Request List -");
 
     if (_userBloc.user.userName != searchedUser?.userName) {
@@ -1096,7 +1099,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
     return [
       getCartIcon(),
       getQRCodeIcon(),
-      widget.userType == 'channel' ? const SizedBox() : getSearchIcon(),
+      if (widget.userType == 'channel') const SizedBox() else getSearchIcon(),
       menuIcon(),
       const SizedBox(width: 16),
     ];
@@ -1147,10 +1150,10 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
           badgeColor: naturalGreen,
           padding: basketBloc.basketItems.length == 0
               ? const EdgeInsets.all(0)
-              : EdgeInsets.all(4),
+              : const EdgeInsets.all(4),
           elevation: 0,
         ),
-        child: Center(
+        child: const Center(
           child: Icon(
             SlydoAppIconNew.cart,
             color: Colors.white,
@@ -1226,10 +1229,10 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
         if (channelDetail != null) {
           //get the account detail of clicked channel
 
-          Map<String, dynamic> financial =
+          final Map<String, dynamic> financial =
               channelDetail!['owner']['wallet']['financial_institution'];
 
-          VirtualAccount virtualAccount = VirtualAccount(
+          final VirtualAccount virtualAccount = VirtualAccount(
             accountName: channelDetail!['owner']['wallet']['account_name'],
             accountNumber: channelDetail!['owner']['wallet']['account_number'],
             financialInstitution: FinancialInstitution.fromJson(financial),
@@ -1245,7 +1248,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
               }));
         } else {
           //get the account detail of clicked user
-          VirtualAccount virtualAccount = VirtualAccount(
+          final VirtualAccount virtualAccount = VirtualAccount(
             accountName: searchedUser?.wallet?.accountName,
             accountNumber: searchedUser?.wallet?.accountNumber,
             financialInstitution: searchedUser?.wallet?.financialInstitution!,
@@ -1483,7 +1486,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
   }
 
   List<Widget> generateBottomSheetItem() {
-    List<Widget> list = [];
+    final List<Widget> list = [];
 
     if (searchedUser?.userName == userBloc.user.userName) {
       list.add(
@@ -1491,7 +1494,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
           title: AppLocalization.of(context)!.createAPost,
           iconData: Icons.add_circle_outlined,
           onTap: () {
-            PermissionType? hasPermission =
+            final PermissionType? hasPermission =
                 userBloc.user.hasWritePermission(ProtectionPermission.blog);
             if (hasPermission == PermissionType.WRITE) {
               Navigator.pop(context);
@@ -1509,7 +1512,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
           title: "Edit Profile",
           iconData: SlydoAppIcon.edit,
           onTap: () async {
-            PermissionType? hasPermission =
+            final PermissionType? hasPermission =
                 userBloc.user.hasWritePermission(ProtectionPermission.profile);
             if (hasPermission == PermissionType.WRITE) {
               Navigator.pop(context);
@@ -1529,7 +1532,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
           title: "Customize Profile",
           iconData: Icons.dashboard_customize_sharp,
           onTap: () async {
-            PermissionType? hasPermission =
+            final PermissionType? hasPermission =
                 userBloc.user.hasWritePermission(ProtectionPermission.profile);
             if (hasPermission == PermissionType.WRITE) {
               var business = '';
@@ -1570,7 +1573,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
             title: "Manage Business",
             iconData: Icons.dashboard_customize_sharp,
             onTap: () async {
-              PermissionType? hasPermission = userBloc.user
+              final PermissionType? hasPermission = userBloc.user
                   .hasWritePermission(ProtectionPermission.profile);
               if (hasPermission == PermissionType.WRITE) {
                 Navigator.pop(context);
@@ -1591,9 +1594,9 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
         iconData: SlydoAppIcon.share,
         onTap: () {
           Navigator.pop(context);
-          String merchantUrl =
+          final String merchantUrl =
               'https://slydo.co/store/${searchedUser?.userName!}';
-          var shareBody = userBloc.user.type != 'User'
+          final shareBody = userBloc.user.type != 'User'
               ? merchantUrl
               : "https://slydo.co/user/${searchedUser?.userName!}";
           Share.share(shareBody, subject: "${searchedUser?.displayName()}");
@@ -1707,7 +1710,8 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
               iconData: SlydoAppIcon.block,
               onTap: () async {
                 Navigator.pop(context);
-                Future<bool?> check = blockUserAlert(context, searchedUser!);
+                final Future<bool?> check =
+                    blockUserAlert(context, searchedUser!);
                 if (check == true) {
                   Navigator.pop(context);
                   Navigator.pop(context);
@@ -1724,7 +1728,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
             iconData: Icons.insert_link_sharp,
             onTap: () async {
               Navigator.pop(context);
-              String termsAndConditionUrl =
+              final String termsAndConditionUrl =
                   "https://slydo.co/store/terms-and-conditions/${searchedUser?.userName}/";
               try {
                 if (!await launchUrl(Uri.parse(termsAndConditionUrl)))
@@ -1763,7 +1767,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
   }
 
   List<Widget> generateBottomSheetItemForManageBusiness() {
-    List<Widget> list = [];
+    final List<Widget> list = [];
 
     if (searchedUser?.userName == userBloc.user.userName) {
       list.add(
@@ -1852,11 +1856,12 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
   }
 
   void sendProfileToUsersInChat() async {
-    List<ChatConversation?> listOfRecipient =
+    final List<ChatConversation?> listOfRecipient =
         await ShareInChat().selectShareCustomer(context);
     debugPrint("Selected users = ${listOfRecipient.length}");
 
-    Map<String, dynamic> itemData = searchedUser?.toJsonToSendInToChat() ?? {};
+    final Map<String, dynamic> itemData =
+        searchedUser?.toJsonToSendInToChat() ?? {};
 
     if (listOfRecipient != null && listOfRecipient.isNotEmpty) {
       for (ChatConversation? recipient in listOfRecipient) {
@@ -1871,7 +1876,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
       {Map<String, dynamic>? itemData,
       required ChatConversation recipientUser,
       String? url}) async {
-    Map<String, dynamic> data = {
+    final Map<String, dynamic> data = {
       "meta_data": messageDecoderWithEmoji(jsonEncode(itemData)),
       "check_id": const Uuid().v4(),
       "conversation_id": recipientUser.conversationId,
@@ -1895,7 +1900,8 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
             userProfile: searchedUser,
             callback: (params) async {
               params..attachment = {"profile": searchedUser?.toJson()};
-              bool data = await YarnAuth().addYarnAndQuestion(params, '', '');
+              final bool data =
+                  await YarnAuth().addYarnAndQuestion(params, '', '');
               if (data) {
                 showToast(message: "Shared in Yarn successfully");
               }

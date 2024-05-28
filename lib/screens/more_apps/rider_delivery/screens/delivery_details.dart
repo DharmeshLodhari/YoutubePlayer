@@ -617,7 +617,8 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
   }
 
   Widget _buildDistanceAndHours() {
-    Duration? duration = riderDeliveryBloc.deliveryDetails?.travelDuration;
+    final Duration? duration =
+        riderDeliveryBloc.deliveryDetails?.travelDuration;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -907,12 +908,12 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
         // riderDeliveryBloc.deliveryDetails?.isDeliveryAccepted = false;
         // riderDeliveryBloc.deliveryDetails?.isDeliveryStarted = true;
         // _initialSheetChildSize = 0.35;
-        Map<String, dynamic> data = {
+        final Map<String, dynamic> data = {
           "order_id": riderDeliveryBloc.deliveryDetails?.orderId,
           "at_pickup_location": true,
           "at_delivery_location": false,
         };
-        NearByLocation atLocation = NearByLocation.fromJson(data);
+        final NearByLocation atLocation = NearByLocation.fromJson(data);
         await _db.insertRiderAtLocation(atLocation);
 
         await riderDeliveryBloc

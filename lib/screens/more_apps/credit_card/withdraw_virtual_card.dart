@@ -167,33 +167,33 @@ class WithdrawVirtualCardState extends State<WithdrawVirtualCard> {
                         const SizedBox(
                           height: 20,
                         ),
-                        canWithdraw(usdCheck!, allCards.availableBalance!)
-                            ? getSubmitButton()
-                            : Container(
-                                child: Center(
-                                    child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 16.0),
-                                        child: Text.rich(TextSpan(
-                                            text: AppLocalization.of(context)!
-                                                .availableFund,
+                        if (canWithdraw(usdCheck!, allCards.availableBalance!))
+                          getSubmitButton()
+                        else
+                          Container(
+                            child: Center(
+                                child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 16.0),
+                                    child: Text.rich(TextSpan(
+                                        text: AppLocalization.of(context)!
+                                            .availableFund,
+                                        style: TextStyle(
+                                            fontSize: 12,
+                                            color: blackFont,
+                                            fontWeight: FontWeight.w600),
+                                        children: <InlineSpan>[
+                                          TextSpan(
+                                            text: formatAsDollar(
+                                                allCards.availableBalance!),
                                             style: TextStyle(
                                                 fontSize: 12,
                                                 color: blackFont,
+                                                fontFamily: "Inter",
                                                 fontWeight: FontWeight.w600),
-                                            children: <InlineSpan>[
-                                              TextSpan(
-                                                text: formatAsDollar(
-                                                    allCards.availableBalance!),
-                                                style: TextStyle(
-                                                    fontSize: 12,
-                                                    color: blackFont,
-                                                    fontFamily: "Inter",
-                                                    fontWeight:
-                                                        FontWeight.w600),
-                                              )
-                                            ])))),
-                              ),
+                                          )
+                                        ])))),
+                          ),
                         const SizedBox(
                           height: 20,
                         ),
@@ -380,31 +380,33 @@ class WithdrawVirtualCardState extends State<WithdrawVirtualCard> {
                         right: 20,
                         child: Column(
                           children: [
-                            cardData.cardBrand == 'Visa'
-                                ? SvgPicture.asset(
-                                    "visa".toSVG(),
-                                    fit: BoxFit.cover,
-                                  )
-                                : SvgPicture.asset(
-                                    "mastercard".toSVG(),
-                                    fit: BoxFit.cover,
-                                  ),
+                            if (cardData.cardBrand == 'Visa')
+                              SvgPicture.asset(
+                                "visa".toSVG(),
+                                fit: BoxFit.cover,
+                              )
+                            else
+                              SvgPicture.asset(
+                                "mastercard".toSVG(),
+                                fit: BoxFit.cover,
+                              ),
                             const SizedBox(width: 5.0),
-                            cardData.cardBrand == 'Visa'
-                                ? SizedBox.shrink()
-                                : Column(
-                                    children: [
-                                      Text(
-                                        'Mastercard',
-                                        style: TextStyle(
-                                          color: white,
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      const SizedBox(width: 5.0),
-                                    ],
+                            if (cardData.cardBrand == 'Visa')
+                              SizedBox.shrink()
+                            else
+                              Column(
+                                children: [
+                                  Text(
+                                    'Mastercard',
+                                    style: TextStyle(
+                                      color: white,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
+                                  const SizedBox(width: 5.0),
+                                ],
+                              ),
                           ],
                         ),
                       ),
@@ -634,12 +636,12 @@ class WithdrawVirtualCardState extends State<WithdrawVirtualCard> {
 
   bool canWithdraw(double enteredAmount, double currentBalance) {
     if (enteredAmount <= 0) {
-      // print("Invalid withdrawal amount: Please enter a positive amount.");
+      // debugPrint("Invalid withdrawal amount: Please enter a positive amount.");
       return false;
     }
 
     if (enteredAmount > currentBalance) {
-      // print("Insufficient balance: You cannot withdraw more than your current balance.");
+      // debugPrint("Insufficient balance: You cannot withdraw more than your current balance.");
       return false;
     }
 

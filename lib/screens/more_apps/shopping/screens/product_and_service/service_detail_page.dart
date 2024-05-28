@@ -137,7 +137,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   }
 
   Future canReviewService() async {
-    Map<String, String> data = {};
+    final Map<String, String> data = {};
     data['provider'] = service?.provider ?? "";
     data['buyer'] = userBloc.user.userName!;
     data['type'] = 'services';
@@ -159,13 +159,13 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
     if (mounted) setState(() {});
 
     await ReviewAuth().fetchServiceReviews(serviceId: serviceId).then((value) {
-      List? tempList =
+      final List? tempList =
           value.containsKey('results') ? value['results'] as List : [];
       value.containsKey('count') ? reviewCount = value["count"] : 0;
       canRate = value['can_rate'];
 
       reviewList = [];
-      tempList.forEach((element) {
+      tempList?.forEach((element) {
         reviewList.add(Review.fromJson(element));
       });
 
@@ -247,13 +247,14 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
       ),
       actions: <Widget>[
         menuBtn(),
-        isValidCustomer
-            ? SizedBox(
-                width: 8,
-              )
-            : Container(),
-        isValidCustomer ? goToCartWidget() : Container(),
-        SizedBox(
+        if (isValidCustomer)
+          const SizedBox(
+            width: 8,
+          )
+        else
+          Container(),
+        if (isValidCustomer) goToCartWidget() else Container(),
+        const SizedBox(
           width: 16,
         ),
       ],
@@ -266,7 +267,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
         context: context,
         builder: (BuildContext context) {
           return Card(
-              shape: RoundedRectangleBorder(
+              shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(20),
                     topRight: Radius.circular(20)),
@@ -274,7 +275,8 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
               color: Colors.white,
               margin: EdgeInsets.zero,
               child: Container(
-                padding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: generateBottomSheetItem(),
@@ -306,7 +308,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
         context: context,
         builder: (BuildContext context) {
           return Card(
-              shape: RoundedRectangleBorder(
+              shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(20),
                     topRight: Radius.circular(20)),
@@ -314,7 +316,8 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
               color: Colors.white,
               margin: EdgeInsets.zero,
               child: Container(
-                padding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: generateBottomSheetItem(),
@@ -324,9 +327,9 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   }
 
   List<Widget> generateBottomSheetItem() {
-    List<Widget> list = [];
+    final List<Widget> list = [];
 
-    PermissionType? hasPermission =
+    final PermissionType? hasPermission =
         userBloc.user.hasWritePermission(ProtectionPermission.product);
 
     list.add(
@@ -336,7 +339,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
         onTap: () async {
           if (hasPermission == PermissionType.WRITE) {
             Navigator.pop(context);
-            var result = await Navigator.of(context).pushNamed(
+            final result = await Navigator.of(context).pushNamed(
               '/edit-service',
               arguments: {
                 "serviceId": serviceId,
@@ -365,7 +368,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
       onTap: () async {
         Navigator.pop(context);
 
-        var shareBody =
+        final shareBody =
             "http://slydo.co/store/${service?.provider}/services/${service?.id}";
         Share.share(
           shareBody,
@@ -423,7 +426,8 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                   "service": service?.toJson().cast<String, dynamic>() ?? {}
                 };
               logger.d(params.toAddMap());
-              bool data = await YarnAuth().addYarnAndQuestion(params, '', '');
+              final bool data =
+                  await YarnAuth().addYarnAndQuestion(params, '', '');
               if (data) {
                 showToast(message: "Shared in Yarn successfully");
               }
@@ -431,16 +435,16 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   }
 
   void sendItemToUsersInChat() async {
-    List<ChatConversation?> listOfRecipient =
+    final List<ChatConversation?> listOfRecipient =
         await ShareInChat().selectShareCustomer(context);
     debugPrint("Selected users = ${listOfRecipient.length}");
 
-    String url = AppConfig.baseUrl +
+    final String url = AppConfig.baseUrl +
         "/api/v1/${service is Product ? "products" : "services"}/" +
         (service?.id ?? "") +
         "/";
 
-    Map<String, dynamic>? itemData =
+    final Map<String, dynamic>? itemData =
         await ShoppingAuthService().getProductOrService(url);
 
     listOfRecipient.forEach((recipient) {
@@ -457,9 +461,9 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
       required ChatConversation recipientUser,
       String? url,
       dynamic item}) async {
-    Map<String, dynamic> data = {
+    final Map<String, dynamic> data = {
       "meta_data": jsonEncode(itemData),
-      "check_id": Uuid().v4(),
+      "check_id": const Uuid().v4(),
       "conversation_id": recipientUser.conversationId,
       "author": userBloc.user.userName,
       "message": url,
@@ -477,7 +481,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
       icon: badges.Badge(
         badgeContent: getBadgeContent(),
         position: badges.BadgePosition.topEnd(end: 0, top: 0),
-        badgeAnimation: badges.BadgeAnimation.rotation(
+        badgeAnimation: const badges.BadgeAnimation.rotation(
           animationDuration: Duration(seconds: 1),
           colorChangeAnimationDuration: Duration(seconds: 1),
           loopAnimation: false,
@@ -488,8 +492,8 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
             shape: badges.BadgeShape.circle,
             badgeColor: naturalGreen,
             padding: basketBloc.basketItems.length == 0
-                ? EdgeInsets.all(0)
-                : EdgeInsets.all(4)),
+                ? const EdgeInsets.all(0)
+                : const EdgeInsets.all(4)),
         child: Center(
           child: Icon(
             SlydoAppIcon.cart,
@@ -588,7 +592,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
     return badges.Badge(
       badgeContent: getBadgeContent(),
       position: badges.BadgePosition.topEnd(end: 6, top: 6),
-      badgeAnimation: badges.BadgeAnimation.rotation(
+      badgeAnimation: const badges.BadgeAnimation.rotation(
         animationDuration: Duration(seconds: 1),
         colorChangeAnimationDuration: Duration(seconds: 1),
         loopAnimation: false,
@@ -599,11 +603,11 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
         shape: badges.BadgeShape.circle,
         badgeColor: naturalGreen,
         padding: basketBloc.basketItems.length == 0
-            ? EdgeInsets.all(0)
-            : EdgeInsets.all(4),
+            ? const EdgeInsets.all(0)
+            : const EdgeInsets.all(4),
       ),
       child: IconButton(
-        icon: Icon(
+        icon: const Icon(
           Icons.shopping_cart,
           color: Colors.white,
         ),
@@ -624,7 +628,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
     }
     return Text(
       getBadgeCount().toString(),
-      style: TextStyle(
+      style: const TextStyle(
           fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold),
     );
   }
@@ -643,15 +647,15 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
       shadowColor: boxShadowTwo,
       margin: EdgeInsets.zero,
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8.0),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8.0),
         child: Row(
           children: <Widget>[
             messageSellerWidget(),
-            SizedBox(
+            const SizedBox(
               width: 8,
             ),
             addToCartWidget(),
-            SizedBox(width: 8),
+            const SizedBox(width: 8),
             _buildPayButtonWidget(),
           ],
         ),
@@ -670,12 +674,12 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
           children: [
             _buildServiceImagesWidgets(),
             Container(
-              padding: EdgeInsets.only(right: 16, left: 16, top: 24),
+              padding: const EdgeInsets.only(right: 16, left: 16, top: 24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   _buildServiceTitleAndPriceWidget(),
-                  SizedBox(
+                  const SizedBox(
                     height: 24,
                   ),
                   Divider(
@@ -683,11 +687,11 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                     color: dividerColor,
                     thickness: 1,
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 12,
                   ),
                   _buildShortInfoWidget(),
-                  SizedBox(
+                  const SizedBox(
                     height: 16,
                   ),
                   Divider(
@@ -695,11 +699,11 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                     color: dividerColor,
                     thickness: 1,
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 12,
                   ),
                   _buildAvailableFromAndShareWidgets(),
-                  SizedBox(
+                  const SizedBox(
                     height: 16,
                   ),
                   Divider(
@@ -707,11 +711,11 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                     color: dividerColor,
                     thickness: 1,
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 12,
                   ),
                   _buildDescriptionWidget(),
-                  SizedBox(
+                  const SizedBox(
                     height: 16,
                   ),
                   Divider(
@@ -719,15 +723,15 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                     color: dividerColor,
                     thickness: 1,
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 10,
                   ),
                   _buildSellerInfoWidget(),
-                  SizedBox(
+                  const SizedBox(
                     height: 10,
                   ),
                   _buildReviewList(),
-                  SizedBox(
+                  const SizedBox(
                     height: 16,
                   ),
                   _buildWriteReview(),
@@ -739,10 +743,13 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
               color: dividerColor,
               thickness: 1,
             ),
-            SizedBox(
+            const SizedBox(
               height: 16,
             ),
-            isOtherItemIsEmpty ? Container() : _buildProviderOtherServices(),
+            if (isOtherItemIsEmpty)
+              Container()
+            else
+              _buildProviderOtherServices(),
             SizedBox(height: isValidCustomer ? 60.0 : 20),
           ],
         ),
@@ -795,7 +802,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                   ),
                 ],
               ),
-              SizedBox(height: 12),
+              const SizedBox(height: 12),
               Column(
                 children: reviewList
                     .map(
@@ -822,7 +829,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
           style: TextStyle(
               color: blackFont, fontSize: 12, fontWeight: FontWeight.bold),
         ),
-        SizedBox(
+        const SizedBox(
           height: 8,
         ),
         Text(
@@ -850,7 +857,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
       children: [
         GestureDetector(
           onTap: () async {
-            var result = await Navigator.of(context).pushNamed(
+            final result = await Navigator.of(context).pushNamed(
               Routes.ADD_REVIEW,
               arguments: {
                 "service": service,
@@ -874,7 +881,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
             ),
           ),
         ),
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
       ],
     );
   }
@@ -892,12 +899,12 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                     fontSize: 12,
                     fontWeight: FontWeight.bold),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 8,
               ),
               ListTile(
                 contentPadding:
-                    EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+                    const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
                 leading: GestureDetector(
                   onTap: () {
                     Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
@@ -943,7 +950,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
 
   Widget _buildServiceImagesWidgets() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 4.0),
+      padding: const EdgeInsets.symmetric(horizontal: 4.0),
       child: imgList?.length == 0
           ? AspectRatio(
               aspectRatio: 1.5,
@@ -959,7 +966,8 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                       child: Container(
                         child: Center(
                           child: ClipRRect(
-                            borderRadius: BorderRadius.all(Radius.circular(10)),
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(10)),
                             child: CachedNetworkImage(
                               placeholder: (context, url) =>
                                   Center(child: CircularLoadingIndicator()),
@@ -1001,8 +1009,9 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                                       Container(
                                         child: Center(
                                           child: ClipRRect(
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(10)),
+                                            borderRadius:
+                                                const BorderRadius.all(
+                                                    Radius.circular(10)),
                                             child: CachedNetworkImage(
                                               placeholder: (context, url) => Center(
                                                   child:
@@ -1031,11 +1040,11 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                             crossAxisAlignment: CrossAxisAlignment.end,
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: imgList!.map((url) {
-                              int index = imgList!.indexOf(url);
+                              final int index = imgList!.indexOf(url);
                               return Container(
                                 width: 5.0,
                                 height: 5.0,
-                                margin: EdgeInsets.symmetric(
+                                margin: const EdgeInsets.symmetric(
                                     vertical: 10.0, horizontal: 2.0),
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
@@ -1070,7 +1079,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
             text: AppLocalization.of(context)!.outOfStock, color: red),
       );
     } else {
-      return SizedBox();
+      return const SizedBox();
     }
   }
 
@@ -1083,7 +1092,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
             text: AppLocalization.of(context)!.outOfStock, color: starYellow),
       );
     }
-    return SizedBox.shrink();
+    return const SizedBox.shrink();
   }
 
   Widget _buildServiceTitleAndPriceWidget() {
@@ -1127,7 +1136,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                   ],
                 ),
               ),
-              SizedBox(height: 5),
+              const SizedBox(height: 5),
               getRating(
                 numberOfRating: service?.rating?.toInt(),
               ),
@@ -1149,7 +1158,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: dividerColor)),
-        padding: EdgeInsets.all(10),
+        padding: const EdgeInsets.all(10),
         child: InkWell(
           child: service?.qrCode == ""
               ? Center(child: CircularLoadingIndicator())
@@ -1187,7 +1196,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
           style: TextStyle(
               color: blackFont, fontSize: 12, fontWeight: FontWeight.bold),
         ),
-        SizedBox(
+        const SizedBox(
           height: 8,
         ),
         Row(
@@ -1217,22 +1226,22 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
           style: TextStyle(
               color: blackFont, fontSize: 12, fontWeight: FontWeight.bold),
         ),
-        SizedBox(
+        const SizedBox(
           height: 8,
         ),
         Container(
-          padding: EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10), color: lightGrey),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              Icon(
+              const Icon(
                 SlydoAppIcon.date,
                 color: Colors.black,
                 size: 16,
               ),
-              SizedBox(
+              const SizedBox(
                 width: 8.0,
               ),
               Text(
@@ -1256,7 +1265,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 20),
+            padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
@@ -1288,14 +1297,14 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
               ],
             ),
           ),
-          SizedBox(height: 12),
+          const SizedBox(height: 12),
           Expanded(
             child: ListView.separated(
-              padding: EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               itemCount: sellersOtherItems.length,
               scrollDirection: Axis.horizontal,
               separatorBuilder: (context, index) {
-                return SizedBox(width: 15);
+                return const SizedBox(width: 15);
               },
               itemBuilder: (context, index) => DisplayService(
                 service: sellersOtherItems[index],
@@ -1344,13 +1353,13 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
 
   void navigateToSendPayment() {
     basketBloc.productOrService.clear();
-    Map<dynamic, dynamic> result = {
+    final Map<dynamic, dynamic> result = {
       "type": 'service',
       "results": service!.toJson()
     };
 
     basketBloc.buyProductOrServiceNow('service', result);
-    NavigationUtil.push(context, screen: CheckoutProductService());
+    NavigationUtil.push(context, screen: const CheckoutProductService());
   }
 
   @override

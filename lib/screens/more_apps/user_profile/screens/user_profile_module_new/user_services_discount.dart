@@ -340,8 +340,7 @@ class _UserServicesDiscountState extends State<UserServicesDiscount> {
           )
         : ListView.builder(
             shrinkWrap: true,
-            padding: EdgeInsets.only(bottom: 15.0),
-            physics: AlwaysScrollableScrollPhysics(),
+            physics: const AlwaysScrollableScrollPhysics(),
             controller: _serviceScrollController,
             itemCount: serviceList.length + 1,
             itemBuilder: (context, index) {

@@ -110,9 +110,9 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
     try {
       currentLocation = await _locationTracker.getLocation();
       double? accuracy = currentLocation.accuracy;
-      print('Location Accuracy: $accuracy meters');
+      debugPrint('Location Accuracy: $accuracy meters');
     } catch (e) {
-      print('Error getting location: $e');
+      debugPrint('Error getting location: $e');
     }
     // final LocationData location = await _locationTracker.getLocation();
     return currentLocation;
@@ -505,7 +505,7 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
     //     polylineCoordinates.add(LatLng(point.latitude, point.longitude));
     //   });
     // } else {
-    //   print(result.errorMessage);
+    //   debugPrint(result.errorMessage);
     // }
     // return polylineCoordinates;
   }

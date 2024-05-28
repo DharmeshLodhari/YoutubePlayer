@@ -314,9 +314,9 @@ class _PaymentLinkSearchState extends State<PaymentLinkSearch> {
     return Container(
       child: Column(
         children: [
-          SizedBox(height: 6),
+          const SizedBox(height: 6),
           searchBox(),
-          SizedBox(height: 12),
+          const SizedBox(height: 12),
           isLoading
               ? Shimmer.fromColors(
                   baseColor: Colors.white,
@@ -324,8 +324,9 @@ class _PaymentLinkSearchState extends State<PaymentLinkSearch> {
                   child: GridView.builder(
                     padding: const EdgeInsets.symmetric(horizontal: 15),
                     shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate:
+                        const SliverGridDelegateWithMaxCrossAxisExtent(
                       mainAxisSpacing: 14,
                       mainAxisExtent: 180,
                       crossAxisSpacing: 15,
@@ -342,7 +343,7 @@ class _PaymentLinkSearchState extends State<PaymentLinkSearch> {
                     },
                   ),
                 )
-              : SizedBox.shrink(),
+              : const SizedBox.shrink(),
           isSearchIsEmpty
               ? Expanded(
                   child: NoItemInList(
@@ -375,7 +376,7 @@ class _PaymentLinkSearchState extends State<PaymentLinkSearch> {
           ),
         ),
         child: TextFormField(
-          key: ValueKey('Search'),
+          key: const ValueKey('Search'),
           controller: searchController,
           onChanged: (value) {
             if (value.length >= 3) {
@@ -409,8 +410,8 @@ class _PaymentLinkSearchState extends State<PaymentLinkSearch> {
             hintText: "",
             fillColor: Colors.white,
             filled: true,
-            contentPadding: EdgeInsets.symmetric(vertical: 10),
-            prefix: Padding(
+            contentPadding: const EdgeInsets.symmetric(vertical: 10),
+            prefix: const Padding(
               padding: EdgeInsets.only(left: 16),
             ),
             enabledBorder: OutlineInputBorder(

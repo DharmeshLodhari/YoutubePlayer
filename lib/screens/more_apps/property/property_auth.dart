@@ -7,12 +7,18 @@ import 'models/user_detail_item/PropertyDetailItem.dart';
 
 class PropertyAuthService extends AuthService {
   Future<List<String>> getLocation() async {
-    List<String> list = ["Lagos", "Kano", "Ibadan", "Benin City", "Abuja"];
+    final List<String> list = [
+      "Lagos",
+      "Kano",
+      "Ibadan",
+      "Benin City",
+      "Abuja"
+    ];
     return list;
   }
 
   Future<List<PropertyItem>> getPropertyList() async {
-    var propertyItem = List.generate(
+    final propertyItem = List.generate(
       10,
       (index) => PropertyItem.fromJson({
         "name": "Lake side cottage",
@@ -30,12 +36,12 @@ class PropertyAuthService extends AuthService {
         "rating": "7.8"
       }),
     );
-    await Future.delayed(Duration(seconds: 1));
+    await Future.delayed(const Duration(seconds: 1));
     return propertyItem;
   }
 
   Future<List<PartialPropertyItem>> getPartialPropertyList() async {
-    List<String> propertyImages = [
+    final List<String> propertyImages = [
       "https://rawcdn.githack.com/BlackStriker99/slydo-mock-data/c6495b0b5b6307d708279b6cc055caaec073c590/ezgif-4-2a367168ec0f.gif",
       "https://rawcdn.githack.com/BlackStriker99/slydo-mock-data/c6495b0b5b6307d708279b6cc055caaec073c590/ezgif-4-844078c9fe52.gif",
       "https://media.istockphoto.com/photos/3d-rendering-modern-luxury-bedroom-suite-and-bathroom-picture-id928431714?k=6&m=928431714&s=612x612&w=0&h=IBnf0aE9zEmsaJ3nLep6UmK4u-KYQPdEQa6LY30Ivn4=",
@@ -43,7 +49,7 @@ class PropertyAuthService extends AuthService {
       "https://blisssaigon.com/wp-content/uploads/2019/10/iwood-R5v8Xtc0ecg-unsplash-1.jpg"
     ];
 
-    List<PartialPropertyItem> propertyItem = propertyImages
+    final List<PartialPropertyItem> propertyItem = propertyImages
         .map(
           (image) => PartialPropertyItem.fromJson({
             "name": "Lake side cottage",
@@ -54,14 +60,20 @@ class PropertyAuthService extends AuthService {
           }),
         )
         .toList();
-    await Future.delayed(Duration(seconds: 1));
+    await Future.delayed(const Duration(seconds: 1));
     return propertyItem;
   }
 
   Future<List<CityData>> getCityList() async {
-    List<String> city = ["Lagos", "Kano", "Ibadan", "Benin City", "Abuja"];
+    final List<String> city = [
+      "Lagos",
+      "Kano",
+      "Ibadan",
+      "Benin City",
+      "Abuja"
+    ];
 
-    List<CityData> cityItem = city
+    final List<CityData> cityItem = city
         .map(
           (name) => CityData.fromJson({
             "name": name,
@@ -70,12 +82,12 @@ class PropertyAuthService extends AuthService {
           }),
         )
         .toList();
-    await Future.delayed(Duration(seconds: 1));
+    await Future.delayed(const Duration(seconds: 1));
     return cityItem;
   }
 
   Future<PropertyDetailItem> getProperty() async {
-    var dummyData = {
+    final dummyData = {
       "name": "Lake side cottage",
       "short_detail": "3 beds • 2 bath • 1 livingroom",
       "owner_name": "Bond street dojo",
@@ -194,13 +206,13 @@ class PropertyAuthService extends AuthService {
           "https://rawcdn.githack.com/BlackStriker99/slydo-mock-data/f8001e9a7d13cfa1db96d85e7467c1a87ba73f0b/y2mate.com - Cinematic Real Estate Video in 4K_480p.mp4"
     };
 
-    PropertyDetailItem property = PropertyDetailItem.fromJson(dummyData);
-    await Future.delayed(Duration(seconds: 1));
+    final PropertyDetailItem property = PropertyDetailItem.fromJson(dummyData);
+    await Future.delayed(const Duration(seconds: 1));
     return property;
   }
 
   Future<void> addToWishList() async {
-    await Future.delayed(Duration(milliseconds: 500));
+    await Future.delayed(const Duration(milliseconds: 500));
     return;
   }
 }

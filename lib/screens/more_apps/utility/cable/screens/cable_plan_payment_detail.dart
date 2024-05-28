@@ -81,18 +81,18 @@ class _CablePlanPaymentDetailState extends State<CablePlanPaymentDetail> {
           ),
           Container(
             height: 470,
-            padding: EdgeInsets.symmetric(horizontal: 24),
+            padding: const EdgeInsets.symmetric(horizontal: 24),
             child: Column(
               children: [
-                SizedBox(
+                const SizedBox(
                   height: 30,
                 ),
                 providerInfo(),
-                SizedBox(
+                const SizedBox(
                   height: 15,
                 ),
                 MySeparator(color: dividerColor),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
                 Expanded(child: paymentInfo()),
@@ -113,7 +113,7 @@ class _CablePlanPaymentDetailState extends State<CablePlanPaymentDetail> {
           height: 80,
           width: 80,
         ),
-        SizedBox(
+        const SizedBox(
           width: 8,
         ),
         Column(
@@ -121,16 +121,16 @@ class _CablePlanPaymentDetailState extends State<CablePlanPaymentDetail> {
           children: [
             Text(
               provider['name'],
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
             ),
-            SizedBox(
+            const SizedBox(
               height: 2,
             ),
             Text(
               plan!.name!,
-              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
             ),
-            SizedBox(
+            const SizedBox(
               height: 8,
             ),
           ],
@@ -142,17 +142,17 @@ class _CablePlanPaymentDetailState extends State<CablePlanPaymentDetail> {
   Widget paymentInfo() {
     return Column(children: [
       getAmountTile(),
-      Expanded(
+      const Expanded(
           child: SizedBox(
         height: 10,
       )),
       getDateAndTime(),
-      Expanded(
+      const Expanded(
           child: SizedBox(
         height: 10,
       )),
       getStatus(),
-      Expanded(
+      const Expanded(
           child: SizedBox(
         height: 10,
       )),
@@ -231,7 +231,7 @@ class _CablePlanPaymentDetailState extends State<CablePlanPaymentDetail> {
             fontSize: 14, fontWeight: FontWeight.w400, color: blackFont),
       ),
       subtitle: Container(
-        padding: EdgeInsets.only(top: 4),
+        padding: const EdgeInsets.only(top: 4),
         child: Row(
           children: [
             Container(
@@ -239,7 +239,7 @@ class _CablePlanPaymentDetailState extends State<CablePlanPaymentDetail> {
                 borderRadius: BorderRadius.circular(8),
                 color: navyBlue.withOpacity(0.1),
               ),
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
               child: Text(
                 "Complete",
                 style: TextStyle(

@@ -253,20 +253,22 @@ class _PutMoneyInEnvelopeState extends State<PutMoneyInEnvelope> {
                                     const SizedBox(
                                       height: 20,
                                     ),
-                                    errorMessage == ""
-                                        ? Container()
-                                        : Text(
-                                            errorMessage,
-                                            style: TextStyle(
-                                                color: mateRed,
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 16),
-                                          ),
-                                    errorMessage == ""
-                                        ? Container()
-                                        : const SizedBox(
-                                            height: 20,
-                                          ),
+                                    if (errorMessage == "")
+                                      Container()
+                                    else
+                                      Text(
+                                        errorMessage,
+                                        style: TextStyle(
+                                            color: mateRed,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16),
+                                      ),
+                                    if (errorMessage == "")
+                                      Container()
+                                    else
+                                      const SizedBox(
+                                        height: 20,
+                                      ),
                                   ],
                                 ),
                               ),

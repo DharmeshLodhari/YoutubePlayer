@@ -50,11 +50,11 @@ class _TakeDeliveryProofState extends State<TakeDeliveryProof> {
       if (cameras.length > 0) {
         initCamera(cameras[0]);
       } else {
-        print("No camera available");
+        debugPrint("No camera available");
       }
     }).catchError((err) {
       // 3
-      print('Error: $err.code\nError Message: $err.message');
+      debugPrint('Error: $err.code\nError Message: $err.message');
     });
   }
 
@@ -70,10 +70,10 @@ class _TakeDeliveryProofState extends State<TakeDeliveryProof> {
       if (e is CameraException) {
         switch (e.code) {
           case 'CameraAccessDenied':
-            print('User denied camera access.');
+            debugPrint('User denied camera access.');
             break;
           default:
-            print('Handle other errors.');
+            debugPrint('Handle other errors.');
             break;
         }
       }
@@ -118,11 +118,11 @@ class _TakeDeliveryProofState extends State<TakeDeliveryProof> {
               if (cameras.length > 0) {
                 initCamera(cameras[_isRearCameraSelected ? 0 : 1]);
               } else {
-                print("No camera available");
+                debugPrint("No camera available");
               }
             }).catchError((err) {
               // 3
-              print('Error: $err.code\nError Message: $err.message');
+              debugPrint('Error: $err.code\nError Message: $err.message');
             });
           },
         ),
@@ -148,7 +148,7 @@ class _TakeDeliveryProofState extends State<TakeDeliveryProof> {
       onPressed: () {
         Navigator.pop(context, "back pressed");
       },
-      icon: Icon(
+      icon: const Icon(
         Icons.keyboard_arrow_left,
         size: 20,
         color: Colors.white,
@@ -164,7 +164,7 @@ class _TakeDeliveryProofState extends State<TakeDeliveryProof> {
               ? CameraPreview(_cameraController!)
               : Container(
                   color: Colors.black,
-                  child: Center(child: CircularProgressIndicator())),
+                  child: const Center(child: CircularProgressIndicator())),
           Align(
             alignment: Alignment.bottomCenter,
             child: Container(
@@ -173,16 +173,17 @@ class _TakeDeliveryProofState extends State<TakeDeliveryProof> {
               child: Center(
                 child: Column(
                   children: [
+                    // ignore: prefer_if_elements_to_conditional_expressions
                     videoTimer != 4
                         ? Text(
                             videoTimer.toString(),
-                            style: TextStyle(
+                            style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 18,
                                 fontWeight: FontWeight.w600),
                           )
-                        : SizedBox.shrink(),
-                    SizedBox(height: 10),
+                        : const SizedBox.shrink(),
+                    const SizedBox(height: 10),
                     GestureDetector(
                       onTap: takePhoto,
                       onLongPressStart: mediaCaptured()
@@ -246,7 +247,7 @@ class _TakeDeliveryProofState extends State<TakeDeliveryProof> {
 
     try {
       _cameraController?.startVideoRecording();
-      timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      timer = Timer.periodic(const Duration(seconds: 1), (timer) {
         if (mounted) {
           setState(() {
             videoTimer--;

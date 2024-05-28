@@ -44,7 +44,7 @@ class AskReplyView extends StatelessWidget {
               child: Container(
                 height: 24,
                 width: 24,
-                decoration: BoxDecoration(shape: BoxShape.circle),
+                decoration: const BoxDecoration(shape: BoxShape.circle),
                 child: ClipOval(
                   child: CachedNetworkImage(
                     imageUrl: replyCommentDetail!.authorAvatar!,
@@ -54,7 +54,7 @@ class AskReplyView extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               width: 10,
             ),
           ],
@@ -81,15 +81,15 @@ class AskReplyView extends StatelessWidget {
                 ],
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 3,
             ),
             _buildRepliedText(),
-            SizedBox(
+            const SizedBox(
               height: 15,
             ),
             _buildCommentDescription(),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
             _buildTopActions(),
@@ -102,7 +102,7 @@ class AskReplyView extends StatelessWidget {
               context: context,
               builder: (BuildContext context) {
                 return Card(
-                  shape: RoundedRectangleBorder(
+                  shape: const RoundedRectangleBorder(
                     borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(20),
                         topRight: Radius.circular(20)),
@@ -117,7 +117,7 @@ class AskReplyView extends StatelessWidget {
               },
             );
           },
-          child: Icon(
+          child: const Icon(
             Icons.more_horiz_rounded,
             color: Color(0xFF4B545A),
           ),

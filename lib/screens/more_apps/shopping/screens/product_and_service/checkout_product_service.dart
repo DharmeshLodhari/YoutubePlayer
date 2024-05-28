@@ -43,7 +43,8 @@ class _CheckoutProductServiceState extends State<CheckoutProductService> {
   void initState() {
     super.initState();
 
-    BasketBloc basketBloc = Provider.of<BasketBloc>(context, listen: false);
+    final BasketBloc basketBloc =
+        Provider.of<BasketBloc>(context, listen: false);
     basketBloc.orderTotalProductService = 0;
     basketBloc.totalShippingCost = 0;
   }
@@ -115,13 +116,13 @@ class _CheckoutProductServiceState extends State<CheckoutProductService> {
                 fontWeight: FontWeight.w600,
               ),
             ),
-            SizedBox(height: 14),
+            const SizedBox(height: 14),
             dropDownPickItemWidget(
               label: 'Merchant',
               selectedItem: merchantFullName,
               onTap: () {},
             ),
-            SizedBox(height: 18),
+            const SizedBox(height: 18),
             Visibility(
               visible: merchantFullName != null,
               child: dropDownPickItemWidget(
@@ -130,18 +131,19 @@ class _CheckoutProductServiceState extends State<CheckoutProductService> {
                 onTap: () => pickDeliveryOptions(),
               ),
             ),
-            SizedBox(height: 18),
-            shippingOptionsLoading
-                ? Center(child: CircularLoadingIndicator())
-                : Visibility(
-                    visible: shippingOptions.isNotEmpty,
-                    child: dropDownPickItemWidget(
-                      label: 'Shipping Options',
-                      onTap: () => pickShippingOptions(),
-                      selectedItem: selectedShippingOptionName,
-                    ),
-                  ),
-            SizedBox(height: 18),
+            const SizedBox(height: 18),
+            if (shippingOptionsLoading)
+              Center(child: CircularLoadingIndicator())
+            else
+              Visibility(
+                visible: shippingOptions.isNotEmpty,
+                child: dropDownPickItemWidget(
+                  label: 'Shipping Options',
+                  onTap: () => pickShippingOptions(),
+                  selectedItem: selectedShippingOptionName,
+                ),
+              ),
+            const SizedBox(height: 18),
             Divider(thickness: 0.3, color: blackFont),
             Visibility(
               visible: merchantFullName != null,
@@ -174,7 +176,7 @@ class _CheckoutProductServiceState extends State<CheckoutProductService> {
                     title: 'Order total',
                     amount: moneyDisplayNormalizer(getOrderTotalPrice()),
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                 ],
               ),
             ),
@@ -188,7 +190,7 @@ class _CheckoutProductServiceState extends State<CheckoutProductService> {
   int getOrderTotalPrice() {
     int? totalPrice;
 
-    Map<dynamic, dynamic>? variant = getVariantAsMap();
+    final Map<dynamic, dynamic>? variant = getVariantAsMap();
 
     if (deliveryOption == 'Pickup') {
       totalPrice = variant!['id'].isNotEmpty
@@ -213,7 +215,7 @@ class _CheckoutProductServiceState extends State<CheckoutProductService> {
     for (var product in basketBloc.productOrService) {
       // Access the 'key' in the outer map
       if (product.containsKey('results')) {
-        var results = product['variant'];
+        final results = product['variant'];
         variant = results;
       }
     }
@@ -226,7 +228,7 @@ class _CheckoutProductServiceState extends State<CheckoutProductService> {
     for (var product in basketBloc.productOrService) {
       // Access the 'key' in the outer map
       if (product.containsKey('results')) {
-        var results = product['add_ons'];
+        final results = product['add_ons'];
         variant = results;
       }
     }
@@ -234,8 +236,8 @@ class _CheckoutProductServiceState extends State<CheckoutProductService> {
   }
 
   getSubTotalPrice() {
-    Map<dynamic, dynamic>? variant = getVariantAsMap();
-    Map<dynamic, dynamic>? addOn = getAddOnAsMap();
+    final Map<dynamic, dynamic>? variant = getVariantAsMap();
+    final Map<dynamic, dynamic>? addOn = getAddOnAsMap();
 
     if (variant!['id'] != null && variant['id'].isNotEmpty) {
       return int.parse(variant['current_price'].toString());
@@ -299,7 +301,7 @@ class _CheckoutProductServiceState extends State<CheckoutProductService> {
       } else if (shippingOption != null) {
         return getCurvedButton();
       }
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     } else {
       if (merchantFullName != null &&
           deliveryOption != null &&
@@ -308,7 +310,7 @@ class _CheckoutProductServiceState extends State<CheckoutProductService> {
       }
     }
 
-    return SizedBox.shrink();
+    return const SizedBox.shrink();
   }
 
   Widget getCurvedButton() {
@@ -341,7 +343,7 @@ class _CheckoutProductServiceState extends State<CheckoutProductService> {
   }
 
   pickDeliveryOptions() async {
-    String? pickedDeliveryOption = await showPickItemDialog<String>(
+    final String? pickedDeliveryOption = await showPickItemDialog<String>(
       context: context,
       items: deliveryOptions,
       selectedItem: deliveryOption,
@@ -385,12 +387,12 @@ class _CheckoutProductServiceState extends State<CheckoutProductService> {
   void selectCategory() async {}
 
   pickShippingOptions() async {
-    ShippingOptionsModel? pickedShippingOption =
+    final ShippingOptionsModel? pickedShippingOption =
         await showDialog<ShippingOptionsModel>(
             context: context,
             builder: (context) => AlertDialog(
                   insetPadding:
-                      EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
                   contentPadding: EdgeInsets.zero,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10)),

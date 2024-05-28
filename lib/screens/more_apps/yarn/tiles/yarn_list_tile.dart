@@ -83,7 +83,7 @@ class _YarnTileState extends State<YarnTile> {
       // widget.yarn.body =
       //     'Read this https://www.simplilearn.com/building-career-in-mobile-app-development-article';
 
-      Map<String, dynamic> linkData =
+      final Map<String, dynamic> linkData =
           detectLinkInText(messageDecoderWithEmoji(widget.yarn.body)!);
 
       if (linkData["hasLink"]) {
@@ -152,97 +152,98 @@ class _YarnTileState extends State<YarnTile> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildUserInfoRow(),
-        SizedBox(
+        const SizedBox(
           height: 4,
         ),
         if (shouldShowYarnText() == true) ...[
           if (widget.yarn.body.toString().isNotEmpty) ...[
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
             _buildPostDescription(),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
           ]
         ] else
-          SizedBox(
+          const SizedBox(
             height: 8,
           ),
         if (isMediaPresent) ...[
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           getDisplayWidget(_buildImagesRow),
-          SizedBox(
+          const SizedBox(
             height: 8,
           ),
         ],
         if (isAttachmentPresent &&
             widget.yarn.attachment != null &&
             widget.yarn.attachment?.isEmpty == false) ...[
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           getDisplayWidget(_buildAttachment),
-          SizedBox(
+          const SizedBox(
             height: 8,
           ),
         ],
-        SizedBox(
+        const SizedBox(
           height: 8,
         ),
         if (isReYarnPresent && widget.yarn.reYarn != null) ...[
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           getDisplayWidget(_buildReYarnTile),
-          SizedBox(
+          const SizedBox(
             height: 8,
           ),
         ],
-        widget.yarn.factChecked == true
-            ? _buildFactCheckWidget()
-            : SizedBox.shrink(),
-        SizedBox(height: 6),
+        if (widget.yarn.factChecked == true)
+          _buildFactCheckWidget()
+        else
+          const SizedBox.shrink(),
+        const SizedBox(height: 6),
         _buildTopActions(),
       ],
     );
   }
 
   Widget _buildUserInfoRow() {
-    var author = messageDecoderWithEmoji(widget.yarn.authorName ?? "") ?? '';
+    final author = messageDecoderWithEmoji(widget.yarn.authorName ?? "") ?? '';
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(
+        const SizedBox(
           height: 4,
         ),
         if (widget.yarn.category != null && widget.yarn.reYarn != null) ...[
           _buildCategoryTypeChip(),
-          SizedBox(
+          const SizedBox(
             height: 8,
           ),
         ] else if (widget.yarn.category != null) ...[
           _buildCategoryTypeChip(),
-          SizedBox(
+          const SizedBox(
             height: 8,
           ),
         ] else if (widget.yarn.reYarn != null) ...[
           _checkCategoryTypeChipReyarn(),
-          SizedBox(
+          const SizedBox(
             height: 8,
           ),
         ],
         if (widget.yarn.isQuestion) ...[
           _buildPostTitle(),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
         ],
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildUserAvatar(),
-            SizedBox(
+            const SizedBox(
               width: 10,
             ),
             Expanded(
@@ -264,7 +265,7 @@ class _YarnTileState extends State<YarnTile> {
                               color: yarnBlack,
                               fontWeight: FontWeight.w700),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 4,
                         ),
                         ClipOval(
@@ -274,7 +275,7 @@ class _YarnTileState extends State<YarnTile> {
                             color: yarnBlack,
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 4,
                         ),
                         Expanded(
@@ -309,7 +310,7 @@ class _YarnTileState extends State<YarnTile> {
                   context: context,
                   builder: (BuildContext context) {
                     return Card(
-                      shape: RoundedRectangleBorder(
+                      shape: const RoundedRectangleBorder(
                         borderRadius: BorderRadius.only(
                             topLeft: Radius.circular(20),
                             topRight: Radius.circular(20)),
@@ -366,11 +367,11 @@ class _YarnTileState extends State<YarnTile> {
   }
 
   Widget _buildCategoryTypeChip() {
-    List<UserFollowers> viewers = [];
+    final List<UserFollowers> viewers = [];
 
     if (widget.yarn.viewersAvatars != null) {
       for (ViewersAvatars avatars in widget.yarn.viewersAvatars!) {
-        UserFollowers follower = UserFollowers(avatar: avatars.avatar!);
+        final UserFollowers follower = UserFollowers(avatar: avatars.avatar!);
         viewers.add(follower);
       }
     }
@@ -400,7 +401,7 @@ class _YarnTileState extends State<YarnTile> {
           );
         },
         child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
             color: yarnBlack,
@@ -413,7 +414,7 @@ class _YarnTileState extends State<YarnTile> {
         ),
       );
     } else {
-      return SizedBox();
+      return const SizedBox();
     }
   }
 
@@ -429,7 +430,7 @@ class _YarnTileState extends State<YarnTile> {
           );
         },
         child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
             color: yarnBlack,
@@ -442,7 +443,7 @@ class _YarnTileState extends State<YarnTile> {
         ),
       );
     } else {
-      return SizedBox();
+      return const SizedBox();
     }
   }
 
@@ -477,18 +478,18 @@ class _YarnTileState extends State<YarnTile> {
   Widget _buildAttachment() {
     Widget childWidget;
 
-    String? attachmentType = widget.yarn.attachmentType;
+    final String? attachmentType = widget.yarn.attachmentType;
 
     switch (attachmentType) {
       case 'service':
-        Service service = Service.fromJson(widget.yarn.attachment);
+        final Service service = Service.fromJson(widget.yarn.attachment);
         childWidget = YarnServiceTile(
           service: service,
         );
         break;
 
       case 'product':
-        Product product = Product.fromJson(widget.yarn.attachment);
+        final Product product = Product.fromJson(widget.yarn.attachment);
         childWidget = YarnProductTile(
           product: product,
         );
@@ -496,7 +497,7 @@ class _YarnTileState extends State<YarnTile> {
         break;
 
       case 'blog':
-        UserPost post = UserPost.fromJson(widget.yarn.attachment);
+        final UserPost post = UserPost.fromJson(widget.yarn.attachment);
         childWidget = YarnBlogPostTile(
           post: post,
           showAuthorDetails: true,
@@ -505,7 +506,7 @@ class _YarnTileState extends State<YarnTile> {
         break;
 
       case 'profile':
-        CustomerProfile customerProfile =
+        final CustomerProfile customerProfile =
             CustomerProfile.fromJson(widget.yarn.attachment ?? {});
 
         childWidget = YarnCustomerPostTile(
@@ -516,7 +517,8 @@ class _YarnTileState extends State<YarnTile> {
 
         break;
       case 'job':
-        JobModel jobModel = JobModel.fromJson(widget.yarn.attachment ?? {});
+        final JobModel jobModel =
+            JobModel.fromJson(widget.yarn.attachment ?? {});
         childWidget = GestureDetector(
             onTap: () {
               userBloc.user.userName == jobModel.owner
@@ -537,7 +539,7 @@ class _YarnTileState extends State<YarnTile> {
         break;
 
       default:
-        childWidget = SizedBox();
+        childWidget = const SizedBox();
 
         break;
     }
@@ -555,7 +557,7 @@ class _YarnTileState extends State<YarnTile> {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
+          const SizedBox(
             height: 5,
           ),
           YarnSmartText(
@@ -575,7 +577,7 @@ class _YarnTileState extends State<YarnTile> {
               });
             },
           ),
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           Container(
@@ -601,8 +603,8 @@ class _YarnTileState extends State<YarnTile> {
                       launchUrl(Uri.parse(linkToBePreview!));
                     },
                     child: Container(
-                      margin:
-                          EdgeInsets.only(left: 10.0, top: 10.0, bottom: 10.0),
+                      margin: const EdgeInsets.only(
+                          left: 10.0, top: 10.0, bottom: 10.0),
                       child: Text(
                         linkToBePreview!,
                         maxLines: 1,
@@ -632,7 +634,7 @@ class _YarnTileState extends State<YarnTile> {
                     color: Colors.white,
                   ),
                   padding: const EdgeInsets.all(10),
-                  margin: EdgeInsets.only(bottom: 4, top: 8),
+                  margin: const EdgeInsets.only(bottom: 4, top: 8),
                   child: Column(
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -675,7 +677,7 @@ class _YarnTileState extends State<YarnTile> {
 
   Widget _buildFactCheckWidget() {
     return Container(
-      padding: EdgeInsets.all(5),
+      padding: const EdgeInsets.all(5),
       //margin: EdgeInsets.only(right: 64),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16.5),
@@ -686,10 +688,10 @@ class _YarnTileState extends State<YarnTile> {
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           SvgPicture.asset('assets/images/yarn/yell_icon.svg'),
-          SizedBox(
+          const SizedBox(
             width: 2,
           ),
-          Text(
+          const Text(
             'We doubt the information in the Yarn is correct.',
             style: TextStyle(
                 color: Color.fromARGB(255, 187, 118, 27), fontSize: 10),
@@ -702,7 +704,7 @@ class _YarnTileState extends State<YarnTile> {
   Widget _buildSensitiveContentWidget() {
     return Container(
       width: MediaQuery.of(context).size.width,
-      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 18),
+      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 18),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(15),
           border: Border.all(color: deepPink),
@@ -715,7 +717,7 @@ class _YarnTileState extends State<YarnTile> {
             style: TextStyle(
                 color: blackFont, fontSize: 13, fontWeight: FontWeight.w600),
           ),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
           Text(
@@ -723,7 +725,7 @@ class _YarnTileState extends State<YarnTile> {
             style: TextStyle(
                 color: blackFont, fontSize: 12, fontWeight: FontWeight.w400),
           ),
-          SizedBox(
+          const SizedBox(
             height: 15,
           ),
           Row(
@@ -736,7 +738,7 @@ class _YarnTileState extends State<YarnTile> {
                   });
                 },
               ),
-              SizedBox(
+              const SizedBox(
                 width: 10,
               ),
               clickWidget(
@@ -758,11 +760,11 @@ class _YarnTileState extends State<YarnTile> {
   Widget _buildAdultContentWidget() {
     return Container(
       width: MediaQuery.of(context).size.width,
-      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 18),
+      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 18),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(15),
-          border: Border.all(color: Color.fromARGB(255, 187, 118, 27)),
-          color: Color.fromARGB(255, 249, 242, 222)),
+          border: Border.all(color: const Color.fromARGB(255, 187, 118, 27)),
+          color: const Color.fromARGB(255, 249, 242, 222)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -771,7 +773,7 @@ class _YarnTileState extends State<YarnTile> {
             style: TextStyle(
                 color: blackFont, fontSize: 13, fontWeight: FontWeight.w600),
           ),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
           Text(
@@ -779,7 +781,7 @@ class _YarnTileState extends State<YarnTile> {
             style: TextStyle(
                 color: blackFont, fontSize: 12, fontWeight: FontWeight.w400),
           ),
-          SizedBox(
+          const SizedBox(
             height: 15,
           ),
           Row(
@@ -792,7 +794,7 @@ class _YarnTileState extends State<YarnTile> {
                   });
                 },
               ),
-              SizedBox(
+              const SizedBox(
                 width: 10,
               ),
               clickWidget(
@@ -826,7 +828,7 @@ class _YarnTileState extends State<YarnTile> {
   Widget clickWidget({String? text, Function()? onClick}) => GestureDetector(
         onTap: onClick,
         child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 14, vertical: 5),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(15), color: blackFont),
           child: Text(

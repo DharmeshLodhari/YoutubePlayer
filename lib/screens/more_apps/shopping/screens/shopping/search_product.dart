@@ -118,10 +118,10 @@ class _SearchProductState extends State<SearchProduct> {
           isLoading = true;
           setState(() {});
         }
-        String url = widget.arguments != null
+        final String url = widget.arguments != null
             ? "&${widget.arguments?.keys.first}=${widget.arguments?.values.first}"
             : "";
-        Map<String, dynamic>? result =
+        final Map<String, dynamic>? result =
             await ShoppingAuthService().searchUsersProductsInSuperStore(
           next,
           previous,
@@ -152,7 +152,7 @@ class _SearchProductState extends State<SearchProduct> {
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
-        List? tempList = result['results'];
+        final List? tempList = result['results'];
         debugPrint('TEMP LIST --> $tempList');
         if (mounted) {
           isLoading = false;
@@ -348,8 +348,8 @@ class _SearchProductState extends State<SearchProduct> {
                 _refreshList();
                 return;
               }
-              String firstWord = newValue?.split(' ')[0] ?? "";
-              String secondWord = newValue?.split(' ')[1] ?? "";
+              final String firstWord = newValue?.split(' ')[0] ?? "";
+              final String secondWord = newValue?.split(' ')[1] ?? "";
               sortBy = "$firstWord-$secondWord".toLowerCase();
 
               setState(() {
@@ -602,7 +602,8 @@ class _SearchProductState extends State<SearchProduct> {
                     shrinkWrap: true,
                     itemCount: productCategories?.length,
                     itemBuilder: (context, index) {
-                      ProductCategory category = productCategories![index];
+                      final ProductCategory category =
+                          productCategories![index];
                       return CheckboxListTile(
                         value: categoryCheckMark[category.name] ?? false,
                         onChanged: (isChecked) {

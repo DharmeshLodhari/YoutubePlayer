@@ -171,7 +171,7 @@ Future<bool?> showDialogBoxWithImage({
     title: title,
     desc: description,
     image: image,
-    style: AlertStyle(
+    style: const AlertStyle(
       isOverlayTapDismiss: true,
       isCloseButton: true,
     ),
@@ -208,7 +208,7 @@ Future<bool?> showDialogBoxWithImageWithOneAction({
     title: title,
     desc: description,
     image: image,
-    style: AlertStyle(
+    style: const AlertStyle(
       isOverlayTapDismiss: true,
       isCloseButton: true,
     ),
@@ -241,7 +241,7 @@ Future<bool?> showDialogBoxWithImageForNudge({
     title: title,
     desc: description,
     image: image,
-    style: AlertStyle(
+    style: const AlertStyle(
       isOverlayTapDismiss: true,
       isCloseButton: true,
     ),
@@ -417,14 +417,14 @@ Widget dropDownPickItemWidget(
           fontFamily: "Inter",
         ),
       ),
-      SizedBox(height: 5),
+      const SizedBox(height: 5),
       Card(
         elevation: 0,
         color: Colors.white,
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
             side: BorderSide(color: greyBorderColor)),
-        margin: EdgeInsets.all(0),
+        margin: const EdgeInsets.all(0),
         borderOnForeground: true,
         child: ListTile(
           dense: true,
@@ -462,7 +462,7 @@ Future<T?> showPickItemDialog<T>({
   return await showDialog<T>(
     context: context,
     builder: (context) => AlertDialog(
-      insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+      insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
       contentPadding: EdgeInsets.zero,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       content: Container(
@@ -541,7 +541,7 @@ void showSwipeHintCard({required BuildContext context}) {
     context: context,
     builder: (context) => Dialog(
       elevation: 0,
-      insetPadding: EdgeInsets.symmetric(horizontal: 20),
+      insetPadding: const EdgeInsets.symmetric(horizontal: 20),
       child: Container(
         width: MediaQuery.of(context).size.width,
         child: Image.asset(
@@ -558,7 +558,7 @@ void showHoldHintCard({required BuildContext context}) {
     context: context,
     builder: (context) => Dialog(
       elevation: 0,
-      insetPadding: EdgeInsets.symmetric(horizontal: 20),
+      insetPadding: const EdgeInsets.symmetric(horizontal: 20),
       child: Container(
         width: MediaQuery.of(context).size.width,
         child: Image.asset(
@@ -583,7 +583,7 @@ void showUserLogoutCard({required BuildContext context}) {
       child: Dialog(
         elevation: 0,
         child: Container(
-            padding: EdgeInsets.all(20),
+            padding: const EdgeInsets.all(20),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -594,7 +594,7 @@ void showUserLogoutCard({required BuildContext context}) {
                       fontWeight: FontWeight.bold,
                       fontSize: 25),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 Text(
@@ -604,7 +604,7 @@ void showUserLogoutCard({required BuildContext context}) {
                       fontWeight: FontWeight.bold,
                       fontSize: 15),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
                 CurvedButton(
@@ -625,7 +625,7 @@ void showUserLogoutCard({required BuildContext context}) {
 
 Future<bool> showInAppLocationAlertPopUp(
     {required BuildContext context, bool isForChat = true}) async {
-  bool? result = await showDialog<bool>(
+  final bool? result = await showDialog<bool>(
     barrierDismissible: false,
     context: context,
     builder: (context) => WillPopScope(
@@ -635,18 +635,18 @@ Future<bool> showInAppLocationAlertPopUp(
       },
       child: Dialog(
         elevation: 0,
-        insetPadding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+        insetPadding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
         child: Container(
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height,
           child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
             child: Column(
               children: [
                 Align(
                   alignment: Alignment.centerLeft,
                   child: IconButton(
-                      icon: Icon(Icons.arrow_back),
+                      icon: const Icon(Icons.arrow_back),
                       onPressed: () {
                         Navigator.pop(context, false);
                       }),
@@ -655,11 +655,11 @@ Future<bool> showInAppLocationAlertPopUp(
                     child: Container(
                   height: 10,
                 )),
-                Icon(
+                const Icon(
                   SlydoAppIcon.location,
                   size: 35,
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
                 Text(
@@ -669,19 +669,19 @@ Future<bool> showInAppLocationAlertPopUp(
                       fontWeight: FontWeight.w600,
                       color: blackFont),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
-                Text(
+                const Text(
                   "Slydo collects location data to enable you to share your location with your friends.",
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
                   textAlign: TextAlign.center,
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
                 Image.asset("assets/images/location-disclosure.png"),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
                 Expanded(
@@ -717,7 +717,7 @@ Future<bool> showInAppLocationAlertPopUp(
                     )
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
               ],

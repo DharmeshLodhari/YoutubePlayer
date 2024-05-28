@@ -108,9 +108,9 @@ class _UtilityPaymentScreenState extends State<UtilityPaymentScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Card(
               elevation: 2,
               margin: EdgeInsets.zero,
@@ -125,47 +125,47 @@ class _UtilityPaymentScreenState extends State<UtilityPaymentScreen> {
                 child: Container(
                   child: Column(
                     children: [
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       Container(
-                        padding: EdgeInsets.symmetric(horizontal: 20),
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: getProvider(),
                       ),
                       Divider(
                         color: dividerColor,
                         thickness: 1.5,
                       ),
-                      SizedBox(height: 30),
+                      const SizedBox(height: 30),
                       Container(
-                        padding: EdgeInsets.symmetric(horizontal: 20),
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: utilityProviderDetails.isNotEmpty
                             ? selectPlanDropDown()
                             : hasError
-                                ? Text('Something went wrong, try again')
+                                ? const Text('Something went wrong, try again')
                                 : CircularLoadingIndicator(),
                       ),
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       Visibility(
                         visible: planSelected,
                         child: Container(
-                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
                           child: getReferenceNumber(),
                         ),
                       ),
                       Visibility(
                         visible: planSelected,
                         child: Container(
-                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
                           child: getAmount(),
                         ),
                       ),
-                      SizedBox(height: 50),
+                      const SizedBox(height: 50),
                     ],
                   ),
                 ),
               ),
             ),
           ),
-          SizedBox(height: 40),
+          const SizedBox(height: 40),
           Visibility(
             visible: planSelected &&
                 referenceNumVerified &&
@@ -175,7 +175,7 @@ class _UtilityPaymentScreenState extends State<UtilityPaymentScreen> {
               child: submitButton(),
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
         ],
       ),
     );
@@ -188,8 +188,8 @@ class _UtilityPaymentScreenState extends State<UtilityPaymentScreen> {
         children: [
           Card(
             elevation: 8,
-            shadowColor: Color(0XFF314167).withOpacity(0.08),
-            margin: EdgeInsets.symmetric(vertical: 6),
+            shadowColor: const Color(0XFF314167).withOpacity(0.08),
+            margin: const EdgeInsets.symmetric(vertical: 6),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(15),
             ),
@@ -205,7 +205,7 @@ class _UtilityPaymentScreenState extends State<UtilityPaymentScreen> {
               ),
             ),
           ),
-          SizedBox(width: 8),
+          const SizedBox(width: 8),
           Expanded(
             child: Text(
               widget.providerModel.name,
@@ -231,7 +231,7 @@ class _UtilityPaymentScreenState extends State<UtilityPaymentScreen> {
           "Select a plan",
           style: TextStyle(color: darkGrey, fontSize: 14),
         ),
-        SizedBox(height: 6),
+        const SizedBox(height: 6),
         // getPlanField(),
         Card(
           elevation: 0,
@@ -239,7 +239,7 @@ class _UtilityPaymentScreenState extends State<UtilityPaymentScreen> {
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
               side: BorderSide(color: greyBorderColor)),
-          margin: EdgeInsets.all(0),
+          margin: const EdgeInsets.all(0),
           borderOnForeground: true,
           child: ListTile(
             dense: true,
@@ -275,7 +275,8 @@ class _UtilityPaymentScreenState extends State<UtilityPaymentScreen> {
     final pressedPlan = await showDialog<ProviderProductModel>(
         context: context,
         builder: (context) => AlertDialog(
-              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              insetPadding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
@@ -367,12 +368,12 @@ class _UtilityPaymentScreenState extends State<UtilityPaymentScreen> {
             extraFunctionWhenInputWasVerifiedFromServerSuccessfully: () {},
             extraFunctionWhenInputWasNotVerifiedFromServer: () {},
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
         ],
       );
     }
 
-    return SizedBox.shrink();
+    return const SizedBox.shrink();
   }
 
   Future<bool> verifyReferenceNumber() async {

@@ -344,7 +344,6 @@ class _ContractScreenState extends State<ContractScreen> {
                       direction: Axis.horizontal,
                       actionPane: const SlidableBehindActionPane(),
                       actionExtentRatio: 0.25,
-                      child: ContractTile(contract: contract),
                       actions: [
                         SlideActionButton(
                             backgroundColor: mateRed,
@@ -410,6 +409,7 @@ class _ContractScreenState extends State<ContractScreen> {
                                   slideController: _slideController),
                             ]
                           : null,
+                      child: ContractTile(contract: contract),
                     );
                   } else if (isNotSlidable) {
                     return ContractTile(contract: contract);
@@ -432,9 +432,9 @@ class _ContractScreenState extends State<ContractScreen> {
       direction: Axis.horizontal,
       actionPane: const SlidableBehindActionPane(),
       actionExtentRatio: 0.25,
-      child: VerticalListItem(contractTile, contract),
       actions: listActionSlideActions(contract),
       secondaryActions: listSecondaryActions(index, contract),
+      child: VerticalListItem(contractTile, contract),
     );
   }
 

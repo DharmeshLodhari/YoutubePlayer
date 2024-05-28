@@ -137,16 +137,16 @@ class BasketListModifierPayload {
 extension BasketItemListPayloadGenerator on List<BasketItem> {
   BasketListModifierPayload toPayload(BasketItem basketItem,
       {required BasketListModifierAction actionType}) {
-    Map<String, dynamic> data = {};
+    final Map<String, dynamic> data = {};
 
     BasketListModifierPayloadTypes payloadType =
         BasketListModifierPayloadTypes.addOrUpdate;
 
     /// for product
     if (basketItem.item?.isProduct ?? false) {
-      Product product = basketItem.item as Product;
+      final Product product = basketItem.item as Product;
 
-      List<BasketItem> listOfBasketItem = this.where((element) {
+      final List<BasketItem> listOfBasketItem = this.where((element) {
         if (element.item?.isProduct ?? false) {
           if ((element.item as Product).id == product.id) {
             return true;
@@ -167,13 +167,13 @@ extension BasketItemListPayloadGenerator on List<BasketItem> {
         // we will find all the basket Item with same product but different variant
 
         if (listOfBasketItem.isNotEmpty) {
-          List<Variant?> getListOfVariant = listOfBasketItem
+          final List<Variant?> getListOfVariant = listOfBasketItem
               .where((element) => element.variants?.isNotEmpty ?? false)
               .toList()
               .map((e) => e.variants?.first)
               .toList();
 
-          List<Map<String, dynamic>> variantData = getListOfVariant
+          final List<Map<String, dynamic>> variantData = getListOfVariant
               .where((element) => element != null)
               .toList()
               .map((e) => <String, dynamic>{
@@ -191,7 +191,7 @@ extension BasketItemListPayloadGenerator on List<BasketItem> {
           data["id"] = product.id;
           data["type"] = basketItem.type;
 
-          num qty = variantData.fold<num>(0,
+          final num qty = variantData.fold<num>(0,
               (previousValue, element) => previousValue + element["quantity"]);
 
           data["qty"] = qty;
@@ -207,8 +207,8 @@ extension BasketItemListPayloadGenerator on List<BasketItem> {
           this.removeWhere((element) => element.variants?.isEmpty ?? false);
         }
       } else if (basketItem.hasAddOns) {
-        List<AddedBy> itemAddedBy = [];
-        List<BasketItem> basketItemAddedBy = listOfBasketItem
+        final List<AddedBy> itemAddedBy = [];
+        final List<BasketItem> basketItemAddedBy = listOfBasketItem
             .where((element) => element.itemAddedBy?.isNotEmpty ?? false)
             .toList();
 
@@ -218,7 +218,7 @@ extension BasketItemListPayloadGenerator on List<BasketItem> {
           }
         }
 
-        List<Map<String, dynamic>> itemAddedByData = itemAddedBy
+        final List<Map<String, dynamic>> itemAddedByData = itemAddedBy
             .where((element) => element != null)
             .toList()
             .map((e) => <String, dynamic>{
@@ -230,25 +230,26 @@ extension BasketItemListPayloadGenerator on List<BasketItem> {
         data["id"] = product.id;
         data["type"] = basketItem.type;
         data["qty"] = basketItem.qty;
-        List<Map<String, dynamic>> addOnsDataList = (basketItem.item as Product)
-                .addOnsModels
-                ?.map((e) => {
-                      "id": e.id,
-                      "options": e.options
-                          ?.map((option) => {
-                                "id": option.id,
-                                "quantity": option.quantity,
-                                "added_by": option.addedBy
-                                    ?.map((e) => <String, dynamic>{
-                                          "user": e.user?.userName,
-                                          "quantity": e.quantity
-                                        })
-                                    .toList()
-                              })
-                          .toList()
-                    })
-                .toList() ??
-            [];
+        final List<Map<String, dynamic>> addOnsDataList =
+            (basketItem.item as Product)
+                    .addOnsModels
+                    ?.map((e) => {
+                          "id": e.id,
+                          "options": e.options
+                              ?.map((option) => {
+                                    "id": option.id,
+                                    "quantity": option.quantity,
+                                    "added_by": option.addedBy
+                                        ?.map((e) => <String, dynamic>{
+                                              "user": e.user?.userName,
+                                              "quantity": e.quantity
+                                            })
+                                        .toList()
+                                  })
+                              .toList()
+                        })
+                    .toList() ??
+                [];
         data["add_ons"] = addOnsDataList;
         data["added_by"] = itemAddedByData;
 
@@ -262,8 +263,8 @@ extension BasketItemListPayloadGenerator on List<BasketItem> {
 
       /// product without variant and addOns
       else {
-        List<AddedBy> itemAddedBy = [];
-        List<BasketItem> basketItemAddedBy = listOfBasketItem
+        final List<AddedBy> itemAddedBy = [];
+        final List<BasketItem> basketItemAddedBy = listOfBasketItem
             .where((element) => element.itemAddedBy?.isNotEmpty ?? false)
             .toList();
 
@@ -273,7 +274,7 @@ extension BasketItemListPayloadGenerator on List<BasketItem> {
           }
         }
 
-        List<Map<String, dynamic>> itemAddedByData = itemAddedBy
+        final List<Map<String, dynamic>> itemAddedByData = itemAddedBy
             .where((element) => element != null)
             .toList()
             .map((e) => <String, dynamic>{

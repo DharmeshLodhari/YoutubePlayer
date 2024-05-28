@@ -18,7 +18,7 @@ import 'models/ask_categories_model.dart';
 
 class YarnAuth extends AuthService {
   YarnCategories createAskCategories(Map<String, dynamic> item) {
-    YarnCategories categories = YarnCategories();
+    final YarnCategories categories = YarnCategories();
     categories.id = item['id'];
     categories.name = item['name'];
     categories.color = item['color'];
@@ -28,7 +28,7 @@ class YarnAuth extends AuthService {
   }
 
   ProductCategory createProductCategories(dynamic item) {
-    ProductCategory categories =
+    final ProductCategory categories =
         ProductCategory(messageDecoderWithEmoji(item["name"])!, id: item["id"]);
     return categories;
   }
@@ -47,24 +47,24 @@ class YarnAuth extends AuthService {
     }
     debugPrint(url);
 
-    var headers = await getAuthHeaders();
-    var response = await httpGet(url, headers: headers);
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers);
 
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      List<YarnCategories> askCategories = [];
-      var jsonData = json.decode(response.body);
+      final List<YarnCategories> askCategories = [];
+      final jsonData = json.decode(response.body);
 
       // debugPrint("JSON CATEGORIES::- $jsonData");
 
       for (var item in jsonData["results"]) {
-        YarnCategories categories = createAskCategories(item);
+        final YarnCategories categories = createAskCategories(item);
         askCategories.add(categories);
       }
 
-      Map<String, dynamic> result = {
+      final Map<String, dynamic> result = {
         "count": jsonData["count"],
         "next": jsonData["next"],
         "previous": jsonData["previous"],
@@ -94,23 +94,23 @@ class YarnAuth extends AuthService {
     }
     debugPrint(url);
 
-    var headers = await getAuthHeaders();
-    var response = await httpGet(url, headers: headers);
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers);
 
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      List<ProductCategory> productCategories = [];
-      var jsonData = json.decode(response.body);
+      final List<ProductCategory> productCategories = [];
+      final jsonData = json.decode(response.body);
 
       for (var item in jsonData["results"]) {
         // ProductCategory categories = createProductCategories(item['name']);
-        ProductCategory categories = createProductCategories(item);
+        final ProductCategory categories = createProductCategories(item);
         productCategories.add(categories);
       }
 
-      Map<String, dynamic> result = {
+      final Map<String, dynamic> result = {
         "count": jsonData["count"],
         "next": jsonData["next"],
         "previous": jsonData["previous"],
@@ -131,19 +131,19 @@ class YarnAuth extends AuthService {
     url = "${AppConfig.baseUrl}/api/v1/social/ask/user-interest/";
     debugPrint(url);
 
-    var headers = await getAuthHeaders();
-    var response = await httpGet(url, headers: headers);
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers);
 
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       UsersCategories usersCategory;
-      var jsonData = json.decode(response.body);
+      final jsonData = json.decode(response.body);
       debugPrint("JSON DECODED:- $jsonData");
       usersCategory = UsersCategories.fromJson(jsonData);
 
-      Map<String, dynamic> result = {"results": usersCategory};
+      final Map<String, dynamic> result = {"results": usersCategory};
 
       return result;
     } else if (response.statusCode == 500) {
@@ -159,15 +159,15 @@ class YarnAuth extends AuthService {
     url = "${AppConfig.baseUrl}/api/v1/social/ask/user-interest/";
     debugPrint(url);
 
-    var headers = await getAuthHeaders();
-    var response = await httpGet(url, headers: headers);
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers);
 
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       UserYarnSettings yarnSettings;
-      var jsonData = json.decode(response.body);
+      final jsonData = json.decode(response.body);
       yarnSettings = UserYarnSettings.fromJson(jsonData);
       return yarnSettings;
     } else if (response.statusCode == 500) {
@@ -183,8 +183,8 @@ class YarnAuth extends AuthService {
     url = "${AppConfig.baseUrl}/api/v1/social/ask/user-interest/";
     debugPrint(url);
 
-    var headers = await getAuthHeaders();
-    var response =
+    final headers = await getAuthHeaders();
+    final response =
         await httpPost(url, headers: headers, body: jsonEncode(body));
 
     debugPrint(
@@ -192,7 +192,7 @@ class YarnAuth extends AuthService {
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       UserYarnSettings yarnSettings;
-      var jsonData = json.decode(response.body);
+      final jsonData = json.decode(response.body);
       debugPrint("JSON DECODED:- $jsonData");
       logger.d(jsonData);
       yarnSettings = UserYarnSettings.fromJson(jsonData);
@@ -210,19 +210,19 @@ class YarnAuth extends AuthService {
     url = "${AppConfig.baseUrl}/api/v1/social/ask/user-interest/";
     debugPrint(url);
 
-    var headers = await getAuthHeaders();
-    var response = await httpPost(url, headers: headers, body: body);
+    final headers = await getAuthHeaders();
+    final response = await httpPost(url, headers: headers, body: body);
 
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       UsersCategories usersCategory;
-      var jsonData = json.decode(response.body);
+      final jsonData = json.decode(response.body);
       debugPrint("JSON DECODED:- $jsonData");
       usersCategory = UsersCategories.fromJson(jsonData);
 
-      Map<String, dynamic> result = {"results": usersCategory};
+      final Map<String, dynamic> result = {"results": usersCategory};
 
       return result;
     } else if (response.statusCode == 500) {
@@ -240,19 +240,19 @@ class YarnAuth extends AuthService {
         "${AppConfig.baseUrl}/api/v1/social/ask/user-single-interest/$categoryId/";
     debugPrint(url);
 
-    var headers = await getAuthHeaders();
-    var response = await httpPost(url, headers: headers);
+    final headers = await getAuthHeaders();
+    final response = await httpPost(url, headers: headers);
 
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       UsersCategories usersCategory;
-      var jsonData = json.decode(response.body);
+      final jsonData = json.decode(response.body);
       debugPrint("JSON DECODED:- $jsonData");
       usersCategory = UsersCategories.fromJson(jsonData);
 
-      Map<String, dynamic> result = {"results": usersCategory};
+      final Map<String, dynamic> result = {"results": usersCategory};
 
       return result;
     } else if (response.statusCode == 500) {
@@ -270,19 +270,19 @@ class YarnAuth extends AuthService {
         "${AppConfig.baseUrl}/api/v1/social/ask/user-single-interest/$categoryId/";
     debugPrint(url);
 
-    var headers = await getAuthHeaders();
-    var response = await httpDelete(url, headers: headers);
+    final headers = await getAuthHeaders();
+    final response = await httpDelete(url, headers: headers);
 
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       UsersCategories usersCategory;
-      var jsonData = json.decode(response.body);
+      final jsonData = json.decode(response.body);
       debugPrint("JSON DECODED:- $jsonData");
       usersCategory = UsersCategories.fromJson(jsonData);
 
-      Map<String, dynamic> result = {"results": usersCategory};
+      final Map<String, dynamic> result = {"results": usersCategory};
 
       return result;
     } else if (response.statusCode == 500) {
@@ -338,22 +338,22 @@ class YarnAuth extends AuthService {
       }
     }
 
-    var headers = await getAuthHeaders();
-    var response = await httpGet(url, headers: headers);
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      List<Yarn> yarnTopics = [];
-      var jsonData = json.decode(response.body);
+      final List<Yarn> yarnTopics = [];
+      final jsonData = json.decode(response.body);
 
       // debugPrint("GET DATA yarn list:- $jsonData");
       for (var item in jsonData["results"]) {
-        Yarn yarnTopic = Yarn.fromJson(item);
+        final Yarn yarnTopic = Yarn.fromJson(item);
         yarnTopics.add(yarnTopic);
 
         debugPrint("GET DATA Yarn:- ${item['viewers_avatars']}");
       }
 
-      Map<String, dynamic> result = {
+      final Map<String, dynamic> result = {
         "count": jsonData["count"],
         "next": jsonData["next"],
         "previous": jsonData["previous"],
@@ -387,19 +387,19 @@ class YarnAuth extends AuthService {
     }
     debugPrint('GET DATA saved Yarn::: $url');
 
-    var headers = await getAuthHeaders();
-    var response = await httpGet(url, headers: headers);
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      List<Yarn> yarnTopics = [];
-      var jsonData = json.decode(response.body);
+      final List<Yarn> yarnTopics = [];
+      final jsonData = json.decode(response.body);
 
       for (var item in jsonData["results"]) {
-        Yarn yarnTopic = Yarn.fromJson(item);
+        final Yarn yarnTopic = Yarn.fromJson(item);
         yarnTopics.add(yarnTopic);
       }
 
-      Map<String, dynamic> result = {
+      final Map<String, dynamic> result = {
         "count": jsonData["count"],
         "next": jsonData["next"],
         "previous": jsonData["previous"],
@@ -422,8 +422,8 @@ class YarnAuth extends AuthService {
           "${AppConfig.baseUrl}/api/v1/social/ask/user-saved-or-hidden-yarns/$savedYarnID/";
     }
 
-    var headers = await getAuthHeaders();
-    var response = await httpDelete(url, headers: headers);
+    final headers = await getAuthHeaders();
+    final response = await httpDelete(url, headers: headers);
 
     if (response.statusCode == 204) {
       return true;
@@ -442,14 +442,14 @@ class YarnAuth extends AuthService {
     }
     debugPrint(url);
 
-    var headers = await getAuthHeaders();
-    var response = await httpGet(url, headers: headers);
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      var jsonData = json.decode(response.body);
-      Yarn yarnTopic = Yarn.fromJson(jsonData);
+      final jsonData = json.decode(response.body);
+      final Yarn yarnTopic = Yarn.fromJson(jsonData);
 
-      Map<String, dynamic> result = {"results": yarnTopic};
+      final Map<String, dynamic> result = {"results": yarnTopic};
       return result;
     } else if (response.statusCode == 500) {
       return null;
@@ -466,8 +466,8 @@ class YarnAuth extends AuthService {
     }
     debugPrint(url);
 
-    var headers = await getAuthHeaders();
-    var response = await httpDelete(url, headers: headers);
+    final headers = await getAuthHeaders();
+    final response = await httpDelete(url, headers: headers);
 
     if (response.statusCode == 204) {
       return true;
@@ -496,18 +496,18 @@ class YarnAuth extends AuthService {
     } else {
       url = getSecureUrl(url: next);
     }
-    var headers = await getAuthHeaders();
-    var response = await httpGet(url, headers: headers);
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      List<Yarn> yarnTopics = [];
-      var jsonData = json.decode(response.body);
+      final List<Yarn> yarnTopics = [];
+      final jsonData = json.decode(response.body);
       for (var item in jsonData["results"]) {
-        Yarn yarnTopic = Yarn.fromJson(item);
+        final Yarn yarnTopic = Yarn.fromJson(item);
         yarnTopics.add(yarnTopic);
       }
 
-      Map<String, dynamic> result = {
+      final Map<String, dynamic> result = {
         "count": jsonData["count"],
         "next": jsonData["next"],
         "previous": jsonData["previous"],
@@ -524,20 +524,20 @@ class YarnAuth extends AuthService {
 
   //edit Yarn and Question
   Future editYarnAndQuestion(Yarn yarn) async {
-    var headers = await getAuthHeaders();
-    String url =
+    final headers = await getAuthHeaders();
+    final String url =
         "${AppConfig.baseUrl}/api/v1/social/ask/${yarn.id}/edit-yarn-or-question/";
 
     //create multipart request for POST or PATCH method
-    var request = http.MultipartRequest("POST", Uri.parse(url));
+    final request = http.MultipartRequest("POST", Uri.parse(url));
 
     // Map<dynamic, dynamic> _data = yarn.toJson();
     if (yarn.isQuestion) {
       request.fields["title"] = yarn.title!;
     }
 
-    List<MultipartFile> newList = [];
-    List<MultipartFile> thumbnailList = [];
+    final List<MultipartFile> newList = [];
+    final List<MultipartFile> thumbnailList = [];
     debugPrint("MEDIA LENGTH::: ${yarn.media.length}");
     int count = 0;
     for (int i = 0; i < yarn.media.length; i++) {
@@ -594,14 +594,14 @@ class YarnAuth extends AuthService {
     debugPrint('REQUEST FILES ---> ${request.files}');
 
     headers.forEach((k, v) => request.headers[k] = v);
-    var response = await request.send();
+    final response = await request.send();
     if (response.statusCode == 413) {
       return Future.error(
           "Please upload smaller images, One or all of your images are too large.");
     }
-    var responseBody = await response.stream.bytesToString();
+    final responseBody = await response.stream.bytesToString();
     if (response.statusCode == 200 || response.statusCode == 201) {
-      var result = jsonDecode(responseBody);
+      final result = jsonDecode(responseBody);
       return result;
     } else {
       debugPrint(
@@ -615,19 +615,19 @@ class YarnAuth extends AuthService {
   Future<StreamedResponse> _createYarn(
       Yarn addYarnAndQuestion, String url) async {
     debugPrint("MEDIA LENGTH:- ${addYarnAndQuestion.media.length}");
-    var headers = await getAuthHeaders();
+    final headers = await getAuthHeaders();
 
     //create multipart request for POST or PATCH method
-    var request = http.MultipartRequest("POST", Uri.parse(url));
+    final request = http.MultipartRequest("POST", Uri.parse(url));
 
-    Map<dynamic, dynamic> _data = addYarnAndQuestion.toAddMap();
+    final Map<dynamic, dynamic> _data = addYarnAndQuestion.toAddMap();
     debugPrint('DATA ---> $_data');
 
     if (addYarnAndQuestion.isQuestion) {
       request.fields["title"] = addYarnAndQuestion.title!;
     }
 
-    var mapValue = {
+    final mapValue = {
       "tags": jsonEncode(addYarnAndQuestion.tags),
       "body": messageDecoderWithEmoji(addYarnAndQuestion.body) ?? "",
       // "body": addYarnAndQuestion.body ?? "",
@@ -659,8 +659,8 @@ class YarnAuth extends AuthService {
 
     request.fields.addAll(mapValue);
 
-    List<MultipartFile> newList = [];
-    List<MultipartFile> thumbnailList = [];
+    final List<MultipartFile> newList = [];
+    final List<MultipartFile> thumbnailList = [];
     debugPrint("MEDIA LENGTH::: ${addYarnAndQuestion.media.length}");
     for (int i = 0; i < addYarnAndQuestion.media.length; i++) {
       debugPrint("MEDIA TYPE::: ${addYarnAndQuestion.media[i].mediaType}");
@@ -700,7 +700,7 @@ class YarnAuth extends AuthService {
     debugPrint('REQUEST FILES ---> ${request.files}');
 
     headers.forEach((k, v) => request.headers[k] = v);
-    var response = await request.send();
+    final response = await request.send();
 
     return response;
   }
@@ -713,24 +713,24 @@ class YarnAuth extends AuthService {
     url = "${AppConfig.baseUrl}/api/v1/social/ask/reyarn/";
     debugPrint(url);
 
-    var response = await _createYarn(reYarn, url);
+    final response = await _createYarn(reYarn, url);
 
     debugPrint("MEDIA LENGTH::: ${reYarn.media.length}");
 
     if (response.statusCode == 401) {
-      var headers = await getAuthHeaders();
+      final headers = await getAuthHeaders();
       // var response =
       // await httpPost(url, headers: headers, body: jsonEncode(body));
-      var response = await _createYarn(reYarn, url);
+      final response = await _createYarn(reYarn, url);
     }
 
     // debugPrint(
     //     "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.stream.bytesToString()}");
-    var responseBody = await response.stream.bytesToString();
+    final responseBody = await response.stream.bytesToString();
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      var data = jsonDecode(responseBody);
-      Yarn reYarn = Yarn.fromJson(data);
+      final data = jsonDecode(responseBody);
+      final Yarn reYarn = Yarn.fromJson(data);
 
       return reYarn;
     } else if (response.statusCode == 500) {
@@ -745,7 +745,7 @@ class YarnAuth extends AuthService {
       Yarn addYarnAndQuestion, String s, String channelUsername) async {
     log('ppppppp${addYarnAndQuestion.toJson().toString()}');
     debugPrint("MEDIA LENGTH:- ${addYarnAndQuestion.media.length}");
-    var headers = await getAuthHeaders();
+    final headers = await getAuthHeaders();
     String url = "${AppConfig.baseUrl}/api/v1/social/ask/";
 
     if (channelUsername.isNotEmpty) {
@@ -753,9 +753,9 @@ class YarnAuth extends AuthService {
     }
 
     //create multipart request for POST or PATCH method
-    var request = http.MultipartRequest("POST", Uri.parse(url));
+    final request = http.MultipartRequest("POST", Uri.parse(url));
 
-    Map<dynamic, dynamic> _data = addYarnAndQuestion.toAddMap();
+    final Map<dynamic, dynamic> _data = addYarnAndQuestion.toAddMap();
     debugPrint('DATA ---> $_data');
 
     if (addYarnAndQuestion.isQuestion) {
@@ -763,7 +763,7 @@ class YarnAuth extends AuthService {
           messageDecoderWithEmoji(addYarnAndQuestion.title)!;
     }
 
-    var mapValue = {
+    final mapValue = {
       "tags": jsonEncode(addYarnAndQuestion.tags),
       "body": messageDecoderWithEmoji(addYarnAndQuestion.body) ?? "",
       "category": addYarnAndQuestion.category?.id ?? "0",
@@ -794,8 +794,8 @@ class YarnAuth extends AuthService {
 
     request.fields.addAll(mapValue);
 
-    List<MultipartFile> newList = [];
-    List<MultipartFile> thumbnailList = [];
+    final List<MultipartFile> newList = [];
+    final List<MultipartFile> thumbnailList = [];
     debugPrint("MEDIA LENGTH::: ${addYarnAndQuestion.media.length}");
     for (int i = 0; i < addYarnAndQuestion.media.length; i++) {
       debugPrint("MEDIA TYPE::: ${addYarnAndQuestion.media[i].mediaType}");
@@ -835,13 +835,13 @@ class YarnAuth extends AuthService {
     debugPrint('REQUEST FILES ---> ${request.files}');
 
     headers.forEach((k, v) => request.headers[k] = v);
-    var response = await request.send();
+    final response = await request.send();
 
     if (response.statusCode == 413) {
       return Future.error(
           "Please upload smaller images, One or all of your images are too large.");
     }
-    var responseBody = await response.stream.bytesToString();
+    final responseBody = await response.stream.bytesToString();
 
     debugPrint('RESPONSE BODY url :::: ${url}');
     debugPrint('RESPONSE BODY :::: ${responseBody}');
@@ -851,8 +851,8 @@ class YarnAuth extends AuthService {
       debugPrint('RESPONSE BODY create:::: ${responseBody}');
 
       if (s == 'Add') {
-        var data = jsonDecode(responseBody);
-        Yarn reYarn = Yarn.fromJson(data);
+        final data = jsonDecode(responseBody);
+        final Yarn reYarn = Yarn.fromJson(data);
 
         return reYarn;
       } else {
@@ -867,15 +867,15 @@ class YarnAuth extends AuthService {
   }
 
   Future<bool> deleteYarnMedia(String mediaId) async {
-    String url =
+    final String url =
         "${AppConfig.baseUrl}/api/v1/social/ask/delete-yarn-media/$mediaId/";
-    var headers = await getAuthHeaders();
-    var response = await httpDelete(url, headers: headers);
+    final headers = await getAuthHeaders();
+    final response = await httpDelete(url, headers: headers);
     debugPrint("response:- ${response.body}");
     if (response.statusCode == 204) {
       return true;
     } else {
-      var jsonData = json.decode(response.body);
+      final jsonData = json.decode(response.body);
       throw jsonData;
     }
   }
@@ -883,16 +883,16 @@ class YarnAuth extends AuthService {
   // ADD COMMENT TO YARN
   Future<YarnComment?> addCommentToYarn(
       String yarnId, Map<String, dynamic> body) async {
-    String url =
+    final String url =
         "${AppConfig.baseUrl}/api/v1/social/ask/yarn-comments/$yarnId/";
     debugPrint(url);
 
-    var headers = await getAuthHeaders();
-    var request = http.MultipartRequest("POST", Uri.parse(url));
+    final headers = await getAuthHeaders();
+    final request = http.MultipartRequest("POST", Uri.parse(url));
 
     // logger.d('body to see $body and d ${body['media_count'].length}');
 
-    Map<String, String> payload = {
+    final Map<String, String> payload = {
       "comment": body['comment'] ?? "",
       "author_username": body['author_username'] ?? "",
       "enable_payme": jsonEncode(body['enable_payme'] ?? false),
@@ -910,8 +910,8 @@ class YarnAuth extends AuthService {
     }
 
     request.fields.addAll(payload);
-    List<MultipartFile> newList = [];
-    List<MultipartFile> thumbnailList = [];
+    final List<MultipartFile> newList = [];
+    final List<MultipartFile> thumbnailList = [];
     if (body['media_count'].isNotEmpty) {
       debugPrint("MEDIA LENGTH::: ${body['media_count'].length}");
       for (int i = 0; i < body['media_count'].length; i++) {
@@ -953,15 +953,15 @@ class YarnAuth extends AuthService {
     debugPrint('REQUEST FILES ---> ${request.files}');
 
     headers.forEach((k, v) => request.headers[k] = v);
-    var response = await request.send();
+    final response = await request.send();
     if (response.statusCode == 413) {
       return Future.error(
           "Please upload smaller images, One or all of your images are too large.");
     }
 
-    var responseBody = await response.stream.bytesToString();
+    final responseBody = await response.stream.bytesToString();
     if (response.statusCode == 200 || response.statusCode == 201) {
-      YarnComment commentDetails =
+      final YarnComment commentDetails =
           YarnComment.fromJson(json.decode(responseBody));
 
       return commentDetails;
@@ -993,16 +993,16 @@ class YarnAuth extends AuthService {
     }
     debugPrint(url);
 
-    var headers = await getAuthHeaders();
-    var response = await httpGet(url, headers: headers);
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers);
 
-    Map<String, dynamic>? pinnedYarn = await getPinnedComment(yarnId);
+    final Map<String, dynamic>? pinnedYarn = await getPinnedComment(yarnId);
 
     debugPrint(
         "COMMENTS RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
     if (response.statusCode == 200 || response.statusCode == 201) {
-      List<YarnComment> commentsDetails = [];
-      var jsonData = json.decode(response.body);
+      final List<YarnComment> commentsDetails = [];
+      final jsonData = json.decode(response.body);
 
       debugPrint(
           'COMMENTS RESPONSE CODE::: ${jsonData['results'].runtimeType}');
@@ -1014,18 +1014,18 @@ class YarnAuth extends AuthService {
         if (pinnedYarn.isNotEmpty) {
           pinnedYarn['pinned'] = true;
 
-          List<dynamic> pinnedYarnList = [pinnedYarn];
+          final List<dynamic> pinnedYarnList = [pinnedYarn];
 
           results = pinnedYarnList + results;
         }
       }
 
       for (var item in results) {
-        YarnComment commentsDetail = YarnComment.fromJson(item);
+        final YarnComment commentsDetail = YarnComment.fromJson(item);
         commentsDetails.add(commentsDetail);
       }
 
-      Map<String, dynamic> result = {
+      final Map<String, dynamic> result = {
         "count": jsonData["count"],
         "next": jsonData["next"],
         "previous": jsonData["previous"],
@@ -1043,10 +1043,10 @@ class YarnAuth extends AuthService {
   // Toggle commenting
   Future<Map<String, dynamic>?> toggleCommenting(
       String? yarnId, bool status) async {
-    String url =
+    final String url =
         getSecureUrl(url: "${AppConfig.baseUrl}/api/v1/social/ask/$yarnId/");
-    var headers = await getAuthHeaders();
-    var response = await httpPatch(url,
+    final headers = await getAuthHeaders();
+    final response = await httpPatch(url,
         headers: headers, body: jsonEncode({"enable_commenting": status}));
     return jsonDecode(response.body);
   }
@@ -1058,8 +1058,8 @@ class YarnAuth extends AuthService {
     url = "${AppConfig.baseUrl}/api/v1/social/comments/$commentId/";
     debugPrint(url);
 
-    var headers = await getAuthHeaders();
-    var response = await httpDelete(url, headers: headers);
+    final headers = await getAuthHeaders();
+    final response = await httpDelete(url, headers: headers);
 
     if (response.statusCode == 204) {
       return true;
@@ -1084,8 +1084,8 @@ class YarnAuth extends AuthService {
     }
     debugPrint(url);
 
-    var headers = await getAuthHeaders();
-    var response = await httpPost(url, headers: headers);
+    final headers = await getAuthHeaders();
+    final response = await httpPost(url, headers: headers);
 
     debugPrint(
         "RESPONSE PINNED POST CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
@@ -1106,14 +1106,14 @@ class YarnAuth extends AuthService {
     url = "${AppConfig.baseUrl}/api/v1/social/ask/pinned-comment/$yarnId/";
     debugPrint(url);
 
-    var headers = await getAuthHeaders();
-    var response = await httpGet(url, headers: headers);
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers);
 
     debugPrint(
         "RESPONSE PINNED GET CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      var data = json.decode(response.body);
+      final data = json.decode(response.body);
       return data;
     } else if (response.statusCode == 500) {
       return null;
@@ -1137,8 +1137,8 @@ class YarnAuth extends AuthService {
 
     debugPrint(url);
 
-    var headers = await getAuthHeaders();
-    var response = await httpDelete(url, headers: headers);
+    final headers = await getAuthHeaders();
+    final response = await httpDelete(url, headers: headers);
 
     debugPrint(
         "RESPONSE PINNED DELETE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
@@ -1160,14 +1160,14 @@ class YarnAuth extends AuthService {
         "${AppConfig.baseUrl}/api/v1/social/ask/reply-a-yarn-comment/$commentId/";
     debugPrint(url);
 
-    var headers = await getAuthHeaders();
+    final headers = await getAuthHeaders();
 
-    var request = http.MultipartRequest("POST", Uri.parse(url));
+    final request = http.MultipartRequest("POST", Uri.parse(url));
 
     // debugPrint(
     //     "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
-    Map<String, String> payload = {
+    final Map<String, String> payload = {
       "comment": messageDecoderWithEmoji(body['comment']) ?? "",
       "is_reply": jsonEncode(body['is_reply']),
       "author_username": body['author_username'] ?? "",
@@ -1186,8 +1186,8 @@ class YarnAuth extends AuthService {
     }
 
     request.fields.addAll(payload);
-    List<MultipartFile> newList = [];
-    List<MultipartFile> thumbnailList = [];
+    final List<MultipartFile> newList = [];
+    final List<MultipartFile> thumbnailList = [];
     if (body['media_count'].isNotEmpty) {
       debugPrint("MEDIA LENGTH::: ${body['media_count'].length}");
       for (int i = 0; i < body['media_count'].length; i++) {
@@ -1229,16 +1229,16 @@ class YarnAuth extends AuthService {
     debugPrint('REQUEST FILES ---> ${request.files}');
 
     headers.forEach((k, v) => request.headers[k] = v);
-    var response = await request.send();
+    final response = await request.send();
     if (response.statusCode == 413) {
       return Future.error(
           "Please upload smaller images, One or all of your images are too large.");
     }
 
-    var responseBody = await response.stream.bytesToString();
+    final responseBody = await response.stream.bytesToString();
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      YarnComment commentDetail =
+      final YarnComment commentDetail =
           YarnComment.fromJson(json.decode(responseBody));
 
       return commentDetail;
@@ -1271,18 +1271,18 @@ class YarnAuth extends AuthService {
     }
     debugPrint(url);
 
-    var headers = await getAuthHeaders();
-    var response = await httpGet(url, headers: headers);
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      List<YarnComment> commentDetails = [];
-      var jsonData = json.decode(response.body);
+      final List<YarnComment> commentDetails = [];
+      final jsonData = json.decode(response.body);
       for (var item in jsonData['results']) {
-        YarnComment replyCommentDetail = YarnComment.fromJson(item);
+        final YarnComment replyCommentDetail = YarnComment.fromJson(item);
         commentDetails.add(replyCommentDetail);
       }
 
-      Map<String, dynamic> result = {
+      final Map<String, dynamic> result = {
         "count": jsonData["count"],
         "next": jsonData["next"],
         "previous": jsonData["previous"],
@@ -1303,14 +1303,14 @@ class YarnAuth extends AuthService {
     url = "${AppConfig.baseUrl}/api/v1/social/ask/up-vote/$postId/";
     debugPrint(url);
 
-    var headers = await getAuthHeaders();
-    var response = await httpPost(url, headers: headers);
+    final headers = await getAuthHeaders();
+    final response = await httpPost(url, headers: headers);
 
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      var data = json.decode(response.body);
+      final data = json.decode(response.body);
       return data;
     } else if (response.statusCode == 500) {
       return null;
@@ -1325,14 +1325,14 @@ class YarnAuth extends AuthService {
     url = "${AppConfig.baseUrl}/api/v1/social/ask/down-vote/$postId/";
     debugPrint(url);
 
-    var headers = await getAuthHeaders();
-    var response = await httpPost(url, headers: headers);
+    final headers = await getAuthHeaders();
+    final response = await httpPost(url, headers: headers);
 
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      var data = json.decode(response.body);
+      final data = json.decode(response.body);
       return data;
     } else if (response.statusCode == 500) {
       return null;
@@ -1347,14 +1347,14 @@ class YarnAuth extends AuthService {
     url = "${AppConfig.baseUrl}/api/v1/social/comments/like/$commentId/";
     debugPrint(url);
 
-    var headers = await getAuthHeaders();
-    var response = await httpPost(url, headers: headers);
+    final headers = await getAuthHeaders();
+    final response = await httpPost(url, headers: headers);
 
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      var data = json.decode(response.body);
+      final data = json.decode(response.body);
       return data;
     } else if (response.statusCode == 500) {
       return null;
@@ -1369,14 +1369,14 @@ class YarnAuth extends AuthService {
     url = "${AppConfig.baseUrl}/api/v1/social/comments/dislike/$commentId/";
     debugPrint(url);
 
-    var headers = await getAuthHeaders();
-    var response = await httpPost(url, headers: headers);
+    final headers = await getAuthHeaders();
+    final response = await httpPost(url, headers: headers);
 
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      var data = json.decode(response.body);
+      final data = json.decode(response.body);
       return data;
     } else if (response.statusCode == 500) {
       return null;
@@ -1398,8 +1398,8 @@ class YarnAuth extends AuthService {
     debugPrint('url$url');
     debugPrint('report body::: ${body}');
 
-    var headers = await getAuthHeaders();
-    var response =
+    final headers = await getAuthHeaders();
+    final response =
         await httpPost(url, headers: headers, body: jsonEncode(body));
 
     debugPrint(
@@ -1426,8 +1426,8 @@ class YarnAuth extends AuthService {
     debugPrint('url$url');
     debugPrint('report body::: ${body}');
 
-    var headers = await getAuthHeaders();
-    var response =
+    final headers = await getAuthHeaders();
+    final response =
         await httpPost(url, headers: headers, body: jsonEncode(body));
 
     debugPrint(
@@ -1453,8 +1453,8 @@ class YarnAuth extends AuthService {
     debugPrint('url$url');
     debugPrint('report body::: ${body}');
 
-    var headers = await getAuthHeaders();
-    var response =
+    final headers = await getAuthHeaders();
+    final response =
         await httpPost(url, headers: headers, body: jsonEncode(body));
 
     debugPrint(
@@ -1471,7 +1471,7 @@ class YarnAuth extends AuthService {
 
   // ADD TO STATUS FOR POST
   Future<bool?> addStatusInPost(String topicId, String status) async {
-    Map<String, dynamic> body = {
+    final Map<String, dynamic> body = {
       "status": status,
       "yarn": topicId,
     };
@@ -1482,8 +1482,8 @@ class YarnAuth extends AuthService {
         "${AppConfig.baseUrl}/api/v1/social/ask/user-yarn-visibility-options/$topicId/";
     debugPrint(url);
 
-    var headers = await getAuthHeaders();
-    var response =
+    final headers = await getAuthHeaders();
+    final response =
         await httpPost(url, headers: headers, body: jsonEncode(body));
 
     debugPrint(
@@ -1507,21 +1507,21 @@ class YarnAuth extends AuthService {
     if (next != "") {
       url = next;
     }
-    var headers = await getAuthHeaders();
-    var response = await httpGet(url, headers: headers)
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers)
         .timeout(timeOutDuration, onTimeout: () => timeOutFunction());
 
-    print('SEARCH USER ::: ${response.body}');
+    debugPrint('SEARCH USER ::: ${response.body}');
     if (response.statusCode == 200 || response.statusCode == 201) {
-      List<CustomerProfile> customerProfiles = [];
-      var jsonData = json.decode(response.body);
+      final List<CustomerProfile> customerProfiles = [];
+      final jsonData = json.decode(response.body);
 
       for (var item in jsonData['results']) {
-        CustomerProfile customerProfile = CustomerProfile.fromJson(item);
+        final CustomerProfile customerProfile = CustomerProfile.fromJson(item);
         customerProfiles.add(customerProfile);
       }
 
-      Map<String, dynamic> result = {
+      final Map<String, dynamic> result = {
         "count": jsonData["count"],
         "next": jsonData["next"],
         "previous": jsonData["previous"],
@@ -1529,7 +1529,7 @@ class YarnAuth extends AuthService {
       };
       return result;
     } else {
-      var jsonData = json.decode(response.body);
+      final jsonData = json.decode(response.body);
       throw jsonData;
     }
   }
@@ -1549,20 +1549,20 @@ class YarnAuth extends AuthService {
     }
     debugPrint(url);
 
-    var headers = await getAuthHeaders();
-    var response = await httpGet(url, headers: headers);
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers);
 
     debugPrint(
         "COMMENTS RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
     if (response.statusCode == 200 || response.statusCode == 201) {
-      List<Notifications> notifications = [];
-      var jsonData = json.decode(response.body);
+      final List<Notifications> notifications = [];
+      final jsonData = json.decode(response.body);
       for (var item in jsonData["results"]) {
-        Notifications notification = Notifications.fromJson(item);
+        final Notifications notification = Notifications.fromJson(item);
         notifications.add(notification);
       }
 
-      Map<String, dynamic> result = {
+      final Map<String, dynamic> result = {
         "count": jsonData["count"],
         "next": jsonData["next"],
         "previous": jsonData["previous"],
@@ -1580,13 +1580,13 @@ class YarnAuth extends AuthService {
   // delete Notifications
   Future<bool?> deleteNotification(String? notificationId) async {
     debugPrint("CALLING DELETE NOTIFICATION");
-    String url =
+    final String url =
         "${AppConfig.baseUrl}/api/v1/social/ask/notifications/$notificationId/";
 
     debugPrint(url);
 
-    var headers = await getAuthHeaders();
-    var response = await httpDelete(url, headers: headers);
+    final headers = await getAuthHeaders();
+    final response = await httpDelete(url, headers: headers);
 
     debugPrint(
         "DELETE NOTIFICATION RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");

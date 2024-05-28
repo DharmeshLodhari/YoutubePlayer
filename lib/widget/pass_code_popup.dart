@@ -29,24 +29,24 @@ class PassCodePopup {
                   child: PasscodeScreen(
                     title: Text(
                       AppLocalization.of(context)!.enterPassCode,
-                      style: TextStyle(color: Colors.white),
+                      style: const TextStyle(color: Colors.white),
                     ),
                     passwordEnteredCallback: _onPassCodeEntered,
                     cancelButton: Container(
-                      padding: EdgeInsets.all(0),
+                      padding: const EdgeInsets.all(0),
                       child: Text(
                         AppLocalization.of(context)!.cancel,
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 10,
                         ),
                       ),
                     ),
                     deleteButton: Container(
-                      padding: EdgeInsets.all(0),
+                      padding: const EdgeInsets.all(0),
                       child: Text(
                         AppLocalization.of(context)!.delete,
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 10,
                         ),
@@ -56,7 +56,7 @@ class PassCodePopup {
                     passwordDigits: 6,
                     isValidCallback: isValidCallback,
                     cancelCallback: cancelCallBack,
-                    keyboardUIConfig: KeyboardUIConfig(
+                    keyboardUIConfig: const KeyboardUIConfig(
                       keyboardRowMargin: EdgeInsets.all(8),
                     ),
                   ),

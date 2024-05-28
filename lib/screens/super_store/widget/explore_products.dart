@@ -61,13 +61,13 @@ class _ExploreProductsState extends State<ExploreProducts> {
               _buildViewMore(context)
             ],
           ),
-          SizedBox(
+          const SizedBox(
             height: 15,
           ),
           ListView.builder(
             shrinkWrap: true,
-            padding: EdgeInsets.all(0.0),
-            physics: NeverScrollableScrollPhysics(),
+            padding: const EdgeInsets.all(0.0),
+            physics: const NeverScrollableScrollPhysics(),
             scrollDirection: Axis.vertical,
             itemCount: result.length > 4 ? 3 : result.length,
             itemBuilder: (context, index) {
@@ -84,7 +84,7 @@ class _ExploreProductsState extends State<ExploreProducts> {
         ],
       );
     } else {
-      return SizedBox();
+      return const SizedBox();
     }
   }
 

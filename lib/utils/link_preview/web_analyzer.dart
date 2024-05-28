@@ -100,7 +100,7 @@ class WebAnalyzer {
       print("Get web error:$url, Error:$e");
     }
 
-    // print("$url cost ${DateTime.now().difference(start).inMilliseconds}");
+    // debugPrint("$url cost ${DateTime.now().difference(start).inMilliseconds}");
 
     return info;
   }
@@ -109,7 +109,7 @@ class WebAnalyzer {
     final response = await _requestUrl(url);
 
     if (response == null) return null;
-    // print("$url ${response.statusCode}");
+    // debugPrint("$url ${response.statusCode}");
     if (multimedia!) {
       final String? contentType = response.headers["content-type"];
       if (contentType != null) {
@@ -177,7 +177,7 @@ class WebAnalyzer {
     });
   }
 
-  static Map<String, String> _cookies = {
+  static final Map<String, String> _cookies = {
     "weibo.com":
         "YF-Page-G0=02467fca7cf40a590c28b8459d93fb95|1596707497|1596707497; SUB=_2AkMod12Af8NxqwJRmf8WxGjna49_ygnEieKeK6xbJRMxHRl-yT9kqlcftRB6A_dzb7xq29tqJiOUtDsy806R_ZoEGgwS; SUBP=0033WrSXqPxfM72-Ws9jqgMF55529P9D9W59fYdi4BXCzHNAH7GabuIJ"
   };
@@ -192,7 +192,7 @@ class WebAnalyzer {
     final uri = Uri.parse(url);
     final ioClient = HttpClient()..badCertificateCallback = _certificateCheck;
     final client = IOClient(ioClient);
-    Request request = Request('GET', uri)
+    final Request request = Request('GET', uri)
       ..followRedirects = false
       ..headers["User-Agent"] = useDesktopAgent
           ? "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.125 Safari/537.36"
@@ -202,7 +202,7 @@ class WebAnalyzer {
     if (cookie != null || (cookie == null && _cookies[uri.host] != null)) {
       request.headers["Cookie"] = cookie ?? _cookies[uri.host]!;
     }
-    // print(request.headers);
+    // debugPrint(request.headers);
     final stream = await client.send(request);
 
     if (stream.statusCode == HttpStatus.movedTemporarily ||
@@ -220,7 +220,7 @@ class WebAnalyzer {
         }
         count++;
         client.close();
-        // print("Redirect ====> $url");
+        // debugPrint("Redirect ====> $url");
         return _requestUrl(url, count: count, cookie: cookie);
       }
     } else if (stream.statusCode == HttpStatus.ok) {
@@ -263,7 +263,7 @@ class WebAnalyzer {
       // final start = DateTime.now();
       final headHtml = _getHeadHtml(html);
       final document = parser.parse(headHtml);
-      // print("dom cost ${DateTime.now().difference(start).inMilliseconds}");
+      // debugPrint("dom cost ${DateTime.now().difference(start).inMilliseconds}");
       final uri = Uri.parse(url);
 
       // get image or video
@@ -363,7 +363,7 @@ class WebAnalyzer {
       if (body.length > 300) {
         body = body.substring(0, 300);
       }
-      // print("html cost ${DateTime.now().difference(start).inMilliseconds}");
+      // debugPrint("html cost ${DateTime.now().difference(start).inMilliseconds}");
       return body;
     }
     return description;

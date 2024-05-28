@@ -49,7 +49,7 @@ class _HomeQuickViewState extends State<HomeQuickView> {
   String autoCompleteSearchText = "";
   late AppLocalization appLocalization;
   AppConfigurationModel? appConfigurationModel;
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
   TextEditingController searchItemTextController = TextEditingController();
 
   String appBarTitle = "";
@@ -253,7 +253,7 @@ class _HomeQuickViewState extends State<HomeQuickView> {
 
       default:
         // Handle the default case (if any)
-        print('Tapped on an unknown shortcut');
+        debugPrint('Tapped on an unknown shortcut');
     }
   }
 
@@ -615,7 +615,7 @@ class _HomeQuickViewState extends State<HomeQuickView> {
         break;
       default:
         // Handle the default case (if any)
-        print('Tapped on an unknown shortcut');
+        debugPrint('Tapped on an unknown shortcut');
     }
   }
 
@@ -688,7 +688,7 @@ class _HomeQuickViewState extends State<HomeQuickView> {
         break;
       default:
         // Handle the default case (if any)
-        print('Tapped on an unknown shortcut');
+        debugPrint('Tapped on an unknown shortcut');
     }
   }
 

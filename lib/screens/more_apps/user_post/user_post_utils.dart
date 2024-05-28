@@ -45,7 +45,7 @@ class UserPostUtils {
 
   static sendPostToUserInChat(
       {required BuildContext context, required UserPost userPost}) async {
-    List<ChatConversation?> listOfRecipient =
+    final List<ChatConversation?> listOfRecipient =
         await ShareInChat().selectShareCustomer(context);
     debugPrint("Selected users = ${listOfRecipient.length}");
 
@@ -61,9 +61,9 @@ class UserPostUtils {
     required ChatConversation recipientUser,
     String? url,
   }) async {
-    UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
+    final UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
 
-    Map<String, dynamic> data = {
+    final Map<String, dynamic> data = {
       "meta_data": jsonEncode({
         "id": userPost.id,
         "title": userPost.title,
@@ -72,7 +72,7 @@ class UserPostUtils {
         "author_avatar": userPost.authorAvatar,
         "author_username": userPost.authorUsername,
       }),
-      "check_id": Uuid().v4(),
+      "check_id": const Uuid().v4(),
       "conversation_id": recipientUser.conversationId,
       "author": userBloc.user.userName,
       "message": 'blog_post',

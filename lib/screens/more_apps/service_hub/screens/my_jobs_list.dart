@@ -37,7 +37,7 @@ class _JobsMyJobsListState extends State<JobsMyJobsList> {
   Widget tabViews() {
     return IndexedStack(
       index: currentIndex,
-      children: [PostedMyJobs(), AppliedMyJobs()],
+      children: [const PostedMyJobs(), const AppliedMyJobs()],
     );
   }
 
@@ -51,7 +51,7 @@ class _JobsMyJobsListState extends State<JobsMyJobsList> {
         appBar: appBar(),
         body: IndexedStack(
           index: currentIndex,
-          children: [PostedMyJobs(), AppliedMyJobs()],
+          children: [const PostedMyJobs(), const AppliedMyJobs()],
         ),
       ),
     );

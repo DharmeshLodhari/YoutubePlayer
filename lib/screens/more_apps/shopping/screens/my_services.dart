@@ -100,11 +100,11 @@ class _MyServicesState extends State<MyServices> {
           width: 12,
         ),
       ),
-      SizedBox(width: 30),
+      const SizedBox(width: 30),
       RoundedBackgroundIcon(
         backgroundColor: Colors.transparent,
         onTap: () {
-          PermissionType? hasPermission =
+          final PermissionType? hasPermission =
               userBloc.user.hasWritePermission(ProtectionPermission.services);
           if (hasPermission == PermissionType.WRITE) {
             Navigator.pushNamed(context, Routes.ADD_SERVICE);
@@ -121,7 +121,7 @@ class _MyServicesState extends State<MyServices> {
           width: 12,
         ),
       ),
-      SizedBox(width: 20),
+      const SizedBox(width: 20),
     ];
   }
 

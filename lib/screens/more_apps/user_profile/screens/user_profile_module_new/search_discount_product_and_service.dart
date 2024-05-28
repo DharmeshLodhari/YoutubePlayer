@@ -126,11 +126,7 @@ class _SearchDiscountProductAndServiceState
     }
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-      if (selectedMenuItemIndex == 1) {
-        updateCategoryList();
-      } else {
-        getProductAPI();
-      }
+      updateCategoryList();
 
       getList();
       _scrollController.addListener(() {
@@ -356,9 +352,14 @@ class _SearchDiscountProductAndServiceState
       selectedProductCondition = null;
       filterModel.rating = "";
       filterModel.manufacturer = "";
+      filterModel.minAmount = null;
+      minAmountTextController.clear();
+      filterModel.maxAmount = null;
+      maxAmountTextController.clear();
       selectedRating = "";
       categoryList = productCategoryList.map((e) => e.name).toList();
       categoryList.insert(0, 'All categories');
+      getProductAPI();
     } else if (selectedMenuItemIndex == 1) {
       categoryList = serviceCategoryList;
     }
@@ -1528,39 +1529,38 @@ class _SearchDiscountProductAndServiceState
               )
             : isLoading && itemList.isEmpty
                 ? buildLoadingIndicator(isLoading: isLoading)
-                : Container(
-                    child: ListView.builder(
-                      //+1 for progressbar
-                      itemCount: itemList.length + 1,
-                      // ignore: missing_return
-                      itemBuilder: (BuildContext context, int index) {
-                        if (index == itemList.length) {
-                          return buildJumpingLoadingIndicator(
-                              isLoading: isLoading);
+                : ListView.builder(
+                    padding: EdgeInsets.only(bottom: 70),
+                    //+1 for progressbar
+                    itemCount: itemList.length + 1,
+                    // ignore: missing_return
+                    itemBuilder: (BuildContext context, int index) {
+                      if (index == itemList.length) {
+                        return buildJumpingLoadingIndicator(
+                            isLoading: isLoading);
+                      } else {
+                        if (filterValue == "Services") {
+                          return DisplayServiceForDiscount(
+                            service: itemList[index],
+                            onChange: (bool value) {
+                              itemList[index].isChecked = value;
+                              if (mounted) setState(() {});
+                            },
+                            isSelected: itemList[index].isChecked,
+                          );
                         } else {
-                          if (filterValue == "Services") {
-                            return DisplayServiceForDiscount(
-                              service: itemList[index],
-                              onChange: (bool value) {
-                                itemList[index].isChecked = value;
-                                if (mounted) setState(() {});
-                              },
-                              isSelected: itemList[index].isChecked,
-                            );
-                          } else {
-                            return DisplayProductForDiscount(
-                              product: itemList[index],
-                              onChange: (bool value) {
-                                itemList[index].isChecked = value;
-                                if (mounted) setState(() {});
-                              },
-                              isSelected: itemList[index].isChecked,
-                            );
-                          }
+                          return DisplayProductForDiscount(
+                            product: itemList[index],
+                            onChange: (bool value) {
+                              itemList[index].isChecked = value;
+                              if (mounted) setState(() {});
+                            },
+                            isSelected: itemList[index].isChecked,
+                          );
                         }
-                      },
-                      controller: _scrollController,
-                    ),
+                      }
+                    },
+                    controller: _scrollController,
                   );
   }
 
@@ -1624,7 +1624,6 @@ class _SearchDiscountProductAndServiceState
           isLoading = false;
           return;
         }
-        itemList.clear();
         count = result['count'];
         next = result['next'];
         previous = result['previous'];

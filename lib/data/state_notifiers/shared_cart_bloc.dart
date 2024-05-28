@@ -159,7 +159,7 @@ class SharedCartBloc extends ChangeNotifier {
         await getSharedCartProductDetail(context, sharedCartModel);
       }
 
-      print("CART LIST:- ${cartList.length} ");
+      debugPrint("CART LIST:- ${cartList.length} ");
     }
   }
 
@@ -231,7 +231,7 @@ class SharedCartBloc extends ChangeNotifier {
         }
       }
     }
-    print("CART DETAIL ID:- ${cart.id} ");
+    debugPrint("CART DETAIL ID:- ${cart.id} ");
   }
 
   Future<SharedCartModel> refreshCartDetail(String? cartId,

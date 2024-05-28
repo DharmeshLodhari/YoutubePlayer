@@ -1,3 +1,5 @@
+import 'package:flutter/cupertino.dart';
+
 /// customer_api_transaction_fee : 500
 /// business_transaction_fee : 400
 /// magic_envelope_fee : 400
@@ -36,7 +38,7 @@ class FeeStructure {
       this.currency});
 
   FeeStructure.fromJson(dynamic json) {
-    print('double ::: ${json['tax_rate']}');
+    debugPrint('double ::: ${json['tax_rate']}');
     customerApiTransactionFee = json['customer_api_transaction_fee'];
     businessTransactionFee = json['business_transaction_fee'];
     magicEnvelopeFee = json['magic_envelope_fee'];

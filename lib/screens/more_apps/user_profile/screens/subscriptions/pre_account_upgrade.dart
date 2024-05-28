@@ -39,7 +39,7 @@ class _PreAccountUpgradeState extends State<PreAccountUpgrade> {
           as PreferredSizeWidget?,
       body: SingleChildScrollView(
         child: Container(
-          padding: EdgeInsets.only(right: 20, left: 20, top: 24),
+          padding: const EdgeInsets.only(right: 20, left: 20, top: 24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -93,7 +93,8 @@ class _PreAccountUpgradeState extends State<PreAccountUpgrade> {
   Widget ListTiles(String title) {
     return ListTile(
       // contentPadding: EdgeInsets.zero,
-      contentPadding: EdgeInsets.symmetric(vertical: 0.0, horizontal: 0.0),
+      contentPadding:
+          const EdgeInsets.symmetric(vertical: 0.0, horizontal: 0.0),
       minLeadingWidth: 0.0,
       minVerticalPadding: 0.0,
       horizontalTitleGap: 10.0,

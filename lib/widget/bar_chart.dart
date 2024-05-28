@@ -34,7 +34,7 @@ class _BarChartState extends State<BarChart> {
 
   @override
   void initState() {
-    DateTime date = DateTime.now();
+    final DateTime date = DateTime.now();
     week = weekNumber(date);
     start = getStartingOfWeek(date);
     end = getEndingOfWeek(date);
@@ -64,7 +64,7 @@ class _BarChartState extends State<BarChart> {
 
   void getData(List<dynamic> expenses) {
     expenses.forEach((data) {
-      var amount = double.parse(data["amount"].toString());
+      final amount = double.parse(data["amount"].toString());
       if (amount >= 0.01) {
         setState(() {
           isDataIsZero = true;
@@ -80,13 +80,13 @@ class _BarChartState extends State<BarChart> {
     return isLoading
         ? Container(
             child: Padding(
-              padding: EdgeInsets.all(12.0),
+              padding: const EdgeInsets.all(12.0),
               child: Center(
                 child: Column(
                   children: <Widget>[
-                    SizedBox(height: 125.0),
+                    const SizedBox(height: 125.0),
                     CircularLoadingIndicator(),
-                    SizedBox(height: 125.0),
+                    const SizedBox(height: 125.0),
                   ],
                 ),
               ),
@@ -99,7 +99,7 @@ class _BarChartState extends State<BarChart> {
 
   Widget barChart() {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
@@ -124,7 +124,7 @@ class _BarChartState extends State<BarChart> {
               ),
             ],
           ),
-          SizedBox(height: 15.0),
+          const SizedBox(height: 15.0),
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: <Widget>[
@@ -178,27 +178,27 @@ class _BarChartState extends State<BarChart> {
 
   void fetchPrevious() {
     week = week - 1;
-    start = start.subtract(Duration(days: 7));
-    end = end.subtract(Duration(days: 7));
+    start = start.subtract(const Duration(days: 7));
+    end = end.subtract(const Duration(days: 7));
     fetchData(week.toString());
   }
 
   void fetchNext() {
     week = week + 1;
-    start = start.add(Duration(days: 7));
-    end = end.add(Duration(days: 7));
+    start = start.add(const Duration(days: 7));
+    end = end.add(const Duration(days: 7));
     fetchData(week.toString());
   }
 
   Widget noDataPresent() {
     return Padding(
-        padding: EdgeInsets.all(20.0),
+        padding: const EdgeInsets.all(20.0),
         child: Container(
           height: 200,
           child: Center(
             child: Text(
               AppLocalization.of(context)!.noTransactionDoneThisWeek,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 20.0,
                 fontWeight: FontWeight.bold,
               ),
@@ -239,19 +239,20 @@ class _BarState extends State<Bar> {
         children: <Widget>[
           showAmount
               ? Container(
-                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8), color: blackFont),
                   child: Text(
                     moneyConverter(widget.amountSpent),
-                    style: TextStyle(
+                    style: const TextStyle(
                         fontSize: 10,
                         fontWeight: FontWeight.bold,
                         color: Colors.white),
                   ),
                 )
               : Container(height: 20),
-          SizedBox(height: 6.0),
+          const SizedBox(height: 6.0),
           Container(
             height: barHeight,
             width: 22.0,
@@ -260,7 +261,7 @@ class _BarState extends State<Bar> {
               borderRadius: BorderRadius.circular(30.0),
             ),
           ),
-          SizedBox(height: 8.0),
+          const SizedBox(height: 8.0),
           Text(
             widget.label!,
             style: TextStyle(fontSize: 12.0, color: darkGrey),

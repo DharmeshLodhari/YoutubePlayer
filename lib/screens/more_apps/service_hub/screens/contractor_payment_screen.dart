@@ -99,7 +99,7 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
       children: [
         Card(
           elevation: .8,
-          margin: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+          margin: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
@@ -139,11 +139,11 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
                     ),
                   ))),
         ),
-        SizedBox(
+        const SizedBox(
           height: 40,
         ),
         Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
           child: canDoSlydoTransfer(
                   moneyInputNormalizer2(jobmodel!.pay.toString()).toDouble(),
                   currentBalance)
@@ -158,7 +158,7 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
                   ),
                 ),
         ),
-        SizedBox(
+        const SizedBox(
           height: 60,
         ),
       ],
@@ -212,16 +212,16 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
           minChildSize: .25,
           maxChildSize: .65,
           builder: (_, controller) => Container(
-            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
             decoration: BoxDecoration(
                 color: white,
-                borderRadius: BorderRadius.only(
+                borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(10),
                     topRight: Radius.circular(10))),
             child: ListView(
               controller: controller,
               children: <Widget>[
-                SizedBox(
+                const SizedBox(
                   height: 26,
                 ),
                 Row(
@@ -264,7 +264,7 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
                     ),
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 16,
                 ),
                 Align(
@@ -275,8 +275,8 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
                     direction: Axis.horizontal,
                     allowHalfRating: false,
                     itemCount: 5,
-                    itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
-                    itemBuilder: (context, _) => Icon(
+                    itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
+                    itemBuilder: (context, _) => const Icon(
                       Icons.star,
                       color: Colors.amber,
                     ),
@@ -287,15 +287,15 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
                     },
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
                 getReferenceField(),
-                SizedBox(
+                const SizedBox(
                   height: 30,
                 ),
                 submitRatingAndReviewButton(),
-                SizedBox(
+                const SizedBox(
                   height: 306,
                 ),
               ],
@@ -308,7 +308,7 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
 
   endJob() async {
     await ServiceHubAuthService().endJob(jobmodel!.id).then((value) {
-      print(value);
+      debugPrint("$value");
       if (value == true) {
         makePayment();
       } else {
@@ -345,7 +345,7 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
   }
 
   void onSubmit() async {
-    PermissionType? hasPermission =
+    final PermissionType? hasPermission =
         userBloc.user.hasWritePermission(ProtectionPermission.transaction);
     if (hasPermission == PermissionType.WRITE) {
       if (FocusScope.of(context).hasFocus) {
@@ -382,9 +382,9 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
     if (Platform.isIOS) {
       userLocation = await locationService.getLocation();
     }
-    String description = 'General Payment';
+    final String description = 'General Payment';
 
-    var data = {
+    final data = {
       "from_customer": userBloc.user.userName,
       "to_customer": _recipientController.text.trim(),
       "currency": userBloc.user.currency,
@@ -399,13 +399,13 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
       "is_anonymous": false,
       "made_from_chat": false,
     };
-    print('ptrint data:::$data');
+    debugPrint('ptrint data:::$data');
 
     await _auth.makePayment(data).then((value) async {
       debugPrint("status code3333:- ${value.statusCode}  body:- ${value.body}");
 
       response = value;
-      var jsonData = json.decode(response.body);
+      final jsonData = json.decode(response.body);
       if (response.statusCode == 200 || response.statusCode == 201) {
         _auth
             .updateStatusPayment(
@@ -466,7 +466,8 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
     return Column(
       children: [
         ListTile(
-          contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
           leading: ClipOval(
             child: CachedNetworkImage(
               height: 50,
@@ -479,7 +480,7 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
             ),
           ),
           trailing: messageReceiver == null
-              ? SizedBox.shrink()
+              ? const SizedBox.shrink()
               : CachedNetworkImage(
                   height: 48,
                   width: 48,
@@ -506,7 +507,7 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
           color: greyBorderColor,
           thickness: .9,
         ),
-        SizedBox(
+        const SizedBox(
           height: 16.6,
         ),
       ],
@@ -529,7 +530,7 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
         onPressed: () async {
           if (FocusScope.of(context).hasFocus) {
             FocusScope.of(context).unfocus();
-            await Future.delayed(Duration(milliseconds: 300));
+            await Future.delayed(const Duration(milliseconds: 300));
           }
           Navigator.pop(context, "back pressed");
         },
@@ -544,7 +545,7 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
       ),
       actions: [
         iconAvatar(),
-        SizedBox(
+        const SizedBox(
           width: 26,
         )
       ],
@@ -558,7 +559,7 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
       child: Card(
         color: iconBtnGrey,
         elevation: 0,
-        margin: EdgeInsets.symmetric(vertical: 10),
+        margin: const EdgeInsets.symmetric(vertical: 10),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
         ),
@@ -630,7 +631,7 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
       validator: (val) {
         if (val.isNotEmpty) {
           try {
-            double amount = double.parse(val.replaceAll(',', ''));
+            final double amount = double.parse(val.replaceAll(',', ''));
             if (amount > 0.0) {
               return null;
             } else {

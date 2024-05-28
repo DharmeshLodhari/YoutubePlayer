@@ -31,7 +31,7 @@ class AwesomeNotificationService {
             channelKey: 'basic_channel',
             channelName: 'Basic notifications',
             channelDescription: 'Notification channel for basic tests',
-            defaultColor: Color(0xFF3F61DB),
+            defaultColor: const Color(0xFF3F61DB),
             ledColor: Colors.white,
             importance: NotificationImportance.Max,
             channelShowBadge: true,
@@ -49,7 +49,7 @@ class AwesomeNotificationService {
               channelKey: 'ringtone_channel',
               channelName: 'Ringtone Channel',
               channelDescription: 'Channel with default ringtone',
-              defaultColor: Color(0xFF3F61DB),
+              defaultColor: const Color(0xFF3F61DB),
               ledColor: Colors.white,
               soundSource: "resource://raw/ping",
               playSound: true,
@@ -189,8 +189,8 @@ class AwesomeNotificationService {
 
   void showNudgeNotification({required Map<String, dynamic> message}) async {
     try {
-      int id = Random().nextInt(5000);
-      Map<String, String> messagePayload =
+      final int id = Random().nextInt(5000);
+      final Map<String, String> messagePayload =
           Map<String, String>.from(message['data']);
 
       messagePayload['actions'] = message['actions'];
@@ -225,10 +225,10 @@ class AwesomeNotificationService {
   }
 
   void showNotification({required Map<String, dynamic> message}) async {
-    int id = Random().nextInt(50000);
+    final int id = Random().nextInt(50000);
 
-    Map<String, String> finalNotification = {};
-    Map<String, dynamic> tempNotification =
+    final Map<String, String> finalNotification = {};
+    final Map<String, dynamic> tempNotification =
         Map<String, dynamic>.from(message['notification']);
 
     //We are converting those values that are null to empty string,
@@ -242,7 +242,7 @@ class AwesomeNotificationService {
       }
     });
 
-    Map<String, String> notification =
+    final Map<String, String> notification =
         Map<String, String>.from(finalNotification);
 
     notification['type'] = message['data']['type'];

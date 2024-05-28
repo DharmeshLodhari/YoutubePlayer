@@ -648,7 +648,8 @@ class _SearchUsersProductAndServiceState
                           width: 25,
                           margin: const EdgeInsets.only(right: 10, top: 10),
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(35)),
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(35)),
                             border: Border.all(
                               width: 1,
                               color: black,
@@ -830,8 +831,8 @@ class _SearchUsersProductAndServiceState
                                 margin:
                                     const EdgeInsets.only(right: 10, top: 10),
                                 decoration: BoxDecoration(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(35)),
+                                  borderRadius: const BorderRadius.all(
+                                      Radius.circular(35)),
                                   border: Border.all(
                                     width: 1,
                                     color: black,
@@ -1554,33 +1555,33 @@ class _SearchUsersProductAndServiceState
   }
 
   Widget _buildResultList() {
-    return isSearchIsEmpty
+    // return isSearchIsEmpty
+    //     ? NoItemInList(
+    //         msg: AppLocalization.of(context)!.pleaseTypeSomethingToGetResult,
+    //         isResult: false,
+    //       )
+    //     :
+    return noItemInList
         ? NoItemInList(
-            msg: AppLocalization.of(context)!.pleaseTypeSomethingToGetResult,
-            isResult: false,
+            msg: AppLocalization.of(context)!.noResultFound,
           )
-        : noItemInList
-            ? NoItemInList(
-                msg: AppLocalization.of(context)!.noResultFound,
-              )
-            : isLoading && results.isEmpty
-                ? buildLoadingIndicator(isLoading: isLoading)
-                : Container(
-                    child: ListView.builder(
-                      //+1 for progressbar
-                      itemCount: results.length + 1,
-                      // ignore: missing_return
-                      itemBuilder: (BuildContext context, int index) {
-                        if (index == results.length) {
-                          return buildJumpingLoadingIndicator(
-                              isLoading: isLoading);
-                        } else {
-                          return results[index];
-                        }
-                      },
-                      controller: _scrollController,
-                    ),
-                  );
+        : isLoading && results.isEmpty
+            ? buildLoadingIndicator(isLoading: isLoading)
+            : ListView.builder(
+                padding: EdgeInsets.zero,
+                shrinkWrap: true,
+                //+1 for progressbar
+                itemCount: results.length + 1,
+                // ignore: missing_return
+                itemBuilder: (BuildContext context, int index) {
+                  if (index == results.length) {
+                    return buildJumpingLoadingIndicator(isLoading: isLoading);
+                  } else {
+                    return results[index];
+                  }
+                },
+                controller: _scrollController,
+              );
   }
 
   Future<Map<String, dynamic>?> getSearchApi() async {
@@ -1622,7 +1623,7 @@ class _SearchUsersProductAndServiceState
           isLoading = false;
           return;
         }
-        results.clear();
+
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
@@ -1630,7 +1631,7 @@ class _SearchUsersProductAndServiceState
         if (mounted) {
           isLoading = false;
           try {
-            tempList!.forEach((result) {
+            tempList?.forEach((result) {
               results.add(getResultTile(result));
             });
           } catch (e) {}

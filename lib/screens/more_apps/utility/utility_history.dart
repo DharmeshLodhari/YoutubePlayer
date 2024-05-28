@@ -140,7 +140,7 @@ class _UtilityHistoryState extends State<UtilityHistory> {
             isLoading = true;
           });
         }
-        Map<String, dynamic>? result =
+        final Map<String, dynamic>? result =
             await UtilityAuth().getUtilityTransactions(next, previous);
         if (result == null) {
           isLoading = false;
@@ -149,7 +149,7 @@ class _UtilityHistoryState extends State<UtilityHistory> {
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
-        var tempList = result['results'];
+        final tempList = result['results'];
 
         isLoading = false;
 
@@ -175,7 +175,7 @@ class _UtilityHistoryState extends State<UtilityHistory> {
   void _onRefresh() async {
     //check network connectivity and if true then refresh the list
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         count = 0;
@@ -206,7 +206,7 @@ class _UtilityHistoryState extends State<UtilityHistory> {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 500),
         ));
       }
     }
@@ -223,7 +223,7 @@ class _UtilityHistoryState extends State<UtilityHistory> {
 
   Widget foregroundScreen() {
     return Container(
-        padding: EdgeInsets.only(top: 16, bottom: 8),
+        padding: const EdgeInsets.only(top: 16, bottom: 8),
         child: SmartRefresher(
           enablePullDown: true,
           header: WaterDropHeader(
@@ -242,7 +242,7 @@ class _UtilityHistoryState extends State<UtilityHistory> {
             msg: AppLocalization.of(context)!.utilityHistoryEmpty,
           )
         : ListView.builder(
-            padding: EdgeInsets.symmetric(vertical: 4),
+            padding: const EdgeInsets.symmetric(vertical: 4),
             //+1 for progressbar
             itemCount: utilityHistoryList.length + 1,
             itemBuilder: (BuildContext context, int index) {
@@ -258,10 +258,10 @@ class _UtilityHistoryState extends State<UtilityHistory> {
   }
 
   Widget _buildIndicator() {
-    return new Padding(
+    return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: new Center(
-        child: new Opacity(
+      child: Center(
+        child: Opacity(
           opacity: isLoading ? 1.0 : 0.0,
           child: CircularLoadingIndicator(),
         ),

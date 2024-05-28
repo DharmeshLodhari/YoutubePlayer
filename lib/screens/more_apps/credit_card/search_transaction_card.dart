@@ -91,7 +91,7 @@ class SearchTransactionCardState extends State<SearchTransactionCard> {
           setState(() {});
         }
 
-        Map<String, dynamic>? result =
+        final Map<String, dynamic>? result =
             await DebitCardAuth().searchSingleCardsTransactions(
           next,
           previous,
@@ -106,7 +106,7 @@ class SearchTransactionCardState extends State<SearchTransactionCard> {
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
-        List? tempList = result['results'];
+        final List? tempList = result['results'];
         // debugPrint('TEMP LIST --> $tempList');
         if (mounted) {
           isLoading = false;

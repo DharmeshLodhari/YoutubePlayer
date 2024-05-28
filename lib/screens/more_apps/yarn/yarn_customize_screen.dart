@@ -28,7 +28,7 @@ class _AskSCustomizeScreenState extends State<AskSCustomizeScreen> {
   }
 
   Future<UsersCategories?> getUserCategories() async {
-    Map<String, dynamic>? result = await YarnAuth().getUsersCategories();
+    final Map<String, dynamic>? result = await YarnAuth().getUsersCategories();
     setState(() {
       usersCategory = result!['results'];
     });
@@ -41,7 +41,7 @@ class _AskSCustomizeScreenState extends State<AskSCustomizeScreen> {
         isAskCategoriesLoading = true;
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result = await YarnAuth()
+        final Map<String, dynamic>? result = await YarnAuth()
             .getAllCategories(categoriesNext, categoriesPrevious!);
 
         if (result == null) {
@@ -57,7 +57,7 @@ class _AskSCustomizeScreenState extends State<AskSCustomizeScreen> {
         categoryCount = result['count'];
         categoriesNext = result['next'];
         categoriesPrevious = result['previous'];
-        var tempList = result['results'];
+        final tempList = result['results'];
         if (mounted) {
           setState(() {
             noCategoriesList = false;
@@ -109,7 +109,7 @@ class _AskSCustomizeScreenState extends State<AskSCustomizeScreen> {
           onTap: () {
             Navigator.pop(context);
           },
-          child: Icon(
+          child: const Icon(
             Icons.keyboard_arrow_left,
             color: Colors.black,
             size: 26,
@@ -119,7 +119,7 @@ class _AskSCustomizeScreenState extends State<AskSCustomizeScreen> {
 
   Widget _buildBody() {
     return SingleChildScrollView(
-      padding: EdgeInsets.all(8.0),
+      padding: const EdgeInsets.all(8.0),
       child: usersCategory != null
           ? _buildCategoryList()
           : Center(

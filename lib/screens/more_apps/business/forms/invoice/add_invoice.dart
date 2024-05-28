@@ -232,15 +232,16 @@ class _AddInvoiceState extends State<AddInvoice> {
                               // SizedBox(height: 16),
                               // getPaymentPeriodDropDown(),
                               const SizedBox(height: 8),
-                              errorMessage == ""
-                                  ? Container()
-                                  : Text(
-                                      errorMessage,
-                                      style: TextStyle(
-                                          color: mateRed,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16),
-                                    ),
+                              if (errorMessage == "")
+                                Container()
+                              else
+                                Text(
+                                  errorMessage,
+                                  style: TextStyle(
+                                      color: mateRed,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16),
+                                ),
                               const SizedBox(height: 8),
                             ],
                           ),
@@ -515,7 +516,7 @@ class _AddInvoiceState extends State<AddInvoice> {
         }
       },
       onTap: () async {
-        CustomerProfile? userFound =
+        final CustomerProfile? userFound =
             await NavigationUtil.push(context, screen: const SearchUser());
 
         if (userFound != null) {
@@ -545,7 +546,7 @@ class _AddInvoiceState extends State<AddInvoice> {
                 _recipientController.text = recipient!;
               });
             }
-            var customerProfile =
+            final customerProfile =
                 await UserAuth().fetchCustomerProfileWithAuth(recipient);
             if (mounted) {
               setState(() {
@@ -877,7 +878,7 @@ class _AddInvoiceState extends State<AddInvoice> {
         }
       }
     } else {
-      var msg = AppLocalization.of(context)!.invalidRecipient;
+      final msg = AppLocalization.of(context)!.invalidRecipient;
       showToast(message: msg);
     }
   }
@@ -897,7 +898,7 @@ class _AddInvoiceState extends State<AddInvoice> {
           }
         },
       );
-      var data = {
+      final data = {
         "from_customer": userBloc.user.userName,
         "to_customer": _recipientController.text.trim(),
         "invoice_number": _invoiceController.text.trim().toString(),
@@ -908,7 +909,7 @@ class _AddInvoiceState extends State<AddInvoice> {
 
       invoiceItem.forEach(
         (item) {
-          int index = invoiceItem.indexOf(item);
+          final int index = invoiceItem.indexOf(item);
           invoiceItem[index]!.amount = invoiceItem[index]!.amount! * 100;
         },
       );

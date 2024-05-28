@@ -188,7 +188,7 @@ class _StickyGroupedListViewState<T, E>
   @override
   Widget build(BuildContext context) {
     this._sortedElements = _sortElements();
-    var hiddenIndex = widget.reverse ? _sortedElements.length * 2 - 1 : 0;
+    final hiddenIndex = widget.reverse ? _sortedElements.length * 2 - 1 : 0;
     _isSeparator = widget.reverse ? (int i) => i.isOdd : (int i) => i.isEven;
 
     return Stack(
@@ -212,7 +212,7 @@ class _StickyGroupedListViewState<T, E>
           addRepaintBoundaries: widget.addRepaintBoundaries,
           addSemanticIndexes: widget.addSemanticIndexes,
           itemBuilder: (context, index) {
-            int actualIndex = index ~/ 2;
+            final int actualIndex = index ~/ 2;
 
             if (index == hiddenIndex) {
               return Opacity(
@@ -236,8 +236,8 @@ class _StickyGroupedListViewState<T, E>
             // I/flutter (11091): #3      _PositionedListState.getItems.<anonymous closure> (package:Slydo/widget/sticky_grouped_list/src/positioned_list.dart:194:17)
 
             if (_isSeparator(index)) {
-              E curr = widget.groupBy(_sortedElements[actualIndex]);
-              E prev = widget.groupBy(
+              final E curr = widget.groupBy(_sortedElements[actualIndex]);
+              final E prev = widget.groupBy(
                   _sortedElements[actualIndex + (widget.reverse ? 1 : -1)]);
               if (prev != curr) {
                 return widget
@@ -267,9 +267,9 @@ class _StickyGroupedListViewState<T, E>
   _positionListener() {
     _headerBox ??=
         _groupHeaderKey?.currentContext?.findRenderObject() as RenderBox?;
-    double headerHeight = _headerBox?.size.height ?? 0;
+    final double headerHeight = _headerBox?.size.height ?? 0;
     _listBox ??= _key.currentContext?.findRenderObject() as RenderBox?;
-    double height = _listBox?.size.height ?? 0;
+    final double height = _listBox?.size.height ?? 0;
     _headerDimension = headerHeight / height;
 
     ItemPosition reducePositions(ItemPosition pos, ItemPosition current) {
@@ -281,16 +281,16 @@ class _StickyGroupedListViewState<T, E>
 
     try {
       if (_listener!.itemPositions.value.isNotEmpty) {
-        ItemPosition? currentItem = _listener!.itemPositions.value
+        final ItemPosition? currentItem = _listener!.itemPositions.value
             .where((ItemPosition position) =>
                 !_isSeparator(position.index) &&
                 position.itemTrailingEdge > _headerDimension!)
             .reduce(reducePositions);
 
-        int index = (currentItem.index) ~/ 2;
+        final int index = (currentItem?.index)! ~/ 2;
         if (_topElementIndex != index) {
-          E curr = widget.groupBy(_sortedElements[index]);
-          E prev = widget.groupBy(_sortedElements[_topElementIndex]);
+          final E curr = widget.groupBy(_sortedElements[index]);
+          final E prev = widget.groupBy(_sortedElements[_topElementIndex]);
           if (prev != curr) {
             _topElementIndex = index;
             _streamController.add(_topElementIndex);

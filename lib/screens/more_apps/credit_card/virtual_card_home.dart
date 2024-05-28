@@ -73,7 +73,7 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
   int _currentIndex = 0;
   List<CardAction> cardActions = [];
   final TextEditingController labelController = TextEditingController();
-  Map<int, FocusNode> _focusNodes = {};
+  final Map<int, FocusNode> _focusNodes = {};
   Timer? _debounce;
 
   @protected
@@ -566,31 +566,33 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
                   right: 20,
                   child: Column(
                     children: [
-                      cardData.cardBrand == 'Visa'
-                          ? SvgPicture.asset(
-                              "visa".toSVG(),
-                              fit: BoxFit.cover,
-                            )
-                          : SvgPicture.asset(
-                              "mastercard".toSVG(),
-                              fit: BoxFit.cover,
-                            ),
+                      if (cardData.cardBrand == 'Visa')
+                        SvgPicture.asset(
+                          "visa".toSVG(),
+                          fit: BoxFit.cover,
+                        )
+                      else
+                        SvgPicture.asset(
+                          "mastercard".toSVG(),
+                          fit: BoxFit.cover,
+                        ),
                       const SizedBox(width: 5.0),
-                      cardData.cardBrand == 'Visa'
-                          ? SizedBox.shrink()
-                          : Column(
-                              children: [
-                                Text(
-                                  'Mastercard',
-                                  style: TextStyle(
-                                    color: white,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                const SizedBox(width: 5.0),
-                              ],
+                      if (cardData.cardBrand == 'Visa')
+                        SizedBox.shrink()
+                      else
+                        Column(
+                          children: [
+                            Text(
+                              'Mastercard',
+                              style: TextStyle(
+                                color: white,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
+                            const SizedBox(width: 5.0),
+                          ],
+                        ),
                     ],
                   ),
                 ),
@@ -606,7 +608,7 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
     _debounce?.cancel();
     _debounce = Timer(const Duration(seconds: 2), () {
       _focusNodes[index]!.unfocus(); // Disable focus for the specific card
-      // print('Performing API call for card $index with text: $newText');
+      // debugPrint('Performing API call for card $index with text: $newText');
       editCard(cardData, newText);
     });
   }

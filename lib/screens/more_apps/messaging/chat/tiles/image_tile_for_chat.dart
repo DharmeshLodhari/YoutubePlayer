@@ -17,11 +17,11 @@ class ImageTileForChat extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    UserBloc userBloc = Provider.of<UserBloc>(context);
+    final UserBloc userBloc = Provider.of<UserBloc>(context);
 
-    bool isSend = message!["author"] == userBloc.user.userName;
+    final bool isSend = message!["author"] == userBloc.user.userName;
     String? messageText = message!['text'] ?? "";
-    bool isMessageEmpty = messageText == "";
+    final bool isMessageEmpty = messageText == "";
 
     messageText = messageDecoderWithEmoji(messageText);
 
@@ -36,7 +36,7 @@ class ImageTileForChat extends StatelessWidget {
               isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            isSend ? Container() : Container(width: 20),
+            if (isSend) Container() else Container(width: 20),
 
             GestureDetector(
               onTap: () async {
@@ -70,8 +70,8 @@ class ImageTileForChat extends StatelessWidget {
                   borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(!isSend ? 0 : 10),
                     bottomRight: Radius.circular(isSend ? 0 : 10),
-                    topLeft: Radius.circular(10),
-                    topRight: Radius.circular(10),
+                    topLeft: const Radius.circular(10),
+                    topRight: const Radius.circular(10),
                   ),
                 ),
                 padding: EdgeInsets.only(
@@ -109,42 +109,45 @@ class ImageTileForChat extends StatelessWidget {
                       ? CrossAxisAlignment.end
                       : CrossAxisAlignment.start,
                   children: [
-                    chatConversation!.isGroupConversation!
-                        ? message!['author'] != userBloc.user.userName
-                            ? Column(
-                                children: [
-                                  Text(
-                                    message!['author_full_name'] ??
-                                        message!['author'],
-                                    style: TextStyle(
-                                        color: isSend ? Colors.white : navyBlue,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w700),
-                                  ),
-                                  SizedBox(
-                                    height: isMessageEmpty ? 4 : 0,
-                                  ),
-                                ],
-                              )
-                            : Container(width: 0)
-                        : Container(width: 0),
-                    isMessageEmpty
-                        ? Container()
-                        : Container(
-                            padding: EdgeInsets.symmetric(
-                                horizontal:
-                                    chatConversation!.isGroupConversation!
-                                        ? 0
-                                        : 8),
-                            child: Text(
-                              messageText!,
-                              style: TextStyle(
-                                  color: isSend ? Colors.white : blackFont,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w400),
-                            ),
-                          ),
-                    isMessageEmpty ? Container() : SizedBox(height: 8),
+                    if (chatConversation!.isGroupConversation!)
+                      message!['author'] != userBloc.user.userName
+                          ? Column(
+                              children: [
+                                Text(
+                                  message!['author_full_name'] ??
+                                      message!['author'],
+                                  style: TextStyle(
+                                      color: isSend ? Colors.white : navyBlue,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w700),
+                                ),
+                                SizedBox(
+                                  height: isMessageEmpty ? 4 : 0,
+                                ),
+                              ],
+                            )
+                          : Container(width: 0)
+                    else
+                      Container(width: 0),
+                    if (isMessageEmpty)
+                      Container()
+                    else
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                            horizontal:
+                                chatConversation!.isGroupConversation! ? 0 : 8),
+                        child: Text(
+                          messageText!,
+                          style: TextStyle(
+                              color: isSend ? Colors.white : blackFont,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400),
+                        ),
+                      ),
+                    if (isMessageEmpty)
+                      Container()
+                    else
+                      const SizedBox(height: 8),
                     Container(
                       height: 200,
                       padding: EdgeInsets.symmetric(
@@ -155,8 +158,8 @@ class ImageTileForChat extends StatelessWidget {
                                   : 8),
                       child: ClipRRect(
                         borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(10),
-                          topRight: Radius.circular(10),
+                          topLeft: const Radius.circular(10),
+                          topRight: const Radius.circular(10),
                           bottomLeft: Radius.circular(isSend ? 10 : 0),
                           bottomRight: Radius.circular(isSend ? 0 : 10),
                         ),
@@ -188,38 +191,41 @@ class ImageTileForChat extends StatelessWidget {
             ),
 
             //Message tick
-            isSend
-                ? Container(
-                    width: 20,
-                    child: isSend
-                        ? Center(
-                            child: getMessageTick(message: message!),
-                          )
-                        : Container(),
-                  )
-                : Container(),
+            if (isSend)
+              Container(
+                width: 20,
+                child: isSend
+                    ? Center(
+                        child: getMessageTick(message: message!),
+                      )
+                    : Container(),
+              )
+            else
+              Container(),
           ],
         ),
-        SizedBox(height: 1),
+        const SizedBox(height: 1),
         Row(
           mainAxisAlignment:
               isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
           children: [
-            isSend
-                ? Container()
-                : SizedBox(
-                    width: 20,
-                  ),
+            if (isSend)
+              Container()
+            else
+              const SizedBox(
+                width: 20,
+              ),
             Text(
               formatTime(message!['created_at']),
               style: TextStyle(
                   color: darkGrey, fontSize: 10, fontWeight: FontWeight.w500),
             ),
-            isSend
-                ? SizedBox(
-                    width: 20,
-                  )
-                : Container(),
+            if (isSend)
+              const SizedBox(
+                width: 20,
+              )
+            else
+              Container(),
           ],
         )
       ],
@@ -231,7 +237,9 @@ class ImageTileForChat extends StatelessWidget {
     double width;
     double height;
 
-    imageProvider.resolve(ImageConfiguration()).addListener(ImageStreamListener(
+    imageProvider
+        .resolve(const ImageConfiguration())
+        .addListener(ImageStreamListener(
       (ImageInfo info, bool _) {
         image = info.image;
       },

@@ -108,7 +108,7 @@ class _CustomizedPassCodeScreenState extends State<CustomizedPassCodeScreen>
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   Container(
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.only(
                             topLeft: Radius.circular(20),
@@ -157,12 +157,12 @@ class _CustomizedPassCodeScreenState extends State<CustomizedPassCodeScreen>
       );
 
   List<Widget> _buildCircles() {
-    var list = <Widget>[];
-    var extraSize = animation.value;
+    final list = <Widget>[];
+    final extraSize = animation.value;
     for (int i = 0; i < widget.passwordDigits; i++) {
       list.add(
         Container(
-          margin: EdgeInsets.all(8),
+          margin: const EdgeInsets.all(8),
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
               color: HexColor("#BEC2F4")),

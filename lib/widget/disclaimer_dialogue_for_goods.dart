@@ -8,7 +8,8 @@ Future<bool> showDisclaimerDialogueForGoods(BuildContext context) async {
     builder: (context) => StatefulBuilder(
       builder: (context, rentDurationStateSetter) {
         return AlertDialog(
-          insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+          insetPadding:
+              const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
           contentPadding: EdgeInsets.zero,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -27,13 +28,13 @@ Future<bool> showDisclaimerDialogueForGoods(BuildContext context) async {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(10),
                     child: Container(
-                      padding: EdgeInsets.only(top: 16, bottom: 8),
+                      padding: const EdgeInsets.only(top: 16, bottom: 8),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Container(
-                            padding: EdgeInsets.symmetric(
+                            padding: const EdgeInsets.symmetric(
                               horizontal: 16,
                             ),
                             child: Column(
@@ -52,7 +53,7 @@ Future<bool> showDisclaimerDialogueForGoods(BuildContext context) async {
                                         fontWeight: FontWeight.w700),
                                   ),
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   height: 12,
                                 ),
                                 Container(

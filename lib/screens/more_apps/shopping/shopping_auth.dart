@@ -282,14 +282,14 @@ class ShoppingAuthService extends AuthService {
     product.description = item['description'];
     product.shortDescription = item["short_description"];
     product.category = item['category'].isEmpty
-        ? ProductCategory("")
+        ? const ProductCategory("")
         : ProductCategory(item['category']["name"], id: item['category']["id"]);
     product.subCategory = item['sub_category'].isEmpty
-        ? ProductCategory("")
+        ? const ProductCategory("")
         : ProductCategory(item['sub_category']["name"],
             id: item['sub_category']["id"]);
     product.customCategory = item['custom_category'].isEmpty
-        ? ProductCategory("")
+        ? const ProductCategory("")
         : ProductCategory(item['custom_category']["name"],
             id: item['custom_category']["id"]);
     product.tags = item['tags'].isEmpty
@@ -806,7 +806,7 @@ class ShoppingAuthService extends AuthService {
         sectionProducts.add(data);
       }
 
-      print("_______________________________________$sectionProducts");
+      debugPrint("_______________________________________$sectionProducts");
 
       final Map<String, dynamic> result = {
         "sectionProducts": sectionProducts,
@@ -2104,7 +2104,7 @@ class ShoppingAuthService extends AuthService {
   Future<Map<String, dynamic>?> searchServiceInServices(
       String? next, String? previous,
       {required SearchItemWithFilterModelForSuperStore filterOptions}) async {
-    print('SEARCH FILTER BODY ........');
+    debugPrint('SEARCH FILTER BODY ........');
     String url = "";
     if (next == null) {
       return null;
@@ -2332,7 +2332,7 @@ class ShoppingAuthService extends AuthService {
   Future<List<ProductCategory>> obtainCustomCategory(name) async {
     final String url = AppConfig.baseUrl +
         "/api/v1/products/merchant-custom-categories/merchant/${name}/";
-    print("_________________________________________${url}");
+    debugPrint("_________________________________________${url}");
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
 
@@ -2381,10 +2381,10 @@ class ShoppingAuthService extends AuthService {
 
     final headers = await getAuthHeaders();
     final response = await httpPatch(url, headers: headers, body: _data);
-    print("__________________________________ ${response.statusCode}");
-    print("__________________________________ ${data}");
-    print("__________________________________ ${response}");
-    print("__________________________________ ${id}");
+    debugPrint("__________________________________ ${response.statusCode}");
+    debugPrint("__________________________________ ${data}");
+    debugPrint("__________________________________ ${response}");
+    debugPrint("__________________________________ ${id}");
     if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     }
@@ -2403,7 +2403,7 @@ class ShoppingAuthService extends AuthService {
       return true;
     } else {
       final jsonData = json.decode(response.body);
-      print("_________________________________${response}");
+      debugPrint("_________________________________${response}");
       throw jsonData;
     }
   }
@@ -2897,7 +2897,7 @@ class ShoppingAuthService extends AuthService {
       }
       final List<ShippingAddress> shippingAddressList = [];
       final jsonData = json.decode(response.body);
-      print(jsonData);
+      debugPrint(jsonData);
       for (var item in jsonData["results"]) {
         final ShippingAddress address = ShippingAddress.fromJson(item);
         shippingAddressList.add(address);
@@ -2927,6 +2927,7 @@ class ShoppingAuthService extends AuthService {
     if (next == null) {
       return null;
     }
+    final startTime = DateTime.now();
     if (next == "") {
       url = AppConfig.baseUrl + "/api/v1/business/discounts/";
     } else if (activeDiscount!) {
@@ -2966,6 +2967,9 @@ class ShoppingAuthService extends AuthService {
         "results": discountList
       };
 
+      final endTime = DateTime.now();
+      debugPrint(
+          'discount List: ${endTime.difference(startTime).inMilliseconds}ms');
       // debugPrint('CALLING OTHER check ---> ${result}');
       return result;
     } else if (response.statusCode == 500) {
@@ -3520,7 +3524,7 @@ class ShoppingAuthService extends AuthService {
     final String url = AppConfig.baseUrl + "/api/v1/products/add-by-token/";
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
-    print('Status of KYC...${response.body} and ${response.statusCode}');
+    debugPrint('Status of KYC...${response.body} and ${response.statusCode}');
     if (response.statusCode == 200 || response.statusCode == 201) {
       final jsonData = jsonDecode(response.body);
       return ProductDetails.fromJson(jsonData);

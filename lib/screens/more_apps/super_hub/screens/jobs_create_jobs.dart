@@ -128,42 +128,42 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
           )
         : SingleChildScrollView(
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Center(
                 child: Form(
                   key: _formKey,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       addImages(),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       addTitleField(),
-                      SizedBox(
+                      const SizedBox(
                         height: 10,
                       ),
                       getManufacturerField(),
-                      SizedBox(
+                      const SizedBox(
                         height: 10,
                       ),
                       getAmountField(),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       getCategoryField(),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       getProductConditionField(),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
                       getAvailableFromField(),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       getProductShortDescription(),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       getProductDescription(),
-                      SizedBox(height: 40),
+                      const SizedBox(height: 40),
                       getIsAvailableField(),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
                       getEnableInSuperStoreField(),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
                       getSubmitButton(),
-                      SizedBox(height: 40),
+                      const SizedBox(height: 40),
                     ],
                   ),
                 ),
@@ -174,7 +174,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
 
   Widget showBackArrow() {
     return IconButton(
-      icon: Icon(Icons.arrow_back_ios),
+      icon: const Icon(Icons.arrow_back_ios),
       onPressed: () {
         Navigator.pop(context);
       },
@@ -189,7 +189,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
         scrollDirection: Axis.horizontal,
         itemCount: productImages.length + 1,
         itemBuilder: (context, index) => Container(
-          padding: EdgeInsets.only(right: 6),
+          padding: const EdgeInsets.only(right: 6),
           child: index != productImages.length
               ? showImage(index)
               : productImages.length != imageCount
@@ -206,7 +206,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
         elevation: 3,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         shadowColor: boxShadowTwo,
-        margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+        margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
         child: Container(
           width: 100,
           decoration: BoxDecoration(
@@ -220,7 +220,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
                   SlydoAppIcon.add_image,
                   color: darkGrey,
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 4,
                 ),
                 Text(
@@ -259,7 +259,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
       ImagePicker().pickImage(source: imageSource).then((value) async {
         if (value != null) {
           /// for cropping the image
-          String? croppedImage = await ImageCrop().cropImage(value.path);
+          final String? croppedImage = await ImageCrop().cropImage(value.path);
           if (croppedImage == null) {
             return;
           }
@@ -282,7 +282,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
               borderRadius: BorderRadius.circular(10),
             ),
             shadowColor: dividerColor,
-            margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+            margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
             child: Container(
               width: 100,
               decoration: BoxDecoration(
@@ -299,10 +299,10 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
             right: 0,
             top: 0,
             child: IconButton(
-              padding: EdgeInsets.only(right: 6, top: 6),
+              padding: const EdgeInsets.only(right: 6, top: 6),
               alignment: Alignment.topRight,
               icon: Container(
-                padding: EdgeInsets.all(2.0),
+                padding: const EdgeInsets.all(2.0),
                 decoration: BoxDecoration(
                   color: iconBtnGrey,
                   borderRadius: BorderRadius.circular(5),
@@ -415,13 +415,14 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
                     }
                   },
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 Expanded(
                   child: ListView.builder(
                     shrinkWrap: true,
                     itemCount: productCategories!.length,
                     itemBuilder: (context, index) {
-                      ProductCategory category = productCategories![index];
+                      final ProductCategory category =
+                          productCategories![index];
                       if (selectedProductCategory == category) {
                         return Container(
                           color: selectedListItemBackgroundBlue,
@@ -489,7 +490,8 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
     final pressedCategory = await showDialog<ProductCategory>(
         context: context,
         builder: (context) => AlertDialog(
-              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              insetPadding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
@@ -582,7 +584,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
                     ? " (" + selectedProductCondition!.description + ")"
                     : "",
                 maxLines: 1,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 16,
                 ),
                 softWrap: false,
@@ -606,7 +608,8 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
     final pressedCondition = await showDialog<ProductCondition>(
         context: context,
         builder: (context) => AlertDialog(
-              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              insetPadding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
@@ -724,7 +727,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
     return CustomizedTextFormField(
       labelText: AppLocalization.of(context)!.price,
       keyboardType: Platform.isIOS
-          ? TextInputType.numberWithOptions(decimal: true)
+          ? const TextInputType.numberWithOptions(decimal: true)
           : TextInputType.number,
       isAmountField: true,
       onChanged: (val) {
@@ -775,7 +778,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
     if (_formKey.currentState!.validate()) {
       if (productImages.length >= 1) {
         if (validateDropdown()) {
-          Product product = Product();
+          final Product product = Product();
           product.localImages =
               productImages.map((file) => File(file.path)).toList();
           product.name = productName;

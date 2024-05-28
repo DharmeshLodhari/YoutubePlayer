@@ -58,13 +58,13 @@ class MomentVideoPlayerState extends State<MomentVideoPlayer> {
     _controller.addListener(() {
       if (_controller.value.isBuffering) {
         if (widget.controller.isAnimating) {
-          print("BUFFERING !! STOPPING ANIMATION CONTROLLER");
+          debugPrint("BUFFERING !! STOPPING ANIMATION CONTROLLER");
           widget.controller.stop();
         }
       } else {
-        print("NOT BUFFERING !!");
+        debugPrint("NOT BUFFERING !!");
         if (widget.controller.isAnimating == false) {
-          print("NOT BUFFERING !! STARTIING ANIMATION CONTROLLER");
+          debugPrint("NOT BUFFERING !! STARTIING ANIMATION CONTROLLER");
           widget.controller.forward();
         }
       }

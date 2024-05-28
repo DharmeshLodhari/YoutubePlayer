@@ -63,7 +63,7 @@ class _AddShippingOptionsState extends State<AddShippingOptions> {
   }
 
   Widget scaffoldBody(BuildContext context) {
-    bool isScreenIsSmall = MediaQuery.of(context).size.height < 600;
+    final bool isScreenIsSmall = MediaQuery.of(context).size.height < 600;
 
     if (isLoading == true) {
       return _buildLoadingIndicator();
@@ -92,34 +92,36 @@ class _AddShippingOptionsState extends State<AddShippingOptions> {
                     child: Column(
                       children: <Widget>[
                         Container(
-                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
                           child: Column(
                             children: [
-                              SizedBox(
+                              const SizedBox(
                                 height: 20,
                               ),
                               getLocation(),
-                              SizedBox(
+                              const SizedBox(
                                 height: 20,
                               ),
                               displayAmountField(),
-                              SizedBox(
+                              const SizedBox(
                                 height: 20,
                               ),
-                              errorMessage == ""
-                                  ? Container()
-                                  : Text(
-                                      errorMessage,
-                                      style: TextStyle(
-                                          color: mateRed,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16),
-                                    ),
-                              errorMessage == ""
-                                  ? Container()
-                                  : SizedBox(
-                                      height: 20,
-                                    ),
+                              if (errorMessage == "")
+                                Container()
+                              else
+                                Text(
+                                  errorMessage,
+                                  style: TextStyle(
+                                      color: mateRed,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16),
+                                ),
+                              if (errorMessage == "")
+                                Container()
+                              else
+                                const SizedBox(
+                                  height: 20,
+                                ),
                             ],
                           ),
                         ),
@@ -132,15 +134,15 @@ class _AddShippingOptionsState extends State<AddShippingOptions> {
             Container(
               child: Column(
                 children: [
-                  SizedBox(
+                  const SizedBox(
                     height: 20,
                   ),
                   if (amount == 0.0) ...[
-                    SizedBox()
+                    const SizedBox()
                   ] else ...[
                     getSubmitButton()
                   ],
-                  SizedBox(
+                  const SizedBox(
                     height: 20,
                   ),
                 ],
@@ -213,7 +215,7 @@ class _AddShippingOptionsState extends State<AddShippingOptions> {
       isAmountField: true,
       enabled: true,
       keyboardType: Platform.isIOS
-          ? TextInputType.numberWithOptions(decimal: true)
+          ? const TextInputType.numberWithOptions(decimal: true)
           : TextInputType.number,
       // inputFormatters: [FilteringTextInputFormatter.digitsOnly],
       controller: _amountController,
@@ -227,7 +229,7 @@ class _AddShippingOptionsState extends State<AddShippingOptions> {
       validator: (val) {
         if (val.isNotEmpty) {
           try {
-            double amount = double.parse(val.replaceAll(',', ''));
+            final double amount = double.parse(val.replaceAll(',', ''));
             if (amount == 0.0) {
               throw Exception("Invalid amount");
               // return null;
@@ -265,15 +267,15 @@ class _AddShippingOptionsState extends State<AddShippingOptions> {
     }
 
     isLoading = true;
-    await Future.delayed(Duration(milliseconds: 500));
+    await Future.delayed(const Duration(milliseconds: 500));
 
     // if (_formKey.currentState?.validate()) {
 
     try {
-      await Future.delayed(Duration(seconds: 3));
+      await Future.delayed(const Duration(seconds: 3));
       errorMessage = '';
 
-      var data = {
+      final data = {
         "currency": userBloc.user.currency,
         "price": moneyInputNormalizer(amount.toString()),
         "name": location,

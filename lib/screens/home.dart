@@ -745,7 +745,7 @@ class _HomeState extends State<Home> {
         break;
       default:
         // Handle the default case (if any)
-        print('Tapped on an unknown shortcut');
+        debugPrint('Tapped on an unknown shortcut');
     }
   }
 
@@ -975,7 +975,7 @@ class _HomeState extends State<Home> {
         break;
       default:
         // Handle the default case (if any)
-        print('Tapped on an unknown shortcut');
+        debugPrint('Tapped on an unknown shortcut');
     }
   }
 
@@ -1390,7 +1390,7 @@ class _HomeState extends State<Home> {
                 ),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               width: 5,
             ),
             if (label == 'Total Balance')
@@ -1409,7 +1409,7 @@ class _HomeState extends State<Home> {
               ),
           ],
         ),
-        SizedBox(
+        const SizedBox(
           height: 5,
         ),
         Row(
@@ -2153,7 +2153,7 @@ class _HomeState extends State<Home> {
         break;
       default:
         // Handle the default case (if any)
-        print('Tapped on an unknown shortcut');
+        debugPrint('Tapped on an unknown shortcut');
     }
   }
 }

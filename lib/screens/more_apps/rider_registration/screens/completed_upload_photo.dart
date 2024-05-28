@@ -23,7 +23,7 @@ class _CompletedUploadPhotoState extends State<CompletedUploadPhoto>
     _controller = AnimationController(vsync: this);
     _controller.addListener(() {
       if (_controller.isCompleted) {
-        Future.delayed(Duration(seconds: 1)).then((value) {
+        Future.delayed(const Duration(seconds: 1)).then((value) {
           if (mounted)
             Navigator.of(context)
                 .popUntil(ModalRoute.withName(Routes.REQUIRE_STEPS));
@@ -82,7 +82,7 @@ class _CompletedUploadPhotoState extends State<CompletedUploadPhoto>
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           _buildSuccessImage(),
-          SizedBox(height: 10.0),
+          const SizedBox(height: 10.0),
           _buildText(),
         ],
       ),

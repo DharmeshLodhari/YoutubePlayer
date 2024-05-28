@@ -80,7 +80,7 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
           isLoading = true;
         });
       }
-      Map<String, dynamic>? result =
+      final Map<String, dynamic>? result =
           await _auth.getAddOnsList(productId!, next, previous);
       if (result == null) {
         isLoading = false;
@@ -92,7 +92,7 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
       count = result['count'];
       next = result['next'];
       previous = result['previous'];
-      var tempList = result['results'];
+      final tempList = result['results'];
 
       productAddOnList.addAll(tempList);
 
@@ -113,7 +113,7 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
         _scaffoldMessengerKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 500),
         ));
       }
     }
@@ -123,7 +123,7 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
   void _onRefresh() async {
     //check network connectivity and if true then refresh the list
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         count = 0;
@@ -205,7 +205,7 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
       ),
       actions: <Widget>[
         addOptionBtn(),
-        SizedBox(
+        const SizedBox(
           width: 16,
         ),
       ],
@@ -341,7 +341,7 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
   }
 
   Widget loadAllCheckedAddOn() {
-    List<AddOns> addOnList =
+    final List<AddOns> addOnList =
         productAddOnList.where((addOn) => addOn.isChecked == true).toList();
 
     Navigator.pop(context, addOnList);
@@ -351,7 +351,7 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
   Widget productAddOnTile({required AddOns addOns, int? index}) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       shadowColor: boxShadowTwo,
       elevation: 0,
       child: Container(
@@ -370,7 +370,7 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
                     fontSize: 14,
                     fontFamily: "Inter"),
               ),
-              SizedBox(height: 5.0),
+              const SizedBox(height: 5.0),
               Text(
                 '${addOns.options!.length} items',
                 maxLines: 1,
@@ -409,7 +409,7 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
     return Slidable(
       controller: _slideController,
       direction: Axis.horizontal,
-      actionPane: SlidableBehindActionPane(),
+      actionPane: const SlidableBehindActionPane(),
       actionExtentRatio: 0.25,
       child: VerticalListItem(bankAccountTile),
       actions: listActionSlideActions(addOns: addOns),

@@ -12,7 +12,7 @@ import 'global_key.dart';
 
 String? messageDecoderWithEmoji(String? text) {
   try {
-    List<int> bytes = text!.codeUnits;
+    final List<int> bytes = text!.codeUnits;
 
     return utf8.decode(bytes);
     // return utf8.decode(base64.decode(text!));
@@ -28,7 +28,7 @@ String? messageDecoder(Uint8List data) {
 }
 
 Future<bool> sendDataToSocket(Map<String, dynamic> data) async {
-  MainSocketProvider mainSocketProvider = Provider.of<MainSocketProvider>(
+  final MainSocketProvider mainSocketProvider = Provider.of<MainSocketProvider>(
       myGlobals.navigationKey.currentContext!,
       listen: false);
   await mainSocketProvider.add(data);
@@ -63,7 +63,7 @@ String trimString(String input) {
 
 String appendStringDot(String input, int maxLength) {
   // int maxLength = 20;
-  String shortText =
+  final String shortText =
       input.length > maxLength ? input.substring(0, maxLength) + "..." : input;
   return shortText;
 }

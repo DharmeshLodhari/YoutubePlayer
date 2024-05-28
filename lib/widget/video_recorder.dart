@@ -63,7 +63,7 @@ class _VideoRecorderState extends State<VideoRecorder> {
         _onCameraSwitched(cameras![selectedCameraIdx!]).then((void v) {});
       }
     }).catchError((err) {
-      print('Error: $err.code\nError Message: $err.message');
+      debugPrint('Error: $err.code\nError Message: $err.message');
     });
   }
 
@@ -74,7 +74,7 @@ class _VideoRecorderState extends State<VideoRecorder> {
       titleSpacing: 0,
       automaticallyImplyLeading: false,
       leading: IconButton(
-        icon: Icon(
+        icon: const Icon(
           Icons.keyboard_arrow_left,
           color: Colors.white,
           size: 28,
@@ -110,8 +110,8 @@ class _VideoRecorderState extends State<VideoRecorder> {
                   ),
                 ),
                 Container(
-                  child: Padding(
-                    padding: const EdgeInsets.all(1.0),
+                  child: const Padding(
+                    padding: EdgeInsets.all(1.0),
                   ),
                   height: MediaQuery.of(context).size.height,
                   width: MediaQuery.of(context).size.width,
@@ -132,16 +132,16 @@ class _VideoRecorderState extends State<VideoRecorder> {
                     children: [
                       Text(
                         getTimerDuration(timerService.currentDuration),
-                        style: TextStyle(
+                        style: const TextStyle(
                             fontSize: 16,
                             color: Colors.white,
                             fontWeight: FontWeight.w600),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 8,
                       ),
                       Container(
-                        padding: EdgeInsets.symmetric(vertical: 16),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
                         width: MediaQuery.of(context).size.width,
                         color: Colors.black45,
                         child: Row(
@@ -167,8 +167,8 @@ class _VideoRecorderState extends State<VideoRecorder> {
                 ),
               ),
               Container(
-                child: Padding(
-                  padding: const EdgeInsets.all(1.0),
+                child: const Padding(
+                  padding: EdgeInsets.all(1.0),
                 ),
                 height: MediaQuery.of(context).size.height,
                 width: MediaQuery.of(context).size.width,
@@ -189,16 +189,16 @@ class _VideoRecorderState extends State<VideoRecorder> {
                   children: [
                     Text(
                       getTimerDuration(timerService.currentDuration),
-                      style: TextStyle(
+                      style: const TextStyle(
                           fontSize: 16,
                           color: Colors.white,
                           fontWeight: FontWeight.w600),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 8,
                     ),
                     Container(
-                      padding: EdgeInsets.symmetric(vertical: 16),
+                      padding: const EdgeInsets.symmetric(vertical: 16),
                       width: MediaQuery.of(context).size.width,
                       color: Colors.black45,
                       child: Row(
@@ -222,8 +222,8 @@ class _VideoRecorderState extends State<VideoRecorder> {
 
   String getTimerDuration(Duration duration) {
     String twoDigits(int n) => n.toString().padLeft(2, "0");
-    String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
-    String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
+    final String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
+    final String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
     return "${twoDigits(duration.inHours)}:$twoDigitMinutes:$twoDigitSeconds";
   }
 
@@ -237,7 +237,7 @@ class _VideoRecorderState extends State<VideoRecorder> {
           timerService.reset();
           Navigator.pop(context);
         },
-        child: Icon(
+        child: const Icon(
           Icons.close_rounded,
           color: Colors.white,
         ),
@@ -287,8 +287,8 @@ class _VideoRecorderState extends State<VideoRecorder> {
       return Row();
     }
 
-    CameraDescription selectedCamera = cameras![selectedCameraIdx!];
-    CameraLensDirection lensDirection = selectedCamera.lensDirection;
+    final CameraDescription selectedCamera = cameras![selectedCameraIdx!];
+    final CameraLensDirection lensDirection = selectedCamera.lensDirection;
 
     return Expanded(
         child: Align(
@@ -325,7 +325,7 @@ class _VideoRecorderState extends State<VideoRecorder> {
                     scale: animation,
                     child: child,
                   ),
-                  duration: Duration(microseconds: 500),
+                  duration: const Duration(microseconds: 500),
                 ),
               ),
             ),
@@ -354,7 +354,7 @@ class _VideoRecorderState extends State<VideoRecorder> {
           borderRadius: BorderRadius.circular(50),
           border: Border.all(color: Colors.white, width: 1.5),
         ),
-        child: Icon(
+        child: const Icon(
           Icons.stop,
           color: Colors.red,
         ),
@@ -411,7 +411,7 @@ class _VideoRecorderState extends State<VideoRecorder> {
   void _onSwitchCamera() {
     selectedCameraIdx =
         selectedCameraIdx! < cameras!.length - 1 ? selectedCameraIdx! + 1 : 0;
-    CameraDescription selectedCamera = cameras![selectedCameraIdx!];
+    final CameraDescription selectedCamera = cameras![selectedCameraIdx!];
 
     _onCameraSwitched(selectedCamera);
 
@@ -487,7 +487,7 @@ class _VideoRecorderState extends State<VideoRecorder> {
     }
 
     try {
-      XFile file = await controller!.stopVideoRecording();
+      final XFile file = await controller!.stopVideoRecording();
       videoPath = file.path;
     } on CameraException catch (e) {
       _showCameraException(e);
@@ -496,8 +496,9 @@ class _VideoRecorderState extends State<VideoRecorder> {
   }
 
   void _showCameraException(CameraException e) {
-    String errorText = 'Error: ${e.code}\nError Message: ${e.description}';
-    print(errorText);
+    final String errorText =
+        'Error: ${e.code}\nError Message: ${e.description}';
+    debugPrint(errorText);
     showToast(message: 'Error: ${e.code}\n${e.description}');
   }
 

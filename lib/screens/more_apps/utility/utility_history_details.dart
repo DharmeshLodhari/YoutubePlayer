@@ -45,7 +45,7 @@ class _UtilityHistoryDetailScreenState
 
   Widget showBackArrow() {
     return IconButton(
-      icon: Icon(Icons.arrow_back_ios),
+      icon: const Icon(Icons.arrow_back_ios),
       onPressed: () {
         Navigator.pop(context);
       },
@@ -91,7 +91,7 @@ class _UtilityHistoryDetailScreenState
       actions: <Widget>[
         downloadBtn(),
         // showMap(),
-        SizedBox(width: 16),
+        const SizedBox(width: 16),
       ],
     );
   }
@@ -127,7 +127,7 @@ class _UtilityHistoryDetailScreenState
             (AppBar().preferredSize.height +
                 MediaQuery.of(context).padding.top),
         width: MediaQuery.of(context).size.width,
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         child: isLoading
             ? Center(child: CircularLoadingIndicator())
             : Stack(
@@ -144,11 +144,11 @@ class _UtilityHistoryDetailScreenState
                             Row(
                               children: [
                                 displayUtilityImage(),
-                                SizedBox(width: 10),
+                                const SizedBox(width: 10),
                                 displayUtilityName(),
                               ],
                             ),
-                            SizedBox(height: 12),
+                            const SizedBox(height: 12),
                             displayUtilityHistoryBody(),
                           ],
                         ),
@@ -162,24 +162,24 @@ class _UtilityHistoryDetailScreenState
   }
 
   String _getFormattedDateTime() {
-    DateTime utilityTransactionTime =
+    final DateTime utilityTransactionTime =
         DateTime.parse(_utilityHistoryModel.createdAt);
-    String date = DateFormat.jm().format(utilityTransactionTime);
-    String time = DateFormat.yMMMMd().format(utilityTransactionTime);
+    final String date = DateFormat.jm().format(utilityTransactionTime);
+    final String time = DateFormat.yMMMMd().format(utilityTransactionTime);
 
     return "$date, $time";
   }
 
   List<Widget> getDashes({required int numberOfDashes}) {
-    List<Widget> widgets = [];
+    final List<Widget> widgets = [];
     for (int i = 0; i < numberOfDashes; i++) {
       widgets.add(
         Expanded(
           child: Container(
             width: 10,
             height: 1,
-            color: Color(0XFFD7DAEC),
-            margin: EdgeInsets.symmetric(horizontal: 4),
+            color: const Color(0XFFD7DAEC),
+            margin: const EdgeInsets.symmetric(horizontal: 4),
           ),
         ),
       );
@@ -190,8 +190,8 @@ class _UtilityHistoryDetailScreenState
   Widget displayUtilityImage() {
     return Card(
       elevation: 7,
-      shadowColor: Color(0XFF314167).withOpacity(0.08),
-      margin: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+      shadowColor: const Color(0XFF314167).withOpacity(0.08),
+      margin: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(15),
       ),
@@ -252,12 +252,12 @@ class _UtilityHistoryDetailScreenState
 
   Widget displayUtilityHistoryBody() {
     return Container(
-      padding: EdgeInsets.only(left: 14),
+      padding: const EdgeInsets.only(left: 14),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           _historyDetailsTile(
             title: AppLocalization.of(context)!.amount,
             subTitleText:
@@ -276,12 +276,12 @@ class _UtilityHistoryDetailScreenState
             subTitleWidget: getStatusWidget(),
             imagePathName: 'status_icon.png',
           ),
-          SizedBox(height: 28),
+          const SizedBox(height: 28),
           Card(
             elevation: 1,
-            shadowColor: Color(0XFFD7DAEC),
-            margin: EdgeInsets.only(right: 16),
-            shape: RoundedRectangleBorder(
+            shadowColor: const Color(0XFFD7DAEC),
+            margin: const EdgeInsets.only(right: 16),
+            shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.only(
                 bottomLeft: Radius.circular(12),
                 bottomRight: Radius.circular(12),
@@ -297,7 +297,7 @@ class _UtilityHistoryDetailScreenState
                     width: 34,
                     height: 34,
                   ),
-                  SizedBox(width: 14),
+                  const SizedBox(width: 14),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -310,9 +310,9 @@ class _UtilityHistoryDetailScreenState
                             fontSize: 14,
                           ),
                         ),
-                        SizedBox(width: 10),
-                        Text('------'),
-                        SizedBox(width: 5),
+                        const SizedBox(width: 10),
+                        const Text('------'),
+                        const SizedBox(width: 5),
                       ],
                     ),
                   ),
@@ -335,7 +335,7 @@ class _UtilityHistoryDetailScreenState
 
   getStatusWidget() {
     return Container(
-      padding: EdgeInsets.all(7),
+      padding: const EdgeInsets.all(7),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
         color: _utilityHistoryModel.status == 'Successful'
@@ -366,7 +366,7 @@ class _UtilityHistoryDetailScreenState
             width: 34,
             height: 34,
           ),
-          SizedBox(width: 14),
+          const SizedBox(width: 14),
           Expanded(
             child: Padding(
               padding: const EdgeInsets.only(top: 18.0),
@@ -381,7 +381,7 @@ class _UtilityHistoryDetailScreenState
                       fontSize: 14,
                     ),
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   subTitleWidget ??
                       Text(
                         subTitleText,

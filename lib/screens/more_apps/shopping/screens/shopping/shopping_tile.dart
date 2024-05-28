@@ -26,7 +26,7 @@ class ShoppingTile extends StatelessWidget {
         child: Container(
           decoration: decorateBox(),
           child: Container(
-            padding: EdgeInsets.all(12),
+            padding: const EdgeInsets.all(12),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -40,7 +40,7 @@ class ShoppingTile extends StatelessWidget {
                     errorWidget: productAndServiceErrorWidget,
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 16,
                 ),
                 Expanded(
@@ -135,7 +135,7 @@ class _ShoppingTileWithHeartState extends State<ShoppingTileWithHeart> {
         child: Container(
           decoration: decorateBox(),
           child: Container(
-            padding: EdgeInsets.all(12),
+            padding: const EdgeInsets.all(12),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -149,7 +149,7 @@ class _ShoppingTileWithHeartState extends State<ShoppingTileWithHeart> {
                     errorWidget: productAndServiceErrorWidget,
                   ),
                 ),
-                SizedBox(width: 16),
+                const SizedBox(width: 16),
                 Expanded(
                   child: Container(
                     height: 60,
@@ -166,7 +166,7 @@ class _ShoppingTileWithHeartState extends State<ShoppingTileWithHeart> {
                             color: blackFont,
                           ),
                         ),
-                        SizedBox(height: 2),
+                        const SizedBox(height: 2),
                         Text(
                           widget.product?.seller ?? "",
                           style: TextStyle(
@@ -175,7 +175,7 @@ class _ShoppingTileWithHeartState extends State<ShoppingTileWithHeart> {
                             color: blackFont,
                           ),
                         ),
-                        SizedBox(height: 4),
+                        const SizedBox(height: 4),
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
@@ -261,7 +261,7 @@ class _ShoppingTileWithHeartWithProductState
         child: Container(
           decoration: decorateBox(),
           child: Container(
-            padding: EdgeInsets.all(12),
+            padding: const EdgeInsets.all(12),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -277,7 +277,7 @@ class _ShoppingTileWithHeartWithProductState
                         (MediaQuery.of(context).size.height * 0.6).toInt(),
                   ),
                 ),
-                SizedBox(width: 16),
+                const SizedBox(width: 16),
                 Expanded(
                   child: Container(
                     height: 60,
@@ -294,7 +294,7 @@ class _ShoppingTileWithHeartWithProductState
                             color: blackFont,
                           ),
                         ),
-                        SizedBox(height: 2),
+                        const SizedBox(height: 2),
                         Text(
                           widget.product?.seller ?? "",
                           style: TextStyle(
@@ -303,7 +303,7 @@ class _ShoppingTileWithHeartWithProductState
                             color: blackFont,
                           ),
                         ),
-                        SizedBox(height: 4),
+                        const SizedBox(height: 4),
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
@@ -386,7 +386,8 @@ class _MovieTileGeneralState extends State<MovieTileGeneral> {
         child: Container(
           decoration: decorateBox(),
           child: ListTile(
-            contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
             leading: Container(
               height: 68,
               width: 68,
@@ -420,7 +421,7 @@ class _MovieTileGeneralState extends State<MovieTileGeneral> {
                       color: starYellow,
                       size: 12,
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 4,
                     ),
                     Text(
@@ -509,7 +510,7 @@ class _ShoppingTileWithHeartWithServiceState
         child: Container(
           decoration: decorateBox(),
           child: Container(
-            padding: EdgeInsets.all(12),
+            padding: const EdgeInsets.all(12),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -525,7 +526,7 @@ class _ShoppingTileWithHeartWithServiceState
                         (MediaQuery.of(context).size.height * 0.6).toInt(),
                   ),
                 ),
-                SizedBox(width: 16),
+                const SizedBox(width: 16),
                 Expanded(
                   child: Container(
                     height: 60,
@@ -551,7 +552,7 @@ class _ShoppingTileWithHeartWithServiceState
                         //     color: blackFont,
                         //   ),
                         // ),
-                        SizedBox(height: 4),
+                        const SizedBox(height: 4),
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [

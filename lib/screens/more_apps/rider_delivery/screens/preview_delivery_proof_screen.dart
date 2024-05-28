@@ -103,13 +103,13 @@ class _PreviewDeliveryProofScreenState
   Widget _buildBody() {
     return Scaffold(
       body: Padding(
-        padding: EdgeInsets.all(25.0),
+        padding: const EdgeInsets.all(25.0),
         child: Column(
           children: [
             Expanded(
               child: mediaRenderer(),
             ),
-            SizedBox(height: 20.0),
+            const SizedBox(height: 20.0),
             _buildButton()
           ],
         ),
@@ -149,16 +149,17 @@ class _PreviewDeliveryProofScreenState
             widget: Stack(
               children: [
                 VideoPlayer(videoPlayerController!),
-                isTapped == false
-                    ? Align(
-                        alignment: Alignment.center,
-                        child: SvgPicture.asset(
-                          "yarn/cam_vec".toSVG(),
-                          height: 50,
-                          width: 50,
-                        ),
-                      )
-                    : const SizedBox.shrink()
+                if (isTapped == false)
+                  Align(
+                    alignment: Alignment.center,
+                    child: SvgPicture.asset(
+                      "yarn/cam_vec".toSVG(),
+                      height: 50,
+                      width: 50,
+                    ),
+                  )
+                else
+                  const SizedBox.shrink()
               ],
             ),
           ),
@@ -190,7 +191,7 @@ class _PreviewDeliveryProofScreenState
             backgroundColor: white,
           ),
         ),
-        SizedBox(width: 15.0),
+        const SizedBox(width: 15.0),
         Expanded(
           child: CurvedButton(
             onPressed: () {

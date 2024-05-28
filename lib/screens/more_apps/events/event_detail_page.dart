@@ -308,7 +308,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
   }
 
   Widget eventTimeAndPlaceDetail() {
-    UserBloc userBloc = Provider.of<UserBloc>(context);
+    final UserBloc userBloc = Provider.of<UserBloc>(context);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

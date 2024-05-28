@@ -166,9 +166,10 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      checkImageLimitForServerImage()
-                          ? viewServerImages()
-                          : Container(),
+                      if (productImagesFromServer.isNotEmpty)
+                        checkImageLimitForServerImage()
+                            ? viewServerImages()
+                            : Container(),
 
                       const SizedBox(height: 10),
                       checkImageLimitForLocalImage()
@@ -313,7 +314,7 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
       ImagePicker().pickImage(source: imageSource).then((value) async {
         if (value != null) {
           /// for cropping the image
-          String? croppedImage = await ImageCrop().cropImage(value.path);
+          final String? croppedImage = await ImageCrop().cropImage(value.path);
           if (croppedImage == null) {
             return;
           }
@@ -394,7 +395,7 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
         scrollDirection: Axis.horizontal,
         itemCount: productImagesFromServer.length,
         itemBuilder: (context, index) => Container(
-          padding: EdgeInsets.only(right: 6),
+          padding: const EdgeInsets.only(right: 6),
           child: showServerImage(index),
         ),
       ),
@@ -413,7 +414,8 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
                 borderRadius: BorderRadius.circular(10),
               ),
               shadowColor: boxShadowTwo,
-              margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+              margin:
+                  const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
               child: Container(
                 width: 100,
                 decoration: BoxDecoration(
@@ -431,10 +433,10 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
             right: 0,
             top: 0,
             child: IconButton(
-              padding: EdgeInsets.only(right: 6, top: 6),
+              padding: const EdgeInsets.only(right: 6, top: 6),
               alignment: Alignment.topRight,
               icon: Container(
-                padding: EdgeInsets.all(2.0),
+                padding: const EdgeInsets.all(2.0),
                 decoration: BoxDecoration(
                   color: iconBtnGrey,
                   borderRadius: BorderRadius.circular(5),
@@ -445,7 +447,7 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
                   size: 15,
                 ),
               ),
-              onPressed: () {
+              onPressed: () async {
                 // var imageId = currentProduct.getImageId(productImagesFromServer[index]);
                 // debugPrint("imageId:- $imageId");
                 // _auth.deleteProductOrServiceImage(imageId).then((value) {
@@ -494,7 +496,7 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
         scrollDirection: Axis.horizontal,
         itemCount: croppedImageList.length + 1,
         itemBuilder: (context, index) => Container(
-          padding: EdgeInsets.only(right: 6),
+          padding: const EdgeInsets.only(right: 6),
           child: index != croppedImageList.length
               ? showLocalImage(index)
               : croppedImageList.length + productImagesFromServer.length !=
@@ -515,7 +517,7 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
             borderRadius: BorderRadius.circular(10),
           ),
           shadowColor: dividerColor,
-          margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+          margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
           child: Container(
             width: 100,
             child: Image.file(
@@ -530,10 +532,10 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
           right: 0,
           top: 0,
           child: IconButton(
-            padding: EdgeInsets.only(right: 6, top: 6),
+            padding: const EdgeInsets.only(right: 6, top: 6),
             alignment: Alignment.topRight,
             icon: Container(
-              padding: EdgeInsets.all(2.0),
+              padding: const EdgeInsets.all(2.0),
               decoration: BoxDecoration(
                 color: iconBtnGrey,
                 borderRadius: BorderRadius.circular(5),
@@ -709,7 +711,8 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
               DateTime.now().year, DateTime.now().month, DateTime.now().day),
           lastDate: DateTime(2101),
         ).then((value) {
-          DateTime selectedDate = DateTime(value!.year, value.month, value.day);
+          final DateTime selectedDate =
+              DateTime(value!.year, value.month, value.day);
 
           productAvailableFrom = DateFormat('yyyy-MM-dd').format(selectedDate);
           // productAvailableFrom = DateTime(value!.year, value.month, value.day);
@@ -869,7 +872,7 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
                     shrinkWrap: true,
                     itemCount: typeList.length,
                     itemBuilder: (context, index) {
-                      var category = typeList[index];
+                      final category = typeList[index];
                       if (selectedType == category) {
                         return Container(
                           color: selectedListItemBackgroundBlue,
@@ -950,7 +953,7 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
     if (_formKey.currentState!.validate()) {
       if (croppedImageList.length >= 1 || productImagesFromServer.length >= 1) {
         if (validateDropdown()) {
-          Variant variant = Variant();
+          final Variant variant = Variant();
           variant.id = id;
           // variant.localImages = productLocalImages.map((file) => File(file.path)).toList();
           variant.localImages =

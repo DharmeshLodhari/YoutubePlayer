@@ -517,7 +517,7 @@ class _AddPropertyState extends State<AddProperty> {
   }
 
   void captureVideo() async {
-    var path = await Navigator.of(context)
+    final path = await Navigator.of(context)
         .pushNamed("/video-recorder", arguments: {"duration": videoDuration});
     if (path != null) {
       debugPrint("$path");
@@ -583,7 +583,7 @@ class _AddPropertyState extends State<AddProperty> {
             ));
 
     if (videoSource != null) {
-      bool? isConditionAccepted = await videoLengthAlert();
+      final bool? isConditionAccepted = await videoLengthAlert();
       if (isConditionAccepted != null && isConditionAccepted) {
         if (videoSource == ImageSource.gallery) {
           ImagePicker()
@@ -592,9 +592,9 @@ class _AddPropertyState extends State<AddProperty> {
               .then((value) async {
             if (value != null) {
               final videoInfo = FlutterVideoInfo();
-              var info = await videoInfo.getVideoInfo(value.path);
+              final info = await videoInfo.getVideoInfo(value.path);
               if (info == null) return;
-              Duration pickedVideoDuration =
+              final Duration pickedVideoDuration =
                   Duration(milliseconds: info.duration!.toInt());
               if (pickedVideoDuration > videoLimit) {
                 showToast(
@@ -681,7 +681,7 @@ class _AddPropertyState extends State<AddProperty> {
                                       ),
                                       RichText(
                                         textAlign: TextAlign.justify,
-                                        text: new TextSpan(
+                                        text: TextSpan(
                                           // Note: Styles for TextSpans must be explicitly defined.
                                           // Child text spans will inherit styles from parent
                                           style: TextStyle(
@@ -696,7 +696,7 @@ class _AddPropertyState extends State<AddProperty> {
                                             TextSpan(
                                                 text:
                                                     '${videoLimit.inMinutes} minutes',
-                                                style: new TextStyle(
+                                                style: const TextStyle(
                                                     fontWeight:
                                                         FontWeight.bold)),
                                             const TextSpan(

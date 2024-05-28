@@ -76,8 +76,8 @@ class _UserProductServiceDiscountState
       shadowColor: greySecondaryYarn,
       actions: [
         getSearchBtn(),
-        const SizedBox(width: 10.0),
-        FilterIcon(),
+        // const SizedBox(width: 10.0),
+        // FilterIcon(),
         const SizedBox(width: 16.0),
       ],
     );
@@ -98,7 +98,7 @@ class _UserProductServiceDiscountState
           icon: const Icon(
             Icons.search,
             color: Colors.black,
-            size: 20,
+            size: 21,
           ),
           onPressed: () async {
             String filterItem;

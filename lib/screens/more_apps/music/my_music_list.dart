@@ -87,12 +87,13 @@ class _MyMusicListState extends State<MyMusicList> {
                 onRefresh: _onRefresh,
                 child: SingleChildScrollView(
                   child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Column(
                       children: musicList
                           .map(
                             (partialMusicItem) => Container(
-                                padding: EdgeInsets.symmetric(vertical: 8),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 8),
                                 child: MusicTileGeneral(
                                   partialMusicItem: partialMusicItem,
                                 )),

@@ -16,20 +16,20 @@ Future<List<ShippingAddress>> getAddressListing(
     List<String?> addressIdList) async {
   String? listNext = "";
   String? listPrevious = "";
-  List<ShippingAddress> addressListing = [];
+  final List<ShippingAddress> addressListing = [];
   int? listCount = 0;
-  Map<String, dynamic> data = {
+  final Map<String, dynamic> data = {
     "addresses": addressIdList,
   };
 
   if (listNext != null) {
-    Map<String, dynamic>? result = await ShippingProcessAuthService()
+    final Map<String, dynamic>? result = await ShippingProcessAuthService()
         .getAddressListing(listNext, listPrevious, data);
 
     listCount = result!['count'];
     listNext = result['next'];
     listPrevious = result['previous'];
-    var tempList = result['results'];
+    final tempList = result['results'];
     addressListing.addAll(tempList);
   }
   return addressListing;
@@ -39,15 +39,15 @@ Future<List<SharedCartModel>> getCartList() async {
   int? listCount = 0;
   String? listNext = "";
   String? listPrevious = "";
-  List<SharedCartModel> cartNameListing = [];
+  final List<SharedCartModel> cartNameListing = [];
   if (listNext != null) {
-    Map<String, dynamic>? result =
+    final Map<String, dynamic>? result =
         await SharedCartAuthService().getSharedCartList(listNext, listPrevious);
 
     listCount = result!['count'];
     listNext = result['next'];
     listPrevious = result['previous'];
-    var tempList = result['results'];
+    final tempList = result['results'];
     cartNameListing.addAll(tempList);
   }
   return cartNameListing;
@@ -56,7 +56,7 @@ Future<List<SharedCartModel>> getCartList() async {
 Future<bool?> buildNewCartAlertDialog(
     {required BuildContext context,
     required Map<String, dynamic> notification}) async {
-  bool? result = await showDialogBoxWithInput(
+  final bool? result = await showDialogBoxWithInput(
       context: context,
       actionOneTextColor: blackFont,
       actionOneBgColor: greyBorderColor,
@@ -75,7 +75,7 @@ Future<bool?> buildNewCartAlertDialog(
                   fontSize: 16.0),
               textAlign: TextAlign.center),
           Container(
-            margin: EdgeInsets.only(top: 30, bottom: 10),
+            margin: const EdgeInsets.only(top: 30, bottom: 10),
             child: RichText(
               textAlign: TextAlign.center,
               text: TextSpan(
@@ -123,16 +123,16 @@ Future<bool?> buildNewCartAlertDialog(
       rightButtonOnPressed: () async {
         Navigator.pop(context);
 
-        SharedCartBloc sharedCartBloc =
+        final SharedCartBloc sharedCartBloc =
             Provider.of<SharedCartBloc>(context, listen: false);
-        int index = sharedCartBloc.cartList
+        final int index = sharedCartBloc.cartList
             .indexWhere((item) => item.id == notification['data']['cart_id']);
 
         if (index == null || index < 0) {
           await sharedCartBloc.refreshAllCart(context);
         }
 
-        int newIndex = sharedCartBloc.cartList
+        final int newIndex = sharedCartBloc.cartList
             .indexWhere((item) => item.id == notification['data']['cart_id']);
 
         sharedCartBloc.currentSelectedIndex = newIndex;
@@ -145,7 +145,7 @@ Future<bool?> buildNewCartAlertDialog(
 Future<bool?> buildCartPaymentRequestDialog(
     {required BuildContext context,
     required Map<String, dynamic> notification}) async {
-  bool? result = await showDialogBoxWithInput(
+  final bool? result = await showDialogBoxWithInput(
       context: context,
       actionOneTextColor: blackFont,
       actionOneBgColor: greyBorderColor,
@@ -164,7 +164,7 @@ Future<bool?> buildCartPaymentRequestDialog(
                   fontSize: 16.0),
               textAlign: TextAlign.center),
           Container(
-            margin: EdgeInsets.only(top: 30, bottom: 10),
+            margin: const EdgeInsets.only(top: 30, bottom: 10),
             child: RichText(
               textAlign: TextAlign.center,
               text: TextSpan(

@@ -30,13 +30,13 @@ class _SelectCableProviderState extends State<SelectCableProvider> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
+          const SizedBox(
             height: 16,
           ),
           Container(
-              padding: EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               child: selectProviderText()),
-          SizedBox(
+          const SizedBox(
             height: 16,
           ),
           Expanded(

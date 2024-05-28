@@ -57,7 +57,7 @@ class _PaymentLinkState extends State<PaymentLink> {
             isLoading = true;
           });
         }
-        dynamic result = await _auth.getPaymentLinks();
+        final dynamic result = await _auth.getPaymentLinks();
 
         if (result == null) {
           isLoading = false;
@@ -66,7 +66,7 @@ class _PaymentLinkState extends State<PaymentLink> {
         next = result['next'];
         count = result['count'];
         previous = result['previous'];
-        var tempList = result['results'];
+        final tempList = result['results'];
 
         isLoading = false;
         paymentLinkList.addAll(tempList);
@@ -87,7 +87,7 @@ class _PaymentLinkState extends State<PaymentLink> {
         isLoading = true;
       });
     }
-    dynamic result = await _auth.cancelPaymentLinks(cancelPaymentLink);
+    final dynamic result = await _auth.cancelPaymentLinks(cancelPaymentLink);
 
     if (result == true) {
       if (mounted)
@@ -111,7 +111,7 @@ class _PaymentLinkState extends State<PaymentLink> {
       });
     }
     paymentLinkList.clear();
-    dynamic result = await _auth.filterPaymentLinks(filter: filter);
+    final dynamic result = await _auth.filterPaymentLinks(filter: filter);
     log('filter link results::::: ${result.toString()}');
 
     if (result == null) {
@@ -121,7 +121,7 @@ class _PaymentLinkState extends State<PaymentLink> {
     next = result['next'];
     count = result['count'];
     previous = result['previous'];
-    var tempList = result['results'];
+    final tempList = result['results'];
 
     isLoading = false;
     paymentLinkList.addAll(tempList);
@@ -518,36 +518,36 @@ class _PaymentLinkState extends State<PaymentLink> {
             itemBuilder: (BuildContext bc) {
               return const [
                 PopupMenuItem(
-                  child: Text("All"),
                   value: 'all',
+                  child: Text("All"),
                 ),
                 PopupMenuItem(
-                  child: Text("Active"),
                   value: 'active',
+                  child: Text("Active"),
                 ),
                 PopupMenuItem(
-                  child: Text("Inactive"),
                   value: 'inactive',
+                  child: Text("Inactive"),
                 ),
                 PopupMenuItem(
-                  child: Text("Paid"),
                   value: 'paid',
+                  child: Text("Paid"),
                 ),
                 PopupMenuItem(
-                  child: Text("Cancelled"),
                   value: 'cancelled',
+                  child: Text("Cancelled"),
                 ),
                 PopupMenuItem(
-                  child: Text("Suspended"),
                   value: 'suspended',
+                  child: Text("Suspended"),
                 ),
                 PopupMenuItem(
-                  child: Text("Reversed"),
                   value: 'reversed',
+                  child: Text("Reversed"),
                 ),
                 PopupMenuItem(
-                  child: Text("Failed"),
                   value: 'failed',
+                  child: Text("Failed"),
                 ),
               ];
             },
@@ -577,7 +577,7 @@ class _PaymentLinkState extends State<PaymentLink> {
   }
 
   void rejectRequestAlert(data, index) async {
-    bool? result = await showDialogBox(
+    final bool? result = await showDialogBox(
       context: context,
       roundedBackgroundIcon: RoundedBackgroundIcon(
         backgroundColor: mateRed.withOpacity(0.08),
@@ -603,7 +603,7 @@ class _PaymentLinkState extends State<PaymentLink> {
       actionTwoText: "Ignore",
     );
     if (result != null && result) {
-      bool done = true;
+      final bool done = true;
       if (done) {
         setState(() {
           // paymentLinkList.removeAt(index);
@@ -697,7 +697,7 @@ class _PaymentLinkState extends State<PaymentLink> {
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         next = "";

@@ -50,7 +50,7 @@ class DiscountModel {
     productCount = json['product_count'];
     serviceCount = json['service_count'];
     if (json['start_date'] != null) {
-      List<int> parse = json['start_date']
+      final List<int> parse = json['start_date']
           .toString()
           .split("-")
           .toList()
@@ -62,7 +62,7 @@ class DiscountModel {
     }
 
     if (json['end_date'] != null) {
-      List<int> parse = json['end_date']
+      final List<int> parse = json['end_date']
           .toString()
           .split("-")
           .toList()
@@ -74,7 +74,7 @@ class DiscountModel {
     }
 
     if (json['only_from'] != null) {
-      List<int> parse = json['only_from']
+      final List<int> parse = json['only_from']
           .toString()
           .split(":")
           .toList()
@@ -86,7 +86,7 @@ class DiscountModel {
       }
     }
     if (json['only_to'] != null) {
-      List<int> parse = json['only_to']
+      final List<int> parse = json['only_to']
           .toString()
           .split(":")
           .toList()
@@ -161,12 +161,12 @@ class DiscountModel {
       map['end_date'] =
           endDate?.toDateFormatString(dateFormat: "yyyy-MM-dd").toString();
     }
-    // if (onlyFrom != null) {
-    //   map['only_from'] = onlyFrom?.toDateFormatString(dateFormat: "hh:mm");
-    // }
-    // if (onlyTo != null) {
-    //   map['only_to'] = onlyTo?.toDateFormatString(dateFormat: "hh:mm");
-    // }
+    if (onlyFrom != null) {
+      map['only_from'] = onlyFrom?.toDateFormatString(dateFormat: "hh:mm");
+    }
+    if (onlyTo != null) {
+      map['only_to'] = onlyTo?.toDateFormatString(dateFormat: "hh:mm");
+    }
     if (consumables != null) {
       map['consumables'] = consumables?.toJson() ?? {};
     }
@@ -210,7 +210,7 @@ class DiscountModel {
   void addProductsToDiscount(List<String?> products) {
     consumables ??= Consumables(product: []);
 
-    List<String> data = [];
+    final List<String> data = [];
 
     for (String? id in products) {
       if (id != null) {
@@ -224,7 +224,7 @@ class DiscountModel {
   void addServicesToDiscount(List<String?> services) {
     consumables ??= Consumables(service: []);
 
-    List<String> data = [];
+    final List<String> data = [];
 
     for (String? id in services) {
       if (id != null) {

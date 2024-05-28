@@ -77,7 +77,7 @@ class _YarnCommentReplyListState extends State<YarnCommentReplyList> {
   Widget _buildCommentView() {
     return SingleChildScrollView(
       controller: widget.commentScrollController,
-      physics: NeverScrollableScrollPhysics(),
+      physics: const NeverScrollableScrollPhysics(),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
@@ -95,13 +95,13 @@ class _YarnCommentReplyListState extends State<YarnCommentReplyList> {
 
   Widget _buildCommentList() {
     return isLoading
-        ? YarnShimmer()
+        ? const YarnShimmer()
         : Column(
             children: yarnComments
                 .map((yarnComment) => Column(
                       children: [
                         Container(
-                          padding: EdgeInsets.symmetric(horizontal: 16),
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
                           child: YarnCommentTile(
                             yarn: widget.yarn,
                             yarnComment: yarnComment,
@@ -109,7 +109,7 @@ class _YarnCommentReplyListState extends State<YarnCommentReplyList> {
                             commentType: 'commentComment',
                             commentAuthor: widget.yarnComment.authorUsername,
                             onDeleteComment: (YarnComment yarnCmt) {
-                              int index = yarnComments.indexWhere(
+                              final int index = yarnComments.indexWhere(
                                   (element) => element.id == yarnCmt.id);
                               if (index != -1) {
                                 yarnComments.removeAt(index);
@@ -119,7 +119,7 @@ class _YarnCommentReplyListState extends State<YarnCommentReplyList> {
                             },
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 10,
                         ),
                         Divider(
@@ -139,7 +139,7 @@ class _YarnCommentReplyListState extends State<YarnCommentReplyList> {
       width: 108,
       child: Card(
         elevation: 0,
-        margin: EdgeInsets.only(left: 5, right: 5, top: 5),
+        margin: const EdgeInsets.only(left: 5, right: 5, top: 5),
         child: InkWell(
           onTap: () {
             if (menu.isMenuOpen) {
@@ -150,14 +150,14 @@ class _YarnCommentReplyListState extends State<YarnCommentReplyList> {
           },
           child: Row(
             children: [
-              Text(
+              const Text(
                 "Top Comments",
                 style: TextStyle(
                   fontSize: 10,
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              Icon(
+              const Icon(
                 Icons.arrow_drop_down_outlined,
               )
             ],
@@ -179,7 +179,7 @@ class _YarnCommentReplyListState extends State<YarnCommentReplyList> {
         isLoading = true;
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result = await YarnAuth().getAllReply(
+        final Map<String, dynamic>? result = await YarnAuth().getAllReply(
             next, previous, widget.yarnComment.id!,
             sortBy: selectFilter);
 
@@ -196,7 +196,7 @@ class _YarnCommentReplyListState extends State<YarnCommentReplyList> {
         count = result['count'] ?? 0;
         next = result['next'] != null ? result['next'] : "";
         previous = result['previous'] != null ? result['previous'] : "";
-        var tempList = result['results'];
+        final tempList = result['results'];
         yarnComments = [];
         if (mounted) {
           setState(() {

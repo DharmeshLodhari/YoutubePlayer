@@ -33,7 +33,7 @@ class DialogButton extends StatelessWidget {
       width: double.infinity,
       height: 42,
       child: Material(
-        shape: RoundedRectangleBorder(
+        shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(7))),
         color: backgroundColor,
         child: InkWell(

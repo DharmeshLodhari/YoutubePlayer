@@ -119,7 +119,7 @@ class ChatShakeDetection extends ChangeNotifier {
 
       await Future.delayed(const Duration(milliseconds: 1500));
 
-      String? result = await showDialog<String>(
+      final String? result = await showDialog<String>(
           context: myGlobals.scaffoldKey.currentContext!,
           barrierColor: Colors.black38,
           builder: (context) => Column(
@@ -210,7 +210,7 @@ class ChatShakeDetection extends ChangeNotifier {
   void _nudgeRecipient() {
     if (_recipientUser == null) return null;
 
-    Map<String, dynamic> data = {
+    final Map<String, dynamic> data = {
       "check_id": const Uuid().v4(),
       "conversation_id": _recipientUser!.conversationId,
       "author": _userBloc.user.userName,
@@ -225,7 +225,7 @@ class ChatShakeDetection extends ChangeNotifier {
   void _stopNudge() {
     if (_recipientUser == null) return null;
 
-    Map<String, dynamic> data = {
+    final Map<String, dynamic> data = {
       "check_id": const Uuid().v4(),
       "conversation_id": _recipientUser!.conversationId,
       "author": _userBloc.user.userName,

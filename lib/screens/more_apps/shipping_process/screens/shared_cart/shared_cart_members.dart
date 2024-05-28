@@ -111,7 +111,7 @@ class _SharedCartMembersState extends State<SharedCartMembers> {
             color: blackFont,
           ),
           onTap: () async {
-            var result = await Navigator.of(context).pushNamed(
+            final result = await Navigator.of(context).pushNamed(
                 Routes.SELECT_USER_FOR_GROUP,
                 arguments: {"create": "addMember"});
             if (result != null && result is bool && result == true) {
@@ -154,7 +154,7 @@ class _SharedCartMembersState extends State<SharedCartMembers> {
   }
 
   Widget _buildCartMembers() {
-    SharedCartModel cartDetails = sharedCartBloc.getSharedCartModel();
+    final SharedCartModel cartDetails = sharedCartBloc.getSharedCartModel();
     return isLoading
         ? Center(
             child: CircularLoadingIndicator(),
@@ -181,7 +181,7 @@ class _SharedCartMembersState extends State<SharedCartMembers> {
   Widget cartMemberTile({required SharedCartMemberModel? member, int? index}) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       shadowColor: boxShadowTwo,
       elevation: 0,
       child: Container(
@@ -253,7 +253,7 @@ class _SharedCartMembersState extends State<SharedCartMembers> {
     return Slidable(
       controller: _slideController,
       direction: Axis.horizontal,
-      actionPane: SlidableBehindActionPane(),
+      actionPane: const SlidableBehindActionPane(),
       actionExtentRatio: 0.25,
       child: VerticalListItem(cartMemberTile),
       secondaryActions: listActionSlideActions(member: member),
@@ -274,7 +274,7 @@ class _SharedCartMembersState extends State<SharedCartMembers> {
   }
 
   Future<void> deleteMember(SharedCartMemberModel? member) async {
-    Map<String, dynamic> data = {
+    final Map<String, dynamic> data = {
       "members": [member?.userName]
     };
     await SharedCartAuthService()
@@ -298,7 +298,7 @@ class _SharedCartMembersState extends State<SharedCartMembers> {
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) async {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         if (mounted) setState(() {});

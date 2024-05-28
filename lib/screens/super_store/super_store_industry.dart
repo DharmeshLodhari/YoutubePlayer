@@ -121,9 +121,9 @@ class _SuperStoreState extends State<SuperStoreIndustry> {
             height: 12,
             width: 12,
           )),
-      SizedBox(width: 20),
+      const SizedBox(width: 20),
       _cartBtn(),
-      SizedBox(width: 20),
+      const SizedBox(width: 20),
     ];
   }
 
@@ -141,7 +141,7 @@ class _SuperStoreState extends State<SuperStoreIndustry> {
             height: 12,
             width: 12,
           )),
-      SizedBox(width: 15),
+      const SizedBox(width: 15),
       RoundedBackgroundIcon(
           backgroundColor: Colors.transparent,
           onTap: () {
@@ -157,7 +157,7 @@ class _SuperStoreState extends State<SuperStoreIndustry> {
             height: 15,
             width: 15,
           )),
-      SizedBox(width: 15),
+      const SizedBox(width: 15),
 
       // RoundedBackgroundIcon(
       //     backgroundColor: Colors.transparent,
@@ -202,7 +202,7 @@ class _SuperStoreState extends State<SuperStoreIndustry> {
       },
       child: Column(
         children: [
-          SizedBox(
+          const SizedBox(
             height: 16,
           ),
           _buildPageView(),
@@ -253,7 +253,7 @@ class _SuperStoreState extends State<SuperStoreIndustry> {
       width: 30,
       icon: badges.Badge(
         badgeContent: getBadgeContent(),
-        badgeAnimation: badges.BadgeAnimation.rotation(
+        badgeAnimation: const badges.BadgeAnimation.rotation(
           animationDuration: Duration(seconds: 1),
           colorChangeAnimationDuration: Duration(seconds: 1),
           loopAnimation: false,
@@ -264,7 +264,7 @@ class _SuperStoreState extends State<SuperStoreIndustry> {
           shape: badges.BadgeShape.circle,
           badgeColor: naturalGreen,
           padding: basketBloc.basketItems.length == 0
-              ? EdgeInsets.all(0)
+              ? const EdgeInsets.all(0)
               : EdgeInsets.only(
                   left: getBadgeCount().length == 1 ? 6 : 8,
                   right: 6,
@@ -294,7 +294,7 @@ class _SuperStoreState extends State<SuperStoreIndustry> {
     }
     return Text(
       getBadgeCount(),
-      style: TextStyle(
+      style: const TextStyle(
         fontSize: 10,
         color: Colors.white,
         fontWeight: FontWeight.bold,

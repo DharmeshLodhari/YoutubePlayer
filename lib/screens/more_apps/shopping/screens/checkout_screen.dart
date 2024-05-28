@@ -37,7 +37,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   void initState() {
     super.initState();
 
-    BasketBloc basketBloc = Provider.of<BasketBloc>(context, listen: false);
+    final BasketBloc basketBloc =
+        Provider.of<BasketBloc>(context, listen: false);
     basketBloc.merchantData.clear();
     basketBloc.getAllMerchant();
   }
@@ -98,7 +99,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 fontWeight: FontWeight.w600,
               ),
             ),
-            SizedBox(height: 14),
+            const SizedBox(height: 14),
             dropDownPickItemWidget(
               label: 'Merchant',
               selectedItem: merchantFullName,
@@ -106,7 +107,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   ? null
                   : pickMerchantNames(),
             ),
-            SizedBox(height: 18),
+            const SizedBox(height: 18),
             Visibility(
               visible: merchantFullName != null,
               child: dropDownPickItemWidget(
@@ -115,7 +116,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 onTap: () => pickDeliveryOptions(),
               ),
             ),
-            SizedBox(height: 18),
+            const SizedBox(height: 18),
             shippingOptionsLoading
                 ? Center(child: CircularLoadingIndicator())
                 : Column(
@@ -128,7 +129,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           selectedItem: selectedShippingOptionName,
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 15,
                       )
                     ],
@@ -183,14 +184,14 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                   ? moneyDisplayNormalizer(getOrderTotalPrice())
                                   : moneyDisplayNormalizer(getSubTotalPrice()),
                         ),
-                        SizedBox(height: 20),
+                        const SizedBox(height: 20),
                       ],
                     ),
                   ),
                 ),
               ),
             ),
-            SizedBox(height: 80),
+            const SizedBox(height: 80),
             renderCurvedButton(),
           ],
         ),
@@ -271,7 +272,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       } else if (shippingOption != null) {
         return getCurvedButton();
       }
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     } else {
       if (merchantFullName != null &&
           deliveryOption != null &&
@@ -280,7 +281,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       }
     }
 
-    return SizedBox.shrink();
+    return const SizedBox.shrink();
   }
 
   Widget getCurvedButton() {
@@ -317,13 +318,13 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   pickMerchantNames() async {
     merchantFullNames.clear();
 
-    var allMerchants = basketBloc.merchantData;
+    final allMerchants = basketBloc.merchantData;
 
     allMerchants.forEach((element) {
       merchantFullNames.add(element['name']!);
     });
 
-    String? pickedMerchantName = await showPickItemDialog<String>(
+    final String? pickedMerchantName = await showPickItemDialog<String>(
       context: context,
       items: merchantFullNames,
       selectedItem: merchantFullName,
@@ -343,7 +344,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   }
 
   pickDeliveryOptions() async {
-    String? pickedDeliveryOption = await showPickItemDialog<String>(
+    final String? pickedDeliveryOption = await showPickItemDialog<String>(
       context: context,
       items: deliveryOptions,
       selectedItem: deliveryOption,
@@ -387,12 +388,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   void selectCategory() async {}
 
   pickShippingOptions() async {
-    ShippingOptionsModel? pickedShippingOption =
+    final ShippingOptionsModel? pickedShippingOption =
         await showDialog<ShippingOptionsModel>(
             context: context,
             builder: (context) => AlertDialog(
                   insetPadding:
-                      EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
                   contentPadding: EdgeInsets.zero,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10)),

@@ -81,11 +81,11 @@ class ControlsDetails {
 typedef ControlsWidgetBuilder = Widget Function(
     BuildContext context, ControlsDetails details);
 
-TextStyle _kStepStyle = TextStyle(
+TextStyle _kStepStyle = const TextStyle(
   fontSize: 12.0,
   color: Colors.white,
 );
-TextStyle _kStepErrorStyle = TextStyle(
+TextStyle _kStepErrorStyle = const TextStyle(
   fontSize: 14.0,
   color: Colors.white,
 );
@@ -337,7 +337,7 @@ class _OrderTrackerStepperState extends State<OrderTrackerStepper>
       child: AnimatedContainer(
         curve: Curves.fastOutSlowIn,
         duration: kThemeAnimationDuration,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           color: Colors.red,
           shape: BoxShape.circle,
         ),

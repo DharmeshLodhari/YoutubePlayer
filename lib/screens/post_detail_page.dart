@@ -83,7 +83,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
     super.initState();
     debugPrint('POST ID ---> ${widget.postId}');
     getPostFuture = UserPostAuth().getSinglePost(postID: widget.postId!);
-    Future.delayed(Duration(seconds: 3), () {
+    Future.delayed(const Duration(seconds: 3), () {
       UserPostAuth().updateBlogView(postId: widget.postId!);
     });
   }
@@ -137,10 +137,10 @@ class _PostDetailPageState extends State<PostDetailPage> {
 
       _quillController = flutterQuill.QuillController(
         document: flutterQuill.Document.fromJson(blogBodyTextJson),
-        selection: TextSelection.collapsed(offset: -1),
+        selection: const TextSelection.collapsed(offset: -1),
       );
     } catch (e) {
-      print('CANNOT DECODE BLOG TEXT: ${e.toString()}');
+      debugPrint('CANNOT DECODE BLOG TEXT: ${e.toString()}');
     }
   }
 
@@ -360,10 +360,10 @@ class _PostDetailPageState extends State<PostDetailPage> {
               style: TextStyle(
                   color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
             )
-          : SizedBox.shrink(),
+          : const SizedBox.shrink(),
       actions: <Widget>[
-        widget.postType == PostType.blog ? menuIcon() : shareBtn(),
-        SizedBox(
+        if (widget.postType == PostType.blog) menuIcon() else shareBtn(),
+        const SizedBox(
           width: 16,
         ),
       ],
@@ -393,7 +393,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
         context: context,
         builder: (BuildContext context) {
           return Card(
-              shape: RoundedRectangleBorder(
+              shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(20),
                     topRight: Radius.circular(20)),
@@ -401,7 +401,8 @@ class _PostDetailPageState extends State<PostDetailPage> {
               color: Colors.white,
               margin: EdgeInsets.zero,
               child: Container(
-                padding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: generateBottomSheetItem(),
@@ -411,7 +412,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
   }
 
   List<Widget> generateBottomSheetItem() {
-    List<Widget> list = [];
+    final List<Widget> list = [];
 
     if (userPost != null) {
       list.add(
@@ -420,7 +421,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
           iconData: SlydoAppIcon.share,
           onTap: () {
             Navigator.pop(context);
-            var shareBody =
+            final shareBody =
                 "https://slydo.co/store/${userPost!.authorUsername}/blogs/${userPost!.id}";
             Share.share(shareBody, subject: "${userPost!.authorName}");
           },
@@ -525,7 +526,8 @@ class _PostDetailPageState extends State<PostDetailPage> {
                 ..attachment = {
                   "blog": userPost?.toJson().cast<String, dynamic>() ?? {}
                 };
-              bool data = await YarnAuth().addYarnAndQuestion(yarn, '', '');
+              final bool data =
+                  await YarnAuth().addYarnAndQuestion(yarn, '', '');
               if (data) {
                 showToast(message: "Shared in Yarn successfully");
               }
@@ -533,7 +535,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
   }
 
   sendPostToUserInChat() async {
-    List<ChatConversation?> listOfRecipient =
+    final List<ChatConversation?> listOfRecipient =
         await ShareInChat().selectShareCustomer(context);
     debugPrint("Selected users = ${listOfRecipient.length}");
 
@@ -546,7 +548,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
     required ChatConversation recipientUser,
     String? url,
   }) async {
-    Map<String, dynamic> data = {
+    final Map<String, dynamic> data = {
       "meta_data": jsonEncode({
         "id": userPost!.id,
         "title": userPost!.title,
@@ -555,7 +557,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
         "author_avatar": userPost!.authorAvatar,
         "author_username": userPost!.authorUsername,
       }),
-      "check_id": Uuid().v4(),
+      "check_id": const Uuid().v4(),
       "conversation_id": recipientUser.conversationId,
       "author": userBloc.user.userName,
       "message": 'blog_post',
@@ -639,7 +641,7 @@ class _PostDetailPageScaffoldBodyState
     user = Provider.of<UserBloc>(context).user;
 
     if (widget.tags is List<String>) {
-      print('myVariable is of type List<String>');
+      debugPrint('myVariable is of type List<String>');
       for (String item in widget.tags) {
         if (hasAlphabeticCharacters(item)) {
           showTag = true;
@@ -647,8 +649,8 @@ class _PostDetailPageScaffoldBodyState
         }
       }
     } else if (widget.tags is List<List<String>>) {
-      List<List<String>> myList = widget.tags.cast<List<String>>();
-      print('myVariable is of type List<List<String>>');
+      final List<List<String>> myList = widget.tags.cast<List<String>>();
+      debugPrint('myVariable is of type List<List<String>>');
       for (List<String> innerList in myList) {
         for (String item in innerList) {
           if (hasAlphabeticCharacters(item)) {
@@ -658,7 +660,7 @@ class _PostDetailPageScaffoldBodyState
         }
       }
     } else {
-      print('myVariable is not of the expected types');
+      debugPrint('myVariable is not of the expected types');
     }
 
     return widget.isLoading
@@ -669,29 +671,31 @@ class _PostDetailPageScaffoldBodyState
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                SizedBox(height: 6),
-                widget.chewieMainController != null
-                    ? videoPlayer()
-                    : postImage(),
-                SizedBox(
+                const SizedBox(height: 6),
+                if (widget.chewieMainController != null)
+                  videoPlayer()
+                else
+                  postImage(),
+                const SizedBox(
                   height: 20,
                 ),
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       newsTitle(),
-                      SizedBox(
+                      const SizedBox(
                         height: 20,
                       ),
                       bloggerDetail(),
-                      widget.postType == PostType.blog
-                          ? SizedBox.shrink()
-                          : newsShortDescription(),
-                      SizedBox(height: 20),
+                      if (widget.postType == PostType.blog)
+                        const SizedBox.shrink()
+                      else
+                        newsShortDescription(),
+                      const SizedBox(height: 20),
                       newsFullDescription(),
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -700,7 +704,7 @@ class _PostDetailPageScaffoldBodyState
                             size: 16,
                             color: blackFont.withOpacity(0.8),
                           ),
-                          SizedBox(width: 4),
+                          const SizedBox(width: 4),
                           Text(
                             getFormattedViewCount(
                               noOfViews:
@@ -714,26 +718,26 @@ class _PostDetailPageScaffoldBodyState
                             ),
                           ),
                           _buildLikeUnLikeReportTile(),
-                          SizedBox(width: 16),
+                          const SizedBox(width: 16),
                           _commentWidget(),
                         ],
                       ),
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       Divider(
                         thickness: 1,
                         color: dividerColor,
                       ),
                       if (showTag == true) ...[
-                        SizedBox(
+                        const SizedBox(
                           height: 20,
                         ),
                         blogChips(),
                       ],
-                      SizedBox(
+                      const SizedBox(
                         height: 20,
                       ),
                       relatedPost(),
-                      SizedBox(
+                      const SizedBox(
                         height: 20,
                       ),
                     ],
@@ -745,13 +749,13 @@ class _PostDetailPageScaffoldBodyState
   }
 
   bool hasAlphabeticCharacters(String item) {
-    RegExp regex = RegExp(r'[a-zA-Z]');
+    final RegExp regex = RegExp(r'[a-zA-Z]');
     return regex.hasMatch(item);
   }
 
   _commentWidget() {
     if (!widget.userPost.enableCommenting!) {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     }
     return Row(
       children: [
@@ -760,7 +764,7 @@ class _PostDetailPageScaffoldBodyState
           size: 16,
           color: blackFont.withOpacity(0.8),
         ),
-        SizedBox(width: 4),
+        const SizedBox(width: 4),
         Text(
           getFormattedViewCount(
             noOfViews: widget.views != null ? widget.views! : 1,
@@ -778,17 +782,17 @@ class _PostDetailPageScaffoldBodyState
 
   Widget _buildLikeUnLikeReportTile() {
     if (!widget.userPost.enableLike!) {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     }
 
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        SizedBox(width: 16),
+        const SizedBox(width: 16),
         Row(
           children: [
             _buildReviewLike(),
-            SizedBox(width: 16),
+            const SizedBox(width: 16),
             _buildPostUnLike(),
           ],
         ),
@@ -815,7 +819,7 @@ class _PostDetailPageScaffoldBodyState
               size: 16,
               color: widget.userPost.userLiked == true ? navyBlue : blackFont,
             ),
-            SizedBox(width: 4),
+            const SizedBox(width: 4),
             Text(
               widget.userPost.likes != null
                   ? widget.userPost.likes!.toString()
@@ -848,7 +852,7 @@ class _PostDetailPageScaffoldBodyState
               color:
                   widget.userPost.userDisLiked! == true ? mateRed : blackFont,
             ),
-            SizedBox(width: 4),
+            const SizedBox(width: 4),
             Text(
               widget.userPost.dislikes != null
                   ? widget.userPost.dislikes!.toString()
@@ -925,7 +929,7 @@ class _PostDetailPageScaffoldBodyState
         controller: widget.chewieMainController!,
       );
     } else {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     }
   }
 
@@ -998,15 +1002,16 @@ class _PostDetailPageScaffoldBodyState
               ),
             ],
           ),
-          widget.readTime == 0
-              ? CustomChip(
-                  text: '1 min read',
-                  padding: EdgeInsets.symmetric(vertical: 5, horizontal: 8),
-                )
-              : CustomChip(
-                  text: '${widget.readTime} min read',
-                  padding: EdgeInsets.symmetric(vertical: 5, horizontal: 8),
-                )
+          if (widget.readTime == 0)
+            CustomChip(
+              text: '1 min read',
+              padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 8),
+            )
+          else
+            CustomChip(
+              text: '${widget.readTime} min read',
+              padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 8),
+            )
         ],
       ),
     );
@@ -1015,7 +1020,7 @@ class _PostDetailPageScaffoldBodyState
   Widget newsShortDescription() {
     return Column(
       children: [
-        SizedBox(
+        const SizedBox(
           height: 20,
         ),
         Text(
@@ -1065,7 +1070,7 @@ class _PostDetailPageScaffoldBodyState
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               relatedPostTitle(),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Column(
                   children: widget.newsListRelatedPostItems!
                       .map((news) => Container(
@@ -1074,7 +1079,7 @@ class _PostDetailPageScaffoldBodyState
                                 NewsTile(
                                   newsListItem: news,
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   height: 16,
                                 )
                               ],
@@ -1100,7 +1105,7 @@ class _PostDetailPageScaffoldBodyState
 }
 
 String formatDate(DateTime dateTime) {
-  DateFormat dateFormat = DateFormat("MMM dd");
+  final DateFormat dateFormat = DateFormat("MMM dd");
   return dateFormat.format(dateTime);
 }
 
@@ -1134,7 +1139,7 @@ class _SimilarPostsForBlogState extends State<SimilarPostsForBlog> {
       builder: (context, AsyncSnapshot<List<UserPost>> snapShot) {
         if (snapShot.connectionState == ConnectionState.done) {
           if (snapShot.hasError) {
-            return Text('Something went wrong');
+            return const Text('Something went wrong');
           }
           if (snapShot.hasData && snapShot.data!.isNotEmpty) {
             return Column(
@@ -1151,8 +1156,8 @@ class _SimilarPostsForBlogState extends State<SimilarPostsForBlog> {
                 ),
                 ListView.builder(
                   shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  padding: EdgeInsets.symmetric(vertical: 32),
+                  physics: const NeverScrollableScrollPhysics(),
+                  padding: const EdgeInsets.symmetric(vertical: 32),
                   itemCount: snapShot.data!.length,
                   itemBuilder: (BuildContext context, int index) {
                     return Padding(
@@ -1167,10 +1172,10 @@ class _SimilarPostsForBlogState extends State<SimilarPostsForBlog> {
               ],
             );
           } else {
-            return SizedBox.shrink();
+            return const SizedBox.shrink();
           }
         } else {
-          return CircularProgressIndicator();
+          return const CircularProgressIndicator();
         }
       },
     );

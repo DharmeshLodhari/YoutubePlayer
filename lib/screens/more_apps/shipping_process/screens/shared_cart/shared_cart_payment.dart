@@ -84,7 +84,7 @@ class _SharedCartPaymentState extends State<SharedCartPayment> {
     PaymentAndBankingAuth().getPaymentCategory().then((result) {
       if (mounted) {
         setState(() {
-          List categoriesList = result["results"]["data"];
+          final List categoriesList = result["results"]["data"];
           categoriesList.forEach((data) {
             paymentCategories.add(data["name"]);
           });
@@ -165,7 +165,7 @@ class _SharedCartPaymentState extends State<SharedCartPayment> {
     userBloc = Provider.of<UserBloc>(context);
     shippingProcessBloc = Provider.of<ShippingProcessBloc>(context);
     return ListView(
-      physics: AlwaysScrollableScrollPhysics(),
+      physics: const AlwaysScrollableScrollPhysics(),
       children: [
         if (sharedCartBloc.isUserCartOwner(context))
           Padding(
@@ -486,7 +486,7 @@ class _SharedCartPaymentState extends State<SharedCartPayment> {
   Widget _buildTotalAmount() {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.symmetric(horizontal: 7, vertical: 7),
+      margin: const EdgeInsets.symmetric(horizontal: 7, vertical: 7),
       shadowColor: boxShadowTwo,
       elevation: 0,
       child: Container(
@@ -540,7 +540,7 @@ class _SharedCartPaymentState extends State<SharedCartPayment> {
     return Slidable(
       controller: _slideController,
       direction: Axis.horizontal,
-      actionPane: SlidableBehindActionPane(),
+      actionPane: const SlidableBehindActionPane(),
       actionExtentRatio: 0.25,
       child: VerticalListItem(cartMemberTile),
       secondaryActions: listActionSlideActions(member, context),
@@ -612,9 +612,9 @@ class _SharedCartPaymentState extends State<SharedCartPayment> {
     // debugPrint(
     //     "place order ${shippingProcessBloc.toPlaceOrder(userBloc.user.userName)}");
     // place order {payment_type: Slydo, shipping_details: []}
-    Map<String, dynamic> shippingData =
+    final Map<String, dynamic> shippingData =
         shippingProcessBloc.toPlaceOrder(userBloc.user.userName);
-    List<ShippingDetail>? shippingDetailsList = sharedCartBloc
+    final List<ShippingDetail>? shippingDetailsList = sharedCartBloc
         .getSharedCartModel()
         .metaData
         ?.shippingData
@@ -641,7 +641,7 @@ class _SharedCartPaymentState extends State<SharedCartPayment> {
             for (int i = 0; i < value.length; i++) {
               orders.add(value[i]["id"]);
             }
-            var response = await PaymentAndBankingAuth()
+            final response = await PaymentAndBankingAuth()
                 .makePaymentForCartOrder({"orders": orders});
 
             if (response.statusCode == 200 || response.statusCode == 201) {
@@ -677,11 +677,11 @@ class _SharedCartPaymentState extends State<SharedCartPayment> {
   }
 
   Future<void> requestForPayment() async {
-    List<Map<String, dynamic>> dataList = [];
+    final List<Map<String, dynamic>> dataList = [];
     for (SharedCartMemberModel member
         in sharedCartBloc.getSharedCartModel().members ?? []) {
       // if (member.userName != userBloc.user.userName) {
-      Map<String, dynamic> data = {
+      final Map<String, dynamic> data = {
         "username": member.userName,
         "currency": "NGN",
         "amount": member.paymentValue,
@@ -690,7 +690,7 @@ class _SharedCartPaymentState extends State<SharedCartPayment> {
       dataList.add(data);
       // }
     }
-    Map<String, dynamic> metaData = {
+    final Map<String, dynamic> metaData = {
       "meta_data": {
         "spit_bill": splitSwitch,
         "shipping_data":
@@ -722,12 +722,12 @@ class _SharedCartPaymentState extends State<SharedCartPayment> {
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) async {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         await sharedCartBloc.refreshSharedCartProduct(
             context, sharedCartBloc.getSharedCartModel());
-        SharedCartModel sharedCartModel = await sharedCartBloc
+        final SharedCartModel sharedCartModel = await sharedCartBloc
             .refreshCartDetail(sharedCartBloc.getSharedCartModel().id,
                 isUpdate: false);
         splitSwitch = sharedCartModel.metaData?.spitBill ?? false;
@@ -763,7 +763,8 @@ class _SharedCartPaymentState extends State<SharedCartPayment> {
                     fontSize: 16.0),
                 textAlign: TextAlign.center),
             Container(
-              margin: EdgeInsets.only(top: 25, bottom: 15, left: 10, right: 10),
+              margin: const EdgeInsets.only(
+                  top: 25, bottom: 15, left: 10, right: 10),
               child: RichText(
                 textAlign: TextAlign.center,
                 text: TextSpan(

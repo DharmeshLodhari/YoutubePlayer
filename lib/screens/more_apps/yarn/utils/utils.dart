@@ -1,8 +1,10 @@
 import 'dart:typed_data';
+
 import 'package:Slydo/screens/more_apps/yarn/utils/yarn_enum.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
+
 import '../../../../utils/util.dart';
 import '../../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 
@@ -31,7 +33,7 @@ List<String> getAllHashtags(String text) {
   List<String> hashtags = [];
   for (var i in new_list) {
     if (i.startsWith("#")) {
-      print("NaI:$i");
+      debugPrint("NaI:$i");
       hashtags.add(i);
     }
   }
@@ -164,11 +166,11 @@ double getButtonSize(TileRenderPlace tileRenderPlace, BuildContext context) {
 
 Widget assignTitleToAction({required String text, required Widget child}) {
   return Container(
-    constraints: BoxConstraints(maxWidth: 60),
+    constraints: const BoxConstraints(maxWidth: 60),
     child: Column(
       children: [
         child,
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         Center(
           child: Text(text,
               style: TextStyle(

@@ -44,13 +44,13 @@ class _UserTileForConnectionState extends State<UserTileForConnection> {
               Provider.of<MainSocketProvider>(context, listen: false);
 
           streamSubscription = mainSocketProvider!.listen((message) {
-            Map<String, dynamic> messageData = jsonDecode(message);
+            final Map<String, dynamic> messageData = jsonDecode(message);
             if (messageData["type"] == "user_typing_message" &&
                 messageData["conversation_id"] == widget.user!.conversationId) {
               isTyping = true;
               typingMessage = messageData["message"];
               if (mounted) setState(() {});
-              Future.delayed(Duration(milliseconds: 500)).then((value) {
+              Future.delayed(const Duration(milliseconds: 500)).then((value) {
                 isTyping = false;
                 typingMessage = "";
                 if (mounted) setState(() {});
@@ -77,9 +77,9 @@ class _UserTileForConnectionState extends State<UserTileForConnection> {
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
 
-    Widget tile = Card(
+    final Widget tile = Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       shadowColor: boxShadowTwo,
       elevation: 0,
       child: Container(
@@ -94,7 +94,7 @@ class _UserTileForConnectionState extends State<UserTileForConnection> {
           subtitle: getSubtitle(context),
           leading: GestureDetector(
               onTap: () {
-                String? link =
+                final String? link =
                     widget.user!.avatar == null || widget.user!.avatar == ""
                         ? getInitials(widget.user!.fullName!)
                         : widget.user!.avatar;
@@ -162,7 +162,7 @@ class _UserTileForConnectionState extends State<UserTileForConnection> {
   }
 
   Widget getAvatar() {
-    Color borderColor = getUserTypeColorByType(type: widget.user!.type!);
+    final Color borderColor = getUserTypeColorByType(type: widget.user!.type!);
 
     if (widget.user!.avatar == null || widget.user!.avatar == "") {
       return CircleAvatar(
@@ -219,7 +219,7 @@ class _UserTileForConnectionState extends State<UserTileForConnection> {
           children: [
             getBadge(count!,
                 padding: checkUserIsAdmin() || checkUserIsOwner() ? 10 : 0),
-            Expanded(
+            const Expanded(
               child: SizedBox(
                 height: 4,
               ),
@@ -236,29 +236,30 @@ class _UserTileForConnectionState extends State<UserTileForConnection> {
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        checkUserIsAdmin() || checkUserIsOwner()
-            ? Row(
-                children: [
-                  Container(
-                    padding: EdgeInsets.symmetric(vertical: 2, horizontal: 2),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: navyBlue.withOpacity(0.1),
-                    ),
-                    child: Icon(
-                      checkUserIsOwner() ? Icons.group : Icons.person,
-                      color: navyBlue,
-                      size: 12,
-                    ),
-                  ),
-                  SizedBox(
-                    width: 4,
-                  ),
-                ],
-              )
-            : Container(),
+        if (checkUserIsAdmin() || checkUserIsOwner())
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 2),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: navyBlue.withOpacity(0.1),
+                ),
+                child: Icon(
+                  checkUserIsOwner() ? Icons.group : Icons.person,
+                  color: navyBlue,
+                  size: 12,
+                ),
+              ),
+              const SizedBox(
+                width: 4,
+              ),
+            ],
+          )
+        else
+          Container(),
         Container(
-          padding: EdgeInsets.symmetric(vertical: 2, horizontal: 6),
+          padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 6),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(4),
             color: naturalGreen.withOpacity(0.1),
@@ -289,11 +290,11 @@ class _UserTileForConnectionState extends State<UserTileForConnection> {
       child: badges.Badge(
         badgeContent: Text(
           getCountForMessage(count),
-          style: TextStyle(
+          style: const TextStyle(
               color: Colors.white, fontWeight: FontWeight.w400, fontSize: 12),
         ),
         position: badges.BadgePosition.topEnd(end: 0, top: 0),
-        badgeAnimation: badges.BadgeAnimation.rotation(
+        badgeAnimation: const badges.BadgeAnimation.rotation(
           animationDuration: Duration(seconds: 1),
           colorChangeAnimationDuration: Duration(seconds: 1),
           loopAnimation: false,

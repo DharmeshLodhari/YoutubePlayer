@@ -5,7 +5,8 @@ class ColorSelector extends StatelessWidget {
   final int currentIndex;
   final ValueChanged<int> onTap;
 
-  const ColorSelector({Key? key,
+  const ColorSelector({
+    Key? key,
     required this.colors,
     required this.currentIndex,
     required this.onTap,
@@ -24,12 +25,13 @@ class ColorSelector extends StatelessWidget {
           child: Container(
             width: 20,
             height: 20,
-            margin: EdgeInsets.all(5),
+            margin: const EdgeInsets.all(5),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: color,
               border: Border.all(
-                color: currentIndex == index ? Colors.transparent : Colors.white,
+                color:
+                    currentIndex == index ? Colors.transparent : Colors.white,
                 width: 3,
               ),
             ),

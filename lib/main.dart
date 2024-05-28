@@ -155,7 +155,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final AppLocalizationDelegate _localeOverrideDelegate =
-      AppLocalizationDelegate(Locale('en', 'US'));
+      const AppLocalizationDelegate(Locale('en', 'US'));
 
   @override
   void initState() {

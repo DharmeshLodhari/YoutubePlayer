@@ -67,9 +67,9 @@ class TrendingListScreenState extends State<TrendingListScreen> {
         isLoading = true;
         if (mounted) setState(() {});
 
-        String latestTrending = 'trending';
+        final String latestTrending = 'trending';
 
-        Map<String, dynamic>? result = await YarnAuth().getAllYarn(
+        final Map<String, dynamic>? result = await YarnAuth().getAllYarn(
             next, previous ?? '',
             type: type,
             isType: isType,
@@ -89,7 +89,7 @@ class TrendingListScreenState extends State<TrendingListScreen> {
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
-        var tempList = result['results'];
+        final tempList = result['results'];
 
         ///check if refresh list doesn't contain deleted yarn
         if (tempList.isNotEmpty) {
@@ -172,8 +172,8 @@ class TrendingListScreenState extends State<TrendingListScreen> {
   Widget _buildListView() {
     if (!noList) {
       return ListView.separated(
-        physics: ClampingScrollPhysics(),
-        padding: EdgeInsets.only(left: 16, right: 16, bottom: 16),
+        physics: const ClampingScrollPhysics(),
+        padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
         controller: _trendingScrollController,
         itemCount: yarnTopicList.length + 1,
         itemBuilder: (BuildContext context, int index) {
@@ -210,7 +210,7 @@ class TrendingListScreenState extends State<TrendingListScreen> {
                 if (mounted) setState(() {});
               },
               onUpdateYarn: (Yarn yarn) {
-                int index = yarnTopicList
+                final int index = yarnTopicList
                     .indexWhere((element) => element.id == yarn.id);
                 yarnTopicList[index] = yarn;
                 if (mounted) setState(() {});
@@ -233,7 +233,7 @@ class TrendingListScreenState extends State<TrendingListScreen> {
         separatorBuilder: (context, int) {
           return Column(
             children: [
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
               Divider(
@@ -253,7 +253,7 @@ class TrendingListScreenState extends State<TrendingListScreen> {
 
   void onPostRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         count = 0;

@@ -73,8 +73,8 @@ class _OtherBankTabSelectionState extends State<OtherBankTabSelection> {
         alignment: Alignment.bottomCenter,
         children: [
           Container(
-            margin: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-            padding: EdgeInsets.symmetric(vertical: 2),
+            margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+            padding: const EdgeInsets.symmetric(vertical: 2),
             child: Text(
               title,
               style: TextStyle(

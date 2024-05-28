@@ -161,7 +161,7 @@ class _SearchServicesState extends State<SearchServices> {
             tempList!.forEach((result) {
               products.add(result);
             });
-            print("PRODUCTS:- $products");
+            debugPrint("PRODUCTS:- $products");
           } catch (e) {
             debugPrint("error adding products $e");
           }
@@ -194,7 +194,7 @@ class _SearchServicesState extends State<SearchServices> {
   void getCategories() async {
     isLoading = true;
     if (mounted) setState(() {});
-    print('category in the house.....print $isLoading');
+    debugPrint('category in the house.....print $isLoading');
     try {
       servicesCategories = await ShoppingAuthService().getServicesCategories();
       servicesCategoriesCopy = servicesCategories;

@@ -71,16 +71,16 @@ class _PackageDetailsState extends State<PackageDetails> {
   Widget _buildBody() {
     return SafeArea(
       child: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
           child: Column(
             children: [
               _buildDeliveryBy(),
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
               _buildNote(),
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
               _buildItems(),
@@ -101,7 +101,7 @@ class _PackageDetailsState extends State<PackageDetails> {
       shadowColor: boxShadowTwo,
       color: white,
       child: Padding(
-        padding: EdgeInsets.all(10.0),
+        padding: const EdgeInsets.all(10.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -114,14 +114,14 @@ class _PackageDetailsState extends State<PackageDetails> {
                 fontFamily: "Inter",
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 8,
             ),
             ListTile(
               minVerticalPadding: 0,
               minLeadingWidth: 10,
               contentPadding: EdgeInsets.zero,
-              visualDensity: VisualDensity(horizontal: 0, vertical: 0),
+              visualDensity: const VisualDensity(horizontal: 0, vertical: 0),
               leading: SvgPicture.asset(
                 "assets/images/slydo.svg",
                 width: 40,
@@ -154,7 +154,7 @@ class _PackageDetailsState extends State<PackageDetails> {
                       fontFamily: "Inter",
                     ),
                   ),
-                  Text(
+                  const Text(
                     "₦3,000.00",
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
@@ -185,7 +185,7 @@ class _PackageDetailsState extends State<PackageDetails> {
 
   Widget _buildTrackingTag() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(7),
         color: greyBorderColor,
@@ -218,10 +218,10 @@ class _PackageDetailsState extends State<PackageDetails> {
                 fontFamily: "Inter",
               ),
             ),
-            Icon(Icons.edit),
+            const Icon(Icons.edit),
           ],
         ),
-        SizedBox(
+        const SizedBox(
           height: 8,
         ),
         Text(
@@ -251,7 +251,7 @@ class _PackageDetailsState extends State<PackageDetails> {
             fontFamily: "Inter",
           ),
         ),
-        SizedBox(
+        const SizedBox(
           height: 8,
         ),
         ListView.builder(
@@ -274,7 +274,7 @@ class _PackageDetailsState extends State<PackageDetails> {
       color: Colors.white,
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        margin: EdgeInsets.symmetric(vertical: 5),
+        margin: const EdgeInsets.symmetric(vertical: 5),
         shadowColor: boxShadowTwo,
         elevation: 0,
         child: Container(
@@ -282,7 +282,8 @@ class _PackageDetailsState extends State<PackageDetails> {
           child: Column(
             children: <Widget>[
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                 child: ListTile(
                   contentPadding: EdgeInsets.zero,
                   leading: getLeading(),
@@ -341,11 +342,11 @@ class _PackageDetailsState extends State<PackageDetails> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        SizedBox(
+        const SizedBox(
           height: 2,
         ),
         getColorSizeName(context),
-        SizedBox(
+        const SizedBox(
           height: 2,
         ),
         Row(
@@ -355,7 +356,7 @@ class _PackageDetailsState extends State<PackageDetails> {
             getAddRemoveItems(),
           ],
         ),
-        SizedBox(
+        const SizedBox(
           height: 10,
         ),
         Row(
@@ -379,7 +380,7 @@ class _PackageDetailsState extends State<PackageDetails> {
   }
 
   Widget getColorSizeName(BuildContext context) {
-    return Text(
+    return const Text(
       "Brown mix, 16”",
       style: TextStyle(
         fontSize: 12,
@@ -438,7 +439,7 @@ class _PackageDetailsState extends State<PackageDetails> {
               //     ? widget.onDecreaseQty
               //     : () => widget.onDecreaseVariantQty!(variantId)),
             ),
-            Expanded(
+            const Expanded(
               child: SizedBox(
                 width: 10,
               ),
@@ -455,7 +456,7 @@ class _PackageDetailsState extends State<PackageDetails> {
                 fontFamily: "Inter",
               ),
             ),
-            Expanded(
+            const Expanded(
               child: SizedBox(
                 width: 10,
               ),
@@ -507,7 +508,7 @@ class _PackageDetailsState extends State<PackageDetails> {
       margin: EdgeInsets.zero,
       shadowColor: boxShadowTwo,
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8.0),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
@@ -517,17 +518,16 @@ class _PackageDetailsState extends State<PackageDetails> {
                   'Total: ',
                   style: TextStyle(fontSize: 14, color: blackFont),
                 ),
-                Text(
+                const Text(
                   '₦',
-                  style: const TextStyle(
+                  style: TextStyle(
                       fontFamily: "Inter",
                       fontSize: 16,
                       fontWeight: FontWeight.bold),
                 ),
-                Text(
+                const Text(
                   '187,200.00',
-                  style: const TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ],
             ),

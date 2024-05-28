@@ -176,28 +176,30 @@ class _AddAccountState extends State<AddAccount> {
                   const SizedBox(
                     height: 20,
                   ),
-                  errorMessage != ""
-                      ? Column(
-                          children: [
-                            Text(
-                              errorMessage,
-                              style: TextStyle(color: mateRed, fontSize: 14),
-                            ),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                          ],
-                        )
-                      : Container(),
+                  if (errorMessage != "")
+                    Column(
+                      children: [
+                        Text(
+                          errorMessage,
+                          style: TextStyle(color: mateRed, fontSize: 14),
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                      ],
+                    )
+                  else
+                    Container(),
                   getUserAgreeCheckBoxWidget(),
                   const SizedBox(
                     height: 40,
                   ),
-                  isUserAgree
-                      ? getSubmitButton(userBloc.user.userName)
-                      : Container(
-                          height: 42,
-                        ),
+                  if (isUserAgree)
+                    getSubmitButton(userBloc.user.userName)
+                  else
+                    Container(
+                      height: 42,
+                    ),
                 ],
               ),
             ),
@@ -839,7 +841,7 @@ class _AddAccountState extends State<AddAccount> {
                         if (bankList.length >= 1) ...[
                           getResultTile(bankList[index]),
                         ] else ...[
-                          // print('The array does not have a second element.');
+                          // debugPrint('The array does not have a second element.');
                         ]
                       ],
                     ));

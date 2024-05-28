@@ -48,7 +48,7 @@ class _YarnSettingsScreenState extends State<YarnSettingsScreen> {
         onTap: () {
           Navigator.pop(context);
         },
-        child: Icon(
+        child: const Icon(
           Icons.keyboard_arrow_left,
           color: Colors.black,
           size: 26,
@@ -80,7 +80,7 @@ class _YarnSettingsScreenState extends State<YarnSettingsScreen> {
   Widget _buildCategoryTile(BuildContext context) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       shadowColor: boxShadowTwo,
       elevation: 0,
       child: Container(
@@ -89,8 +89,8 @@ class _YarnSettingsScreenState extends State<YarnSettingsScreen> {
           onTap: () {
             NavigationUtil.push(context, screen: AskSCustomizeScreen());
           },
-          visualDensity: VisualDensity(vertical: 0, horizontal: 0),
-          title: Text(
+          visualDensity: const VisualDensity(vertical: 0, horizontal: 0),
+          title: const Text(
             "Customize your interest",
             style: TextStyle(
               fontSize: 14,
@@ -110,14 +110,14 @@ class _YarnSettingsScreenState extends State<YarnSettingsScreen> {
   Widget _buildNotificationTile() {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       shadowColor: boxShadowTwo,
       elevation: 0,
       child: Container(
         decoration: decorateBox(),
         child: ListTile(
-          visualDensity: VisualDensity(vertical: 0, horizontal: 0),
-          title: Text(
+          visualDensity: const VisualDensity(vertical: 0, horizontal: 0),
+          title: const Text(
             "Push Notification",
             style: TextStyle(
               fontSize: 14,
@@ -147,14 +147,14 @@ class _YarnSettingsScreenState extends State<YarnSettingsScreen> {
   Widget _buildSensitiveContentTile() {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       shadowColor: boxShadowTwo,
       elevation: 0,
       child: Container(
         decoration: decorateBox(),
         child: ListTile(
-          visualDensity: VisualDensity(vertical: 0, horizontal: 0),
-          title: Text(
+          visualDensity: const VisualDensity(vertical: 0, horizontal: 0),
+          title: const Text(
             "Sensitive Content",
             style: TextStyle(
               fontSize: 14,
@@ -183,14 +183,14 @@ class _YarnSettingsScreenState extends State<YarnSettingsScreen> {
   Widget _buildAdultContentTile() {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       shadowColor: boxShadowTwo,
       elevation: 0,
       child: Container(
         decoration: decorateBox(),
         child: ListTile(
-          visualDensity: VisualDensity(vertical: 0, horizontal: 0),
-          title: Text(
+          visualDensity: const VisualDensity(vertical: 0, horizontal: 0),
+          title: const Text(
             "Adult Content",
             style: TextStyle(
               fontSize: 14,
@@ -219,7 +219,7 @@ class _YarnSettingsScreenState extends State<YarnSettingsScreen> {
   Widget _buildSavedYarn(BuildContext context) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       shadowColor: boxShadowTwo,
       elevation: 0,
       child: Container(
@@ -232,8 +232,8 @@ class _YarnSettingsScreenState extends State<YarnSettingsScreen> {
                   selectedCategory: selectedCategoryId,
                 ));
           },
-          visualDensity: VisualDensity(vertical: 0, horizontal: 0),
-          title: Text(
+          visualDensity: const VisualDensity(vertical: 0, horizontal: 0),
+          title: const Text(
             "Saved Yarn",
             style: TextStyle(
               fontSize: 14,

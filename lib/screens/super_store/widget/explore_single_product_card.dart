@@ -235,7 +235,7 @@ class _ExploreSingleProductState extends State<ExploreSingleProduct> {
               const SizedBox(),
           ],
         ),
-        SizedBox(
+        const SizedBox(
           height: 5,
         ),
         isInCart() == false
@@ -347,7 +347,7 @@ class _ExploreSingleProductState extends State<ExploreSingleProduct> {
           message: AppLocalization.of(context)!.cantPurchaseYourOwnServices);
     }
     if (widget.product.isProductAvailableNow()) {
-      String type = "product";
+      final String type = "product";
       if (widget.product.variantModels?.isNotEmpty ?? false) {
         showToast(message: AppLocalization.of(context)!.selectVariantColorSize);
         Navigator.pushNamed(context, '/product',
@@ -369,9 +369,9 @@ class _ExploreSingleProductState extends State<ExploreSingleProduct> {
   }
 
   Future<void> addToSharedCart(SharedCartModel result) async {
-    String type = "product";
+    final String type = "product";
 
-    Product products =
+    final Product products =
         widget.product.copyWith(quantity: 1, withSelectedAddOn: true);
 
     sharedCartBloc.addItemToSharedCart(
@@ -430,7 +430,7 @@ class _ExploreSingleProductState extends State<ExploreSingleProduct> {
   }
 
   void showBottomSheetDialog() async {
-    var result = await androidBottomSheet(
+    final result = await androidBottomSheet(
       enableDrag: true,
       context: context,
       child: const AllActiveCart(),

@@ -43,7 +43,7 @@ class _AppliedMyJobsState extends State<AppliedMyJobs> {
         isAppliedLoading = true;
         if (mounted) setState(() {});
 
-        var result = await ServiceHubAuthService().getMyJobListing(
+        final result = await ServiceHubAuthService().getMyJobListing(
             appliedListNext, appliedListPrevious,
             myJobType: 'applied', userId: userBloc.user.userName);
 
@@ -62,7 +62,7 @@ class _AppliedMyJobsState extends State<AppliedMyJobs> {
         appliedListCount = result.count;
         appliedListNext = result.next;
         appliedListPrevious = result.previous;
-        var tempList = result.results;
+        final tempList = result.results;
         if (mounted) {
           setState(() {
             noJobsInAppliedList = false;
@@ -153,7 +153,7 @@ class _AppliedMyJobsState extends State<AppliedMyJobs> {
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         _refreshPage();

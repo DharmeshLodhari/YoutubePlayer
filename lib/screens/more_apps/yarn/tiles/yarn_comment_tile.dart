@@ -1,4 +1,3 @@
-import 'package:Slydo/screens/more_apps/yarn/yarn_search_screen.dart';
 import 'package:Slydo/screens/more_apps/yarn/models/Topics/yarn_model.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_blog_post_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_customer_post_tile.dart';
@@ -9,9 +8,11 @@ import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
 import 'package:Slydo/screens/more_apps/yarn/utils/yarn_enum.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/ask_reply_view.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_comment_actions.dart';
+import 'package:Slydo/screens/more_apps/yarn/yarn_search_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+
 import '../../../../routes/route_constants.dart';
 import '../../../../utils/link_preview/flutter_link_preview.dart';
 import '../../../../utils/link_preview/web_analyzer.dart';
@@ -69,7 +70,7 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
   @override
   void initState() {
     if (widget.yarnComment.comment != null) {
-      Map<String, dynamic> linkData = detectLinkInText(
+      final Map<String, dynamic> linkData = detectLinkInText(
           messageDecoderWithEmoji(widget.yarnComment.comment)!);
 
       if (linkData["hasLink"]) {
@@ -186,26 +187,26 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
   Widget _buildAttachment() {
     Widget childWidget;
     if (widget.yarnComment.attachmentType == 'service') {
-      Service service = Service.fromJson(widget.yarnComment.attachment);
+      final Service service = Service.fromJson(widget.yarnComment.attachment);
       childWidget = YarnServiceTile(
         service: service,
         tileRenderPlace: TileRenderPlace.YarnComment,
       );
     } else if (widget.yarnComment.attachmentType == 'product') {
-      Product product = Product.fromJson(widget.yarnComment.attachment);
+      final Product product = Product.fromJson(widget.yarnComment.attachment);
       childWidget = YarnProductTile(
         product: product,
         tileRenderPlace: TileRenderPlace.YarnComment,
       );
     } else if (widget.yarnComment.attachmentType == 'blog') {
-      UserPost post = UserPost.fromJson(widget.yarnComment.attachment);
+      final UserPost post = UserPost.fromJson(widget.yarnComment.attachment);
       childWidget = YarnBlogPostTile(
         post: post,
         showAuthorDetails: true,
         onDeleteBlog: () {},
       );
     } else if (widget.yarnComment.attachmentType == 'profile') {
-      CustomerProfile customerProfile =
+      final CustomerProfile customerProfile =
           CustomerProfile.fromJson(widget.yarnComment.attachment ?? {});
       childWidget = YarnCustomerPostTile(
         customerProfile: customerProfile,
@@ -390,13 +391,12 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
       // username = widget.yarnCommentReply!.authorUsername;
       // username = widget.yarnAuthor;
       username = widget.yarn.author;
-    }
-    else {
-      if(widget.commentType == 'commentComment'){
+    } else {
+      if (widget.commentType == 'commentComment') {
         debugPrint('Comment reply 003::::');
         username = widget.commentAuthor;
         // username = widget.yarn.author;
-      }else{
+      } else {
         debugPrint('Comment reply 004::::');
         username = widget.yarn.author;
       }
@@ -481,8 +481,8 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
                       launchUrl(Uri.parse(linkToBePreview!));
                     },
                     child: Container(
-                      margin:
-                          const EdgeInsets.only(left: 10.0, top: 10.0, bottom: 10.0),
+                      margin: const EdgeInsets.only(
+                          left: 10.0, top: 10.0, bottom: 10.0),
                       child: Text(
                         linkToBePreview!,
                         maxLines: 1,
@@ -585,12 +585,13 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
   }
 
   bool isComments(BuildContext context) {
-    DateTime messageCreatedTime =
+    final DateTime messageCreatedTime =
         DateTime.parse(widget.yarnComment.createdAt!).toLocal();
 
-    DateTime currentTime = DateTime.now();
+    final DateTime currentTime = DateTime.now();
     if (getLoggedInUserName(context) == widget.yarnComment.authorUsername) {
-      if (currentTime.difference(messageCreatedTime) < const Duration(minutes: 3)) {
+      if (currentTime.difference(messageCreatedTime) <
+          const Duration(minutes: 3)) {
         return true;
       } else {
         return false;

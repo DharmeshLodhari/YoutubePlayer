@@ -52,7 +52,7 @@ class _DetailedMessageState extends State<DetailedMessage> {
 
   Widget showBackArrow() {
     return IconButton(
-      icon: Icon(Icons.arrow_back_ios),
+      icon: const Icon(Icons.arrow_back_ios),
       onPressed: () {
         Navigator.pop(context);
       },
@@ -106,12 +106,12 @@ class _DetailedMessageState extends State<DetailedMessage> {
           )
         : SingleChildScrollView(
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
                   displayMessageInfo(),
-                  SizedBox(height: 30),
+                  const SizedBox(height: 30),
                   displayReplyButton(),
                 ],
               ),
@@ -121,7 +121,7 @@ class _DetailedMessageState extends State<DetailedMessage> {
 
   Widget displaySubject() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -230,9 +230,9 @@ class _DetailedMessageState extends State<DetailedMessage> {
     // or isSender is seeing message we got that user and check if it is recipient then
     // we are showing and modifying archive icon by message's isArchivedByRecipient property and if it sender then
     // we are showing and modifying archive icon by message's isArchivedBySender property
-    bool isRecipient = userBloc.user.userName == message.recipient;
+    final bool isRecipient = userBloc.user.userName == message.recipient;
 
-    IconData icon = isRecipient
+    final IconData icon = isRecipient
         ? message.isArchivedByRecipient!
             ? SlydoAppIcon.archive
             : SlydoAppIcon.unarchive
@@ -247,7 +247,7 @@ class _DetailedMessageState extends State<DetailedMessage> {
         size: 24,
       ),
       onPressed: () async {
-        var action = isRecipient
+        final action = isRecipient
             ? message.isArchivedByRecipient!
                 ? "unarchive"
                 : "archive"
@@ -273,8 +273,8 @@ class _DetailedMessageState extends State<DetailedMessage> {
     // or isSender is seeing message we got that user and check if it is recipient then
     // we are showing and modifying star icon by message's isStarredByRecipient property and if it sender then
     // we are showing and modifying star icon by message's isStarredBySender property
-    bool isRecipient = userBloc.user.userName == message.recipient;
-    Color iconColor = isRecipient
+    final bool isRecipient = userBloc.user.userName == message.recipient;
+    final Color iconColor = isRecipient
         ? message.isStarredByRecipient!
             ? starYellow
             : greyBorderColor
@@ -287,7 +287,7 @@ class _DetailedMessageState extends State<DetailedMessage> {
         color: iconColor,
       ),
       onPressed: () async {
-        var action = isRecipient
+        final action = isRecipient
             ? message.isStarredByRecipient!
                 ? AppLocalization.of(context)!.unstar
                 : AppLocalization.of(context)!.star
@@ -341,7 +341,7 @@ class _DetailedMessageState extends State<DetailedMessage> {
         textAlign: TextAlign.left,
         text: TextSpan(
           text: messageDecoderWithEmoji(message.body),
-          style: TextStyle(color: Colors.black, fontSize: 16),
+          style: const TextStyle(color: Colors.black, fontSize: 16),
         ),
       ),
     );

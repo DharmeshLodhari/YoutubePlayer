@@ -546,13 +546,29 @@ class _AddEditDiscountNewState extends State<AddEditDiscountNew> {
                   ? () {}
                   : () async {
                       FocusScope.of(context).unfocus();
-                      isAPILoading = true;
-                      if (mounted) setState(() {});
+                      if (startTimeFrom != null) {
+                        if (endTimeTo != null) {
+                          FocusScope.of(context).unfocus();
+                          isAPILoading = true;
+                          if (mounted) setState(() {});
 
-                      await addEditItem();
+                          await addEditItem();
 
-                      isAPILoading = false;
-                      if (mounted) setState(() {});
+                          isAPILoading = false;
+                          if (mounted) setState(() {});
+                        } else {
+                          showToast(message: 'Select end time');
+                        }
+                      } else {
+                        FocusScope.of(context).unfocus();
+                        isAPILoading = true;
+                        if (mounted) setState(() {});
+
+                        await addEditItem();
+
+                        isAPILoading = false;
+                        if (mounted) setState(() {});
+                      }
                     },
               backgroundColor: navyBlue,
               textColor: Colors.white,
@@ -568,14 +584,29 @@ class _AddEditDiscountNewState extends State<AddEditDiscountNew> {
       onPressed: isAPILoading
           ? () {}
           : () async {
-              FocusScope.of(context).unfocus();
-              isAPILoading = true;
-              if (mounted) setState(() {});
+              if (startTimeFrom != null) {
+                if (endTimeTo != null) {
+                  FocusScope.of(context).unfocus();
+                  isAPILoading = true;
+                  if (mounted) setState(() {});
 
-              await addEditItem();
+                  await addEditItem();
 
-              isAPILoading = false;
-              if (mounted) setState(() {});
+                  isAPILoading = false;
+                  if (mounted) setState(() {});
+                } else {
+                  showToast(message: 'Select end time');
+                }
+              } else {
+                FocusScope.of(context).unfocus();
+                isAPILoading = true;
+                if (mounted) setState(() {});
+
+                await addEditItem();
+
+                isAPILoading = false;
+                if (mounted) setState(() {});
+              }
             },
       backgroundColor: navyBlue,
       textColor: Colors.white,
@@ -668,7 +699,9 @@ class _AddEditDiscountNewState extends State<AddEditDiscountNew> {
           activeColor: Theme.of(context).primaryColor,
         ),
         Text(
-          "Toggle to activate this discount",
+          discountModel.isActive
+              ? "Toggle to deactivate this discount"
+              : "Toggle to activate this discount",
           style: TextStyle(
               fontSize: 14, color: blackFont, fontWeight: FontWeight.w600),
         ),

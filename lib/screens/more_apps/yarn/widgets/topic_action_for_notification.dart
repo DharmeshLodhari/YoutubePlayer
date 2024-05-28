@@ -62,7 +62,7 @@ class _TopicActionsForNotificationState
       child: Row(
         children: [
           SvgPicture.asset("ask/reply".toSVG()),
-          SizedBox(
+          const SizedBox(
             width: 6,
           ),
           Text(
@@ -85,7 +85,7 @@ class _TopicActionsForNotificationState
       child: Row(
         children: [
           SvgPicture.asset("ask/like".toSVG()),
-          SizedBox(
+          const SizedBox(
             width: 6,
           ),
           Text(
@@ -108,7 +108,7 @@ class _TopicActionsForNotificationState
       child: Row(
         children: [
           SvgPicture.asset("ask/dislike".toSVG()),
-          SizedBox(
+          const SizedBox(
             width: 6,
           ),
           Text(
@@ -210,7 +210,7 @@ class _TopicActionsForNotificationState
   }
 
   Future<void> sendMomentToUserInChat({required Yarn yarnTopic}) async {
-    List<ChatConversation?> listOfRecipient =
+    final List<ChatConversation?> listOfRecipient =
         await ShareInChat().selectShareCustomer(context);
     debugPrint("Selected users = ${listOfRecipient.length}");
 
@@ -224,9 +224,9 @@ class _TopicActionsForNotificationState
     required Yarn yarnTopic,
     String? url,
   }) async {
-    UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
+    final UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
 
-    Map<String, dynamic> metaData = {
+    final Map<String, dynamic> metaData = {
       "id": yarnTopic.id,
       "author_avatar": yarnTopic.authorAvatar,
       "author_name": messageDecoderWithEmoji(yarnTopic.authorName),
@@ -247,9 +247,9 @@ class _TopicActionsForNotificationState
     //     break;
     // }
 
-    Map<String, dynamic> data = {
+    final Map<String, dynamic> data = {
       "meta_data": jsonEncode(metaData),
-      "check_id": Uuid().v4(),
+      "check_id": const Uuid().v4(),
       "conversation_id": recipientUser.conversationId,
       "author": userBloc.user.userName,
       "message": 'yarn',

@@ -14,11 +14,11 @@ class GIFImageForChatMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    UserBloc userBloc = Provider.of<UserBloc>(context);
+    final UserBloc userBloc = Provider.of<UserBloc>(context);
 
-    bool isSend = message!["author"] == userBloc.user.userName;
+    final bool isSend = message!["author"] == userBloc.user.userName;
 
-    String gifImage = message!['text'];
+    final String gifImage = message!['text'];
 
     return Column(
       children: [
@@ -27,11 +27,12 @@ class GIFImageForChatMessage extends StatelessWidget {
               isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            isSend
-                ? Container()
-                : Container(
-                    width: 20,
-                  ),
+            if (isSend)
+              Container()
+            else
+              Container(
+                width: 20,
+              ),
             GestureDetector(
               onTap: () async {
                 await Navigator.of(context).pushNamed(
@@ -57,8 +58,8 @@ class GIFImageForChatMessage extends StatelessWidget {
                   borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(!isSend ? 0 : 10),
                     bottomRight: Radius.circular(isSend ? 0 : 10),
-                    topLeft: Radius.circular(10),
-                    topRight: Radius.circular(10),
+                    topLeft: const Radius.circular(10),
+                    topRight: const Radius.circular(10),
                   ),
                 ),
                 padding: EdgeInsets.symmetric(
@@ -78,32 +79,34 @@ class GIFImageForChatMessage extends StatelessWidget {
                       ? CrossAxisAlignment.end
                       : CrossAxisAlignment.start,
                   children: [
-                    chatConversation!.isGroupConversation!
-                        ? message!['author'] != userBloc.user.userName
-                            ? Column(
-                                children: [
-                                  Text(
-                                    message!['author_full_name'] ??
-                                        message!['author'],
-                                    style: TextStyle(
-                                        color: isSend ? Colors.white : navyBlue,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w700),
-                                  ),
-                                  SizedBox(
-                                    height: 4,
-                                  ),
-                                ],
-                              )
-                            : Container(
-                                width: 0,
-                              )
-                        : Container(
-                            width: 0,
-                          ),
+                    if (chatConversation!.isGroupConversation!)
+                      message!['author'] != userBloc.user.userName
+                          ? Column(
+                              children: [
+                                Text(
+                                  message!['author_full_name'] ??
+                                      message!['author'],
+                                  style: TextStyle(
+                                      color: isSend ? Colors.white : navyBlue,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w700),
+                                ),
+                                const SizedBox(
+                                  height: 4,
+                                ),
+                              ],
+                            )
+                          : Container(
+                              width: 0,
+                            )
+                    else
+                      Container(
+                        width: 0,
+                      ),
                     Container(
-                      padding: EdgeInsets.symmetric(horizontal: 0),
+                      padding: const EdgeInsets.symmetric(horizontal: 0),
                       child: ClipRRect(
+                        borderRadius: BorderRadius.circular(3),
                         child: CachedNetworkImage(
                           height: MediaQuery.of(context).size.width / 3,
                           width: MediaQuery.of(context).size.width / 1.8,
@@ -121,47 +124,49 @@ class GIFImageForChatMessage extends StatelessWidget {
                           ),
                           errorWidget: imageErrorWidget,
                         ),
-                        borderRadius: BorderRadius.circular(3),
                       ),
                     ),
                   ],
                 ),
               ),
             ),
-            isSend
-                ? Container(
-                    width: 20,
-                    child: isSend
-                        ? Center(
-                            child: getMessageTick(message: message!),
-                          )
-                        : Container(),
-                  )
-                : Container(),
+            if (isSend)
+              Container(
+                width: 20,
+                child: isSend
+                    ? Center(
+                        child: getMessageTick(message: message!),
+                      )
+                    : Container(),
+              )
+            else
+              Container(),
           ],
         ),
-        SizedBox(
+        const SizedBox(
           height: 1,
         ),
         Row(
           mainAxisAlignment:
               isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
           children: [
-            isSend
-                ? Container()
-                : SizedBox(
-                    width: 20,
-                  ),
+            if (isSend)
+              Container()
+            else
+              const SizedBox(
+                width: 20,
+              ),
             Text(
               formatTime(message!['created_at']),
               style: TextStyle(
                   color: darkGrey, fontSize: 10, fontWeight: FontWeight.w500),
             ),
-            isSend
-                ? SizedBox(
-                    width: 20,
-                  )
-                : Container(),
+            if (isSend)
+              const SizedBox(
+                width: 20,
+              )
+            else
+              Container(),
           ],
         )
       ],

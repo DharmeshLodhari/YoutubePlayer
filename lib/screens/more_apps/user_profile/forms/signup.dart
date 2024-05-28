@@ -119,14 +119,14 @@ class _SignUpState extends State<SignUp> {
     getSubscriptionList();
 
     _businessOrNickNameController.addListener(() {
-      String name = _businessOrNickNameController.text;
+      final String name = _businessOrNickNameController.text;
 
       if (!dotReg.hasMatch(name) &&
           !asteriskReg.hasMatch(name) &&
           !spaceReg.hasMatch(name) &&
           (_userNameController.text.length <= maxUsernameLength - 1 ||
               name.length <= maxUsernameLength - 1)) {
-        String formattedUsername = _businessOrNickNameController.text
+        final String formattedUsername = _businessOrNickNameController.text
             .replaceAll(' ', '.')
             .replaceAll(multipleDotReg, '.')
             .toLowerCase();
@@ -140,7 +140,7 @@ class _SignUpState extends State<SignUp> {
     _userNameController.addListener(() {
       if (_userNameController.text.toLowerCase().isNotEmpty) {
         debugPrint('USER NAME CTRL');
-        Future.delayed(Duration(seconds: 2), () {
+        Future.delayed(const Duration(seconds: 2), () {
           if (_userNameController.text.length >= 4) {
             _verifyUserName();
           }
@@ -157,7 +157,7 @@ class _SignUpState extends State<SignUp> {
     _referralCodeController.addListener(() {
       if (_referralCodeController.text.toLowerCase().isNotEmpty) {
         debugPrint('USER NAME CTRL');
-        Future.delayed(Duration(seconds: 2), () {
+        Future.delayed(const Duration(seconds: 2), () {
           if (_referralCodeController.text.length >= 4) {
             _verifyReferralUserName();
           }
@@ -172,10 +172,10 @@ class _SignUpState extends State<SignUp> {
     super.initState();
   }
 
-  getProductIndustries() async {
+  void getProductIndustries() async {
     loading = true;
     if (mounted) setState(() {});
-    var result = await _auth.listOfIndustries();
+    final result = await _auth.listOfIndustries();
     if (result != null) {
       industries = result["product"];
       loading = false;
@@ -245,71 +245,71 @@ class _SignUpState extends State<SignUp> {
           )
         : SingleChildScrollView(
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Container(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     appIcon(),
-                    SizedBox(
+                    const SizedBox(
                       height: 10,
                     ),
                     registerTitle(),
-                    SizedBox(height: 40),
-                    !basicAccountInfo
-                        ? Form(
-                            key: _personalDetailFormKey,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                accountTypeField(),
-                                Visibility(
-                                  visible: accountTypeChosen,
-                                  child: accountType == 'Personal'
-                                      ? personalAccountFields()
-                                      : businessAccountFields(),
-                                ),
-                              ],
+                    const SizedBox(height: 40),
+                    if (!basicAccountInfo)
+                      Form(
+                        key: _personalDetailFormKey,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            accountTypeField(),
+                            Visibility(
+                              visible: accountTypeChosen,
+                              child: accountType == 'Personal'
+                                  ? personalAccountFields()
+                                  : businessAccountFields(),
                             ),
-                          )
-                        : Form(
-                            key: _bankDetailsFormKey,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                nameInstructionNote(),
-                                SizedBox(height: 20),
-                                firstNameField(),
-                                SizedBox(height: 20),
-                                lastNameField(),
-                                SizedBox(height: 20),
-                                getDOBField(),
-                                if (isValidAge != null && !isValidAge!)
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      SizedBox(height: 8),
-                                      Text(
-                                        "You are not eligible to use Slydo",
-                                        style: TextStyle(
-                                            color: mateRed, fontSize: 13),
-                                      ),
-                                    ],
-                                  )
-                                else
-                                  Container(),
-                                SizedBox(height: 20),
-                                getGenderField(),
-                                SizedBox(height: 20),
-                                registrationTermsAndCondition(),
-                                // bvnField(),
-                                SizedBox(height: 40),
-                                registerBtn(),
-                                SizedBox(height: 40),
-                              ],
-                            ),
-                          ),
+                          ],
+                        ),
+                      )
+                    else
+                      Form(
+                        key: _bankDetailsFormKey,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            nameInstructionNote(),
+                            const SizedBox(height: 20),
+                            firstNameField(),
+                            const SizedBox(height: 20),
+                            lastNameField(),
+                            const SizedBox(height: 20),
+                            getDOBField(),
+                            if (isValidAge != null && !isValidAge!)
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    "You are not eligible to use Slydo",
+                                    style:
+                                        TextStyle(color: mateRed, fontSize: 13),
+                                  ),
+                                ],
+                              )
+                            else
+                              Container(),
+                            const SizedBox(height: 20),
+                            getGenderField(),
+                            const SizedBox(height: 20),
+                            registrationTermsAndCondition(),
+                            // bvnField(),
+                            const SizedBox(height: 40),
+                            registerBtn(),
+                            const SizedBox(height: 40),
+                          ],
+                        ),
+                      ),
                   ],
                 ),
               ),
@@ -321,9 +321,9 @@ class _SignUpState extends State<SignUp> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
         nickNameField(),
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
         userNameField(),
         // Text(
         //   'username should not exceed 15 characters',
@@ -343,21 +343,21 @@ class _SignUpState extends State<SignUp> {
         //     fontSize: 12,
         //   ),
         // ),
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
         referralCodeField(),
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
         passwordField(),
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         passwordInstruction(),
-        SizedBox(
+        const SizedBox(
           height: 20,
         ),
         confirmPasswordField(),
-        SizedBox(
+        const SizedBox(
           height: 40,
         ),
         nextBtn(),
-        SizedBox(height: 40),
+        const SizedBox(height: 40),
       ],
     );
   }
@@ -366,34 +366,34 @@ class _SignUpState extends State<SignUp> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
         // chooseYourPlanWidget(),
         // SizedBox(height: 20),
         Text(
           'Industry',
           style: TextStyle(color: darkGrey, fontSize: 14),
         ),
-        SizedBox(height: 6),
+        const SizedBox(height: 6),
         industryDropdown(),
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
         nickNameField(),
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
         userNameField(),
-        SizedBox(height: 10),
-        Text('Username should not exceed 15 characters'),
-        SizedBox(height: 20),
+        const SizedBox(height: 10),
+        const Text('Username should not exceed 15 characters'),
+        const SizedBox(height: 20),
         referralCodeField(),
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
         passwordField(),
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         passwordInstruction(),
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
         confirmPasswordField(),
-        SizedBox(
+        const SizedBox(
           height: 40,
         ),
         nextBtn(),
-        SizedBox(
+        const SizedBox(
           height: 40,
         ),
       ],
@@ -411,7 +411,7 @@ class _SignUpState extends State<SignUp> {
         fontWeight: FontWeight.w600,
       ),
       decoration: InputDecoration(
-        contentPadding: EdgeInsets.symmetric(horizontal: 0),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 0),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
           borderSide: BorderSide(
@@ -538,10 +538,10 @@ class _SignUpState extends State<SignUp> {
   }
 
   String? fullNameValidator(String enteredName) {
-    List<String> nameList = enteredName.trim().split(" ");
+    final List<String> nameList = enteredName.trim().split(" ");
 
     /// For not allowing user to put any profession title
-    List<String> notValidProfessionTitles = [
+    final List<String> notValidProfessionTitles = [
       "mr",
       "mrs",
       "miss",
@@ -553,7 +553,7 @@ class _SignUpState extends State<SignUp> {
       "evang",
     ];
 
-    RegExp regExp = RegExp(r"^[A-Za-z\s]{1,}[A-Za-z\s-]{0,}$");
+    final RegExp regExp = RegExp(r"^[A-Za-z\s]{1,}[A-Za-z\s-]{0,}$");
 
     if (!regExp.hasMatch(enteredName)) {
       return "Please enter valid name";
@@ -602,14 +602,14 @@ class _SignUpState extends State<SignUp> {
           child: CircleAvatar(
             radius: 14,
             backgroundColor: navyBlue,
-            child: Icon(Icons.check, size: 20, color: Colors.white),
+            child: const Icon(Icons.check, size: 20, color: Colors.white),
           ),
         );
       }
 
-      return Icon(Icons.cancel, color: Colors.red);
+      return const Icon(Icons.cancel, color: Colors.red);
     } else {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     }
   }
 
@@ -672,7 +672,7 @@ class _SignUpState extends State<SignUp> {
   }
 
   String? userNameValidator(String username) {
-    RegExp validCharacters = RegExp(r'^[a-zA-Z 0-9\.\+\-\_]*$');
+    final RegExp validCharacters = RegExp(r'^[a-zA-Z 0-9\.\+\-\_]*$');
 
     // RegExp(r'^[a-z0-9]([._-](?![._-])|[a-z0-9]){3,18}[a-z0-9]$');
 
@@ -739,14 +739,14 @@ class _SignUpState extends State<SignUp> {
           child: CircleAvatar(
             radius: 14,
             backgroundColor: navyBlue,
-            child: Icon(Icons.check, size: 20, color: Colors.white),
+            child: const Icon(Icons.check, size: 20, color: Colors.white),
           ),
         );
       } else {
-        return Icon(Icons.cancel, color: Colors.red);
+        return const Icon(Icons.cancel, color: Colors.red);
       }
     } else {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     }
   }
 
@@ -837,8 +837,8 @@ class _SignUpState extends State<SignUp> {
               ),
             ),
           ),
-          SizedBox(height: 4),
-          Text('You must be 12 years or older'),
+          const SizedBox(height: 4),
+          const Text('You must be 12 years or older'),
         ],
       ),
     );
@@ -852,17 +852,17 @@ class _SignUpState extends State<SignUp> {
         children: <Widget>[
           ClipRRect(
             clipBehavior: Clip.antiAliasWithSaveLayer,
-            borderRadius: BorderRadius.all(Radius.circular(5)),
+            borderRadius: const BorderRadius.all(Radius.circular(5)),
             child: SizedBox(
               width: Checkbox.width - 1.5,
               height: Checkbox.width - 1.5,
               child: Container(
-                decoration: new BoxDecoration(
+                decoration: BoxDecoration(
                   border: Border.all(
                     color: greyBorderColor,
                     width: 1,
                   ),
-                  borderRadius: new BorderRadius.circular(5),
+                  borderRadius: BorderRadius.circular(5),
                 ),
                 child: Theme(
                   data: ThemeData(
@@ -885,7 +885,7 @@ class _SignUpState extends State<SignUp> {
               ),
             ),
           ),
-          SizedBox(
+          const SizedBox(
             width: 12,
           ),
           Expanded(
@@ -956,7 +956,7 @@ class _SignUpState extends State<SignUp> {
             textColor: Colors.white,
             backgroundColor: navyBlue,
           )
-        : SizedBox.shrink();
+        : const SizedBox.shrink();
   }
 
   bool showButton = false;
@@ -969,7 +969,7 @@ class _SignUpState extends State<SignUp> {
             textColor: Colors.white,
             backgroundColor: navyBlue,
           )
-        : SizedBox.shrink();
+        : const SizedBox.shrink();
   }
 
   void triggerInfoChange() {
@@ -980,10 +980,10 @@ class _SignUpState extends State<SignUp> {
   }
 
   bool validateDOB() {
-    DateTime dateTime = DateTime.now();
+    final DateTime dateTime = DateTime.now();
 
     // Validating for 12 years and above
-    if (dob.add(Duration(days: 4380)).isBefore(dateTime)) {
+    if (dob.add(const Duration(days: 4380)).isBefore(dateTime)) {
       isValidAge = true;
       return true;
     } else {
@@ -995,7 +995,7 @@ class _SignUpState extends State<SignUp> {
 
   // validate password
   String? validateEnteredPassword(String val) {
-    var matcher = RegExp(
+    final matcher = RegExp(
       r'^(.)\1{1,}$',
       caseSensitive: true,
     );
@@ -1013,7 +1013,7 @@ class _SignUpState extends State<SignUp> {
 
   // validate confirm password
   String? validateEnteredConfirmPassword(String val) {
-    var matcher = RegExp(
+    final matcher = RegExp(
       r'^(.)\1{1,}$',
       caseSensitive: true,
     );
@@ -1056,7 +1056,8 @@ class _SignUpState extends State<SignUp> {
     final pressedGender = await showDialog<String>(
         context: context,
         builder: (context) => AlertDialog(
-              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              insetPadding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
@@ -1135,7 +1136,7 @@ class _SignUpState extends State<SignUp> {
     if (_bankDetailsFormKey.currentState!.validate()) {
       password = _passwordController.text.trim();
 
-      DateFormat dateFormat = DateFormat('yyyy-MM-dd');
+      final DateFormat dateFormat = DateFormat('yyyy-MM-dd');
       debugPrint("DOB:- ${dateFormat.format(dob)}");
 
       String selectedGender = "";
@@ -1145,19 +1146,20 @@ class _SignUpState extends State<SignUp> {
         selectedGender = "F";
       }
 
-      String firstName = _firstNameController.text.toTitleCase().trim();
-      String lastName = _lastNameController.text.toTitleCase().trim();
-      String referralCode = _referralCodeController.text.toLowerCase().trim();
-      String userName = _userNameController.text
+      final String firstName = _firstNameController.text.toTitleCase().trim();
+      final String lastName = _lastNameController.text.toTitleCase().trim();
+      final String referralCode =
+          _referralCodeController.text.toLowerCase().trim();
+      final String userName = _userNameController.text
           .toLowerCase()
           // .replaceAll(' ', '.')
           // .replaceAll(multipleDotReg, '.')
           // .toLowerCase()
           .trim();
-      String businessOrNickName =
+      final String businessOrNickName =
           _businessOrNickNameController.text.toTitleCase().trim();
 
-      Map<String, dynamic> data = {
+      final Map<String, dynamic> data = {
         "phone_number": phoneNumber,
         "firstname": firstName,
         "lastname": lastName,
@@ -1204,12 +1206,12 @@ class _SignUpState extends State<SignUp> {
         showToast(message: error.toString());
       });
     } else {
-      var msg = AppLocalization.of(context)!.invalidDetails;
+      final msg = AppLocalization.of(context)!.invalidDetails;
       showToast(message: msg);
     }
   }
 
-  clearAllFields() {
+  void clearAllFields() {
     _bvnController.clear();
     _firstNameController.clear();
     _lastNameController.clear();
@@ -1222,7 +1224,7 @@ class _SignUpState extends State<SignUp> {
     industryType = null;
   }
 
-  chooseYourPlanWidget() {
+  Widget chooseYourPlanWidget() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1230,7 +1232,7 @@ class _SignUpState extends State<SignUp> {
           'Choose your plan',
           style: TextStyle(color: darkGrey, fontSize: 14),
         ),
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         chooseYourPlanDropdown(),
       ],
     );
@@ -1249,7 +1251,7 @@ class _SignUpState extends State<SignUp> {
           fontWeight: FontWeight.w600,
         ),
         decoration: InputDecoration(
-          contentPadding: EdgeInsets.symmetric(horizontal: 16),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
             borderSide: BorderSide(
@@ -1282,7 +1284,7 @@ class _SignUpState extends State<SignUp> {
                     id: 0,
                     subscriptionType: '',
                   ),
-                  child: Text(''),
+                  child: const Text(''),
                 )
               ]
             : subscriptionsModelList!.map((SubscriptionsModel item) {
@@ -1298,13 +1300,13 @@ class _SignUpState extends State<SignUp> {
                       ),
                       Text(
                         worldCurrencies[item.currency]!,
-                        style: TextStyle(
+                        style: const TextStyle(
                           decoration: TextDecoration.lineThrough,
                         ),
                       ),
                       Text(
                         '${moneyDisplayNormalizer(int.parse(item.price.toString()))} (${item.subscriptionType}) plan',
-                        style: TextStyle(
+                        style: const TextStyle(
                           decoration: TextDecoration.lineThrough,
                         ),
                       ),
@@ -1331,13 +1333,13 @@ class _SignUpState extends State<SignUp> {
 
   SubscriptionsModel? subscriptionsModel;
   List<SubscriptionsModel>? subscriptionsModelList = [];
-  getSubscriptionList() async {
+  void getSubscriptionList() async {
     setState(() {
       subscriptionsModel = null;
       subscriptionsModelList = null;
     });
     if (accountType != null) {
-      List<SubscriptionsModel> _subscriptionsModelList =
+      final List<SubscriptionsModel> _subscriptionsModelList =
           await SubscriptionsAuth()
               .getSubscriptionList(accountType: accountType ?? "");
       subscriptionsModelList = _subscriptionsModelList;

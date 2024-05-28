@@ -56,10 +56,10 @@ class ContractBloc extends ChangeNotifier {
         contractList.addAll(tempList);
         notifyListeners();
 
-        print('CONTRACT LENGTH :: ${contractList.length}');
+        debugPrint('CONTRACT LENGTH :: ${contractList.length}');
 
         if (isFirstTime && next != null && next != "") {
-          print('NEXT :::: $next');
+          debugPrint('NEXT :::: $next');
           isFirstTime = false;
           getContractList(contractStatus: contractStatus);
         }

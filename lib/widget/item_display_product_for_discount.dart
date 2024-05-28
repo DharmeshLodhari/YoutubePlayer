@@ -19,14 +19,14 @@ class DisplayProductForDiscount extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print("${DateTime.now().toString()}");
+    debugPrint("${DateTime.now().toString()}");
     return GestureDetector(
       onTap: () {
         Navigator.pushNamed(context, Routes.PRODUCT,
             arguments: {"product": product});
       },
       child: Container(
-        margin: EdgeInsets.symmetric(vertical: 7, horizontal: 16),
+        margin: const EdgeInsets.symmetric(vertical: 7, horizontal: 16),
         child: Card(
           semanticContainer: true,
           clipBehavior: Clip.antiAliasWithSaveLayer,
@@ -35,10 +35,10 @@ class DisplayProductForDiscount extends StatelessWidget {
           elevation: 0,
           margin: EdgeInsets.zero,
           shape: RoundedRectangleBorder(
-              side: BorderSide(color: Color(0xFFDCE0E8)),
+              side: const BorderSide(color: Color(0xFFDCE0E8)),
               borderRadius: BorderRadius.circular(8)),
           child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 15, vertical: 13),
+            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 13),
             child: Row(
               children: <Widget>[
                 Checkbox(

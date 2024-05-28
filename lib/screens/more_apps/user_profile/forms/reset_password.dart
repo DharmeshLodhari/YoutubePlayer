@@ -71,7 +71,7 @@ class _ResetPasswordState extends State<ResetPassword> {
             body: SingleChildScrollView(
               scrollDirection: Axis.vertical,
               child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 20),
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 height: MediaQuery.of(context).size.height -
                     (AppBar().preferredSize.height +
                         MediaQuery.of(context).padding.top),
@@ -84,19 +84,19 @@ class _ResetPasswordState extends State<ResetPassword> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             resetPasswordTitle(),
-                            SizedBox(
+                            const SizedBox(
                               height: 20,
                             ),
                             passwordPinFiled(),
-                            SizedBox(
+                            const SizedBox(
                               height: 20,
                             ),
                             newPasswordWidget(),
-                            SizedBox(
+                            const SizedBox(
                               height: 20,
                             ),
                             confirmPasswordWidget(),
-                            SizedBox(
+                            const SizedBox(
                               height: 40,
                             ),
                             resetPasswordButton(),
@@ -150,7 +150,7 @@ class _ResetPasswordState extends State<ResetPassword> {
   // validate password
   String? validateEnteredPassword(String val) {
     ///regexp for repeated number
-    var matcher = RegExp(
+    final matcher = RegExp(
       r'^(.)\1{1,}$',
       caseSensitive: true,
     );
@@ -168,7 +168,7 @@ class _ResetPasswordState extends State<ResetPassword> {
 
   // validate confirm password
   String? validateEnteredConfirmPassword(String val) {
-    var matcher = RegExp(
+    final matcher = RegExp(
       r'^(.)\1{1,}$',
       caseSensitive: true,
     );
@@ -187,10 +187,10 @@ class _ResetPasswordState extends State<ResetPassword> {
   }
 
   Widget passwordPinFiled() {
-    BoxDecoration pinPutDecoration = BoxDecoration(
+    final BoxDecoration pinPutDecoration = BoxDecoration(
         borderRadius: BorderRadius.circular(10),
         border: Border.all(color: greyBorderColor));
-    BoxDecoration selectedDecoration = BoxDecoration(
+    final BoxDecoration selectedDecoration = BoxDecoration(
         borderRadius: BorderRadius.circular(10),
         border: Border.all(color: navyBlue));
     return Container(
@@ -201,7 +201,7 @@ class _ResetPasswordState extends State<ResetPassword> {
             "Reset Password OTP",
             style: TextStyle(fontSize: 14, color: darkGrey),
           ),
-          SizedBox(
+          const SizedBox(
             height: 6.0,
           ),
           PinPut(

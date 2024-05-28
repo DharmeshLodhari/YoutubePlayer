@@ -18,7 +18,7 @@ class FormAddOnTile extends StatelessWidget {
       elevation: 0,
       child: Container(
         decoration: decorateBox(),
-        padding: EdgeInsets.symmetric(vertical: 7.0),
+        padding: const EdgeInsets.symmetric(vertical: 7.0),
         child: ListTile(
           dense: true,
           title: Column(
@@ -32,7 +32,7 @@ class FormAddOnTile extends StatelessWidget {
                     fontWeight: FontWeight.w500,
                     fontSize: 14),
               ),
-              SizedBox(height: 3.0),
+              const SizedBox(height: 3.0),
               Text(
                 '${productAddOnsList[index].options!.length} items',
                 maxLines: 1,

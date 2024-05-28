@@ -76,7 +76,7 @@ class _CreditCardListState extends State<CreditCardList> {
   void _onRefresh() async {
     //check network connectivity and if true then refresh the list
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         count = 0;
@@ -189,7 +189,7 @@ class _CreditCardListState extends State<CreditCardList> {
             isLoading = true;
           });
         }
-        Map<String, dynamic>? result =
+        final Map<String, dynamic>? result =
             await _auth.getCreditCardPagination(next, previous);
         if (result == null) {
           isLoading = false;
@@ -198,7 +198,7 @@ class _CreditCardListState extends State<CreditCardList> {
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
-        var tempList = result['results'];
+        final tempList = result['results'];
         if (mounted) {
           setState(() {
             isLoading = false;
