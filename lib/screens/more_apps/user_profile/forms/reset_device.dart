@@ -77,19 +77,17 @@ class _ResetDeviceState extends State<ResetDevice> {
               children: <Widget>[
                 Form(
                   key: _resetDevice,
-                  child: Container(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        appIcon(),
-                        const SizedBox(height: 20),
-                        titleText(),
-                        const SizedBox(height: 30),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      appIcon(),
+                      const SizedBox(height: 20),
+                      titleText(),
+                      const SizedBox(height: 30),
 
-                        // isReasonIsSelected ? getDeviceData() : Container()
-                        getDeviceData()
-                      ],
-                    ),
+                      // isReasonIsSelected ? getDeviceData() : Container()
+                      getDeviceData()
+                    ],
                   ),
                 ),
               ],
@@ -101,35 +99,31 @@ class _ResetDeviceState extends State<ResetDevice> {
   }
 
   Widget appIcon() {
-    return Container(
-      child: Image.asset(
-        "assets/images/app_logo_navyBlue.png",
-        height: MediaQuery.of(context).size.height / 16,
-        frameBuilder: imageFrameBuilder,
-      ),
+    return Image.asset(
+      "assets/images/app_logo_navyBlue.png",
+      height: MediaQuery.of(context).size.height / 16,
+      frameBuilder: imageFrameBuilder,
     );
   }
 
   Widget titleText() {
-    return Container(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "Slydo",
-            style: TextStyle(
-                fontSize: 22, fontWeight: FontWeight.w700, color: navyBlue),
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          Text(
-            "Reset your Slydo device",
-            style: TextStyle(
-                fontSize: 18, fontWeight: FontWeight.w700, color: blackFont),
-          ),
-        ],
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "Slydo",
+          style: TextStyle(
+              fontSize: 22, fontWeight: FontWeight.w700, color: navyBlue),
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        Text(
+          "Reset your Slydo device",
+          style: TextStyle(
+              fontSize: 18, fontWeight: FontWeight.w700, color: blackFont),
+        ),
+      ],
     );
   }
 

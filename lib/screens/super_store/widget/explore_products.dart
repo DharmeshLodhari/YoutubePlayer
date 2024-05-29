@@ -27,7 +27,7 @@ class _ExploreProductsState extends State<ExploreProducts> {
     isLoading = true;
     if (mounted) setState(() {});
     for (var item in headers['results']) {
-      Product product = await ShoppingAuthService().createProduct(item);
+      final Product product = await ShoppingAuthService().createProduct(item);
       result.add(product);
     }
     isLoading = false;
@@ -91,7 +91,7 @@ class _ExploreProductsState extends State<ExploreProducts> {
   Widget _buildViewMore(BuildContext context) {
     return InkWell(
       onTap: () {
-        String url = AppConfig.baseUrl + widget.headers["next_url"];
+        final String url = AppConfig.baseUrl + widget.headers["next_url"];
         NavigationUtil.push(context,
             screen: SuperStoreIndustry(
                 next: url,

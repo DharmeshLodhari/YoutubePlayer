@@ -5,12 +5,13 @@ import 'package:Slydo/screens/moments/screens/moment_detail/moment_detail_page.d
 import 'package:Slydo/screens/moments/screens/moments_service.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_conversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
+import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/common.dart';
 import 'package:Slydo/utils/navigation_util.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-import '../../../../../utils/util.dart';
 
 class MomentTileForChat extends StatefulWidget {
   final Map<String, dynamic>? message;
@@ -93,7 +94,7 @@ class _MomentTileForChatState extends State<MomentTileForChat> {
                 isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              isSend ? Container() : Container(width: 20),
+              if (isSend) Container() else Container(width: 20),
               Container(
                 constraints: BoxConstraints(
                   maxWidth: MediaQuery.of(context).size.width / 1.75,
@@ -128,31 +129,32 @@ class _MomentTileForChatState extends State<MomentTileForChat> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    widget.chatConversation!.isGroupConversation!
-                        ? widget.message!['author'] != userBloc.user.userName
-                            ? Column(
-                                children: [
-                                  Text(
-                                    widget.message!['author_full_name'] ??
-                                        widget.message!['author'],
-                                    style: TextStyle(
-                                        color: isSend ? Colors.white : navyBlue,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w700),
-                                  ),
-                                  const SizedBox(
-                                    height: 4,
-                                  ),
-                                ],
-                              )
-                            : Container(
-                                height: 0,
-                                width: 0,
-                              )
-                        : Container(
-                            height: 0,
-                            width: 0,
-                          ),
+                    if (widget.chatConversation!.isGroupConversation!)
+                      widget.message!['author'] != userBloc.user.userName
+                          ? Column(
+                              children: [
+                                Text(
+                                  widget.message!['author_full_name'] ??
+                                      widget.message!['author'],
+                                  style: TextStyle(
+                                      color: isSend ? Colors.white : navyBlue,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w700),
+                                ),
+                                const SizedBox(
+                                  height: 4,
+                                ),
+                              ],
+                            )
+                          : const SizedBox(
+                              height: 0,
+                              width: 0,
+                            )
+                    else
+                      const SizedBox(
+                        height: 0,
+                        width: 0,
+                      ),
                     Expanded(
                       child: Card(
                         margin: EdgeInsets.zero,
@@ -256,16 +258,17 @@ class _MomentTileForChatState extends State<MomentTileForChat> {
                   ],
                 ),
               ),
-              isSend
-                  ? Container(
-                      width: 20,
-                      child: isSend
-                          ? Center(
-                              child: getMessageTick(message: widget.message!),
-                            )
-                          : Container(),
-                    )
-                  : Container(),
+              if (isSend)
+                SizedBox(
+                  width: 20,
+                  child: isSend
+                      ? Center(
+                          child: getMessageTick(message: widget.message!),
+                        )
+                      : Container(),
+                )
+              else
+                Container(),
             ],
           ),
           const SizedBox(
@@ -275,21 +278,23 @@ class _MomentTileForChatState extends State<MomentTileForChat> {
             mainAxisAlignment:
                 isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
             children: [
-              isSend
-                  ? Container()
-                  : const SizedBox(
-                      width: 20,
-                    ),
+              if (isSend)
+                Container()
+              else
+                const SizedBox(
+                  width: 20,
+                ),
               Text(
                 formatTime(widget.message!['created_at']),
                 style: TextStyle(
                     color: darkGrey, fontSize: 10, fontWeight: FontWeight.w500),
               ),
-              isSend
-                  ? const SizedBox(
-                      width: 20,
-                    )
-                  : Container(),
+              if (isSend)
+                const SizedBox(
+                  width: 20,
+                )
+              else
+                Container(),
             ],
           ),
         ],

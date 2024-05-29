@@ -39,7 +39,7 @@ class _SuperBlogState extends State<SuperBlog> {
   final RefreshController _postRefreshController =
       RefreshController(initialRefresh: false);
 
-  resetAndGetListOfBlogs(String value) {
+  void resetAndGetListOfBlogs(String value) {
     titleToSearch = value;
     postCount = 0;
     postNext = '';
@@ -85,9 +85,9 @@ class _SuperBlogState extends State<SuperBlog> {
 
         final List<UserPost> posts = [];
 
-        tempList.forEach((element) {
+        for (var element in tempList) {
           posts.add(UserPost.fromJson(element));
-        });
+        }
 
         debugPrint("getListOFBlogs :$titleToSearch ");
 
@@ -402,7 +402,7 @@ class _SuperBlogState extends State<SuperBlog> {
     );
   }
 
-  _onChanged(String value) {
+  void _onChanged(String value) {
     if (_pageViewCtrl.page != 0) {
       _pageViewCtrl.jumpToPage(0);
     }
@@ -497,9 +497,9 @@ class _SlydoBlogsListState extends State<SlydoBlogsList> {
 
         final List<UserPost> posts = [];
 
-        tempList.forEach((element) {
+        for (var element in tempList) {
           posts.add(UserPost.fromJson(element));
-        });
+        }
 
         debugPrint("getListOFBlogs :$titleToSearch ");
 

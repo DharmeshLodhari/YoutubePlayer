@@ -40,17 +40,17 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
   JobModel? jobmodel;
   // String? selectedCategory;
   List<String?> paymentCategories = [];
-  TextEditingController _recipientController = TextEditingController();
-  TextEditingController _categoryController = TextEditingController();
-  TextEditingController _refNumberController = TextEditingController();
-  TextEditingController _amountController = TextEditingController();
-  TextEditingController _reviewController = TextEditingController();
+  final TextEditingController _recipientController = TextEditingController();
+  final TextEditingController _categoryController = TextEditingController();
+  final TextEditingController _refNumberController = TextEditingController();
+  final TextEditingController _amountController = TextEditingController();
+  final TextEditingController _reviewController = TextEditingController();
 
   CustomerProfile? messageReceiver;
   late UserBloc userBloc;
-  FocusNode _recipientFocus = FocusNode();
-  FocusNode _refNumberFocus = FocusNode();
-  FocusNode _categoryFocus = FocusNode();
+  final FocusNode _recipientFocus = FocusNode();
+  final FocusNode _refNumberFocus = FocusNode();
+  final FocusNode _categoryFocus = FocusNode();
   // double? amount;
   int? rateValue;
   bool? isLoading;
@@ -73,7 +73,7 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
     super.initState();
   }
 
-  getContractorDetail() async {
+  void getContractorDetail() async {
     messageReceiver = await UserAuth().fetchCustomerProfile(jobmodel!.assignee);
     _refNumberController.text = '';
     _categoryController.text = 'Finance';
@@ -110,33 +110,31 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
                   border: Border.all(color: iconBtnGrey, width: 1)),
               child: Form(
                   key: _formKey,
-                  child: Container(
-                    child: Column(
-                      children: [
-                        displayCard(),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: Column(children: [
-                            getRecipientField(),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            displayAmountField(),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            getCategoryField(),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            getRefNumberField(),
-                            const SizedBox(
-                              height: 40,
-                            ),
-                          ]),
-                        )
-                      ],
-                    ),
+                  child: Column(
+                    children: [
+                      displayCard(),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Column(children: [
+                          getRecipientField(),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          displayAmountField(),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          getCategoryField(),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          getRefNumberField(),
+                          const SizedBox(
+                            height: 40,
+                          ),
+                        ]),
+                      )
+                    ],
                   ))),
         ),
         const SizedBox(
@@ -201,7 +199,7 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
     );
   }
 
-  ratingAndReviewModal() {
+  void ratingAndReviewModal() {
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
@@ -306,7 +304,7 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
     );
   }
 
-  endJob() async {
+  void endJob() async {
     await ServiceHubAuthService().endJob(jobmodel!.id).then((value) {
       debugPrint("$value");
       if (value == true) {
@@ -320,7 +318,7 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
     });
   }
 
-  submitRatingAndReview() async {
+  void submitRatingAndReview() async {
     await ServiceHubAuthService()
         .rateAndReviewContrator(jobId: jobmodel!.id, data: {
       "job_contractor": jobmodel!.assignee,
@@ -378,11 +376,11 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
     }
   }
 
-  makePayment() async {
+  void makePayment() async {
     if (Platform.isIOS) {
       userLocation = await locationService.getLocation();
     }
-    final String description = 'General Payment';
+    const String description = 'General Payment';
 
     final data = {
       "from_customer": userBloc.user.userName,
@@ -420,13 +418,13 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
         Navigator.pop(context);
         if (response.statusCode == 406) {
           errorMessage = jsonDecode(value.body)[0];
-          showToast(message: "$errorMessage");
+          showToast(message: errorMessage);
           setState(() {});
         } else {
           debugPrint("ERROR:- ${response.body}");
           setState(() {
             errorMessage = AppLocalization.of(context)!.somethingWentWrong;
-            showToast(message: "$errorMessage");
+            showToast(message: errorMessage);
           });
         }
       }
@@ -440,7 +438,7 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
     return false;
   }
 
-  sendPayment() {
+  Widget sendPayment() {
     return PermissionProtectionWidget(
       permissionName: ProtectionPermission.transaction,
       isLockForRead: '1',
@@ -453,7 +451,7 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
     );
   }
 
-  submitRatingAndReviewButton() {
+  Widget submitRatingAndReviewButton() {
     return CurvedButton(
       onPressed: () => submitRatingAndReview(),
       backgroundColor: navyBlue,
@@ -462,7 +460,7 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
     );
   }
 
-  displayCard() {
+  Widget displayCard() {
     return Column(
       children: [
         ListTile(

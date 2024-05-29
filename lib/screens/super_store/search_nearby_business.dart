@@ -137,9 +137,9 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
         if (mounted) {
           isLoading = false;
           try {
-            tempList!.forEach((result) {
+            for (var result in tempList!) {
               nearByBusiness.add(result);
-            });
+            }
           } catch (e) {
             debugPrint("error adding products $e");
           }
@@ -172,9 +172,9 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
       productCategories = await ShoppingAuthService().getProductCategories();
       productCategoriesCopy = productCategories;
 
-      productCategoriesCopy!.forEach((element) {
+      for (var element in productCategoriesCopy!) {
         categoryCheckMark[element.name] = false;
-      });
+      }
     } catch (e) {
       productCategories = [];
       productCategoriesCopy = [];
@@ -192,9 +192,9 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
       stateList = getAllStates();
       stateListCopy = stateList;
 
-      stateListCopy.forEach((element) {
+      for (var element in stateListCopy) {
         stateCheckMark[element] = false;
-      });
+      }
     } catch (e) {
       stateList = [];
       stateListCopy = [];
@@ -312,12 +312,13 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
                                           customerProfileList = nearByBusiness;
                                       // modify customerProfileList for the username and refresh the list
                                       // set the isFollowing for that particular user
-                                      customerProfileList.forEach((customer) {
+                                      for (var customer
+                                          in customerProfileList) {
                                         if (customer.userName == username) {
                                           customer.isFollowing =
                                               value; // Modify the isFollowing property
                                         }
-                                      });
+                                      }
 
                                       nearByBusiness = [];
                                       nearByBusiness = customerProfileList;
@@ -779,9 +780,9 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
           lgaList = getLga(states: pickedStateList);
           lgaListCopy = lgaList;
 
-          lgaListCopy.forEach((element) {
+          for (var element in lgaListCopy) {
             lgaCheckMark[element] = false;
-          });
+          }
           bottomSheetSetState(() {});
 
           lgaBottomSheet(bottomSheetSetState);

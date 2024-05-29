@@ -393,22 +393,20 @@ class _ProductAddOnOptionUpdateState extends State<ProductAddOnOptionUpdate> {
   }
 
   Widget getDescription() {
-    return Container(
-      child: CustomizedTextFormField(
-        maxLines: 3,
-        labelText: "Description",
-        textCapitalization: TextCapitalization.sentences,
-        controller: descriptionController,
-        validator: (val) {
-          if (val.isNotEmpty) {
-            return null;
-          }
-          return AppLocalization.of(context)!.descriptionMustNotEmpty;
-        },
-        onChanged: (val) {
-          description = val;
-        },
-      ),
+    return CustomizedTextFormField(
+      maxLines: 3,
+      labelText: "Description",
+      textCapitalization: TextCapitalization.sentences,
+      controller: descriptionController,
+      validator: (val) {
+        if (val.isNotEmpty) {
+          return null;
+        }
+        return AppLocalization.of(context)!.descriptionMustNotEmpty;
+      },
+      onChanged: (val) {
+        description = val;
+      },
     );
   }
 

@@ -150,12 +150,12 @@ class _PostTileForChatState extends State<PostTileForChat> {
                                 ),
                               ],
                             )
-                          : Container(
+                          : const SizedBox(
                               height: 0,
                               width: 0,
                             )
                     else
-                      Container(
+                      const SizedBox(
                         height: 0,
                         width: 0,
                       ),
@@ -246,7 +246,7 @@ class _PostTileForChatState extends State<PostTileForChat> {
                 ),
               ),
               if (isSend)
-                Container(
+                SizedBox(
                   width: 20,
                   child: isSend
                       ? Center(

@@ -321,13 +321,13 @@ class _AddShippingOptionsState extends State<AddShippingOptions> {
         } else {
           if (response.statusCode == 406) {
             errorMessage = jsonDecode(value.body)[0];
-            showToast(message: "$errorMessage");
+            showToast(message: errorMessage);
             setState(() {});
           } else {
             debugPrint("ERROR:- ${response.body}");
             setState(() {
               errorMessage = AppLocalization.of(context)!.somethingWentWrong;
-              showToast(message: "$errorMessage");
+              showToast(message: errorMessage);
             });
           }
         }

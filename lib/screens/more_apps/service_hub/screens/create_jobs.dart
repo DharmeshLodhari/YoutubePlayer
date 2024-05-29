@@ -52,10 +52,10 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
   String? displayCategory;
 
   final GlobalKey<ScaffoldMessengerState> _jobScaffoldMessengerKey =
-      new GlobalKey<ScaffoldMessengerState>();
+      GlobalKey<ScaffoldMessengerState>();
 
   int imageCount = 5;
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
   List<PickedFile> jobImages = [];
   String jobTitle = "";
   String jobDescription = "";
@@ -113,7 +113,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
       RefreshController(initialRefresh: false);
   List<String> categoriesNameList = [];
   // ScrollController _categoryScrollController = ScrollController();
-  ScrollController _locationScrollController = ScrollController();
+  final ScrollController _locationScrollController = ScrollController();
 
   TextEditingController? searchItemTextController;
   GlobalKey searchItemTextFormField = GlobalKey();
@@ -175,9 +175,9 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
         }
         if (mounted) setState(() {});
 
-        tempList.forEach((item) {
+        for (var item in tempList) {
           searchedCategoryList.add(CategoryListData.fromJson(item));
-        });
+        }
       }
       if (searchedCategoryList.isEmpty) {
         noSearchedItem = true;
@@ -612,7 +612,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
   }
 
   Widget addImages() {
-    return Container(
+    return SizedBox(
       height: 100,
       child: ListView.builder(
         controller: _scrollController,
@@ -703,7 +703,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
   }
 
   Widget showImage(int index) {
-    return Container(
+    return SizedBox(
       height: 100,
       child: Stack(
         children: <Widget>[
@@ -1476,9 +1476,9 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
             isLocationLoading = false;
             locationsList.addAll(tempList!);
             locationsListCopy = locationsList;
-            tempList.forEach((element) {
+            for (var element in tempList) {
               categoriesNameList.add(element.name!);
-            });
+            }
           });
         }
       }
@@ -1618,23 +1618,21 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
       },
       child: CustomizedDropDownField(
         title: "Start Date",
-        child: Container(
-          child: ListTile(
-            dense: true,
-            title: Text(
-              formatDate(jobAvailableFrom),
-              style: TextStyle(
-                color: blackFont,
-                fontWeight: FontWeight.w600,
-                fontSize: 16,
-                fontFamily: "Inter",
-              ),
+        child: ListTile(
+          dense: true,
+          title: Text(
+            formatDate(jobAvailableFrom),
+            style: TextStyle(
+              color: blackFont,
+              fontWeight: FontWeight.w600,
+              fontSize: 16,
+              fontFamily: "Inter",
             ),
-            trailing: Icon(
-              SlydoAppIcon.date,
-              size: 16,
-              color: darkGrey,
-            ),
+          ),
+          trailing: Icon(
+            SlydoAppIcon.date,
+            size: 16,
+            color: darkGrey,
           ),
         ),
       ),
@@ -1659,23 +1657,21 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
       },
       child: CustomizedDropDownField(
         title: "End Date",
-        child: Container(
-          child: ListTile(
-            dense: true,
-            title: Text(
-              formatDate(jobEndDate),
-              style: TextStyle(
-                color: blackFont,
-                fontWeight: FontWeight.w600,
-                fontSize: 16,
-                fontFamily: "Inter",
-              ),
+        child: ListTile(
+          dense: true,
+          title: Text(
+            formatDate(jobEndDate),
+            style: TextStyle(
+              color: blackFont,
+              fontWeight: FontWeight.w600,
+              fontSize: 16,
+              fontFamily: "Inter",
             ),
-            trailing: Icon(
-              SlydoAppIcon.date,
-              size: 16,
-              color: darkGrey,
-            ),
+          ),
+          trailing: Icon(
+            SlydoAppIcon.date,
+            size: 16,
+            color: darkGrey,
           ),
         ),
       ),
@@ -1688,7 +1684,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
     super.dispose();
   }
 
-  getPickDateStart({
+  Widget getPickDateStart({
     CrossAxisAlignment? crossAxisAlignment,
     String? dateText,
   }) =>
@@ -1755,7 +1751,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
         ),
       );
 
-  getPickDateEnd({
+  Widget getPickDateEnd({
     CrossAxisAlignment? crossAxisAlignment,
     String? dateText,
   }) =>
@@ -2005,67 +2001,65 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
   }
 
   Widget searchBox() {
-    return Container(
-      child: Theme(
-        data: Theme.of(context).copyWith(
-          textSelectionTheme: const TextSelectionThemeData()
-              .copyWith(selectionHandleColor: navyBlue),
+    return Theme(
+      data: Theme.of(context).copyWith(
+        textSelectionTheme: const TextSelectionThemeData()
+            .copyWith(selectionHandleColor: navyBlue),
+      ),
+      child: TextFormField(
+        key: searchItemTextFormField,
+        controller: searchItemTextController,
+        style: TextStyle(
+          fontSize: 16,
+          fontFamily: "Inter",
+          color: blackFont,
+          fontWeight: FontWeight.w600,
         ),
-        child: TextFormField(
-          key: searchItemTextFormField,
-          controller: searchItemTextController,
-          style: TextStyle(
-            fontSize: 16,
-            fontFamily: "Inter",
-            color: blackFont,
-            fontWeight: FontWeight.w600,
+        cursorWidth: 1.5,
+        cursorColor: navyBlue,
+        decoration: InputDecoration(
+          hintText: 'Search Category',
+          fillColor: Colors.white,
+          filled: true,
+          contentPadding: const EdgeInsets.symmetric(vertical: 10),
+          prefix: const Padding(
+            padding: EdgeInsets.only(left: 12),
           ),
-          cursorWidth: 1.5,
-          cursorColor: navyBlue,
-          decoration: InputDecoration(
-            hintText: 'Search Category',
-            fillColor: Colors.white,
-            filled: true,
-            contentPadding: const EdgeInsets.symmetric(vertical: 10),
-            prefix: const Padding(
-              padding: EdgeInsets.only(left: 12),
-            ),
-            suffixIcon: searchIcon(),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(
-                color: dividerColor,
-                width: 1.0,
-              ),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(
-                color: navyBlue,
-                width: 1.0,
-              ),
-            ),
-            errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(
-                color: dividerColor,
-                width: 1.0,
-              ),
-            ),
-            focusedErrorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(
-                color: dividerColor,
-                width: 1.0,
-              ),
+          suffixIcon: searchIcon(),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(
+              color: dividerColor,
+              width: 1.0,
             ),
           ),
-          onFieldSubmitted: (val) {
-            if (mounted) setState(() {});
-            FocusScope.of(context).unfocus();
-            onRefresh();
-          },
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(
+              color: navyBlue,
+              width: 1.0,
+            ),
+          ),
+          errorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(
+              color: dividerColor,
+              width: 1.0,
+            ),
+          ),
+          focusedErrorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(
+              color: dividerColor,
+              width: 1.0,
+            ),
+          ),
         ),
+        onFieldSubmitted: (val) {
+          if (mounted) setState(() {});
+          FocusScope.of(context).unfocus();
+          onRefresh();
+        },
       ),
     );
   }
@@ -2126,26 +2120,24 @@ class CustomRadioTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: RadioListTile(
-        contentPadding: EdgeInsets.zero,
-        visualDensity: const VisualDensity(
-          horizontal: VisualDensity.minimumDensity,
-          // vertical: VisualDensity.minimumDensity,
-        ),
-        title: Text(
-          value,
-          style: const TextStyle(
-            color: Colors.black,
-            fontSize: 14,
-            fontFamily: "Inter",
-          ),
-        ),
-        activeColor: navyBlue,
-        value: value,
-        groupValue: groupVal,
-        onChanged: callbackFunction,
+    return RadioListTile(
+      contentPadding: EdgeInsets.zero,
+      visualDensity: const VisualDensity(
+        horizontal: VisualDensity.minimumDensity,
+        // vertical: VisualDensity.minimumDensity,
       ),
+      title: Text(
+        value,
+        style: const TextStyle(
+          color: Colors.black,
+          fontSize: 14,
+          fontFamily: "Inter",
+        ),
+      ),
+      activeColor: navyBlue,
+      value: value,
+      groupValue: groupVal,
+      onChanged: callbackFunction,
     );
   }
 }
@@ -2171,84 +2163,80 @@ class CustomizedRadioButtonRow extends StatelessWidget {
           children: [
             Expanded(
               flex: 1,
-              child: Container(
-                child: Row(
-                  children: [
-                    Radio(
-                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      visualDensity: const VisualDensity(
-                        horizontal: VisualDensity.minimumDensity,
-                        vertical: VisualDensity.minimumDensity,
-                      ),
-                      value: "Fixed",
-                      groupValue: groupValue,
-                      onChanged: (String? value) {
-                        // setState(() {
-                        //   groupValue = value!;
-                        // });
-                      },
+              child: Row(
+                children: [
+                  Radio(
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    visualDensity: const VisualDensity(
+                      horizontal: VisualDensity.minimumDensity,
+                      vertical: VisualDensity.minimumDensity,
                     ),
-                    const SizedBox(
-                      width: 5,
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        // setState(() {
-                        //   groupValue = "Fixed";
-                        // });
-                      },
-                      child: const Text(
-                        "Fixes",
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 14,
-                          fontFamily: "Inter",
-                        ),
+                    value: "Fixed",
+                    groupValue: groupValue,
+                    onChanged: (String? value) {
+                      // setState(() {
+                      //   groupValue = value!;
+                      // });
+                    },
+                  ),
+                  const SizedBox(
+                    width: 5,
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      // setState(() {
+                      //   groupValue = "Fixed";
+                      // });
+                    },
+                    child: const Text(
+                      "Fixes",
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 14,
+                        fontFamily: "Inter",
                       ),
-                    )
-                  ],
-                ),
+                    ),
+                  )
+                ],
               ),
             ),
             Expanded(
               flex: 1,
-              child: Container(
-                child: Row(
-                  children: [
-                    Radio(
-                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      visualDensity: const VisualDensity(
-                        horizontal: VisualDensity.minimumDensity,
-                        vertical: VisualDensity.minimumDensity,
-                      ),
-                      value: "Fixed",
-                      groupValue: groupValue,
-                      onChanged: (String? value) {
-                        // setState(() {
-                        //   groupValue = value!;
-                        // });
-                      },
+              child: Row(
+                children: [
+                  Radio(
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    visualDensity: const VisualDensity(
+                      horizontal: VisualDensity.minimumDensity,
+                      vertical: VisualDensity.minimumDensity,
                     ),
-                    const SizedBox(
-                      width: 5,
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        // setState(() {
-                        //   groupValue = "Fixed";
-                        // });
-                      },
-                      child: const Text(
-                        "Fixes",
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 14,
-                          fontFamily: "Inter",
-                        ),
+                    value: "Fixed",
+                    groupValue: groupValue,
+                    onChanged: (String? value) {
+                      // setState(() {
+                      //   groupValue = value!;
+                      // });
+                    },
+                  ),
+                  const SizedBox(
+                    width: 5,
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      // setState(() {
+                      //   groupValue = "Fixed";
+                      // });
+                    },
+                    child: const Text(
+                      "Fixes",
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 14,
+                        fontFamily: "Inter",
                       ),
-                    )
-                  ],
-                ),
+                    ),
+                  )
+                ],
               ),
             ),
           ],

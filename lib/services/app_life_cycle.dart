@@ -90,7 +90,7 @@ class _AppLifeCycleState extends State<AppLifeCycle>
     AwesomeNotificationService().awesomeNotifications.cancelAll();
 
     //this will store the device data and the app state
-    final Map<String, String?> tempData = Map<String, String?>();
+    final Map<String, String?> tempData = <String, String?>{};
     tempData['token'] = device != null ? device!['firebaseToken'] : "";
     tempData['type'] = device != null ? device!['type'] : "";
     tempData['state'] = "active";
@@ -104,7 +104,7 @@ class _AppLifeCycleState extends State<AppLifeCycle>
 
   void onInactive() {
     //this will store the device data and the app state
-    final Map<String, String?> tempData = Map<String, String?>();
+    final Map<String, String?> tempData = <String, String?>{};
     tempData['token'] = device != null ? device!['firebaseToken'] : "";
     tempData['type'] = device != null ? device!['type'] : "";
     tempData['state'] = "inActive";
@@ -118,7 +118,7 @@ class _AppLifeCycleState extends State<AppLifeCycle>
 
   void onPause() {
     //this will store the device data and the app state
-    final Map<String, String?> tempData = Map<String, String?>();
+    final Map<String, String?> tempData = <String, String?>{};
     tempData['token'] = device != null ? device!['firebaseToken'] : "";
     tempData['type'] = device != null ? device!['type'] : "";
     tempData['state'] = "in-background";
@@ -132,7 +132,7 @@ class _AppLifeCycleState extends State<AppLifeCycle>
 
   void onDetached() {
     //this will store the device data and the app state
-    final Map<String, String?> tempData = Map<String, String?>();
+    final Map<String, String?> tempData = <String, String?>{};
     tempData['token'] = device != null ? device!['firebaseToken'] : "";
     tempData['type'] = device != null ? device!['type'] : "";
     tempData['state'] = "suspended";

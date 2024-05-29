@@ -57,113 +57,111 @@ class MainReview extends StatelessWidget {
 class ReviewTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    height: 20,
-                    width: 20,
-                    child: ClipOval(
-                      child: CachedNetworkImage(
-                        imageUrl:
-                            "https://d2qp0siotla746.cloudfront.net/img/use-cases/profile-picture/template_3.jpg",
-                        fit: BoxFit.fill,
-                        width: double.infinity,
-                        height: double.infinity,
-                        errorWidget: imageErrorWidget,
-                      ),
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                SizedBox(
+                  height: 20,
+                  width: 20,
+                  child: ClipOval(
+                    child: CachedNetworkImage(
+                      imageUrl:
+                          "https://d2qp0siotla746.cloudfront.net/img/use-cases/profile-picture/template_3.jpg",
+                      fit: BoxFit.fill,
+                      width: double.infinity,
+                      height: double.infinity,
+                      errorWidget: imageErrorWidget,
                     ),
                   ),
-                  const SizedBox(
-                    width: 12,
-                  ),
-                  Text(
-                    "Jamé Smith",
-                    style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: blackFont),
-                  )
-                ],
-              ),
-              Text(
-                "20 Aug",
-                style: TextStyle(
-                    fontSize: 12, fontWeight: FontWeight.w400, color: darkGrey),
-              )
-            ],
-          ),
-          const SizedBox(
-            height: 16,
-          ),
-          Row(
-            children: [
-              Icon(
-                SlydoAppIcon.star,
-                color: starYellow,
-                size: 11,
-              ),
-              const SizedBox(
-                width: 4,
-              ),
-              Icon(
-                SlydoAppIcon.star,
-                color: starYellow,
-                size: 11,
-              ),
-              const SizedBox(
-                width: 4,
-              ),
-              Icon(
-                SlydoAppIcon.star,
-                color: starYellow,
-                size: 11,
-              ),
-              const SizedBox(
-                width: 4,
-              ),
-              Icon(
-                SlydoAppIcon.star,
-                color: starYellow,
-                size: 11,
-              ),
-              const SizedBox(
-                width: 4,
-              ),
-              Icon(
-                SlydoAppIcon.star,
-                color: greyBorderColor,
-                size: 11,
-              ),
-              const SizedBox(
-                width: 4,
-              ),
-            ],
-          ),
-          const SizedBox(
-            height: 8,
-          ),
-          Text(
-            "Very knowledgeable about all the history, really friendly, always smile, and always up for a chat.",
-            style: TextStyle(
-                fontSize: 14, fontWeight: FontWeight.w400, color: blackFont),
-            textAlign: TextAlign.justify,
-          ),
-          const SizedBox(
-            height: 8,
-          ),
-          Divider(
-            thickness: 1,
-            height: 4,
-            color: dividerColor,
-          ),
-        ],
-      ),
+                ),
+                const SizedBox(
+                  width: 12,
+                ),
+                Text(
+                  "Jamé Smith",
+                  style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: blackFont),
+                )
+              ],
+            ),
+            Text(
+              "20 Aug",
+              style: TextStyle(
+                  fontSize: 12, fontWeight: FontWeight.w400, color: darkGrey),
+            )
+          ],
+        ),
+        const SizedBox(
+          height: 16,
+        ),
+        Row(
+          children: [
+            Icon(
+              SlydoAppIcon.star,
+              color: starYellow,
+              size: 11,
+            ),
+            const SizedBox(
+              width: 4,
+            ),
+            Icon(
+              SlydoAppIcon.star,
+              color: starYellow,
+              size: 11,
+            ),
+            const SizedBox(
+              width: 4,
+            ),
+            Icon(
+              SlydoAppIcon.star,
+              color: starYellow,
+              size: 11,
+            ),
+            const SizedBox(
+              width: 4,
+            ),
+            Icon(
+              SlydoAppIcon.star,
+              color: starYellow,
+              size: 11,
+            ),
+            const SizedBox(
+              width: 4,
+            ),
+            Icon(
+              SlydoAppIcon.star,
+              color: greyBorderColor,
+              size: 11,
+            ),
+            const SizedBox(
+              width: 4,
+            ),
+          ],
+        ),
+        const SizedBox(
+          height: 8,
+        ),
+        Text(
+          "Very knowledgeable about all the history, really friendly, always smile, and always up for a chat.",
+          style: TextStyle(
+              fontSize: 14, fontWeight: FontWeight.w400, color: blackFont),
+          textAlign: TextAlign.justify,
+        ),
+        const SizedBox(
+          height: 8,
+        ),
+        Divider(
+          thickness: 1,
+          height: 4,
+          color: dividerColor,
+        ),
+      ],
     );
   }
 }

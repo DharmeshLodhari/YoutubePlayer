@@ -22,7 +22,7 @@ class _GetUserConnectionListState extends State<GetUserConnectionList> {
 
   @override
   void initState() {
-    this.getList();
+    getList();
     super.initState();
   }
 

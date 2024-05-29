@@ -389,7 +389,7 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
   // }
 
   Widget viewServerImages() {
-    return Container(
+    return SizedBox(
       height: 100,
       child: ListView.builder(
         controller: _scrollController,
@@ -404,7 +404,7 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
   }
 
   Widget showServerImage(int index) {
-    return Container(
+    return SizedBox(
       height: 100,
       child: Stack(
         children: <Widget>[
@@ -449,7 +449,7 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
                 ),
               ),
               onPressed: () async {
-                var imageId =
+                final imageId =
                     variant?.getImageId(productImagesFromServer[index]) ?? "";
                 debugPrint("imageId:- $imageId");
                 _auth.deleteProductOrServiceImage(imageId).then((value) {
@@ -461,7 +461,7 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
                     }
                   }
                 }).catchError((error) {
-                  debugPrint("ERROR " + error.toString());
+                  debugPrint("ERROR $error");
                 });
               },
             ),
@@ -474,7 +474,7 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
   bool checkImageLimitForServerImage() {
     if (croppedImageList.length + productImagesFromServer.length !=
             imageCount ||
-        productImagesFromServer.length != 0) {
+        productImagesFromServer.isNotEmpty) {
       return true;
     }
     return false;
@@ -484,14 +484,14 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
   bool checkImageLimitForLocalImage() {
     if (croppedImageList.length + productImagesFromServer.length !=
             imageCount ||
-        croppedImageList.length != 0) {
+        croppedImageList.isNotEmpty) {
       return true;
     }
     return false;
   }
 
   Widget addLocalImages() {
-    return Container(
+    return SizedBox(
       height: 100,
       child: ListView.builder(
         controller: _scrollController,
@@ -520,7 +520,7 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
           ),
           shadowColor: dividerColor,
           margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
-          child: Container(
+          child: SizedBox(
             width: 100,
             child: Image.file(
               File(croppedImageList[index]),
@@ -723,22 +723,20 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
       },
       child: CustomizedDropDownField(
         title: "Available from",
-        child: Container(
-          child: ListTile(
-            dense: true,
-            title: Text(
-              productAvailableFrom ?? "",
-              style: TextStyle(
-                color: blackFont,
-                fontWeight: FontWeight.w600,
-                fontSize: 16,
-              ),
+        child: ListTile(
+          dense: true,
+          title: Text(
+            productAvailableFrom ?? "",
+            style: TextStyle(
+              color: blackFont,
+              fontWeight: FontWeight.w600,
+              fontSize: 16,
             ),
-            trailing: Icon(
-              SlydoAppIcon.date,
-              size: 16,
-              color: darkGrey,
-            ),
+          ),
+          trailing: Icon(
+            SlydoAppIcon.date,
+            size: 16,
+            color: darkGrey,
           ),
         ),
       ),
@@ -953,7 +951,7 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
 
   Future<void> updateVariant() async {
     if (_formKey.currentState!.validate()) {
-      if (croppedImageList.length >= 1 || productImagesFromServer.length >= 1) {
+      if (croppedImageList.isNotEmpty || productImagesFromServer.isNotEmpty) {
         if (validateDropdown()) {
           final Variant variant = Variant();
           variant.id = id;

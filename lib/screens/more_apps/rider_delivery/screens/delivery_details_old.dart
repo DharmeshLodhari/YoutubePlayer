@@ -98,7 +98,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
     super.initState();
   }
 
-  fetchJobData() async {
+  void fetchJobData() async {
     isLoading = true;
     if (mounted) setState(() {});
     await RiderDeliveryAuthService().fetchJob(journeyId).then((value) {
@@ -603,7 +603,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
   }
 
   Widget _buildVerticalDivider() {
-    return Container(
+    return SizedBox(
       height: 55,
       child: VerticalDivider(
         color: greySecondaryYarn,
@@ -875,7 +875,8 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
   }
 
   Widget _buildDistanceAndHours() {
-    Duration? duration = riderDeliveryBloc.deliveryDetails?.travelDuration;
+    final Duration? duration =
+        riderDeliveryBloc.deliveryDetails?.travelDuration;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

@@ -70,14 +70,14 @@ class _MixCartItemState extends State<MixCartItem> {
   void initializeShoppingCart() async {
     debugPrint("initializeShoppingCart called");
     final List items = await ShoppingAuthService().getShoppingCart();
-    items.forEach((element) {
+    for (var element in items) {
       final String type = element is Product ? "product" : "service";
       basketBloc.addItemToCart(
         item: element,
         type: type,
         currentUser: userBloc.user.convertToUser(),
       );
-    });
+    }
   }
 
   @override
@@ -296,7 +296,7 @@ class _MixCartItemState extends State<MixCartItem> {
             Row(
               children: <Widget>[
                 Text(
-                  AppLocalization.of(context)!.total + " : ",
+                  "${AppLocalization.of(context)!.total} : ",
                   style: TextStyle(fontSize: 14, color: blackFont),
                 ),
                 Text(
@@ -331,7 +331,7 @@ class _MixCartItemState extends State<MixCartItem> {
                       fontSize: 16),
                 ),
                 onPressed: () {
-                  if (basketBloc.items.length != 0) {
+                  if (basketBloc.items.isNotEmpty) {
                     addNoteDialog();
                   } else {
                     showToast(
@@ -404,13 +404,13 @@ class _MixCartItemState extends State<MixCartItem> {
       currentUser: userBloc.user.convertToUser(),
     );
     late var mapData;
-    basketBloc.items.forEach((element) {
+    for (var element in basketBloc.items) {
       if (element["item"].conversationID ==
           basketBloc.items[index]["item"].conversationID) {
         mapData = element;
-        return;
+        continue;
       }
-    });
+    }
     final Map<String, dynamic> data = {
       "type": type,
       "id": mapData["item"].conversationID,
@@ -425,13 +425,13 @@ class _MixCartItemState extends State<MixCartItem> {
         basketBloc.items[index]["item"] is Product ? "product" : "service";
 
     late var mapData;
-    basketBloc.items.forEach((element) {
+    for (var element in basketBloc.items) {
       if (element["item"].conversationID ==
           basketBloc.items[index]["item"].conversationID) {
         mapData = element;
-        return;
+        continue;
       }
-    });
+    }
     final Map data = {
       "type": type,
       "id": mapData["item"].conversationID,
@@ -528,7 +528,7 @@ class _MixCartItemState extends State<MixCartItem> {
     );
   }
 
-  addNoteDialog() {
+  void addNoteDialog() {
     showMaterialDialog<String>(
       context: context,
       child: WillPopScope(
@@ -548,15 +548,12 @@ class _MixCartItemState extends State<MixCartItem> {
             style: TextStyle(
                 fontSize: 16, fontWeight: FontWeight.bold, color: blackFont),
           ),
-          content: Container(
-            child: Text(
-              AppLocalization.of(context)!.areYouSureWantToPlaceThisOrderFor +
-                  '(${worldCurrencies[userBloc.user.currency!]} ${basketBloc.total})?',
-              style: TextStyle(
-                fontSize: 16,
-                color: blackFont,
-                fontFamily: "Inter",
-              ),
+          content: Text(
+            '${AppLocalization.of(context)!.areYouSureWantToPlaceThisOrderFor}(${worldCurrencies[userBloc.user.currency!]} ${basketBloc.total})?',
+            style: TextStyle(
+              fontSize: 16,
+              color: blackFont,
+              fontFamily: "Inter",
             ),
           ),
           actions: <Widget>[

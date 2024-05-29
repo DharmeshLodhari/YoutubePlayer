@@ -133,7 +133,7 @@ class _MyMusicScreenState extends State<MyMusicScreen> {
       index: currentIndex,
       children: [
         MyMusicList(),
-        MyWishList(),
+        const MyWishList(),
       ],
     );
   }

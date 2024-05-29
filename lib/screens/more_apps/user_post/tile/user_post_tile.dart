@@ -108,7 +108,209 @@ class _PostTileState extends State<PostTile> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         child: Container(
           decoration: decorateBox(),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Stack(
+                children: [
+                  ClipRRect(
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(10),
+                      topRight: Radius.circular(10),
+                    ),
+                    child: widget.post?.video != null &&
+                            widget.post!.video!.isNotEmpty
+                        ? SizedBox(
+                            height: 150,
+                            child: Chewie(
+                              posterUrl: widget.post?.image,
+                              controller: _chewieMainController!,
+                            ),
+                          )
+                        : CachedNetworkImage(
+                            height: 150,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                            errorWidget: imageErrorWidget,
+                            imageUrl: widget.post?.image ?? "",
+                          ),
+                  ),
+                  if (widget.showAuthorDetails)
+                    Positioned(
+                      left: 10,
+                      bottom: 10,
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.pushNamed(context, Routes.USER_PROFILE,
+                              arguments: {
+                                "searchedUserName": widget.post!.authorUsername
+                              });
+                        },
+                        child: Row(
+                          children: [
+                            SizedBox(
+                              width: 25,
+                              height: 25,
+                              child: userImageUserInitialsPic(
+                                  widget.post!.authorAvatar!,
+                                  widget.post!.authorName!,
+                                  15,
+                                  25),
+                            ),
+                            const SizedBox(width: 8),
+                            userNameWithVerifiedIcon(
+                              name: widget.post!.authorName!,
+                              isVerified: false,
+                              textStyle: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 16,
+                                color: Colors.white,
+                                shadows: [
+                                  Shadow(
+                                    blurRadius: 2.0,
+                                    color: blackFont,
+                                    offset: const Offset(0.0, 0),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
+                  else
+                    const SizedBox.shrink(),
+                  if (widget.post!.isPublished!)
+                    const SizedBox.shrink()
+                  else
+                    Positioned(
+                      left: 10,
+                      top: 10,
+                      child: CustomChip(
+                        textColor: blackFont,
+                        color: starYellow,
+                        text: 'Unpublished',
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 4, vertical: 4),
+                      ),
+                    ),
+                ],
+              ),
+              Container(
+                padding: const EdgeInsets.only(left: 15, top: 16, bottom: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            messageDecoderWithEmoji(widget.post?.title) ?? "",
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                              color: blackFont,
+                            ),
+                            maxLines: 2,
+                            softWrap: true,
+                            overflow: TextOverflow.clip,
+                          ),
+                        ),
+                        InkWell(
+                          onTap: () => showUserProfileActionsSheet(),
+                          child: const Padding(
+                            padding: EdgeInsets.all(6.0),
+                            child: Icon(SlydoAppIcon.menu, size: 16),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      messageDecoderWithEmoji(widget.post?.tagLine) ?? "",
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                        color: darkGrey,
+                      ),
+                      maxLines: 3,
+                      softWrap: false,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 10),
+                    Row(
+                      children: [
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.visibility_rounded,
+                              size: 16,
+                              color: blackFont,
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              getFormattedViewCount(
+                                noOfViews: widget.post?.views != null
+                                    ? widget.post!.views!
+                                    : 1,
+                                addViewText: false,
+                              ),
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                                color: blackFont,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(width: 16),
+                        _buildLikeUnLikeReportTile(),
+                        const Spacer(),
+                        CustomChip(
+                          color: greyBorderColor,
+                          textColor: blackFont,
+                          text: widget.post!.readTime == 0
+                              ? '1 min read'
+                              : '${widget.post!.readTime} min read',
+                          padding: const EdgeInsets.all(4),
+                        ),
+                        const SizedBox(width: 8),
+                      ],
+                    )
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    } else {
+      return GestureDetector(
+        onLongPress: () => showUserProfileActionsSheet(),
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) {
+                return PostDetailPage(
+                  postId: widget.post!.id,
+                  postType: PostType.blog,
+                  onDeleteBlog: () {
+                    widget.onDeleteBlog();
+                  },
+                );
+              },
+            ),
+          );
+        },
+        child: Card(
+          margin: EdgeInsets.zero,
+          elevation: 0,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           child: Container(
+            decoration: decorateBox(),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -136,51 +338,52 @@ class _PostTileState extends State<PostTile> {
                               imageUrl: widget.post?.image ?? "",
                             ),
                     ),
-                    if (widget.showAuthorDetails)
-                      Positioned(
-                        left: 10,
-                        bottom: 10,
-                        child: InkWell(
-                          onTap: () {
-                            Navigator.pushNamed(
-                                context, Routes.USER_PROFILE, arguments: {
-                              "searchedUserName": widget.post!.authorUsername
-                            });
-                          },
-                          child: Row(
-                            children: [
-                              SizedBox(
-                                width: 25,
-                                height: 25,
-                                child: userImageUserInitialsPic(
-                                    widget.post!.authorAvatar!,
-                                    widget.post!.authorName!,
-                                    15,
-                                    25),
-                              ),
-                              const SizedBox(width: 8),
-                              userNameWithVerifiedIcon(
-                                name: widget.post!.authorName!,
-                                isVerified: false,
-                                textStyle: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 16,
-                                  color: Colors.white,
-                                  shadows: [
-                                    Shadow(
-                                      blurRadius: 2.0,
-                                      color: blackFont,
-                                      offset: const Offset(0.0, 0),
+                    // ignore: prefer_if_elements_to_conditional_expressions
+                    widget.showAuthorDetails
+                        ? Positioned(
+                            left: 10,
+                            bottom: 10,
+                            child: InkWell(
+                              onTap: () {
+                                Navigator.pushNamed(
+                                    context, Routes.USER_PROFILE, arguments: {
+                                  "searchedUserName":
+                                      widget.post!.authorUsername
+                                });
+                              },
+                              child: Row(
+                                children: [
+                                  SizedBox(
+                                    width: 25,
+                                    height: 25,
+                                    child: userImageUserInitialsPic(
+                                        widget.post!.authorAvatar!,
+                                        widget.post!.authorName!,
+                                        15,
+                                        25),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  userNameWithVerifiedIcon(
+                                    name: widget.post!.authorName!,
+                                    isVerified: false,
+                                    textStyle: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 16,
+                                      color: Colors.white,
+                                      shadows: [
+                                        Shadow(
+                                          blurRadius: 2.0,
+                                          color: blackFont,
+                                          offset: const Offset(0.0, 0),
+                                        ),
+                                      ],
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
-                        ),
-                      )
-                    else
-                      const SizedBox.shrink(),
+                            ),
+                          )
+                        : const SizedBox.shrink(),
                     if (widget.post!.isPublished!)
                       const SizedBox.shrink()
                     else
@@ -284,215 +487,6 @@ class _PostTileState extends State<PostTile> {
                   ),
                 ),
               ],
-            ),
-          ),
-        ),
-      );
-    } else {
-      return GestureDetector(
-        onLongPress: () => showUserProfileActionsSheet(),
-        onTap: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) {
-                return PostDetailPage(
-                  postId: widget.post!.id,
-                  postType: PostType.blog,
-                  onDeleteBlog: () {
-                    widget.onDeleteBlog();
-                  },
-                );
-              },
-            ),
-          );
-        },
-        child: Card(
-          margin: EdgeInsets.zero,
-          elevation: 0,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          child: Container(
-            decoration: decorateBox(),
-            child: Container(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Stack(
-                    children: [
-                      ClipRRect(
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(10),
-                          topRight: Radius.circular(10),
-                        ),
-                        child: widget.post?.video != null &&
-                                widget.post!.video!.isNotEmpty
-                            ? SizedBox(
-                                height: 150,
-                                child: Chewie(
-                                  posterUrl: widget.post?.image,
-                                  controller: _chewieMainController!,
-                                ),
-                              )
-                            : CachedNetworkImage(
-                                height: 150,
-                                width: double.infinity,
-                                fit: BoxFit.cover,
-                                errorWidget: imageErrorWidget,
-                                imageUrl: widget.post?.image ?? "",
-                              ),
-                      ),
-                      // ignore: prefer_if_elements_to_conditional_expressions
-                      widget.showAuthorDetails
-                          ? Positioned(
-                              left: 10,
-                              bottom: 10,
-                              child: InkWell(
-                                onTap: () {
-                                  Navigator.pushNamed(
-                                      context, Routes.USER_PROFILE, arguments: {
-                                    "searchedUserName":
-                                        widget.post!.authorUsername
-                                  });
-                                },
-                                child: Row(
-                                  children: [
-                                    SizedBox(
-                                      width: 25,
-                                      height: 25,
-                                      child: userImageUserInitialsPic(
-                                          widget.post!.authorAvatar!,
-                                          widget.post!.authorName!,
-                                          15,
-                                          25),
-                                    ),
-                                    const SizedBox(width: 8),
-                                    userNameWithVerifiedIcon(
-                                      name: widget.post!.authorName!,
-                                      isVerified: false,
-                                      textStyle: TextStyle(
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: 16,
-                                        color: Colors.white,
-                                        shadows: [
-                                          Shadow(
-                                            blurRadius: 2.0,
-                                            color: blackFont,
-                                            offset: const Offset(0.0, 0),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            )
-                          : const SizedBox.shrink(),
-                      if (widget.post!.isPublished!)
-                        const SizedBox.shrink()
-                      else
-                        Positioned(
-                          left: 10,
-                          top: 10,
-                          child: CustomChip(
-                            textColor: blackFont,
-                            color: starYellow,
-                            text: 'Unpublished',
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 4, vertical: 4),
-                          ),
-                        ),
-                    ],
-                  ),
-                  Container(
-                    padding:
-                        const EdgeInsets.only(left: 15, top: 16, bottom: 16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: Text(
-                                messageDecoderWithEmoji(widget.post?.title) ??
-                                    "",
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w700,
-                                  color: blackFont,
-                                ),
-                                maxLines: 2,
-                                softWrap: true,
-                                overflow: TextOverflow.clip,
-                              ),
-                            ),
-                            InkWell(
-                              onTap: () => showUserProfileActionsSheet(),
-                              child: const Padding(
-                                padding: EdgeInsets.all(6.0),
-                                child: Icon(SlydoAppIcon.menu, size: 16),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          messageDecoderWithEmoji(widget.post?.tagLine) ?? "",
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                            color: darkGrey,
-                          ),
-                          maxLines: 3,
-                          softWrap: false,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 10),
-                        Row(
-                          children: [
-                            Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(
-                                  Icons.visibility_rounded,
-                                  size: 16,
-                                  color: blackFont,
-                                ),
-                                const SizedBox(width: 6),
-                                Text(
-                                  getFormattedViewCount(
-                                    noOfViews: widget.post?.views != null
-                                        ? widget.post!.views!
-                                        : 1,
-                                    addViewText: false,
-                                  ),
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w400,
-                                    color: blackFont,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(width: 16),
-                            _buildLikeUnLikeReportTile(),
-                            const Spacer(),
-                            CustomChip(
-                              color: greyBorderColor,
-                              textColor: blackFont,
-                              text: widget.post!.readTime == 0
-                                  ? '1 min read'
-                                  : '${widget.post!.readTime} min read',
-                              padding: const EdgeInsets.all(4),
-                            ),
-                            const SizedBox(width: 8),
-                          ],
-                        )
-                      ],
-                    ),
-                  ),
-                ],
-              ),
             ),
           ),
         ),
@@ -625,11 +619,10 @@ class _PostTileState extends State<PostTile> {
             askCategories: yarnDashboardBloc.yarnCategories,
             shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
             callback: (params) async {
-              params..body = widget.post?.title ?? "";
-              params
-                ..attachment = {
-                  "blog": widget.post?.toJson().cast<String, dynamic>() ?? {}
-                };
+              params.body = widget.post?.title ?? "";
+              params.attachment = {
+                "blog": widget.post?.toJson().cast<String, dynamic>() ?? {}
+              };
               final bool data =
                   await YarnAuth().addYarnAndQuestion(params, '', '');
               if (data) {
@@ -666,27 +659,25 @@ class _PostTileState extends State<PostTile> {
       onTap: isAuthor
           ? () => showToast(message: 'You cannot like your post')
           : likeUnlikePost,
-      child: Container(
-        child: Row(
-          children: [
-            Icon(
-              widget.post?.userLiked == true
-                  ? Icons.thumb_up_alt_rounded
-                  : Icons.thumb_up_alt_outlined,
-              size: 16,
-              color: widget.post?.userLiked == true ? navyBlue : blackFont,
+      child: Row(
+        children: [
+          Icon(
+            widget.post?.userLiked == true
+                ? Icons.thumb_up_alt_rounded
+                : Icons.thumb_up_alt_outlined,
+            size: 16,
+            color: widget.post?.userLiked == true ? navyBlue : blackFont,
+          ),
+          const SizedBox(width: 4),
+          Text(
+            widget.post?.likes != null ? widget.post!.likes!.toString() : '0',
+            style: TextStyle(
+              color: blackFont,
+              fontWeight: FontWeight.w400,
+              fontSize: 14,
             ),
-            const SizedBox(width: 4),
-            Text(
-              widget.post?.likes != null ? widget.post!.likes!.toString() : '0',
-              style: TextStyle(
-                color: blackFont,
-                fontWeight: FontWeight.w400,
-                fontSize: 14,
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -735,29 +726,27 @@ class _PostTileState extends State<PostTile> {
       onTap: isAuthor
           ? () => showToast(message: 'You cannot dislike your post')
           : dislikeUnlikePost,
-      child: Container(
-        child: Row(
-          children: [
-            Icon(
-              widget.post?.userDisLiked == true
-                  ? Icons.thumb_down_alt_rounded
-                  : Icons.thumb_down_alt_outlined,
-              size: 16,
-              color: widget.post?.userDisLiked! == true ? mateRed : blackFont,
+      child: Row(
+        children: [
+          Icon(
+            widget.post?.userDisLiked == true
+                ? Icons.thumb_down_alt_rounded
+                : Icons.thumb_down_alt_outlined,
+            size: 16,
+            color: widget.post?.userDisLiked! == true ? mateRed : blackFont,
+          ),
+          const SizedBox(width: 4),
+          Text(
+            widget.post?.dislikes != null
+                ? widget.post!.dislikes!.toString()
+                : '0',
+            style: TextStyle(
+              color: blackFont,
+              fontWeight: FontWeight.w400,
+              fontSize: 14,
             ),
-            const SizedBox(width: 4),
-            Text(
-              widget.post?.dislikes != null
-                  ? widget.post!.dislikes!.toString()
-                  : '0',
-              style: TextStyle(
-                color: blackFont,
-                fontWeight: FontWeight.w400,
-                fontSize: 14,
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

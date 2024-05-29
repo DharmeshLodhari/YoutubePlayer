@@ -136,7 +136,7 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
       margin: const EdgeInsets.symmetric(vertical: 0, horizontal: 8),
       child: ListTile(
           leading: ClipOval(
-            child: Container(
+            child: SizedBox(
               height: 45,
               width: 45,
               child: CachedNetworkImage(
@@ -210,7 +210,7 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
               Container(),
             if (userBloc.user.userName != widget.user!.userName &&
                 widget.user?.userName?.toLowerCase() != 'slydo')
-              Container(
+              SizedBox(
                 height: 45,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -225,7 +225,7 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
                       color: dividerColor,
                     ),
                     Expanded(
-                      child: Container(
+                      child: SizedBox(
                         height: double.infinity,
                         child: InkWell(
                           onTap: () async {
@@ -336,7 +336,7 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
   }
 
   Widget contactActionButtons() {
-    return Container(
+    return SizedBox(
       height: double.infinity,
       child: InkWell(
           onTap: contactPrimaryActionCall() as void Function()?,

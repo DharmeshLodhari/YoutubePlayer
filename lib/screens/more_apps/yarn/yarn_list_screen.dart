@@ -134,14 +134,14 @@ class YarnListScreenState extends State<YarnListScreen> {
 
               // Check if any matching createYarnTopicList
               if (filteredListCreateYarnTopicList.isNotEmpty) {
-                filteredListCreateYarnTopicList.forEach((item) {
+                for (var item in filteredListCreateYarnTopicList) {
                   tempList.insert(0, item);
-                });
+                }
               }
             } else {
-              yarnDashboardBloc.createYarnTopicList.forEach((item) {
+              for (var item in yarnDashboardBloc.createYarnTopicList) {
                 tempList.insert(0, item);
-              });
+              }
             }
           }
 
@@ -158,9 +158,9 @@ class YarnListScreenState extends State<YarnListScreen> {
 
               // Check if any matching reYarnTopicList
               if (filteredListReYarnTopicList.isNotEmpty) {
-                filteredListReYarnTopicList.forEach((item) {
+                for (var item in filteredListReYarnTopicList) {
                   tempList.insert(0, item);
-                });
+                }
               }
 
               // List<Yarn>? filteredListTempList = tempList
@@ -175,9 +175,9 @@ class YarnListScreenState extends State<YarnListScreen> {
               //   });
               // }
             } else {
-              yarnDashboardBloc.reYarnTopicList.forEach((item) {
+              for (var item in yarnDashboardBloc.reYarnTopicList) {
                 tempList.insert(0, item);
-              });
+              }
             }
           }
 

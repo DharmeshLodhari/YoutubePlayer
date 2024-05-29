@@ -43,10 +43,10 @@ class YarnComment {
     replies = json['replies'] != null ? json['replies'].cast<String>() : [];
     socialLikes = json['social_likes'];
     socialDislikes = json['social_dislikes'];
-    likes = json['likes'] != null ? json['likes'] : 0;
-    dislike = json['dislikes'] != null ? json['dislikes'] : 0;
-    enablePayMe = json['enable_payme'] != null ? json['enable_payme'] : false;
-    pinned = json['pinned'] != null ? json['pinned'] : false;
+    likes = json['likes'] ?? 0;
+    dislike = json['dislikes'] ?? 0;
+    enablePayMe = json['enable_payme'] ?? false;
+    pinned = json['pinned'] ?? false;
     if (json['media'] != null) {
       media = [];
       json['media'].forEach((v) {

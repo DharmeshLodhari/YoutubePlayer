@@ -33,16 +33,16 @@ class SearchGroupMember extends StatefulWidget {
 
 class _SearchGroupMemberState extends State<SearchGroupMember> {
   final GlobalKey<ScaffoldState> _scaffoldSearchGroupMemberKey =
-      new GlobalKey<ScaffoldState>();
+      GlobalKey<ScaffoldState>();
   final GlobalKey<ScaffoldMessengerState>
       _scaffoldMessengerSearchGroupMemberKey =
-      new GlobalKey<ScaffoldMessengerState>();
+      GlobalKey<ScaffoldMessengerState>();
 
   int? count = 0;
   String? next = "";
   String? previous = "";
   List<Participant> groupMember = [];
-  ScrollController _scrollController = new ScrollController();
+  ScrollController _scrollController = ScrollController();
 
   TextEditingController? searchUserController;
 

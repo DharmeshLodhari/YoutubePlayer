@@ -552,7 +552,7 @@ class _SuperHubState extends State<SuperHub> {
         badgeStyle: badges.BadgeStyle(
           shape: badges.BadgeShape.circle,
           badgeColor: naturalGreen,
-          padding: basketBloc.basketItems.length == 0
+          padding: basketBloc.basketItems.isEmpty
               ? const EdgeInsets.all(0)
               : EdgeInsets.only(
                   left: getBadgeCount().length == 1 ? 6 : 8,
@@ -578,7 +578,7 @@ class _SuperHubState extends State<SuperHub> {
   }
 
   Widget? getBadgeContent() {
-    if (basketBloc.basketItems.length == 0) {
+    if (basketBloc.basketItems.isEmpty) {
       return null;
     }
     return Text(

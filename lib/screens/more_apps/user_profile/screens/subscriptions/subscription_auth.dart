@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 class SubscriptionsAuth extends AuthService {
   Future<List<SubscriptionsModel>> getSubscriptionList(
       {required String accountType}) async {
-    final String url = AppConfig.baseUrl + "/api/v1/user/profile-pricing/";
+    final String url = "${AppConfig.baseUrl}/api/v1/user/profile-pricing/";
 
     final headers = getNonAuthHeader();
     final response =
@@ -25,13 +25,13 @@ class SubscriptionsAuth extends AuthService {
           .where((element) => element.accountType == accountType)
           .toList();
     } else {
-      return Future.error('${response.body}');
+      return Future.error(response.body);
     }
   }
 
   Future<bool> verifyBusinessName({required String businessName}) async {
-    final String url = AppConfig.baseUrl +
-        "/api/v1/user/verify-business-name/?business_name=${Uri.encodeComponent(businessName)}";
+    final String url =
+        "${AppConfig.baseUrl}/api/v1/user/verify-business-name/?business_name=${Uri.encodeComponent(businessName)}";
 
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
@@ -44,7 +44,7 @@ class SubscriptionsAuth extends AuthService {
         return false;
       }
     } else {
-      return Future.error('${response.body}');
+      return Future.error(response.body);
     }
   }
 
@@ -53,7 +53,7 @@ class SubscriptionsAuth extends AuthService {
       required String accountType,
       required String businessName}) async {
     bool? userAccountUpgraded;
-    final String url = AppConfig.baseUrl + "/api/v1/user/upgrade-user-account/";
+    final String url = "${AppConfig.baseUrl}/api/v1/user/upgrade-user-account/";
 
     final headers = await getAuthHeaders();
     debugPrint(accountType);

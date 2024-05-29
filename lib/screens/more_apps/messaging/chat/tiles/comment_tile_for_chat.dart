@@ -79,7 +79,7 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
           if (!linkToBePreview!.contains("http")) {
             // debugPrint('Link to view question::: ${linkData.toString()}');
 
-            linkToBePreview = "http://" + linkToBePreview!;
+            linkToBePreview = "http://${linkToBePreview!}";
           }
         }
         if (yarnComment.attachment != null) {
@@ -219,12 +219,12 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
                                 ),
                               ],
                             )
-                          : Container(
+                          : const SizedBox(
                               height: 0,
                               width: 0,
                             )
                     else
-                      Container(
+                      const SizedBox(
                         height: 0,
                         width: 0,
                       ),
@@ -244,7 +244,7 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
                 ),
               ),
               if (isSend)
-                Container(
+                SizedBox(
                   width: 20,
                   child: isSend
                       ? Center(
@@ -409,7 +409,7 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
               key: ValueKey("${linkToBePreview}233"),
               url: linkToBePreview!,
               builder: (info) {
-                if (info == null)
+                if (info == null) {
                   return InkWell(
                     onTap: () {
                       launchUrl(Uri.parse(linkToBePreview!));
@@ -425,6 +425,7 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
                       ),
                     ),
                   );
+                }
                 if (info is WebImageInfo) {
                   return CachedNetworkImage(
                     imageUrl: info.image!,
@@ -434,11 +435,12 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
                 }
 
                 final WebInfo webInfo = info as WebInfo;
-                if (!WebAnalyzer.isNotEmpty(webInfo.title))
+                if (!WebAnalyzer.isNotEmpty(webInfo.title)) {
                   return const SizedBox(
                     height: 0,
                     width: 0,
                   );
+                }
                 return Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
@@ -490,23 +492,21 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
   }
 
   Widget _buildSingleImage({required BuildContext context}) {
-    return Container(
+    return SizedBox(
       width: double.infinity,
-      child: Container(
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(10),
-          child: CachedNetworkImage(
-            imageUrl: yarnQuestionForChatModel.media!.first.file!,
-            fit: BoxFit.cover,
-            errorWidget: imageErrorWidget,
-          ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(10),
+        child: CachedNetworkImage(
+          imageUrl: yarnQuestionForChatModel.media!.first.file!,
+          fit: BoxFit.cover,
+          errorWidget: imageErrorWidget,
         ),
       ),
     );
   }
 
   Widget _buildTwoImageRow({required BuildContext context}) {
-    return Container(
+    return SizedBox(
       height: 175,
       child: Row(
         children: yarnQuestionForChatModel.media!
@@ -538,7 +538,7 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
   }
 
   Widget _buildThreeImageRow({required BuildContext context}) {
-    return Container(
+    return SizedBox(
       height: 175,
       child: Row(
         children: [
@@ -608,102 +608,100 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
   }
 
   Widget _buildFourImageRow({required BuildContext context}) {
-    return Container(
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: Container(
-                  height: (MediaQuery.of(context).size.width - 40) / 2,
-                  width: (MediaQuery.of(context).size.width - 40) / 2,
-                  padding: const EdgeInsets.symmetric(horizontal: 5),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: CachedNetworkImage(
-                      imageUrl: yarnQuestionForChatModel.media![0].file!,
-                      fit: BoxFit.cover,
-                      height: double.infinity,
-                      width: double.infinity,
-                      errorWidget: imageErrorWidget,
-                    ),
+    return Column(
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: Container(
+                height: (MediaQuery.of(context).size.width - 40) / 2,
+                width: (MediaQuery.of(context).size.width - 40) / 2,
+                padding: const EdgeInsets.symmetric(horizontal: 5),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: CachedNetworkImage(
+                    imageUrl: yarnQuestionForChatModel.media![0].file!,
+                    fit: BoxFit.cover,
+                    height: double.infinity,
+                    width: double.infinity,
+                    errorWidget: imageErrorWidget,
                   ),
                 ),
               ),
-              Expanded(
-                child: Container(
-                  height: (MediaQuery.of(context).size.width - 40) / 2,
-                  width: (MediaQuery.of(context).size.width - 40) / 2,
-                  padding: const EdgeInsets.symmetric(horizontal: 5),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: CachedNetworkImage(
-                      imageUrl: yarnQuestionForChatModel.media![1].file!,
-                      fit: BoxFit.cover,
-                      height: double.infinity,
-                      width: double.infinity,
-                      errorWidget: imageErrorWidget,
-                    ),
-                  ),
+            ),
+            Expanded(
+              child: Container(
+                height: (MediaQuery.of(context).size.width - 40) / 2,
+                width: (MediaQuery.of(context).size.width - 40) / 2,
+                padding: const EdgeInsets.symmetric(horizontal: 5),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
                 ),
-              )
-            ],
-          ),
-          const SizedBox(
-            height: 8,
-          ),
-          Row(
-            children: [
-              Expanded(
-                child: Container(
-                  height: (MediaQuery.of(context).size.width - 40) / 2,
-                  width: (MediaQuery.of(context).size.width - 40) / 2,
-                  padding: const EdgeInsets.symmetric(horizontal: 5),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: CachedNetworkImage(
-                      imageUrl: yarnQuestionForChatModel.media![2].file!,
-                      fit: BoxFit.cover,
-                      height: double.infinity,
-                      width: double.infinity,
-                      errorWidget: imageErrorWidget,
-                    ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: CachedNetworkImage(
+                    imageUrl: yarnQuestionForChatModel.media![1].file!,
+                    fit: BoxFit.cover,
+                    height: double.infinity,
+                    width: double.infinity,
+                    errorWidget: imageErrorWidget,
                   ),
                 ),
               ),
-              Expanded(
-                child: Container(
-                  height: (MediaQuery.of(context).size.width - 40) / 2,
-                  width: (MediaQuery.of(context).size.width - 40) / 2,
-                  padding: const EdgeInsets.symmetric(horizontal: 5),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: CachedNetworkImage(
-                      imageUrl: yarnQuestionForChatModel.media![3].file!,
-                      fit: BoxFit.cover,
-                      height: double.infinity,
-                      width: double.infinity,
-                      errorWidget: imageErrorWidget,
-                    ),
+            )
+          ],
+        ),
+        const SizedBox(
+          height: 8,
+        ),
+        Row(
+          children: [
+            Expanded(
+              child: Container(
+                height: (MediaQuery.of(context).size.width - 40) / 2,
+                width: (MediaQuery.of(context).size.width - 40) / 2,
+                padding: const EdgeInsets.symmetric(horizontal: 5),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: CachedNetworkImage(
+                    imageUrl: yarnQuestionForChatModel.media![2].file!,
+                    fit: BoxFit.cover,
+                    height: double.infinity,
+                    width: double.infinity,
+                    errorWidget: imageErrorWidget,
                   ),
                 ),
-              )
-            ],
-          ),
-        ],
-      ),
+              ),
+            ),
+            Expanded(
+              child: Container(
+                height: (MediaQuery.of(context).size.width - 40) / 2,
+                width: (MediaQuery.of(context).size.width - 40) / 2,
+                padding: const EdgeInsets.symmetric(horizontal: 5),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: CachedNetworkImage(
+                    imageUrl: yarnQuestionForChatModel.media![3].file!,
+                    fit: BoxFit.cover,
+                    height: double.infinity,
+                    width: double.infinity,
+                    errorWidget: imageErrorWidget,
+                  ),
+                ),
+              ),
+            )
+          ],
+        ),
+      ],
     );
   }
 
@@ -850,9 +848,9 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
           !data.toString().trim().endsWith('.')) {
         final replaceWith = 'http://' + data;
 
-        newString = newString + ' ' + replaceWith.toString();
+        newString = '$newString $replaceWith';
       } else {
-        newString = newString + ' ' + data.toString();
+        newString = '$newString $data';
       }
     });
 
@@ -895,7 +893,7 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
               key: ValueKey("${linkToBePreview}233"),
               url: linkToBePreview!,
               builder: (info) {
-                if (info == null)
+                if (info == null) {
                   return InkWell(
                     onTap: () {
                       launchUrl(Uri.parse(linkToBePreview!));
@@ -911,6 +909,7 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
                       ),
                     ),
                   );
+                }
                 if (info is WebImageInfo) {
                   return CachedNetworkImage(
                     imageUrl: info.image!,
@@ -920,11 +919,12 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
                 }
 
                 final WebInfo webInfo = info as WebInfo;
-                if (!WebAnalyzer.isNotEmpty(webInfo.title))
+                if (!WebAnalyzer.isNotEmpty(webInfo.title)) {
                   return const SizedBox(
                     height: 0,
                     width: 0,
                   );
+                }
                 return Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),

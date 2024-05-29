@@ -439,21 +439,19 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
         await ShareInChat().selectShareCustomer(context);
     debugPrint("Selected users = ${listOfRecipient.length}");
 
-    final String url = AppConfig.baseUrl +
-        "/api/v1/${service is Product ? "products" : "services"}/" +
-        (service?.id ?? "") +
-        "/";
+    final String url =
+        "${AppConfig.baseUrl}/api/v1/${service is Product ? "products" : "services"}/${service?.id ?? ""}/";
 
     final Map<String, dynamic>? itemData =
         await ShoppingAuthService().getProductOrService(url);
 
-    listOfRecipient.forEach((recipient) {
+    for (var recipient in listOfRecipient) {
       addProductOrServiceToChat(
           item: service,
           itemData: itemData,
           recipientUser: recipient!,
           url: url);
-    });
+    }
   }
 
   void addProductOrServiceToChat(
@@ -491,7 +489,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
         badgeStyle: badges.BadgeStyle(
             shape: badges.BadgeShape.circle,
             badgeColor: naturalGreen,
-            padding: basketBloc.basketItems.length == 0
+            padding: basketBloc.basketItems.isEmpty
                 ? const EdgeInsets.all(0)
                 : const EdgeInsets.all(4)),
         child: Center(
@@ -602,7 +600,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
       badgeStyle: badges.BadgeStyle(
         shape: badges.BadgeShape.circle,
         badgeColor: naturalGreen,
-        padding: basketBloc.basketItems.length == 0
+        padding: basketBloc.basketItems.isEmpty
             ? const EdgeInsets.all(0)
             : const EdgeInsets.all(4),
       ),
@@ -623,7 +621,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   }
 
   Widget? getBadgeContent() {
-    if (basketBloc.basketItems.length == 0) {
+    if (basketBloc.basketItems.isEmpty) {
       return null;
     }
     return Text(
@@ -635,9 +633,9 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
 
   String getBadgeCount() {
     int totalItem = 0;
-    basketBloc.basketItems.forEach((element) {
+    for (var element in basketBloc.basketItems) {
       totalItem = totalItem + int.parse(element.qty.toString());
-    });
+    }
     return totalItem > 99 ? '99+' : totalItem.toString();
   }
 
@@ -769,7 +767,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   }
 
   Widget _buildReviewList() {
-    return reviewList.length == 0
+    return reviewList.isEmpty
         ? Center(
             child: Text(
               "No Review yet",
@@ -870,7 +868,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
               }
             }
           },
-          child: Container(
+          child: SizedBox(
             width: double.infinity,
             child: Center(
               child: Text(
@@ -910,7 +908,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                     Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
                         arguments: service?.providerAvatar);
                   },
-                  child: Container(
+                  child: SizedBox(
                     height: 48,
                     width: 48,
                     child: ClipOval(
@@ -963,20 +961,18 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                   children: [
                     AspectRatio(
                       aspectRatio: 1.5,
-                      child: Container(
-                        child: Center(
-                          child: ClipRRect(
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(10)),
-                            child: CachedNetworkImage(
-                              placeholder: (context, url) =>
-                                  Center(child: CircularLoadingIndicator()),
-                              imageUrl: imgList![0]!,
-                              fit: BoxFit.cover,
-                              height: double.infinity,
-                              width: double.infinity,
-                              errorWidget: productAndServiceBigErrorWidget,
-                            ),
+                      child: Center(
+                        child: ClipRRect(
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(10)),
+                          child: CachedNetworkImage(
+                            placeholder: (context, url) =>
+                                Center(child: CircularLoadingIndicator()),
+                            imageUrl: imgList![0]!,
+                            fit: BoxFit.cover,
+                            height: double.infinity,
+                            width: double.infinity,
+                            errorWidget: productAndServiceBigErrorWidget,
                           ),
                         ),
                       ),
@@ -1006,23 +1002,20 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                           items: imgList!
                               .map((item) => Stack(
                                     children: [
-                                      Container(
-                                        child: Center(
-                                          child: ClipRRect(
-                                            borderRadius:
-                                                const BorderRadius.all(
-                                                    Radius.circular(10)),
-                                            child: CachedNetworkImage(
-                                              placeholder: (context, url) => Center(
-                                                  child:
-                                                      CircularLoadingIndicator()),
-                                              imageUrl: item!,
-                                              errorWidget:
-                                                  productAndServiceBigErrorWidget,
-                                              fit: BoxFit.cover,
-                                              height: double.infinity,
-                                              width: double.infinity,
-                                            ),
+                                      Center(
+                                        child: ClipRRect(
+                                          borderRadius: const BorderRadius.all(
+                                              Radius.circular(10)),
+                                          child: CachedNetworkImage(
+                                            placeholder: (context, url) => Center(
+                                                child:
+                                                    CircularLoadingIndicator()),
+                                            imageUrl: item!,
+                                            errorWidget:
+                                                productAndServiceBigErrorWidget,
+                                            fit: BoxFit.cover,
+                                            height: double.infinity,
+                                            width: double.infinity,
                                           ),
                                         ),
                                       ),
@@ -1259,7 +1252,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   }
 
   Widget _buildProviderOtherServices() {
-    return Container(
+    return SizedBox(
       height: 290,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

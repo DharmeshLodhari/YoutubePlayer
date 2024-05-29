@@ -123,56 +123,52 @@ class _EditInvoiceItemState extends State<EditInvoiceItem> {
                           border: Border.all(color: iconBtnGrey, width: 1)),
                       child: Form(
                         key: _formKey,
-                        child: Container(
-                          child: Column(
-                            children: <Widget>[
-                              Container(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 20),
-                                child: Column(
-                                  children: [
-                                    const SizedBox(
-                                      height: 20,
+                        child: Column(
+                          children: <Widget>[
+                            Container(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 20),
+                              child: Column(
+                                children: [
+                                  const SizedBox(
+                                    height: 20,
+                                  ),
+                                  getRecipientField(),
+                                  const SizedBox(
+                                    height: 20,
+                                  ),
+                                  displayAmountField(),
+                                  const SizedBox(height: 20),
+                                  getQtyOfItem(),
+                                  const SizedBox(height: 20),
+                                  getTotalText(),
+                                  if (errorMessage == "")
+                                    Container()
+                                  else
+                                    Text(
+                                      errorMessage,
+                                      style: TextStyle(
+                                          color: mateRed,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16),
                                     ),
-                                    getRecipientField(),
-                                    const SizedBox(
-                                      height: 20,
-                                    ),
-                                    displayAmountField(),
-                                    const SizedBox(height: 20),
-                                    getQtyOfItem(),
-                                    const SizedBox(height: 20),
-                                    getTotalText(),
-                                    if (errorMessage == "")
-                                      Container()
-                                    else
-                                      Text(
-                                        errorMessage,
-                                        style: TextStyle(
-                                            color: mateRed,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 16),
-                                      ),
-                                    const SizedBox(height: 20),
-                                  ],
-                                ),
+                                  const SizedBox(height: 20),
+                                ],
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
                   ),
-                  Container(
-                    child: Column(
-                      children: [
-                        const SizedBox(height: 20),
-                        getSubmitButton(),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                      ],
-                    ),
+                  Column(
+                    children: [
+                      const SizedBox(height: 20),
+                      getSubmitButton(),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                    ],
                   ),
                 ],
               ),

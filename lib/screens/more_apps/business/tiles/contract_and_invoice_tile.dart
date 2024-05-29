@@ -141,7 +141,7 @@ class _ContractTileState extends State<ContractTile> {
 
   String getName() {
     if (userBloc!.user.userName == widget.contract.contractor) {
-      return widget.contract.contracteeDisplayName!;
+      return widget.contract.contractDisplayName!;
     }
     return widget.contract.contractorDisplayName!;
   }
@@ -149,7 +149,7 @@ class _ContractTileState extends State<ContractTile> {
   Widget getLeading() {
     late String imageUrl;
     if (userBloc!.user.userName == widget.contract.contractor) {
-      imageUrl = widget.contract.contracteeAvatar!;
+      imageUrl = widget.contract.contractAvatar!;
     } else {
       imageUrl = widget.contract.contractorAvatar!;
     }

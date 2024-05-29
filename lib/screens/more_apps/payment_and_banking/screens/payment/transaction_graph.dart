@@ -66,7 +66,7 @@ class _TransactionGraphState extends State<TransactionGraph> {
 
   @override
   void initState() {
-    DateTime date = DateTime.now();
+    final DateTime date = DateTime.now();
     week = weekNumber(date);
     start = getStartingOfWeek(date);
     end = getEndingOfWeek(date);
@@ -163,7 +163,7 @@ class _TransactionGraphState extends State<TransactionGraph> {
                             thickness: 1,
                           ),
                           if (isLoading)
-                            Container(
+                            SizedBox(
                               height: 240,
                               child: Center(
                                 child: CircularLoadingIndicator(),
@@ -259,10 +259,8 @@ class _TransactionGraphState extends State<TransactionGraph> {
   }
 
   Widget firstSide() {
-    return Container(
-      child: BarChart(
-        arguments: {"week": barChartData},
-      ),
+    return BarChart(
+      arguments: {"week": barChartData},
     );
   }
 
@@ -297,7 +295,7 @@ class _TransactionGraphState extends State<TransactionGraph> {
               GestureDetector(
                 child: Row(
                   children: <Widget>[
-                    Container(
+                    SizedBox(
                       height: 10,
                       width: 10,
                       child: ClipOval(
@@ -324,7 +322,7 @@ class _TransactionGraphState extends State<TransactionGraph> {
               GestureDetector(
                 child: Row(
                   children: <Widget>[
-                    Container(
+                    SizedBox(
                       height: 10,
                       width: 10,
                       child: ClipOval(
@@ -519,14 +517,14 @@ class _TransactionGraphState extends State<TransactionGraph> {
     return AppLocalization.of(context)!.day;
   }
 
-  _onSelectionChanged(charts.SelectionModel model) {
+  void _onSelectionChanged(charts.SelectionModel model) {
     final selectedDatum = model.selectedDatum;
     final measures = <String?, num?>{};
     if (selectedDatum.isNotEmpty) {
-      selectedDatum.forEach((charts.SeriesDatum datumPair) {
+      for (var datumPair in selectedDatum) {
         measures[datumPair.series.displayName] =
             datumPair.datum.referenceNumber;
-      });
+      }
     }
     // Request a build.
     setState(() {

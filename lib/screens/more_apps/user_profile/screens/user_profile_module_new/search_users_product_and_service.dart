@@ -220,7 +220,7 @@ class _SearchUsersProductAndServiceState
         isCategoryLoading = true;
         if (mounted) setState(() {});
 
-        final Map<String, dynamic>? result = await ShoppingAuthService()
+        final Map<String, dynamic> result = await ShoppingAuthService()
             .getMerchantProductCategories(searchedUser?.userAbout?.industry?.id,
                 categoryNext, categoryPrevious);
 
@@ -270,7 +270,7 @@ class _SearchUsersProductAndServiceState
         isManufacturerLoading = true;
         if (mounted) setState(() {});
 
-        final Map<String, dynamic>? result = await ShoppingAuthService()
+        final Map<String, dynamic> result = await ShoppingAuthService()
             .getManufacturerList(
                 searchedUser?.userName, manufacturerNext, manufacturerPrevious);
 
@@ -323,7 +323,7 @@ class _SearchUsersProductAndServiceState
         isSubCategoryLoading = true;
         if (mounted) setState(() {});
 
-        final Map<String, dynamic>? result = await ShoppingAuthService()
+        final Map<String, dynamic> result = await ShoppingAuthService()
             .getMerchantSubProductCategories(
                 categoryId, subCategoryNext, subCategoryPrevious);
 
@@ -563,7 +563,7 @@ class _SearchUsersProductAndServiceState
               Expanded(
                 child: Text(
                   selectedProductCondition != null
-                      ? " (" + selectedProductCondition!.description + ")"
+                      ? " (${selectedProductCondition!.description})"
                       : "",
                   maxLines: 1,
                   style: const TextStyle(
@@ -870,10 +870,7 @@ class _SearchUsersProductAndServiceState
                                         Expanded(
                                           child: Text(
                                             selectedProductCondition != null
-                                                ? " (" +
-                                                    selectedProductCondition!
-                                                        .description +
-                                                    ")"
+                                                ? " (${selectedProductCondition!.description})"
                                                 : "",
                                             maxLines: 1,
                                             style: TextStyle(
@@ -910,7 +907,7 @@ class _SearchUsersProductAndServiceState
                                     ),
                                     Expanded(
                                       child: Text(
-                                        " (" + condition.description + ")",
+                                        " (${condition.description})",
                                         maxLines: 1,
                                         style: TextStyle(
                                           fontSize: 16,
@@ -1672,17 +1669,11 @@ class _SearchUsersProductAndServiceState
   String getSearchUrl(String searchedText) {
     switch (filterValue) {
       case "Products":
-        return AppConfig.baseUrl +
-            "/api/v1/search/products/byseller=" +
-            searchedText;
+        return "${AppConfig.baseUrl}/api/v1/search/products/byseller=$searchedText";
       case "Services":
-        return AppConfig.baseUrl +
-            "/api/v1/search/services/?search=" +
-            searchedText;
+        return "${AppConfig.baseUrl}/api/v1/search/services/?search=$searchedText";
       default:
-        return AppConfig.baseUrl +
-            "/api/v1/search/products/?search=" +
-            searchedText;
+        return "${AppConfig.baseUrl}/api/v1/search/products/?search=$searchedText";
     }
   }
 

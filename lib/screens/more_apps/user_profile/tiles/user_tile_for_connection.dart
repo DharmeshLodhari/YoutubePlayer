@@ -142,7 +142,7 @@ class _UserTileForConnectionState extends State<UserTileForConnection> {
               future: ChatUserManager().getUser(widget.user!.conversationId),
               builder: (context, snapshot) {
                 if (snapshot.hasError) {
-                  return Container(
+                  return const SizedBox(
                     width: 0,
                     height: 0,
                   );
@@ -152,7 +152,7 @@ class _UserTileForConnectionState extends State<UserTileForConnection> {
                         snapshot.data?.messageCount ?? 0);
                   }
                 }
-                return Container(
+                return const SizedBox(
                   width: 0,
                   height: 0,
                 );
@@ -200,7 +200,7 @@ class _UserTileForConnectionState extends State<UserTileForConnection> {
   Widget getBadgeAndGroupLabel(int? count) {
     if (!widget.user!.isGroupConversation!) {
       if (count == 0) {
-        return Container(
+        return const SizedBox(
           width: 0,
           height: 0,
         );

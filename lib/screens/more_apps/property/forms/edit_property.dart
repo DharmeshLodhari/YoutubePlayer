@@ -355,7 +355,7 @@ class _EditPropertyState extends State<EditProperty> {
   }
 
   Widget addImages() {
-    return Container(
+    return SizedBox(
       height: 100,
       child: ListView.builder(
         controller: _imageScrollController,
@@ -440,7 +440,7 @@ class _EditPropertyState extends State<EditProperty> {
   }
 
   Widget showImage(int index) {
-    return Container(
+    return SizedBox(
       height: 100,
       child: Stack(
         children: <Widget>[
@@ -494,7 +494,7 @@ class _EditPropertyState extends State<EditProperty> {
   }
 
   Widget addVideos() {
-    return Container(
+    return SizedBox(
       height: 100,
       child: ListView.builder(
         controller: _videoScrollController,
@@ -619,7 +619,7 @@ class _EditPropertyState extends State<EditProperty> {
                 content: Stack(
                   clipBehavior: Clip.none,
                   children: [
-                    Container(
+                    SizedBox(
                       width: MediaQuery.of(context).size.width - 40,
                       child: Card(
                         elevation: 2,
@@ -751,7 +751,7 @@ class _EditPropertyState extends State<EditProperty> {
   }
 
   Widget showVideo(int index) {
-    return Container(
+    return SizedBox(
       height: 100,
       child: Stack(
         children: <Widget>[
@@ -772,7 +772,7 @@ class _EditPropertyState extends State<EditProperty> {
                           fit: BoxFit.fill),
                     ),
                   )
-                : Container(
+                : SizedBox(
                     width: 100,
                     height: 100,
                     child: Center(
@@ -897,7 +897,7 @@ class _EditPropertyState extends State<EditProperty> {
         const SizedBox(
           height: 8,
         ),
-        Container(
+        SizedBox(
           width: MediaQuery.of(context).size.width - 40,
           height: 30,
           child: Row(
@@ -934,28 +934,24 @@ class _EditPropertyState extends State<EditProperty> {
   }
 
   Widget sellButton() {
-    return Container(
-      child: Text(
-        "Sell",
-        style: TextStyle(
-            fontWeight:
-                isPropertyForSellOrRent[0] ? FontWeight.w600 : FontWeight.w400,
-            fontSize: 16,
-            color: isPropertyForSellOrRent[0] ? Colors.white : blackFont),
-      ),
+    return Text(
+      "Sell",
+      style: TextStyle(
+          fontWeight:
+              isPropertyForSellOrRent[0] ? FontWeight.w600 : FontWeight.w400,
+          fontSize: 16,
+          color: isPropertyForSellOrRent[0] ? Colors.white : blackFont),
     );
   }
 
   Widget rentButton() {
-    return Container(
-      child: Text(
-        "Rent",
-        style: TextStyle(
-            fontWeight:
-                isPropertyForSellOrRent[1] ? FontWeight.w600 : FontWeight.w400,
-            fontSize: 16,
-            color: isPropertyForSellOrRent[1] ? Colors.white : blackFont),
-      ),
+    return Text(
+      "Rent",
+      style: TextStyle(
+          fontWeight:
+              isPropertyForSellOrRent[1] ? FontWeight.w600 : FontWeight.w400,
+          fontSize: 16,
+          color: isPropertyForSellOrRent[1] ? Colors.white : blackFont),
     );
   }
 
@@ -1000,7 +996,7 @@ class _EditPropertyState extends State<EditProperty> {
                 contentPadding: EdgeInsets.zero,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10)),
-                content: Container(
+                content: SizedBox(
                   width: MediaQuery.of(context).size.width - 40,
                   child: Card(
                     elevation: 2,
@@ -1130,7 +1126,7 @@ class _EditPropertyState extends State<EditProperty> {
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: Container(
+              content: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   elevation: 2,
@@ -1327,7 +1323,7 @@ class _EditPropertyState extends State<EditProperty> {
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: Container(
+              content: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   elevation: 2,
@@ -1405,7 +1401,7 @@ class _EditPropertyState extends State<EditProperty> {
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: Container(
+              content: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   margin: EdgeInsets.zero,
@@ -1484,7 +1480,7 @@ class _EditPropertyState extends State<EditProperty> {
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: Container(
+              content: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   margin: EdgeInsets.zero,
@@ -1563,7 +1559,7 @@ class _EditPropertyState extends State<EditProperty> {
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: Container(
+              content: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   margin: EdgeInsets.zero,
@@ -1693,7 +1689,7 @@ class _EditPropertyState extends State<EditProperty> {
                 contentPadding: EdgeInsets.zero,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10)),
-                content: Container(
+                content: SizedBox(
                   width: MediaQuery.of(context).size.width - 40,
                   child: Card(
                     elevation: 2,
@@ -1847,7 +1843,7 @@ class _EditPropertyState extends State<EditProperty> {
                 contentPadding: EdgeInsets.zero,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10)),
-                content: Container(
+                content: SizedBox(
                   width: MediaQuery.of(context).size.width - 40,
                   child: Card(
                     elevation: 2,
@@ -1992,7 +1988,7 @@ class _EditPropertyState extends State<EditProperty> {
                   contentPadding: EdgeInsets.zero,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10)),
-                  content: Container(
+                  content: SizedBox(
                     width: MediaQuery.of(context).size.width - 40,
                     child: Card(
                       elevation: 2,
@@ -2210,22 +2206,20 @@ class _EditPropertyState extends State<EditProperty> {
       child: CustomizedDropDownField(
         titleColor: darkGrey,
         title: "Available from",
-        child: Container(
-          child: ListTile(
-            dense: true,
-            title: Text(
-              formatDate(propertyAvailableFrom),
-              style: TextStyle(
-                color: blackFont,
-                fontWeight: FontWeight.w600,
-                fontSize: 16,
-              ),
+        child: ListTile(
+          dense: true,
+          title: Text(
+            formatDate(propertyAvailableFrom),
+            style: TextStyle(
+              color: blackFont,
+              fontWeight: FontWeight.w600,
+              fontSize: 16,
             ),
-            trailing: Icon(
-              SlydoAppIcon.date,
-              size: 16,
-              color: darkGrey,
-            ),
+          ),
+          trailing: Icon(
+            SlydoAppIcon.date,
+            size: 16,
+            color: darkGrey,
           ),
         ),
       ),

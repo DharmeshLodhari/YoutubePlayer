@@ -109,7 +109,7 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
     LocationData? currentLocation;
     try {
       currentLocation = await _locationTracker.getLocation();
-      double? accuracy = currentLocation.accuracy;
+      final double? accuracy = currentLocation.accuracy;
       debugPrint('Location Accuracy: $accuracy meters');
     } catch (e) {
       debugPrint('Error getting location: $e');
@@ -272,7 +272,7 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
   Future<void> _cameraToPosition(LocationData pos) async {
     controller = await _mapController.future;
     final double zoomLevel = await controller?.getZoomLevel() ?? 13;
-    final CameraPosition _newCameraPosition = CameraPosition(
+    final CameraPosition newCameraPosition = CameraPosition(
       target: LatLng(pos.latitude!, pos.longitude!),
       zoom: zoomLevel,
     );
@@ -300,14 +300,15 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
   Duration calculateDurationInMinutes(
       double distanceInMeters, double riderSpeedMetersPerSecond) {
     // Calculate duration in seconds
-    double durationInSeconds = distanceInMeters / riderSpeedMetersPerSecond;
+    final double durationInSeconds =
+        distanceInMeters / riderSpeedMetersPerSecond;
 
     // Convert duration to minutes
     // double durationInMinutes = durationInSeconds / 60;
 
     // return durationInMinutes.floor();
 
-    Duration d = Duration(seconds: durationInSeconds.floor());
+    final Duration d = Duration(seconds: durationInSeconds.floor());
 
     return d;
   }
@@ -339,20 +340,20 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
   }
 
   Future<void> getLocationUpdates() async {
-    bool _serviceEnabled;
-    PermissionStatus _permissionGranted;
+    bool serviceEnabled;
+    PermissionStatus permissionGranted;
 
-    _serviceEnabled = await _locationTracker.serviceEnabled();
-    if (_serviceEnabled) {
-      _serviceEnabled = await _locationTracker.requestService();
+    serviceEnabled = await _locationTracker.serviceEnabled();
+    if (serviceEnabled) {
+      serviceEnabled = await _locationTracker.requestService();
     } else {
       return;
     }
 
-    _permissionGranted = await _locationTracker.hasPermission();
-    if (_permissionGranted == PermissionStatus.denied) {
-      _permissionGranted = await _locationTracker.requestPermission();
-      if (_permissionGranted != PermissionStatus.granted) {
+    permissionGranted = await _locationTracker.hasPermission();
+    if (permissionGranted == PermissionStatus.denied) {
+      permissionGranted = await _locationTracker.requestPermission();
+      if (permissionGranted != PermissionStatus.granted) {
         return;
       }
     }
@@ -360,7 +361,7 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
     _locationTracker.onLocationChanged.listen((LocationData currentLocation) {
       if (currentLocation.latitude != null &&
           currentLocation.longitude != null) {
-        if (mounted)
+        if (mounted) {
           setState(() {
             _currentP = currentLocation;
 
@@ -413,6 +414,7 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
               }
             }
           });
+        }
       }
     });
   }
@@ -469,9 +471,9 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
         deliveryModel?.totalDistance = result.distance;
         deliveryModel?.totalDuration = result.duration;
 
-        result.points.forEach((PointLatLng point) {
+        for (var point in result.points) {
           polylineCoordinates.add(LatLng(point.latitude, point.longitude));
-        });
+        }
       } else {
         debugPrint("${result.errorMessage}");
         mode = TravelMode.walking;
@@ -511,17 +513,18 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
   }
 
   void generatePolyLineFromPoints(List<LatLng> polylineCoordinates) async {
-    final PolylineId id = const PolylineId("poly");
+    const PolylineId id = PolylineId("poly");
     final Polyline polyline = Polyline(
       polylineId: id,
       color: navyBlue,
       points: polylineCoordinates,
       width: 9,
     );
-    if (mounted)
+    if (mounted) {
       setState(() {
         polylines[id] = polyline;
       });
+    }
   }
 
   @override

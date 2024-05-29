@@ -60,38 +60,36 @@ class _RegistrationState extends State<Registration> {
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Form(
               key: _registrationFormKey,
-              child: Container(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    const SizedBox(height: 20),
-                    appIcon(),
-                    const SizedBox(height: 20),
-                    registerTitle(),
-                    const SizedBox(height: 8),
-                    Text(
-                      AppLocalization.of(context)!.registerTopInformation,
-                      style: TextStyle(color: darkGrey, fontSize: 14),
-                    ),
-                    const SizedBox(
-                      height: 50,
-                    ),
-                    selectCountryField(),
-                    const SizedBox(height: 12),
-                    phoneNumberField(),
-                    const SizedBox(height: 12),
-                    getUserAgreeCheckBoxWidget(),
-                    const SizedBox(height: 12),
-                    Align(
-                        alignment: Alignment.centerRight,
-                        child: alreadyHaveOtp()),
-                    const SizedBox(height: 12),
-                    continueBtn(),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                  ],
-                ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  const SizedBox(height: 20),
+                  appIcon(),
+                  const SizedBox(height: 20),
+                  registerTitle(),
+                  const SizedBox(height: 8),
+                  Text(
+                    AppLocalization.of(context)!.registerTopInformation,
+                    style: TextStyle(color: darkGrey, fontSize: 14),
+                  ),
+                  const SizedBox(
+                    height: 50,
+                  ),
+                  selectCountryField(),
+                  const SizedBox(height: 12),
+                  phoneNumberField(),
+                  const SizedBox(height: 12),
+                  getUserAgreeCheckBoxWidget(),
+                  const SizedBox(height: 12),
+                  Align(
+                      alignment: Alignment.centerRight,
+                      child: alreadyHaveOtp()),
+                  const SizedBox(height: 12),
+                  continueBtn(),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                ],
               ),
             ),
           ),
@@ -101,31 +99,27 @@ class _RegistrationState extends State<Registration> {
   }
 
   Widget appIcon() {
-    return Container(
-      child: Image.asset(
-        "assets/images/app_logo_navyBlue.png",
-        height: MediaQuery.of(context).size.height / 16,
-        frameBuilder: imageFrameBuilder,
-      ),
+    return Image.asset(
+      "assets/images/app_logo_navyBlue.png",
+      height: MediaQuery.of(context).size.height / 16,
+      frameBuilder: imageFrameBuilder,
     );
   }
 
   Widget registerTitle() {
-    return Container(
-      child: Row(
-        children: <Widget>[
-          Text(
-            "Slydo ",
-            style: TextStyle(
-                fontSize: 22, fontWeight: FontWeight.w700, color: navyBlue),
-          ),
-          Text(
-            "Registration",
-            style: TextStyle(
-                fontSize: 22, fontWeight: FontWeight.w700, color: blackFont),
-          ),
-        ],
-      ),
+    return Row(
+      children: <Widget>[
+        Text(
+          "Slydo ",
+          style: TextStyle(
+              fontSize: 22, fontWeight: FontWeight.w700, color: navyBlue),
+        ),
+        Text(
+          "Registration",
+          style: TextStyle(
+              fontSize: 22, fontWeight: FontWeight.w700, color: blackFont),
+        ),
+      ],
     );
   }
 

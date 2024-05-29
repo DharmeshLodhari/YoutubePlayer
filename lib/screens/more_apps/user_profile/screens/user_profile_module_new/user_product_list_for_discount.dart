@@ -80,9 +80,9 @@ class _UserProductListForDiscountState
   void toggleSelectAll() {
     isSelectAll = !isSelectAll;
 
-    productList.forEach((element) {
+    for (var element in productList) {
       element.isChecked = isSelectAll;
-    });
+    }
     if (mounted) setState(() {});
   }
 

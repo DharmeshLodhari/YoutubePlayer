@@ -261,7 +261,7 @@ class _ContactDriverState extends State<ContactDriver> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(50),
         ),
-        child: Container(
+        child: SizedBox(
           height: 70,
           width: 70,
           child: Center(

@@ -55,9 +55,7 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
 
   @override
   void initState() {
-    if (widget.isWalletFunding == null) {
-      widget.isWalletFunding = false;
-    }
+    widget.isWalletFunding ??= false;
     cvvFocusNode.addListener(textFieldFocusDidChange);
     super.initState();
   }

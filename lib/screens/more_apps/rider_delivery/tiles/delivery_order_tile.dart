@@ -86,7 +86,7 @@ class _DeliveryOrderTileState extends State<DeliveryOrderTile> {
   }
 
   Widget _buildVerticalDivider() {
-    return Container(
+    return SizedBox(
       height: 50,
       child: VerticalDivider(
         color: greySecondaryYarn,

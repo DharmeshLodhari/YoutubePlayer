@@ -246,72 +246,70 @@ class _SignUpState extends State<SignUp> {
         : SingleChildScrollView(
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Container(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    appIcon(),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    registerTitle(),
-                    const SizedBox(height: 40),
-                    if (!basicAccountInfo)
-                      Form(
-                        key: _personalDetailFormKey,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            accountTypeField(),
-                            Visibility(
-                              visible: accountTypeChosen,
-                              child: accountType == 'Personal'
-                                  ? personalAccountFields()
-                                  : businessAccountFields(),
-                            ),
-                          ],
-                        ),
-                      )
-                    else
-                      Form(
-                        key: _bankDetailsFormKey,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            nameInstructionNote(),
-                            const SizedBox(height: 20),
-                            firstNameField(),
-                            const SizedBox(height: 20),
-                            lastNameField(),
-                            const SizedBox(height: 20),
-                            getDOBField(),
-                            if (isValidAge != null && !isValidAge!)
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    "You are not eligible to use Slydo",
-                                    style:
-                                        TextStyle(color: mateRed, fontSize: 13),
-                                  ),
-                                ],
-                              )
-                            else
-                              Container(),
-                            const SizedBox(height: 20),
-                            getGenderField(),
-                            const SizedBox(height: 20),
-                            registrationTermsAndCondition(),
-                            // bvnField(),
-                            const SizedBox(height: 40),
-                            registerBtn(),
-                            const SizedBox(height: 40),
-                          ],
-                        ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  appIcon(),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  registerTitle(),
+                  const SizedBox(height: 40),
+                  if (!basicAccountInfo)
+                    Form(
+                      key: _personalDetailFormKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          accountTypeField(),
+                          Visibility(
+                            visible: accountTypeChosen,
+                            child: accountType == 'Personal'
+                                ? personalAccountFields()
+                                : businessAccountFields(),
+                          ),
+                        ],
                       ),
-                  ],
-                ),
+                    )
+                  else
+                    Form(
+                      key: _bankDetailsFormKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          nameInstructionNote(),
+                          const SizedBox(height: 20),
+                          firstNameField(),
+                          const SizedBox(height: 20),
+                          lastNameField(),
+                          const SizedBox(height: 20),
+                          getDOBField(),
+                          if (isValidAge != null && !isValidAge!)
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const SizedBox(height: 8),
+                                Text(
+                                  "You are not eligible to use Slydo",
+                                  style:
+                                      TextStyle(color: mateRed, fontSize: 13),
+                                ),
+                              ],
+                            )
+                          else
+                            Container(),
+                          const SizedBox(height: 20),
+                          getGenderField(),
+                          const SizedBox(height: 20),
+                          registrationTermsAndCondition(),
+                          // bvnField(),
+                          const SizedBox(height: 40),
+                          registerBtn(),
+                          const SizedBox(height: 40),
+                        ],
+                      ),
+                    ),
+                ],
               ),
             ),
           );
@@ -456,41 +454,35 @@ class _SignUpState extends State<SignUp> {
   }
 
   Widget appIcon() {
-    return Container(
-      child: Image.asset(
-        "assets/images/app_logo_navyBlue.png",
-        height: MediaQuery.of(context).size.height / 16,
-        frameBuilder: imageFrameBuilder,
-      ),
+    return Image.asset(
+      "assets/images/app_logo_navyBlue.png",
+      height: MediaQuery.of(context).size.height / 16,
+      frameBuilder: imageFrameBuilder,
     );
   }
 
   Widget registerTitle() {
-    return Container(
-      child: Row(
-        children: <Widget>[
-          Text(
-            "Slydo ",
-            style: TextStyle(
-                fontSize: 22, fontWeight: FontWeight.w700, color: navyBlue),
-          ),
-          Text(
-            "Registration",
-            style: TextStyle(
-                fontSize: 22, fontWeight: FontWeight.w700, color: blackFont),
-          ),
-        ],
-      ),
+    return Row(
+      children: <Widget>[
+        Text(
+          "Slydo ",
+          style: TextStyle(
+              fontSize: 22, fontWeight: FontWeight.w700, color: navyBlue),
+        ),
+        Text(
+          "Registration",
+          style: TextStyle(
+              fontSize: 22, fontWeight: FontWeight.w700, color: blackFont),
+        ),
+      ],
     );
   }
 
   Widget nameInstructionNote() {
-    return Container(
-      child: Text(
-        "Please ensure the information below matches that which is on your government issued ID",
-        style: TextStyle(
-            fontSize: 12, color: blackFont, fontWeight: FontWeight.w600),
-      ),
+    return Text(
+      "Please ensure the information below matches that which is on your government issued ID",
+      style: TextStyle(
+          fontSize: 12, color: blackFont, fontWeight: FontWeight.w600),
     );
   }
 
@@ -755,12 +747,10 @@ class _SignUpState extends State<SignUp> {
   }
 
   Widget passwordInstruction() {
-    return Container(
-      child: Text(
-        "Use a 6 digit number",
-        style: TextStyle(
-            fontSize: 12, color: blackFont, fontWeight: FontWeight.w600),
-      ),
+    return Text(
+      "Use a 6 digit number",
+      style: TextStyle(
+          fontSize: 12, color: blackFont, fontWeight: FontWeight.w600),
     );
   }
 
@@ -816,24 +806,22 @@ class _SignUpState extends State<SignUp> {
           CustomizedDropDownField(
             title:
                 isPersonalAccount ? "Birthdate" : 'Business Owner\'s Birthdate',
-            child: Container(
-              child: ListTile(
-                dense: true,
-                title: Text(
-                  /*This is so that when the user
-                     * comes to this page before picking a date, the field will be empty*/
-                  showDOB == true ? formatDate(dob) : '',
-                  style: TextStyle(
-                    color: blackFont,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 16,
-                  ),
+            child: ListTile(
+              dense: true,
+              title: Text(
+                /*This is so that when the user
+                   * comes to this page before picking a date, the field will be empty*/
+                showDOB == true ? formatDate(dob) : '',
+                style: TextStyle(
+                  color: blackFont,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 16,
                 ),
-                trailing: Icon(
-                  SlydoAppIcon.date,
-                  size: 16,
-                  color: darkGrey,
-                ),
+              ),
+              trailing: Icon(
+                SlydoAppIcon.date,
+                size: 16,
+                color: darkGrey,
               ),
             ),
           ),

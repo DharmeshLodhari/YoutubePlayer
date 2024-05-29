@@ -67,7 +67,7 @@ class _ArrivingDriverState extends State<ArrivingDriver> {
   }
 
   void getExistingMapStatus() {
-    TaxiBloc taxiBloc =
+    final TaxiBloc taxiBloc =
         Provider.of(myGlobals.navigationKey.currentContext!, listen: false);
     TaxiAuth()
         .getDirections(
@@ -97,94 +97,97 @@ class _ArrivingDriverState extends State<ArrivingDriver> {
         appBar: appBar() as PreferredSizeWidget?,
         body: Stack(
           children: [
-            isLoading
-                ? Center(child: CircularLoadingIndicator())
-                : MapUI(
-                    key: UniqueKey(),
-                    showRideToStartingPointPolyline: false,
-                    showStartingPointToDestinationPolyline: true,
-                    startRide: startRide,
+            if (isLoading)
+              Center(child: CircularLoadingIndicator())
+            else
+              MapUI(
+                key: UniqueKey(),
+                showRideToStartingPointPolyline: false,
+                showStartingPointToDestinationPolyline: true,
+                startRide: startRide,
+              ),
+            if (isDriverArrived)
+              Card(
+                shadowColor: dividerColor,
+                elevation: 5,
+                borderOnForeground: true,
+                margin:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(50)),
+                child: Container(
+                  // margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(50),
+                      color: Colors.white),
+                  child: Row(
+                    children: [
+                      Container(
+                        height: 8,
+                        width: 8,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(50),
+                            color: navyBlue),
+                      ),
+                      const SizedBox(
+                        width: 8,
+                      ),
+                      const Text(
+                        "Your ride has arrived",
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.w400),
+                      ),
+                    ],
                   ),
-            isDriverArrived
-                ? Card(
-                    shadowColor: dividerColor,
-                    elevation: 5,
-                    borderOnForeground: true,
-                    margin: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 12),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(50)),
-                    child: Container(
-                      // margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 20, vertical: 16),
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(50),
-                          color: Colors.white),
+                ),
+              )
+            else
+              Container(),
+
+            if (isNavigationStarted)
+              Container(
+                // margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                decoration: BoxDecoration(color: blackFont),
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.arrow_upward_rounded,
+                      color: Colors.white,
+                      size: 30,
+                    ),
+                    const SizedBox(
+                      width: 16,
+                    ),
+                    Expanded(
                       child: Row(
                         children: [
-                          Container(
-                            height: 8,
-                            width: 8,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(50),
-                                color: navyBlue),
+                          const Text(
+                            "500 miles",
+                            style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white),
                           ),
                           const SizedBox(
-                            width: 8,
+                            width: 4,
                           ),
-                          const Text(
-                            "Your ride has arrived",
-                            style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.w400),
-                          ),
+                          const Text("Head southwest on Madison St",
+                              style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w400,
+                                  color: Colors.white)),
                         ],
                       ),
                     ),
-                  )
-                : Container(),
-
-            isNavigationStarted
-                ? Container(
-                    // margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 20, vertical: 16),
-                    decoration: BoxDecoration(color: blackFont),
-                    child: Row(
-                      children: [
-                        const Icon(
-                          Icons.arrow_upward_rounded,
-                          color: Colors.white,
-                          size: 30,
-                        ),
-                        const SizedBox(
-                          width: 16,
-                        ),
-                        Expanded(
-                          child: Row(
-                            children: [
-                              const Text(
-                                "500 miles",
-                                style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.white),
-                              ),
-                              const SizedBox(
-                                width: 4,
-                              ),
-                              const Text("Head southwest on Madison St",
-                                  style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w400,
-                                      color: Colors.white)),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  )
-                : Container(),
+                  ],
+                ),
+              )
+            else
+              Container(),
 
             // FlutterMap(
             //   mapController: mapController,
@@ -280,14 +283,15 @@ class _ArrivingDriverState extends State<ArrivingDriver> {
                           height: 10,
                         ),
                         getDriverInfo(),
-                        isDriverStartedMoving
-                            ? Column(
-                                children: [
-                                  const SizedBox(height: 10),
-                                  getRideInfo(),
-                                ],
-                              )
-                            : Container(),
+                        if (isDriverStartedMoving)
+                          Column(
+                            children: [
+                              const SizedBox(height: 10),
+                              getRideInfo(),
+                            ],
+                          )
+                        else
+                          Container(),
                         const SizedBox(
                           height: 10,
                         ),
@@ -363,7 +367,7 @@ class _ArrivingDriverState extends State<ArrivingDriver> {
   }
 
   Widget getDriverInfo() {
-    UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
+    final UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
       child: Row(
@@ -473,7 +477,7 @@ class _ArrivingDriverState extends State<ArrivingDriver> {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Container(
+            child: SizedBox(
               height: 42,
               width: 42,
               child: Center(
@@ -534,7 +538,7 @@ class _ArrivingDriverState extends State<ArrivingDriver> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(50),
         ),
-        child: Container(
+        child: SizedBox(
           height: 70,
           width: 70,
           child: Center(

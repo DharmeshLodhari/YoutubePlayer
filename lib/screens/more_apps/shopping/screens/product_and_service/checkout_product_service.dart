@@ -101,7 +101,7 @@ class _CheckoutProductServiceState extends State<CheckoutProductService> {
     );
   }
 
-  _scaffoldBody() {
+  SingleChildScrollView _scaffoldBody() {
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(12.0),
@@ -235,7 +235,7 @@ class _CheckoutProductServiceState extends State<CheckoutProductService> {
     return variant;
   }
 
-  getSubTotalPrice() {
+  int? getSubTotalPrice() {
     final Map<dynamic, dynamic>? variant = getVariantAsMap();
     final Map<dynamic, dynamic>? addOn = getAddOnAsMap();
 
@@ -334,7 +334,7 @@ class _CheckoutProductServiceState extends State<CheckoutProductService> {
         screen: UserAddressProductService(fromCheckoutScreen: true));
   }
 
-  resetData() {
+  void resetData() {
     deliveryOption = null;
     merchantFullName = null;
     shippingOptions.clear();
@@ -342,7 +342,7 @@ class _CheckoutProductServiceState extends State<CheckoutProductService> {
     if (mounted) setState(() {});
   }
 
-  pickDeliveryOptions() async {
+  void pickDeliveryOptions() async {
     final String? pickedDeliveryOption = await showPickItemDialog<String>(
       context: context,
       items: deliveryOptions,
@@ -396,7 +396,7 @@ class _CheckoutProductServiceState extends State<CheckoutProductService> {
                   contentPadding: EdgeInsets.zero,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10)),
-                  content: Container(
+                  content: SizedBox(
                     width: MediaQuery.of(context).size.width - 40,
                     child: Card(
                       elevation: 2,

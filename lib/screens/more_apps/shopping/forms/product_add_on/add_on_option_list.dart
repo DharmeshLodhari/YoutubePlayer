@@ -401,7 +401,7 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
                 isAPILoading = true;
                 if (mounted) setState(() {});
 
-                await loadAllCheckedAddOn();
+                loadAllCheckedAddOn();
 
                 isAPILoading = false;
                 if (mounted) setState(() {});

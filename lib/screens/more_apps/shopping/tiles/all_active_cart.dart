@@ -15,7 +15,7 @@ class _AllActiveCartState extends State<AllActiveCart> {
   bool isLoading = false;
   List<SharedCartModel> cartList = [];
   SharedCartModel selectedCart = SharedCartModel();
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
@@ -65,7 +65,7 @@ class _AllActiveCartState extends State<AllActiveCart> {
               ),
               const SizedBox(height: 20),
               if (isLoading)
-                Container(
+                SizedBox(
                   height: MediaQuery.of(context).size.height / 2,
                   child: Center(
                     child: CircularLoadingIndicator(),

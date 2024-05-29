@@ -280,7 +280,7 @@ class _AlbumDetailPageState extends State<AlbumDetailPage> {
   }
 
   Widget albumPoster() {
-    return Container(
+    return SizedBox(
       height: MediaQuery.of(context).size.width,
       width: MediaQuery.of(context).size.width,
       child: Stack(
@@ -376,7 +376,7 @@ class _AlbumDetailPageState extends State<AlbumDetailPage> {
                 ),
               ],
             ),
-            Container(
+            SizedBox(
               width: MediaQuery.of(context).size.width / 3,
               child: buyAlbumButton(),
             )

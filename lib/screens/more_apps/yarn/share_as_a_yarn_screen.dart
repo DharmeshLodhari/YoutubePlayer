@@ -4,7 +4,7 @@ import 'package:Slydo/data/state_notifiers/user_bloc.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/main.dart';
 import 'package:Slydo/screens/moments/screens/trimmer_view.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/gif_model/GIFModel.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/gif_model/gif_model.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:Slydo/screens/more_apps/service_hub/models/jobs.dart';
@@ -166,7 +166,7 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
   }
 
   Widget gifPreviewList() {
-    return Container(
+    return SizedBox(
       height: MediaQuery.of(context).size.height / 3,
       child: _isGIFLoading
           ? Center(child: CircularLoadingIndicator())
@@ -194,7 +194,7 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
                       imageUrl: _gifs[index].images!.previewGif!.url!,
                       fit: BoxFit.fill,
                       errorWidget: imageErrorWidget,
-                      placeholder: (context, url) => Container(
+                      placeholder: (context, url) => SizedBox(
                           width: MediaQuery.of(context).size.width / 2,
                           child: Center(child: CircularLoadingIndicator())),
                     ),
@@ -743,7 +743,7 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(
+        SizedBox(
           height: 100,
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
@@ -862,7 +862,7 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Container(
+        SizedBox(
           height: 100,
           child: Stack(
             children: <Widget>[
@@ -919,7 +919,7 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Container(
+        SizedBox(
           height: 100,
           child: Stack(
             children: <Widget>[

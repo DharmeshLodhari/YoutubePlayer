@@ -74,20 +74,18 @@ class _VerifyResetPasswordOTPScreenState
                   flex: 6,
                   child: Form(
                     key: _verifyOtpFormKey,
-                    child: Container(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          verifyOTPTitle(),
-                          flexibleSpace(flex: 1),
-                          expirationNote(),
-                          flexibleSpace(flex: 3),
-                          otpFillUpField(),
-                          flexibleSpace(flex: 2),
-                          verifyBtn(),
-                          flexibleSpace(flex: 1),
-                        ],
-                      ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        verifyOTPTitle(),
+                        flexibleSpace(flex: 1),
+                        expirationNote(),
+                        flexibleSpace(flex: 3),
+                        otpFillUpField(),
+                        flexibleSpace(flex: 2),
+                        verifyBtn(),
+                        flexibleSpace(flex: 1),
+                      ],
                     ),
                   ),
                 ),
@@ -101,42 +99,38 @@ class _VerifyResetPasswordOTPScreenState
   }
 
   Widget verifyOTPTitle() {
-    return Container(
-      child: Text(
-        "Verify OTP",
-        style: TextStyle(
-            fontSize: 22, fontWeight: FontWeight.w700, color: blackFont),
-      ),
+    return Text(
+      "Verify OTP",
+      style: TextStyle(
+          fontSize: 22, fontWeight: FontWeight.w700, color: blackFont),
     );
   }
 
   Widget expirationNote() {
-    return Container(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(
-            "Please enter code that sent to your phone number in the form below.",
-            style: TextStyle(fontSize: 14, color: darkGrey),
-          ),
-          Row(
-            children: <Widget>[
-              Text(
-                "This code will expired in",
-                style: TextStyle(fontSize: 14, color: darkGrey),
-              ),
-              const Text(
-                " 00:30 ",
-                style: TextStyle(fontSize: 14, color: Colors.red),
-              ),
-              Text(
-                "seconds.",
-                style: TextStyle(fontSize: 14, color: darkGrey),
-              ),
-            ],
-          ),
-        ],
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          "Please enter code that sent to your phone number in the form below.",
+          style: TextStyle(fontSize: 14, color: darkGrey),
+        ),
+        Row(
+          children: <Widget>[
+            Text(
+              "This code will expired in",
+              style: TextStyle(fontSize: 14, color: darkGrey),
+            ),
+            const Text(
+              " 00:30 ",
+              style: TextStyle(fontSize: 14, color: Colors.red),
+            ),
+            Text(
+              "seconds.",
+              style: TextStyle(fontSize: 14, color: darkGrey),
+            ),
+          ],
+        ),
+      ],
     );
   }
 

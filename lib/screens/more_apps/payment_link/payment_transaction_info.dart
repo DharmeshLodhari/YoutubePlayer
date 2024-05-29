@@ -192,7 +192,7 @@ class _TransactionPaymentLinkState extends State<TransactionPaymentLink> {
                                   const CustomText(
                                     title: 'Status',
                                     fontSize: 16,
-                                    fontweight: FontWeight.w700,
+                                    fontWeight: FontWeight.w700,
                                   ),
                                   const SizedBox(
                                     height: 10,
@@ -294,7 +294,7 @@ class _TransactionPaymentLinkState extends State<TransactionPaymentLink> {
             contentPadding: const EdgeInsets.only(
               top: 10.0,
             ),
-            content: Container(
+            content: SizedBox(
               height: 520,
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(22.0),
@@ -467,7 +467,7 @@ class _TransactionPaymentLinkState extends State<TransactionPaymentLink> {
                 CustomText(
                   title: text!,
                   fontSize: 16,
-                  fontweight: FontWeight.w700,
+                  fontWeight: FontWeight.w700,
                 ),
                 const SizedBox(
                   height: 10,
@@ -527,7 +527,7 @@ class _TransactionPaymentLinkState extends State<TransactionPaymentLink> {
                 CustomText(
                   title: text!,
                   fontSize: 16,
-                  fontweight: FontWeight.w700,
+                  fontWeight: FontWeight.w700,
                 ),
                 const SizedBox(
                   height: 10,

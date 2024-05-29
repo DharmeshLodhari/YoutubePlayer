@@ -66,7 +66,7 @@ class _PostTileForInvoiceState extends State<PostTileForInvoice> {
               child: getPaymentContractTile(),
             ),
             if (isSender)
-              Container(
+              SizedBox(
                 width: 20,
                 child: isSender
                     ? Center(
@@ -167,7 +167,7 @@ class _PostTileForInvoiceState extends State<PostTileForInvoice> {
           ),
         ),
         Text(
-          '${moneyDisplayNormalizer(invoiceModel.amount)}',
+          moneyDisplayNormalizer(invoiceModel.amount),
           style: TextStyle(
             color: navyBlue,
             fontWeight: FontWeight.bold,

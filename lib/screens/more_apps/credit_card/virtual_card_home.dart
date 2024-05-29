@@ -537,67 +537,65 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
 
         // Right side with background image and text
         Expanded(
-          child: Container(
-            child: Stack(
-              children: [
-                Positioned(
-                  top: 20,
-                  right: 20,
-                  child: Row(
-                    children: [
-                      Text(
-                        'Slydo',
-                        style: TextStyle(
-                          color: white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
+          child: Stack(
+            children: [
+              Positioned(
+                top: 20,
+                right: 20,
+                child: Row(
+                  children: [
+                    Text(
+                      'Slydo',
+                      style: TextStyle(
+                        color: white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
                       ),
-                      const SizedBox(width: 5.0),
+                    ),
+                    const SizedBox(width: 5.0),
+                    SvgPicture.asset(
+                      "slydo".toSVG(),
+                      fit: BoxFit.cover,
+                    ),
+                  ],
+                ),
+              ),
+              Positioned(
+                bottom: 20,
+                right: 20,
+                child: Column(
+                  children: [
+                    if (cardData.cardBrand == 'Visa')
                       SvgPicture.asset(
-                        "slydo".toSVG(),
+                        "visa".toSVG(),
+                        fit: BoxFit.cover,
+                      )
+                    else
+                      SvgPicture.asset(
+                        "mastercard".toSVG(),
                         fit: BoxFit.cover,
                       ),
-                    ],
-                  ),
-                ),
-                Positioned(
-                  bottom: 20,
-                  right: 20,
-                  child: Column(
-                    children: [
-                      if (cardData.cardBrand == 'Visa')
-                        SvgPicture.asset(
-                          "visa".toSVG(),
-                          fit: BoxFit.cover,
-                        )
-                      else
-                        SvgPicture.asset(
-                          "mastercard".toSVG(),
-                          fit: BoxFit.cover,
-                        ),
-                      const SizedBox(width: 5.0),
-                      if (cardData.cardBrand == 'Visa')
-                        SizedBox.shrink()
-                      else
-                        Column(
-                          children: [
-                            Text(
-                              'Mastercard',
-                              style: TextStyle(
-                                color: white,
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                              ),
+                    const SizedBox(width: 5.0),
+                    if (cardData.cardBrand == 'Visa')
+                      SizedBox.shrink()
+                    else
+                      Column(
+                        children: [
+                          Text(
+                            'Mastercard',
+                            style: TextStyle(
+                              color: white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
                             ),
-                            const SizedBox(width: 5.0),
-                          ],
-                        ),
-                    ],
-                  ),
+                          ),
+                          const SizedBox(width: 5.0),
+                        ],
+                      ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ],
@@ -885,32 +883,30 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
 
               // Right side with background image and text
               Expanded(
-                child: Container(
-                  child: Stack(
-                    children: [
-                      Positioned(
-                        top: 20,
-                        right: 20,
-                        child: Row(
-                          children: [
-                            Text(
-                              'Slydo',
-                              style: TextStyle(
-                                color: white,
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
+                child: Stack(
+                  children: [
+                    Positioned(
+                      top: 20,
+                      right: 20,
+                      child: Row(
+                        children: [
+                          Text(
+                            'Slydo',
+                            style: TextStyle(
+                              color: white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
                             ),
-                            const SizedBox(width: 5.0),
-                            SvgPicture.asset(
-                              "slydo".toSVG(),
-                              fit: BoxFit.cover,
-                            ),
-                          ],
-                        ),
+                          ),
+                          const SizedBox(width: 5.0),
+                          SvgPicture.asset(
+                            "slydo".toSVG(),
+                            fit: BoxFit.cover,
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ],

@@ -354,43 +354,41 @@ class _ContractDetailState extends State<ContractDetail> {
   }
 
   Widget displayBodyOfTransaction() {
-    return Container(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Divider(
-            color: dividerColor,
-            thickness: 1,
-            height: 0,
-          ),
-          detailTile(
-            Icons.history_edu,
-            AppLocalization.of(context)!.status,
-            contract.status!,
-          ),
-          detailTile(
-            Icons.timer,
-            "Payment duration",
-            contract.paymentDuration!,
-          ),
-          detailTile(
-            SlydoAppIcon.note_filled,
-            AppLocalization.of(context)!.note,
-            messageDecoderWithEmoji(contract.note) ?? '---',
-          ),
-          detailTile(
-            SlydoAppIcon.date,
-            "Starting date",
-            formatDate(contract.startDate),
-          ),
-          detailTile(
-            SlydoAppIcon.date,
-            "Ending date",
-            formatDate(contract.startDate),
-          ),
-        ],
-      ),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Divider(
+          color: dividerColor,
+          thickness: 1,
+          height: 0,
+        ),
+        detailTile(
+          Icons.history_edu,
+          AppLocalization.of(context)!.status,
+          contract.status!,
+        ),
+        detailTile(
+          Icons.timer,
+          "Payment duration",
+          contract.paymentDuration!,
+        ),
+        detailTile(
+          SlydoAppIcon.note_filled,
+          AppLocalization.of(context)!.note,
+          messageDecoderWithEmoji(contract.note) ?? '---',
+        ),
+        detailTile(
+          SlydoAppIcon.date,
+          "Starting date",
+          formatDate(contract.startDate),
+        ),
+        detailTile(
+          SlydoAppIcon.date,
+          "Ending date",
+          formatDate(contract.startDate),
+        ),
+      ],
     );
   }
 

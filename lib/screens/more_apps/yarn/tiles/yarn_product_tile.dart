@@ -56,7 +56,7 @@ class _YarnProductTileState extends State<YarnProductTile> {
         Navigator.of(context)
             .pushNamed("/product", arguments: {"product": widget.product});
       },
-      child: Container(
+      child: SizedBox(
         height: getItemHeight(widget.tileRenderPlace, context),
         width: double.infinity,
         child: CustomBoxShadow(
@@ -203,67 +203,65 @@ class _YarnProductTileState extends State<YarnProductTile> {
                               softWrap: false,
                               overflow: TextOverflow.ellipsis,
                             ),
-                            widget.product!.seller == userBloc.user.userName
-                                ? Container(
-                                    height: 4,
-                                  )
-                                : Container(
-                                    child: Column(
+                            if (widget.product!.seller ==
+                                userBloc.user.userName)
+                              Container(
+                                height: 4,
+                              )
+                            else
+                              Container(
+                                child: Column(
+                                  children: [
+                                    const SizedBox(
+                                      height: 5,
+                                    ),
+                                    Row(
                                       children: [
+                                        addToCartWidget(item: widget.product),
                                         const SizedBox(
-                                          height: 5,
+                                          width: 8,
                                         ),
-                                        Row(
-                                          children: [
-                                            addToCartWidget(
-                                                item: widget.product),
-                                            const SizedBox(
-                                              width: 8,
-                                            ),
-                                            Expanded(
-                                              child: CurvedButton(
-                                                height: getButtonSize(
-                                                    widget.tileRenderPlace,
-                                                    context),
-                                                isPaymentBtn: true,
-                                                textColor: Colors.white,
-                                                backgroundColor: navyBlue,
-                                                text: "BUY NOW",
-                                                borderRadius: 10,
-                                                onPressed: () async {
-                                                  // if (appConfigurationModel
-                                                  //         ?.enablePayment ==
-                                                  //     true) {
-                                                  final bool result =
-                                                      await showDisclaimerDialogueForGoods(
-                                                          context);
-                                                  if (result) {
-                                                    customerProfileBloc
-                                                            .customer =
-                                                        await UserAuth()
-                                                            .fetchCustomerProfile(
-                                                                widget.product!
-                                                                    .seller);
+                                        Expanded(
+                                          child: CurvedButton(
+                                            height: getButtonSize(
+                                                widget.tileRenderPlace,
+                                                context),
+                                            isPaymentBtn: true,
+                                            textColor: Colors.white,
+                                            backgroundColor: navyBlue,
+                                            text: "BUY NOW",
+                                            borderRadius: 10,
+                                            onPressed: () async {
+                                              // if (appConfigurationModel
+                                              //         ?.enablePayment ==
+                                              //     true) {
+                                              final bool result =
+                                                  await showDisclaimerDialogueForGoods(
+                                                      context);
+                                              if (result) {
+                                                customerProfileBloc.customer =
+                                                    await UserAuth()
+                                                        .fetchCustomerProfile(
+                                                            widget.product!
+                                                                .seller);
 
-                                                    Navigator.of(context)
-                                                        .pushNamed(
-                                                      '/send-payment',
-                                                      arguments: {
-                                                        'isFromProfile': false,
-                                                        'product':
-                                                            widget.product
-                                                      },
-                                                    );
-                                                  }
-                                                  // }
-                                                },
-                                              ),
-                                            ),
-                                          ],
+                                                Navigator.of(context).pushNamed(
+                                                  '/send-payment',
+                                                  arguments: {
+                                                    'isFromProfile': false,
+                                                    'product': widget.product
+                                                  },
+                                                );
+                                              }
+                                              // }
+                                            },
+                                          ),
                                         ),
                                       ],
                                     ),
-                                  )
+                                  ],
+                                ),
+                              )
                           ],
                         ),
                       ),

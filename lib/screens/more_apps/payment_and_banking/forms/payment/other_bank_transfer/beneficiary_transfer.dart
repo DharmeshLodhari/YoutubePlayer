@@ -98,15 +98,17 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
       if (searchItemTextController.text.length >= 3) {
         searchText = searchItemTextController.text;
 
-        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+        if (bottomSheetStateSetterGlobal != null && bottomSheetMounted) {
           bottomSheetStateSetterGlobal!(() {});
+        }
         if (mounted) setState(() {});
 
         // Call your search function here
         searchBankList();
-      } else if (searchItemTextController.text.length == 0) {
-        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+      } else if (searchItemTextController.text.isEmpty) {
+        if (bottomSheetStateSetterGlobal != null && bottomSheetMounted) {
           bottomSheetStateSetterGlobal!(() {});
+        }
         if (mounted) setState(() {});
 
         clearSearchAndAllBanks();
@@ -128,9 +130,7 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
     await getAccountBalance();
     getList("");
     virtualAccount = await DatabaseHelper().getVirtualAccount();
-    if (virtualAccount == null) {
-      virtualAccount = await PaymentAndBankingAuth().getVirtualAccountDetail();
-    }
+    virtualAccount ??= await PaymentAndBankingAuth().getVirtualAccountDetail();
     if (virtualAccount != null) {
       isAccountFound = true;
     }
@@ -161,9 +161,7 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
 
     return isLoading
         ? Center(
-            child: Container(
-              child: CircularLoadingIndicator(),
-            ),
+            child: CircularLoadingIndicator(),
           )
         : noItemInList
             ? NoItemInList(
@@ -201,7 +199,7 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
         const SizedBox(
           height: 8,
         ),
-        Container(
+        SizedBox(
           width: MediaQuery.of(context).size.width,
           child: Card(
             elevation: 0,
@@ -393,49 +391,45 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
   }
 
   Widget _buildSendPayment() {
-    return Container(
-      child: Column(
-        children: [
-          const SizedBox(
-            height: 40,
-          ),
-          if (canCashOut(amount!, accountBalance!))
-            getSubmitButton()
-          else
-            Container(
-              child: Center(
-                  child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 16.0),
-                      child: Text.rich(TextSpan(
-                          text: AppLocalization.of(context)!.minimumTransfer,
+    return Column(
+      children: [
+        const SizedBox(
+          height: 40,
+        ),
+        if (canCashOut(amount!, accountBalance!))
+          getSubmitButton()
+        else
+          Center(
+              child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  child: Text.rich(TextSpan(
+                      text: AppLocalization.of(context)!.minimumTransfer,
+                      style: TextStyle(
+                          fontSize: 12,
+                          color: blackFont,
+                          fontWeight: FontWeight.w600),
+                      children: <InlineSpan>[
+                        TextSpan(
+                          text: double.parse(moneyDisplayNormalizer(
+                                      displayPossibleCashOutAmount(
+                                          accountBalance!))) >=
+                                  35.00
+                              ? worldCurrencies[userBloc.user.currency!]! +
+                                  moneyDisplayNormalizer(
+                                      displayPossibleCashOutAmount(
+                                          accountBalance!))
+                              : '${worldCurrencies[userBloc.user.currency!]!}0.00',
                           style: TextStyle(
                               fontSize: 12,
                               color: blackFont,
+                              fontFamily: "Inter",
                               fontWeight: FontWeight.w600),
-                          children: <InlineSpan>[
-                            TextSpan(
-                              text: double.parse(moneyDisplayNormalizer(
-                                          displayPossibleCashOutAmount(
-                                              accountBalance!))) >=
-                                      35.00
-                                  ? worldCurrencies[userBloc.user.currency!]! +
-                                      moneyDisplayNormalizer(
-                                          displayPossibleCashOutAmount(
-                                              accountBalance!))
-                                  : '${worldCurrencies[userBloc.user.currency!]!}0.00',
-                              style: TextStyle(
-                                  fontSize: 12,
-                                  color: blackFont,
-                                  fontFamily: "Inter",
-                                  fontWeight: FontWeight.w600),
-                            )
-                          ])))),
-            ),
-          const SizedBox(
-            height: 20,
-          ),
-        ],
-      ),
+                        )
+                      ])))),
+        const SizedBox(
+          height: 20,
+        ),
+      ],
     );
   }
 
@@ -722,70 +716,68 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
   }
 
   Widget searchBox() {
-    return Container(
-      child: Theme(
-        data: Theme.of(context).copyWith(
-          textSelectionTheme: const TextSelectionThemeData()
-              .copyWith(selectionHandleColor: navyBlue),
+    return Theme(
+      data: Theme.of(context).copyWith(
+        textSelectionTheme: const TextSelectionThemeData()
+            .copyWith(selectionHandleColor: navyBlue),
+      ),
+      child: TextFormField(
+        key: searchItemTextFormField,
+        controller: searchItemTextController,
+        style: TextStyle(
+          fontSize: 16,
+          color: blackFont,
+          fontWeight: FontWeight.w600,
         ),
-        child: TextFormField(
-          key: searchItemTextFormField,
-          controller: searchItemTextController,
-          style: TextStyle(
-            fontSize: 16,
-            color: blackFont,
-            fontWeight: FontWeight.w600,
+        cursorWidth: 1.5,
+        cursorColor: navyBlue,
+        decoration: InputDecoration(
+          hintText: 'Search Beneficiary',
+          fillColor: Colors.white,
+          filled: true,
+          contentPadding: const EdgeInsets.symmetric(vertical: 10),
+          // prefixIcon: searchTypeSelection(),
+          prefix: const Padding(
+            padding: EdgeInsets.only(left: 12),
           ),
-          cursorWidth: 1.5,
-          cursorColor: navyBlue,
-          decoration: InputDecoration(
-            hintText: 'Search Beneficiary',
-            fillColor: Colors.white,
-            filled: true,
-            contentPadding: const EdgeInsets.symmetric(vertical: 10),
-            // prefixIcon: searchTypeSelection(),
-            prefix: const Padding(
-              padding: EdgeInsets.only(left: 12),
-            ),
-            suffixIcon: searchIcon(),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(
-                color: dividerColor,
-                width: 1.0,
-              ),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(
-                color: navyBlue,
-                width: 1.0,
-              ),
-            ),
-            errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(
-                color: dividerColor,
-                width: 1.0,
-              ),
-            ),
-            focusedErrorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(
-                color: dividerColor,
-                width: 1.0,
-              ),
+          suffixIcon: searchIcon(),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(
+              color: dividerColor,
+              width: 1.0,
             ),
           ),
-          onFieldSubmitted: (val) {
-            if (mounted) setState(() {});
-            FocusScope.of(context).unfocus();
-            searchText = val;
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(
+              color: navyBlue,
+              width: 1.0,
+            ),
+          ),
+          errorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(
+              color: dividerColor,
+              width: 1.0,
+            ),
+          ),
+          focusedErrorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(
+              color: dividerColor,
+              width: 1.0,
+            ),
+          ),
+        ),
+        onFieldSubmitted: (val) {
+          if (mounted) setState(() {});
+          FocusScope.of(context).unfocus();
+          searchText = val;
 
-            // Call your search function here
-            searchBankList();
-          },
-        ),
+          // Call your search function here
+          searchBankList();
+        },
       ),
     );
   }
@@ -916,8 +908,9 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
       bankAccountList = [];
       bankAccountListStore = [];
       noItemInList = false;
-      if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+      if (bottomSheetStateSetterGlobal != null && bottomSheetMounted) {
         bottomSheetStateSetterGlobal!(() {});
+      }
       bankAccountList.addAll(tempList);
       bankAccountListStore.addAll(tempList);
 
@@ -1193,9 +1186,9 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
       direction: Axis.horizontal,
       actionPane: const SlidableBehindActionPane(),
       actionExtentRatio: 0.25,
-      child: VerticalListItem(bankAccountTile),
       actions: listActionSlideActions(account: account),
       secondaryActions: listSecondaryActions(account: account),
+      child: VerticalListItem(bankAccountTile),
     );
   }
 
@@ -1245,8 +1238,9 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
             showToast(
                 message:
                     AppLocalization.of(context)!.accountDeletedSuccessfully);
-            if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+            if (bottomSheetStateSetterGlobal != null && bottomSheetMounted) {
               bottomSheetStateSetterGlobal!(() {});
+            }
             if (mounted) setState(() {});
             _onRefresh();
           } else {
@@ -1277,8 +1271,9 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
           final BankAccountBloc bankAccountBloc =
               Provider.of<BankAccountBloc>(context, listen: false);
           bankAccountBloc.bankAccount = accounts[0];
-          if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+          if (bottomSheetStateSetterGlobal != null && bottomSheetMounted) {
             bottomSheetStateSetterGlobal!(() {});
+          }
           if (mounted) setState(() {});
         });
         _onRefresh();

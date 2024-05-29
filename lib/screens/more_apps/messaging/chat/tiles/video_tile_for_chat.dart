@@ -196,7 +196,7 @@ class VideoTileForChat extends StatelessWidget {
                               errorWidget: imageErrorWidget,
                             ),
                           ),
-                          Container(
+                          SizedBox(
                             height: MediaQuery.of(context).size.width / 3,
                             width: MediaQuery.of(context).size.width / 1.8,
                             // height: MediaQuery.of(context).size.width / 2.2,
@@ -226,7 +226,7 @@ class VideoTileForChat extends StatelessWidget {
               ),
             ),
             if (isSend)
-              Container(
+              SizedBox(
                 width: 20,
                 child: isSend
                     ? Center(

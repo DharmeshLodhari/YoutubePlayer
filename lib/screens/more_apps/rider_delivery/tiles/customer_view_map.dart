@@ -163,9 +163,9 @@ class _CustomerViewMapState extends State<CustomerViewMap> {
       travelMode: TravelMode.driving,
     );
     if (result.points.isNotEmpty) {
-      result.points.forEach((PointLatLng point) {
+      for (var point in result.points) {
         polylineCoordinates.add(LatLng(point.latitude, point.longitude));
-      });
+      }
     } else {
       debugPrint(result.errorMessage);
     }
@@ -173,7 +173,7 @@ class _CustomerViewMapState extends State<CustomerViewMap> {
   }
 
   void generatePolyLineFromPoints(List<LatLng> polylineCoordinates) async {
-    final PolylineId id = const PolylineId("poly");
+    const PolylineId id = PolylineId("poly");
     final Polyline polyline = Polyline(
       polylineId: id,
       color: navyBlue,

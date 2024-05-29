@@ -2508,8 +2508,8 @@ extension StringCasingExtension on String {
 }
 
 bool canCashOut(int amount, int accountBalance) {
-  final int payoutCharge = 2500; //transaction charges in kobo
-  final int minimumAccountBalance =
+  const int payoutCharge = 2500; //transaction charges in kobo
+  const int minimumAccountBalance =
       1000; //the minimum a user's account can have at any time in kobo
   int totalDeduction = 0;
   int balanceAfterTransaction = 0;
@@ -2526,8 +2526,8 @@ bool canCashOut(int amount, int accountBalance) {
 }
 
 int displayPossibleCashOutAmount(int accountBalance) {
-  final int payoutCharge = 2500; //transaction charges in kobo
-  final int minimumAccountBalance =
+  const int payoutCharge = 2500; //transaction charges in kobo
+  const int minimumAccountBalance =
       1000; //the minimum a user's account can have at any time in kobo
   int possibleSendOutAmount = 0;
 

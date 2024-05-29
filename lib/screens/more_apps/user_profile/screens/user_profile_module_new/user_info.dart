@@ -151,7 +151,7 @@ class _UserInfoState extends State<UserInfo> {
   }
 
   Widget _buildProductList() {
-    return Container(
+    return SizedBox(
       height: 220,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -202,7 +202,7 @@ class _UserInfoState extends State<UserInfo> {
   }
 
   Widget _buildServiceList() {
-    return Container(
+    return SizedBox(
       height: 220,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

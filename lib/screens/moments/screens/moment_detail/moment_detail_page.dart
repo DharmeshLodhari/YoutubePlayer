@@ -53,8 +53,8 @@ class _MomentsDetailsScreenState extends State<MomentsDetailsScreen> {
   late PageController _verticalScrollPageViewCtrl;
   int? horizoallyPageIndex;
 
-  List<CachedVideoPlayerController> _videoPlayerControllers = [];
-  List<PhotoViewController> _photoViewController = [];
+  final List<CachedVideoPlayerController> _videoPlayerControllers = [];
+  final List<PhotoViewController> _photoViewController = [];
   // late List<String> videoUrls;
   // late List<File> cachedVideos;
 
@@ -255,16 +255,16 @@ class _MomentsDetailsScreenState extends State<MomentsDetailsScreen> {
 
   void clearAllMedia() {
     log("DISPOSING VIDEO CONTROLLERS:- ${_videoPlayerControllers.length} PHOTO CONTROLLERS:- ${_photoViewController.length}");
-    _videoPlayerControllers.forEach((element) {
+    for (var element in _videoPlayerControllers) {
       try {
         element.dispose();
       } catch (error) {}
-    });
-    _photoViewController.forEach((element) {
+    }
+    for (var element in _photoViewController) {
       try {
         element.dispose();
       } catch (error) {}
-    });
+    }
   }
 
   @override

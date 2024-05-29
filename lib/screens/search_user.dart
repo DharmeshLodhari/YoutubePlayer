@@ -27,10 +27,10 @@ class _SearchUserState extends State<SearchUser> {
   List<Widget> results = [];
   bool noItemInList = false;
   bool isSearchIsEmpty = true;
-  AuthService _auth = AuthService();
+  final AuthService _auth = AuthService();
   String autoCompleteSearchText = "";
 
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
   TextEditingController searchItemTextController = TextEditingController();
 
   void getList() async {
@@ -61,9 +61,9 @@ class _SearchUserState extends State<SearchUser> {
           results.clear();
 
           try {
-            tempList!.forEach((result) {
+            for (var result in tempList!) {
               results.add(getUserTile(result));
-            });
+            }
           } catch (e) {
             debugPrint(
                 'ERROR ADDING SEARCH RESULT TO LIST ::: ${e.toString()}');
@@ -260,20 +260,18 @@ class _SearchUserState extends State<SearchUser> {
               )
             : isLoading && results.isEmpty
                 ? buildLoadingIndicator(isLoading: isLoading)
-                : Container(
-                    child: ListView.builder(
-                      //+1 for progressbar
-                      itemCount: results.length + 1,
-                      itemBuilder: (BuildContext context, int index) {
-                        if (index == results.length) {
-                          return buildJumpingLoadingIndicator(
-                              isLoading: isLoading);
-                        } else {
-                          return results[index];
-                        }
-                      },
-                      controller: _scrollController,
-                    ),
+                : ListView.builder(
+                    //+1 for progressbar
+                    itemCount: results.length + 1,
+                    itemBuilder: (BuildContext context, int index) {
+                      if (index == results.length) {
+                        return buildJumpingLoadingIndicator(
+                            isLoading: isLoading);
+                      } else {
+                        return results[index];
+                      }
+                    },
+                    controller: _scrollController,
                   );
   }
 

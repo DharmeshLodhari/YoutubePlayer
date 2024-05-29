@@ -391,7 +391,7 @@ class _YarnBlogPostTileState extends State<YarnBlogPostTile> {
   }
 
   List<Widget> generateBottomSheetItem() {
-    List<Widget> list = [];
+    final List<Widget> list = [];
 
     list.add(
       bottomSheetItem(
@@ -399,7 +399,7 @@ class _YarnBlogPostTileState extends State<YarnBlogPostTile> {
         iconData: SlydoAppIcon.share,
         onTap: () {
           Navigator.pop(context);
-          var shareBody =
+          final shareBody =
               "https://slydo.co/store/${widget.post!.authorUsername}/blogs/${widget.post!.id}";
           Share.share(shareBody, subject: "${widget.post!.authorName}");
         },

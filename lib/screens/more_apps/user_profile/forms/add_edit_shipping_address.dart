@@ -93,11 +93,8 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
           Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high),
           Future.delayed(const Duration(seconds: 5), () => null),
         ]);
-        if (currentLocation == null) {
-          currentLocation = await Geolocator.getCurrentPosition(
-              desiredAccuracy: LocationAccuracy.high);
-          // currentLocation = await location.getLocation();
-        }
+        currentLocation ??= await Geolocator.getCurrentPosition(
+            desiredAccuracy: LocationAccuracy.high);
       }
       if (currentLocation != null) {
         currentLocationMarker = {
@@ -375,11 +372,11 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
               onTap: (LatLng location) {
                 _changeLocation(location);
               },
-              gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>[
-                new Factory<OneSequenceGestureRecognizer>(
-                  () => new EagerGestureRecognizer(),
+              gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>{
+                Factory<OneSequenceGestureRecognizer>(
+                  () => EagerGestureRecognizer(),
                 ),
-              ].toSet(),
+              },
             ),
     );
   }

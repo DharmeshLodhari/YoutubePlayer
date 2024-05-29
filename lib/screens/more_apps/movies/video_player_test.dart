@@ -100,8 +100,8 @@ class _ChewieDemoState extends State<ChewieDemo> {
                       });
                     },
                     child: const Padding(
-                      child: Text("Video 1"),
                       padding: EdgeInsets.symmetric(vertical: 16.0),
+                      child: Text("Video 1"),
                     ),
                   ),
                 ),
@@ -139,8 +139,8 @@ class _ChewieDemoState extends State<ChewieDemo> {
                       });
                     },
                     child: const Padding(
-                      child: Text("Android controls"),
                       padding: EdgeInsets.symmetric(vertical: 16.0),
+                      child: Text("Android controls"),
                     ),
                   ),
                 ),

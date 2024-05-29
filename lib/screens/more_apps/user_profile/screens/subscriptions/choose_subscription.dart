@@ -377,7 +377,7 @@ class _ChooseSubscriptionState extends State<ChooseSubscription> {
       }
     }).catchError((e) {
       Navigator.pop(context);
-      showToast(message: '${e.toString()}');
+      showToast(message: e.toString());
     });
   }
 
@@ -390,7 +390,7 @@ class _ChooseSubscriptionState extends State<ChooseSubscription> {
         .then((value) => _refreshUser())
         .catchError((e) {
       Navigator.pop(context);
-      showToast(message: '${e.toString()}');
+      showToast(message: e.toString());
     });
   }
 

@@ -163,7 +163,7 @@ class MomentVideoPlayerState extends State<MomentVideoPlayer> {
 
   Widget _buildBackground() {
     debugPrint("poster ${widget.momentsModel.mediaPoster}");
-    if (widget.momentsModel.mediaPoster != null)
+    if (widget.momentsModel.mediaPoster != null) {
       return CachedNetworkImage(
         imageUrl: widget.momentsModel.mediaPoster!,
         fit: BoxFit.fitWidth,
@@ -172,22 +172,24 @@ class MomentVideoPlayerState extends State<MomentVideoPlayer> {
           return Container(color: black);
         },
       );
-    else
+    } else {
       return Container(
         decoration: BoxDecoration(
           color: black,
           borderRadius: BorderRadius.circular(10),
         ),
       );
+    }
   }
 
   showMediaIconFor2Seconds() {
     setState(() => showMediaIcon = true);
     Future.delayed(const Duration(seconds: 2), () {
-      if (mounted)
+      if (mounted) {
         setState(() {
           showMediaIcon = false;
         });
+      }
     });
   }
 }

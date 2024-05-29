@@ -55,12 +55,12 @@ class _PickStateWidgetState extends State<PickStateWidget> {
     disableDropDown = true;
     if (mounted) setState(() {});
     UserAuth().getStates().then((value) {
-      value.forEach((element) {
+      for (var element in value) {
         states.add(element.name!);
         debugPrint('Fola states::: ${element.name!}');
 
         statesMap[element.id!] = element.name!;
-      });
+      }
 
       pickedStateValue = widget.initialStateValue ?? statesMap[stateId];
 

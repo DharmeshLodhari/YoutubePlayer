@@ -45,9 +45,9 @@ class _EnvelopeTileForChatState extends State<EnvelopeTileForChat> {
 
     // customerProfile = CustomerProfile.fromJson(data);
 
-    bool isSend = widget.message!["author"] == userBloc.user.userName;
+    final bool isSend = widget.message!["author"] == userBloc.user.userName;
 
-    Map<String, dynamic>? message = widget.message;
+    final Map<String, dynamic>? message = widget.message;
 
     return Column(
       children: [
@@ -267,7 +267,7 @@ class _EnvelopeTileForChatState extends State<EnvelopeTileForChat> {
       onTap: () {
         if (isEmptyEnvelope) {
           if (envelope.toCustomer == userBloc.user.userName) {
-            ChatConversation _chatConversation =
+            final ChatConversation _chatConversation =
                 ChatConversation.fromChatConversation(widget.chatConversation!);
 
             if (widget.chatConversation!.isGroupConversation!) {

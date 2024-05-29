@@ -356,7 +356,7 @@ class _UserAddressProductServiceState extends State<UserAddressProductService> {
       UserAuth().addUserAddress(data).then((value) {
         showToast(
             message:
-                AppLocalization.of(context)!.addressAddedSuccessFully + " !!!");
+                "${AppLocalization.of(context)!.addressAddedSuccessFully} !!!");
         Navigator.pop(context);
         Navigator.pop(context);
       }).catchError((e) {

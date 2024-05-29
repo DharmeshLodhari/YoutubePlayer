@@ -17,7 +17,7 @@ class PlayerWithControls extends StatelessWidget {
     final ChewieController chewieController = ChewieController.of(context);
 
     return Center(
-      child: Container(
+      child: SizedBox(
         width: MediaQuery.of(context).size.width,
         child: AspectRatio(
           aspectRatio:

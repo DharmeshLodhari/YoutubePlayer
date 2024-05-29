@@ -165,7 +165,7 @@ class _SelectAddressForTaxiState extends State<SelectAddressForTaxi> {
       borderOnForeground: true,
       elevation: 3,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      child: Container(
+      child: SizedBox(
         width: double.infinity,
         child: Container(
           padding: const EdgeInsets.only(bottom: 16, left: 16, right: 16),

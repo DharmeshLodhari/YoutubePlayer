@@ -74,15 +74,15 @@ List<CustomSmartTextElement> _smartify(
     final words = lines[i].split(' ');
     for (final word in words) {
       if (link && _linkRegex.hasMatch(word) && !word.contains("..")) {
-        span.add(SlydoYarnLinks(word + " "));
+        span.add(SlydoYarnLinks("$word "));
       } else if (hashTag &&
           hashTagRegExp.hasMatch(word) &&
           !word.contains("..")) {
-        span.add(HashTagElement(word + " "));
+        span.add(HashTagElement("$word "));
       } else if (at && atSignRegExp.hasMatch(word) && !word.contains("..")) {
-        span.add(AtElement(word + " "));
+        span.add(AtElement("$word "));
       } else {
-        span.add(TextElement(word + " "));
+        span.add(TextElement("$word "));
       }
     }
     if (i != lines.length - 1) {

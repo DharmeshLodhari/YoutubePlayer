@@ -55,19 +55,19 @@ class InvoiceModel {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['amount'] = this.amount;
-    data['created_at'] = this.createdAt;
-    data['currency'] = this.currency;
-    data['due_date'] = this.dueDate;
-    data['from_customer'] = this.fromCustomer;
-    data['from_customer_avatar'] = this.fromCustomerAvatar;
-    data['id'] = this.id;
-    data['invoice_date'] = this.invoiceDate;
-    data['status'] = this.status;
-    data['to_customer'] = this.toCustomer;
-    data['to_customer_avatar'] = this.toCustomerAvatar;
-    if (this.items != null) {
-      data['items'] = this.items!.map((v) => v.toJson()).toList();
+    data['amount'] = amount;
+    data['created_at'] = createdAt;
+    data['currency'] = currency;
+    data['due_date'] = dueDate;
+    data['from_customer'] = fromCustomer;
+    data['from_customer_avatar'] = fromCustomerAvatar;
+    data['id'] = id;
+    data['invoice_date'] = invoiceDate;
+    data['status'] = status;
+    data['to_customer'] = toCustomer;
+    data['to_customer_avatar'] = toCustomerAvatar;
+    if (items != null) {
+      data['items'] = items!.map((v) => v.toJson()).toList();
     }
     return data;
   }

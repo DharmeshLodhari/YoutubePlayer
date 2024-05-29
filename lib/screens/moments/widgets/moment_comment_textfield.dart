@@ -697,7 +697,7 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
       if (productOrServiceNext != null && !isItemLoading) {
         isItemLoading = true;
 
-        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted) {
+        if (bottomSheetStateSetterGlobal != null && bottomSheetMounted) {
           bottomSheetStateSetterGlobal!(() {});
         }
         if (mounted) setState(() {});
@@ -715,12 +715,12 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
         final List tempList = result['results'];
 
         isItemLoading = false;
-        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted) {
+        if (bottomSheetStateSetterGlobal != null && bottomSheetMounted) {
           bottomSheetStateSetterGlobal!(() {});
         }
         if (mounted) setState(() {});
 
-        tempList.forEach((item) {
+        for (var item in tempList) {
           if (isProductSearch) {
             searchedProductAndService.add(Product.fromJson(item));
           } else if (isServiceSearch) {
@@ -730,7 +730,7 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
           } else if (isUserSearch) {
             searchedProductAndService.add(CustomerProfile.fromJson(item));
           }
-        });
+        }
 
         if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted) {
           bottomSheetStateSetterGlobal!(() {});
@@ -749,26 +749,16 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
 
   String getSearchUrl() {
     if (isProductSearch) {
-      return AppConfig.baseUrl +
-          "/api/v1/search/products/?search=name__wildcard|*" +
-          searchItemTextController!.text +
-          "*";
+      return "${AppConfig.baseUrl}/api/v1/search/products/?search=name__wildcard|*${searchItemTextController!.text}*";
     }
     if (isServiceSearch) {
-      return AppConfig.baseUrl +
-          "/api/v1/search/services/?search=name__wildcard|*" +
-          searchItemTextController!.text +
-          "*";
+      return "${AppConfig.baseUrl}/api/v1/search/services/?search=name__wildcard|*${searchItemTextController!.text}*";
     }
     if (isUserSearch) {
-      return AppConfig.baseUrl +
-          "/api/v1/search/users/?search=" +
-          searchItemTextController!.text;
+      return "${AppConfig.baseUrl}/api/v1/search/users/?search=${searchItemTextController!.text}";
     }
     if (isBlogSearch) {
-      return AppConfig.baseUrl +
-          "/api/v1/social/posts/public/?search=" +
-          searchItemTextController!.text;
+      return "${AppConfig.baseUrl}/api/v1/social/posts/public/?search=${searchItemTextController!.text}";
     }
     return "";
   }
@@ -976,7 +966,7 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
   }
 
   Widget _buildAddImages() {
-    return Container(
+    return SizedBox(
       height: 100,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
@@ -1046,7 +1036,7 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
   }
 
   Widget showImage(int index) {
-    return Container(
+    return SizedBox(
       height: 100,
       child: Stack(
         children: <Widget>[
@@ -1107,7 +1097,7 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
     );
   }
 
-  pickFileFromMedia() async {
+  Future<void> pickFileFromMedia() async {
     // List<Media>? res = await ImagesPicker.pick(
     //   count: 4,
     //   pickType: PickType.all,
@@ -1330,7 +1320,7 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
     );
   }
 
-  sendMessageBtn() {
+  Widget sendMessageBtn() {
     return widget.isLoading!
         ? Padding(
             padding: const EdgeInsets.only(right: 12.0, left: 4.0),
@@ -1355,7 +1345,7 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
           );
   }
 
-  textMessageField() {
+  Container textMessageField() {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
@@ -1819,7 +1809,7 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
                       imageUrl: _gifs[index].images!.previewGif!.url!,
                       fit: BoxFit.fill,
                       errorWidget: imageErrorWidget,
-                      placeholder: (context, url) => Container(
+                      placeholder: (context, url) => SizedBox(
                           width: MediaQuery.of(context).size.width / 2,
                           child: Center(child: CircularLoadingIndicator())),
                     ),

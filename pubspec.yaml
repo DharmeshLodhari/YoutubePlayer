@@ -142,7 +142,7 @@ dependencies:
   jumping_dot: ^0.0.6
   video_player: ^2.6.0
   geolocator: ^11.0.0
-
+  flutter_gen: ^5.4.0
 
 flutter_icons:
   android: "launcher_icon"

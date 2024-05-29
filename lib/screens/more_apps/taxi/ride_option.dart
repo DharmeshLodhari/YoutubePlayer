@@ -202,179 +202,174 @@ class _RideOptionState extends State<RideOption> {
 
   Widget bookingConfirmation() {
     return Container(
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Column(
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Image.asset(
-                      selectedRide!["image"],
-                      height: 90,
-                      width: 120,
-                      fit: BoxFit.fitWidth,
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    selectedRide!["image"],
+                    height: 90,
+                    width: 120,
+                    fit: BoxFit.fitWidth,
+                  ),
+                  Text(
+                    selectedRide!["name"],
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
                     ),
-                    Text(
-                      selectedRide!["name"],
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
+                  ),
+                  const SizedBox(
+                    height: 12,
+                  ),
+                ],
+              ),
+              const SizedBox(
+                width: 20,
+              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Row(
+                    children: [
+                      const Text(
+                        "₦",
+                        style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700,
+                            fontFamily: "Inter"),
                       ),
-                    ),
-                    const SizedBox(
-                      height: 12,
-                    ),
-                  ],
-                ),
-                const SizedBox(
-                  width: 20,
-                ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Row(
-                      children: [
-                        const Text(
-                          "₦",
-                          style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w700,
-                              fontFamily: "Inter"),
-                        ),
-                        Text(
-                          "1000 - 1200",
-                          style: TextStyle(
-                              fontSize: 26,
-                              fontWeight: FontWeight.w700,
-                              color: blackFont),
-                        )
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 8,
-                    ),
-                    Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 2),
-                        decoration: BoxDecoration(
-                            color: darkGrey.withAlpha(100),
-                            borderRadius: BorderRadius.circular(100)),
-                        child: const Text(
-                          "3 mins",
-                          style: TextStyle(
-                              fontSize: 14, fontWeight: FontWeight.w600),
-                        )),
-                  ],
-                )
-              ],
-            ),
-            submitButton(),
-          ],
-        ),
+                      Text(
+                        "1000 - 1200",
+                        style: TextStyle(
+                            fontSize: 26,
+                            fontWeight: FontWeight.w700,
+                            color: blackFont),
+                      )
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 8,
+                  ),
+                  Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 2),
+                      decoration: BoxDecoration(
+                          color: darkGrey.withAlpha(100),
+                          borderRadius: BorderRadius.circular(100)),
+                      child: const Text(
+                        "3 mins",
+                        style: TextStyle(
+                            fontSize: 14, fontWeight: FontWeight.w600),
+                      )),
+                ],
+              )
+            ],
+          ),
+          submitButton(),
+        ],
       ),
     );
   }
 
   Widget getRideSelectionListView() {
-    return Container(
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Row(
-          children: rideOption.map((ride) {
-            return Container(
-              padding: const EdgeInsets.only(right: 8, bottom: 8),
-              child: GestureDetector(
-                onTap: () {
-                  if (ride["name"] == "Car") {
-                    toggleCarOption = !toggleCarOption;
-                    if (mounted) setState(() {});
-                  } else {
-                    isRideSelected = true;
-                    selectedRide = ride;
-                    taxiBloc.rideDetail = ride;
-                    if (mounted) setState(() {});
-                  }
-                },
-                child: Card(
-                  shadowColor: dividerColor,
-                  elevation: 1,
-                  borderOnForeground: true,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15)),
-                  child: Container(
-                    width: MediaQuery.of(context).size.width / 3.5,
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                    child: Column(
-                      children: [
-                        Image.asset(
-                          ride["image"],
-                          height: 50,
-                          fit: BoxFit.fill,
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Text(
-                          ride["name"],
-                          style: const TextStyle(
-                              fontSize: 14, fontWeight: FontWeight.w400),
-                        ),
-                        const SizedBox(
-                          height: 8,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Text(
-                              "₦",
-                              style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w700,
-                                  fontFamily: "Inter"),
-                            ),
-                            Text(
-                              ride["price"],
-                              style: const TextStyle(
-                                  fontSize: 18, fontWeight: FontWeight.w700),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 8,
-                        ),
-                        Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 2),
-                            decoration: BoxDecoration(
-                                color: darkGrey.withAlpha(100),
-                                borderRadius: BorderRadius.circular(100)),
-                            child: Text(
-                              ride["time"],
-                              style: const TextStyle(
-                                  fontSize: 14, fontWeight: FontWeight.w600),
-                            )),
-                      ],
-                    ),
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: rideOption.map((ride) {
+          return Container(
+            padding: const EdgeInsets.only(right: 8, bottom: 8),
+            child: GestureDetector(
+              onTap: () {
+                if (ride["name"] == "Car") {
+                  toggleCarOption = !toggleCarOption;
+                  if (mounted) setState(() {});
+                } else {
+                  isRideSelected = true;
+                  selectedRide = ride;
+                  taxiBloc.rideDetail = ride;
+                  if (mounted) setState(() {});
+                }
+              },
+              child: Card(
+                shadowColor: dividerColor,
+                elevation: 1,
+                borderOnForeground: true,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15)),
+                child: Container(
+                  width: MediaQuery.of(context).size.width / 3.5,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                  child: Column(
+                    children: [
+                      Image.asset(
+                        ride["image"],
+                        height: 50,
+                        fit: BoxFit.fill,
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Text(
+                        ride["name"],
+                        style: const TextStyle(
+                            fontSize: 14, fontWeight: FontWeight.w400),
+                      ),
+                      const SizedBox(
+                        height: 8,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text(
+                            "₦",
+                            style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w700,
+                                fontFamily: "Inter"),
+                          ),
+                          Text(
+                            ride["price"],
+                            style: const TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.w700),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 8,
+                      ),
+                      Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 2),
+                          decoration: BoxDecoration(
+                              color: darkGrey.withAlpha(100),
+                              borderRadius: BorderRadius.circular(100)),
+                          child: Text(
+                            ride["time"],
+                            style: const TextStyle(
+                                fontSize: 14, fontWeight: FontWeight.w600),
+                          )),
+                    ],
                   ),
                 ),
               ),
-            );
-          }).toList(),
-        ),
+            ),
+          );
+        }).toList(),
       ),
     );
   }
 
   Widget getCarSelectionListView() {
-    return Container(
-        child: SingleChildScrollView(
+    return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Row(
         children: carOption.map((car) {
@@ -452,7 +447,7 @@ class _RideOptionState extends State<RideOption> {
           );
         }).toList(),
       ),
-    ));
+    );
   }
 
   Widget submitButton() {

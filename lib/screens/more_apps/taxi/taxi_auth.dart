@@ -11,8 +11,8 @@ class TaxiAuth extends AuthService {
   Future<List> searchPlaces({String? place = ""}) async {
     String url = "https://maps.googleapis.com/maps/api/place/textsearch/json?";
 
-    url = url + "query=$place";
-    url = url + "&key=${AppConfig.googleMapApiKey}";
+    url = "${url}query=$place";
+    url = "$url&key=${AppConfig.googleMapApiKey}";
 
     url = Uri.encodeFull(url);
     final headers = await getAuthHeaders();
@@ -26,9 +26,9 @@ class TaxiAuth extends AuthService {
 
       final List places = responseBody['results'];
 
-      places.forEach((element) {
+      for (var element in places) {
         placesModal.add(PlaceModal.fromJson(element));
-      });
+      }
 
       return placesModal;
     } else {
@@ -42,9 +42,9 @@ class TaxiAuth extends AuthService {
       {required LatLng origin, required LatLng destination}) async {
     String url = "https://maps.googleapis.com/maps/api/directions/json?";
 
-    url = url + "origin=${origin.latitude},${origin.longitude}";
-    url = url + "&destination=${destination.latitude},${destination.longitude}";
-    url = url + "&key=${AppConfig.googleMapApiKey}";
+    url = "${url}origin=${origin.latitude},${origin.longitude}";
+    url = "$url&destination=${destination.latitude},${destination.longitude}";
+    url = "$url&key=${AppConfig.googleMapApiKey}";
 
     url = Uri.encodeFull(url);
     final headers = await getAuthHeaders();
@@ -847,9 +847,9 @@ class TaxiAuth extends AuthService {
       }
     ];
 
-    fakeJson.forEach((element) {
+    for (var element in fakeJson) {
       places.add(PlaceModal.fromJson(element));
-    });
+    }
 
     return places;
   }

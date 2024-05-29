@@ -522,10 +522,11 @@ class _AddInvoiceState extends State<AddInvoice> {
           _payee = userFound;
           isValidPayee = _payee!.userName != userBloc.user.userName;
           _recipientController.text = _payee!.userName!;
-          if (mounted)
+          if (mounted) {
             setState(() {
               errorMessage = "";
             });
+          }
         }
       },
     );
@@ -628,25 +629,23 @@ class _AddInvoiceState extends State<AddInvoice> {
             },
             child: CustomizedDropDownField(
               title: "Invoice date",
-              child: Container(
-                child: ListTile(
-                  dense: true,
-                  title: Text(
-                    formatDateInDigit(invoiceDate),
-                    style: TextStyle(
-                      color: blackFont,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
-                    ),
-                    overflow: TextOverflow.fade,
-                    softWrap: false,
-                    maxLines: 1,
+              child: ListTile(
+                dense: true,
+                title: Text(
+                  formatDateInDigit(invoiceDate),
+                  style: TextStyle(
+                    color: blackFont,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
                   ),
-                  trailing: Icon(
-                    SlydoAppIcon.date,
-                    size: 16,
-                    color: darkGrey,
-                  ),
+                  overflow: TextOverflow.fade,
+                  softWrap: false,
+                  maxLines: 1,
+                ),
+                trailing: Icon(
+                  SlydoAppIcon.date,
+                  size: 16,
+                  color: darkGrey,
                 ),
               ),
             ),
@@ -671,25 +670,23 @@ class _AddInvoiceState extends State<AddInvoice> {
             },
             child: CustomizedDropDownField(
               title: "Due date",
-              child: Container(
-                child: ListTile(
-                  dense: true,
-                  title: Text(
-                    formatDateInDigit(dueDate),
-                    style: TextStyle(
-                      color: blackFont,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
-                    ),
-                    overflow: TextOverflow.fade,
-                    softWrap: false,
-                    maxLines: 1,
+              child: ListTile(
+                dense: true,
+                title: Text(
+                  formatDateInDigit(dueDate),
+                  style: TextStyle(
+                    color: blackFont,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
                   ),
-                  trailing: Icon(
-                    SlydoAppIcon.date,
-                    size: 16,
-                    color: darkGrey,
-                  ),
+                  overflow: TextOverflow.fade,
+                  softWrap: false,
+                  maxLines: 1,
+                ),
+                trailing: Icon(
+                  SlydoAppIcon.date,
+                  size: 16,
+                  color: darkGrey,
                 ),
               ),
             ),

@@ -475,7 +475,7 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
               key: ValueKey("${linkToBePreview}233"),
               url: linkToBePreview!,
               builder: (info) {
-                if (info == null)
+                if (info == null) {
                   return InkWell(
                     onTap: () {
                       launchUrl(Uri.parse(linkToBePreview!));
@@ -491,6 +491,7 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
                       ),
                     ),
                   );
+                }
                 if (info is WebImageInfo) {
                   return CachedNetworkImage(
                     imageUrl: info.image!,
@@ -500,11 +501,12 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
                 }
 
                 final WebInfo webInfo = info as WebInfo;
-                if (!WebAnalyzer.isNotEmpty(webInfo.title))
+                if (!WebAnalyzer.isNotEmpty(webInfo.title)) {
                   return const SizedBox(
                     height: 0,
                     width: 0,
                   );
+                }
                 return Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),

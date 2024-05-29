@@ -28,13 +28,13 @@ GlobalKey tutorialSettingsKey = GlobalKey();
 
 class AppTutorialController {
   static final AppTutorialController _instance =
-      new AppTutorialController.internal();
+      AppTutorialController.internal();
 
   factory AppTutorialController() => _instance;
 
   AppTutorialController.internal();
 
-  List<TargetFocus> _targets = [];
+  final List<TargetFocus> _targets = [];
 
   TutorialCoachMark? tutorial;
 
@@ -135,28 +135,26 @@ class AppTutorialController {
         contents: [
           TargetContent(
               align: ContentAlign.top,
-              child: Container(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    const Text(
-                      "Make Payment",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          fontSize: 20.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  const Text(
+                    "Make Payment",
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        fontSize: 20.0),
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.only(top: 10.0),
+                    child: Text(
+                      "Click here to initiate payment.",
+                      style: TextStyle(color: Colors.white),
                     ),
-                    const Padding(
-                      padding: EdgeInsets.only(top: 10.0),
-                      child: Text(
-                        "Click here to initiate payment.",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                    nextButton()
-                  ],
-                ),
+                  ),
+                  nextButton()
+                ],
               )),
         ]);
   }
@@ -170,28 +168,26 @@ class AppTutorialController {
         contents: [
           TargetContent(
               align: ContentAlign.top,
-              child: Container(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    const Text(
-                      "Payment Request",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          fontSize: 20.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  const Text(
+                    "Payment Request",
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        fontSize: 20.0),
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.only(top: 10.0),
+                    child: Text(
+                      "Click here to initiate payment request.",
+                      style: TextStyle(color: Colors.white),
                     ),
-                    const Padding(
-                      padding: EdgeInsets.only(top: 10.0),
-                      child: Text(
-                        "Click here to initiate payment request.",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                    nextButton()
-                  ],
-                ),
+                  ),
+                  nextButton()
+                ],
               ))
         ]);
   }
@@ -206,28 +202,26 @@ class AppTutorialController {
         contents: [
           TargetContent(
               align: ContentAlign.bottom,
-              child: Container(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    const Text(
-                      "User QR Code",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          fontSize: 20.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  const Text(
+                    "User QR Code",
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        fontSize: 20.0),
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.only(top: 10.0),
+                    child: Text(
+                      "The current user's QR code.",
+                      style: TextStyle(color: Colors.white),
                     ),
-                    const Padding(
-                      padding: EdgeInsets.only(top: 10.0),
-                      child: Text(
-                        "The current user's QR code.",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                    nextButton()
-                  ],
-                ),
+                  ),
+                  nextButton()
+                ],
               ))
         ]);
   }
@@ -242,28 +236,26 @@ class AppTutorialController {
         contents: [
           TargetContent(
               align: ContentAlign.top,
-              child: Container(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    const Text(
-                      "Transactions",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          fontSize: 20.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  const Text(
+                    "Transactions",
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        fontSize: 20.0),
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.only(top: 10.0),
+                    child: Text(
+                      "Access all your completed and pending transactions.",
+                      style: TextStyle(color: Colors.white),
                     ),
-                    const Padding(
-                      padding: EdgeInsets.only(top: 10.0),
-                      child: Text(
-                        "Access all your completed and pending transactions.",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                    nextButton()
-                  ],
-                ),
+                  ),
+                  nextButton()
+                ],
               ))
         ]);
   }
@@ -278,28 +270,26 @@ class AppTutorialController {
         contents: [
           TargetContent(
               align: ContentAlign.top,
-              child: Container(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    const Text(
-                      "Wallet",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          fontSize: 20.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  const Text(
+                    "Wallet",
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        fontSize: 20.0),
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.only(top: 10.0),
+                    child: Text(
+                      "Fund your Slydo account with direct transfers or debit card.",
+                      style: TextStyle(color: Colors.white),
                     ),
-                    const Padding(
-                      padding: EdgeInsets.only(top: 10.0),
-                      child: Text(
-                        "Fund your Slydo account with direct transfers or debit card.",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                    nextButton()
-                  ],
-                ),
+                  ),
+                  nextButton()
+                ],
               ))
         ]);
   }
@@ -314,28 +304,26 @@ class AppTutorialController {
         contents: [
           TargetContent(
               align: ContentAlign.left,
-              child: Container(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    const Text(
-                      "Search",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          fontSize: 20.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  const Text(
+                    "Search",
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        fontSize: 20.0),
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.only(top: 10.0),
+                    child: Text(
+                      "Click here to search for users, products and services.",
+                      style: TextStyle(color: Colors.white),
                     ),
-                    const Padding(
-                      padding: EdgeInsets.only(top: 10.0),
-                      child: Text(
-                        "Click here to search for users, products and services.",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                    nextButton()
-                  ],
-                ),
+                  ),
+                  nextButton()
+                ],
               ))
         ]);
   }
@@ -350,28 +338,26 @@ class AppTutorialController {
       contents: [
         TargetContent(
             align: ContentAlign.bottom,
-            child: Container(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  const Text(
-                    "Shopping Cart",
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                        fontSize: 20.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                const Text(
+                  "Shopping Cart",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      fontSize: 20.0),
+                ),
+                const Padding(
+                  padding: EdgeInsets.only(top: 10.0),
+                  child: Text(
+                    "Click here to view your shopping cart.",
+                    style: TextStyle(color: Colors.white),
                   ),
-                  const Padding(
-                    padding: EdgeInsets.only(top: 10.0),
-                    child: Text(
-                      "Click here to view your shopping cart.",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                  nextButton()
-                ],
-              ),
+                ),
+                nextButton()
+              ],
             ))
       ],
     );
@@ -387,28 +373,26 @@ class AppTutorialController {
       contents: [
         TargetContent(
           align: ContentAlign.top,
-          child: Container(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                const Text(
-                  "Yarn",
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      fontSize: 20.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              const Text(
+                "Yarn",
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    fontSize: 20.0),
+              ),
+              const Padding(
+                padding: EdgeInsets.only(top: 10.0),
+                child: Text(
+                  "Connect with others and stay up to date on worldwide trends.",
+                  style: TextStyle(color: Colors.white),
                 ),
-                const Padding(
-                  padding: EdgeInsets.only(top: 10.0),
-                  child: Text(
-                    "Connect with others and stay up to date on worldwide trends.",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-                nextButton()
-              ],
-            ),
+              ),
+              nextButton()
+            ],
           ),
         )
       ],
@@ -425,28 +409,26 @@ class AppTutorialController {
       contents: [
         TargetContent(
           align: ContentAlign.left,
-          child: Container(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                const Text(
-                  "QR Code Scanner",
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      fontSize: 20.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              const Text(
+                "QR Code Scanner",
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    fontSize: 20.0),
+              ),
+              const Padding(
+                padding: EdgeInsets.only(top: 10.0),
+                child: Text(
+                  "Click here to scan slydo QR codes.",
+                  style: TextStyle(color: Colors.white),
                 ),
-                const Padding(
-                  padding: EdgeInsets.only(top: 10.0),
-                  child: Text(
-                    "Click here to scan slydo QR codes.",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-                nextButton()
-              ],
-            ),
+              ),
+              nextButton()
+            ],
           ),
         )
       ],
@@ -463,28 +445,26 @@ class AppTutorialController {
       contents: [
         TargetContent(
           align: ContentAlign.top,
-          child: Container(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                const Text(
-                  "Chat",
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      fontSize: 20.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              const Text(
+                "Chat",
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    fontSize: 20.0),
+              ),
+              const Padding(
+                padding: EdgeInsets.only(top: 10.0),
+                child: Text(
+                  "View and exchange messages with buyers, sellers and friends.",
+                  style: TextStyle(color: Colors.white),
                 ),
-                const Padding(
-                  padding: EdgeInsets.only(top: 10.0),
-                  child: Text(
-                    "View and exchange messages with buyers, sellers and friends.",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-                nextButton()
-              ],
-            ),
+              ),
+              nextButton()
+            ],
           ),
         )
       ],
@@ -501,28 +481,26 @@ class AppTutorialController {
       contents: [
         TargetContent(
           align: ContentAlign.left,
-          child: Container(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                const Text(
-                  "Settings",
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      fontSize: 20.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              const Text(
+                "Settings",
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    fontSize: 20.0),
+              ),
+              const Padding(
+                padding: EdgeInsets.only(top: 10.0),
+                child: Text(
+                  "Control and manage every account function.",
+                  style: TextStyle(color: Colors.white),
                 ),
-                const Padding(
-                  padding: EdgeInsets.only(top: 10.0),
-                  child: Text(
-                    "Control and manage every account function.",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-                nextButton()
-              ],
-            ),
+              ),
+              nextButton()
+            ],
           ),
         )
       ],
@@ -539,28 +517,26 @@ class AppTutorialController {
       contents: [
         TargetContent(
           align: ContentAlign.top,
-          child: Container(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                const Text(
-                  "Super Store",
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      fontSize: 20.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              const Text(
+                "Super Store",
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    fontSize: 20.0),
+              ),
+              const Padding(
+                padding: EdgeInsets.only(top: 10.0),
+                child: Text(
+                  "Check out an unlimited variety of goods available for sale.",
+                  style: TextStyle(color: Colors.white),
                 ),
-                const Padding(
-                  padding: EdgeInsets.only(top: 10.0),
-                  child: Text(
-                    "Check out an unlimited variety of goods available for sale.",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-                nextButton()
-              ],
-            ),
+              ),
+              nextButton()
+            ],
           ),
         )
       ],
@@ -577,28 +553,26 @@ class AppTutorialController {
       contents: [
         TargetContent(
           align: ContentAlign.top,
-          child: Container(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                const Text(
-                  "Moment",
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      fontSize: 20.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              const Text(
+                "Moment",
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    fontSize: 20.0),
+              ),
+              const Padding(
+                padding: EdgeInsets.only(top: 10.0),
+                child: Text(
+                  "Share and view unforgettable memories.",
+                  style: TextStyle(color: Colors.white),
                 ),
-                const Padding(
-                  padding: EdgeInsets.only(top: 10.0),
-                  child: Text(
-                    "Share and view unforgettable memories.",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-                nextButton()
-              ],
-            ),
+              ),
+              nextButton()
+            ],
           ),
         )
       ],
@@ -615,28 +589,26 @@ class AppTutorialController {
       contents: [
         TargetContent(
           align: ContentAlign.top,
-          child: Container(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                const Text(
-                  "Orders",
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      fontSize: 20.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              const Text(
+                "Orders",
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    fontSize: 20.0),
+              ),
+              const Padding(
+                padding: EdgeInsets.only(top: 10.0),
+                child: Text(
+                  "View all open and closed orders.",
+                  style: TextStyle(color: Colors.white),
                 ),
-                const Padding(
-                  padding: EdgeInsets.only(top: 10.0),
-                  child: Text(
-                    "View all open and closed orders.",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-                nextButton()
-              ],
-            ),
+              ),
+              nextButton()
+            ],
           ),
         )
       ],
@@ -653,28 +625,26 @@ class AppTutorialController {
       contents: [
         TargetContent(
           align: ContentAlign.top,
-          child: Container(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                const Text(
-                  "Inbox",
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      fontSize: 20.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              const Text(
+                "Inbox",
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    fontSize: 20.0),
+              ),
+              const Padding(
+                padding: EdgeInsets.only(top: 10.0),
+                child: Text(
+                  "Check all sent and received messages.",
+                  style: TextStyle(color: Colors.white),
                 ),
-                const Padding(
-                  padding: EdgeInsets.only(top: 10.0),
-                  child: Text(
-                    "Check all sent and received messages.",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-                nextButton()
-              ],
-            ),
+              ),
+              nextButton()
+            ],
           ),
         )
       ],
@@ -691,28 +661,26 @@ class AppTutorialController {
       contents: [
         TargetContent(
           align: ContentAlign.top,
-          child: Container(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                const Text(
-                  "Blogs",
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      fontSize: 20.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              const Text(
+                "Blogs",
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    fontSize: 20.0),
+              ),
+              const Padding(
+                padding: EdgeInsets.only(top: 10.0),
+                child: Text(
+                  "Discover insightful write upd on your preferred topics and many more.",
+                  style: TextStyle(color: Colors.white),
                 ),
-                const Padding(
-                  padding: EdgeInsets.only(top: 10.0),
-                  child: Text(
-                    "Discover insightful write upd on your preferred topics and many more.",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-                nextButton()
-              ],
-            ),
+              ),
+              nextButton()
+            ],
           ),
         )
       ],
@@ -729,28 +697,26 @@ class AppTutorialController {
       contents: [
         TargetContent(
           align: ContentAlign.top,
-          child: Container(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                const Text(
-                  "Services",
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      fontSize: 20.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              const Text(
+                "Services",
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    fontSize: 20.0),
+              ),
+              const Padding(
+                padding: EdgeInsets.only(top: 10.0),
+                child: Text(
+                  "Take a look at all services offered by Slydo users at the best prices.",
+                  style: TextStyle(color: Colors.white),
                 ),
-                const Padding(
-                  padding: EdgeInsets.only(top: 10.0),
-                  child: Text(
-                    "Take a look at all services offered by Slydo users at the best prices.",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-                nextButton()
-              ],
-            ),
+              ),
+              nextButton()
+            ],
           ),
         )
       ],

@@ -163,8 +163,7 @@ class _StartupScreenState extends State<StartupScreen> {
   }
 
   Widget resetDeviceField() {
-    return Container(
-        child: GestureDetector(
+    return GestureDetector(
       onTap: () {
         // Navigator.of(context).pushNamed("/verify-reset-device-otp");
         Navigator.of(context).pushNamed(Routes.RESET_DEVICE);
@@ -174,7 +173,7 @@ class _StartupScreenState extends State<StartupScreen> {
         style: TextStyle(
             fontSize: 14, fontWeight: FontWeight.w600, color: mateRed),
       ),
-    ));
+    );
   }
 
   Widget loginButton() {
@@ -193,12 +192,10 @@ class _StartupScreenState extends State<StartupScreen> {
   }
 
   Widget appIcon() {
-    return Container(
-      child: Image.asset(
-        'assets/images/app_logo.png',
-        height: MediaQuery.of(context).size.height / 10,
-        frameBuilder: imageFrameBuilder,
-      ),
+    return Image.asset(
+      'assets/images/app_logo.png',
+      height: MediaQuery.of(context).size.height / 10,
+      frameBuilder: imageFrameBuilder,
     );
   }
 
@@ -277,43 +274,41 @@ class _StartupScreenState extends State<StartupScreen> {
           ),
           Expanded(
               flex: 2,
-              child: Container(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    const Expanded(
-                      flex: 1,
-                      child: SizedBox(
-                        height: 10,
-                      ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  const Expanded(
+                    flex: 1,
+                    child: SizedBox(
+                      height: 10,
                     ),
-                    const Text(
-                      "SCAN QR CODE",
+                  ),
+                  const Text(
+                    "SCAN QR CODE",
+                    textAlign: TextAlign.center,
+                    style:
+                        TextStyle(fontSize: 22.0, fontWeight: FontWeight.w700),
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 4.0.w),
+                    child: Text(
+                      "Scan QR Code to make payment. Easy and secure.",
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                          fontSize: 22.0, fontWeight: FontWeight.w700),
+                          fontSize: 14.0, color: darkGrey, height: 1.5),
                     ),
-                    const SizedBox(
-                      height: 20,
+                  ),
+                  const Expanded(
+                    flex: 2,
+                    child: SizedBox(
+                      height: 10,
                     ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 4.0.w),
-                      child: Text(
-                        "Scan QR Code to make payment. Easy and secure.",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            fontSize: 14.0, color: darkGrey, height: 1.5),
-                      ),
-                    ),
-                    const Expanded(
-                      flex: 2,
-                      child: SizedBox(
-                        height: 10,
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               )),
         ],
       ),
@@ -339,43 +334,41 @@ class _StartupScreenState extends State<StartupScreen> {
           ),
           Expanded(
               flex: 2,
-              child: Container(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    const Expanded(
-                      flex: 1,
-                      child: SizedBox(
-                        height: 10,
-                      ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  const Expanded(
+                    flex: 1,
+                    child: SizedBox(
+                      height: 10,
                     ),
-                    const Text(
-                      "SEND PAYMENT",
+                  ),
+                  const Text(
+                    "SEND PAYMENT",
+                    textAlign: TextAlign.center,
+                    style:
+                        TextStyle(fontSize: 22.0, fontWeight: FontWeight.w700),
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 4.0.w),
+                    child: Text(
+                      "Send money fast to anyone, anywhere in Africa.",
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                          fontSize: 22.0, fontWeight: FontWeight.w700),
+                          fontSize: 14.0, color: darkGrey, height: 1.5),
                     ),
-                    const SizedBox(
-                      height: 20,
+                  ),
+                  const Expanded(
+                    flex: 2,
+                    child: SizedBox(
+                      height: 10,
                     ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 4.0.w),
-                      child: Text(
-                        "Send money fast to anyone, anywhere in Africa.",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            fontSize: 14.0, color: darkGrey, height: 1.5),
-                      ),
-                    ),
-                    const Expanded(
-                      flex: 2,
-                      child: SizedBox(
-                        height: 10,
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               )),
         ],
       ),
@@ -401,43 +394,41 @@ class _StartupScreenState extends State<StartupScreen> {
           ),
           Expanded(
               flex: 2,
-              child: Container(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    const Expanded(
-                      flex: 1,
-                      child: SizedBox(
-                        height: 10,
-                      ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  const Expanded(
+                    flex: 1,
+                    child: SizedBox(
+                      height: 10,
                     ),
-                    const Text(
-                      "RECEIVE PAYMENT",
+                  ),
+                  const Text(
+                    "RECEIVE PAYMENT",
+                    textAlign: TextAlign.center,
+                    style:
+                        TextStyle(fontSize: 22.0, fontWeight: FontWeight.w700),
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 4.0.w),
+                    child: Text(
+                      "Receive instant payment from your customers.",
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                          fontSize: 22.0, fontWeight: FontWeight.w700),
+                          fontSize: 14.0, color: darkGrey, height: 1.5),
                     ),
-                    const SizedBox(
-                      height: 20,
+                  ),
+                  const Expanded(
+                    flex: 2,
+                    child: SizedBox(
+                      height: 10,
                     ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 4.0.w),
-                      child: Text(
-                        "Receive instant payment from your customers.",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            fontSize: 14.0, color: darkGrey, height: 1.5),
-                      ),
-                    ),
-                    const Expanded(
-                      flex: 2,
-                      child: SizedBox(
-                        height: 10,
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               )),
         ],
       ),
@@ -463,43 +454,41 @@ class _StartupScreenState extends State<StartupScreen> {
           ),
           Expanded(
               flex: 2,
-              child: Container(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    const Expanded(
-                      flex: 1,
-                      child: SizedBox(
-                        height: 10,
-                      ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  const Expanded(
+                    flex: 1,
+                    child: SizedBox(
+                      height: 10,
                     ),
-                    const Text(
-                      "VIEW TRANSACTIONS",
+                  ),
+                  const Text(
+                    "VIEW TRANSACTIONS",
+                    textAlign: TextAlign.center,
+                    style:
+                        TextStyle(fontSize: 22.0, fontWeight: FontWeight.w700),
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 4.0.w),
+                    child: Text(
+                      "See how much you receive and spend daily, weekly and monthly.",
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                          fontSize: 22.0, fontWeight: FontWeight.w700),
+                          fontSize: 14.0, color: darkGrey, height: 1.5),
                     ),
-                    const SizedBox(
-                      height: 20,
+                  ),
+                  const Expanded(
+                    flex: 2,
+                    child: SizedBox(
+                      height: 10,
                     ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 4.0.w),
-                      child: Text(
-                        "See how much you receive and spend daily, weekly and monthly.",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            fontSize: 14.0, color: darkGrey, height: 1.5),
-                      ),
-                    ),
-                    const Expanded(
-                      flex: 2,
-                      child: SizedBox(
-                        height: 10,
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               )),
         ],
       ),

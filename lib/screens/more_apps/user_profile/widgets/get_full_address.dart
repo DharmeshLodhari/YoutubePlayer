@@ -32,9 +32,9 @@ class _GetFullAddressWidgetState extends State<GetFullAddressWidget> {
     }
 
     UserAuth().getStates().then((value) {
-      value.forEach((element) {
+      for (var element in value) {
         statesMap[element.id!] = element.name!;
-      });
+      }
 
       stateName = statesMap[stateId];
 

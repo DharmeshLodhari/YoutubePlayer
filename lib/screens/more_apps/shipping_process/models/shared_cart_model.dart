@@ -167,7 +167,7 @@ class SharedCartModel {
 
     bool flag = false;
 
-    _basketItems.forEach((element) {
+    for (var element in _basketItems) {
       if (element.item?.id == item.id) {
         flag = true;
 
@@ -184,9 +184,9 @@ class SharedCartModel {
         }
 
         addedOrUpdatedItem = element;
-        return;
+        continue;
       }
-    });
+    }
 
     if (!flag) {
       if (withApiCall == true) {
@@ -738,10 +738,10 @@ class SharedCartModel {
   void getSplitBillEvenlyPayment(int? totalOrder) {
     if (splitBillEvenly == true) {
       if (members != null) {
-        final int? listLength = members?.length ?? 0;
+        final int listLength = members?.length ?? 0;
 
         for (var item in members!) {
-          item.paymentValue = ((totalOrder ?? 0) / listLength!).floor();
+          item.paymentValue = ((totalOrder ?? 0) / listLength).floor();
         }
       }
     }
@@ -806,7 +806,7 @@ class SharedCartMemberModel {
     avatar = json['avatar'];
     fullName = json['full_name'];
     if (mataDataJson != null) {
-      final List<UserData>? userData = mataDataJson.userData
+      final List<UserData> userData = mataDataJson.userData
               ?.where((element) => element.username == userName)
               .toList() ??
           [];

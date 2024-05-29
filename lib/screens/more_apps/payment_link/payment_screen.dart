@@ -36,8 +36,9 @@ class PaymentLinkScreen extends StatefulWidget {
 }
 
 class _PaymentLinkScreenState extends State<PaymentLinkScreen> {
-  TextEditingController _amountController = TextEditingController();
-  late TextEditingController _referenceController = TextEditingController();
+  final TextEditingController _amountController = TextEditingController();
+  late final TextEditingController _referenceController =
+      TextEditingController();
 
   final _sendPaymentScaffold = GlobalKey<ScaffoldState>();
   final _sendPaymentScaffoldMessenger = GlobalKey<ScaffoldMessengerState>();
@@ -83,9 +84,9 @@ class _PaymentLinkScreenState extends State<PaymentLinkScreen> {
       if (mounted) {
         setState(() {
           final List categoriesList = result["results"]["data"];
-          categoriesList.forEach((data) {
+          for (var data in categoriesList) {
             paymentCategories.add(data["name"]);
-          });
+          }
           isLoading = false;
         });
       }
@@ -148,7 +149,7 @@ class _PaymentLinkScreenState extends State<PaymentLinkScreen> {
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: Container(
+              content: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   elevation: 2,
@@ -216,7 +217,7 @@ class _PaymentLinkScreenState extends State<PaymentLinkScreen> {
     }
   }
 
-  showDataAlert(link) {
+  void showDataAlert(link) {
     showDialog(
         context: context,
         builder: (context) {
@@ -231,7 +232,7 @@ class _PaymentLinkScreenState extends State<PaymentLinkScreen> {
             contentPadding: const EdgeInsets.only(
               top: 10.0,
             ),
-            content: Container(
+            content: SizedBox(
               height: 540,
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(22.0),
@@ -384,7 +385,7 @@ class _PaymentLinkScreenState extends State<PaymentLinkScreen> {
 
               await Future.delayed(const Duration(seconds: 3));
 
-              final String description = 'General Payment';
+              const String description = 'General Payment';
               final data = {
                 "currency": userBloc.user.currency,
                 "amount": moneyInputNormalizer(amount.toString()),
@@ -430,14 +431,14 @@ class _PaymentLinkScreenState extends State<PaymentLinkScreen> {
                   Navigator.pop(context);
                   if (response.statusCode == 406) {
                     errorMessage = jsonDecode(value.body)[0];
-                    showToast(message: "$errorMessage");
+                    showToast(message: errorMessage);
                     setState(() {});
                   } else {
                     debugPrint("ERROR:- ${response.body}");
                     setState(() {
                       errorMessage =
                           AppLocalization.of(context)!.somethingWentWrong;
-                      showToast(message: "$errorMessage");
+                      showToast(message: errorMessage);
                     });
                   }
                 }

@@ -30,7 +30,7 @@ class _ViewAskMediaState extends State<ViewAskMedia> {
   void initState() {
     type = widget.arguments["type"];
     url = widget.arguments["file"];
-    poster = widget.arguments["poster"] ?? null;
+    poster = widget.arguments["poster"];
 
     if (type == "video") {
       initializeVideoPlayer();

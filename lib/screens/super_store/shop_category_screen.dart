@@ -150,7 +150,7 @@ class _ShopCategoryScreenState extends State<ShopCategoryScreen> {
             ),
           ],
         ),
-        actions: [
+        actions: const [
           // Row(
           //   children: [
           //     InkWell(
@@ -293,7 +293,7 @@ class _ShopCategoryScreenState extends State<ShopCategoryScreen> {
           updateCurrentAskTapOnHome(index: currentPage);
         },
         controller: _pageViewCtrl,
-        children: [
+        children: const [
           // YarnListScreen(
           //   key: topicViewStateKey,
           //   selectedCategory: widget.askCategories!.id,

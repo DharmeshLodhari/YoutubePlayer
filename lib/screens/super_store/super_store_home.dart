@@ -193,7 +193,7 @@ class _SuperStoreHomeState extends State<SuperStoreHome> {
             Container(
               padding: const EdgeInsets.only(left: 8.0, right: 8.0),
               child: isLoading
-                  ? Container(
+                  ? SizedBox(
                       height: 100.0,
                       child: Shimmer.fromColors(
                           baseColor: Colors.white,
@@ -234,7 +234,7 @@ class _SuperStoreHomeState extends State<SuperStoreHome> {
   }
 
   Widget _displayShortcutButtons(List<ProductIndustryResults> industries) {
-    return Container(
+    return SizedBox(
       height: 80.0,
       child: ListView(
         scrollDirection: Axis.horizontal,
@@ -346,7 +346,7 @@ class _SuperStoreHomeState extends State<SuperStoreHome> {
         badgeStyle: badges.BadgeStyle(
           shape: badges.BadgeShape.circle,
           badgeColor: naturalGreen,
-          padding: basketBloc.basketItems.length == 0
+          padding: basketBloc.basketItems.isEmpty
               ? const EdgeInsets.all(0)
               : EdgeInsets.only(
                   left: getBadgeCount().length == 1 ? 6 : 8,
@@ -372,7 +372,7 @@ class _SuperStoreHomeState extends State<SuperStoreHome> {
   }
 
   Widget? getBadgeContent() {
-    if (basketBloc.basketItems.length == 0) {
+    if (basketBloc.basketItems.isEmpty) {
       return null;
     }
     return Text(
@@ -387,9 +387,9 @@ class _SuperStoreHomeState extends State<SuperStoreHome> {
 
   String getBadgeCount() {
     int totalItem = 0;
-    basketBloc.basketItems.forEach((element) {
+    for (var element in basketBloc.basketItems) {
       totalItem = totalItem + int.parse(element.qty.toString());
-    });
+    }
     // for (var item in basketBloc.items) {
     //
     //   if (item['item'] is Product) {

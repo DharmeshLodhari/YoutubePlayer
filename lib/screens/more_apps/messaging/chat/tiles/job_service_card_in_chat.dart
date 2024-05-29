@@ -32,18 +32,18 @@ class _JobCardChatDescriptionState extends State<JobCardChatDescription> {
   String getTimeDifference(String date) {
     var difference = DateTime.now().difference(DateTime.parse(date));
     String time = '';
-    debugPrint(difference.toString() + '-----');
+    debugPrint('$difference-----');
 
     if (difference > const Duration(hours: 24)) {
-      time = difference.inDays.toString() + ' days';
+      time = '${difference.inDays} days';
     } else if (difference > const Duration(hours: 1)) {
-      time = difference.inHours.toString() + ' hrs';
+      time = '${difference.inHours} hrs';
     } else if (difference > const Duration(minutes: 1)) {
-      time = difference.inMinutes.toString() + ' mins';
+      time = '${difference.inMinutes} mins';
     } else if (difference > const Duration(seconds: 1)) {
-      time = difference.inSeconds.toString() + ' sec';
+      time = '${difference.inSeconds} sec';
     } else {
-      time = difference.inMilliseconds.toString() + ' ms';
+      time = '${difference.inMilliseconds} ms';
     }
 
     return time;
@@ -234,7 +234,7 @@ class _JobCardChatDescriptionState extends State<JobCardChatDescription> {
                     ]),
               ),
               if (isSend)
-                Container(
+                SizedBox(
                   width: 20,
                   child: isSend
                       ? Center(

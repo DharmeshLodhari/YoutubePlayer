@@ -80,13 +80,13 @@ class _AddReviewState extends State<AddReview> {
                             height: 20,
                           ),
                           ClipRRect(
+                            borderRadius: BorderRadius.circular(16),
                             child: CachedNetworkImage(
                               imageUrl: getImage(),
                               height: 200,
                               width: 200,
                               fit: BoxFit.fill,
                             ),
-                            borderRadius: BorderRadius.circular(16),
                           ),
                           const SizedBox(
                             height: 20,
@@ -122,11 +122,12 @@ class _AddReviewState extends State<AddReview> {
                 ),
               ),
             ),
-            isLoading
-                ? const Center(
-                    child: CircularProgressIndicator(),
-                  )
-                : Container()
+            if (isLoading)
+              const Center(
+                child: CircularProgressIndicator(),
+              )
+            else
+              Container()
           ],
         ),
       ),

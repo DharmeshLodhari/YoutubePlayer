@@ -314,7 +314,7 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
             height: 12,
           ),
           Text(
-            messageDecoderWithEmoji("${envelope!.title ?? ""}")!,
+            messageDecoderWithEmoji(envelope!.title ?? "")!,
             style: TextStyle(
                 fontSize: 16, fontWeight: FontWeight.w700, color: blackFont),
           ),
@@ -322,7 +322,7 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
             height: 12,
           ),
           Text(
-            messageDecoderWithEmoji("${envelope!.message ?? ""}")!,
+            messageDecoderWithEmoji(envelope!.message ?? "")!,
             style: TextStyle(
                 fontSize: 14, fontWeight: FontWeight.w400, color: blackFont),
           ),

@@ -113,7 +113,7 @@ class _UserProfileTileForChatState extends State<UserProfileTileForChat> {
               ),
             ),
             if (isSend)
-              Container(
+              SizedBox(
                 width: 20,
                 child: isSend
                     ? Center(

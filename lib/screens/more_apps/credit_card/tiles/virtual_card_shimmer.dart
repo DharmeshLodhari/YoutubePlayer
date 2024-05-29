@@ -76,7 +76,7 @@ class VirtualCardShimmer extends StatelessWidget {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Container(
+                        SizedBox(
                           width: 50,
                           height: 15,
                         ),
@@ -87,7 +87,7 @@ class VirtualCardShimmer extends StatelessWidget {
                               color: greyBackground,
                               borderRadius: BorderRadius.circular(4)),
                         ),
-                        Container(
+                        SizedBox(
                           width: 50,
                           height: 15,
                         ),

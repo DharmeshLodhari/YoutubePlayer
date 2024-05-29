@@ -35,10 +35,10 @@ class TrendingListScreenState extends State<TrendingListScreen> {
   List<Yarn> deleteYarnTopicList = [];
   int count = 0;
   bool noList = false;
-  RefreshController _postRefreshController =
+  final RefreshController _postRefreshController =
       RefreshController(initialRefresh: false);
   String? selectedId;
-  ScrollController _trendingScrollController = new ScrollController();
+  final ScrollController _trendingScrollController = ScrollController();
   late DashboardBloc _dashboardBloc;
 
   @override

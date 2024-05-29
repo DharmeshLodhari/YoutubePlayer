@@ -65,7 +65,7 @@ class _EditJobState extends State<EditJob> {
   List<Cities> cityList = [];
 
   int imageCount = 5;
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
   TextEditingController titleController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
   TextEditingController locationController = TextEditingController();
@@ -120,9 +120,9 @@ class _EditJobState extends State<EditJob> {
   List<String> categoriesNameList = [];
   List<PickedFile> jobLocalImages = [];
   List<Pictures?> jobImagesFromServer = [];
-  ScrollController _categoryScrollController = ScrollController();
+  final ScrollController _categoryScrollController = ScrollController();
   final GlobalKey<ScaffoldMessengerState> _jobScaffoldMessengerKey =
-      new GlobalKey<ScaffoldMessengerState>();
+      GlobalKey<ScaffoldMessengerState>();
   RefreshController refreshController =
       RefreshController(initialRefresh: false);
 
@@ -188,9 +188,9 @@ class _EditJobState extends State<EditJob> {
         }
         if (mounted) setState(() {});
 
-        tempList.forEach((item) {
+        for (var item in tempList) {
           searchedCategoryList.add(CategoryListData.fromJson(item));
-        });
+        }
       }
       if (searchedCategoryList.isEmpty) {
         noSearchedItem = true;
@@ -391,67 +391,65 @@ class _EditJobState extends State<EditJob> {
   }
 
   Widget searchBox() {
-    return Container(
-      child: Theme(
-        data: Theme.of(context).copyWith(
-          textSelectionTheme: const TextSelectionThemeData()
-              .copyWith(selectionHandleColor: navyBlue),
+    return Theme(
+      data: Theme.of(context).copyWith(
+        textSelectionTheme: const TextSelectionThemeData()
+            .copyWith(selectionHandleColor: navyBlue),
+      ),
+      child: TextFormField(
+        key: searchItemTextFormField,
+        controller: searchItemTextController,
+        style: TextStyle(
+          fontSize: 16,
+          fontFamily: "Inter",
+          color: blackFont,
+          fontWeight: FontWeight.w600,
         ),
-        child: TextFormField(
-          key: searchItemTextFormField,
-          controller: searchItemTextController,
-          style: TextStyle(
-            fontSize: 16,
-            fontFamily: "Inter",
-            color: blackFont,
-            fontWeight: FontWeight.w600,
+        cursorWidth: 1.5,
+        cursorColor: navyBlue,
+        decoration: InputDecoration(
+          hintText: 'Search Category',
+          fillColor: Colors.white,
+          filled: true,
+          contentPadding: const EdgeInsets.symmetric(vertical: 10),
+          prefix: const Padding(
+            padding: EdgeInsets.only(left: 12),
           ),
-          cursorWidth: 1.5,
-          cursorColor: navyBlue,
-          decoration: InputDecoration(
-            hintText: 'Search Category',
-            fillColor: Colors.white,
-            filled: true,
-            contentPadding: const EdgeInsets.symmetric(vertical: 10),
-            prefix: const Padding(
-              padding: EdgeInsets.only(left: 12),
-            ),
-            suffixIcon: searchIcon(),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(
-                color: dividerColor,
-                width: 1.0,
-              ),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(
-                color: navyBlue,
-                width: 1.0,
-              ),
-            ),
-            errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(
-                color: dividerColor,
-                width: 1.0,
-              ),
-            ),
-            focusedErrorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(
-                color: dividerColor,
-                width: 1.0,
-              ),
+          suffixIcon: searchIcon(),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(
+              color: dividerColor,
+              width: 1.0,
             ),
           ),
-          onFieldSubmitted: (val) {
-            if (mounted) setState(() {});
-            FocusScope.of(context).unfocus();
-            onRefresh();
-          },
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(
+              color: navyBlue,
+              width: 1.0,
+            ),
+          ),
+          errorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(
+              color: dividerColor,
+              width: 1.0,
+            ),
+          ),
+          focusedErrorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(
+              color: dividerColor,
+              width: 1.0,
+            ),
+          ),
         ),
+        onFieldSubmitted: (val) {
+          if (mounted) setState(() {});
+          FocusScope.of(context).unfocus();
+          onRefresh();
+        },
       ),
     );
   }
@@ -603,7 +601,7 @@ class _EditJobState extends State<EditJob> {
     }
   }
 
-  Future<void> getShippingCities(code) async {
+  Future<void> getShippingCities(String? code) async {
     if (mounted) setState(() {});
     if (!isLoader) {
       isLoader = true;
@@ -810,7 +808,7 @@ class _EditJobState extends State<EditJob> {
     );
   }
 
-  getPickDateStart({
+  Widget getPickDateStart({
     CrossAxisAlignment? crossAxisAlignment,
     String? dateText,
   }) =>
@@ -874,7 +872,7 @@ class _EditJobState extends State<EditJob> {
         ],
       );
 
-  getPickDateEnd({
+  Widget getPickDateEnd({
     CrossAxisAlignment? crossAxisAlignment,
     String? dateText,
   }) =>
@@ -939,7 +937,7 @@ class _EditJobState extends State<EditJob> {
   // decide that serverImage List is need to be show or not
   bool checkImageLimitForServerImage() {
     if (jobLocalImages.length + jobImagesFromServer.length != imageCount ||
-        jobImagesFromServer.length != 0) {
+        jobImagesFromServer.isNotEmpty) {
       return true;
     }
     return false;
@@ -948,14 +946,14 @@ class _EditJobState extends State<EditJob> {
   // decide that localImage List is need to be show or not
   bool checkImageLimitForLocalImage() {
     if (jobLocalImages.length + jobImagesFromServer.length != imageCount ||
-        jobLocalImages.length != 0) {
+        jobLocalImages.isNotEmpty) {
       return true;
     }
     return false;
   }
 
   Widget addLocalImages() {
-    return Container(
+    return SizedBox(
       height: 100,
       child: ListView.builder(
         controller: _scrollController,
@@ -1030,7 +1028,7 @@ class _EditJobState extends State<EditJob> {
   }
 
   Widget viewServerImages() {
-    return Container(
+    return SizedBox(
       height: 100,
       child: ListView.builder(
         controller: _scrollController,
@@ -1045,7 +1043,7 @@ class _EditJobState extends State<EditJob> {
   }
 
   Widget showServerImage(int index) {
-    return Container(
+    return SizedBox(
       height: 100,
       child: Stack(
         children: <Widget>[
@@ -1293,7 +1291,7 @@ class _EditJobState extends State<EditJob> {
   }
 
   Widget addImages() {
-    return Container(
+    return SizedBox(
       height: 100,
       child: ListView.builder(
         controller: _scrollController,
@@ -1384,7 +1382,7 @@ class _EditJobState extends State<EditJob> {
   }
 
   Widget showImage(int index) {
-    return Container(
+    return SizedBox(
       height: 100,
       child: Stack(
         children: <Widget>[
@@ -1814,7 +1812,7 @@ class _EditJobState extends State<EditJob> {
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: Container(
+              content: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   elevation: 2,
@@ -1893,7 +1891,7 @@ class _EditJobState extends State<EditJob> {
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: Container(
+              content: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   margin: EdgeInsets.zero,
@@ -2072,7 +2070,7 @@ class _EditJobState extends State<EditJob> {
 
   Future<void> editJob() async {
     if (_formKey.currentState!.validate()) {
-      if (jobImagesFromServer.length >= 1 || jobLocalImages.length >= 1) {
+      if (jobImagesFromServer.isNotEmpty || jobLocalImages.isNotEmpty) {
         if (true) {
           showDialog(
               context: context,
@@ -2335,9 +2333,9 @@ class _EditJobState extends State<EditJob> {
             isLocationLoading = false;
             locationsList.addAll(tempList!);
             locationsListCopy = locationsList;
-            tempList.forEach((element) {
+            for (var element in tempList) {
               categoriesNameList.add(element.name!);
-            });
+            }
           });
         }
       }
@@ -2378,26 +2376,24 @@ class CustomRadioTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: RadioListTile(
-        contentPadding: EdgeInsets.zero,
-        visualDensity: const VisualDensity(
-          horizontal: VisualDensity.minimumDensity,
-          // vertical: VisualDensity.minimumDensity,
-        ),
-        title: Text(
-          value,
-          style: const TextStyle(
-            color: Colors.black,
-            fontSize: 14,
-            fontFamily: "Inter",
-          ),
-        ),
-        activeColor: navyBlue,
-        value: value,
-        groupValue: groupVal,
-        onChanged: callbackFunction,
+    return RadioListTile(
+      contentPadding: EdgeInsets.zero,
+      visualDensity: const VisualDensity(
+        horizontal: VisualDensity.minimumDensity,
+        // vertical: VisualDensity.minimumDensity,
       ),
+      title: Text(
+        value,
+        style: const TextStyle(
+          color: Colors.black,
+          fontSize: 14,
+          fontFamily: "Inter",
+        ),
+      ),
+      activeColor: navyBlue,
+      value: value,
+      groupValue: groupVal,
+      onChanged: callbackFunction,
     );
   }
 }
@@ -2423,84 +2419,80 @@ class CustomizedRadioButtonRow extends StatelessWidget {
           children: [
             Expanded(
               flex: 1,
-              child: Container(
-                child: Row(
-                  children: [
-                    Radio(
-                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      visualDensity: const VisualDensity(
-                        horizontal: VisualDensity.minimumDensity,
-                        vertical: VisualDensity.minimumDensity,
-                      ),
-                      value: "Fixed",
-                      groupValue: groupValue,
-                      onChanged: (String? value) {
-                        // setState(() {
-                        //   groupValue = value!;
-                        // });
-                      },
+              child: Row(
+                children: [
+                  Radio(
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    visualDensity: const VisualDensity(
+                      horizontal: VisualDensity.minimumDensity,
+                      vertical: VisualDensity.minimumDensity,
                     ),
-                    const SizedBox(
-                      width: 5,
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        // setState(() {
-                        //   groupValue = "Fixed";
-                        // });
-                      },
-                      child: const Text(
-                        "Fixes",
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 14,
-                          fontFamily: "Inter",
-                        ),
+                    value: "Fixed",
+                    groupValue: groupValue,
+                    onChanged: (String? value) {
+                      // setState(() {
+                      //   groupValue = value!;
+                      // });
+                    },
+                  ),
+                  const SizedBox(
+                    width: 5,
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      // setState(() {
+                      //   groupValue = "Fixed";
+                      // });
+                    },
+                    child: const Text(
+                      "Fixes",
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 14,
+                        fontFamily: "Inter",
                       ),
-                    )
-                  ],
-                ),
+                    ),
+                  )
+                ],
               ),
             ),
             Expanded(
               flex: 1,
-              child: Container(
-                child: Row(
-                  children: [
-                    Radio(
-                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      visualDensity: const VisualDensity(
-                        horizontal: VisualDensity.minimumDensity,
-                        vertical: VisualDensity.minimumDensity,
-                      ),
-                      value: "Fixed",
-                      groupValue: groupValue,
-                      onChanged: (String? value) {
-                        // setState(() {
-                        //   groupValue = value!;
-                        // });
-                      },
+              child: Row(
+                children: [
+                  Radio(
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    visualDensity: const VisualDensity(
+                      horizontal: VisualDensity.minimumDensity,
+                      vertical: VisualDensity.minimumDensity,
                     ),
-                    const SizedBox(
-                      width: 5,
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        // setState(() {
-                        //   groupValue = "Fixed";
-                        // });
-                      },
-                      child: const Text(
-                        "Fixes",
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 14,
-                          fontFamily: "Inter",
-                        ),
+                    value: "Fixed",
+                    groupValue: groupValue,
+                    onChanged: (String? value) {
+                      // setState(() {
+                      //   groupValue = value!;
+                      // });
+                    },
+                  ),
+                  const SizedBox(
+                    width: 5,
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      // setState(() {
+                      //   groupValue = "Fixed";
+                      // });
+                    },
+                    child: const Text(
+                      "Fixes",
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 14,
+                        fontFamily: "Inter",
                       ),
-                    )
-                  ],
-                ),
+                    ),
+                  )
+                ],
               ),
             ),
           ],

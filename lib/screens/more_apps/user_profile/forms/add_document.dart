@@ -32,15 +32,15 @@ class _AddDocumentState extends State<AddDocument> {
   Widget build(BuildContext context) {
     _forms = [
       WillPopScope(
-        onWillPop: () => Future.sync(this.onWillPop),
+        onWillPop: () => Future.sync(onWillPop),
         child: formOne(),
       ),
       WillPopScope(
-        onWillPop: () => Future.sync(this.onWillPop),
+        onWillPop: () => Future.sync(onWillPop),
         child: formTwo(),
       ),
       WillPopScope(
-        onWillPop: () => Future.sync(this.onWillPop),
+        onWillPop: () => Future.sync(onWillPop),
         child: formThree(),
       ),
     ];
@@ -209,7 +209,10 @@ class _AddDocumentState extends State<AddDocument> {
           const SizedBox(
             height: 10,
           ),
-          documentImage != null ? takeDocumentPhotoFromGallery() : Container(),
+          if (documentImage != null)
+            takeDocumentPhotoFromGallery()
+          else
+            Container(),
           buttonBarTwo()
         ],
       ),
@@ -278,6 +281,8 @@ class _AddDocumentState extends State<AddDocument> {
         child: Column(
       children: <Widget>[
         SizedBox(
+          height: 300,
+          width: double.infinity,
           child: documentImage != null
               ? Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -291,8 +296,6 @@ class _AddDocumentState extends State<AddDocument> {
                   color: Colors.grey[200],
                   size: 300,
                 ),
-          height: 300,
-          width: double.infinity,
         ),
       ],
     ));
@@ -302,16 +305,17 @@ class _AddDocumentState extends State<AddDocument> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
-        documentImage != null
-            ? MaterialButton(
-                child: Text(
-                  AppLocalization.of(context)!.next,
-                  style: const TextStyle(color: Colors.white),
-                ),
-                color: blackFont,
-                onPressed: _nextFormStep,
-              )
-            : Container(),
+        if (documentImage != null)
+          MaterialButton(
+            color: blackFont,
+            onPressed: _nextFormStep,
+            child: Text(
+              AppLocalization.of(context)!.next,
+              style: const TextStyle(color: Colors.white),
+            ),
+          )
+        else
+          Container(),
       ],
     );
   }
@@ -334,7 +338,7 @@ class _AddDocumentState extends State<AddDocument> {
           const SizedBox(
             height: 10,
           ),
-          userImage != null ? takeUserPhotoFromGallary() : Container(),
+          if (userImage != null) takeUserPhotoFromGallary() else Container(),
           buttonBarThree()
         ],
       ),
@@ -379,6 +383,8 @@ class _AddDocumentState extends State<AddDocument> {
         child: Column(
       children: <Widget>[
         SizedBox(
+          height: 300,
+          width: double.infinity,
           child: userImage != null
               ? Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -392,8 +398,6 @@ class _AddDocumentState extends State<AddDocument> {
                   color: Colors.grey[200],
                   size: 300,
                 ),
-          height: 300,
-          width: double.infinity,
         ),
         const SizedBox(
           height: 10,
@@ -407,54 +411,54 @@ class _AddDocumentState extends State<AddDocument> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
         MaterialButton(
+          color: blackFont,
+          onPressed: _previousFormStep,
           child: Text(
             AppLocalization.of(context)!.previous,
             style: const TextStyle(color: Colors.white),
           ),
-          color: blackFont,
-          onPressed: _previousFormStep,
         ),
-        userImage != null
-            ? MaterialButton(
-                child: Text(
-                  AppLocalization.of(context)!.finish,
-                  style: const TextStyle(color: Colors.white),
-                ),
-                color: blackFont,
-                onPressed: () {
-                  final _auth = AuthService();
-                  final userBloc =
-                      Provider.of<UserBloc>(context, listen: false);
-                  // Get new token for user before attempting to post data to server
-                  _auth
-                      .authenticate(
-                          userBloc.user.phoneNumber, userBloc.user.password)
+        if (userImage != null)
+          MaterialButton(
+            color: blackFont,
+            onPressed: () {
+              final _auth = AuthService();
+              final userBloc = Provider.of<UserBloc>(context, listen: false);
+              // Get new token for user before attempting to post data to server
+              _auth
+                  .authenticate(
+                      userBloc.user.phoneNumber, userBloc.user.password)
+                  .then((user) {
+                try {
+                  UserAuth()
+                      .verifyUserDetail(
+                          File(documentImage!.path), File(userImage!.path))
                       .then((user) {
-                    try {
-                      UserAuth()
-                          .verifyUserDetail(
-                              File(documentImage!.path), File(userImage!.path))
-                          .then((user) {
-                        _auth
-                            .authenticate(userBloc.user.phoneNumber,
-                                userBloc.user.password)
-                            .then((user) {
-                          if (user.isVerified!) {
-                            userBloc.user = user;
-                            Navigator.of(context).pushNamedAndRemoveUntil(
-                              "/dashboard",
-                              (Route<dynamic> route) => false,
-                            );
-                          }
-                        });
-                      });
-                    } catch (exception) {
-                      showToast(message: exception.toString());
-                    }
+                    _auth
+                        .authenticate(
+                            userBloc.user.phoneNumber, userBloc.user.password)
+                        .then((user) {
+                      if (user.isVerified!) {
+                        userBloc.user = user;
+                        Navigator.of(context).pushNamedAndRemoveUntil(
+                          "/dashboard",
+                          (Route<dynamic> route) => false,
+                        );
+                      }
+                    });
                   });
-                },
-              )
-            : Container(),
+                } catch (exception) {
+                  showToast(message: exception.toString());
+                }
+              });
+            },
+            child: Text(
+              AppLocalization.of(context)!.finish,
+              style: const TextStyle(color: Colors.white),
+            ),
+          )
+        else
+          Container(),
       ],
     );
   }

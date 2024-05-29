@@ -41,7 +41,7 @@ class _AddMoneyToSlydoTwoState extends State<AddMoneyToSlydoTwo> {
     amount = widget.arguments["amount"].toString();
     referenceNumber = widget.arguments["reference"].toString();
     currency = widget.arguments["currency"].toString();
-    Map? bankDetails = widget.arguments["bank_details"];
+    final Map? bankDetails = widget.arguments["bank_details"];
     if (bankDetails == null || bankDetails.isEmpty) {
       // isBankDetailsIsEmpty = true;
       isBankDetailsIsEmpty = false;
@@ -240,32 +240,34 @@ class _AddMoneyToSlydoTwoState extends State<AddMoneyToSlydoTwo> {
   }
 
   Widget getOtherDetails() {
-    return isBankDetailsIsEmpty
-        ? getBankAccountEmptyWidget()
-        : Column(
-            children: [
-              referenceIdFiled(),
-              const SizedBox(
-                height: 20,
-              ),
-              getUserBankAccountSlydo(),
-              const SizedBox(
-                height: 24,
-              ),
-              userTopUpNote(),
-              const SizedBox(
-                height: 16,
-              ),
-              transferredMoneyCheck(),
-              const SizedBox(
-                height: 20,
-              ),
-              isChecked ? getSubmitButton() : Container(),
-              const SizedBox(
-                height: 20,
-              ),
-            ],
-          );
+    if (isBankDetailsIsEmpty) {
+      return getBankAccountEmptyWidget();
+    } else {
+      return Column(
+        children: [
+          referenceIdFiled(),
+          const SizedBox(
+            height: 20,
+          ),
+          getUserBankAccountSlydo(),
+          const SizedBox(
+            height: 24,
+          ),
+          userTopUpNote(),
+          const SizedBox(
+            height: 16,
+          ),
+          transferredMoneyCheck(),
+          const SizedBox(
+            height: 20,
+          ),
+          if (isChecked) getSubmitButton() else Container(),
+          const SizedBox(
+            height: 20,
+          ),
+        ],
+      );
+    }
   }
 
   Widget getBankAccountEmptyWidget() {
@@ -324,7 +326,7 @@ class _AddMoneyToSlydoTwoState extends State<AddMoneyToSlydoTwo> {
                 ),
               ),
               onTap: () {
-                Clipboard.setData(new ClipboardData(text: referenceNumber));
+                Clipboard.setData(ClipboardData(text: referenceNumber));
                 showToast(message: "Reference number copied !!");
               },
             ),
@@ -345,12 +347,12 @@ class _AddMoneyToSlydoTwoState extends State<AddMoneyToSlydoTwo> {
               width: Checkbox.width - 1.5,
               height: Checkbox.width - 1.5,
               child: Container(
-                decoration: new BoxDecoration(
+                decoration: BoxDecoration(
                   border: Border.all(
                     color: greyBorderColor,
                     width: 1,
                   ),
-                  borderRadius: new BorderRadius.circular(5),
+                  borderRadius: BorderRadius.circular(5),
                 ),
                 child: Theme(
                   data: ThemeData(
@@ -404,7 +406,7 @@ class _AddMoneyToSlydoTwoState extends State<AddMoneyToSlydoTwo> {
         builder: (context) => Center(child: CircularLoadingIndicator()));
 
     if (_formKeyTwo.currentState!.validate()) {
-      var data = {"reference": referenceNumber};
+      final data = {"reference": referenceNumber};
       PaymentAndBankingAuth()
           .confirmTopUpWithReferenceNumber(data)
           .then((value) {

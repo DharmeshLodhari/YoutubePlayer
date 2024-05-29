@@ -148,7 +148,7 @@ class _ProductAddOnOptionCreateState extends State<ProductAddOnOptionCreate> {
   }
 
   Widget addImages() {
-    return Container(
+    return SizedBox(
       height: 100,
       child: ListView.builder(
         controller: _scrollController,
@@ -310,22 +310,20 @@ class _ProductAddOnOptionCreateState extends State<ProductAddOnOptionCreate> {
   }
 
   Widget getDescription() {
-    return Container(
-      child: CustomizedTextFormField(
-        maxLines: 3,
-        labelText: "Description",
-        textCapitalization: TextCapitalization.sentences,
-        // controller: groupDescriptionController,
-        validator: (val) {
-          if (val.isNotEmpty) {
-            return null;
-          }
-          return AppLocalization.of(context)!.descriptionMustNotEmpty;
-        },
-        onChanged: (val) {
-          description = val;
-        },
-      ),
+    return CustomizedTextFormField(
+      maxLines: 3,
+      labelText: "Description",
+      textCapitalization: TextCapitalization.sentences,
+      // controller: groupDescriptionController,
+      validator: (val) {
+        if (val.isNotEmpty) {
+          return null;
+        }
+        return AppLocalization.of(context)!.descriptionMustNotEmpty;
+      },
+      onChanged: (val) {
+        description = val;
+      },
     );
   }
 

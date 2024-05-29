@@ -5,8 +5,8 @@ class ShareAsYarnModel {
   ShareAsYarnModel({this.id, this.name});
 
   ShareAsYarnModel.fromJson(object) {
-    this.id = object['id'];
-    this.name = object['name'];
+    id = object['id'];
+    name = object['name'];
   }
 
   Map toJson() => {"id": id, "name": name};

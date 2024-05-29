@@ -228,7 +228,7 @@ class YarnAuth extends AuthService {
     } else if (response.statusCode == 500) {
       return Future.error("Please try again later !!");
     } else {
-      return Future.error("${response.body}");
+      return Future.error(response.body);
     }
   }
 
@@ -258,7 +258,7 @@ class YarnAuth extends AuthService {
     } else if (response.statusCode == 500) {
       return Future.error("Please try again later !!");
     } else {
-      return Future.error("${response.body}");
+      return Future.error(response.body);
     }
   }
 
@@ -288,7 +288,7 @@ class YarnAuth extends AuthService {
     } else if (response.statusCode == 500) {
       return Future.error("Please try again later !!");
     } else {
-      return Future.error("${response.body}");
+      return Future.error(response.body);
     }
   }
 
@@ -646,8 +646,7 @@ class YarnAuth extends AuthService {
       "age_restriction": jsonEncode(addYarnAndQuestion.ageRestriction ?? 13),
     };
     if (addYarnAndQuestion.attachment != null) {
-      mapValue['attachment'] =
-          jsonEncode(addYarnAndQuestion.attachment ?? null);
+      mapValue['attachment'] = jsonEncode(addYarnAndQuestion.attachment);
     }
 
     if (addYarnAndQuestion.reYarn != null) {
@@ -843,12 +842,12 @@ class YarnAuth extends AuthService {
     }
     final responseBody = await response.stream.bytesToString();
 
-    debugPrint('RESPONSE BODY url :::: ${url}');
-    debugPrint('RESPONSE BODY :::: ${responseBody}');
+    debugPrint('RESPONSE BODY url :::: $url');
+    debugPrint('RESPONSE BODY :::: $responseBody');
     debugPrint('RESPONSE BODY 111 :::: ${jsonDecode(responseBody)}');
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      debugPrint('RESPONSE BODY create:::: ${responseBody}');
+      debugPrint('RESPONSE BODY create:::: $responseBody');
 
       if (s == 'Add') {
         final data = jsonDecode(responseBody);
@@ -1396,7 +1395,7 @@ class YarnAuth extends AuthService {
     //   url = "${AppConfig.baseUrl}/api/v1/social/moments/report/$postId/";
     // }
     debugPrint('url$url');
-    debugPrint('report body::: ${body}');
+    debugPrint('report body::: $body');
 
     final headers = await getAuthHeaders();
     final response =
@@ -1424,7 +1423,7 @@ class YarnAuth extends AuthService {
     //   url = "${AppConfig.baseUrl}/api/v1/social/moments/report/$postId/";
     // }
     debugPrint('url$url');
-    debugPrint('report body::: ${body}');
+    debugPrint('report body::: $body');
 
     final headers = await getAuthHeaders();
     final response =
@@ -1451,7 +1450,7 @@ class YarnAuth extends AuthService {
     //   url = "${AppConfig.baseUrl}/api/v1/social/moments/report/$postId/";
     // }
     debugPrint('url$url');
-    debugPrint('report body::: ${body}');
+    debugPrint('report body::: $body');
 
     final headers = await getAuthHeaders();
     final response =

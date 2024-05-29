@@ -53,7 +53,7 @@ class RiderRegistrationAuthService extends AuthService {
 
   // Status of KYC
   Future<KYCDataModel> getKYCStatus(String? username) async {
-    final String url = AppConfig.baseUrl + "/api/v1/user/rider-kyc/$username/";
+    final String url = "${AppConfig.baseUrl}/api/v1/user/rider-kyc/$username/";
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
     debugPrint('Status of KYC...${response.body} and ${response.statusCode}');
@@ -68,7 +68,7 @@ class RiderRegistrationAuthService extends AuthService {
 
   Future<KYCDataModel> kycStatus(
       {RiderRegistrationModel? registrationModel, String? username}) async {
-    final String url = AppConfig.baseUrl + "/api/v1/user/rider-kyc/$username/";
+    final String url = "${AppConfig.baseUrl}/api/v1/user/rider-kyc/$username/";
     final headers = await getAuthHeaders();
 
     if (registrationModel != null) {

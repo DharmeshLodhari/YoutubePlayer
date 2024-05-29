@@ -274,25 +274,23 @@ class _BusExploreScreenState extends State<BusExploreScreen> {
               },
               child: CustomizedDropDownField(
                 title: "Arrival date",
-                child: Container(
-                  child: ListTile(
-                    dense: true,
-                    title: Text(
-                      formatDateInDigit(arrivalDate),
-                      style: TextStyle(
-                        color: blackFont,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 16,
-                      ),
-                      overflow: TextOverflow.fade,
-                      softWrap: false,
-                      maxLines: 1,
+                child: ListTile(
+                  dense: true,
+                  title: Text(
+                    formatDateInDigit(arrivalDate),
+                    style: TextStyle(
+                      color: blackFont,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16,
                     ),
-                    trailing: Icon(
-                      SlydoAppIcon.date,
-                      size: 16,
-                      color: darkGrey,
-                    ),
+                    overflow: TextOverflow.fade,
+                    softWrap: false,
+                    maxLines: 1,
+                  ),
+                  trailing: Icon(
+                    SlydoAppIcon.date,
+                    size: 16,
+                    color: darkGrey,
                   ),
                 ),
               ),
@@ -404,7 +402,7 @@ class _BusExploreScreenState extends State<BusExploreScreen> {
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: Container(
+              content: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   elevation: 2,
@@ -571,7 +569,7 @@ class _BusExploreScreenState extends State<BusExploreScreen> {
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: Container(
+              content: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   elevation: 2,
@@ -749,7 +747,7 @@ class _BusExploreScreenState extends State<BusExploreScreen> {
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: Container(
+              content: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   elevation: 2,

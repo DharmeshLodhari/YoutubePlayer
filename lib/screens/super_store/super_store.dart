@@ -67,10 +67,10 @@ class _SuperStoreState extends State<SuperStore> {
 
   void getIndustryUrls(ProductIndustryResults industry) {
     setState(() {
-      url = AppConfig.baseUrl +
-          "/api/v1/products/categories/?industry=${industry.id}";
-      nextUrl = AppConfig.baseUrl +
-          "/api/v1/products/super-store-industry/?industry=${industry.id}";
+      url =
+          "${AppConfig.baseUrl}/api/v1/products/categories/?industry=${industry.id}";
+      nextUrl =
+          "${AppConfig.baseUrl}/api/v1/products/super-store-industry/?industry=${industry.id}";
     });
   }
 
@@ -296,17 +296,17 @@ class _SuperStoreState extends State<SuperStore> {
                   categoryName = category;
                   categoryId = id;
                   if (id == "") {
-                    nextUrl = AppConfig.baseUrl +
-                        "/api/v1/products/super-store-industry/?industry=${productUrl.id}";
+                    nextUrl =
+                        "${AppConfig.baseUrl}/api/v1/products/super-store-industry/?industry=${productUrl.id}";
                   } else {
-                    nextUrl = AppConfig.baseUrl +
-                        "/api/v1/products/?industry=${productUrl.id}&category=$id";
+                    nextUrl =
+                        "${AppConfig.baseUrl}/api/v1/products/?industry=${productUrl.id}&category=$id";
                   }
                   if (mounted) setState(() {});
                 },
                 categoryName: categoryName,
-                next_url: AppConfig.baseUrl +
-                    "/api/v1/products/categories/?industry=${productUrl.id}"),
+                next_url:
+                    "${AppConfig.baseUrl}/api/v1/products/categories/?industry=${productUrl.id}"),
           ),
           const SizedBox(height: 14),
           Divider(
@@ -451,7 +451,7 @@ class _SuperStoreState extends State<SuperStore> {
         badgeStyle: badges.BadgeStyle(
           shape: badges.BadgeShape.circle,
           badgeColor: naturalGreen,
-          padding: basketBloc.basketItems.length == 0
+          padding: basketBloc.basketItems.isEmpty
               ? const EdgeInsets.all(0)
               : EdgeInsets.only(
                   left: getBadgeCount().length == 1 ? 6 : 8,
@@ -477,7 +477,7 @@ class _SuperStoreState extends State<SuperStore> {
   }
 
   Widget? getBadgeContent() {
-    if (basketBloc.basketItems.length == 0) {
+    if (basketBloc.basketItems.isEmpty) {
       return null;
     }
     return Text(
@@ -493,9 +493,9 @@ class _SuperStoreState extends State<SuperStore> {
 
   String getBadgeCount() {
     int totalItem = 0;
-    basketBloc.basketItems.forEach((element) {
+    for (var element in basketBloc.basketItems) {
       totalItem = totalItem + int.parse(element.qty.toString());
-    });
+    }
     // for (var item in basketBloc.items) {
     //
     //   if (item['item'] is Product) {

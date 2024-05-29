@@ -24,7 +24,7 @@ class MovieTile extends StatelessWidget {
           child: ListTile(
             contentPadding:
                 const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
-            leading: Container(
+            leading: SizedBox(
               height: 68,
               width: 68,
               child: ClipRRect(
@@ -117,7 +117,7 @@ class _MovieTileWithHeartState extends State<MovieTileWithHeart> {
           child: ListTile(
             contentPadding:
                 const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
-            leading: Container(
+            leading: SizedBox(
               height: 68,
               width: 68,
               child: ClipRRect(
@@ -218,7 +218,7 @@ class _MovieTileGeneralState extends State<MovieTileGeneral> {
           child: ListTile(
             contentPadding:
                 const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
-            leading: Container(
+            leading: SizedBox(
               height: 68,
               width: 68,
               child: ClipRRect(

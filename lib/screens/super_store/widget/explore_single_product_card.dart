@@ -347,7 +347,7 @@ class _ExploreSingleProductState extends State<ExploreSingleProduct> {
           message: AppLocalization.of(context)!.cantPurchaseYourOwnServices);
     }
     if (widget.product.isProductAvailableNow()) {
-      final String type = "product";
+      const String type = "product";
       if (widget.product.variantModels?.isNotEmpty ?? false) {
         showToast(message: AppLocalization.of(context)!.selectVariantColorSize);
         Navigator.pushNamed(context, '/product',
@@ -369,7 +369,7 @@ class _ExploreSingleProductState extends State<ExploreSingleProduct> {
   }
 
   Future<void> addToSharedCart(SharedCartModel result) async {
-    final String type = "product";
+    const String type = "product";
 
     final Product products =
         widget.product.copyWith(quantity: 1, withSelectedAddOn: true);

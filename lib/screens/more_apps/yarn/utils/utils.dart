@@ -28,9 +28,9 @@ String getGetYarnQuestionDateTime(String dateTime) {
 List<String> getAllHashtags(String text) {
   text = messageDecoderWithEmoji(text) ?? "";
   text = text.replaceAll(RegExp(r'\n'), ' ');
-  var new_list = text.split(" ");
+  final new_list = text.split(" ");
   new_list.removeWhere((item) => ["", " ", null, false, 0].contains(item));
-  List<String> hashtags = [];
+  final List<String> hashtags = [];
   for (var i in new_list) {
     if (i.startsWith("#")) {
       debugPrint("NaI:$i");
@@ -51,8 +51,8 @@ List<String> getAllHashtags(String text) {
 List<String> getAllMentions(String text) {
   final regexp = RegExp(r'\@[a-zA-Z0-9._-]+\b()');
 
-  List<String> mentions = [];
-  List<String> filterMention = [];
+  final List<String> mentions = [];
+  final List<String> filterMention = [];
 
   regexp.allMatches(text.replaceAll("\n", " ")).forEach((element) {
     if (element.group(0) != null) {

@@ -343,7 +343,7 @@ class LocationTileForChatMessage extends StatelessWidget {
               ),
             ),
             if (isSend)
-              Container(
+              SizedBox(
                 width: 20,
                 child: isSend
                     ? Center(

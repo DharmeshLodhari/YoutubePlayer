@@ -99,43 +99,43 @@ class _EditShippingOptionsState extends State<EditShippingOptions> {
                     border: Border.all(color: iconBtnGrey, width: 1)),
                 child: Form(
                   key: _formKey,
-                  child: Container(
-                    child: Column(
-                      children: <Widget>[
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: Column(
-                            children: [
+                  child: Column(
+                    children: <Widget>[
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Column(
+                          children: [
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            getLocation(),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            displayAmountField(),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            if (errorMessage == "")
+                              Container()
+                            else
+                              Text(
+                                errorMessage,
+                                style: TextStyle(
+                                    color: mateRed,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16),
+                              ),
+                            if (errorMessage == "")
+                              Container()
+                            else
                               const SizedBox(
                                 height: 20,
                               ),
-                              getLocation(),
-                              const SizedBox(
-                                height: 20,
-                              ),
-                              displayAmountField(),
-                              const SizedBox(
-                                height: 20,
-                              ),
-                              errorMessage == ""
-                                  ? Container()
-                                  : Text(
-                                      errorMessage,
-                                      style: TextStyle(
-                                          color: mateRed,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16),
-                                    ),
-                              errorMessage == ""
-                                  ? Container()
-                                  : const SizedBox(
-                                      height: 20,
-                                    ),
-                            ],
-                          ),
+                          ],
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -335,13 +335,13 @@ class _EditShippingOptionsState extends State<EditShippingOptions> {
         } else {
           if (response.statusCode == 406) {
             errorMessage = jsonDecode(value.body)[0];
-            showToast(message: "$errorMessage");
+            showToast(message: errorMessage);
             setState(() {});
           } else {
             debugPrint("ERROR:- ${response.body}");
             setState(() {
               errorMessage = AppLocalization.of(context)!.somethingWentWrong;
-              showToast(message: "$errorMessage");
+              showToast(message: errorMessage);
             });
           }
         }

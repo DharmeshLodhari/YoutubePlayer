@@ -140,7 +140,7 @@ class AuthService {
 
   Future<List<CompanyName>?> listOfCompanyName(String query) async {
     final String url =
-        AppConfig.baseUrl + "/api/v1/user/merchant-search/?q=$query";
+        "${AppConfig.baseUrl}/api/v1/user/merchant-search/?q=$query";
 
     debugPrint(url);
     final response = await httpGet(url);
@@ -166,9 +166,9 @@ class AuthService {
     // the auth user.
     var uri = "";
     if (!isStaffLogin) {
-      uri = AppConfig.baseUrl + "/api/v1/user/auth/get-token/";
+      uri = "${AppConfig.baseUrl}/api/v1/user/auth/get-token/";
     } else {
-      uri = AppConfig.baseUrl + "/api/v1/user/auth/get-staff-token/";
+      uri = "${AppConfig.baseUrl}/api/v1/user/auth/get-staff-token/";
     }
 
     final uuid = const Uuid();
@@ -226,7 +226,7 @@ class AuthService {
       log("User=> $jsonData");
       jsonData["password"] = password;
       jsonData["url"] =
-          AppConfig.baseUrl + "/api/v1/user/customer/" + jsonData["username"];
+          "${AppConfig.baseUrl}/api/v1/user/customer/" + jsonData["username"];
       final User user = await createUser(jsonData,
           staff: jsonResponse["staff"],
           permissions: jsonResponse["permissions"]);
@@ -252,7 +252,7 @@ class AuthService {
 
   // Log user out
   Future<void> logOut() async {
-    final uri = AppConfig.baseUrl + "/api/v1/user/auth/logout/";
+    final uri = "${AppConfig.baseUrl}/api/v1/user/auth/logout/";
     final headers = await getAuthHeaders();
     debugPrint("URL:- $uri Called !!");
     final Uri url = Uri.parse(uri);
@@ -319,7 +319,7 @@ class AuthService {
     String password = secureUser.password ?? "";
 
     if (phoneNumber != "") {
-      phoneNumber = "+" + country.phoneCode! + phoneNumber;
+      phoneNumber = "+${country.phoneCode!}$phoneNumber";
     }
 
     if (phoneNumber == "" || password == "") {
@@ -404,7 +404,7 @@ class AuthService {
       jwt = await fetchNewToken();
     }
 
-    final String bearer = "Bearer " + jwt!.access!;
+    final String bearer = "Bearer ${jwt!.access!}";
     // log("$bearer");
     final uuid = const Uuid();
     final transactionId = uuid.v4();
@@ -478,7 +478,7 @@ class AuthService {
 
   Future<Map<String, dynamic>?> listOfIndustries() async {
     final String url =
-        AppConfig.baseUrl + "/api/v1/user/profile-industries/?page_size=200";
+        "${AppConfig.baseUrl}/api/v1/user/profile-industries/?page_size=200";
 
     debugPrint(url);
     final headers = await getAuthHeaders();
@@ -493,10 +493,9 @@ class AuthService {
         return result;
       }
       final jsonData = json.decode(response.body);
-      final List<ProductIndustryResults>? results =
-          (jsonData["results"] as List)
-              .map((e) => ProductIndustryResults.fromJson(e))
-              .toList();
+      final List<ProductIndustryResults> results = (jsonData["results"] as List)
+          .map((e) => ProductIndustryResults.fromJson(e))
+          .toList();
 
       final Map<String, dynamic> result = {"product": results};
 
@@ -527,7 +526,7 @@ class AuthService {
   //register device
   Future<bool> registerDevice(Map data) async {
     final String url =
-        AppConfig.baseUrl + "/api/v1/notification/register-device/";
+        "${AppConfig.baseUrl}/api/v1/notification/register-device/";
     final headers = await getAuthHeaders();
     final _data = jsonEncode(data);
 
@@ -542,7 +541,7 @@ class AuthService {
 
   // it will unregister the device from server
   Future<bool> unRegisterDevice() async {
-    final uri = AppConfig.baseUrl + "/api/v1/notification/unregister-device/";
+    final uri = "${AppConfig.baseUrl}/api/v1/notification/unregister-device/";
     final headers = await getAuthHeaders();
     final _data = jsonEncode({});
     debugPrint("URL:- $uri Called !!");
@@ -553,7 +552,7 @@ class AuthService {
     } catch (e) {
       debugPrint(
           "URL:- $url STATUS CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
-      debugPrint("ERROR: WHILE UNREGISTERING DEVICE :-" + e.toString());
+      debugPrint("ERROR: WHILE UNREGISTERING DEVICE :-$e");
     }
     debugPrint(
         "URL:- $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
@@ -563,7 +562,7 @@ class AuthService {
   // it will tell the server our app is in which state
   Future<bool> updateAppState(Map data) async {
     final String url =
-        AppConfig.baseUrl + "/api/v1/notification/update-app-state/";
+        "${AppConfig.baseUrl}/api/v1/notification/update-app-state/";
     final headers = await getAuthHeaders();
     final _data = jsonEncode(data);
     var response;
@@ -572,7 +571,7 @@ class AuthService {
     } catch (e) {
       debugPrint(
           "URL:- $url STATUSCODE:- ${response?.statusCode} RESPONSEBODY:- ${response?.body}");
-      debugPrint("updateAppState : " + e.toString());
+      debugPrint("updateAppState : $e");
     }
     if (response != null) {
       if (response.statusCode != 200) {

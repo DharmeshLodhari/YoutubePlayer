@@ -146,7 +146,7 @@ extension BasketItemListPayloadGenerator on List<BasketItem> {
     if (basketItem.item?.isProduct ?? false) {
       final Product product = basketItem.item as Product;
 
-      final List<BasketItem> listOfBasketItem = this.where((element) {
+      final List<BasketItem> listOfBasketItem = where((element) {
         if (element.item?.isProduct ?? false) {
           if ((element.item as Product).id == product.id) {
             return true;
@@ -159,7 +159,7 @@ extension BasketItemListPayloadGenerator on List<BasketItem> {
       if (basketItem.hasVariant) {
         /// first we will check if the any variant have zero qty then we will remove those variants
         if (actionType == BasketListModifierAction.decreaseQty) {
-          this.forEach((element) {
+          forEach((element) {
             element.cleanVariantsWithZeroQty();
           });
         }
@@ -204,7 +204,7 @@ extension BasketItemListPayloadGenerator on List<BasketItem> {
           }
 
           /// to remove those items from basket item which's variant's qty =0;
-          this.removeWhere((element) => element.variants?.isEmpty ?? false);
+          removeWhere((element) => element.variants?.isEmpty ?? false);
         }
       } else if (basketItem.hasAddOns) {
         final List<AddedBy> itemAddedBy = [];
@@ -255,7 +255,7 @@ extension BasketItemListPayloadGenerator on List<BasketItem> {
 
         if (basketItem.qty == 0) {
           payloadType = BasketListModifierPayloadTypes.remove;
-          this.remove(basketItem);
+          remove(basketItem);
         } else {
           payloadType = BasketListModifierPayloadTypes.addOrUpdate;
         }
@@ -290,7 +290,7 @@ extension BasketItemListPayloadGenerator on List<BasketItem> {
 
         if (basketItem.qty == 0) {
           payloadType = BasketListModifierPayloadTypes.remove;
-          this.remove(basketItem);
+          remove(basketItem);
         } else {
           payloadType = BasketListModifierPayloadTypes.addOrUpdate;
         }

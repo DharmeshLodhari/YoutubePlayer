@@ -142,9 +142,9 @@ class _RequestPaymentState extends State<RequestPayment> {
       if (mounted) {
         setState(() {
           final List categoriesList = result["results"]["data"];
-          categoriesList.forEach((data) {
+          for (var data in categoriesList) {
             paymentCategoriesTest.add(data["name"]);
-          });
+          }
           isLoading = false;
         });
       }
@@ -256,67 +256,63 @@ class _RequestPaymentState extends State<RequestPayment> {
                           border: Border.all(color: iconBtnGrey, width: 1)),
                       child: Form(
                         key: _formKey,
-                        child: Container(
-                          child: Column(
-                            children: <Widget>[
-                              getDisplayCard(),
-                              Container(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 20),
-                                child: Column(
-                                  children: [
-                                    const SizedBox(height: 20),
-                                    getRecipientField(),
-                                    const SizedBox(height: 20),
-                                    Visibility(
-                                      visible: isConnection,
-                                      child: Column(
-                                        children: [
-                                          displayAmountField(),
+                        child: Column(
+                          children: <Widget>[
+                            getDisplayCard(),
+                            Container(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 20),
+                              child: Column(
+                                children: [
+                                  const SizedBox(height: 20),
+                                  getRecipientField(),
+                                  const SizedBox(height: 20),
+                                  Visibility(
+                                    visible: isConnection,
+                                    child: Column(
+                                      children: [
+                                        displayAmountField(),
+                                        const SizedBox(height: 20),
+                                        if (showMoreOption)
+                                          getMoreOption()
+                                        else
+                                          Container(),
+                                        getMoreOptionTrigger(),
+                                        if (errorMessage == "")
+                                          Container()
+                                        else
+                                          Text(
+                                            errorMessage,
+                                            style: TextStyle(
+                                                color: mateRed,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 16),
+                                          ),
+                                        if (errorMessage == "")
+                                          Container()
+                                        else
                                           const SizedBox(height: 20),
-                                          if (showMoreOption)
-                                            getMoreOption()
-                                          else
-                                            Container(),
-                                          getMoreOptionTrigger(),
-                                          if (errorMessage == "")
-                                            Container()
-                                          else
-                                            Text(
-                                              errorMessage,
-                                              style: TextStyle(
-                                                  color: mateRed,
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 16),
-                                            ),
-                                          if (errorMessage == "")
-                                            Container()
-                                          else
-                                            const SizedBox(height: 20),
-                                        ],
-                                      ),
+                                      ],
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
                   ),
-                  Container(
-                    child: Column(
-                      children: [
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        getSubmitButton(),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                      ],
-                    ),
+                  Column(
+                    children: [
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      getSubmitButton(),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -631,7 +627,7 @@ class _RequestPaymentState extends State<RequestPayment> {
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: Container(
+              content: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   elevation: 2,

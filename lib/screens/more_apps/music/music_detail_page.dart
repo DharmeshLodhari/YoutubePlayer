@@ -55,7 +55,7 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
       isLoading = false;
       setState(() {});
     } catch (t) {
-      debugPrint("t" + t.toString());
+      debugPrint("t$t");
       //mp3 unreachable
     }
   }
@@ -268,7 +268,7 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
                 borderRadius: 50,
                 shadowColor: Colors.black12.withOpacity(0.08)),
             child: ClipOval(
-              child: Container(
+              child: SizedBox(
                 height: 70,
                 width: 70,
                 child: StreamBuilder<bool>(
@@ -322,20 +322,18 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
     return ClipRRect(
       borderRadius: BorderRadius.circular(20),
       clipBehavior: Clip.hardEdge,
-      child: Container(
-        child: AspectRatio(
-          aspectRatio: 1,
-          child: musicPlayer!.audioPlayer.builderRealtimePlayingInfos(
-              builder: (context, info) {
-            return CachedNetworkImage(
-              imageUrl: info.current == null
-                  ? "https://www.naijaloaded.com.ng/wp-content/uploads/2019/10/erigga.jpg"
-                  : info.current!.audio.audio.metas.image!.path,
-              fit: BoxFit.fill,
-              errorWidget: imageErrorWidget,
-            );
-          }),
-        ),
+      child: AspectRatio(
+        aspectRatio: 1,
+        child: musicPlayer!.audioPlayer.builderRealtimePlayingInfos(
+            builder: (context, info) {
+          return CachedNetworkImage(
+            imageUrl: info.current == null
+                ? "https://www.naijaloaded.com.ng/wp-content/uploads/2019/10/erigga.jpg"
+                : info.current!.audio.audio.metas.image!.path,
+            fit: BoxFit.fill,
+            errorWidget: imageErrorWidget,
+          );
+        }),
       ),
     );
   }
@@ -381,7 +379,7 @@ class _PositionSeekWidgetState extends State<PositionSeekWidget> {
   Widget build(BuildContext context) {
     debugPrint("Max > ${widget.duration.inMilliseconds.toDouble().floor()}");
     debugPrint("===>${percent * widget.duration.inMilliseconds.toDouble()}");
-    return Container(
+    return SizedBox(
       height: 20,
       child: Stack(
         clipBehavior: Clip.none,

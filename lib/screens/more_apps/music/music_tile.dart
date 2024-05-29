@@ -16,7 +16,7 @@ import 'music_player.dart';
 // ignore: must_be_immutable
 class MusicTile extends StatelessWidget {
   String? imageUrl;
-  MusicTile({this.imageUrl});
+  MusicTile({super.key, this.imageUrl});
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -44,7 +44,7 @@ class MusicTile extends StatelessWidget {
                   width: 16,
                 ),
                 Expanded(
-                  child: Container(
+                  child: SizedBox(
                     height: 86,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -115,7 +115,7 @@ class _MusicTileWithHeartState extends State<MusicTileWithHeart> {
           child: ListTile(
             contentPadding:
                 const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
-            leading: Container(
+            leading: SizedBox(
               height: 68,
               width: 68,
               child: ClipRRect(
@@ -210,7 +210,7 @@ class _MusicTileGeneralState extends State<MusicTileGeneral> {
           child: ListTile(
             contentPadding:
                 const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
-            leading: Container(
+            leading: SizedBox(
               height: 68,
               width: 68,
               child: ClipRRect(

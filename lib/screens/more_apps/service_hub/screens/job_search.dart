@@ -52,7 +52,7 @@ class _JobsSearchState extends State<JobsSearch> {
         isLoading = true;
         if (mounted) setState(() {});
 
-        var result = await ServiceHubAuthService().getActiveJobListing(
+        final result = await ServiceHubAuthService().getActiveJobListing(
             next, previous,
             search: searchController.text,
             category: widget.filterMap?['category'] ?? category,
@@ -74,7 +74,7 @@ class _JobsSearchState extends State<JobsSearch> {
         count = result.count;
         next = result.next;
         previous = result.previous;
-        var tempList = result.results;
+        final tempList = result.results;
         if (mounted) {
           setState(() {
             isSearchIsEmpty = false;
@@ -144,7 +144,8 @@ class _JobsSearchState extends State<JobsSearch> {
         GestureDetector(
           onTap: () => Navigator.pushNamed(context, Routes.JOB_SEARCH_FILTER)
               .then((value) {
-            Map<String, dynamic> filterData = value as Map<String, dynamic>;
+            final Map<String, dynamic> filterData =
+                value as Map<String, dynamic>;
             debugPrint('stores map ${searchController.text}');
 
             category = filterData['category'];

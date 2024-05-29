@@ -809,29 +809,27 @@ class _PostDetailPageScaffoldBodyState
       onTap: user.userName == widget.userPost.authorUsername
           ? () => showToast(message: 'You cannot like your post')
           : likeUnlikePost,
-      child: Container(
-        child: Row(
-          children: [
-            Icon(
-              widget.userPost.userLiked == true
-                  ? Icons.thumb_up_alt_rounded
-                  : Icons.thumb_up_alt_outlined,
-              size: 16,
-              color: widget.userPost.userLiked == true ? navyBlue : blackFont,
+      child: Row(
+        children: [
+          Icon(
+            widget.userPost.userLiked == true
+                ? Icons.thumb_up_alt_rounded
+                : Icons.thumb_up_alt_outlined,
+            size: 16,
+            color: widget.userPost.userLiked == true ? navyBlue : blackFont,
+          ),
+          const SizedBox(width: 4),
+          Text(
+            widget.userPost.likes != null
+                ? widget.userPost.likes!.toString()
+                : '0',
+            style: TextStyle(
+              color: blackFont,
+              fontWeight: FontWeight.w400,
+              fontSize: 14,
             ),
-            const SizedBox(width: 4),
-            Text(
-              widget.userPost.likes != null
-                  ? widget.userPost.likes!.toString()
-                  : '0',
-              style: TextStyle(
-                color: blackFont,
-                fontWeight: FontWeight.w400,
-                fontSize: 14,
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -841,30 +839,27 @@ class _PostDetailPageScaffoldBodyState
       onTap: user.userName == widget.userPost.authorUsername
           ? () => showToast(message: 'You cannot dislike your post')
           : dislikeUnlikePost,
-      child: Container(
-        child: Row(
-          children: [
-            Icon(
-              widget.userPost.userDisLiked == true
-                  ? Icons.thumb_down_alt_rounded
-                  : Icons.thumb_down_alt_outlined,
-              size: 16,
-              color:
-                  widget.userPost.userDisLiked! == true ? mateRed : blackFont,
+      child: Row(
+        children: [
+          Icon(
+            widget.userPost.userDisLiked == true
+                ? Icons.thumb_down_alt_rounded
+                : Icons.thumb_down_alt_outlined,
+            size: 16,
+            color: widget.userPost.userDisLiked! == true ? mateRed : blackFont,
+          ),
+          const SizedBox(width: 4),
+          Text(
+            widget.userPost.dislikes != null
+                ? widget.userPost.dislikes!.toString()
+                : '0',
+            style: TextStyle(
+              color: blackFont,
+              fontWeight: FontWeight.w400,
+              fontSize: 14,
             ),
-            const SizedBox(width: 4),
-            Text(
-              widget.userPost.dislikes != null
-                  ? widget.userPost.dislikes!.toString()
-                  : '0',
-              style: TextStyle(
-                color: blackFont,
-                fontWeight: FontWeight.w400,
-                fontSize: 14,
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -909,14 +904,12 @@ class _PostDetailPageScaffoldBodyState
         Navigator.of(context)
             .pushNamed(Routes.PHOTO_VIEWER, arguments: widget.postImageUrl);
       },
-      child: Container(
-        child: CachedNetworkImage(
-          imageUrl: widget.postImageUrl ?? "",
-          fit: BoxFit.cover,
-          width: double.infinity,
-          height: 220,
-          errorWidget: imageErrorWidget,
-        ),
+      child: CachedNetworkImage(
+        imageUrl: widget.postImageUrl ?? "",
+        fit: BoxFit.cover,
+        width: double.infinity,
+        height: 220,
+        errorWidget: imageErrorWidget,
       ),
     );
   }
@@ -1073,17 +1066,15 @@ class _PostDetailPageScaffoldBodyState
               const SizedBox(height: 10),
               Column(
                   children: widget.newsListRelatedPostItems!
-                      .map((news) => Container(
-                            child: Column(
-                              children: [
-                                NewsTile(
-                                  newsListItem: news,
-                                ),
-                                const SizedBox(
-                                  height: 16,
-                                )
-                              ],
-                            ),
+                      .map((news) => Column(
+                            children: [
+                              NewsTile(
+                                newsListItem: news,
+                              ),
+                              const SizedBox(
+                                height: 16,
+                              )
+                            ],
                           ))
                       .toList()),
             ],

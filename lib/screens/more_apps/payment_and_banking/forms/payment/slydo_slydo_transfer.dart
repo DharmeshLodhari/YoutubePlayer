@@ -101,36 +101,24 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
   @override
   void initState() {
     final String? defaultReferenceText =
-        widget.arguments['defaultReferenceText'] != null
-            ? widget.arguments['defaultReferenceText']
-            : null;
+        widget.arguments['defaultReferenceText'];
     _referenceController = TextEditingController(text: defaultReferenceText);
     reference = _referenceController.text;
 
     isFromProfile = widget.arguments != null
-        ? widget.arguments['isFromProfile'] != null
-            ? widget.arguments['isFromProfile']
-            : false
+        ? widget.arguments['isFromProfile'] ?? false
         : false;
     isFromChat = widget.arguments != null
-        ? widget.arguments['isFromChat'] != null
-            ? widget.arguments['isFromChat']
-            : false
+        ? widget.arguments['isFromChat'] ?? false
         : false;
     isFromYarn = widget.arguments != null
-        ? widget.arguments['isFromYarn'] != null
-            ? widget.arguments['isFromYarn']
-            : false
+        ? widget.arguments['isFromYarn'] ?? false
         : false;
     isFromMoment = widget.arguments != null
-        ? widget.arguments['isFromMoment'] != null
-            ? widget.arguments['isFromMoment']
-            : false
+        ? widget.arguments['isFromMoment'] ?? false
         : false;
     conversationId = widget.arguments != null
-        ? widget.arguments['conversationId'] != null
-            ? widget.arguments['conversationId']
-            : null
+        ? widget.arguments['conversationId'] ?? null
         : null;
     product = widget.arguments != null ? widget.arguments['product'] : null;
     service = widget.arguments != null ? widget.arguments['service'] : null;
@@ -142,16 +130,15 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
     if (service != null) {
       setAllFieldService();
     }
-    _recipientFocus
-      ..addListener(() {
-        if (!_recipientFocus.hasFocus) {
-          if (mounted) {
-            setState(() {
-              _recipientController.text = _recipientController.text;
-            });
-          }
+    _recipientFocus.addListener(() {
+      if (!_recipientFocus.hasFocus) {
+        if (mounted) {
+          setState(() {
+            _recipientController.text = _recipientController.text;
+          });
         }
-      });
+      }
+    });
     getRecipientProfileAndGetCategory();
     getBankAccountDetail();
     super.initState();
@@ -244,9 +231,9 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
       if (mounted) {
         setState(() {
           final List categoriesList = result["results"]["data"];
-          categoriesList.forEach((data) {
+          for (var data in categoriesList) {
             paymentCategories.add(data["name"]);
-          });
+          }
           isLoading = false;
         });
       }
@@ -287,7 +274,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
         enableMargin: true,
       );
     }
-    return Container(
+    return SizedBox(
       height: 10,
       width: 10,
     );
@@ -332,7 +319,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
         const SizedBox(
           height: 8,
         ),
-        Container(
+        SizedBox(
           width: MediaQuery.of(context).size.width,
           child: Card(
             elevation: 0,
@@ -640,7 +627,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
         },
       );
     }
-    return Container(
+    return SizedBox(
       height: 1,
       width: 1,
     );
@@ -902,7 +889,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: Container(
+              content: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   elevation: 2,
@@ -1084,7 +1071,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
           content: Stack(
             clipBehavior: Clip.none,
             children: [
-              Container(
+              SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   elevation: 2,
@@ -1272,7 +1259,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
 
                       deviceData = await getDeviceInfo();
 
-                      final String description = 'General Payment';
+                      const String description = 'General Payment';
                       final data = {
                         "from_customer": userBloc.user.userName,
                         "to_customer": _recipientController.text.trim(),
@@ -1386,14 +1373,14 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
                           Navigator.pop(context);
                           if (response.statusCode == 406) {
                             errorMessage = jsonDecode(value.body)[0];
-                            showToast(message: "$errorMessage");
+                            showToast(message: errorMessage);
                             setState(() {});
                           } else {
                             debugPrint("ERROR:- ${response.body}");
                             setState(() {
                               errorMessage = AppLocalization.of(context)!
                                   .somethingWentWrong;
-                              showToast(message: "$errorMessage");
+                              showToast(message: errorMessage);
                             });
                           }
                         }

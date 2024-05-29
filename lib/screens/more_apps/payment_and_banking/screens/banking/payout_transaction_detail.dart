@@ -283,40 +283,38 @@ class _PayoutTransactionDetailState extends State<PayoutTransactionDetail> {
   }
 
   Widget displayBodyOfPayout() {
-    return Container(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Divider(
-            color: dividerColor,
-            thickness: 1,
-            height: 0,
-          ),
-          transactionOrPayoutTile(
-            'assets/images/payout/status.svg',
-            AppLocalization.of(context)!.status,
-            payout!.status!,
-            true,
-          ),
-          transactionOrPayoutTile(
-            'assets/images/payout/account_name.svg',
-            AppLocalization.of(context)!.accountNameHint,
-            payout!.accountName!,
-            false,
-          ),
-          transactionOrPayoutTile(
-              'assets/images/payout/account_number.svg',
-              AppLocalization.of(context)!.accountNumberHint,
-              payout!.accountNumber!,
-              false),
-          transactionOrPayoutTile(
-              'assets/images/payout/description.svg',
-              AppLocalization.of(context)!.description,
-              messageDecoderWithEmoji(payout!.description) ?? '---',
-              false),
-        ],
-      ),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Divider(
+          color: dividerColor,
+          thickness: 1,
+          height: 0,
+        ),
+        transactionOrPayoutTile(
+          'assets/images/payout/status.svg',
+          AppLocalization.of(context)!.status,
+          payout!.status!,
+          true,
+        ),
+        transactionOrPayoutTile(
+          'assets/images/payout/account_name.svg',
+          AppLocalization.of(context)!.accountNameHint,
+          payout!.accountName!,
+          false,
+        ),
+        transactionOrPayoutTile(
+            'assets/images/payout/account_number.svg',
+            AppLocalization.of(context)!.accountNumberHint,
+            payout!.accountNumber!,
+            false),
+        transactionOrPayoutTile(
+            'assets/images/payout/description.svg',
+            AppLocalization.of(context)!.description,
+            messageDecoderWithEmoji(payout!.description) ?? '---',
+            false),
+      ],
     );
   }
 

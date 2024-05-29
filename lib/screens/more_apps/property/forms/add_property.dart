@@ -955,28 +955,24 @@ class _AddPropertyState extends State<AddProperty> {
   }
 
   Widget sellButton() {
-    return Container(
-      child: Text(
-        "Sell",
-        style: TextStyle(
-            fontWeight:
-                isPropertyForSellOrRent[0] ? FontWeight.w600 : FontWeight.w400,
-            fontSize: 16,
-            color: isPropertyForSellOrRent[0] ? Colors.white : blackFont),
-      ),
+    return Text(
+      "Sell",
+      style: TextStyle(
+          fontWeight:
+              isPropertyForSellOrRent[0] ? FontWeight.w600 : FontWeight.w400,
+          fontSize: 16,
+          color: isPropertyForSellOrRent[0] ? Colors.white : blackFont),
     );
   }
 
   Widget rentButton() {
-    return Container(
-      child: Text(
-        "Rent",
-        style: TextStyle(
-            fontWeight:
-                isPropertyForSellOrRent[1] ? FontWeight.w600 : FontWeight.w400,
-            fontSize: 16,
-            color: isPropertyForSellOrRent[1] ? Colors.white : blackFont),
-      ),
+    return Text(
+      "Rent",
+      style: TextStyle(
+          fontWeight:
+              isPropertyForSellOrRent[1] ? FontWeight.w600 : FontWeight.w400,
+          fontSize: 16,
+          color: isPropertyForSellOrRent[1] ? Colors.white : blackFont),
     );
   }
 

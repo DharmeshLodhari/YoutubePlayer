@@ -290,8 +290,9 @@ class _MaterialControlsState extends State<MaterialControls> {
               setState(() {
                 _hideStuff = true;
               });
-            } else
+            } else {
               _cancelAndRestartTimer();
+            }
           } else {
             _playPause();
 
@@ -344,8 +345,9 @@ class _MaterialControlsState extends State<MaterialControls> {
                 setState(() {
                   _hideStuff = true;
                 });
-              } else
+              } else {
                 _cancelAndRestartTimer();
+              }
             } else {
               _playPause();
 

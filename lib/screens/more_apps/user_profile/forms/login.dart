@@ -118,7 +118,7 @@ class _UserLoginState extends State<UserLogin> {
 
       if (phoneNumberFromPref != null) {
         phoneNumber =
-            "+" + _selectedDialogCountry.phoneCode! + phoneNumberFromPref!;
+            "+${_selectedDialogCountry.phoneCode!}${phoneNumberFromPref!}";
       }
 
       password = passwordFromPref;
@@ -191,30 +191,26 @@ class _UserLoginState extends State<UserLogin> {
   }
 
   Widget appIcon() {
-    return Container(
-      child: Image.asset(
-        "assets/images/app_logo_navyBlue.png",
-        height: MediaQuery.of(context).size.height / 22,
-        frameBuilder: imageFrameBuilder,
-      ),
+    return Image.asset(
+      "assets/images/app_logo_navyBlue.png",
+      height: MediaQuery.of(context).size.height / 22,
+      frameBuilder: imageFrameBuilder,
     );
   }
 
   Widget loginTitle() {
-    return Container(
-      child: Row(
-        children: <Widget>[
-          Text(
-            currentIndex == 0 ? "Log in to Slydo" : 'Staff Login',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w600,
-              color: blackFont,
-              fontFamily: "Inter",
-            ),
+    return Row(
+      children: <Widget>[
+        Text(
+          currentIndex == 0 ? "Log in to Slydo" : 'Staff Login',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+            color: blackFont,
+            fontFamily: "Inter",
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -335,28 +331,26 @@ class _UserLoginState extends State<UserLogin> {
                 trackVisibility: true,
                 thumbColor: navyBlue,
                 radius: const Radius.circular(15),
-                child: Container(
-                  child: ListView(
-                    padding: EdgeInsets.zero,
-                    shrinkWrap: true,
-                    controller: scrollController,
-                    children: _dropdownItems.map((String value) {
-                      return Container(
-                        color: white,
-                        child: ListTile(
-                          dense: true,
-                          title: Text(value),
-                          onTap: () {
-                            companyController?.text = value;
-                            companyController?.text = value;
-                            _dropdownItems.clear();
-                            setState(() {});
-                            companyFocusNode?.unfocus();
-                          },
-                        ),
-                      );
-                    }).toList(),
-                  ),
+                child: ListView(
+                  padding: EdgeInsets.zero,
+                  shrinkWrap: true,
+                  controller: scrollController,
+                  children: _dropdownItems.map((String value) {
+                    return Container(
+                      color: white,
+                      child: ListTile(
+                        dense: true,
+                        title: Text(value),
+                        onTap: () {
+                          companyController?.text = value;
+                          companyController?.text = value;
+                          _dropdownItems.clear();
+                          setState(() {});
+                          companyFocusNode?.unfocus();
+                        },
+                      ),
+                    );
+                  }).toList(),
                 ),
               ),
             ),
@@ -366,7 +360,7 @@ class _UserLoginState extends State<UserLogin> {
   }
 
   Widget dropdownCountrySearch() {
-    return Container(
+    return SizedBox(
       height: 50,
       child: DropdownSearch<String>(
         popupProps: PopupProps.menu(
@@ -583,7 +577,7 @@ class _UserLoginState extends State<UserLogin> {
         const SizedBox(width: 8.0),
         Expanded(
           child: Text(
-            "(" + country.name! + ")",
+            "(${country.name!})",
             overflow: TextOverflow.fade,
             softWrap: false,
             style: TextStyle(
@@ -636,54 +630,50 @@ class _UserLoginState extends State<UserLogin> {
     final BoxDecoration selectedDecoration = BoxDecoration(
         borderRadius: BorderRadius.circular(10),
         border: Border.all(color: navyBlue));
-    return Container(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(
-            "Password",
-            style: TextStyle(
-              fontSize: 14,
-              color: darkGrey,
-              fontWeight: FontWeight.w400,
-              fontFamily: "Inter",
-            ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          "Password",
+          style: TextStyle(
+            fontSize: 14,
+            color: darkGrey,
+            fontWeight: FontWeight.w400,
+            fontFamily: "Inter",
           ),
-          const SizedBox(
-            height: 6.0,
-          ),
-          PinPut(
-            eachFieldWidth: 45,
-            eachFieldHeight: 45,
-            obscureText: '•',
-            validator: (val) => val!.length < 4
-                ? AppLocalization.of(context)!.invalidPassword
-                : null,
-            fieldsCount: 6,
-            focusNode: _pinPutFocusNode,
-            controller: passwordController,
-            submittedFieldDecoration: pinPutDecoration,
-            selectedFieldDecoration: selectedDecoration,
-            followingFieldDecoration: pinPutDecoration,
-            pinAnimationType: PinAnimationType.scale,
-            textInputAction: TextInputAction.done,
-            keyboardType: TextInputType.number,
-            textStyle: TextStyle(color: blackFont, fontSize: 35),
-          ),
-        ],
-      ),
+        ),
+        const SizedBox(
+          height: 6.0,
+        ),
+        PinPut(
+          eachFieldWidth: 45,
+          eachFieldHeight: 45,
+          obscureText: '•',
+          validator: (val) => val!.length < 4
+              ? AppLocalization.of(context)!.invalidPassword
+              : null,
+          fieldsCount: 6,
+          focusNode: _pinPutFocusNode,
+          controller: passwordController,
+          submittedFieldDecoration: pinPutDecoration,
+          selectedFieldDecoration: selectedDecoration,
+          followingFieldDecoration: pinPutDecoration,
+          pinAnimationType: PinAnimationType.scale,
+          textInputAction: TextInputAction.done,
+          keyboardType: TextInputType.number,
+          textStyle: TextStyle(color: blackFont, fontSize: 35),
+        ),
+      ],
     );
   }
 
   Widget rememberMeAndForgotPasswordField() {
-    return Container(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: <Widget>[
-          //   rememberMeField(),
-          forgotPasswordField(),
-        ],
-      ),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: <Widget>[
+        //   rememberMeField(),
+        forgotPasswordField(),
+      ],
     );
   }
 
@@ -698,12 +688,12 @@ class _UserLoginState extends State<UserLogin> {
               width: Checkbox.width - 1.5,
               height: Checkbox.width - 1.5,
               child: Container(
-                decoration: new BoxDecoration(
+                decoration: BoxDecoration(
                   border: Border.all(
                     color: greyBorderColor,
                     width: 1,
                   ),
-                  borderRadius: new BorderRadius.circular(5),
+                  borderRadius: BorderRadius.circular(5),
                 ),
                 child: Theme(
                   data: ThemeData(
@@ -756,19 +746,17 @@ class _UserLoginState extends State<UserLogin> {
   }
 
   Widget forgotPasswordField() {
-    return Container(
-      child: GestureDetector(
-        onTap: () {
-          Navigator.of(context).pushNamed('/forgot-password');
-        },
-        child: Text(
-          AppLocalization.of(context)!.forgotPassword,
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-            color: navyBlue,
-            fontFamily: "Inter",
-          ),
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).pushNamed('/forgot-password');
+      },
+      child: Text(
+        AppLocalization.of(context)!.forgotPassword,
+        style: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+          color: navyBlue,
+          fontFamily: "Inter",
         ),
       ),
     );
@@ -808,7 +796,7 @@ class _UserLoginState extends State<UserLogin> {
       }
 
       phoneNumber =
-          "+" + _selectedDialogCountry.phoneCode! + phoneNumberFromTextField;
+          "+${_selectedDialogCountry.phoneCode!}$phoneNumberFromTextField";
       password = passwordController!.text.trim();
       companyName = companyController!.text.trim();
       bool isStaffLogin;
@@ -939,14 +927,14 @@ class _UserLoginState extends State<UserLogin> {
   void initializeShoppingCart() async {
     debugPrint("initializeShoppingCart called");
     final List items = await ShoppingAuthService().getShoppingCart();
-    items.forEach((element) {
+    for (var element in items) {
       final String type = element is Product ? "product" : "service";
       basketBloc.addItemToCart(
           item: element,
           type: type,
           currentUser: userBloc.user.convertToUser(),
           withApiCall: false);
-    });
+    }
     await sharedCartBloc.refreshAllCart(context);
   }
 

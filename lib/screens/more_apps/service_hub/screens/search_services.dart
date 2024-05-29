@@ -14,7 +14,6 @@ import 'package:flutter/material.dart';
 import '../../../../../../utils/util.dart';
 import '../../../../../../widget/customized_dropdown_field.dart';
 import '../../../../../../widget/rounded_background_icon.dart';
-import '../../../../widget/debouncer_widget.dart';
 
 class SearchServices extends StatefulWidget {
   SearchServices({
@@ -69,7 +68,6 @@ class _SearchServicesState extends State<SearchServices> {
   String? sortBy;
   String? sortByMenuItemValue = 'Best match';
   TextEditingController searchController = TextEditingController();
-  final _debouncer = Debouncer(milliseconds: 500);
 
   @override
   void initState() {
@@ -95,7 +93,7 @@ class _SearchServicesState extends State<SearchServices> {
           _refreshList();
         });
       }
-      if (products.isNotEmpty || searchController.text.length != 0) {
+      if (products.isNotEmpty || searchController.text.isNotEmpty) {
         if (mounted) {
           setState(() {
             isSearchIsEmpty = false;
@@ -158,9 +156,9 @@ class _SearchServicesState extends State<SearchServices> {
         if (mounted) {
           isLoading = false;
           try {
-            tempList!.forEach((result) {
+            for (var result in tempList!) {
               products.add(result);
-            });
+            }
             debugPrint("PRODUCTS:- $products");
           } catch (e) {
             debugPrint("error adding products $e");
@@ -199,9 +197,9 @@ class _SearchServicesState extends State<SearchServices> {
       servicesCategories = await ShoppingAuthService().getServicesCategories();
       servicesCategoriesCopy = servicesCategories;
 
-      servicesCategoriesCopy!.forEach((element) {
+      for (var element in servicesCategoriesCopy!) {
         categoryCheckMark[element.name] = false;
-      });
+      }
     } catch (e) {
       servicesCategories = [];
       servicesCategoriesCopy = [];

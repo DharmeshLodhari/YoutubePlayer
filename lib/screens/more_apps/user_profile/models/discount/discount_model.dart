@@ -106,21 +106,21 @@ class DiscountModel {
       updatedAt = DateTime.parse(json['updated_at']);
     }
     consumables = json['consumables'] != null
-        ? new Consumables.fromJson(json['consumables'])
+        ? Consumables.fromJson(json['consumables'])
         : null;
     poster = json['poster'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
     map['type'] = type?.toValue();
-    data['name'] = this.name;
-    data['merchant'] = this.merchant;
-    data['is_active'] = this.isActive;
-    data['value'] = this.value;
-    data['product_count'] = this.productCount;
-    data['service_count'] = this.serviceCount;
+    data['name'] = name;
+    data['merchant'] = merchant;
+    data['is_active'] = isActive;
+    data['value'] = value;
+    data['product_count'] = productCount;
+    data['service_count'] = serviceCount;
     if (startDate != null) {
       map['start_date'] = startDate?.toString();
     }
@@ -137,13 +137,13 @@ class DiscountModel {
       map['created_at'] = createdAt?.toString();
     }
 
-    data['only_from'] = this.onlyFrom;
-    data['only_to'] = this.onlyTo;
-    data['created_at'] = this.createdAt;
-    if (this.consumables != null) {
-      data['consumables'] = this.consumables!.toJson();
+    data['only_from'] = onlyFrom;
+    data['only_to'] = onlyTo;
+    data['created_at'] = createdAt;
+    if (consumables != null) {
+      data['consumables'] = consumables!.toJson();
     }
-    data['poster'] = this.poster;
+    data['poster'] = poster;
     return data;
   }
 
@@ -300,12 +300,12 @@ class Consumables {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    if (this.product != null) {
-      data['Product'] = this.product;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    if (product != null) {
+      data['Product'] = product;
     }
-    if (this.service != null) {
-      data['Service'] = this.service;
+    if (service != null) {
+      data['Service'] = service;
     }
     return data;
   }

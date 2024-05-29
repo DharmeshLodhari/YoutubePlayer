@@ -7,7 +7,7 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/main.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/moments/screens/trimmer_view.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/gif_model/GIFModel.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/gif_model/gif_model.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/product_and_service_tile_for_search.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
@@ -392,8 +392,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
       onChanged: onValueChange,
       inputFormatters: [LengthLimitingTextInputFormatter(400)],
       decoration: InputDecoration(
-        counterText:
-            textController!.text.length.toString() + "/" + 400.toString(),
+        counterText: "${textController!.text.length}/${400}",
         hintText: "Leave your thought",
         hintStyle: TextStyle(
           fontSize: 13,
@@ -671,7 +670,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
   }
 
   Widget gifPreviewList() {
-    return Container(
+    return SizedBox(
       height: MediaQuery.of(context).size.height / 3,
       child: _isGIFLoading
           ? Center(child: CircularLoadingIndicator())
@@ -698,7 +697,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
                       imageUrl: _gifs[index].images!.previewGif!.url!,
                       fit: BoxFit.fill,
                       errorWidget: imageErrorWidget,
-                      placeholder: (context, url) => Container(
+                      placeholder: (context, url) => SizedBox(
                           width: MediaQuery.of(context).size.width / 2,
                           child: Center(child: CircularLoadingIndicator())),
                     ),
@@ -921,7 +920,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(
+        SizedBox(
           height: 100,
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
@@ -983,7 +982,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Container(
+        SizedBox(
           height: 100,
           child: Stack(
             children: <Widget>[
@@ -1040,7 +1039,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Container(
+        SizedBox(
           height: 100,
           child: Stack(
             children: <Widget>[
@@ -1205,12 +1204,11 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
       key: UniqueKey(),
       onTap: (String? tappedUser) {
         if (tappedUser != null) {
-          textController!.text = textController!.text.replaceRange(
-                (textController!.text.length - (searchString?.length ?? 0)),
-                textController!.text.length,
-                tappedUser,
-              ) +
-              " ";
+          textController!.text = "${textController!.text.replaceRange(
+            (textController!.text.length - (searchString?.length ?? 0)),
+            textController!.text.length,
+            tappedUser,
+          )} ";
           textController!.selection = TextSelection.fromPosition(TextPosition(
             offset: textController!.text.length,
           ));
@@ -1352,7 +1350,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
 
             Navigator.pop(context);
           },
-          child: Container(
+          child: SizedBox(
             height: 48,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -2002,8 +2000,9 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     productOrServiceCount = 0;
     productOrServiceNext = "";
     productOrServicePrevious = "";
-    if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+    if (bottomSheetStateSetterGlobal != null && bottomSheetMounted) {
       bottomSheetStateSetterGlobal!(() {});
+    }
     if (mounted) setState(() {});
   }
 
@@ -2014,8 +2013,9 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
       if (productOrServiceNext != null && !isItemLoading) {
         isItemLoading = true;
 
-        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+        if (bottomSheetStateSetterGlobal != null && bottomSheetMounted) {
           bottomSheetStateSetterGlobal!(() {});
+        }
         if (mounted) setState(() {});
 
         final Map<String, dynamic>? result = await MessageAuth()
@@ -2031,11 +2031,12 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
         final List tempList = result['results'];
 
         isItemLoading = false;
-        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+        if (bottomSheetStateSetterGlobal != null && bottomSheetMounted) {
           bottomSheetStateSetterGlobal!(() {});
+        }
         if (mounted) setState(() {});
 
-        tempList.forEach((item) {
+        for (var item in tempList) {
           if (isProductSearch) {
             searchedProductAndService.add(Product.fromJson(item));
           } else if (isServiceSearch) {
@@ -2045,16 +2046,18 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
           } else if (isUserSearch) {
             searchedProductAndService.add(CustomerProfile.fromJson(item));
           }
-        });
+        }
 
-        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+        if (bottomSheetStateSetterGlobal != null && bottomSheetMounted) {
           bottomSheetStateSetterGlobal!(() {});
+        }
         if (mounted) setState(() {});
       }
       if (searchedProductAndService.isEmpty) {
         noSearchedItem = true;
-        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+        if (bottomSheetStateSetterGlobal != null && bottomSheetMounted) {
           bottomSheetStateSetterGlobal!(() {});
+        }
         if (mounted) setState(() {});
       }
     }
@@ -2062,26 +2065,16 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
 
   String getSearchUrl() {
     if (isProductSearch) {
-      return AppConfig.baseUrl +
-          "/api/v1/search/products/?search=name__wildcard|*" +
-          searchItemTextController!.text +
-          "*";
+      return "${AppConfig.baseUrl}/api/v1/search/products/?search=name__wildcard|*${searchItemTextController!.text}*";
     }
     if (isServiceSearch) {
-      return AppConfig.baseUrl +
-          "/api/v1/search/services/?search=name__wildcard|*" +
-          searchItemTextController!.text +
-          "*";
+      return "${AppConfig.baseUrl}/api/v1/search/services/?search=name__wildcard|*${searchItemTextController!.text}*";
     }
     if (isUserSearch) {
-      return AppConfig.baseUrl +
-          "/api/v1/search/users/?search=" +
-          searchItemTextController!.text;
+      return "${AppConfig.baseUrl}/api/v1/search/users/?search=${searchItemTextController!.text}";
     }
     if (isBlogSearch) {
-      return AppConfig.baseUrl +
-          "/api/v1/social/posts/public/?search=" +
-          searchItemTextController!.text;
+      return "${AppConfig.baseUrl}/api/v1/social/posts/public/?search=${searchItemTextController!.text}";
     }
     return "";
   }
@@ -2399,38 +2392,36 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
   }
 
   Widget checkIfProductService() {
-    return Container(
-      child: Column(
-        children: [
-          Stack(
-            children: <Widget>[
-              getPreviewContainer(),
-              Positioned(
-                right: 20,
-                top: 10,
-                child: InkWell(
-                  onTap: () {
-                    yarnDashboardBloc!.productService = null;
-                    if (mounted) setState(() {});
-                  },
-                  child: Container(
-                    height: 25,
-                    width: 25,
-                    margin: const EdgeInsets.only(right: 6, top: 6),
-                    decoration: BoxDecoration(
-                        color: HexColor("#000000"), shape: BoxShape.circle),
-                    child: Icon(
-                      Icons.close_outlined,
-                      color: white,
-                      size: 15,
-                    ),
+    return Column(
+      children: [
+        Stack(
+          children: <Widget>[
+            getPreviewContainer(),
+            Positioned(
+              right: 20,
+              top: 10,
+              child: InkWell(
+                onTap: () {
+                  yarnDashboardBloc!.productService = null;
+                  if (mounted) setState(() {});
+                },
+                child: Container(
+                  height: 25,
+                  width: 25,
+                  margin: const EdgeInsets.only(right: 6, top: 6),
+                  decoration: BoxDecoration(
+                      color: HexColor("#000000"), shape: BoxShape.circle),
+                  child: Icon(
+                    Icons.close_outlined,
+                    color: white,
+                    size: 15,
                   ),
                 ),
               ),
-            ],
-          ),
-        ],
-      ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 

@@ -166,7 +166,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     await launchUrl(launchUri);
   }
 
-  getOrderStatusTime(Order? order, String? status) {
+  String getOrderStatusTime(Order? order, String? status) {
     var time = '';
     var date = '';
     order?.statusTimeStamp?.map((e) {
@@ -180,7 +180,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     return date + time;
   }
 
-  getActiveOrderStatus(Order? order, String? status) {
+  bool getActiveOrderStatus(Order? order, String? status) {
     bool value = false;
     order?.statusTimeStamp?.map((e) {
       if (e[status ?? ''] != null) {
@@ -190,7 +190,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     return value;
   }
 
-  getCanceledOrderStatus(Order? order, String? status) {
+  bool getCanceledOrderStatus(Order? order, String? status) {
     bool value = false;
     for (var v in order?.statusTimeStamp ?? []) {
       if (v.containsKey('Canceled')) {
@@ -200,7 +200,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     return value;
   }
 
-  getOnHoldAndPendingOrderStatus(Order? order, String? status) {
+  bool getOnHoldAndPendingOrderStatus(Order? order, String? status) {
     bool value = false;
     for (var v in order?.statusTimeStamp ?? []) {
       if (v.containsKey('On Hold') || v.containsKey('Pending')) {
@@ -295,7 +295,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
       ),
       centerTitle: false,
       title: Text(
-        "${"Ref # :" + (order?.id ?? "")}",
+        "${"Ref # :${order?.id ?? ""}"}",
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
@@ -801,31 +801,29 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   }
 
   Widget getNoteAddTextField() {
-    return Container(
-      child: TextFormField(
-        maxLines: 8,
-        onFieldSubmitted: (val) {
-          addNote();
-        },
-        cursorColor: blackFont,
-        decoration: InputDecoration(
-          isDense: true,
-          labelText: AppLocalization.of(context)?.enterYourNoteHere,
-          labelStyle: TextStyle(color: darkGrey),
-          alignLabelWithHint: true,
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide(color: greyBorderColor, width: 1),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide(color: greyBorderColor, width: 1),
-          ),
+    return TextFormField(
+      maxLines: 8,
+      onFieldSubmitted: (val) {
+        addNote();
+      },
+      cursorColor: blackFont,
+      decoration: InputDecoration(
+        isDense: true,
+        labelText: AppLocalization.of(context)?.enterYourNoteHere,
+        labelStyle: TextStyle(color: darkGrey),
+        alignLabelWithHint: true,
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(color: greyBorderColor, width: 1),
         ),
-        onChanged: (val) {
-          note = val;
-        },
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(color: greyBorderColor, width: 1),
+        ),
       ),
+      onChanged: (val) {
+        note = val;
+      },
     );
   }
 
@@ -848,11 +846,11 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     });
   }
 
-  getOrderNote() {
+  String getOrderNote() {
     if (order?.note == "") {
-      return AppLocalization.of(context)!.noSpecialNoteAttached + " !!";
+      return "${AppLocalization.of(context)!.noSpecialNoteAttached} !!";
     }
-    return order?.note;
+    return order?.note ?? "";
   }
 
   void showChangeStatusAndroidSheet() {
@@ -1041,7 +1039,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Text(
-                  AppLocalization.of(context)!.subTotal + " : ",
+                  "${AppLocalization.of(context)!.subTotal} : ",
                   style: TextStyle(
                     fontSize: 14,
                     color: black,
@@ -1073,7 +1071,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Text(
-                  AppLocalization.of(context)!.shipping + " : ",
+                  "${AppLocalization.of(context)!.shipping} : ",
                   style: TextStyle(
                     fontSize: 14,
                     color: black,
@@ -1105,7 +1103,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Text(
-                  AppLocalization.of(context)!.tax + " : ",
+                  "${AppLocalization.of(context)!.tax} : ",
                   style: TextStyle(
                     fontSize: 14,
                     color: black,
@@ -1138,7 +1136,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Text(
-                  AppLocalization.of(context)!.total + " : ",
+                  "${AppLocalization.of(context)!.total} : ",
                   style: TextStyle(
                     fontSize: 14,
                     color: black,
@@ -1184,7 +1182,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     );
   }
 
-  getItemTileUi(int index) {
+  StatefulWidget getItemTileUi(int index) {
     if (items[index]["type"] == "product") {
       return OrderTileForProduct(
         items[index],
@@ -1263,7 +1261,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
 
   void handleSlideIsOpenChanged(bool? isOpen) {}
 
-  void updateStatus(value) {
+  void updateStatus(String value) {
     showDialog(
         context: context,
         builder: (dialogLoadingContext) => LoadingIndicator());
@@ -1283,15 +1281,15 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
 
   int _currentStep = 0;
 
-  tapped(int step) {
+  void tapped(int step) {
     setState(() => _currentStep = step);
   }
 
-  continued() {
+  void continued() {
     _currentStep < 5 ? setState(() => _currentStep += 1) : null;
   }
 
-  cancel() {
+  void cancel() {
     _currentStep > 0 ? setState(() => _currentStep -= 1) : null;
   }
 
@@ -1510,302 +1508,300 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   }
 
   Widget stepperBodyOld() {
-    return Container(
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
-            track.OrderTrackerStepper(
-              type: track.StepperType.vertical,
-              physics: const AlwaysScrollableScrollPhysics(),
-              currentStep: _currentStep,
-              onStepTapped: (step) => tapped(step),
-              onStepContinue: continued,
-              onStepCancel: cancel,
-              controlsBuilder: (context, details) {
-                return Container(
-                  color: navyBlue,
-                  child: Container(),
-                );
-              },
-              steps: <track.Step>[
-                track.Step(
-                  title: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Text('Order Placed',
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500)),
-                      Text(
-                          getActiveOrderStatus(order, "New Order")
-                              ? 'This order has been placed sucessfully.'
-                              : "",
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w400)),
-                      Text(getOrderStatusTime(order, "New Order"),
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w400)),
-                    ],
-                  ),
-                  content: const SizedBox.shrink(),
-                  isActive: getActiveOrderStatus(order, "New Order"),
-                  state: getActiveOrderStatus(order, "New Order")
-                      ? track.StepState.complete
-                      : track.StepState.disabled,
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          track.OrderTrackerStepper(
+            type: track.StepperType.vertical,
+            physics: const AlwaysScrollableScrollPhysics(),
+            currentStep: _currentStep,
+            onStepTapped: (step) => tapped(step),
+            onStepContinue: continued,
+            onStepCancel: cancel,
+            controlsBuilder: (context, details) {
+              return Container(
+                color: navyBlue,
+                child: Container(),
+              );
+            },
+            steps: <track.Step>[
+              track.Step(
+                title: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text('Order Placed',
+                        style: TextStyle(
+                            color: blackFont,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500)),
+                    Text(
+                        getActiveOrderStatus(order, "New Order")
+                            ? 'This order has been placed sucessfully.'
+                            : "",
+                        style: TextStyle(
+                            color: blackFont,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w400)),
+                    Text(getOrderStatusTime(order, "New Order"),
+                        style: TextStyle(
+                            color: blackFont,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w400)),
+                  ],
                 ),
-                track.Step(
-                  title: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Awaiting Payment',
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500)),
-                      Text(
-                          getActiveOrderStatus(order, "Awaiting Payment")
-                              ? 'Your order is onhold till payment is being confirmed.'
-                              : "",
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w400)),
-                      Text(getOrderStatusTime(order, "Awaiting Payment"),
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w400)),
-                    ],
-                  ),
-                  content: const SizedBox.shrink(),
-                  isActive: getActiveOrderStatus(order, "Awaiting Payment"),
-                  state: getActiveOrderStatus(order, "Awaiting Payment")
-                      ? track.StepState.editing
-                      : track.StepState.disabled,
+                content: const SizedBox.shrink(),
+                isActive: getActiveOrderStatus(order, "New Order"),
+                state: getActiveOrderStatus(order, "New Order")
+                    ? track.StepState.complete
+                    : track.StepState.disabled,
+              ),
+              track.Step(
+                title: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Awaiting Payment',
+                        style: TextStyle(
+                            color: blackFont,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500)),
+                    Text(
+                        getActiveOrderStatus(order, "Awaiting Payment")
+                            ? 'Your order is onhold till payment is being confirmed.'
+                            : "",
+                        style: TextStyle(
+                            color: blackFont,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w400)),
+                    Text(getOrderStatusTime(order, "Awaiting Payment"),
+                        style: TextStyle(
+                            color: blackFont,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w400)),
+                  ],
                 ),
-                track.Step(
-                  title: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Payment Successful',
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500)),
-                      Text(
-                          getActiveOrderStatus(order, "Payment Received")
-                              ? 'Payment has been receive sucessfully.'
-                              : "",
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w400)),
-                      Text(getOrderStatusTime(order, "Payment Received"),
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w400)),
-                    ],
-                  ),
-                  content: const SizedBox.shrink(),
-                  isActive: getActiveOrderStatus(order, "Payment Received"),
-                  state: getActiveOrderStatus(order, "Payment Received")
-                      ? track.StepState.complete
-                      : track.StepState.disabled,
+                content: const SizedBox.shrink(),
+                isActive: getActiveOrderStatus(order, "Awaiting Payment"),
+                state: getActiveOrderStatus(order, "Awaiting Payment")
+                    ? track.StepState.editing
+                    : track.StepState.disabled,
+              ),
+              track.Step(
+                title: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Payment Successful',
+                        style: TextStyle(
+                            color: blackFont,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500)),
+                    Text(
+                        getActiveOrderStatus(order, "Payment Received")
+                            ? 'Payment has been receive sucessfully.'
+                            : "",
+                        style: TextStyle(
+                            color: blackFont,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w400)),
+                    Text(getOrderStatusTime(order, "Payment Received"),
+                        style: TextStyle(
+                            color: blackFont,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w400)),
+                  ],
                 ),
-                track.Step(
-                  title: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Processing',
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500)),
-                      Text(
-                          getActiveOrderStatus(order, "Processing")
-                              ? 'Your order is being prepared for shipment'
-                              : "",
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w400)),
-                      Text(getOrderStatusTime(order, "Processing"),
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w400)),
-                    ],
-                  ),
-                  content: const SizedBox.shrink(),
-                  isActive: getActiveOrderStatus(order, "Processing"),
-                  state: getActiveOrderStatus(order, "Processing")
-                      ? track.StepState.complete
-                      : track.StepState.disabled,
+                content: const SizedBox.shrink(),
+                isActive: getActiveOrderStatus(order, "Payment Received"),
+                state: getActiveOrderStatus(order, "Payment Received")
+                    ? track.StepState.complete
+                    : track.StepState.disabled,
+              ),
+              track.Step(
+                title: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Processing',
+                        style: TextStyle(
+                            color: blackFont,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500)),
+                    Text(
+                        getActiveOrderStatus(order, "Processing")
+                            ? 'Your order is being prepared for shipment'
+                            : "",
+                        style: TextStyle(
+                            color: blackFont,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w400)),
+                    Text(getOrderStatusTime(order, "Processing"),
+                        style: TextStyle(
+                            color: blackFont,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w400)),
+                  ],
                 ),
-                track.Step(
-                  title: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Shipped',
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500)),
-                      Text(
-                          getActiveOrderStatus(order, "Order Picked Up")
-                              ? 'Your order has been shipped and is in transit'
-                              : "",
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w400)),
-                      Text(getOrderStatusTime(order, "Order Picked Up"),
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w400)),
-                    ],
-                  ),
-                  content: const SizedBox.shrink(),
-                  isActive: getActiveOrderStatus(order, "Order Picked Up"),
-                  state: getActiveOrderStatus(order, "Order Picked Up")
-                      ? track.StepState.complete
-                      : track.StepState.disabled,
+                content: const SizedBox.shrink(),
+                isActive: getActiveOrderStatus(order, "Processing"),
+                state: getActiveOrderStatus(order, "Processing")
+                    ? track.StepState.complete
+                    : track.StepState.disabled,
+              ),
+              track.Step(
+                title: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Shipped',
+                        style: TextStyle(
+                            color: blackFont,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500)),
+                    Text(
+                        getActiveOrderStatus(order, "Order Picked Up")
+                            ? 'Your order has been shipped and is in transit'
+                            : "",
+                        style: TextStyle(
+                            color: blackFont,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w400)),
+                    Text(getOrderStatusTime(order, "Order Picked Up"),
+                        style: TextStyle(
+                            color: blackFont,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w400)),
+                  ],
                 ),
-                track.Step(
-                  title: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('On hold/Pending',
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500)),
-                      Text(
-                          getActiveOrderStatus(order, "On Hold") ||
-                                  getActiveOrderStatus(order, "Pending")
-                              ? 'Your order is onhold till the product is restocked.'
-                              : "",
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w400)),
-                      Text(
-                          getOrderStatusTime(order, "On Hold") ??
-                              getOrderStatusTime(order, "Pending"),
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w400)),
-                    ],
-                  ),
-                  content: const SizedBox.shrink(),
-                  isActive: getActiveOrderStatus(order, "On Hold"),
-                  state: getActiveOrderStatus(order, "On Hold")
-                      ? track.StepState.editing
-                      : track.StepState.disabled,
+                content: const SizedBox.shrink(),
+                isActive: getActiveOrderStatus(order, "Order Picked Up"),
+                state: getActiveOrderStatus(order, "Order Picked Up")
+                    ? track.StepState.complete
+                    : track.StepState.disabled,
+              ),
+              track.Step(
+                title: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('On hold/Pending',
+                        style: TextStyle(
+                            color: blackFont,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500)),
+                    Text(
+                        getActiveOrderStatus(order, "On Hold") ||
+                                getActiveOrderStatus(order, "Pending")
+                            ? 'Your order is onhold till the product is restocked.'
+                            : "",
+                        style: TextStyle(
+                            color: blackFont,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w400)),
+                    Text(
+                        getOrderStatusTime(order, "On Hold") ??
+                            getOrderStatusTime(order, "Pending"),
+                        style: TextStyle(
+                            color: blackFont,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w400)),
+                  ],
                 ),
-                track.Step(
-                  title: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Out for delivery',
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500)),
-                      Text(
-                          getActiveOrderStatus(order, "Out For Delivery")
-                              ? 'Your order is out for delivery and  will arrive soon'
-                              : "",
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w400)),
-                      Text(getOrderStatusTime(order, "Out For Delivery"),
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w400)),
-                    ],
-                  ),
-                  content: const SizedBox.shrink(),
-                  isActive: getActiveOrderStatus(order, "Out For Delivery"),
-                  state: getActiveOrderStatus(order, "Out For Delivery")
-                      ? track.StepState.complete
-                      : track.StepState.disabled,
+                content: const SizedBox.shrink(),
+                isActive: getActiveOrderStatus(order, "On Hold"),
+                state: getActiveOrderStatus(order, "On Hold")
+                    ? track.StepState.editing
+                    : track.StepState.disabled,
+              ),
+              track.Step(
+                title: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Out for delivery',
+                        style: TextStyle(
+                            color: blackFont,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500)),
+                    Text(
+                        getActiveOrderStatus(order, "Out For Delivery")
+                            ? 'Your order is out for delivery and  will arrive soon'
+                            : "",
+                        style: TextStyle(
+                            color: blackFont,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w400)),
+                    Text(getOrderStatusTime(order, "Out For Delivery"),
+                        style: TextStyle(
+                            color: blackFont,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w400)),
+                  ],
                 ),
-                track.Step(
-                  title: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Canceled',
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500)),
-                      Text(
-                          getActiveOrderStatus(order, "Canceled")
-                              ? 'This order has been cancelled'
-                              : "",
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w400)),
-                      Text(getOrderStatusTime(order, "Canceled"),
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w400)),
-                    ],
-                  ),
-                  content: const SizedBox.shrink(),
-                  isActive: getActiveOrderStatus(order, "Canceled"),
-                  state: getActiveOrderStatus(order, "Canceled")
-                      ? track.StepState.error
-                      : track.StepState.disabled,
+                content: const SizedBox.shrink(),
+                isActive: getActiveOrderStatus(order, "Out For Delivery"),
+                state: getActiveOrderStatus(order, "Out For Delivery")
+                    ? track.StepState.complete
+                    : track.StepState.disabled,
+              ),
+              track.Step(
+                title: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Canceled',
+                        style: TextStyle(
+                            color: blackFont,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500)),
+                    Text(
+                        getActiveOrderStatus(order, "Canceled")
+                            ? 'This order has been cancelled'
+                            : "",
+                        style: TextStyle(
+                            color: blackFont,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w400)),
+                    Text(getOrderStatusTime(order, "Canceled"),
+                        style: TextStyle(
+                            color: blackFont,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w400)),
+                  ],
                 ),
-                track.Step(
-                  title: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Order recieved',
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500)),
-                      Text(
-                          getActiveOrderStatus(order, "Complete")
-                              ? 'Your order has been delivered sucessfully, thank you for shopping from us'
-                              : "",
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w400)),
-                      Text(getOrderStatusTime(order, "Complete"),
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w400)),
-                    ],
-                  ),
-                  content: const SizedBox.shrink(),
-                  isActive: getActiveOrderStatus(order, "Complete"),
-                  state: getActiveOrderStatus(order, "Complete")
-                      ? track.StepState.complete
-                      : track.StepState.disabled,
+                content: const SizedBox.shrink(),
+                isActive: getActiveOrderStatus(order, "Canceled"),
+                state: getActiveOrderStatus(order, "Canceled")
+                    ? track.StepState.error
+                    : track.StepState.disabled,
+              ),
+              track.Step(
+                title: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Order recieved',
+                        style: TextStyle(
+                            color: blackFont,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500)),
+                    Text(
+                        getActiveOrderStatus(order, "Complete")
+                            ? 'Your order has been delivered sucessfully, thank you for shopping from us'
+                            : "",
+                        style: TextStyle(
+                            color: blackFont,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w400)),
+                    Text(getOrderStatusTime(order, "Complete"),
+                        style: TextStyle(
+                            color: blackFont,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w400)),
+                  ],
                 ),
-              ],
-            ),
-          ],
-        ),
+                content: const SizedBox.shrink(),
+                isActive: getActiveOrderStatus(order, "Complete"),
+                state: getActiveOrderStatus(order, "Complete")
+                    ? track.StepState.complete
+                    : track.StepState.disabled,
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

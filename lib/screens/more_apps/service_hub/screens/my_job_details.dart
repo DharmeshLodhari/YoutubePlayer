@@ -282,7 +282,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
                         const CustomText(
                           title: "Description",
                           fontSize: 14,
-                          fontweight: FontWeight.w700,
+                          fontWeight: FontWeight.w700,
                         ),
                         const SizedBox(
                           height: 8,
@@ -308,7 +308,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
                         const CustomText(
                           title: 'Due date',
                           fontSize: 14,
-                          fontweight: FontWeight.w700,
+                          fontWeight: FontWeight.w700,
                         ),
                         Row(
                           children: [
@@ -348,7 +348,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
                         const CustomText(
                           title: "Location",
                           fontSize: 14,
-                          fontweight: FontWeight.w700,
+                          fontWeight: FontWeight.w700,
                         ),
                         Row(
                           children: [
@@ -387,7 +387,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
                         const CustomText(
                           title: "Category",
                           fontSize: 14,
-                          fontweight: FontWeight.w700,
+                          fontWeight: FontWeight.w700,
                         ),
                         Text(
                           "${job?.category?.name}",
@@ -415,7 +415,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
                                 const CustomText(
                                   title: 'Job Activity',
                                   fontSize: 14,
-                                  fontweight: FontWeight.w700,
+                                  fontWeight: FontWeight.w700,
                                 ),
                                 const SizedBox(
                                   height: 10,
@@ -548,7 +548,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
                                 const CustomText(
                                   title: 'Job Activity',
                                   fontSize: 14,
-                                  fontweight: FontWeight.w700,
+                                  fontWeight: FontWeight.w700,
                                 ),
                                 const SizedBox(
                                   height: 10,
@@ -785,7 +785,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
                                 const CustomText(
                                   title: "Contractor",
                                   fontSize: 14,
-                                  fontweight: FontWeight.w700,
+                                  fontWeight: FontWeight.w700,
                                 ),
                                 GestureDetector(
                                   onTap: () => Navigator.pushNamed(
@@ -835,7 +835,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
                                 const CustomText(
                                   title: "Posted By",
                                   fontSize: 14,
-                                  fontweight: FontWeight.w700,
+                                  fontWeight: FontWeight.w700,
                                 ),
                                 GestureDetector(
                                   onTap: () => Navigator.pushNamed(
@@ -898,7 +898,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
                           const CustomText(
                             title: "Review",
                             fontSize: 14,
-                            fontweight: FontWeight.w700,
+                            fontWeight: FontWeight.w700,
                           ),
                           const SizedBox(
                             height: 20,
@@ -1064,7 +1064,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
     return 'Paid';
   }
 
-  getPaymentStatusRow() {
+  Widget getPaymentStatusRow() {
     return Column(
       children: [
         const Divider(),
@@ -1076,7 +1076,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
               const CustomText(
                 title: 'Payment',
                 fontSize: 14,
-                fontweight: FontWeight.w700,
+                fontWeight: FontWeight.w700,
               ),
               const SizedBox(
                 height: 10,
@@ -1120,7 +1120,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
               const CustomText(
                 title: 'Job Status',
                 fontSize: 14,
-                fontweight: FontWeight.w700,
+                fontWeight: FontWeight.w700,
               ),
               const SizedBox(
                 height: 10,
@@ -1188,7 +1188,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
               const CustomText(
                 title: 'Job Mode',
                 fontSize: 14,
-                fontweight: FontWeight.w700,
+                fontWeight: FontWeight.w700,
               ),
               const SizedBox(
                 height: 10,
@@ -1220,7 +1220,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
           const CustomText(
             title: 'Job Activity',
             fontSize: 14,
-            fontweight: FontWeight.w700,
+            fontWeight: FontWeight.w700,
           ),
           const SizedBox(
             height: 10,
@@ -1236,7 +1236,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
             child: CustomText(
                 title: "Applied by: ${job!.applicantsCount}",
                 fontSize: 12,
-                fontweight: FontWeight.w600),
+                fontWeight: FontWeight.w600),
           ),
         ],
       ),
@@ -1250,7 +1250,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
         CustomText(
           title: title,
           fontSize: 12,
-          fontweight: FontWeight.w700,
+          fontWeight: FontWeight.w700,
         ),
         Container(
           height: 34,
@@ -1293,7 +1293,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
               CustomText(
                 title: "${job!.title}",
                 fontSize: 16,
-                fontweight: FontWeight.w700,
+                fontWeight: FontWeight.w700,
               ),
               const SizedBox(
                 height: 5,
@@ -1431,7 +1431,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
     }
   }
 
-  endJobButton() {
+  Widget endJobButton() {
     return CurvedButton(
       onPressed: isAPILoading
           ? () {}
@@ -1451,7 +1451,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
     );
   }
 
-  endJob() async {
+  void endJob() async {
     await ServiceHubAuthService().endJob(job!.id).then((value) {
       debugPrint("$value");
       if (value == true) {
@@ -1465,7 +1465,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
     });
   }
 
-  getRatingsAndReveiw() async {
+  void getRatingsAndReveiw() async {
     await ServiceHubAuthService()
         .rateAndReviewContratorDetail(jobId: job!.id)
         .then((value) {
@@ -1524,7 +1524,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
     );
   }
 
-  getListNowBtn() {
+  Widget getListNowBtn() {
     return CurvedButton(
       onPressed: isAPILoading
           ? () {}
@@ -1544,7 +1544,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
     );
   }
 
-  getUnListNowBtn() {
+  Widget getUnListNowBtn() {
     return CurvedButton(
       onPressed: isAPILoading
           ? () {}
@@ -1564,7 +1564,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
     );
   }
 
-  getApplyNowBtn() {
+  Widget getApplyNowBtn() {
     return CurvedButton(
       onPressed: isAPILoading
           ? () {}
@@ -1585,7 +1585,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
     );
   }
 
-  cancelApplicationNowBtn() {
+  Widget cancelApplicationNowBtn() {
     return CurvedButton(
       onPressed: isAPILoading
           ? () {}
@@ -1600,7 +1600,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
     );
   }
 
-  createJobListing() async {
+  void createJobListing() async {
     await ServiceHubAuthService().createListing({
       "job": job!.id,
     }).then((value) {
@@ -1613,7 +1613,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
     });
   }
 
-  removeJobFromActiveListing() async {
+  void removeJobFromActiveListing() async {
     await ServiceHubAuthService()
         .removeJobListing(job!.activeListing)
         .then((value) {
@@ -1625,7 +1625,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
     });
   }
 
-  applyForJob() async {
+  void applyForJob() async {
     await ServiceHubAuthService().applyForJob(
         {"applicant": "${userBloc.user.userName}"},
         jobId: job!.id).then((value) {
@@ -1638,7 +1638,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
     });
   }
 
-  cancelApplication() async {
+  void cancelApplication() async {
     await ServiceHubAuthService().cancelApplicationForJob(
         {"applicant": "${userBloc.user.userName}"},
         jobId: job!.id).then((value) {
@@ -1998,10 +1998,9 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
             shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
             jobModel: job,
             callback: (params) async {
-              params
-                ..attachment = {
-                  "job": job?.toJson().cast<String, dynamic>() ?? {}
-                };
+              params.attachment = {
+                "job": job?.toJson().cast<String, dynamic>() ?? {}
+              };
               final bool data =
                   await YarnAuth().addYarnAndQuestion(params, '', '');
               if (data) {
@@ -2112,13 +2111,14 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
 
 class CustomText extends StatelessWidget {
   const CustomText({
+    super.key,
     required this.title,
     required this.fontSize,
-    required this.fontweight,
+    required this.fontWeight,
   });
   final String title;
   final double fontSize;
-  final FontWeight fontweight;
+  final FontWeight fontWeight;
 
   @override
   Widget build(BuildContext context) {
@@ -2128,7 +2128,7 @@ class CustomText extends StatelessWidget {
         color: const Color(0xff030e36),
         fontSize: fontSize,
         fontFamily: "Inter",
-        fontWeight: fontweight,
+        fontWeight: fontWeight,
       ),
     );
   }

@@ -328,7 +328,7 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
               isAPILoading = true;
               if (mounted) setState(() {});
 
-              await loadAllCheckedAddOn();
+              loadAllCheckedAddOn();
 
               isAPILoading = false;
               if (mounted) setState(() {});
@@ -411,8 +411,8 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
       direction: Axis.horizontal,
       actionPane: const SlidableBehindActionPane(),
       actionExtentRatio: 0.25,
-      child: VerticalListItem(bankAccountTile),
       actions: listActionSlideActions(addOns: addOns),
+      child: VerticalListItem(bankAccountTile),
       // secondaryActions: listSecondaryActions(addOns: addOns),
     );
   }

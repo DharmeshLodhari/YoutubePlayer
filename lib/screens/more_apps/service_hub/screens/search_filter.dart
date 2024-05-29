@@ -26,7 +26,7 @@ class JobsSearchFilter extends StatefulWidget {
 }
 
 class _JobsSearchFilterState extends State<JobsSearchFilter> {
-  TextEditingController _controller = TextEditingController();
+  final TextEditingController _controller = TextEditingController();
   String productPrice = "";
   String priceFrom = "";
   String priceTo = "";
@@ -64,8 +64,8 @@ class _JobsSearchFilterState extends State<JobsSearchFilter> {
   List<String> categoriesNameList = [];
   final GlobalKey<ScaffoldMessengerState> _filterScaffoldMessengerKey =
       GlobalKey<ScaffoldMessengerState>();
-  ScrollController _categoriesScrollController = ScrollController();
-  ScrollController _locationScrollController = ScrollController();
+  final ScrollController _categoriesScrollController = ScrollController();
+  final ScrollController _locationScrollController = ScrollController();
 
   final List<String> items = [
     'Item1',

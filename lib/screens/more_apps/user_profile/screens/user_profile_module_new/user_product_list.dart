@@ -82,14 +82,14 @@ class _UserProductListState extends State<UserProductList> {
     getNextUrl();
 
     fetchMerchantDiscount();
-    widget.type != null ? listOfUsersProduct() : this.getProductList();
+    widget.type != null ? listOfUsersProduct() : getProductList();
 
     _productScrollController.addListener(() {
       if (_productScrollController.position.pixels ==
               _productScrollController.position.maxScrollExtent &&
           _productScrollController.position.pixels != 0) {
         if (widget.type == null) {
-          widget.type != null ? listOfUsersProduct() : this.getProductList();
+          widget.type != null ? listOfUsersProduct() : getProductList();
         }
       }
     });

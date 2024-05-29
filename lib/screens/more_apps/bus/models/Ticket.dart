@@ -33,14 +33,14 @@ class Ticket {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['from'] = this.from;
-    data['from_time'] = this.fromTime;
-    data['gate'] = this.gate;
-    data['journey_time'] = this.journeyTime;
-    data['qr_code'] = this.qrCode;
-    data['seat'] = this.seat;
-    data['to'] = this.to;
-    data['to_time'] = this.toTime;
+    data['from'] = from;
+    data['from_time'] = fromTime;
+    data['gate'] = gate;
+    data['journey_time'] = journeyTime;
+    data['qr_code'] = qrCode;
+    data['seat'] = seat;
+    data['to'] = to;
+    data['to_time'] = toTime;
     return data;
   }
 }

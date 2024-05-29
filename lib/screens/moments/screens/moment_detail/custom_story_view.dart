@@ -471,17 +471,17 @@ class StoryViewShiddoState extends State<StoryViewShiddo>
       });
     }
 
-    this._playbackSubscription =
+    _playbackSubscription =
         widget.controller.playbackNotifier.listen((playbackStatus) {
       switch (playbackStatus) {
         case PlaybackState.play:
           _removeNextHold();
-          this._animationController?.forward();
+          _animationController?.forward();
           break;
 
         case PlaybackState.pause:
           _holdNext(); // then pause animation
-          this._animationController?.stop(canceled: false);
+          _animationController?.stop(canceled: false);
           break;
 
         case PlaybackState.next:
@@ -571,15 +571,15 @@ class StoryViewShiddoState extends State<StoryViewShiddo>
   void _goBack() {
     _animationController!.stop();
 
-    if (this._currentStory == null) {
+    if (_currentStory == null) {
       widget.storyItems.last!.shown = false;
     }
 
-    if (this._currentStory == widget.storyItems.first) {
+    if (_currentStory == widget.storyItems.first) {
       _beginPlay();
     } else {
-      this._currentStory!.shown = false;
-      int lastPos = widget.storyItems.indexOf(this._currentStory);
+      _currentStory!.shown = false;
+      int lastPos = widget.storyItems.indexOf(_currentStory);
       final previous = widget.storyItems[lastPos - 1]!;
 
       previous.shown = false;
@@ -589,11 +589,11 @@ class StoryViewShiddoState extends State<StoryViewShiddo>
   }
 
   void _goForward() {
-    if (this._currentStory != widget.storyItems.last) {
+    if (_currentStory != widget.storyItems.last) {
       _animationController!.stop();
 
       // get last showing
-      final _last = this._currentStory;
+      final _last = _currentStory;
 
       if (_last != null) {
         _last.shown = true;
@@ -648,7 +648,7 @@ class StoryViewShiddoState extends State<StoryViewShiddo>
                     widget.storyItems
                         .map((it) => PageData(it!.duration, it.shown))
                         .toList(),
-                    this._currentAnimation,
+                    _currentAnimation,
                     key: UniqueKey(),
                     indicatorHeight: widget.inline
                         ? IndicatorHeight.small
@@ -793,8 +793,8 @@ class PageBarState extends State<PageBar> {
       children: widget.pages.map((it) {
         return Expanded(
           child: Container(
-            padding: EdgeInsets.only(
-                right: widget.pages.last == it ? 0 : this.spacing),
+            padding:
+                EdgeInsets.only(right: widget.pages.last == it ? 0 : spacing),
             child: StoryProgressIndicator(
               isPlaying(it) ? widget.animation!.value : (it.shown ? 1 : 0),
               indicatorHeight:
@@ -829,14 +829,14 @@ class StoryProgressIndicator extends StatelessWidget {
   Widget build(BuildContext context) {
     return CustomPaint(
       size: Size.fromHeight(
-        this.indicatorHeight,
+        indicatorHeight,
       ),
       foregroundPainter: IndicatorOval(
-        this.indicatorForegroundColor ?? Colors.white.withOpacity(0.8),
-        this.value,
+        indicatorForegroundColor ?? Colors.white.withOpacity(0.8),
+        value,
       ),
       painter: IndicatorOval(
-        this.indicatorColor ?? Colors.white.withOpacity(0.4),
+        indicatorColor ?? Colors.white.withOpacity(0.4),
         1.0,
       ),
     );
@@ -851,10 +851,10 @@ class IndicatorOval extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()..color = this.color;
+    final paint = Paint()..color = color;
     canvas.drawRRect(
         RRect.fromRectAndRadius(
-            Rect.fromLTWH(0, 0, size.width * this.widthFactor, size.height),
+            Rect.fromLTWH(0, 0, size.width * widthFactor, size.height),
             const Radius.circular(3)),
         paint);
   }

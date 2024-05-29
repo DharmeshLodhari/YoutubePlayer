@@ -65,7 +65,7 @@ class _YarnQuotePreviewState extends State<YarnQuotePreview> {
 
       linkToBePreview = linkData['links'][0];
       if (!linkToBePreview!.contains("http")) {
-        linkToBePreview = "http://" + linkToBePreview!;
+        linkToBePreview = "http://${linkToBePreview!}";
       }
     }
 
@@ -392,9 +392,9 @@ class _YarnQuotePreviewState extends State<YarnQuotePreview> {
           !data.toString().endsWith('.')) {
         final replaceWith = 'http://' + data;
 
-        newString = newString + ' ' + replaceWith.toString();
+        newString = '$newString $replaceWith';
       } else {
-        newString = newString + ' ' + data.toString();
+        newString = '$newString $data';
       }
     });
 
@@ -433,7 +433,7 @@ class _YarnQuotePreviewState extends State<YarnQuotePreview> {
               key: ValueKey("${linkToBePreview}233"),
               url: linkToBePreview!,
               builder: (info) {
-                if (info == null)
+                if (info == null) {
                   return InkWell(
                     onTap: () {
                       launchUrl(Uri.parse(linkToBePreview!));
@@ -449,6 +449,7 @@ class _YarnQuotePreviewState extends State<YarnQuotePreview> {
                       ),
                     ),
                   );
+                }
                 if (info is WebImageInfo) {
                   return CachedNetworkImage(
                     imageUrl: info.image!,
@@ -458,11 +459,12 @@ class _YarnQuotePreviewState extends State<YarnQuotePreview> {
                 }
 
                 final WebInfo webInfo = info as WebInfo;
-                if (!WebAnalyzer.isNotEmpty(webInfo.title))
+                if (!WebAnalyzer.isNotEmpty(webInfo.title)) {
                   return const SizedBox(
                     height: 0,
                     width: 0,
                   );
+                }
                 return Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),

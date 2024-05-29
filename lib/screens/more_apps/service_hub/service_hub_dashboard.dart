@@ -258,7 +258,7 @@ class _ServiceHubDashboardState extends State<ServiceHubDashboard> {
   }
 
   Widget? getBadgeContent() {
-    if (basketBloc.basketItems.length == 0) {
+    if (basketBloc.basketItems.isEmpty) {
       return null;
     }
     return Text(
@@ -274,9 +274,9 @@ class _ServiceHubDashboardState extends State<ServiceHubDashboard> {
 
   String getBadgeCount() {
     int totalItem = 0;
-    basketBloc.basketItems.forEach((element) {
+    for (var element in basketBloc.basketItems) {
       totalItem = totalItem + int.parse(element.qty.toString());
-    });
+    }
     return totalItem > 99 ? '99+' : totalItem.toString();
   }
 
@@ -288,7 +288,7 @@ class _ServiceHubDashboardState extends State<ServiceHubDashboard> {
         badgeStyle: badges.BadgeStyle(
           shape: badges.BadgeShape.circle,
           badgeColor: naturalGreen,
-          padding: basketBloc.basketItems.length == 0
+          padding: basketBloc.basketItems.isEmpty
               ? const EdgeInsets.all(0)
               : const EdgeInsets.all(4),
           elevation: 0,

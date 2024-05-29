@@ -167,8 +167,9 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
                     onTap: () async {
                       try {
                         if (!await launchUrl(
-                            Uri.parse(AppConfig.termsAndCondition ?? "")))
+                            Uri.parse(AppConfig.termsAndCondition ?? ""))) {
                           throw 'Could not launch ${AppConfig.termsAndCondition!}';
+                        }
                       } catch (error) {
                         debugPrint("Error:- $error");
                       }
@@ -178,8 +179,9 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
                     onTap: () async {
                       try {
                         if (!await launchUrl(
-                            Uri.parse(AppConfig.privacyPolicy ?? "")))
+                            Uri.parse(AppConfig.privacyPolicy ?? ""))) {
                           throw 'Could not launch ${AppConfig.privacyPolicy!}';
+                        }
                       } catch (error) {
                         debugPrint("Error:- $error");
                       }
@@ -356,7 +358,7 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
             overflow: TextOverflow.fade,
             softWrap: false,
           ),
-          trailing: Container(
+          trailing: SizedBox(
             width: 60,
             child: Switch(
               value: userBloc.chatMessageSettings.playIncomingMessageSound!,
@@ -568,7 +570,7 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
             overflow: TextOverflow.fade,
             softWrap: false,
           ),
-          trailing: Container(
+          trailing: SizedBox(
             width: 60,
             child: Switch(
               value: userBloc.chatMessageSettings.playOutgoingMessageSound!,
@@ -614,7 +616,7 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
             overflow: TextOverflow.fade,
             softWrap: false,
           ),
-          trailing: Container(
+          trailing: SizedBox(
             width: 60,
             child: Switch(
               value: userBloc.chatMessageSettings.accountBalanceVisibility!,
@@ -668,7 +670,7 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
             overflow: TextOverflow.fade,
             softWrap: false,
           ),
-          trailing: Container(
+          trailing: SizedBox(
             width: 50,
             child: Icon(
               SlydoAppIcon.leave,

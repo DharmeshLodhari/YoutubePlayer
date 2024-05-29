@@ -23,10 +23,11 @@ class PolylineDecoder {
       } while (b >= big0x20);
       BigInt rShifted = result >> 1;
       int dLat;
-      if (result.isOdd)
+      if (result.isOdd) {
         dLat = (~rShifted).toInt();
-      else
+      } else {
         dLat = rShifted.toInt();
+      }
       lat += dLat;
 
       shift = 0;
@@ -38,10 +39,11 @@ class PolylineDecoder {
       } while (b >= big0x20);
       rShifted = result >> 1;
       int dLng;
-      if (result.isOdd)
+      if (result.isOdd) {
         dLng = (~rShifted).toInt();
-      else
+      } else {
         dLng = rShifted.toInt();
+      }
       lng += dLng;
 
       points.add(PointLatLng((lat / 1E5).toDouble(), (lng / 1E5).toDouble()));

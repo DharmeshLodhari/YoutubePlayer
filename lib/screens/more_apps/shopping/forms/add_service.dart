@@ -34,7 +34,7 @@ class _AddServiceState extends State<AddService> {
   ProductCondition? selectedProductCondition;
 
   int imageCount = 5;
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
   List<PickedFile> serviceImages = [];
   String serviceName = "";
   String serviceShortDescription = "";
@@ -181,7 +181,7 @@ class _AddServiceState extends State<AddService> {
   }
 
   Widget addImages() {
-    return Container(
+    return SizedBox(
       height: 100,
       child: ListView.builder(
         controller: _scrollController,
@@ -530,7 +530,7 @@ class _AddServiceState extends State<AddService> {
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: Container(
+              content: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   elevation: 2,
@@ -723,23 +723,21 @@ class _AddServiceState extends State<AddService> {
       },
       child: CustomizedDropDownField(
         title: "Available from",
-        child: Container(
-          child: ListTile(
-            dense: true,
-            title: Text(
-              formatDate(serviceAvailableFrom),
-              style: TextStyle(
-                color: blackFont,
-                fontWeight: FontWeight.w600,
-                fontSize: 16,
-                fontFamily: "Inter",
-              ),
+        child: ListTile(
+          dense: true,
+          title: Text(
+            formatDate(serviceAvailableFrom),
+            style: TextStyle(
+              color: blackFont,
+              fontWeight: FontWeight.w600,
+              fontSize: 16,
+              fontFamily: "Inter",
             ),
-            trailing: Icon(
-              SlydoAppIcon.date,
-              size: 16,
-              color: darkGrey,
-            ),
+          ),
+          trailing: Icon(
+            SlydoAppIcon.date,
+            size: 16,
+            color: darkGrey,
           ),
         ),
       ),

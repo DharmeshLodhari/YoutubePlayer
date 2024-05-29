@@ -44,7 +44,7 @@ class _CreditCardListState extends State<CreditCardList> {
 
   @override
   void initState() {
-    this.getList();
+    getList();
     checkForVirtualAccount();
     _slideController = SlidableController(
       onSlideAnimationChanged: handleSlideAnimationChanged,
@@ -54,7 +54,7 @@ class _CreditCardListState extends State<CreditCardList> {
     super.initState();
   }
 
-  checkForVirtualAccount() async {
+  void checkForVirtualAccount() async {
     bool isFromServer = false;
 
     virtualAccount = await DatabaseHelper().getVirtualAccount();

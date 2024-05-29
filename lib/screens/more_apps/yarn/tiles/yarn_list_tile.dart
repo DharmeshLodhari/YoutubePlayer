@@ -592,12 +592,7 @@ class _YarnTileState extends State<YarnTile> {
               key: ValueKey("${linkToBePreview}211"),
               url: linkToBePreview!,
               builder: (info) {
-                if (info == null)
-                  // return const SizedBox(
-                  //   height: 0,
-                  //   width: 0,
-                  // );
-
+                if (info == null) {
                   return InkWell(
                     onTap: () {
                       launchUrl(Uri.parse(linkToBePreview!));
@@ -613,6 +608,7 @@ class _YarnTileState extends State<YarnTile> {
                       ),
                     ),
                   );
+                }
 
                 if (info is WebImageInfo) {
                   return CachedNetworkImage(
@@ -623,11 +619,12 @@ class _YarnTileState extends State<YarnTile> {
                 }
 
                 final WebInfo webInfo = info as WebInfo;
-                if (!WebAnalyzer.isNotEmpty(webInfo.title))
+                if (!WebAnalyzer.isNotEmpty(webInfo.title)) {
                   return const SizedBox(
                     height: 0,
                     width: 0,
                   );
+                }
                 return Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),

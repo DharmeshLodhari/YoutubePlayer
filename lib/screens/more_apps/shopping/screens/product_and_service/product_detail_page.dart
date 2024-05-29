@@ -160,9 +160,9 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         reviewList.add(Review.fromJson(element));
       });
 
-      reviewList.forEach((element) {
+      for (var element in reviewList) {
         debugPrint('LIKES :: ${element.likes}');
-      });
+      }
 
       isReviewLoading = false;
       if (mounted) setState(() {});
@@ -388,10 +388,10 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       onTap: () async {
         Navigator.pop(context);
 
-        final shareBody = "http://slydo.co/store/${product?.seller}/products/" +
-            (product?.id.toString() ?? "");
+        final shareBody =
+            "http://slydo.co/store/${product?.seller}/products/${product?.id.toString() ?? ""}";
         Share.share(shareBody,
-            subject: "${messageDecoderWithEmoji(product?.name) ?? ""}");
+            subject: messageDecoderWithEmoji(product?.name) ?? "");
       },
     ));
 
@@ -445,21 +445,19 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         await ShareInChat().selectShareCustomer(context);
     debugPrint("Selected users = ${listOfRecipient.length}");
 
-    final String url = AppConfig.baseUrl +
-        "/api/v1/${product is Product ? "products" : "services"}/" +
-        (product?.id ?? "") +
-        "/";
+    final String url =
+        "${AppConfig.baseUrl}/api/v1/${product is Product ? "products" : "services"}/${product?.id ?? ""}/";
 
     final Map<String, dynamic>? itemData =
         await ShoppingAuthService().getProductOrService(url);
 
-    listOfRecipient.forEach((recipient) {
+    for (var recipient in listOfRecipient) {
       addProductOrServiceToChat(
           item: product,
           itemData: itemData,
           recipientUser: recipient!,
           url: url);
-    });
+    }
   }
 
   void addProductOrServiceToChat(
@@ -497,7 +495,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         badgeStyle: badges.BadgeStyle(
             shape: badges.BadgeShape.circle,
             badgeColor: naturalGreen,
-            padding: basketBloc.basketItems.length == 0
+            padding: basketBloc.basketItems.isEmpty
                 ? const EdgeInsets.all(0)
                 : const EdgeInsets.all(4)),
         child: Center(
@@ -519,7 +517,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   Widget getUserProfile() {
     return GestureDetector(
       child: ClipOval(
-        child: Container(
+        child: SizedBox(
           height: 40,
           width: 40,
           child: CachedNetworkImage(
@@ -951,7 +949,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   Widget? getBadgeContent() {
-    if (basketBloc.basketItems.length == 0) {
+    if (basketBloc.basketItems.isEmpty) {
       return null;
     }
     return Text(
@@ -1184,7 +1182,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   Widget _buildReviewList() {
-    return reviewList.length == 0
+    return reviewList.isEmpty
         ? Center(
             child: Text(
               "No Review yet",
@@ -1262,7 +1260,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
               }
             }
           },
-          child: Container(
+          child: SizedBox(
             width: double.infinity,
             child: Center(
               child: Text(
@@ -1305,29 +1303,26 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                           children: [
                             AspectRatio(
                               aspectRatio: 1.5,
-                              child: Container(
-                                child: Center(
-                                    child: ClipRRect(
-                                  borderRadius: const BorderRadius.all(
-                                      Radius.circular(10)),
-                                  child: Stack(
-                                    children: [
-                                      CachedNetworkImage(
-                                        placeholder: (context, url) => Center(
-                                            child: CircularLoadingIndicator()),
-                                        imageUrl:
-                                            displayProductImages?[0] ?? "",
-                                        fit: BoxFit.cover,
-                                        height: double.infinity,
-                                        width: double.infinity,
-                                        errorWidget:
-                                            productAndServiceBigErrorWidget,
-                                      ),
-                                      productStockAndDetailTag(),
-                                    ],
-                                  ),
-                                )),
-                              ),
+                              child: Center(
+                                  child: ClipRRect(
+                                borderRadius:
+                                    const BorderRadius.all(Radius.circular(10)),
+                                child: Stack(
+                                  children: [
+                                    CachedNetworkImage(
+                                      placeholder: (context, url) => Center(
+                                          child: CircularLoadingIndicator()),
+                                      imageUrl: displayProductImages?[0] ?? "",
+                                      fit: BoxFit.cover,
+                                      height: double.infinity,
+                                      width: double.infinity,
+                                      errorWidget:
+                                          productAndServiceBigErrorWidget,
+                                    ),
+                                    productStockAndDetailTag(),
+                                  ],
+                                ),
+                              )),
                             ),
                             // getOutOfStockTag(),
                           ],
@@ -1362,30 +1357,28 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                                         },
                                         child: Stack(
                                           children: [
-                                            Container(
-                                              child: Center(
-                                                child: ClipRRect(
-                                                  borderRadius:
-                                                      const BorderRadius.all(
-                                                          Radius.circular(10)),
-                                                  child: Stack(
-                                                    children: [
-                                                      CachedNetworkImage(
-                                                        placeholder: (context,
-                                                                url) =>
-                                                            Center(
-                                                                child:
-                                                                    CircularLoadingIndicator()),
-                                                        imageUrl: item!,
-                                                        fit: BoxFit.cover,
-                                                        height: double.infinity,
-                                                        width: double.infinity,
-                                                        errorWidget:
-                                                            productAndServiceBigErrorWidget,
-                                                      ),
-                                                      productStockAndDetailTag(),
-                                                    ],
-                                                  ),
+                                            Center(
+                                              child: ClipRRect(
+                                                borderRadius:
+                                                    const BorderRadius.all(
+                                                        Radius.circular(10)),
+                                                child: Stack(
+                                                  children: [
+                                                    CachedNetworkImage(
+                                                      placeholder: (context,
+                                                              url) =>
+                                                          Center(
+                                                              child:
+                                                                  CircularLoadingIndicator()),
+                                                      imageUrl: item!,
+                                                      fit: BoxFit.cover,
+                                                      height: double.infinity,
+                                                      width: double.infinity,
+                                                      errorWidget:
+                                                          productAndServiceBigErrorWidget,
+                                                    ),
+                                                    productStockAndDetailTag(),
+                                                  ],
                                                 ),
                                               ),
                                             ),
@@ -1551,10 +1544,11 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
   void fetchProduct(String productId) async {
     debugPrint('PRODUCT ID ::$productId');
-    if (mounted)
+    if (mounted) {
       setState(() {
         productIsLoading = true;
       });
+    }
     await _auth.getProduct(productId).then((value) {
       if (value != null) {
         product = value;
@@ -1580,17 +1574,19 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
         if (mounted) setState(() {});
       } else {
-        if (mounted)
+        if (mounted) {
           setState(() {
             productIsLoading = false;
           });
+        }
         Navigator.pop(context);
       }
     }).catchError((e) {
-      if (mounted)
+      if (mounted) {
         setState(() {
           productIsLoading = false;
         });
+      }
       Navigator.pop(context);
       showToast(message: e.toString());
     });
@@ -1874,8 +1870,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
               'virtualAccount': virtualAccount,
               'product': product!.seller,
               'productUrl':
-                  "https://slydo.co/store/${product!.seller}/products/" +
-                      product!.id.toString()
+                  "https://slydo.co/store/${product!.seller}/products/${product!.id}"
             }));
       },
       backgroundColor: lightGrey.withOpacity(0.1),
@@ -2335,7 +2330,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   Widget _buildSellersOtherProducts() {
-    return Container(
+    return SizedBox(
       height: 290,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

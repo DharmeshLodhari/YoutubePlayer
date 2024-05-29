@@ -140,7 +140,7 @@ class _NewsDashboardState extends State<NewsDashboard> {
     return IndexedStack(
       index: currentIndex,
       children: [
-        LatestNewsList(),
+        const LatestNewsList(),
         TrendingNewsList(),
         SubscriptionList(),
       ],

@@ -84,7 +84,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     );
   }
 
-  _scaffoldBody() {
+  Widget _scaffoldBody() {
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(12.0),
@@ -117,23 +117,24 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               ),
             ),
             const SizedBox(height: 18),
-            shippingOptionsLoading
-                ? Center(child: CircularLoadingIndicator())
-                : Column(
-                    children: [
-                      Visibility(
-                        visible: shippingOptions.isNotEmpty,
-                        child: dropDownPickItemWidget(
-                          label: 'Shipping Options',
-                          onTap: () => pickShippingOptions(),
-                          selectedItem: selectedShippingOptionName,
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 15,
-                      )
-                    ],
+            if (shippingOptionsLoading)
+              Center(child: CircularLoadingIndicator())
+            else
+              Column(
+                children: [
+                  Visibility(
+                    visible: shippingOptions.isNotEmpty,
+                    child: dropDownPickItemWidget(
+                      label: 'Shipping Options',
+                      onTap: () => pickShippingOptions(),
+                      selectedItem: selectedShippingOptionName,
+                    ),
                   ),
+                  const SizedBox(
+                    height: 15,
+                  )
+                ],
+              ),
             // Divider(thickness: 0.3, color: blackFont),
             Visibility(
               visible: merchantFullName != null,
@@ -208,7 +209,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             shippingOption != null ? shippingOption?.price ?? 0 : 0);
   }
 
-  getSubTotalPrice() {
+  int getSubTotalPrice() {
     return basketBloc.getSubTotalPriceByMerchant(
         merchantUserName:
             basketBloc.merchantNameMapCopy[merchantFullName] ?? '');
@@ -291,7 +292,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     );
   }
 
-  onNextClicked() {
+  void onNextClicked() {
     basketBloc.orderTotal += getOrderTotalPrice();
     basketBloc.totalShippingCost +=
         shippingOption != null ? shippingOption?.price ?? 0 : 0;
@@ -299,7 +300,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     if (basketBloc.merchantData.length == 1) {
       basketBloc.userSelectedShippingOption = userSelectedShippingOption;
       NavigationUtil.pushReplacement(context,
-          screen: UserAddress(fromCheckoutScreen: true));
+          screen: const UserAddress(fromCheckoutScreen: true));
     } else {
       basketBloc.removeMerchant(merchantFullName!);
       if (mounted) setState(() {});
@@ -307,7 +308,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     }
   }
 
-  resetData() {
+  void resetData() {
     deliveryOption = null;
     merchantFullName = null;
     shippingOptions.clear();
@@ -315,14 +316,14 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     if (mounted) setState(() {});
   }
 
-  pickMerchantNames() async {
+  void pickMerchantNames() async {
     merchantFullNames.clear();
 
     final allMerchants = basketBloc.merchantData;
 
-    allMerchants.forEach((element) {
+    for (var element in allMerchants) {
       merchantFullNames.add(element['name']!);
-    });
+    }
 
     final String? pickedMerchantName = await showPickItemDialog<String>(
       context: context,
@@ -365,12 +366,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             if (mounted) setState(() {});
 
             debugPrint('VALUE :: $value');
-            value.forEach((element) {
+            for (var element in value) {
               // String shippingOption = element.name;
               // int shippingOptionAmount = element.price;
               // String currencySymbol = worldCurrencies[element.currency] ?? '';
               shippingOptions.add(element);
-            });
+            }
           },
         ).catchError((error) {
           shippingOptionsLoading = false;

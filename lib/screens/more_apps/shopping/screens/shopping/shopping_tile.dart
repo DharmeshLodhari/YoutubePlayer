@@ -44,7 +44,7 @@ class ShoppingTile extends StatelessWidget {
                   width: 16,
                 ),
                 Expanded(
-                  child: Container(
+                  child: SizedBox(
                     height: 60,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -75,7 +75,7 @@ class ShoppingTile extends StatelessWidget {
                     ),
                   ),
                 ),
-                Container(
+                SizedBox(
                   height: 60,
                   child: Center(
                     child: Row(
@@ -151,7 +151,7 @@ class _ShoppingTileWithHeartState extends State<ShoppingTileWithHeart> {
                 ),
                 const SizedBox(width: 16),
                 Expanded(
-                  child: Container(
+                  child: SizedBox(
                     height: 60,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -279,7 +279,7 @@ class _ShoppingTileWithHeartWithProductState
                 ),
                 const SizedBox(width: 16),
                 Expanded(
-                  child: Container(
+                  child: SizedBox(
                     height: 60,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -388,7 +388,7 @@ class _MovieTileGeneralState extends State<MovieTileGeneral> {
           child: ListTile(
             contentPadding:
                 const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
-            leading: Container(
+            leading: SizedBox(
               height: 68,
               width: 68,
               child: ClipRRect(
@@ -528,7 +528,7 @@ class _ShoppingTileWithHeartWithServiceState
                 ),
                 const SizedBox(width: 16),
                 Expanded(
-                  child: Container(
+                  child: SizedBox(
                     height: 60,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,

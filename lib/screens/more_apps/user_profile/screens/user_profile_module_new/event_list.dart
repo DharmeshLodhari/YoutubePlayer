@@ -33,7 +33,7 @@ class _EventListState extends State<EventList> {
 
   @override
   void initState() {
-    this.getReviewList();
+    getReviewList();
     _eventScrollController.addListener(() {
       if (_eventScrollController.position.pixels ==
               _eventScrollController.position.maxScrollExtent &&

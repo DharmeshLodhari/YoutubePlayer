@@ -138,50 +138,48 @@ class _SearchMovieState extends State<SearchMovie> {
   }
 
   Widget scaffoldBody() {
-    return Container(
-      child: Column(
-        children: [
-          const SizedBox(
-            height: 6,
-          ),
-          searchBox(),
-          const SizedBox(
-            height: 12,
-          ),
-          isLoading
-              ? Expanded(
-                  child: Center(
-                    child: CircularLoadingIndicator(),
-                  ),
-                )
-              : movieList.isEmpty
-                  ? Expanded(child: searchBackground())
-                  : Expanded(
-                      child: SmartRefresher(
-                        enablePullDown: true,
-                        header: WaterDropHeader(
-                          complete: Container(),
-                          waterDropColor: navyBlue,
-                        ),
-                        controller: _refreshController,
-                        onRefresh: _onRefresh,
-                        child: SingleChildScrollView(
-                          child: Column(
-                            children: movieList
-                                .map(
-                                  (movie) => Container(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 8, horizontal: 16),
-                                      child:
-                                          MovieTileWithHeart(movieItem: movie)),
-                                )
-                                .toList(),
-                          ),
-                        ),
+    return Column(
+      children: [
+        const SizedBox(
+          height: 6,
+        ),
+        searchBox(),
+        const SizedBox(
+          height: 12,
+        ),
+        if (isLoading)
+          Expanded(
+            child: Center(
+              child: CircularLoadingIndicator(),
+            ),
+          )
+        else
+          movieList.isEmpty
+              ? Expanded(child: searchBackground())
+              : Expanded(
+                  child: SmartRefresher(
+                    enablePullDown: true,
+                    header: WaterDropHeader(
+                      complete: Container(),
+                      waterDropColor: navyBlue,
+                    ),
+                    controller: _refreshController,
+                    onRefresh: _onRefresh,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: movieList
+                            .map(
+                              (movie) => Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 8, horizontal: 16),
+                                  child: MovieTileWithHeart(movieItem: movie)),
+                            )
+                            .toList(),
                       ),
                     ),
-        ],
-      ),
+                  ),
+                ),
+      ],
     );
   }
 
@@ -376,7 +374,7 @@ class _SearchMovieState extends State<SearchMovie> {
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: Container(
+              content: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   elevation: 2,
@@ -497,7 +495,7 @@ class _SearchMovieState extends State<SearchMovie> {
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: Container(
+              content: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   elevation: 2,

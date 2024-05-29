@@ -226,22 +226,18 @@ class _EnterAddressOrPinPinPageState extends State<EnterAddressOrPinPinPage> {
   }
 
   Widget enterPinTitle() {
-    return Container(
-      child: Text(
-        "Enter Pin",
-        style: TextStyle(
-            fontSize: 22, fontWeight: FontWeight.w700, color: blackFont),
-      ),
+    return Text(
+      "Enter Pin",
+      style: TextStyle(
+          fontSize: 22, fontWeight: FontWeight.w700, color: blackFont),
     );
   }
 
   Widget enterAddressTitle() {
-    return Container(
-      child: Text(
-        "Enter address",
-        style: TextStyle(
-            fontSize: 22, fontWeight: FontWeight.w700, color: blackFont),
-      ),
+    return Text(
+      "Enter address",
+      style: TextStyle(
+          fontSize: 22, fontWeight: FontWeight.w700, color: blackFont),
     );
   }
 
@@ -253,11 +249,9 @@ class _EnterAddressOrPinPinPageState extends State<EnterAddressOrPinPinPage> {
   }
 
   Widget enterAddressDescription() {
-    return Container(
-      child: Text(
-        "Enter your address below",
-        style: TextStyle(fontSize: 14, color: darkGrey),
-      ),
+    return Text(
+      "Enter your address below",
+      style: TextStyle(fontSize: 14, color: darkGrey),
     );
   }
 }

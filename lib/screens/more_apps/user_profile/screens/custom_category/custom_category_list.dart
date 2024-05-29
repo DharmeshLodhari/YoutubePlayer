@@ -30,17 +30,17 @@ class _CustomCategoryListState extends State<CustomCategoryList> {
   String? next = "";
   String? previous = "";
   List<ProductCategory> itemList = [];
-  ScrollController _scrollController = new ScrollController();
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  final ScrollController _scrollController = ScrollController();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<ScaffoldMessengerState> _messengerScaffoldKey =
-      new GlobalKey<ScaffoldMessengerState>();
-  RefreshController _refreshController =
+      GlobalKey<ScaffoldMessengerState>();
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
   bool isLoading = false;
   bool noItemInList = false;
   UserBloc? userBloc;
 
-  TextEditingController _controller = TextEditingController();
+  final TextEditingController _controller = TextEditingController();
   @override
   void initState() {
     Future.delayed(const Duration(seconds: 1), () {
@@ -65,7 +65,7 @@ class _CustomCategoryListState extends State<CustomCategoryList> {
 
   void _onProductRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         itemCount = 0;
@@ -97,7 +97,7 @@ class _CustomCategoryListState extends State<CustomCategoryList> {
         isLoading = true;
         if (mounted) setState(() {});
 
-        List<ProductCategory> result = await ShoppingAuthService()
+        final List<ProductCategory> result = await ShoppingAuthService()
             .obtainCustomCategory(userBloc!.user.userName);
 
         if (result == null) {
@@ -188,7 +188,7 @@ class _CustomCategoryListState extends State<CustomCategoryList> {
       ),
       leftButtonOnPressed: () async {
         if (_controller.text.isNotEmpty) {
-          bool result = await ShoppingAuthService()
+          final bool result = await ShoppingAuthService()
               .createCustomCategory(_controller.text);
           _onProductRefresh();
           _controller.clear();
@@ -255,7 +255,7 @@ class _CustomCategoryListState extends State<CustomCategoryList> {
           deleteCategoryDialog(prod.id);
         },
         rightButtonOnPressed: () async {
-          bool result = await ShoppingAuthService()
+          final bool result = await ShoppingAuthService()
               .editCustomCategory(_controller.text, prod.id);
           _onProductRefresh();
           _controller.clear();
@@ -281,7 +281,8 @@ class _CustomCategoryListState extends State<CustomCategoryList> {
         image: Image.asset('assets/images/delete_dialog_icon.png'),
       ),
       rightButtonOnPressed: () async {
-        bool result = await ShoppingAuthService().deleteCustomCategory(id);
+        final bool result =
+            await ShoppingAuthService().deleteCustomCategory(id);
         _onProductRefresh();
         _controller.clear();
         Navigator.pop(context);

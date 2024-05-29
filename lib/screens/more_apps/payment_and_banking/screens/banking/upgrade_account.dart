@@ -127,7 +127,7 @@ class _UpgradeAccountState extends State<UpgradeAccount> {
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: Container(
+              content: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   margin: EdgeInsets.zero,

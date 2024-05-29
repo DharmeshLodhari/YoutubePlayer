@@ -85,7 +85,7 @@ class _SearchServicesState extends State<SearchServices> {
           _refreshList();
         });
       }
-      if (products.isNotEmpty || searchController.text.length != 0) {
+      if (products.isNotEmpty || searchController.text.isNotEmpty) {
         if (mounted) {
           setState(() {
             isSearchIsEmpty = false;
@@ -154,9 +154,9 @@ class _SearchServicesState extends State<SearchServices> {
         if (mounted) {
           isLoading = false;
           try {
-            tempList!.forEach((result) {
+            for (var result in tempList!) {
               products.add(result);
-            });
+            }
             debugPrint("PRODUCTS:- $products");
           } catch (e) {
             debugPrint("error adding products $e");
@@ -195,9 +195,9 @@ class _SearchServicesState extends State<SearchServices> {
       servicesCategories = await ShoppingAuthService().getServicesCategories();
       servicesCategoriesCopy = servicesCategories;
 
-      servicesCategoriesCopy!.forEach((element) {
+      for (var element in servicesCategoriesCopy!) {
         categoryCheckMark[element.name] = false;
-      });
+      }
     } catch (e) {
       servicesCategories = [];
       servicesCategoriesCopy = [];

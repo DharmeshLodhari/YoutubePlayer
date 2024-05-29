@@ -88,9 +88,7 @@ double getBgHeightOfAppBar(String bio, bool hasAddress, bool hasContact) {
 
   debugPrint('GET HEIGHT -> $height');
 
-  if (height == null) {
-    height = 300;
-  }
+  height ??= 300;
 
   return height;
 }

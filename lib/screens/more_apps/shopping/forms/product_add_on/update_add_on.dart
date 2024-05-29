@@ -180,22 +180,20 @@ class _UpdateAddOnState extends State<UpdateAddOn> {
   }
 
   Widget getDescription() {
-    return Container(
-      child: CustomizedTextFormField(
-        maxLines: 3,
-        labelText: "Description",
-        textCapitalization: TextCapitalization.sentences,
-        controller: descriptionController,
-        validator: (val) {
-          if (val.isNotEmpty) {
-            return null;
-          }
-          return AppLocalization.of(context)!.descriptionMustNotEmpty;
-        },
-        onChanged: (val) {
-          description = val;
-        },
-      ),
+    return CustomizedTextFormField(
+      maxLines: 3,
+      labelText: "Description",
+      textCapitalization: TextCapitalization.sentences,
+      controller: descriptionController,
+      validator: (val) {
+        if (val.isNotEmpty) {
+          return null;
+        }
+        return AppLocalization.of(context)!.descriptionMustNotEmpty;
+      },
+      onChanged: (val) {
+        description = val;
+      },
     );
   }
 
@@ -388,23 +386,21 @@ class _UpdateAddOnState extends State<UpdateAddOn> {
           if (mounted) setState(() {});
         }
       },
-      child: Container(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Select from available options',
-              maxLines: 1,
-              style: TextStyle(
-                  color: navyBlue, fontWeight: FontWeight.w600, fontSize: 14),
-            ),
-            Icon(
-              Icons.arrow_forward_ios,
-              size: 16,
-              color: blackFont,
-            ),
-          ],
-        ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            'Select from available options',
+            maxLines: 1,
+            style: TextStyle(
+                color: navyBlue, fontWeight: FontWeight.w600, fontSize: 14),
+          ),
+          Icon(
+            Icons.arrow_forward_ios,
+            size: 16,
+            color: blackFont,
+          ),
+        ],
       ),
     );
   }
@@ -528,7 +524,7 @@ class _UpdateAddOnState extends State<UpdateAddOn> {
   Widget _buildAddOnOptionList() {
     return isLoading && productAddOnOptionList.isEmpty
         ? buildLoadingIndicator(isLoading: isLoading)
-        : Container(
+        : SizedBox(
             height: 80 * productAddOnOptionList.length.toDouble(),
             child: ListView.builder(
               padding: const EdgeInsets.symmetric(vertical: 16),

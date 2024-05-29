@@ -132,7 +132,7 @@ class _PreviewDeliveryProofScreenState
       if (isVideoLoading) {
         return Center(child: CircularLoadingIndicator());
       }
-      return Container(
+      return SizedBox(
         width: double.infinity,
         child: GestureDetector(
           onTap: () {

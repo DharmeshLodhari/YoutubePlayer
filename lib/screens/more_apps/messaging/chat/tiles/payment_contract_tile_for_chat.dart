@@ -72,7 +72,7 @@ class _PostTileForPaymentContractState
               child: getPaymentContractTile(),
             ),
             if (isSender)
-              Container(
+              SizedBox(
                 width: 20,
                 child: isSender
                     ? Center(
@@ -242,7 +242,7 @@ class _PostTileForPaymentContractState
           ],
         ),
         const SizedBox(width: 12),
-        Container(
+        SizedBox(
           width: 70,
           height: 40,
           child: Stack(
@@ -250,7 +250,7 @@ class _PostTileForPaymentContractState
             children: [
               Positioned(
                 top: 6,
-                child: Container(
+                child: SizedBox(
                   width: 70,
                   child: Image.asset(
                     "assets/images/arrow_right.png",

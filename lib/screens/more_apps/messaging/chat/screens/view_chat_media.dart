@@ -121,11 +121,11 @@ class _ViewChatMediaState extends State<ViewChatMedia> {
                 top: 4,
                 left: 4,
                 child: InkWell(
-                  child: ClipOval(
-                    child: Container(
+                  child: const ClipOval(
+                    child: SizedBox(
                       height: 36,
                       width: 36,
-                      child: const Icon(
+                      child: Icon(
                         Icons.arrow_back_ios_rounded,
                         color: Colors.white,
                         size: 18,

@@ -454,6 +454,7 @@ class VerticalListItem extends StatefulWidget {
   const VerticalListItem(this.transaction, {this.key}) : super(key: key);
 
   final Transaction transaction;
+  @override
   final Key? key;
 
   @override
@@ -610,8 +611,8 @@ class _VerticalListItemState extends State<VerticalListItem> {
               }
               if (result) {
                 showToast(
-                    message: "${widget.transaction.payee} " +
-                        AppLocalization.of(context)!.isBlocked);
+                    message:
+                        "${widget.transaction.payee} ${AppLocalization.of(context)!.isBlocked}");
               } else {
                 showToast(
                   message: AppLocalization.of(context)!.error,

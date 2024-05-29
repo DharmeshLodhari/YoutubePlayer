@@ -149,7 +149,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
                   ],
                 ),
                 if (isSend)
-                  Container(
+                  SizedBox(
                     width: 20,
                     child: isSend
                         ? Center(
@@ -1512,7 +1512,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
             ),
           ),
           if (widget.chatConversation!.isGroupConversation!)
-            Container(
+            SizedBox(
               height: 50,
               width: 80,
               child: Stack(
@@ -1559,7 +1559,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
               ),
             )
           else
-            Container(
+            SizedBox(
               width: 1,
               height: 1,
             ),

@@ -47,7 +47,7 @@ class _PayoutScreenState extends State<PayoutScreen> {
   StateSetter? bottomSheetStateSetterGlobal;
   bool bottomSheetMounted = false;
   int bottomSheetSearchIndex = 0;
-  ScrollController _scrollController = new ScrollController();
+  final ScrollController _scrollController = ScrollController();
   String? next = "", previous = "";
   int count = 0;
   bool noList = false;
@@ -76,9 +76,7 @@ class _PayoutScreenState extends State<PayoutScreen> {
     await getAccountBalance();
     getList();
     virtualAccount = await DatabaseHelper().getVirtualAccount();
-    if (virtualAccount == null) {
-      virtualAccount = await PaymentAndBankingAuth().getVirtualAccountDetail();
-    }
+    virtualAccount ??= await PaymentAndBankingAuth().getVirtualAccountDetail();
     if (virtualAccount != null) {
       isAccountFound = true;
     }
@@ -134,9 +132,7 @@ class _PayoutScreenState extends State<PayoutScreen> {
   Widget scaffoldBody() {
     return isLoading
         ? Center(
-            child: Container(
-              child: CircularLoadingIndicator(),
-            ),
+            child: CircularLoadingIndicator(),
           )
         : SingleChildScrollView(
             child: Container(
@@ -160,36 +156,34 @@ class _PayoutScreenState extends State<PayoutScreen> {
                           const SizedBox(
                             height: 40,
                           ),
-                          canCashOut(amount!, accountBalance!)
-                              ? getSubmitButton()
-                              : Container(
-                                  child: Center(
-                                      child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 16.0),
-                                          child: Text.rich(TextSpan(
-                                              text: AppLocalization.of(context)!
-                                                  .minimumTransfer,
-                                              style: TextStyle(
-                                                  fontSize: 12,
-                                                  color: blackFont,
-                                                  fontWeight: FontWeight.w600),
-                                              children: <InlineSpan>[
-                                                TextSpan(
-                                                  text: worldCurrencies[userBloc
-                                                          .user.currency!]! +
-                                                      moneyDisplayNormalizer(
-                                                          displayPossibleCashOutAmount(
-                                                              accountBalance!)),
-                                                  style: TextStyle(
-                                                      fontSize: 12,
-                                                      color: blackFont,
-                                                      fontFamily: "Inter",
-                                                      fontWeight:
-                                                          FontWeight.w600),
-                                                )
-                                              ])))),
-                                ),
+                          if (canCashOut(amount!, accountBalance!))
+                            getSubmitButton()
+                          else
+                            Center(
+                                child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 16.0),
+                                    child: Text.rich(TextSpan(
+                                        text: AppLocalization.of(context)!
+                                            .minimumTransfer,
+                                        style: TextStyle(
+                                            fontSize: 12,
+                                            color: blackFont,
+                                            fontWeight: FontWeight.w600),
+                                        children: <InlineSpan>[
+                                          TextSpan(
+                                            text: worldCurrencies[
+                                                    userBloc.user.currency!]! +
+                                                moneyDisplayNormalizer(
+                                                    displayPossibleCashOutAmount(
+                                                        accountBalance!)),
+                                            style: TextStyle(
+                                                fontSize: 12,
+                                                color: blackFont,
+                                                fontFamily: "Inter",
+                                                fontWeight: FontWeight.w600),
+                                          )
+                                        ])))),
                           const SizedBox(
                             height: 20,
                           ),
@@ -197,19 +191,17 @@ class _PayoutScreenState extends State<PayoutScreen> {
                       ),
                     )
                   else
-                    Container(
-                      child: Center(
-                          child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 16.0),
-                        child: Text(
-                          "Please add Bank Account for cashout.",
-                          style: TextStyle(
-                              fontSize: 14,
-                              color: blackFont,
-                              fontWeight: FontWeight.w600),
-                        ),
-                      )),
-                    ),
+                    Center(
+                        child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      child: Text(
+                        "Please add Bank Account for cashout.",
+                        style: TextStyle(
+                            fontSize: 14,
+                            color: blackFont,
+                            fontWeight: FontWeight.w600),
+                      ),
+                    )),
                 ],
               ),
             ),

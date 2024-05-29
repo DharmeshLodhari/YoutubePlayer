@@ -344,16 +344,14 @@ class _VirtualAccountDetailState extends State<VirtualAccountDetail> {
   }
 
   Widget getSlydoBankAccountDetail() {
-    return Container(
-      child: Column(
-        children: [
-          Text(
-            "Please transfer funds into your virtual account to fund your slydo wallet",
-            style: TextStyle(
-                color: naturalGreen, fontWeight: FontWeight.w600, fontSize: 14),
-          )
-        ],
-      ),
+    return Column(
+      children: [
+        Text(
+          "Please transfer funds into your virtual account to fund your slydo wallet",
+          style: TextStyle(
+              color: naturalGreen, fontWeight: FontWeight.w600, fontSize: 14),
+        )
+      ],
     );
   }
 

@@ -479,79 +479,77 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
   }
 
   Widget searchBox() {
-    return Container(
-      child: Theme(
-        data: Theme.of(context).copyWith(
-          textSelectionTheme: const TextSelectionThemeData()
-              .copyWith(selectionHandleColor: navyBlue),
+    return Theme(
+      data: Theme.of(context).copyWith(
+        textSelectionTheme: const TextSelectionThemeData()
+            .copyWith(selectionHandleColor: navyBlue),
+      ),
+      child: TextFormField(
+        key: searchItemTextFormField,
+        controller: searchItemTextController,
+        style: TextStyle(
+          fontSize: 16,
+          color: blackFont,
+          fontWeight: FontWeight.w600,
         ),
-        child: TextFormField(
-          key: searchItemTextFormField,
-          controller: searchItemTextController,
-          style: TextStyle(
-            fontSize: 16,
-            color: blackFont,
-            fontWeight: FontWeight.w600,
+        cursorWidth: 1.5,
+        cursorColor: navyBlue,
+        decoration: InputDecoration(
+          hintText: checkHintText(selectedMenuItemIndex),
+          fillColor: Colors.white,
+          filled: true,
+          contentPadding: const EdgeInsets.symmetric(vertical: 10),
+          prefixIcon: searchTypeSelection(),
+          prefix: const Padding(
+            padding: EdgeInsets.only(left: 12),
           ),
-          cursorWidth: 1.5,
-          cursorColor: navyBlue,
-          decoration: InputDecoration(
-            hintText: checkHintText(selectedMenuItemIndex),
-            fillColor: Colors.white,
-            filled: true,
-            contentPadding: const EdgeInsets.symmetric(vertical: 10),
-            prefixIcon: searchTypeSelection(),
-            prefix: const Padding(
-              padding: EdgeInsets.only(left: 12),
-            ),
-            suffixIcon: searchIcon(),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(
-                color: dividerColor,
-                width: 1.0,
-              ),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(
-                color: navyBlue,
-                width: 1.0,
-              ),
-            ),
-            errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(
-                color: dividerColor,
-                width: 1.0,
-              ),
-            ),
-            focusedErrorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(
-                color: dividerColor,
-                width: 1.0,
-              ),
+          suffixIcon: searchIcon(),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(
+              color: dividerColor,
+              width: 1.0,
             ),
           ),
-          onFieldSubmitted: (val) {
-            if (mounted) {
-              FocusScope.of(context).unfocus();
-              _onRefresh();
-            }
-          },
-          // onChanged: (val) {
-          //   if (val.length == 3) {
-          //     if (mounted) {
-          //       searchProductOrService();
-          //     }
-          //   } else if (val.length == 6) {
-          //     if (mounted) {
-          //       searchProductOrService();
-          //     }
-          //   }
-          // },
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(
+              color: navyBlue,
+              width: 1.0,
+            ),
+          ),
+          errorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(
+              color: dividerColor,
+              width: 1.0,
+            ),
+          ),
+          focusedErrorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(
+              color: dividerColor,
+              width: 1.0,
+            ),
+          ),
         ),
+        onFieldSubmitted: (val) {
+          if (mounted) {
+            FocusScope.of(context).unfocus();
+            _onRefresh();
+          }
+        },
+        // onChanged: (val) {
+        //   if (val.length == 3) {
+        //     if (mounted) {
+        //       searchProductOrService();
+        //     }
+        //   } else if (val.length == 6) {
+        //     if (mounted) {
+        //       searchProductOrService();
+        //     }
+        //   }
+        // },
       ),
     );
   }
@@ -618,8 +616,9 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
     productOrServiceCount = 0;
     productOrServiceNext = "";
     productOrServicePrevious = "";
-    if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+    if (bottomSheetStateSetterGlobal != null && bottomSheetMounted) {
       bottomSheetStateSetterGlobal!(() {});
+    }
     if (mounted) setState(() {});
   }
 
@@ -630,8 +629,9 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
       if (productOrServiceNext != null && !isItemLoading) {
         isItemLoading = true;
 
-        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+        if (bottomSheetStateSetterGlobal != null && bottomSheetMounted) {
           bottomSheetStateSetterGlobal!(() {});
+        }
         if (mounted) setState(() {});
 
         final Map<String, dynamic>? result = await MessageAuth()
@@ -647,11 +647,12 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
         final List tempList = result['results'];
 
         isItemLoading = false;
-        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+        if (bottomSheetStateSetterGlobal != null && bottomSheetMounted) {
           bottomSheetStateSetterGlobal!(() {});
+        }
         if (mounted) setState(() {});
 
-        tempList.forEach((item) {
+        for (var item in tempList) {
           if (isProductSearch) {
             searchedProductAndService.add(Product.fromJson(item));
           } else if (isServiceSearch) {
@@ -661,16 +662,18 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
           } else if (isUserSearch) {
             searchedProductAndService.add(CustomerProfile.fromJson(item));
           }
-        });
+        }
 
-        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+        if (bottomSheetStateSetterGlobal != null && bottomSheetMounted) {
           bottomSheetStateSetterGlobal!(() {});
+        }
         if (mounted) setState(() {});
       }
       if (searchedProductAndService.isEmpty) {
         noSearchedItem = true;
-        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+        if (bottomSheetStateSetterGlobal != null && bottomSheetMounted) {
           bottomSheetStateSetterGlobal!(() {});
+        }
         if (mounted) setState(() {});
       }
     }
@@ -678,26 +681,16 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
 
   String getSearchUrl() {
     if (isProductSearch) {
-      return AppConfig.baseUrl +
-          "/api/v1/search/products/?search=name__wildcard|*" +
-          searchItemTextController!.text +
-          "*";
+      return "${AppConfig.baseUrl}/api/v1/search/products/?search=name__wildcard|*${searchItemTextController!.text}*";
     }
     if (isServiceSearch) {
-      return AppConfig.baseUrl +
-          "/api/v1/search/services/?search=name__wildcard|*" +
-          searchItemTextController!.text +
-          "*";
+      return "${AppConfig.baseUrl}/api/v1/search/services/?search=name__wildcard|*${searchItemTextController!.text}*";
     }
     if (isUserSearch) {
-      return AppConfig.baseUrl +
-          "/api/v1/search/users/?search=" +
-          searchItemTextController!.text;
+      return "${AppConfig.baseUrl}/api/v1/search/users/?search=${searchItemTextController!.text}";
     }
     if (isBlogSearch) {
-      return AppConfig.baseUrl +
-          "/api/v1/social/posts/public/?search=" +
-          searchItemTextController!.text;
+      return "${AppConfig.baseUrl}/api/v1/social/posts/public/?search=${searchItemTextController!.text}";
     }
     return "";
   }
@@ -1067,8 +1060,9 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
         selectedMedia
             .add(YarnMedia(mediaFile: File(imagePath!), mediaType: mediaType));
 
-        if (widget.addedSelectedMedia != null)
+        if (widget.addedSelectedMedia != null) {
           widget.addedSelectedMedia!(selectedMedia);
+        }
         if (mounted) setState(() {});
       } else if (mediaType == 'video') {
         final videoFilePath =
@@ -1304,8 +1298,9 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
       readOnly: widget.readOnly,
       onTap: widget.onTap ??
           () {
-            if (widget.resetScrollingValue != null)
+            if (widget.resetScrollingValue != null) {
               widget.resetScrollingValue!(false);
+            }
           },
       decoration: InputDecoration(
           contentPadding: const EdgeInsets.symmetric(horizontal: 12),

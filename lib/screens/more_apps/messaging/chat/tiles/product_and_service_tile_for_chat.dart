@@ -131,12 +131,12 @@ class _ProductTileForChatMessageState extends State<ProductTileForChatMessage> {
                                 ),
                               ],
                             )
-                          : Container(
+                          : const SizedBox(
                               height: 0,
                               width: 0,
                             )
                     else
-                      Container(
+                      const SizedBox(
                         height: 0,
                         width: 0,
                       ),
@@ -150,151 +150,142 @@ class _ProductTileForChatMessageState extends State<ProductTileForChatMessage> {
                             shadowColor: boxShadowTwo,
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(10),
-                              child: Container(
-                                child: Column(
-                                  children: <Widget>[
-                                    Expanded(
-                                      child: CachedNetworkImage(
-                                        width: double.infinity,
-                                        imageUrl: product!.cover!,
-                                        fit: BoxFit.cover,
-                                        filterQuality: FilterQuality.high,
-                                        progressIndicatorBuilder:
-                                            (context, url, downloadProgress) =>
-                                                Center(
-                                          child: CircularProgressIndicator(
-                                            value: downloadProgress.progress,
-                                            strokeWidth: 2.5,
-                                            valueColor: AlwaysStoppedAnimation(
-                                                navyBlue),
-                                            backgroundColor: Colors.transparent,
-                                          ),
+                              child: Column(
+                                children: <Widget>[
+                                  Expanded(
+                                    child: CachedNetworkImage(
+                                      width: double.infinity,
+                                      imageUrl: product!.cover!,
+                                      fit: BoxFit.cover,
+                                      filterQuality: FilterQuality.high,
+                                      progressIndicatorBuilder:
+                                          (context, url, downloadProgress) =>
+                                              Center(
+                                        child: CircularProgressIndicator(
+                                          value: downloadProgress.progress,
+                                          strokeWidth: 2.5,
+                                          valueColor:
+                                              AlwaysStoppedAnimation(navyBlue),
+                                          backgroundColor: Colors.transparent,
                                         ),
-                                        errorWidget:
-                                            productAndServiceErrorWidget,
                                       ),
+                                      errorWidget: productAndServiceErrorWidget,
                                     ),
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 16, vertical: 8),
-                                      child: Column(
-                                        children: [
-                                          Row(
-                                            children: [
-                                              Expanded(
-                                                child: Text(
-                                                  messageDecoderWithEmoji(
-                                                          product?.name) ??
-                                                      "",
-                                                  maxLines: 1,
-                                                  style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.w700,
-                                                      fontSize: 14,
-                                                      color: blackFont),
-                                                  softWrap: false,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                ),
+                                  ),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 16, vertical: 8),
+                                    child: Column(
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              child: Text(
+                                                messageDecoderWithEmoji(
+                                                        product?.name) ??
+                                                    "",
+                                                maxLines: 1,
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.w700,
+                                                    fontSize: 14,
+                                                    color: blackFont),
+                                                softWrap: false,
+                                                overflow: TextOverflow.ellipsis,
                                               ),
-                                              RichText(
-                                                text: TextSpan(children: [
-                                                  TextSpan(
-                                                      text: worldCurrencies[
-                                                          product!.currency!],
-                                                      style: TextStyle(
-                                                          fontFamily: "Inter",
-                                                          color: navyBlue,
-                                                          fontWeight:
-                                                              FontWeight.w700,
-                                                          fontSize: 14)),
-                                                  TextSpan(
-                                                      // text: widget.product.price.toString(),
-                                                      text:
-                                                          moneyDisplayNormalizer(
-                                                              int.parse(product!
-                                                                  .price
-                                                                  .toString())),
-                                                      style: TextStyle(
+                                            ),
+                                            RichText(
+                                              text: TextSpan(children: [
+                                                TextSpan(
+                                                    text: worldCurrencies[
+                                                        product!.currency!],
+                                                    style: TextStyle(
+                                                        fontFamily: "Inter",
                                                         color: navyBlue,
-                                                        fontSize: 14,
                                                         fontWeight:
                                                             FontWeight.w700,
-                                                      ))
-                                                ]),
-                                              )
-                                            ],
-                                          ),
-                                          if (product!.seller ==
-                                              userBloc.user.userName)
-                                            Container(
-                                              height: 4,
+                                                        fontSize: 14)),
+                                                TextSpan(
+                                                    // text: widget.product.price.toString(),
+                                                    text:
+                                                        moneyDisplayNormalizer(
+                                                            int.parse(product!
+                                                                .price
+                                                                .toString())),
+                                                    style: TextStyle(
+                                                      color: navyBlue,
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w700,
+                                                    ))
+                                              ]),
                                             )
-                                          else
-                                            Container(
-                                              child: Column(
+                                          ],
+                                        ),
+                                        if (product!.seller ==
+                                            userBloc.user.userName)
+                                          Container(
+                                            height: 4,
+                                          )
+                                        else
+                                          Column(
+                                            children: [
+                                              const SizedBox(
+                                                height: 8,
+                                              ),
+                                              Row(
                                                 children: [
+                                                  addToCartWidget(
+                                                      item: product),
                                                   const SizedBox(
-                                                    height: 8,
+                                                    width: 8,
                                                   ),
-                                                  Row(
-                                                    children: [
-                                                      addToCartWidget(
-                                                          item: product),
-                                                      const SizedBox(
-                                                        width: 8,
-                                                      ),
-                                                      Expanded(
-                                                        child: CurvedButton(
-                                                          height: 36,
-                                                          isPaymentBtn: true,
-                                                          textColor:
-                                                              Colors.white,
-                                                          backgroundColor:
-                                                              navyBlue,
-                                                          text: "BUY NOW",
-                                                          borderRadius: 10,
-                                                          onPressed: () async {
-                                                            if (appConfigurationModel
-                                                                    ?.enablePayment ==
-                                                                true) {
-                                                              final bool
-                                                                  result =
-                                                                  await showDisclaimerDialogueForGoods(
-                                                                      context);
-                                                              if (result) {
-                                                                customerProfileBloc
-                                                                        .customer =
-                                                                    await UserAuth()
-                                                                        .fetchCustomerProfile(
-                                                                            product!.seller);
+                                                  Expanded(
+                                                    child: CurvedButton(
+                                                      height: 36,
+                                                      isPaymentBtn: true,
+                                                      textColor: Colors.white,
+                                                      backgroundColor: navyBlue,
+                                                      text: "BUY NOW",
+                                                      borderRadius: 10,
+                                                      onPressed: () async {
+                                                        if (appConfigurationModel
+                                                                ?.enablePayment ==
+                                                            true) {
+                                                          final bool result =
+                                                              await showDisclaimerDialogueForGoods(
+                                                                  context);
+                                                          if (result) {
+                                                            customerProfileBloc
+                                                                    .customer =
+                                                                await UserAuth()
+                                                                    .fetchCustomerProfile(
+                                                                        product!
+                                                                            .seller);
 
-                                                                Navigator.of(
-                                                                        context)
-                                                                    .pushNamed(
-                                                                  '/send-payment',
-                                                                  arguments: {
-                                                                    'isFromProfile':
-                                                                        false,
-                                                                    'product':
-                                                                        product
-                                                                  },
-                                                                );
-                                                              }
-                                                            }
-                                                          },
-                                                        ),
-                                                      ),
-                                                    ],
+                                                            Navigator.of(
+                                                                    context)
+                                                                .pushNamed(
+                                                              '/send-payment',
+                                                              arguments: {
+                                                                'isFromProfile':
+                                                                    false,
+                                                                'product':
+                                                                    product
+                                                              },
+                                                            );
+                                                          }
+                                                        }
+                                                      },
+                                                    ),
                                                   ),
                                                 ],
                                               ),
-                                            )
-                                        ],
-                                      ),
+                                            ],
+                                          )
+                                      ],
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
                             )),
                       ),
@@ -303,7 +294,7 @@ class _ProductTileForChatMessageState extends State<ProductTileForChatMessage> {
                 ),
               ),
               if (isSend)
-                Container(
+                SizedBox(
                   width: 20,
                   child: isSend
                       ? Center(
@@ -493,12 +484,12 @@ class _ServiceTileChatMessageState extends State<ServiceTileChatMessage> {
                                 ),
                               ],
                             )
-                          : Container(
+                          : const SizedBox(
                               height: 0,
                               width: 0,
                             )
                     else
-                      Container(
+                      const SizedBox(
                         height: 0,
                         width: 0,
                       ),
@@ -512,149 +503,141 @@ class _ServiceTileChatMessageState extends State<ServiceTileChatMessage> {
                             shadowColor: boxShadowTwo,
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(10),
-                              child: Container(
-                                child: Column(
-                                  children: <Widget>[
-                                    Expanded(
-                                      child: CachedNetworkImage(
-                                        width: double.infinity,
-                                        imageUrl: service!.cover!,
-                                        fit: BoxFit.cover,
-                                        filterQuality: FilterQuality.high,
-                                        progressIndicatorBuilder:
-                                            (context, url, downloadProgress) =>
-                                                Center(
-                                          child: CircularProgressIndicator(
-                                            value: downloadProgress.progress,
-                                            strokeWidth: 2.5,
-                                            valueColor: AlwaysStoppedAnimation(
-                                                navyBlue),
-                                            backgroundColor: Colors.transparent,
-                                          ),
+                              child: Column(
+                                children: <Widget>[
+                                  Expanded(
+                                    child: CachedNetworkImage(
+                                      width: double.infinity,
+                                      imageUrl: service!.cover!,
+                                      fit: BoxFit.cover,
+                                      filterQuality: FilterQuality.high,
+                                      progressIndicatorBuilder:
+                                          (context, url, downloadProgress) =>
+                                              Center(
+                                        child: CircularProgressIndicator(
+                                          value: downloadProgress.progress,
+                                          strokeWidth: 2.5,
+                                          valueColor:
+                                              AlwaysStoppedAnimation(navyBlue),
+                                          backgroundColor: Colors.transparent,
                                         ),
-                                        errorWidget:
-                                            productAndServiceBigErrorWidget,
                                       ),
+                                      errorWidget:
+                                          productAndServiceBigErrorWidget,
                                     ),
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 16, vertical: 8),
-                                      child: Column(
-                                        children: [
-                                          Row(
-                                            children: [
-                                              Expanded(
-                                                child: Text(
-                                                  messageDecoderWithEmoji(
-                                                          service?.name) ??
-                                                      "",
-                                                  maxLines: 1,
-                                                  style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.w700,
-                                                      fontSize: 14,
-                                                      color: blackFont),
-                                                  softWrap: false,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                ),
+                                  ),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 16, vertical: 8),
+                                    child: Column(
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              child: Text(
+                                                messageDecoderWithEmoji(
+                                                        service?.name) ??
+                                                    "",
+                                                maxLines: 1,
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.w700,
+                                                    fontSize: 14,
+                                                    color: blackFont),
+                                                softWrap: false,
+                                                overflow: TextOverflow.ellipsis,
                                               ),
-                                              RichText(
-                                                text: TextSpan(children: [
-                                                  TextSpan(
-                                                      text: worldCurrencies[
-                                                          service!.currency!],
-                                                      style: TextStyle(
-                                                          fontFamily: "Inter",
-                                                          color: navyBlue,
-                                                          fontWeight:
-                                                              FontWeight.w700,
-                                                          fontSize: 14)),
-                                                  TextSpan(
-                                                      // text: widget.product.price.toString(),
-                                                      text:
-                                                          moneyDisplayNormalizer(
-                                                              int.parse(service!
-                                                                  .price
-                                                                  .toString())),
-                                                      style: TextStyle(
+                                            ),
+                                            RichText(
+                                              text: TextSpan(children: [
+                                                TextSpan(
+                                                    text: worldCurrencies[
+                                                        service!.currency!],
+                                                    style: TextStyle(
+                                                        fontFamily: "Inter",
                                                         color: navyBlue,
-                                                        fontSize: 14,
                                                         fontWeight:
                                                             FontWeight.w700,
-                                                      ))
-                                                ]),
-                                              )
-                                            ],
-                                          ),
-                                          if (service!.provider ==
-                                              userBloc.user.userName)
-                                            Container()
-                                          else
-                                            Container(
-                                              child: Column(
+                                                        fontSize: 14)),
+                                                TextSpan(
+                                                    // text: widget.product.price.toString(),
+                                                    text:
+                                                        moneyDisplayNormalizer(
+                                                            int.parse(service!
+                                                                .price
+                                                                .toString())),
+                                                    style: TextStyle(
+                                                      color: navyBlue,
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w700,
+                                                    ))
+                                              ]),
+                                            )
+                                          ],
+                                        ),
+                                        if (service!.provider ==
+                                            userBloc.user.userName)
+                                          Container()
+                                        else
+                                          Column(
+                                            children: [
+                                              const SizedBox(
+                                                height: 8,
+                                              ),
+                                              Row(
                                                 children: [
+                                                  addToCartWidget(
+                                                      item: service),
                                                   const SizedBox(
-                                                    height: 8,
+                                                    width: 8,
                                                   ),
-                                                  Row(
-                                                    children: [
-                                                      addToCartWidget(
-                                                          item: service),
-                                                      const SizedBox(
-                                                        width: 8,
-                                                      ),
-                                                      Expanded(
-                                                        child: CurvedButton(
-                                                          height: 36,
-                                                          isPaymentBtn: false,
-                                                          textColor:
-                                                              Colors.white,
-                                                          backgroundColor:
-                                                              navyBlue,
-                                                          text: "PAY NOW",
-                                                          borderRadius: 10,
-                                                          onPressed: () async {
-                                                            if (appConfigurationModel
-                                                                    ?.enablePayment ==
-                                                                true) {
-                                                              final bool
-                                                                  result =
-                                                                  await showDisclaimerDialogueForGoods(
-                                                                      context);
-                                                              if (result) {
-                                                                customerProfileBloc
-                                                                        .customer =
-                                                                    await UserAuth()
-                                                                        .fetchCustomerProfile(
-                                                                            service!.provider);
+                                                  Expanded(
+                                                    child: CurvedButton(
+                                                      height: 36,
+                                                      isPaymentBtn: false,
+                                                      textColor: Colors.white,
+                                                      backgroundColor: navyBlue,
+                                                      text: "PAY NOW",
+                                                      borderRadius: 10,
+                                                      onPressed: () async {
+                                                        if (appConfigurationModel
+                                                                ?.enablePayment ==
+                                                            true) {
+                                                          final bool result =
+                                                              await showDisclaimerDialogueForGoods(
+                                                                  context);
+                                                          if (result) {
+                                                            customerProfileBloc
+                                                                    .customer =
+                                                                await UserAuth()
+                                                                    .fetchCustomerProfile(
+                                                                        service!
+                                                                            .provider);
 
-                                                                Navigator.of(
-                                                                        context)
-                                                                    .pushNamed(
-                                                                  '/send-payment',
-                                                                  arguments: {
-                                                                    'isFromProfile':
-                                                                        false,
-                                                                    'service':
-                                                                        service
-                                                                  },
-                                                                );
-                                                              }
-                                                            }
-                                                          },
-                                                        ),
-                                                      ),
-                                                    ],
+                                                            Navigator.of(
+                                                                    context)
+                                                                .pushNamed(
+                                                              '/send-payment',
+                                                              arguments: {
+                                                                'isFromProfile':
+                                                                    false,
+                                                                'service':
+                                                                    service
+                                                              },
+                                                            );
+                                                          }
+                                                        }
+                                                      },
+                                                    ),
                                                   ),
                                                 ],
                                               ),
-                                            )
-                                        ],
-                                      ),
+                                            ],
+                                          )
+                                      ],
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
                             )),
                       ),
@@ -663,7 +646,7 @@ class _ServiceTileChatMessageState extends State<ServiceTileChatMessage> {
                 ),
               ),
               if (isSend)
-                Container(
+                SizedBox(
                   width: 20,
                   child: isSend
                       ? Center(

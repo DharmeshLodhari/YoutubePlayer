@@ -336,78 +336,76 @@ class _SuperHubState extends State<SuperHub> {
   }
 
   Widget searchBox() {
-    return Container(
-      child: Theme(
-        data: Theme.of(context).copyWith(
-          textSelectionTheme: TextSelectionThemeData(
-            selectionHandleColor: navyBlue,
-          ),
+    return Theme(
+      data: Theme.of(context).copyWith(
+        textSelectionTheme: TextSelectionThemeData(
+          selectionHandleColor: navyBlue,
         ),
-        child: InkWell(
-          onTap: () {
-            Navigator.of(context).pushNamed(Routes.SEARCH_SERVICES);
-          },
-          child: IgnorePointer(
-            ignoring: true,
-            child: TextFormField(
-              readOnly: true,
-              style: TextStyle(
-                fontSize: 16,
+      ),
+      child: InkWell(
+        onTap: () {
+          Navigator.of(context).pushNamed(Routes.SEARCH_SERVICES);
+        },
+        child: IgnorePointer(
+          ignoring: true,
+          child: TextFormField(
+            readOnly: true,
+            style: TextStyle(
+              fontSize: 16,
+              fontFamily: "Inter",
+              color: blackFont,
+              fontWeight: FontWeight.w600,
+            ),
+            cursorWidth: 1.5,
+            cursorColor: navyBlue,
+            decoration: InputDecoration(
+              hintStyle: TextStyle(
+                fontSize: 14,
                 fontFamily: "Inter",
-                color: blackFont,
                 fontWeight: FontWeight.w600,
+                color: darkGrey,
               ),
-              cursorWidth: 1.5,
-              cursorColor: navyBlue,
-              decoration: InputDecoration(
-                hintStyle: TextStyle(
-                  fontSize: 14,
-                  fontFamily: "Inter",
-                  fontWeight: FontWeight.w600,
+              suffixIcon: IconButton(
+                icon: Icon(
+                  SlydoAppIcon.search,
                   color: darkGrey,
+                  size: 14,
                 ),
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    SlydoAppIcon.search,
-                    color: darkGrey,
-                    size: 14,
-                  ),
-                  onPressed: () {},
+                onPressed: () {},
+              ),
+              hintText: "Search",
+              fillColor: Colors.white,
+              filled: true,
+              contentPadding: const EdgeInsets.symmetric(vertical: 10),
+              prefix: const Padding(
+                padding: EdgeInsets.only(left: 16),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: dividerColor,
+                  width: 1.0,
                 ),
-                hintText: "Search",
-                fillColor: Colors.white,
-                filled: true,
-                contentPadding: const EdgeInsets.symmetric(vertical: 10),
-                prefix: const Padding(
-                  padding: EdgeInsets.only(left: 16),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: navyBlue,
+                  width: 1.0,
                 ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(
-                    color: dividerColor,
-                    width: 1.0,
-                  ),
+              ),
+              errorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: dividerColor,
+                  width: 1.0,
                 ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(
-                    color: navyBlue,
-                    width: 1.0,
-                  ),
-                ),
-                errorBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(
-                    color: dividerColor,
-                    width: 1.0,
-                  ),
-                ),
-                focusedErrorBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(
-                    color: dividerColor,
-                    width: 1.0,
-                  ),
+              ),
+              focusedErrorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: dividerColor,
+                  width: 1.0,
                 ),
               ),
             ),
@@ -435,7 +433,7 @@ class _SuperHubState extends State<SuperHub> {
         badgeStyle: badges.BadgeStyle(
           shape: badges.BadgeShape.circle,
           badgeColor: naturalGreen,
-          padding: basketBloc.basketItems.length == 0
+          padding: basketBloc.basketItems.isEmpty
               ? const EdgeInsets.all(0)
               : EdgeInsets.only(
                   left: getBadgeCount().length == 1 ? 6 : 8,
@@ -461,7 +459,7 @@ class _SuperHubState extends State<SuperHub> {
   }
 
   Widget? getBadgeContent() {
-    if (basketBloc.basketItems.length == 0) {
+    if (basketBloc.basketItems.isEmpty) {
       return null;
     }
     return Text(
@@ -476,9 +474,9 @@ class _SuperHubState extends State<SuperHub> {
 
   String getBadgeCount() {
     int totalItem = 0;
-    basketBloc.basketItems.forEach((element) {
+    for (var element in basketBloc.basketItems) {
       totalItem = totalItem + int.parse(element.qty.toString());
-    });
+    }
     return totalItem > 99 ? '99+' : totalItem.toString();
   }
 }

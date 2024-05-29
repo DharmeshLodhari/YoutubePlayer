@@ -182,7 +182,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
   }
 
   Widget addImages() {
-    return Container(
+    return SizedBox(
       height: 100,
       child: ListView.builder(
         controller: _scrollController,
@@ -272,7 +272,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
   }
 
   Widget showImage(int index) {
-    return Container(
+    return SizedBox(
       height: 100,
       child: Stack(
         children: <Widget>[
@@ -495,7 +495,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: Container(
+              content: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   elevation: 2,
@@ -581,7 +581,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
             Expanded(
               child: Text(
                 selectedProductCondition != null
-                    ? " (" + selectedProductCondition!.description + ")"
+                    ? " (${selectedProductCondition!.description})"
                     : "",
                 maxLines: 1,
                 style: const TextStyle(
@@ -613,7 +613,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: Container(
+              content: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   margin: EdgeInsets.zero,
@@ -642,10 +642,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
                                     Expanded(
                                       child: Text(
                                         selectedProductCondition != null
-                                            ? " (" +
-                                                selectedProductCondition!
-                                                    .description +
-                                                ")"
+                                            ? " (${selectedProductCondition!.description})"
                                             : "",
                                         maxLines: 1,
                                         style: TextStyle(
@@ -679,7 +676,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
                                 ),
                                 Expanded(
                                   child: Text(
-                                    " (" + condition.description + ")",
+                                    " (${condition.description})",
                                     maxLines: 1,
                                     style: TextStyle(
                                         fontSize: 16, color: blackFont),

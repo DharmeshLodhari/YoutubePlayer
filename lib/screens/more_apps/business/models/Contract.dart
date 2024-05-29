@@ -1,10 +1,10 @@
 class ContractModel {
   int? amount;
-  String? contractee;
-  String? contracteeAvatar;
+  String? contract;
+  String? contractAvatar;
   String? contractor;
   String? contractorDisplayName;
-  String? contracteeDisplayName;
+  String? contractDisplayName;
   String? contractorAvatar;
   String? createdAt;
   String? currency;
@@ -18,10 +18,10 @@ class ContractModel {
 
   ContractModel(
       {this.amount,
-      this.contractee,
+      this.contract,
       this.contractorDisplayName,
-      this.contracteeDisplayName,
-      this.contracteeAvatar,
+      this.contractDisplayName,
+      this.contractAvatar,
       this.contractor,
       this.contractorAvatar,
       this.createdAt,
@@ -37,10 +37,10 @@ class ContractModel {
   factory ContractModel.fromJson(Map<String, dynamic> json) {
     return ContractModel(
       amount: json['amount'],
-      contractee: json['contractee'],
-      contracteeDisplayName: json['contractee_display_name'],
+      contract: json['contractee'],
+      contractDisplayName: json['contractee_display_name'],
       contractorDisplayName: json['contractor_display_name'],
-      contracteeAvatar: json['contractee_avatar'],
+      contractAvatar: json['contractee_avatar'],
       contractor: json['contractor'],
       contractorAvatar: json['contractor_avatar'],
       createdAt: json['created_at'],
@@ -57,19 +57,19 @@ class ContractModel {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['amount'] = this.amount;
-    data['contractee'] = this.contractee;
-    data['contractee_avatar'] = this.contracteeAvatar;
-    data['contractor'] = this.contractor;
-    data['contractor_avatar'] = this.contractorAvatar;
-    data['created_at'] = this.createdAt;
-    data['currency'] = this.currency;
-    data['end_date'] = this.endDate;
-    data['id'] = this.id;
-    data['note'] = this.note;
-    data['payment_duration'] = this.paymentDuration;
-    data['start_date'] = this.startDate;
-    data['status'] = this.status;
+    data['amount'] = amount;
+    data['contractee'] = contract;
+    data['contractee_avatar'] = contractAvatar;
+    data['contractor'] = contractor;
+    data['contractor_avatar'] = contractorAvatar;
+    data['created_at'] = createdAt;
+    data['currency'] = currency;
+    data['end_date'] = endDate;
+    data['id'] = id;
+    data['note'] = note;
+    data['payment_duration'] = paymentDuration;
+    data['start_date'] = startDate;
+    data['status'] = status;
     return data;
   }
 }

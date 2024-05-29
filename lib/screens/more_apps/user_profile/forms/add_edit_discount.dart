@@ -176,7 +176,7 @@ class _AddEditDiscountState extends State<AddEditDiscount> {
   }
 
   Widget showServerImage() {
-    return Container(
+    return SizedBox(
       height: 170,
       child: Stack(
         children: <Widget>[
@@ -231,7 +231,7 @@ class _AddEditDiscountState extends State<AddEditDiscount> {
   }
 
   Widget addImages() {
-    return Container(
+    return SizedBox(
       height: 170,
       child: ListView.builder(
         controller: _scrollController,
@@ -323,7 +323,7 @@ class _AddEditDiscountState extends State<AddEditDiscount> {
   }
 
   Widget showImage(int index) {
-    return Container(
+    return SizedBox(
       height: 170,
       child: Stack(
         children: <Widget>[
@@ -431,7 +431,7 @@ class _AddEditDiscountState extends State<AddEditDiscount> {
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: Container(
+              content: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   elevation: 2,
@@ -954,22 +954,20 @@ class _AddEditDiscountState extends State<AddEditDiscount> {
       },
       child: CustomizedDropDownField(
         title: "End Time",
-        child: Container(
-          child: ListTile(
-            dense: true,
-            title: Text(
-              endTimeTo != null ? formatTime(endTimeTo.toString()) : "",
-              style: TextStyle(
-                color: blackFont,
-                fontWeight: FontWeight.w600,
-                fontSize: 16,
-              ),
+        child: ListTile(
+          dense: true,
+          title: Text(
+            endTimeTo != null ? formatTime(endTimeTo.toString()) : "",
+            style: TextStyle(
+              color: blackFont,
+              fontWeight: FontWeight.w600,
+              fontSize: 16,
             ),
-            trailing: Icon(
-              SlydoAppIcon.clock,
-              size: 16,
-              color: darkGrey,
-            ),
+          ),
+          trailing: Icon(
+            SlydoAppIcon.clock,
+            size: 16,
+            color: darkGrey,
           ),
         ),
       ),
@@ -1035,22 +1033,20 @@ class _AddEditDiscountState extends State<AddEditDiscount> {
       },
       child: CustomizedDropDownField(
         title: "End Date",
-        child: Container(
-          child: ListTile(
-            dense: true,
-            title: Text(
-              endTo != null ? formatDate(endTo) : "",
-              style: TextStyle(
-                color: blackFont,
-                fontWeight: FontWeight.w600,
-                fontSize: 16,
-              ),
+        child: ListTile(
+          dense: true,
+          title: Text(
+            endTo != null ? formatDate(endTo) : "",
+            style: TextStyle(
+              color: blackFont,
+              fontWeight: FontWeight.w600,
+              fontSize: 16,
             ),
-            trailing: Icon(
-              SlydoAppIcon.date,
-              size: 16,
-              color: darkGrey,
-            ),
+          ),
+          trailing: Icon(
+            SlydoAppIcon.date,
+            size: 16,
+            color: darkGrey,
           ),
         ),
       ),

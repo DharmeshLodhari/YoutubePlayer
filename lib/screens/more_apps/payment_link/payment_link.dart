@@ -91,10 +91,11 @@ class _PaymentLinkState extends State<PaymentLink> {
     final dynamic result = await _auth.cancelPaymentLinks(cancelPaymentLink);
 
     if (result == true) {
-      if (mounted)
+      if (mounted) {
         setState(() {
           isLoading = false;
         });
+      }
       _onRefresh();
     } else {
       isLoading = false;
@@ -105,7 +106,7 @@ class _PaymentLinkState extends State<PaymentLink> {
     setState(() {});
   }
 
-  filterPaymentLinks(String filter) async {
+  void filterPaymentLinks(String filter) async {
     if (mounted) {
       setState(() {
         isLoading = true;
@@ -604,7 +605,7 @@ class _PaymentLinkState extends State<PaymentLink> {
       actionTwoText: "Ignore",
     );
     if (result != null && result) {
-      final bool done = true;
+      const bool done = true;
       if (done) {
         setState(() {
           // paymentLinkList.removeAt(index);

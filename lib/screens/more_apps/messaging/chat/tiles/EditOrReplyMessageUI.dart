@@ -380,7 +380,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
             ),
           ),
           if (widget.chatConversation!.isGroupConversation!)
-            Container(
+            SizedBox(
               height: 50,
               width: 70,
               child: Stack(
@@ -425,7 +425,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
               ),
             )
           else
-            Container(
+            const SizedBox(
               width: 1,
               height: 1,
             ),
@@ -504,7 +504,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
             ),
           ),
           if (widget.chatConversation!.isGroupConversation!)
-            Container(
+            SizedBox(
               height: 50,
               width: 70,
               child: Stack(
@@ -549,7 +549,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
               ),
             )
           else
-            Container(
+            const SizedBox(
               width: 1,
               height: 1,
             ),
@@ -940,7 +940,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
             ),
           ),
           if (widget.chatConversation!.isGroupConversation!)
-            Container(
+            SizedBox(
               height: 50,
               width: 80,
               child: Stack(
@@ -985,7 +985,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
               ),
             )
           else
-            Container(
+            const SizedBox(
               width: 1,
               height: 1,
             ),

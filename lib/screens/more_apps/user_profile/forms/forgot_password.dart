@@ -79,14 +79,16 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                               height: 20,
                             ),
                             phoneNumberField(),
-                            isOTPSent
-                                ? const SizedBox(
-                                    height: 20,
-                                  )
-                                : Container(),
-                            isOTPSent
-                                ? getVerificationOTPWidget()
-                                : Container(),
+                            if (isOTPSent)
+                              const SizedBox(
+                                height: 20,
+                              )
+                            else
+                              Container(),
+                            if (isOTPSent)
+                              getVerificationOTPWidget()
+                            else
+                              Container(),
                             const SizedBox(
                               height: 20,
                             ),
@@ -343,13 +345,13 @@ class _ForgotPasswordState extends State<ForgotPassword> {
         } else {
           if (response.statusCode == 406) {
             errorMessage = jsonDecode(value.body)[0];
-            showToast(message: "$errorMessage");
+            showToast(message: errorMessage);
             setState(() {});
           } else {
             debugPrint("ERROR:- ${response.body}");
             setState(() {
               errorMessage = AppLocalization.of(context)!.somethingWentWrong;
-              showToast(message: "$errorMessage");
+              showToast(message: errorMessage);
             });
           }
         }

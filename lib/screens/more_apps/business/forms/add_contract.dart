@@ -148,7 +148,7 @@ class _AddContractState extends State<AddContract> {
         enableMargin: true,
       );
     }
-    return Container(
+    return SizedBox(
       height: 10,
       width: 10,
     );
@@ -250,7 +250,7 @@ class _AddContractState extends State<AddContract> {
         },
       );
     }
-    return Container(
+    return SizedBox(
       height: 1,
       width: 1,
     );
@@ -270,7 +270,7 @@ class _AddContractState extends State<AddContract> {
     var avatarImage;
     var qrCodeImage;
     if (_payee != null) {
-      avatarImage = Container(
+      avatarImage = SizedBox(
         height: 48,
         width: 48,
         child: ClipOval(
@@ -577,7 +577,7 @@ class _AddContractState extends State<AddContract> {
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: Container(
+              content: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   elevation: 2,

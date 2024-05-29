@@ -301,7 +301,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
         ? const SizedBox.shrink()
         : Column(
             children: [
-              if (job!.pictures!.length > 0) customImageSlider(),
+              if (job!.pictures!.isNotEmpty) customImageSlider(),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -533,7 +533,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
     return 'Paid';
   }
 
-  getPaymentStatusRow() {
+  Widget getPaymentStatusRow() {
     return job?.assignee == userBloc.user.userName
         ? Column(
             children: [
@@ -1126,7 +1126,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
     }
   }
 
-  getListNowBtn() {
+  Widget getListNowBtn() {
     return CurvedButton(
       onPressed: isAPILoading
           ? () {}
@@ -1146,7 +1146,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
     );
   }
 
-  getUnListNowBtn() {
+  Widget getUnListNowBtn() {
     return CurvedButton(
       onPressed: isAPILoading
           ? () {}
@@ -1166,7 +1166,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
     );
   }
 
-  getApplyNowBtn() {
+  Widget getApplyNowBtn() {
     return CurvedButton(
       onPressed: isAPILoading
           ? () {}
@@ -1184,7 +1184,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
     );
   }
 
-  cancelApplicationNowBtn() {
+  Widget cancelApplicationNowBtn() {
     return CurvedButton(
       onPressed: isAPILoading
           ? () {}
@@ -1235,7 +1235,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
     );
   }
 
-  cancelApplication() async {
+  void cancelApplication() async {
     await ServiceHubAuthService().cancelApplicationForJob(
         {"applicant": "${userBloc.user.userName}"},
         jobId: job!.id).then((value) {
@@ -1249,11 +1249,11 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
     });
   }
 
-  createJobListing() async {
+  void createJobListing() async {
     await ServiceHubAuthService().createListing({
       "job": job!.id,
     }).then((value) {
-      debugPrint(value.toString() + 'Create Listing');
+      debugPrint('${value}Create Listing');
       Navigator.pushNamed(context, Routes.SUPER_HUB, arguments: {'page': 1});
       showToast(message: AppLocalization.of(context)!.jobListSuccessfully);
     }).catchError((error) {
@@ -1262,7 +1262,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
     });
   }
 
-  removeJobListing() async {
+  void removeJobListing() async {
     debugPrint('print listing id $listingId');
     await ServiceHubAuthService().removeJobListing(listingId).then((value) {
       Navigator.pushNamed(context, Routes.SUPER_HUB, arguments: {'page': 1});
@@ -1273,7 +1273,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
     });
   }
 
-  applyForJob() async {
+  void applyForJob() async {
     await ServiceHubAuthService().applyForJob(
         {"applicant": userBloc.user.userName},
         jobId: job!.id).then((value) {
@@ -1471,18 +1471,16 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
         await ShareInChat().selectShareCustomer(context);
     debugPrint("Selected users = ${listOfRecipient.length}");
 
-    final String url = AppConfig.baseUrl +
-        "/api/v1/job-service/${job is JobModel ? "job" : "services"}/" +
-        job!.id! +
-        "/";
+    final String url =
+        "${AppConfig.baseUrl}/api/v1/job-service/${job is JobModel ? "job" : "services"}/${job!.id!}/";
 
     final Map<String, dynamic>? itemData =
         await ServiceHubAuthService().getJobOrService(url);
 
-    listOfRecipient.forEach((recipient) {
+    for (var recipient in listOfRecipient) {
       addProductOrServiceToChat(
           item: job, itemData: itemData, recipientUser: recipient!, url: url);
-    });
+    }
   }
 
   void addProductOrServiceToChat(
@@ -1587,7 +1585,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
     );
   }
 
-  onPageFunction(index, reason) {
+  void onPageFunction(index, reason) {
     currentIndex = index;
     setState(() {});
   }
@@ -1595,6 +1593,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
 
 class CustomText extends StatelessWidget {
   const CustomText({
+    super.key,
     required this.title,
     required this.fontSize,
     required this.fontweight,

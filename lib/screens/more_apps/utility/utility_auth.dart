@@ -22,8 +22,8 @@ class UtilityAuth extends AuthService {
       return null;
     }
     if (next == "") {
-      url = AppConfig.baseUrl +
-          "/api/v1/utilities/providers/?category=$utilitiesProvider";
+      url =
+          "${AppConfig.baseUrl}/api/v1/utilities/providers/?category=$utilitiesProvider";
     } else {
       url = getSecureUrl(url: next);
     }
@@ -60,7 +60,7 @@ class UtilityAuth extends AuthService {
   Future<List<ProviderProductModel>> getUtilityProviderProduct(
       {required String providerId}) async {
     final String url =
-        AppConfig.baseUrl + "/api/v1/utilities/providers/$providerId/";
+        "${AppConfig.baseUrl}/api/v1/utilities/providers/$providerId/";
 
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
@@ -87,7 +87,7 @@ class UtilityAuth extends AuthService {
       return null;
     }
     if (next == "") {
-      url = AppConfig.baseUrl + "/api/v1/utilities/transactions/";
+      url = "${AppConfig.baseUrl}/api/v1/utilities/transactions/";
     } else {
       url = getSecureUrl(url: next);
     }
@@ -143,7 +143,7 @@ class UtilityAuth extends AuthService {
   Future<UtilityHistoryModel?> getUtilityTransactionsDetails(
       {required String transactionsId}) async {
     final String url =
-        AppConfig.baseUrl + "/api/v1/utilities/transactions/$transactionsId/";
+        "${AppConfig.baseUrl}/api/v1/utilities/transactions/$transactionsId/";
 
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
@@ -163,7 +163,7 @@ class UtilityAuth extends AuthService {
     required String customerRefNum,
   }) async {
     final String url =
-        AppConfig.baseUrl + "/api/v1/utilities/ref-number-lookup/";
+        "${AppConfig.baseUrl}/api/v1/utilities/ref-number-lookup/";
 
     // var data = {
     //   "product_id": productId,
@@ -193,7 +193,7 @@ class UtilityAuth extends AuthService {
 
   Future<bool> payUtilityBill(
       {required BillPaymentModel billPaymentModel}) async {
-    final String url = AppConfig.baseUrl + "/api/v1/utilities/payment/";
+    final String url = "${AppConfig.baseUrl}/api/v1/utilities/payment/";
 
     final Map<String, dynamic> data = billPaymentModel.toJson();
 

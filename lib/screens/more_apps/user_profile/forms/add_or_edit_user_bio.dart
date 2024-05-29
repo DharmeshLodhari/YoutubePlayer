@@ -233,25 +233,25 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
 
   void addUserAddedOpeningHour() {
     final List<String?> updatedDays = [];
-    userBioDetail!.openingHours.forEach((element) {
+    for (var element in userBioDetail!.openingHours) {
       final String time = element.time!.trim();
       final List<String> openingAndClosingTime = time.split("-");
 
-      userAddedOpeningHours.forEach((existing) {
+      for (var existing in userAddedOpeningHours) {
         if (element.day == existing["day"]) {
           updatedDays.add(element.day);
           existing['is_open'] = true;
           existing['starting_hour'] = openingAndClosingTime[0].trim();
           existing['closing_hour'] = openingAndClosingTime[1].trim();
         }
-      });
-    });
+      }
+    }
 
-    userAddedOpeningHours.forEach((element) {
+    for (var element in userAddedOpeningHours) {
       if (!updatedDays.contains(element["day"])) {
         element["is_open"] = false;
       }
-    });
+    }
 
     setState(() {});
   }
@@ -623,7 +623,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
           titleSpacing: 0,
           backgroundColor: navyBlue,
           flexibleSpace: FlexibleSpaceBar(
-            stretchModes: <StretchMode>[
+            stretchModes: const <StretchMode>[
               StretchMode.zoomBackground,
               StretchMode.blurBackground
             ],
@@ -664,7 +664,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
         'USER ABOUT --> ${!userBloc.userAbout!.wallpaper.contains("https")}');
 
     debugPrint('MY WALL -> ${userBloc.userAbout!.wallpaper}');
-    return Container(height: 206, child: getProfileWallpaper());
+    return SizedBox(height: 206, child: getProfileWallpaper());
   }
 
   Widget getProfileWallpaper() {
@@ -750,7 +750,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
                   child: Container(
                     color: Colors.white,
                     child: isUserAvatarLoading
-                        ? Container(
+                        ? SizedBox(
                             height: 88,
                             width: 88,
                             child: Center(child: CircularLoadingIndicator()))
@@ -1040,12 +1040,12 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
                         width: Checkbox.width,
                         height: Checkbox.width,
                         child: Container(
-                          decoration: new BoxDecoration(
+                          decoration: BoxDecoration(
                             border: Border.all(
                               color: greyBorderColor,
                               width: 1,
                             ),
-                            borderRadius: new BorderRadius.circular(4),
+                            borderRadius: BorderRadius.circular(4),
                           ),
                           child: Theme(
                             data: ThemeData(
@@ -1412,7 +1412,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
   void addOpeningHoursToUserAboutObject() {
     userBioDetail?.openingHours = [];
 
-    userAddedOpeningHours.forEach((element) {
+    for (var element in userAddedOpeningHours) {
       if (element["is_open"]) {
         final OpeningHourForDay openingHour = OpeningHourForDay();
 
@@ -1425,7 +1425,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
           userBioDetail?.openingHours.add(openingHour);
         }
       }
-    });
+    }
 
     userBioDetail?.openingHours.forEach((element) {
       debugPrint('OPENING HOURS ---> ${element.toJson()}');
