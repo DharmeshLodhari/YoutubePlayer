@@ -10,7 +10,7 @@ import 'package:Slydo/screens/more_apps/messaging/chat/helpers/db_socket_message
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/SocketQueueChatMessage.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
-import 'package:connectivity/connectivity.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/io.dart';
 
@@ -354,12 +354,12 @@ class MainSocketProvider extends ChangeNotifier {
 
   /// from remove listening subscriptions from socket
   void removeStreamSubscription(StreamSubscription? streamSubscription) {
-    for (var element in _streamSubscriptions) {
+    _streamSubscriptions.forEach((element) {
       if (element == streamSubscription) {
         element?.cancel();
         // debugPrint("Stream Subscription removed successfully !");
       }
-    }
+    });
   }
 
   /// for adding data into user socket
@@ -387,9 +387,9 @@ class MainSocketProvider extends ChangeNotifier {
   Future<bool> addDataInTheCorrectOrder() async {
     try {
       if (_isConnected) {
-        for (var message in _queueMessages) {
+        _queueMessages.forEach((message) {
           _channel!.sink.add(message);
-        }
+        });
 
         _lastSent = DateTime.now();
         pingCount = 0;
@@ -423,9 +423,9 @@ class MainSocketProvider extends ChangeNotifier {
       _isConnected = false;
 
       await connect().then((value) async {
-        for (var message in _queueMessages) {
+        _queueMessages.forEach((message) {
           _channel!.sink.add(message);
-        }
+        });
 
         _lastSent = DateTime.now();
         pingCount = 0;
@@ -506,9 +506,9 @@ class MainSocketProvider extends ChangeNotifier {
         debugPrint(
             "Messages related To Conversation id found at $messagesIndex");
       }
-      for (var element in messagesIndex) {
+      messagesIndex.forEach((element) {
         _queueMessages.removeAt(element);
-      }
+      });
     }
   }
 

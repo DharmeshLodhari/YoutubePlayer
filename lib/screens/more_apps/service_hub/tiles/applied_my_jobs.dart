@@ -7,7 +7,7 @@ import 'package:Slydo/screens/more_apps/service_hub/auth/service_hub_auth.dart';
 import 'package:Slydo/screens/more_apps/service_hub/models/jobs.dart';
 import 'package:Slydo/screens/more_apps/service_hub/tiles/jos_description_card.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:connectivity/connectivity.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';

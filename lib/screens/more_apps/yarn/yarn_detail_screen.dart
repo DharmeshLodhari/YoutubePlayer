@@ -14,7 +14,7 @@ import 'package:Slydo/screens/more_apps/yarn/yarn_comment_list.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_dashboard_bloc.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
-import 'package:connectivity/connectivity.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';

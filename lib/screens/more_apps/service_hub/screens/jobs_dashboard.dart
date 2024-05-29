@@ -6,7 +6,7 @@ import 'package:Slydo/screens/more_apps/service_hub/models/active_job_listing.da
 import 'package:Slydo/screens/more_apps/service_hub/models/list_of_categories.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/debouncer_widget.dart';
-import 'package:connectivity/connectivity.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:lottie/lottie.dart';

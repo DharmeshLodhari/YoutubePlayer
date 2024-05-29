@@ -3,7 +3,7 @@ import 'package:Slydo/screens/more_apps/payment_and_banking/models/payout.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/tiles/payout_tile.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
-import 'package:connectivity/connectivity.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 

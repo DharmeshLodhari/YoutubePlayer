@@ -8,7 +8,7 @@ import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/custom_box_shadow.dart';
 import 'package:Slydo/widget/item_display_product_for_discount.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
-import 'package:connectivity/connectivity.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';

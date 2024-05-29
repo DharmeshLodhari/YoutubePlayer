@@ -65,7 +65,7 @@ import 'package:Slydo/widget/sticky_grouped_list/sticky_grouped_list.dart';
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
-import 'package:connectivity/connectivity.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
