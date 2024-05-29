@@ -1,9 +1,12 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/item_display_card.dart';
+import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:badges/badges.dart' as badges;
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
@@ -11,10 +14,6 @@ import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shimmer/shimmer.dart';
-
-import '../../../routes/route_constants.dart';
-import '../../../widget/item_display_card.dart';
-import '../../../widget/rounded_background_icon.dart';
 
 class SuperHub extends StatefulWidget {
   const SuperHub({Key? key}) : super(key: key);

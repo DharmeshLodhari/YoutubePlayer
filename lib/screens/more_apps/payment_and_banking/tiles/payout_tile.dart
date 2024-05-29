@@ -1,14 +1,13 @@
 import 'package:Slydo/data/currency.dart';
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/payout.dart';
+import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-
-import '../../../../routes/route_constants.dart';
-import '../../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 
 class PayoutTile extends StatelessWidget {
   final Payout? payout;

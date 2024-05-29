@@ -1,14 +1,14 @@
 import 'package:Slydo/screens/more_apps/utility/models/provider_product_model.dart';
 import 'package:Slydo/screens/more_apps/utility/utility_auth.dart';
+import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/curved_btn.dart';
+import 'package:Slydo/widget/customized_textform_field.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../../../utils/slydo_app_icon_icons.dart';
-import '../../../widget/curved_btn.dart';
-import '../../../widget/customized_textform_field.dart';
-import '../../../widget/loading_indicator.dart';
 import 'models/provider_model.dart';
 
 class UtilityPaymentScreen extends StatefulWidget {

@@ -1,3 +1,6 @@
+import 'package:Slydo/data/state_notifiers/user_bloc.dart';
+import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/main.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/yarn/models/Topics/yarn_model.dart';
@@ -5,16 +8,13 @@ import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_comment_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_comment_reply_list.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_dashboard_bloc.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-import '../../../data/state_notifier.dart';
-import '../../../locale/app_localization.dart';
-import '../../../main.dart';
-import '../../../utils/util.dart';
 import 'models/Topics/CommentDetails.dart';
 import 'models/share_as_yarn_model.dart';
 import 'widgets/yarn_comment_textfield.dart';

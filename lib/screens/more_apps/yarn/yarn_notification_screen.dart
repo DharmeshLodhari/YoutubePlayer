@@ -1,12 +1,12 @@
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/notification_view.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-import '../../../locale/app_localization.dart';
-import '../../../widget/no_item_in_list.dart';
 import 'models/Topics/Notifications.dart';
 
 class YarnNotification extends StatefulWidget {

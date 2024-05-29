@@ -1,15 +1,14 @@
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/utility/tiles/utility_history_tile.dart';
 import 'package:Slydo/screens/more_apps/utility/utility_auth.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
+import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-
-import '../../../locale/app_localization.dart';
-import '../../../widget/loading_indicator.dart';
-import '../../../widget/no_item_in_list.dart';
 
 class UtilityHistory extends StatefulWidget {
   @override

@@ -1,16 +1,16 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/main.dart';
+import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart';
 import "package:http/http.dart" as http;
 
-import '../../../data/environment.dart';
-import '../../../utils/util.dart';
-import '../shopping/models/store.dart';
-import '../user_profile/models/user.dart';
 import 'models/Topics/CommentDetails.dart';
 import 'models/Topics/Notifications.dart';
 import 'models/Topics/yarn_model.dart';

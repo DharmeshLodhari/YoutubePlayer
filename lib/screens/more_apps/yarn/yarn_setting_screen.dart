@@ -3,11 +3,12 @@ import 'package:Slydo/screens/more_apps/yarn/saved_yarn_screen.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_dashboard_bloc.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_list_screen.dart';
+import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/navigation_util.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../utils/navigation_util.dart';
-import '../../../utils/util.dart';
 import 'yarn_customize_screen.dart';
 
 class YarnSettingsScreen extends StatefulWidget {

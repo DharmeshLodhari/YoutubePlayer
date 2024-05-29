@@ -1,28 +1,27 @@
 import 'dart:io';
 
 import 'package:Slydo/constant.dart';
+import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/VirtualAccount.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
+import 'package:Slydo/screens/more_apps/payment_loading_screen.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_passcode_sheet/bottomsheet_passcode.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
+import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:Slydo/widget/permission_protection_widget.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
-
-import '../../../../../data/currency.dart';
-import '../../../../../widget/no_item_in_list.dart';
-import '../../../payment_loading_screen.dart';
-import '../../../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
-import '../../models/transactions.dart';
-import '../../payment_and_banking_auth.dart';
 
 class PayoutScreen extends StatefulWidget {
   @override
@@ -273,7 +272,11 @@ class _PayoutScreenState extends State<PayoutScreen> {
       onChanged: (val) {
         if (mounted) {
           setState(() {
-            amount = int.parse(val.replaceAll(",", "").split(".")[0]);
+            if (val.isNotEmpty) {
+              amount = int.parse(val.replaceAll(",", "").split(".")[0]);
+            } else {
+              amount = 0;
+            }
           });
         }
       },

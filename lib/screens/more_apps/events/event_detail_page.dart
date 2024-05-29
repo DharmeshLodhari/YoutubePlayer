@@ -1,3 +1,5 @@
+import 'package:Slydo/data/currency.dart';
+import 'package:Slydo/data/state_notifiers/user_bloc.dart';
 import 'package:Slydo/screens/more_apps/events/event_auth.dart';
 import 'package:Slydo/screens/more_apps/events/event_dashboard_bloc.dart';
 import 'package:Slydo/screens/more_apps/events/event_tile.dart';
@@ -10,9 +12,6 @@ import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-import '../../../data/currency.dart';
-import '../../../data/state_notifier.dart';
 
 class EventDetailPage extends StatefulWidget {
   @override

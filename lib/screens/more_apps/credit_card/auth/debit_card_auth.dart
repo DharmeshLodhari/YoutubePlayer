@@ -1,13 +1,12 @@
 import 'dart:convert';
 
+import 'package:Slydo/data/environment.dart';
+import 'package:Slydo/screens/more_apps/credit_card/models/all_cards.dart';
+import 'package:Slydo/screens/more_apps/credit_card/models/card_transactions.dart';
+import 'package:Slydo/screens/more_apps/credit_card/models/exchange_rate.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:flutter/cupertino.dart';
-
-import '../../../../data/environment.dart';
-import '../../../../utils/util.dart';
-import '../models/all_cards.dart';
-import '../models/card_transactions.dart';
-import '../models/exchange_rate.dart';
 
 class DebitCardAuth extends AuthService {
   // Get all virtual cards

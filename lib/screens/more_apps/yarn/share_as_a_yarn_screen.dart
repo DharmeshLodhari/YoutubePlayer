@@ -1,6 +1,17 @@
 import 'dart:io';
 
+import 'package:Slydo/data/state_notifiers/user_bloc.dart';
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/main.dart';
+import 'package:Slydo/screens/moments/screens/trimmer_view.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/gif_model/GIFModel.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
+import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
+import 'package:Slydo/screens/more_apps/service_hub/models/jobs.dart';
+import 'package:Slydo/screens/more_apps/service_hub/tiles/jos_description_card.dart';
+import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
+import 'package:Slydo/screens/more_apps/user_post/models/user_post.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_blog_post_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_customer_post_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_product_tile.dart';
@@ -12,8 +23,18 @@ import 'package:Slydo/screens/more_apps/yarn/widgets/ask_enable_comment_payment.
 import 'package:Slydo/screens/more_apps/yarn/widgets/ask_mention_view.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_dashboard_bloc.dart';
+import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/common.dart';
 import 'package:Slydo/utils/extensions.dart';
+import 'package:Slydo/utils/navigation_util.dart';
+import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/storage_permission.dart';
+import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/curved_btn.dart';
+import 'package:Slydo/widget/custom_box_shadow.dart';
+import 'package:Slydo/widget/customized_dropdown_field.dart';
+import 'package:Slydo/widget/customized_textform_field.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -23,43 +44,23 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 
-import '../../../../data/state_notifier.dart';
-import '../../../../locale/app_localization.dart';
-import '../../../../utils/navigation_util.dart';
-import '../../../../utils/slydo_app_icon_icons.dart';
-import '../../../../utils/util.dart';
-import '../../../../widget/curved_btn.dart';
-import '../../../../widget/custom_box_shadow.dart';
-import '../../../../widget/customized_dropdown_field.dart';
-import '../../../../widget/customized_textform_field.dart';
-import '../../../widget/loading_indicator.dart';
-import '../../moments/screens/trimmer_view.dart';
-import '../messaging/chat/models/gif_model/gif_model.dart';
-import '../messaging/chat/utils.dart';
-import '../messaging/message_auth.dart';
-import '../service_hub/models/jobs.dart';
-import '../service_hub/tiles/jos_description_card.dart';
-import '../shopping/models/store.dart';
-import '../user_post/models/user_post.dart';
-import '../user_profile/models/user.dart';
 import 'models/Topics/yarn_model.dart';
 import 'models/ask_categories_model.dart';
 import 'models/share_as_yarn_model.dart';
 
-// ignore: must_be_immutable
 class ShareAsAyarnScreen extends StatefulWidget {
-  final String? appTitle;
-  late final List<YarnCategories>? askCategories;
-  late final List<ShareAsYarnModel>? shareAsYarnModel;
-  final YarnCategories? askCategory;
+  String? appTitle;
+  List<YarnCategories>? askCategories;
+  List<ShareAsYarnModel>? shareAsYarnModel;
+  YarnCategories? askCategory;
   bool? isYarn = false;
   bool? enableText = false; //TODO: this attribute should be deprecated
   bool isShare = true;
-  final Yarn? yarnTopic;
-  final CustomerProfile? userProfile;
-  final Service? serviceModel;
-  final Product? productModel;
-  final JobModel? jobModel;
+  Yarn? yarnTopic;
+  CustomerProfile? userProfile;
+  Service? serviceModel;
+  Product? productModel;
+  JobModel? jobModel;
 
   UserPost? blogPost;
 
@@ -119,7 +120,7 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
   bool _isMessageIsGIFOrSticker = false;
   bool _isMessageIsSticker = false;
   bool _isGIFLoading = false;
-  final TextEditingController _gifController = TextEditingController();
+  TextEditingController _gifController = TextEditingController();
 
   @override
   void initState() {

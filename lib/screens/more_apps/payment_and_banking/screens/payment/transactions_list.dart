@@ -1,20 +1,19 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/payment/transactions/cash_out_transaction_list.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/payment/transactions/slydo_transaction_list.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/screens/search_user.dart';
+import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/customized_popup_menu.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
+import 'package:Slydo/widget/tab_selection.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-
-import '../../../../../routes/route_constants.dart';
-import '../../../../../utils/navigation_util.dart';
-import '../../../../../widget/tab_selection.dart';
-import '../../../../search_user.dart';
-import '../../../user_profile/models/user.dart';
 
 class TransactionList extends StatefulWidget {
   final dynamic arguments;

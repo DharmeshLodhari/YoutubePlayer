@@ -2,11 +2,19 @@ import 'dart:isolate';
 import 'dart:ui';
 
 import 'package:Slydo/data/currency.dart';
+import 'package:Slydo/data/environment.dart';
+import 'package:Slydo/data/state_notifiers/user_bloc.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/routes/route_constants.dart';
+import 'package:Slydo/screens/more_apps/business/bloc/invoice_bloc.dart';
+import 'package:Slydo/screens/more_apps/business/business_auth.dart';
+import 'package:Slydo/screens/more_apps/business/forms/invoice/add_or_update_invoice_item.dart';
+import 'package:Slydo/screens/more_apps/business/models/Invoice.dart';
 import 'package:Slydo/screens/more_apps/business/models/Item.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
@@ -17,15 +25,6 @@ import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
-
-import '../../../../data/environment.dart';
-import '../../../../data/state_notifier.dart';
-import '../../../../routes/route_constants.dart';
-import '../../../../widget/curved_btn.dart';
-import '../bloc/invoice_bloc.dart';
-import '../business_auth.dart';
-import '../forms/invoice/add_or_update_invoice_item.dart';
-import '../models/Invoice.dart';
 
 // ignore: must_be_immutable
 class InvoiceDetail extends StatefulWidget {

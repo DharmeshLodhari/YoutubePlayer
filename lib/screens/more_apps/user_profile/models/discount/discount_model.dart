@@ -301,8 +301,12 @@ class Consumables {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['Product'] = this.product;
-    data['Service'] = this.service;
+    if (this.product != null) {
+      data['Product'] = this.product;
+    }
+    if (this.service != null) {
+      data['Service'] = this.service;
+    }
     return data;
   }
 }

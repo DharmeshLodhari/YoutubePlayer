@@ -100,6 +100,14 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
 
       addOnOptionList.addAll(tempList);
 
+      for (var allOptions in addOnOptionList) {
+        for (var selectedOption in selectedOptions) {
+          if (selectedOption.id == allOptions.id) {
+            allOptions.isSelected = true;
+          }
+        }
+      }
+
       if (mounted) {
         setState(() {
           isLoading = false;

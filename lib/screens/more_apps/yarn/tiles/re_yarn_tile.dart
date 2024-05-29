@@ -1,4 +1,9 @@
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
+import 'package:Slydo/screens/more_apps/user_post/models/user_post.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
+import 'package:Slydo/screens/more_apps/yarn/models/Topics/yarn_model.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_blog_post_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_customer_post_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_product_tile.dart';
@@ -6,22 +11,18 @@ import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_service_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/utils/slydo_yarn_links.dart';
 import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/rich_text.dart';
+import 'package:Slydo/screens/more_apps/yarn/widgets/url_reader_of_yarn.dart';
+import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_media_renderer.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_search_screen.dart';
+import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/common.dart';
+import 'package:Slydo/utils/link_preview/flutter_link_preview.dart';
+import 'package:Slydo/utils/link_preview/web_analyzer.dart';
 import 'package:Slydo/utils/navigation_util.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-import '../../../../routes/route_constants.dart';
-import '../../../../utils/link_preview/flutter_link_preview.dart';
-import '../../../../utils/link_preview/web_analyzer.dart';
-import '../../../../utils/util.dart';
-import '../../user_post/models/user_post.dart';
-import '../../user_profile/models/user.dart';
-import '../../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
-import '../models/Topics/yarn_model.dart';
-import '../widgets/url_reader_of_yarn.dart';
-import '../widgets/yarn_media_renderer.dart';
 
 class ReYarnTile extends StatefulWidget {
   final GestureTapCallback? onOptionsAction;

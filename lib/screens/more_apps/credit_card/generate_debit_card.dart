@@ -1,21 +1,20 @@
 import 'dart:io';
 
+import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/credit_card/auth/debit_card_auth.dart';
 import 'package:Slydo/screens/more_apps/credit_card/models/exchange_rate.dart';
 import 'package:Slydo/screens/more_apps/credit_card/utils/utils.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
 import 'package:Slydo/utils/cache_manager.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
+import 'package:Slydo/widget/customized_passcode_sheet/bottomsheet_passcode.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-import '../../../data/currency.dart';
-import '../../../widget/customized_passcode_sheet/bottomsheet_passcode.dart';
-import '../payment_and_banking/payment_and_banking_auth.dart';
 
 class GenerateDebitCard extends StatefulWidget {
   var arguments;

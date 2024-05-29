@@ -172,9 +172,10 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
                             : Container(),
 
                       const SizedBox(height: 10),
-                      checkImageLimitForLocalImage()
-                          ? addLocalImages()
-                          : Container(),
+                      if (checkImageLimitForLocalImage())
+                        addLocalImages()
+                      else
+                        Container(),
                       // addImages(),
 
                       const SizedBox(height: 10),
@@ -448,19 +449,20 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
                 ),
               ),
               onPressed: () async {
-                // var imageId = currentProduct.getImageId(productImagesFromServer[index]);
-                // debugPrint("imageId:- $imageId");
-                // _auth.deleteProductOrServiceImage(imageId).then((value) {
-                //   if (value) {
-                //     if (mounted) {
-                //       setState(() {
-                //         productImagesFromServer.removeAt(index);
-                //       });
-                //     }
-                //   }
-                // }).catchError((error) {
-                //   debugPrint("ERROR " + error.toString());
-                // });
+                var imageId =
+                    variant?.getImageId(productImagesFromServer[index]) ?? "";
+                debugPrint("imageId:- $imageId");
+                _auth.deleteProductOrServiceImage(imageId).then((value) {
+                  if (value) {
+                    if (mounted) {
+                      setState(() {
+                        productImagesFromServer.removeAt(index);
+                      });
+                    }
+                  }
+                }).catchError((error) {
+                  debugPrint("ERROR " + error.toString());
+                });
               },
             ),
           )
