@@ -1,7 +1,7 @@
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:pinput/pin_put/pin_put.dart';
+import 'package:pinput/pinput.dart';
 
 import '../../../../../utils/util.dart';
 import '../../../../../widget/curved_btn.dart';
@@ -201,19 +201,35 @@ class _EnterAddressOrPinPinPageState extends State<EnterAddressOrPinPinPage> {
       shadowColor: whiteBackground,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 28),
-        child: PinPut(
-          eachFieldWidth: 40,
-          eachFieldHeight: 45,
-          fieldsCount: 4,
-          obscureText: '●',
+        child: Pinput(
+          length: 4,
+          obscuringCharacter: '●',
           controller: pinController,
-          submittedFieldDecoration: navyBlueBorder,
-          selectedFieldDecoration: grayBorder,
-          followingFieldDecoration: grayBorder,
+          defaultPinTheme: PinTheme(
+            width: 40,
+            height: 45,
+            textStyle: TextStyle(
+              fontSize: 32,
+              color: blackFont,
+              fontWeight: FontWeight.w600,
+              fontFamily: "Inter",
+            ),
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.grey),
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+          focusedPinTheme: PinTheme(
+            decoration: grayBorder,
+          ),
+          submittedPinTheme: PinTheme(
+            decoration: navyBlueBorder,
+          ),
+          followingPinTheme: PinTheme(
+            decoration: grayBorder,
+          ),
           pinAnimationType: PinAnimationType.scale,
           inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-          textStyle: TextStyle(
-              color: blackFont, fontSize: 32, fontWeight: FontWeight.w600),
           validator: (val) {
             if (val!.length != 4) {
               return "Please enter a valid pin";

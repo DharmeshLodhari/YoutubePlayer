@@ -19,7 +19,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:pinput/pin_put/pin_put.dart';
+import 'package:pinput/pinput.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../payment_and_banking/models/bank_list.dart';
@@ -899,23 +899,40 @@ class _PaymentLinkCashOutState extends State<PaymentLinkCashOut> {
         const SizedBox(
           height: 6.0,
         ),
-        PinPut(
-          eachFieldWidth: 45,
-          eachFieldHeight: 45,
-          obscureText: '•',
+        Pinput(
+          obscuringCharacter: '•',
           validator: (val) => val!.length < 4
               ? AppLocalization.of(context)!.invalidPassword
               : null,
-          fieldsCount: 6,
+          length: 6,
           focusNode: _pinPutFocusNode,
           controller: pinController,
-          submittedFieldDecoration: pinPutDecoration,
-          selectedFieldDecoration: selectedDecoration,
-          followingFieldDecoration: pinPutDecoration,
+          defaultPinTheme: PinTheme(
+            width: 45,
+            height: 45,
+            textStyle: TextStyle(
+              fontSize: 35,
+              color: blackFont,
+              fontWeight: FontWeight.w600,
+              fontFamily: "Inter",
+            ),
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.grey),
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+          focusedPinTheme: PinTheme(
+            decoration: selectedDecoration,
+          ),
+          submittedPinTheme: PinTheme(
+            decoration: pinPutDecoration,
+          ),
+          followingPinTheme: PinTheme(
+            decoration: pinPutDecoration,
+          ),
           pinAnimationType: PinAnimationType.scale,
           textInputAction: TextInputAction.done,
           keyboardType: TextInputType.number,
-          textStyle: TextStyle(color: blackFont, fontSize: 35),
         ),
       ],
     );

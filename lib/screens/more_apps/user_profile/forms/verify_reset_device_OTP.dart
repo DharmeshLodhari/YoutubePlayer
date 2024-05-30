@@ -3,7 +3,7 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:flutter/material.dart';
-import 'package:pinput/pin_put/pin_put.dart';
+import 'package:pinput/pinput.dart';
 
 // ignore: must_be_immutable
 class VerifyResetDeviceOTPScreen extends StatefulWidget {
@@ -155,18 +155,34 @@ class _VerifyResetDeviceOTPScreenState
       shadowColor: whiteBackground,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 28),
-        child: PinPut(
-          eachFieldWidth: 40,
-          eachFieldHeight: 45,
-          fieldsCount: 6,
+        child: Pinput(
+          length: 6,
           focusNode: _pinPutFocusNode,
           controller: otpController,
-          submittedFieldDecoration: navyBlueBorder,
-          selectedFieldDecoration: grayBorder,
-          followingFieldDecoration: grayBorder,
+          defaultPinTheme: PinTheme(
+            width: 40,
+            height: 45,
+            textStyle: TextStyle(
+              fontSize: 32,
+              color: blackFont,
+              fontWeight: FontWeight.w600,
+              fontFamily: "Inter",
+            ),
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.grey),
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+          focusedPinTheme: PinTheme(
+            decoration: grayBorder,
+          ),
+          submittedPinTheme: PinTheme(
+            decoration: navyBlueBorder,
+          ),
+          followingPinTheme: PinTheme(
+            decoration: grayBorder,
+          ),
           pinAnimationType: PinAnimationType.scale,
-          textStyle: TextStyle(
-              color: blackFont, fontSize: 32, fontWeight: FontWeight.w600),
           validator: (val) {
             if (val!.length != 6) {
               return "Please enter code that sent to you";
