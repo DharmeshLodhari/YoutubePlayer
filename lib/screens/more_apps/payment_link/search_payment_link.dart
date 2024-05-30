@@ -25,7 +25,8 @@ class PaymentLinkSearch extends StatefulWidget {
   State<PaymentLinkSearch> createState() => _PaymentLinkSearchState();
 }
 
-class _PaymentLinkSearchState extends State<PaymentLinkSearch> {
+class _PaymentLinkSearchState extends State<PaymentLinkSearch>
+    with SingleTickerProviderStateMixin {
   final TextEditingController searchController = TextEditingController();
 
   final _debouncer = Debouncer(milliseconds: 500);
@@ -42,11 +43,7 @@ class _PaymentLinkSearchState extends State<PaymentLinkSearch> {
 
   final ScrollController _scrollController = ScrollController();
 
-  SlidableController? _slideController;
-
-  void handleSlideAnimationChanged(Animation<double>? slideAnimation) {}
-
-  void handleSlideIsOpenChanged(bool? isOpen) {}
+  late final SlidableController _slideController = SlidableController(this);
 
   getPaymenttLinks({searchLink}) async {
     if (!isLoading) {
@@ -205,10 +202,6 @@ class _PaymentLinkSearchState extends State<PaymentLinkSearch> {
   @override
   void initState() {
     getPaymenttLinks();
-    _slideController = SlidableController(
-      onSlideAnimationChanged: handleSlideAnimationChanged,
-      onSlideIsOpenChanged: handleSlideIsOpenChanged,
-    );
     super.initState();
   }
 
@@ -278,9 +271,11 @@ class _PaymentLinkSearchState extends State<PaymentLinkSearch> {
       key: Key(e["id"].toString()),
       controller: _slideController,
       direction: Axis.horizontal,
-      actionPane: const SlidableBehindActionPane(),
-      actionExtentRatio: 0.25,
-      secondaryActions: listActionSlideActions(e, index),
+      endActionPane: ActionPane(
+        motion: const BehindMotion(),
+        extentRatio: 0.25,
+        children: listActionSlideActions(e, index),
+      ),
       child: paymentLinkCard(
           name: e['reference'],
           amount: e['amount'],

@@ -28,7 +28,8 @@ class ContractScreen extends StatefulWidget {
   State<ContractScreen> createState() => _ContractScreenState();
 }
 
-class _ContractScreenState extends State<ContractScreen> {
+class _ContractScreenState extends State<ContractScreen>
+    with SingleTickerProviderStateMixin {
   late UserBloc userBloc;
   bool isContractor = true;
   bool isPopMenuOpen = false;
@@ -40,18 +41,13 @@ class _ContractScreenState extends State<ContractScreen> {
 
   final ScrollController _scrollController = ScrollController();
 
-  //slidable tile
-  SlidableController? _slideController;
+  late final SlidableController _slideController = SlidableController(this);
 
   late ContractBloc contractBloc;
+
   @override
   void initState() {
     super.initState();
-
-    _slideController = SlidableController(
-      onSlideAnimationChanged: handleSlideAnimationChanged,
-      onSlideIsOpenChanged: handleSlideIsOpenChanged,
-    );
 
     Provider.of<ContractBloc>(context, listen: false).isRefreshing = true;
     Provider.of<ContractBloc>(context, listen: false).isContractor = true;
@@ -342,10 +338,11 @@ class _ContractScreenState extends State<ContractScreen> {
                     return Slidable(
                       controller: _slideController,
                       direction: Axis.horizontal,
-                      actionPane: const SlidableBehindActionPane(),
-                      actionExtentRatio: 0.25,
-                      actions: [
-                        SlideActionButton(
+                      startActionPane: ActionPane(
+                        motion: const BehindMotion(),
+                        extentRatio: 0.25,
+                        children: [
+                          SlideActionButton(
                             backgroundColor: mateRed,
                             icon: Icons.stop_circle_outlined,
                             onTap: () {
@@ -372,11 +369,16 @@ class _ContractScreenState extends State<ContractScreen> {
                               );
                             },
                             title: userIsContractor ? 'Reject' : "Cancel",
-                            slideController: _slideController),
-                      ],
-                      secondaryActions: userIsContractor
-                          ? [
-                              SlideActionButton(
+                            slideController: _slideController,
+                          ),
+                        ],
+                      ),
+                      endActionPane: userIsContractor
+                          ? ActionPane(
+                              motion: const BehindMotion(),
+                              extentRatio: 0.25,
+                              children: [
+                                SlideActionButton(
                                   backgroundColor: naturalGreen,
                                   icon: Icons.stop_circle_outlined,
                                   onTap: () {
@@ -406,8 +408,10 @@ class _ContractScreenState extends State<ContractScreen> {
                                     );
                                   },
                                   title: "Accept",
-                                  slideController: _slideController),
-                            ]
+                                  slideController: _slideController,
+                                ),
+                              ],
+                            )
                           : null,
                       child: ContractTile(contract: contract),
                     );
@@ -430,10 +434,16 @@ class _ContractScreenState extends State<ContractScreen> {
     return Slidable(
       controller: _slideController,
       direction: Axis.horizontal,
-      actionPane: const SlidableBehindActionPane(),
-      actionExtentRatio: 0.25,
-      actions: listActionSlideActions(contract),
-      secondaryActions: listSecondaryActions(index, contract),
+      startActionPane: ActionPane(
+        motion: const BehindMotion(),
+        extentRatio: 0.25,
+        children: listActionSlideActions(contract),
+      ),
+      endActionPane: ActionPane(
+        motion: const BehindMotion(),
+        extentRatio: 0.25,
+        children: listSecondaryActions(index, contract),
+      ),
       child: VerticalListItem(contractTile, contract),
     );
   }
@@ -441,14 +451,15 @@ class _ContractScreenState extends State<ContractScreen> {
   List<Widget> listSecondaryActions(int index, ContractModel contract) {
     return [
       SlideActionButton(
-          backgroundColor: getSecondaryActionIconColor(contract),
-          icon: getSecondaryActionIcon(contract),
-          onTap: () {
-            // _slideController.activeState.close();
-            updateContractStatus(contract, getUpdateAction(contract));
-          },
-          title: getSecondaryActionTitle(contract),
-          slideController: _slideController),
+        backgroundColor: getSecondaryActionIconColor(contract),
+        icon: getSecondaryActionIcon(contract),
+        onTap: () {
+          _slideController.close();
+          updateContractStatus(contract, getUpdateAction(contract));
+        },
+        title: getSecondaryActionTitle(contract),
+        slideController: _slideController,
+      ),
     ];
   }
 
@@ -521,38 +532,35 @@ class _ContractScreenState extends State<ContractScreen> {
   List<Widget> listActionSlideActions(ContractModel contract) {
     return [
       SlideActionButton(
-          backgroundColor: mateRed,
-          icon: Icons.stop_circle_outlined,
-          onTap: () {
-            showDialogBox(
-              context: context,
-              actionOneBgColor: greyBorderColor,
-              actionOneTextColor: blackFont,
-              actionTwoBgColor: naturalGreen,
-              actionTwoTextColor: Colors.white,
-              title: 'End contract',
-              actionTwoText: AppLocalization.of(context)!.yes,
-              actionOneText: AppLocalization.of(context)!.no,
-              description: 'Are you sure you want to end this contract?',
-              roundedBackgroundIcon: RoundedBackgroundIcon(
-                enableMargin: false,
-                width: 90,
-                height: 90,
-                image: const Icon(SlydoAppIcon.remove),
-              ),
-              rightButtonOnPressed: () {
-                updateContractStatus(contract, 'Ended');
-              },
-            );
-          },
-          title: "End",
-          slideController: _slideController),
+        backgroundColor: mateRed,
+        icon: Icons.stop_circle_outlined,
+        onTap: () {
+          showDialogBox(
+            context: context,
+            actionOneBgColor: greyBorderColor,
+            actionOneTextColor: blackFont,
+            actionTwoBgColor: naturalGreen,
+            actionTwoTextColor: Colors.white,
+            title: 'End contract',
+            actionTwoText: AppLocalization.of(context)!.yes,
+            actionOneText: AppLocalization.of(context)!.no,
+            description: 'Are you sure you want to end this contract?',
+            roundedBackgroundIcon: RoundedBackgroundIcon(
+              enableMargin: false,
+              width: 90,
+              height: 90,
+              image: const Icon(SlydoAppIcon.remove),
+            ),
+            rightButtonOnPressed: () {
+              updateContractStatus(contract, 'Ended');
+            },
+          );
+        },
+        title: "End",
+        slideController: _slideController,
+      ),
     ];
   }
-
-  void handleSlideAnimationChanged(Animation<double>? slideAnimation) {}
-
-  void handleSlideIsOpenChanged(bool? isOpen) {}
 
   void acceptContract({required int id}) async {
     showDialog(

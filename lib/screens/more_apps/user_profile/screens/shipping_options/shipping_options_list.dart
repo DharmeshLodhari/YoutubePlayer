@@ -23,7 +23,8 @@ class ShippingOptionsList extends StatefulWidget {
   _ShippingOptionsListState createState() => _ShippingOptionsListState();
 }
 
-class _ShippingOptionsListState extends State<ShippingOptionsList> {
+class _ShippingOptionsListState extends State<ShippingOptionsList>
+    with SingleTickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey =
       GlobalKey<ScaffoldMessengerState>();
@@ -40,8 +41,7 @@ class _ShippingOptionsListState extends State<ShippingOptionsList> {
   bool isLoading = false;
   bool noItemInList = false;
 
-  //slidable tile
-  SlidableController? _slideController;
+  late final SlidableController _slideController = SlidableController(this);
 
   @override
   void initState() {
@@ -55,11 +55,6 @@ class _ShippingOptionsListState extends State<ShippingOptionsList> {
         getList();
       }
     });
-
-    _slideController = SlidableController(
-      onSlideAnimationChanged: handleSlideAnimationChanged,
-      onSlideIsOpenChanged: handleSlideIsOpenChanged,
-    );
   }
 
   // refresh the list when lifecycle called onResume method
@@ -289,10 +284,16 @@ class _ShippingOptionsListState extends State<ShippingOptionsList> {
     return Slidable(
       controller: _slideController,
       direction: Axis.horizontal,
-      actionPane: const SlidableBehindActionPane(),
-      actionExtentRatio: 0.25,
-      actions: listActionSlideActions(shippingModel: shippingModel),
-      secondaryActions: listSecondaryActions(shippingModel: shippingModel),
+      startActionPane: ActionPane(
+        motion: const BehindMotion(),
+        extentRatio: 0.25,
+        children: listActionSlideActions(shippingModel: shippingModel),
+      ),
+      endActionPane: ActionPane(
+        motion: const BehindMotion(),
+        extentRatio: 0.25,
+        children: listSecondaryActions(shippingModel: shippingModel),
+      ),
       child: VerticalListItem(bankAccountTile),
     );
   }
@@ -333,10 +334,6 @@ class _ShippingOptionsListState extends State<ShippingOptionsList> {
           slideController: _slideController),
     ];
   }
-
-  void handleSlideAnimationChanged(Animation<double>? slideAnimation) {}
-
-  void handleSlideIsOpenChanged(bool? isOpen) {}
 
   // callback function with a bool parameter for adding shipping option
   void onCallback(bool value) {

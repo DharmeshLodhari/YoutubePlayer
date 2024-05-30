@@ -26,13 +26,14 @@ class OrdersList extends StatefulWidget {
   _OrdersListState createState() => _OrdersListState();
 }
 
-class _OrdersListState extends State<OrdersList> {
+class _OrdersListState extends State<OrdersList>
+    with SingleTickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _scaffoldOrderListKey =
       GlobalKey<ScaffoldState>();
   final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerOrderListKey =
       GlobalKey<ScaffoldMessengerState>();
   final _auth = ShoppingAuthService();
-  SlidableController? _slideController;
+  late final SlidableController _slideController = SlidableController(this);
   int? count = 0;
   String? next = "";
   List orderList = [];
@@ -443,10 +444,6 @@ class _OrdersListState extends State<OrdersList> {
     );
   }
 
-  void handleSlideAnimationChanged(Animation<double>? slideAnimation) {}
-
-  void handleSlideIsOpenChanged(bool? isOpen) {}
-
   List<Widget> listSecondaryActions(Order order, int index) {
     final bool canPay = order.status == 'Awaiting Payment' &&
         userBloc.user.userName != order.merchant;
@@ -515,10 +512,16 @@ class _OrdersListState extends State<OrdersList> {
       key: Key(order.customerName!),
       controller: _slideController,
       direction: Axis.horizontal,
-      actionPane: const SlidableBehindActionPane(),
-      actionExtentRatio: 0.25,
-      actions: listActionSlideActions(order, index),
-      secondaryActions: listSecondaryActions(order, index),
+      startActionPane: ActionPane(
+        motion: const BehindMotion(),
+        extentRatio: 0.25,
+        children: listActionSlideActions(order, index),
+      ),
+      endActionPane: ActionPane(
+        motion: const BehindMotion(),
+        extentRatio: 0.25,
+        children: listSecondaryActions(order, index),
+      ),
       child: VerticalListItem(
         order,
         onPaymentSuccessfulFromDetailPage: () {

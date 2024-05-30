@@ -13,7 +13,7 @@ import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_quill/flutter_quill.dart' as flutterQuill;
+import 'package:flutter_quill/flutter_quill.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
@@ -52,8 +52,9 @@ class _CreateOrEditPostScreenState extends State<CreateOrEditPostScreen> {
   VideoPlayerController? _mainVideoController;
   late FocusNode textEditorTextFieldFocusNode;
   late ScrollController _textEditorScrollController;
-  flutterQuill.QuillController _quillBodyTextController =
-      flutterQuill.QuillController.basic();
+  // flutterQuill.QuillController _quillBodyTextController =
+  //     flutterQuill.QuillController.basic();
+  QuillController _quillBodyTextController = QuillController.basic();
   ChewieController? pickedVideoChewieMainController;
   ChewieController? videoFromServerChewieMainController;
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
@@ -143,8 +144,8 @@ class _CreateOrEditPostScreenState extends State<CreateOrEditPostScreen> {
     try {
       blogBodyTextJson =
           jsonDecode(messageDecoderWithEmoji(widget.userPost!.text!)!);
-      _quillBodyTextController = flutterQuill.QuillController(
-          document: flutterQuill.Document.fromJson(blogBodyTextJson),
+      _quillBodyTextController = QuillController(
+          document: Document.fromJson(blogBodyTextJson),
           selection: const TextSelection.collapsed(offset: 0));
     } catch (e) {}
   }
@@ -444,23 +445,43 @@ class _CreateOrEditPostScreenState extends State<CreateOrEditPostScreen> {
   }
 
   Widget getEditor() {
-    final Widget editorWidget = flutterQuill.QuillToolbar.basic(
-      showDirection: false,
-      showHeaderStyle: false,
-      showInlineCode: false,
-      showCodeBlock: false,
-      showStrikeThrough: false,
-      showJustifyAlignment: false,
-      showBackgroundColorButton: false,
-      showClearFormat: false,
-      showDividers: false,
-      showIndent: false,
-      showListCheck: false,
-      showRedo: false,
-      showListBullets: false,
-      showListNumbers: false,
-      showAlignmentButtons: true,
-      controller: _quillBodyTextController,
+    // final Widget editorWidget = flutterQuill.QuillToolbar.basic(
+    //   showDirection: false,
+    //   showHeaderStyle: false,
+    //   showInlineCode: false,
+    //   showCodeBlock: false,
+    //   showStrikeThrough: false,
+    //   showJustifyAlignment: false,
+    //   showBackgroundColorButton: false,
+    //   showClearFormat: false,
+    //   showDividers: false,
+    //   showIndent: false,
+    //   showListCheck: false,
+    //   showRedo: false,
+    //   showListBullets: false,
+    //   showListNumbers: false,
+    //   showAlignmentButtons: true,
+    //   controller: _quillBodyTextController,
+    // );
+    final Widget editorWidget = QuillToolbar.simple(
+      configurations: QuillSimpleToolbarConfigurations(
+        controller: _quillBodyTextController,
+        showDirection: false,
+        showHeaderStyle: false,
+        showInlineCode: false,
+        showCodeBlock: false,
+        showStrikeThrough: false,
+        showJustifyAlignment: false,
+        showBackgroundColorButton: false,
+        showClearFormat: false,
+        showDividers: false,
+        showIndent: false,
+        showListCheck: false,
+        showRedo: false,
+        showListBullets: false,
+        showListNumbers: false,
+        showAlignmentButtons: true,
+      ),
     );
 
     if (widget.userPost != null) {
@@ -804,18 +825,20 @@ class _CreateOrEditPostScreenState extends State<CreateOrEditPostScreen> {
   }
 
   Widget getTextEditorWidget() {
-    final flutterQuill.QuillEditor quillEditor = flutterQuill.QuillEditor(
-      autoFocus: false,
-      controller: _quillBodyTextController,
-      readOnly: false,
-      scrollable: true,
-      expands: false,
-      padding: EdgeInsets.zero,
-      placeholder: 'Tell your story...',
-      scrollController: _textEditorScrollController,
-      focusNode: textEditorTextFieldFocusNode,
-      scrollBottomInset: 20,
-      embedBuilders: CustomQuillEmbed.builders(),
+    final QuillEditor quillEditor = QuillEditor.basic(
+      configurations: QuillEditorConfigurations(
+        autoFocus: false,
+        controller: _quillBodyTextController,
+        // readOnly: false,
+        scrollable: true,
+        expands: false,
+        padding: EdgeInsets.zero,
+        placeholder: 'Tell your story...',
+        // scrollController: _textEditorScrollController,
+        // focusNode: textEditorTextFieldFocusNode,
+        scrollBottomInset: 20,
+        embedBuilders: CustomQuillEmbed.builders(),
+      ),
     );
     if (widget.userPost != null) {
       if (blogBodyTextJson != null) {
@@ -1142,8 +1165,8 @@ class _CreateOrEditPostScreenState extends State<CreateOrEditPostScreen> {
           index,
           length,
           mediaType == MediaType.picture
-              ? flutterQuill.BlockEmbed.image(response['media'])
-              : flutterQuill.BlockEmbed.video(response['media']),
+              ? BlockEmbed.image(response['media'])
+              : BlockEmbed.video(response['media']),
           null,
         );
         blogPostInlineMediaIds.add(response['id']);

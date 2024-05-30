@@ -36,11 +36,12 @@ class SharedCartPayment extends StatefulWidget {
   State<SharedCartPayment> createState() => _SharedCartPaymentState();
 }
 
-class _SharedCartPaymentState extends State<SharedCartPayment> {
+class _SharedCartPaymentState extends State<SharedCartPayment>
+    with SingleTickerProviderStateMixin {
   late SharedCartBloc sharedCartBloc;
   late UserBloc userBloc;
   late ShippingProcessBloc shippingProcessBloc;
-  SlidableController? _slideController;
+  late final SlidableController _slideController = SlidableController(this);
   TextEditingController amountController = TextEditingController();
   String? selectedCategory;
   List<String?> paymentCategories = [];
@@ -54,11 +55,6 @@ class _SharedCartPaymentState extends State<SharedCartPayment> {
 
   @override
   void initState() {
-    _slideController = SlidableController(
-      onSlideAnimationChanged: handleSlideAnimationChanged,
-      onSlideIsOpenChanged: handleSlideIsOpenChanged,
-    );
-
     selectedCategory = "Shopping";
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -69,10 +65,6 @@ class _SharedCartPaymentState extends State<SharedCartPayment> {
     fetchCategory();
     super.initState();
   }
-
-  void handleSlideAnimationChanged(Animation<double>? slideAnimation) {}
-
-  void handleSlideIsOpenChanged(bool? isOpen) {}
 
   @override
   void dispose() {
@@ -541,9 +533,11 @@ class _SharedCartPaymentState extends State<SharedCartPayment> {
     return Slidable(
       controller: _slideController,
       direction: Axis.horizontal,
-      actionPane: const SlidableBehindActionPane(),
-      actionExtentRatio: 0.25,
-      secondaryActions: listActionSlideActions(member, context),
+      endActionPane: ActionPane(
+        motion: const BehindMotion(),
+        extentRatio: 0.25,
+        children: listActionSlideActions(member, context),
+      ),
       child: VerticalListItem(cartMemberTile),
     );
   }

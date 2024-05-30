@@ -40,7 +40,8 @@ class SearchModule extends StatefulWidget {
   _SearchModuleState createState() => _SearchModuleState();
 }
 
-class _SearchModuleState extends State<SearchModule> {
+class _SearchModuleState extends State<SearchModule>
+    with SingleTickerProviderStateMixin {
   bool isValidSearch = false;
   bool isSearchIsEmpty = true;
   String autoCompleteSearchText = "";
@@ -51,9 +52,9 @@ class _SearchModuleState extends State<SearchModule> {
   static String hint = "Search...";
 
   final _auth = AuthService();
-  SlidableController? slidableController;
-  SlidableController? slidableController1;
-  SlidableController? slidableController2;
+  late final SlidableController slidableController = SlidableController(this);
+  late final SlidableController slidableController1 = SlidableController(this);
+  late final SlidableController slidableController2 = SlidableController(this);
 
   List<Widget> results = [];
 
@@ -112,18 +113,6 @@ class _SearchModuleState extends State<SearchModule> {
       usingOutsideOfDashboard = widget.arguments["show_back_button"] ?? false;
     }
 
-    slidableController = SlidableController(
-      onSlideAnimationChanged: handleSlideAnimationChanged,
-      onSlideIsOpenChanged: handleSlideIsOpenChanged,
-    );
-    slidableController1 = SlidableController(
-      onSlideAnimationChanged: handleSlideAnimationChanged1,
-      onSlideIsOpenChanged: handleSlideIsOpenChanged1,
-    );
-    slidableController2 = SlidableController(
-      onSlideAnimationChanged: handleSlideAnimationChanged2,
-      onSlideIsOpenChanged: handleSlideIsOpenChanged2,
-    );
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
               _scrollController.position.maxScrollExtent &&
@@ -1151,14 +1140,20 @@ class _SearchModuleState extends State<SearchModule> {
     return Slidable(
       controller: slidableController,
       direction: Axis.horizontal,
-      actionPane: const SlidableBehindActionPane(),
-      actionExtentRatio: 0.25,
-      actions: user.userName.toString().toLowerCase() == "slydo"
-          ? []
-          : listActionSlideActions(user),
-      secondaryActions: user.userName.toString().toLowerCase() == "slydo"
-          ? []
-          : listSecondaryActions(user),
+      startActionPane: user.userName.toString().toLowerCase() == "slydo"
+          ? null
+          : ActionPane(
+              motion: const BehindMotion(),
+              extentRatio: 0.25,
+              children: listSecondaryActions(user),
+            ),
+      endActionPane: user.userName.toString().toLowerCase() == "slydo"
+          ? null
+          : ActionPane(
+              motion: const BehindMotion(),
+              extentRatio: 0.25,
+              children: listSecondaryActions(user),
+            ),
       child: VerticalListItem(searchCard, user),
     );
   }
@@ -1243,10 +1238,16 @@ class _SearchModuleState extends State<SearchModule> {
     return Slidable(
       controller: slidableController1,
       direction: Axis.horizontal,
-      actionPane: const SlidableBehindActionPane(),
-      actionExtentRatio: 0.25,
-      actions: listActionSlideActions1(product),
-      secondaryActions: listSecondaryActions1(product),
+      startActionPane: ActionPane(
+        motion: const BehindMotion(),
+        extentRatio: 0.25,
+        children: listActionSlideActions1(product),
+      ),
+      endActionPane: ActionPane(
+        motion: const BehindMotion(),
+        extentRatio: 0.25,
+        children: listSecondaryActions1(product),
+      ),
       child: VerticalListItem1(searchCard, product),
     );
   }
@@ -1290,10 +1291,17 @@ class _SearchModuleState extends State<SearchModule> {
     return Slidable(
       controller: slidableController2,
       direction: Axis.horizontal,
-      actionPane: const SlidableBehindActionPane(),
-      actionExtentRatio: 0.25,
-      actions: listActionSlideActions2(service),
-      secondaryActions: listSecondaryActions2(service),
+      direction: Axis.horizontal,
+      startActionPane: ActionPane(
+        motion: const BehindMotion(),
+        extentRatio: 0.25,
+        children: listActionSlideActions2(service),
+      ),
+      endActionPane: ActionPane(
+        motion: const BehindMotion(),
+        extentRatio: 0.25,
+        children: listSecondaryActions2(service),
+      ),
       child: VerticalListItem2(searchCard, service),
     );
   }
@@ -1330,18 +1338,6 @@ class _SearchModuleState extends State<SearchModule> {
       ),
     ];
   }
-
-  void handleSlideAnimationChanged(Animation<double>? slideAnimation) {}
-
-  void handleSlideIsOpenChanged(bool? isOpen) {}
-
-  void handleSlideAnimationChanged1(Animation<double>? slideAnimation) {}
-
-  void handleSlideIsOpenChanged1(bool? isOpen) {}
-
-  void handleSlideAnimationChanged2(Animation<double>? slideAnimation) {}
-
-  void handleSlideIsOpenChanged2(bool? isOpen) {}
 
   void blockUserAlert(CustomerProfile user) async {
     final bool? result = await showDialogBox(

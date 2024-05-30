@@ -29,7 +29,8 @@ class ProductVariantList extends StatefulWidget {
   _ProductVariantListState createState() => _ProductVariantListState();
 }
 
-class _ProductVariantListState extends State<ProductVariantList> {
+class _ProductVariantListState extends State<ProductVariantList>
+    with SingleTickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey =
       GlobalKey<ScaffoldMessengerState>();
@@ -48,8 +49,7 @@ class _ProductVariantListState extends State<ProductVariantList> {
   bool noItemInList = false;
   final _auth = ShoppingAuthService();
 
-  //slidable tile
-  SlidableController? _slideController;
+  late final SlidableController _slideController = SlidableController(this);
 
   @override
   void initState() {
@@ -65,11 +65,6 @@ class _ProductVariantListState extends State<ProductVariantList> {
         getVariantList();
       }
     });
-
-    _slideController = SlidableController(
-      onSlideAnimationChanged: handleSlideAnimationChanged,
-      onSlideIsOpenChanged: handleSlideIsOpenChanged,
-    );
   }
 
   void getVariantList() async {
@@ -368,10 +363,16 @@ class _ProductVariantListState extends State<ProductVariantList> {
     return Slidable(
       controller: _slideController,
       direction: Axis.horizontal,
-      actionPane: const SlidableBehindActionPane(),
-      actionExtentRatio: 0.25,
-      actions: listActionSlideActions(variant: variant),
-      secondaryActions: listSecondaryActions(variant: variant),
+      startActionPane: ActionPane(
+        motion: const BehindMotion(),
+        extentRatio: 0.25,
+        children: listActionSlideActions(variant: variant),
+      ),
+      endActionPane: ActionPane(
+        motion: const BehindMotion(),
+        extentRatio: 0.25,
+        children: listSecondaryActions(variant: variant),
+      ),
       child: VerticalListItem(bankAccountTile),
     );
   }
@@ -426,10 +427,6 @@ class _ProductVariantListState extends State<ProductVariantList> {
       showToast(message: error.toString());
     });
   }
-
-  void handleSlideAnimationChanged(Animation<double>? slideAnimation) {}
-
-  void handleSlideIsOpenChanged(bool? isOpen) {}
 
   @override
   void dispose() {

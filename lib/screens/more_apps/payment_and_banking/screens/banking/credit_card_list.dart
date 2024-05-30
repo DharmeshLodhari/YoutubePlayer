@@ -25,7 +25,8 @@ class CreditCardList extends StatefulWidget {
   _CreditCardListState createState() => _CreditCardListState();
 }
 
-class _CreditCardListState extends State<CreditCardList> {
+class _CreditCardListState extends State<CreditCardList>
+    with SingleTickerProviderStateMixin {
   int? count = 0;
   String? next = "";
   String? previous = "";
@@ -39,17 +40,12 @@ class _CreditCardListState extends State<CreditCardList> {
   final PaymentAndBankingAuth _auth = PaymentAndBankingAuth();
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
-  // //slidable tile
-  SlidableController? _slideController;
+  late final SlidableController _slideController = SlidableController(this);
 
   @override
   void initState() {
     getList();
     checkForVirtualAccount();
-    _slideController = SlidableController(
-      onSlideAnimationChanged: handleSlideAnimationChanged,
-      onSlideIsOpenChanged: handleSlideIsOpenChanged,
-    );
 
     super.initState();
   }
@@ -316,11 +312,17 @@ class _CreditCardListState extends State<CreditCardList> {
     return Slidable(
       controller: _slideController,
       direction: Axis.horizontal,
-      actionPane: const SlidableBehindActionPane(),
-      actionExtentRatio: 0.25,
+      startActionPane: ActionPane(
+        motion: const BehindMotion(),
+        extentRatio: 0.25,
+        children: listActionSlideActions(creditCard: creditCard),
+      ),
+      endActionPane: ActionPane(
+        motion: const BehindMotion(),
+        extentRatio: 0.25,
+        children: listSecondaryActions(creditCard: creditCard),
+      ),
       child: VerticalListItem(creditCardTile),
-      actions: listActionSlideActions(creditCard: creditCard),
-      secondaryActions: listSecondaryActions(creditCard: creditCard),
     );
   }
 
@@ -396,10 +398,6 @@ class _CreditCardListState extends State<CreditCardList> {
     });
     _onRefresh();
   }
-
-  void handleSlideAnimationChanged(Animation<double>? slideAnimation) {}
-
-  void handleSlideIsOpenChanged(bool? isOpen) {}
 
   @override
   void dispose() {

@@ -38,12 +38,13 @@ class ConnectionList extends StatefulWidget {
   _ConnectionListState createState() => _ConnectionListState();
 }
 
-class _ConnectionListState extends State<ConnectionList> {
+class _ConnectionListState extends State<ConnectionList>
+    with SingleTickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _scaffoldContactsListKey =
       GlobalKey<ScaffoldState>();
   final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerContactsListKey =
       GlobalKey<ScaffoldMessengerState>();
-  SlidableController? _slideController;
+  late final SlidableController _slideController = SlidableController(this);
   int? count = 0;
   String? next = "";
   String? previous = "";
@@ -84,10 +85,7 @@ class _ConnectionListState extends State<ConnectionList> {
         getList();
       }
     });
-    _slideController = SlidableController(
-      onSlideAnimationChanged: handleSlideAnimationChanged,
-      onSlideIsOpenChanged: handleSlideIsOpenChanged,
-    );
+
     super.initState();
   }
 
@@ -389,10 +387,6 @@ class _ConnectionListState extends State<ConnectionList> {
     }
   }
 
-  void handleSlideAnimationChanged(Animation<double>? slideAnimation) {}
-
-  void handleSlideIsOpenChanged(bool? isOpen) {}
-
   void _showSnackBar(BuildContext context, String text) {
     _scaffoldMessengerContactsListKey.currentState
         ?.showSnackBar(SnackBar(content: Text(text)));
@@ -607,11 +601,17 @@ class _ConnectionListState extends State<ConnectionList> {
       key: Key(user.userName ?? ''),
       controller: _slideController,
       direction: Axis.horizontal,
-      actionPane: const SlidableBehindActionPane(),
-      actionExtentRatio: 0.25,
+      startActionPane: ActionPane(
+        motion: const BehindMotion(),
+        extentRatio: 0.25,
+        children: listActionSlideActions(user, index),
+      ),
+      endActionPane: ActionPane(
+        motion: const BehindMotion(),
+        extentRatio: 0.25,
+        children: listSecondaryActions(user, index),
+      ),
       child: VerticalListItem(user),
-      actions: listActionSlideActions(user, index),
-      secondaryActions: listSecondaryActions(user, index),
     );
   }
 

@@ -23,7 +23,8 @@ class BankAccountList extends StatefulWidget {
   _BankAccountListState createState() => _BankAccountListState();
 }
 
-class _BankAccountListState extends State<BankAccountList> {
+class _BankAccountListState extends State<BankAccountList>
+    with SingleTickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey =
       GlobalKey<ScaffoldMessengerState>();
@@ -41,8 +42,7 @@ class _BankAccountListState extends State<BankAccountList> {
   bool isLoading = false;
   bool noItemInList = false;
 
-  //slidable tile
-  SlidableController? _slideController;
+  late final SlidableController _slideController = SlidableController(this);
 
   @override
   void initState() {
@@ -57,11 +57,6 @@ class _BankAccountListState extends State<BankAccountList> {
         getList();
       }
     });
-
-    _slideController = SlidableController(
-      onSlideAnimationChanged: handleSlideAnimationChanged,
-      onSlideIsOpenChanged: handleSlideIsOpenChanged,
-    );
   }
 
   // refresh the list when lifecycle called onResume method
@@ -362,10 +357,16 @@ class _BankAccountListState extends State<BankAccountList> {
     return Slidable(
       controller: _slideController,
       direction: Axis.horizontal,
-      actionPane: const SlidableBehindActionPane(),
-      actionExtentRatio: 0.25,
-      actions: listActionSlideActions(account: account),
-      secondaryActions: listSecondaryActions(account: account),
+      startActionPane: ActionPane(
+        motion: const BehindMotion(),
+        extentRatio: 0.25,
+        children: listActionSlideActions(account: account),
+      ),
+      endActionPane: ActionPane(
+        motion: const BehindMotion(),
+        extentRatio: 0.25,
+        children: listSecondaryActions(account: account),
+      ),
       child: VerticalListItem(bankAccountTile),
     );
   }
@@ -455,10 +456,6 @@ class _BankAccountListState extends State<BankAccountList> {
     });
     _onRefresh();
   }
-
-  void handleSlideAnimationChanged(Animation<double>? slideAnimation) {}
-
-  void handleSlideIsOpenChanged(bool? isOpen) {}
 
   @override
   void dispose() {

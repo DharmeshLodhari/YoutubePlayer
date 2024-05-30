@@ -6,7 +6,6 @@ import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_
 import 'package:Slydo/screens/more_apps/payment_link/payment_screen.dart';
 import 'package:Slydo/screens/more_apps/payment_link/search_payment_link.dart';
 import 'package:Slydo/screens/more_apps/service_hub/screens/my_job_details.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
@@ -31,7 +30,8 @@ class PaymentLink extends StatefulWidget {
   State<PaymentLink> createState() => _PaymentLinkState();
 }
 
-class _PaymentLinkState extends State<PaymentLink> {
+class _PaymentLinkState extends State<PaymentLink>
+    with SingleTickerProviderStateMixin {
   bool isPopMenuOpen = false;
 
   final _auth = PaymentAndBankingAuth();
@@ -43,12 +43,12 @@ class _PaymentLinkState extends State<PaymentLink> {
   bool isLoading = false;
   bool noItemInList = false;
 
-  ScrollController _scrollController = new ScrollController();
+  final ScrollController _scrollController = ScrollController();
 
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
-  SlidableController? _slideController;
+  late final SlidableController _slideController = SlidableController(this);
 
   getPaymentLinks() async {
     if (!isLoading) {
@@ -557,10 +557,6 @@ class _PaymentLinkState extends State<PaymentLink> {
     );
   }
 
-  void handleSlideAnimationChanged(Animation<double>? slideAnimation) {}
-
-  void handleSlideIsOpenChanged(bool? isOpen) {}
-
   @override
   void dispose() {
     _scrollController.dispose();
@@ -571,10 +567,6 @@ class _PaymentLinkState extends State<PaymentLink> {
   @override
   void initState() {
     getPaymentLinks();
-    _slideController = SlidableController(
-      onSlideAnimationChanged: handleSlideAnimationChanged,
-      onSlideIsOpenChanged: handleSlideIsOpenChanged,
-    );
     super.initState();
   }
 
@@ -636,9 +628,11 @@ class _PaymentLinkState extends State<PaymentLink> {
       key: Key(e["id"].toString()),
       controller: _slideController,
       direction: Axis.horizontal,
-      actionPane: const SlidableBehindActionPane(),
-      actionExtentRatio: 0.25,
-      secondaryActions: listActionSlideActions(e, index),
+      endActionPane: ActionPane(
+        motion: const BehindMotion(),
+        extentRatio: 0.25,
+        children: listActionSlideActions(e, index),
+      ),
       child: paymentLinkCard(
           name: e['reference'],
           amount: e['amount'],
@@ -708,10 +702,6 @@ class _PaymentLinkState extends State<PaymentLink> {
         isLoading = false;
         paymentLinkList = [];
         getPaymentLinks();
-        _slideController = SlidableController(
-          onSlideAnimationChanged: handleSlideAnimationChanged,
-          onSlideIsOpenChanged: handleSlideIsOpenChanged,
-        );
         _refreshController.refreshCompleted();
       } else {
         showToast(

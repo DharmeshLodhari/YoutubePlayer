@@ -39,7 +39,8 @@ class SearchUsersProductAndService extends StatefulWidget {
 }
 
 class _SearchUsersProductAndServiceState
-    extends State<SearchUsersProductAndService> {
+    extends State<SearchUsersProductAndService>
+    with SingleTickerProviderStateMixin {
   bool isValidSearch = false;
   bool isSearchIsEmpty = true;
   String autoCompleteSearchText = "";
@@ -49,8 +50,8 @@ class _SearchUsersProductAndServiceState
   late UserBloc userBloc;
   static String filterValue = "Products";
 
-  SlidableController? slidableController1;
-  SlidableController? slidableController2;
+  late final SlidableController slidableController1 = SlidableController(this);
+  late final SlidableController slidableController2 = SlidableController(this);
 
   List<Widget> results = [];
 
@@ -139,15 +140,6 @@ class _SearchUsersProductAndServiceState
     } else {
       getProductAPI();
     }
-
-    slidableController1 = SlidableController(
-      onSlideAnimationChanged: handleSlideAnimationChanged1,
-      onSlideIsOpenChanged: handleSlideIsOpenChanged1,
-    );
-    slidableController2 = SlidableController(
-      onSlideAnimationChanged: handleSlideAnimationChanged2,
-      onSlideIsOpenChanged: handleSlideIsOpenChanged2,
-    );
     getList();
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
@@ -1946,10 +1938,16 @@ class _SearchUsersProductAndServiceState
     return Slidable(
       controller: slidableController1,
       direction: Axis.horizontal,
-      actionPane: const SlidableBehindActionPane(),
-      actionExtentRatio: 0.25,
-      actions: listActionSlideActions1(product),
-      secondaryActions: listSecondaryActions1(product),
+      startActionPane: ActionPane(
+        motion: const BehindMotion(),
+        extentRatio: 0.25,
+        children: listActionSlideActions1(product),
+      ),
+      endActionPane: ActionPane(
+        motion: const BehindMotion(),
+        extentRatio: 0.25,
+        children: listSecondaryActions1(product),
+      ),
       child: VerticalListItem1(searchCard, product),
     );
   }
@@ -2003,10 +2001,16 @@ class _SearchUsersProductAndServiceState
     return Slidable(
       controller: slidableController2,
       direction: Axis.horizontal,
-      actionPane: const SlidableBehindActionPane(),
-      actionExtentRatio: 0.25,
-      actions: listActionSlideActions2(service),
-      secondaryActions: listSecondaryActions2(service),
+      startActionPane: ActionPane(
+        motion: const BehindMotion(),
+        extentRatio: 0.25,
+        children: listActionSlideActions2(service),
+      ),
+      endActionPane: ActionPane(
+        motion: const BehindMotion(),
+        extentRatio: 0.25,
+        children: listSecondaryActions2(service),
+      ),
       child: VerticalListItem2(searchCard, service),
     );
   }
@@ -2051,18 +2055,6 @@ class _SearchUsersProductAndServiceState
       ),
     ];
   }
-
-  void handleSlideAnimationChanged(Animation<double> slideAnimation) {}
-
-  void handleSlideIsOpenChanged(bool isOpen) {}
-
-  void handleSlideAnimationChanged1(Animation<double>? slideAnimation) {}
-
-  void handleSlideIsOpenChanged1(bool? isOpen) {}
-
-  void handleSlideAnimationChanged2(Animation<double>? slideAnimation) {}
-
-  void handleSlideIsOpenChanged2(bool? isOpen) {}
 
   @override
   void dispose() {

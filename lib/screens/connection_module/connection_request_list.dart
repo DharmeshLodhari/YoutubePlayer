@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/tiles/user_tile.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
@@ -17,8 +18,6 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-import '../../../../../routes/route_constants.dart';
-
 class ConnectionRequestList extends StatefulWidget {
   const ConnectionRequestList({super.key});
 
@@ -26,14 +25,15 @@ class ConnectionRequestList extends StatefulWidget {
   State<ConnectionRequestList> createState() => _ConnectionRequestListState();
 }
 
-class _ConnectionRequestListState extends State<ConnectionRequestList> {
+class _ConnectionRequestListState extends State<ConnectionRequestList>
+    with SingleTickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _scaffoldContactRequestListKey =
       GlobalKey<ScaffoldState>();
   final GlobalKey<ScaffoldMessengerState>
       _scaffoldMessengerContactRequestListKey =
       GlobalKey<ScaffoldMessengerState>();
   late UserBloc userBloc;
-  SlidableController? _slideController;
+  late final SlidableController _slideController = SlidableController(this);
   int? count = 0;
   String? next = "";
   String? previous = "";
@@ -55,10 +55,6 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
         getList();
       }
     });
-    _slideController = SlidableController(
-      onSlideAnimationChanged: handleSlideAnimationChanged,
-      onSlideIsOpenChanged: handleSlideIsOpenChanged,
-    );
 
     super.initState();
   }
@@ -186,10 +182,6 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
       }
     }
   }
-
-  void handleSlideAnimationChanged(Animation<double>? slideAnimation) {}
-
-  void handleSlideIsOpenChanged(bool? isOpen) {}
 
   void _showSnackBar(BuildContext context, String text) {
     _scaffoldMessengerContactRequestListKey.currentState
@@ -347,10 +339,16 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
       key: Key(data["id"].toString()),
       controller: _slideController,
       direction: Axis.horizontal,
-      actionPane: const SlidableBehindActionPane(),
-      actionExtentRatio: 0.25,
-      actions: listActionSlideActions(data, index),
-      secondaryActions: listSecondaryActions(data, index),
+      startActionPane: ActionPane(
+        motion: const BehindMotion(),
+        extentRatio: 0.25,
+        children: listActionSlideActions(data, index),
+      ),
+      endActionPane: ActionPane(
+        motion: const BehindMotion(),
+        extentRatio: 0.25,
+        children: listSecondaryActions(data, index),
+      ),
       child: VerticalListItem(data),
     );
   }
@@ -388,9 +386,17 @@ class VerticalListItem extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        Slidable.of(context)?.renderingMode == SlidableRenderingMode.none
-            ? Slidable.of(context)?.open()
-            : Slidable.of(context)?.close();
+        final slidableController = Slidable.of(context);
+        if (slidableController != null) {
+          if (slidableController.actionPaneType == ActionPaneType.none) {
+            slidableController.openEndActionPane();
+          } else {
+            slidableController.close();
+          }
+        }
+        // Slidable.of(context)?.renderingMode == SlidableRenderingMode.none
+        //     ? Slidable.of(context)?.open()
+        //     : Slidable.of(context)?.close();
         Navigator.pushNamed(context, Routes.USER_PROFILE,
             arguments: {"searchedUserName": user.userName});
       },

@@ -28,14 +28,15 @@ class SlydoTransactionList extends StatefulWidget {
   _SlydoTransactionListState createState() => _SlydoTransactionListState();
 }
 
-class _SlydoTransactionListState extends State<SlydoTransactionList> {
+class _SlydoTransactionListState extends State<SlydoTransactionList>
+    with SingleTickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _scaffoldTransactionKey =
       GlobalKey<ScaffoldState>();
   late UserBloc userBloc;
 
   // Get list of users transactions
   final _auth = PaymentAndBankingAuth();
-  SlidableController? _slideController;
+  late final SlidableController _slideController = SlidableController(this);
   int? count = 0;
   String? next = "";
   String? previous = "";
@@ -74,10 +75,6 @@ class _SlydoTransactionListState extends State<SlydoTransactionList> {
         getList();
       }
     });
-    _slideController = SlidableController(
-      onSlideAnimationChanged: handleSlideAnimationChanged,
-      onSlideIsOpenChanged: handleSlideIsOpenChanged,
-    );
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       // initializePopMenu();
@@ -345,10 +342,6 @@ class _SlydoTransactionListState extends State<SlydoTransactionList> {
     );
   }
 
-  void handleSlideAnimationChanged(Animation<double>? value) {}
-
-  void handleSlideIsOpenChanged(bool? value) {}
-
   List<Widget> listSecondaryActions(Transaction transaction) {
     final PermissionType? hasPermission =
         userBloc.user.hasWritePermission(ProtectionPermission.transaction);
@@ -429,10 +422,16 @@ class _SlydoTransactionListState extends State<SlydoTransactionList> {
       key: Key(transaction.payee!),
       controller: _slideController,
       direction: Axis.horizontal,
-      actionPane: const SlidableBehindActionPane(),
-      actionExtentRatio: 0.25,
-      actions: listActionSlideActions(transaction),
-      secondaryActions: listSecondaryActions(transaction),
+      startActionPane: ActionPane(
+        motion: const BehindMotion(),
+        extentRatio: 0.25,
+        children: listActionSlideActions(transaction),
+      ),
+      endActionPane: ActionPane(
+        motion: const BehindMotion(),
+        extentRatio: 0.25,
+        children: listSecondaryActions(transaction),
+      ),
       child: VerticalListItem(
         transaction,
         key: Key(
@@ -467,10 +466,19 @@ class _VerticalListItemState extends State<VerticalListItem> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () =>
-          Slidable.of(context)?.renderingMode == SlidableRenderingMode.none
-              ? Slidable.of(context)?.open()
-              : Slidable.of(context)?.close(),
+      onTap: () {
+        // Slidable.of(context)?.renderingMode == SlidableRenderingMode.none
+        //     ? Slidable.of(context)?.open()
+        //     : Slidable.of(context)?.close(),
+        final slidableController = Slidable.of(context);
+        if (slidableController != null) {
+          if (slidableController.actionPaneType == ActionPaneType.none) {
+            slidableController.openEndActionPane();
+          } else {
+            slidableController.close();
+          }
+        }
+      },
       onDoubleTap: () {
         if (widget.transaction.payee == "slydo_envelope" ||
             widget.transaction.payee == "slydo" ||

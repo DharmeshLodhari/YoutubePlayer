@@ -30,7 +30,8 @@ class AddOnOptionList extends StatefulWidget {
   _AddOnOptionListState createState() => _AddOnOptionListState();
 }
 
-class _AddOnOptionListState extends State<AddOnOptionList> {
+class _AddOnOptionListState extends State<AddOnOptionList>
+    with SingleTickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey =
       GlobalKey<ScaffoldMessengerState>();
@@ -51,8 +52,7 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
   bool isAPILoading = false;
   List<AddOnOption> selectedOptions = [];
 
-  //slidable tile
-  SlidableController? _slideController;
+  late final SlidableController _slideController = SlidableController(this);
 
   @override
   void initState() {
@@ -71,11 +71,6 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
         }
       }
     });
-
-    _slideController = SlidableController(
-      onSlideAnimationChanged: handleSlideAnimationChanged,
-      onSlideIsOpenChanged: handleSlideIsOpenChanged,
-    );
   }
 
   void getAddOnOptionList() async {
@@ -462,10 +457,12 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
     return Slidable(
       controller: _slideController,
       direction: Axis.horizontal,
-      actionPane: const SlidableBehindActionPane(),
-      actionExtentRatio: 0.25,
+      startActionPane: ActionPane(
+        motion: const BehindMotion(),
+        extentRatio: 0.25,
+        children: listActionSlideActions(addOnOption: addOnOption),
+      ),
       child: VerticalListItem(bankAccountTile),
-      actions: listActionSlideActions(addOnOption: addOnOption),
       // secondaryActions: listSecondaryActions(addOnOption: addOnOption),
     );
   }
@@ -558,10 +555,6 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
       showToast(message: error.toString());
     });
   }
-
-  void handleSlideAnimationChanged(Animation<double>? slideAnimation) {}
-
-  void handleSlideIsOpenChanged(bool? isOpen) {}
 
   @override
   void dispose() {

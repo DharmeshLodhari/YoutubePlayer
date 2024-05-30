@@ -46,7 +46,8 @@ class OrderDetailPage extends StatefulWidget {
       _OrderDetailPageState(arguments: arguments);
 }
 
-class _OrderDetailPageState extends State<OrderDetailPage> {
+class _OrderDetailPageState extends State<OrderDetailPage>
+    with SingleTickerProviderStateMixin {
   var arguments;
 
   _OrderDetailPageState({this.arguments});
@@ -54,7 +55,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   late BasketBloc basketBloc;
   late UserBloc userBloc;
 
-  SlidableController? _slideController;
+  late final SlidableController _slideController = SlidableController(this);
 
   String note = "";
 
@@ -1198,11 +1199,17 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     return Slidable(
       controller: _slideController,
       direction: Axis.horizontal,
-      actionPane: const SlidableBehindActionPane(),
-      actionExtentRatio: 0.25,
+      startActionPane: ActionPane(
+        motion: const BehindMotion(),
+        extentRatio: 0.25,
+        children: listActionSlideActions(index),
+      ),
+      endActionPane: ActionPane(
+        motion: const BehindMotion(),
+        extentRatio: 0.25,
+        children: listSecondaryActions(index),
+      ),
       child: VerticalListItem(itemTile, item),
-      actions: listActionSlideActions(index),
-      secondaryActions: listSecondaryActions(index),
     );
   }
 
@@ -1256,10 +1263,6 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
       'subject': items[index]["item"].name.toString(),
     });
   }
-
-  void handleSlideAnimationChanged(Animation<double>? slideAnimation) {}
-
-  void handleSlideIsOpenChanged(bool? isOpen) {}
 
   void updateStatus(String value) {
     showDialog(

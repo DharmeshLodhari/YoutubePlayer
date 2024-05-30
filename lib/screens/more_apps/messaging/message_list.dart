@@ -24,13 +24,14 @@ class MessageList extends StatefulWidget {
   _MessageListState createState() => _MessageListState();
 }
 
-class _MessageListState extends State<MessageList> {
+class _MessageListState extends State<MessageList>
+    with SingleTickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _scaffoldMessageKey =
       GlobalKey<ScaffoldState>();
   final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerMessageKey =
       GlobalKey<ScaffoldMessengerState>();
   final _messageAuth = MessageAuth();
-  SlidableController? slidableController;
+  late final SlidableController _slideController = SlidableController(this);
   int? count = 0;
   String? next = "";
   String? previous = "";
@@ -60,10 +61,6 @@ class _MessageListState extends State<MessageList> {
         getList();
       }
     });
-    slidableController = SlidableController(
-      onSlideAnimationChanged: handleSlideAnimationChanged,
-      onSlideIsOpenChanged: handleSlideIsOpenChanged,
-    );
 
     super.initState();
   }
@@ -333,10 +330,6 @@ class _MessageListState extends State<MessageList> {
     }
   }
 
-  void handleSlideAnimationChanged(Animation<double>? slideAnimation) {}
-
-  void handleSlideIsOpenChanged(bool? isOpen) {}
-
   void _showSnackBar(BuildContext context, String text) {
     _scaffoldMessengerMessageKey.currentState
         ?.showSnackBar(SnackBar(content: Text(text)));
@@ -394,7 +387,7 @@ class _MessageListState extends State<MessageList> {
           });
         },
         title: actionText,
-        slideController: slidableController);
+        slideController: _slideController);
   }
 
   void markArchivedUnArchivedMessage(PartialMessage partialMessage, int index) {
@@ -416,7 +409,7 @@ class _MessageListState extends State<MessageList> {
           deleteMessage(partialMessage, index);
         },
         title: AppLocalization.of(context)!.delete,
-        slideController: slidableController);
+        slideController: _slideController);
   }
 
   void deleteMessage(PartialMessage partialMessage, int index) async {
@@ -467,12 +460,18 @@ class _MessageListState extends State<MessageList> {
       BuildContext context, PartialMessage partialMessage, int index) {
     return Slidable(
       key: Key(partialMessage.id!),
-      controller: slidableController,
+      controller: _slideController,
       direction: Axis.horizontal,
-      actionPane: const SlidableBehindActionPane(),
-      actionExtentRatio: 0.25,
-      actions: listActionSlideActions(partialMessage, index),
-      secondaryActions: listSecondaryActions(partialMessage, index),
+      startActionPane: ActionPane(
+        motion: const BehindMotion(),
+        extentRatio: 0.25,
+        children: listActionSlideActions(partialMessage, index),
+      ),
+      endActionPane: ActionPane(
+        motion: const BehindMotion(),
+        extentRatio: 0.25,
+        children: listSecondaryActions(partialMessage, index),
+      ),
       child: VerticalListItem(partialMessage),
     );
   }

@@ -24,9 +24,10 @@ class SharedCartMembers extends StatefulWidget {
   State<SharedCartMembers> createState() => _SharedCartMembersState();
 }
 
-class _SharedCartMembersState extends State<SharedCartMembers> {
+class _SharedCartMembersState extends State<SharedCartMembers>
+    with SingleTickerProviderStateMixin {
   late SharedCartBloc sharedCartBloc;
-  SlidableController? _slideController;
+  late final SlidableController _slideController = SlidableController(this);
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey =
       GlobalKey<ScaffoldMessengerState>();
@@ -39,11 +40,6 @@ class _SharedCartMembersState extends State<SharedCartMembers> {
   @override
   void initState() {
     super.initState();
-    _slideController = SlidableController(
-      onSlideAnimationChanged: handleSlideAnimationChanged,
-      onSlideIsOpenChanged: handleSlideIsOpenChanged,
-    );
-
     // WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
     //   isLoading = true;
     //   if (mounted) setState(() {});
@@ -59,10 +55,6 @@ class _SharedCartMembersState extends State<SharedCartMembers> {
     _refreshController.dispose();
     super.dispose();
   }
-
-  void handleSlideAnimationChanged(Animation<double>? slideAnimation) {}
-
-  void handleSlideIsOpenChanged(bool? isOpen) {}
 
   @override
   Widget build(BuildContext context) {
@@ -253,9 +245,11 @@ class _SharedCartMembersState extends State<SharedCartMembers> {
     return Slidable(
       controller: _slideController,
       direction: Axis.horizontal,
-      actionPane: const SlidableBehindActionPane(),
-      actionExtentRatio: 0.25,
-      secondaryActions: listActionSlideActions(member: member),
+      endActionPane: ActionPane(
+        motion: const BehindMotion(),
+        extentRatio: 0.25,
+        children: listActionSlideActions(member: member),
+      ),
       child: VerticalListItem(cartMemberTile),
     );
   }

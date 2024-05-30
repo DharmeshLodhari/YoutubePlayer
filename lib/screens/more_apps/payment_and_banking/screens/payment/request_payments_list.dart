@@ -34,14 +34,15 @@ class PaymentRequestList extends StatefulWidget {
   _PaymentRequestListState createState() => _PaymentRequestListState();
 }
 
-class _PaymentRequestListState extends State<PaymentRequestList> {
+class _PaymentRequestListState extends State<PaymentRequestList>
+    with SingleTickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _scaffoldPaymentListKey =
       GlobalKey<ScaffoldState>();
   final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerPaymentListKey =
       GlobalKey<ScaffoldMessengerState>();
 
   final _auth = PaymentAndBankingAuth();
-  SlidableController? _slideController;
+  late final SlidableController _slideController = SlidableController(this);
   int? count = 0;
   String? next = "";
   String? previous = "";
@@ -82,10 +83,6 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
         getList();
       }
     });
-    _slideController = SlidableController(
-      onSlideAnimationChanged: handleSlideAnimationChanged,
-      onSlideIsOpenChanged: handleSlideIsOpenChanged,
-    );
 
     super.initState();
   }
@@ -93,18 +90,17 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
   // refresh the list when lifecycle called onResume method
   void _onRefreshOnResume() {
     _refreshBloc = Provider.of<RefreshBlocForRequestPayment>(context);
-    _refreshBloc!
-      ..addListener(() {
-        if (_refreshBloc!.isRefresh) {
-          debugPrint("refreshing !!");
-          if (mounted) {
-            debugPrint('_onRefreshOnResume--->');
+    _refreshBloc!.addListener(() {
+      if (_refreshBloc!.isRefresh) {
+        debugPrint("refreshing !!");
+        if (mounted) {
+          debugPrint('_onRefreshOnResume--->');
 
-            _onRefresh();
-            _refreshBloc!.isRefresh = false;
-          }
+          _onRefresh();
+          _refreshBloc!.isRefresh = false;
         }
-      });
+      }
+    });
   }
 
   _refresh() {
@@ -630,10 +626,6 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
     );
   }
 
-  void handleSlideAnimationChanged(Animation<double>? slideAnimation) {}
-
-  void handleSlideIsOpenChanged(bool? isOpen) {}
-
   void _showSnackBar(BuildContext context, String text) {
     _scaffoldMessengerPaymentListKey.currentState
         ?.showSnackBar(SnackBar(content: Text(text)));
@@ -894,10 +886,16 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
       key: Key("PaymentRequest:${paymentRequest.id! + date}"),
       controller: _slideController,
       direction: Axis.horizontal,
-      actionPane: const SlidableBehindActionPane(),
-      actionExtentRatio: 0.25,
-      actions: listActionSlideActions(paymentRequest, index),
-      secondaryActions: listSecondaryActions(paymentRequest, index),
+      startActionPane: ActionPane(
+        motion: const BehindMotion(),
+        extentRatio: 0.25,
+        children: listActionSlideActions(paymentRequest, index),
+      ),
+      endActionPane: ActionPane(
+        motion: const BehindMotion(),
+        extentRatio: 0.25,
+        children: listSecondaryActions(paymentRequest, index),
+      ),
       child: VerticalListItem(paymentRequest),
     );
   }
@@ -928,9 +926,17 @@ class _VerticalListItemState extends State<VerticalListItem> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Slidable.of(context)?.renderingMode == SlidableRenderingMode.none
-            ? Slidable.of(context)?.open()
-            : Slidable.of(context)?.close();
+        final slidableController = Slidable.of(context);
+        if (slidableController != null) {
+          if (slidableController.actionPaneType == ActionPaneType.none) {
+            slidableController.openEndActionPane();
+          } else {
+            slidableController.close();
+          }
+        }
+        // Slidable.of(context)?.renderingMode == SlidableRenderingMode.none
+        //     ? Slidable.of(context)?.open()
+        //     : Slidable.of(context)?.close();
         Navigator.pushNamed(context, Routes.USER_PROFILE,
             arguments: {"searchedUserName": widget.paymentRequest.payee});
       },

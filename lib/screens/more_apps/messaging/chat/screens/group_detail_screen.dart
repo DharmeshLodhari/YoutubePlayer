@@ -34,11 +34,12 @@ class GroupDetailScreen extends StatefulWidget {
   _GroupDetailScreenState createState() => _GroupDetailScreenState();
 }
 
-class _GroupDetailScreenState extends State<GroupDetailScreen> {
+class _GroupDetailScreenState extends State<GroupDetailScreen>
+    with SingleTickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _scaffoldGroupDetailScreen =
       new GlobalKey<ScaffoldState>();
 
-  SlidableController? _slideController;
+  late final SlidableController _slideController = SlidableController(this);
 
   GroupDetailModel? groupDetail;
   bool isLoading = false;
@@ -56,11 +57,6 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
   @protected
   void initState() {
     getGroupDetail();
-
-    _slideController = SlidableController(
-      onSlideAnimationChanged: handleSlideAnimationChanged,
-      onSlideIsOpenChanged: handleSlideIsOpenChanged,
-    );
     super.initState();
   }
 
@@ -661,14 +657,17 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
       key: UniqueKey(),
       controller: _slideController,
       direction: Axis.horizontal,
-      actionPane: const SlidableBehindActionPane(),
-      actionExtentRatio: 0.20,
-      fastThreshold: 1,
-      showAllActionsThreshold: 0.6,
-      // movementDuration: Duration(milliseconds: 300),
+      startActionPane: ActionPane(
+        motion: const BehindMotion(),
+        extentRatio: 0.20,
+        children: listActionSlideActions(user, index),
+      ),
+      endActionPane: ActionPane(
+        motion: const BehindMotion(),
+        extentRatio: 0.20,
+        children: listSecondaryActions(user, index),
+      ),
       child: VerticalListItem(user, groupDetail),
-      actions: listActionSlideActions(user, index),
-      secondaryActions: listSecondaryActions(user, index),
     );
   }
 
@@ -794,49 +793,48 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
 
     if (isMuted && isCurrentUserIsAdmin) {
       rightSwipeAction.add(SlideActionButton(
-          backgroundColor: lightGrey,
-          icon: SlydoAppIcon.unmute,
-          iconColor: blackFont,
-          onTap: () {
-            unMuteParticipantFromGroup(index!);
-          },
-          title: "Unmute",
-          slideController: _slideController));
+        backgroundColor: lightGrey,
+        icon: SlydoAppIcon.unmute,
+        iconColor: blackFont,
+        onTap: () {
+          unMuteParticipantFromGroup(index!);
+        },
+        title: "Unmute",
+        slideController: _slideController,
+      ));
     }
 
     if (isBlocked && isCurrentUserIsAdmin) {
       rightSwipeAction.add(
         SlideActionButton(
-            backgroundColor: lightGrey,
-            icon: SlydoAppIcon.unblock,
-            iconColor: blackFont,
-            onTap: () {
-              unBlockParticipantFromGroup(index!);
-            },
-            title: "Unblock",
-            slideController: _slideController),
+          backgroundColor: lightGrey,
+          icon: SlydoAppIcon.unblock,
+          iconColor: blackFont,
+          onTap: () {
+            unBlockParticipantFromGroup(index!);
+          },
+          title: "Unblock",
+          slideController: _slideController,
+        ),
       );
     }
 
     if (!isAdmin && isCurrentUserIsAdmin) {
       rightSwipeAction.add(
         SlideActionButton(
-            backgroundColor: naturalGreen,
-            icon: SlydoAppIcon.make_admin,
-            onTap: () {
-              makeParticipantAdmin(index!);
-            },
-            title: "Make admin",
-            slideController: _slideController),
+          backgroundColor: naturalGreen,
+          icon: SlydoAppIcon.make_admin,
+          onTap: () {
+            makeParticipantAdmin(index!);
+          },
+          title: "Make admin",
+          slideController: _slideController,
+        ),
       );
     }
 
     return rightSwipeAction;
   }
-
-  void handleSlideAnimationChanged(Animation<double>? slideAnimation) {}
-
-  void handleSlideIsOpenChanged(bool? isOpen) {}
 
   void removeParticipantFromAdmin(int index) {
     final Participant participant = groupDetail!.participants[index];
@@ -1091,9 +1089,17 @@ class _VerticalListItemState extends State<VerticalListItem> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Slidable.of(context)?.renderingMode == SlidableRenderingMode.none
-            ? Slidable.of(context)?.open()
-            : Slidable.of(context)?.close();
+        final slidableController = Slidable.of(context);
+        if (slidableController != null) {
+          if (slidableController.actionPaneType == ActionPaneType.none) {
+            slidableController.openEndActionPane();
+          } else {
+            slidableController.close();
+          }
+        }
+        // Slidable.of(context)?.renderingMode == SlidableRenderingMode.none
+        //     ? Slidable.of(context)?.open()
+        //     : Slidable.of(context)?.close();
       },
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 2),

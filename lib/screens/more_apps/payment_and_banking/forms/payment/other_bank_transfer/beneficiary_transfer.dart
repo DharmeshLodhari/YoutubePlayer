@@ -43,7 +43,8 @@ class BeneficiaryTransfer extends StatefulWidget {
   _BeneficiaryTransferState createState() => _BeneficiaryTransferState();
 }
 
-class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
+class _BeneficiaryTransferState extends State<BeneficiaryTransfer>
+    with SingleTickerProviderStateMixin {
   late http.Response response;
 
   final _auth = PaymentAndBankingAuth();
@@ -75,8 +76,7 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
   final TextEditingController _amountController = TextEditingController();
   final searchItemTextController = TextEditingController();
   GlobalKey searchItemTextFormField = GlobalKey();
-  //slidable tile
-  SlidableController? _slideController;
+  late final SlidableController _slideController = SlidableController(this);
   final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
   bool isBalanceHidden = true;
@@ -115,11 +115,6 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
         searchBankList();
       }
     });
-
-    _slideController = SlidableController(
-      onSlideAnimationChanged: handleSlideAnimationChanged,
-      onSlideIsOpenChanged: handleSlideIsOpenChanged,
-    );
 
     super.initState();
   }
@@ -925,7 +920,6 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
           bankAccountList.isNotEmpty) {
         bankAccountBloc.bankAccount =
             bankAccountList[0]; // Pick the first item in the list
-
       }
       isLoading = false;
       if (mounted) setState(() {});
@@ -1184,10 +1178,16 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
     return Slidable(
       controller: _slideController,
       direction: Axis.horizontal,
-      actionPane: const SlidableBehindActionPane(),
-      actionExtentRatio: 0.25,
-      actions: listActionSlideActions(account: account),
-      secondaryActions: listSecondaryActions(account: account),
+      startActionPane: ActionPane(
+        motion: const BehindMotion(),
+        extentRatio: 0.25,
+        children: listActionSlideActions(account: account),
+      ),
+      endActionPane: ActionPane(
+        motion: const BehindMotion(),
+        extentRatio: 0.25,
+        children: listSecondaryActions(account: account),
+      ),
       child: VerticalListItem(bankAccountTile),
     );
   }
@@ -1285,8 +1285,4 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
     });
     _onRefresh();
   }
-
-  void handleSlideAnimationChanged(Animation<double>? slideAnimation) {}
-
-  void handleSlideIsOpenChanged(bool? isOpen) {}
 }

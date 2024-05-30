@@ -31,7 +31,8 @@ class SearchGroupMember extends StatefulWidget {
   _SearchGroupMemberState createState() => _SearchGroupMemberState();
 }
 
-class _SearchGroupMemberState extends State<SearchGroupMember> {
+class _SearchGroupMemberState extends State<SearchGroupMember>
+    with SingleTickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _scaffoldSearchGroupMemberKey =
       GlobalKey<ScaffoldState>();
   final GlobalKey<ScaffoldMessengerState>
@@ -52,7 +53,7 @@ class _SearchGroupMemberState extends State<SearchGroupMember> {
 
   GroupDetailModel? groupDetail;
 
-  SlidableController? _slideController;
+  late final SlidableController _slideController = SlidableController(this);
   late UserBloc userBloc;
 
   /// Socket
@@ -62,10 +63,6 @@ class _SearchGroupMemberState extends State<SearchGroupMember> {
   @protected
   void initState() {
     searchUserController = TextEditingController();
-    _slideController = SlidableController(
-      onSlideAnimationChanged: handleSlideAnimationChanged,
-      onSlideIsOpenChanged: handleSlideIsOpenChanged,
-    );
 
     groupDetail = widget.arguments["groupDetail"];
 
@@ -313,13 +310,17 @@ class _SearchGroupMemberState extends State<SearchGroupMember> {
       key: UniqueKey(),
       controller: _slideController,
       direction: Axis.horizontal,
-      actionPane: const SlidableBehindActionPane(),
-      actionExtentRatio: 0.20,
-      fastThreshold: 1,
-      showAllActionsThreshold: 0.6,
+      startActionPane: ActionPane(
+        motion: const BehindMotion(),
+        extentRatio: 0.20,
+        children: listActionSlideActions(user, index),
+      ),
+      endActionPane: ActionPane(
+        motion: const BehindMotion(),
+        extentRatio: 0.20,
+        children: listSecondaryActions(user, index),
+      ),
       child: VerticalListItem(user, groupDetail),
-      actions: listActionSlideActions(user, index),
-      secondaryActions: listSecondaryActions(user, index),
     );
   }
 
@@ -484,10 +485,6 @@ class _SearchGroupMemberState extends State<SearchGroupMember> {
 
     return rightSwipeAction;
   }
-
-  void handleSlideAnimationChanged(Animation<double>? slideAnimation) {}
-
-  void handleSlideIsOpenChanged(bool? isOpen) {}
 
   void removeParticipantFromAdmin(int index) {
     final Participant participant = groupDetail!.participants[index];
@@ -671,9 +668,17 @@ class _VerticalListItemState extends State<VerticalListItem> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Slidable.of(context)?.renderingMode == SlidableRenderingMode.none
-            ? Slidable.of(context)?.open()
-            : Slidable.of(context)?.close();
+        final slidableController = Slidable.of(context);
+        if (slidableController != null) {
+          if (slidableController.actionPaneType == ActionPaneType.none) {
+            slidableController.openEndActionPane();
+          } else {
+            slidableController.close();
+          }
+        }
+        // Slidable.of(context)?.renderingMode == SlidableRenderingMode.none
+        //     ? Slidable.of(context)?.open()
+        //     : Slidable.of(context)?.close();
       },
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 2),

@@ -27,7 +27,8 @@ class ProductAddOnList extends StatefulWidget {
   _ProductAddOnListState createState() => _ProductAddOnListState();
 }
 
-class _ProductAddOnListState extends State<ProductAddOnList> {
+class _ProductAddOnListState extends State<ProductAddOnList>
+    with SingleTickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey =
       GlobalKey<ScaffoldMessengerState>();
@@ -48,8 +49,7 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
   final _auth = ShoppingAuthService();
   bool isAPILoading = false;
 
-  //slidable tile
-  SlidableController? _slideController;
+  late final SlidableController _slideController = SlidableController(this);
 
   @override
   void initState() {
@@ -66,11 +66,6 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
         getAddOnList();
       }
     });
-
-    _slideController = SlidableController(
-      onSlideAnimationChanged: handleSlideAnimationChanged,
-      onSlideIsOpenChanged: handleSlideIsOpenChanged,
-    );
   }
 
   void getAddOnList() async {
@@ -409,9 +404,11 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
     return Slidable(
       controller: _slideController,
       direction: Axis.horizontal,
-      actionPane: const SlidableBehindActionPane(),
-      actionExtentRatio: 0.25,
-      actions: listActionSlideActions(addOns: addOns),
+      startActionPane: ActionPane(
+        motion: const BehindMotion(),
+        extentRatio: 0.25,
+        children: listActionSlideActions(addOns: addOns),
+      ),
       child: VerticalListItem(bankAccountTile),
       // secondaryActions: listSecondaryActions(addOns: addOns),
     );
@@ -493,10 +490,6 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
       showToast(message: error.toString());
     });
   }
-
-  void handleSlideAnimationChanged(Animation<double>? slideAnimation) {}
-
-  void handleSlideIsOpenChanged(bool? isOpen) {}
 
   @override
   void dispose() {

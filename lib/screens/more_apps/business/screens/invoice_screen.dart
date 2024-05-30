@@ -27,7 +27,8 @@ class InvoiceScreen extends StatefulWidget {
   State<InvoiceScreen> createState() => _InvoiceScreenState();
 }
 
-class _InvoiceScreenState extends State<InvoiceScreen> {
+class _InvoiceScreenState extends State<InvoiceScreen>
+    with SingleTickerProviderStateMixin {
   bool isSender = true;
   late UserBloc userBloc;
   bool isPopMenuOpen = false;
@@ -39,17 +40,13 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
       RefreshController(initialRefresh: false);
   final GlobalKey _key = LabeledGlobalKey("myInvoiceList");
 
-  SlidableController? _slideController;
+  late final SlidableController _slideController = SlidableController(this);
   final ScrollController _scrollController = ScrollController();
   AppConfigurationModel? appConfigurationModel;
 
   @override
   void initState() {
     appConfigurationModel = getIt<AppConfigurationBloc>().appConfigurationModel;
-    _slideController = SlidableController(
-      onSlideAnimationChanged: handleSlideAnimationChanged,
-      onSlideIsOpenChanged: handleSlideIsOpenChanged,
-    );
 
     Provider.of<InvoiceBloc>(context, listen: false).isSender = true;
     Provider.of<InvoiceBloc>(context, listen: false).isRefreshing = true;
@@ -342,31 +339,36 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                 return Slidable(
                   controller: _slideController,
                   direction: Axis.horizontal,
-                  actionPane: const SlidableBehindActionPane(),
-                  actionExtentRatio: 0.25,
-                  actions: canDeleteInvoice
-                      ? [
-                          SlideActionButton(
-                              backgroundColor: mateRed,
-                              icon: Icons.delete,
-                              onTap: () => deleteInvoice(invoice),
-                              title: 'Delete',
-                              slideController: _slideController),
-                        ]
+                  startActionPane: canDeleteInvoice
+                      ? ActionPane(
+                          motion: const BehindMotion(),
+                          extentRatio: 0.25,
+                          children: [
+                              SlideActionButton(
+                                  backgroundColor: mateRed,
+                                  icon: Icons.delete,
+                                  onTap: () => deleteInvoice(invoice),
+                                  title: 'Delete',
+                                  slideController: _slideController),
+                            ])
                       : null,
-                  secondaryActions: invoice.status != "Paid" &&
-                          invoice.amount! > 0
-                      ? [
-                          SlideActionButton(
-                              backgroundColor: getBgColor(invoice),
-                              icon: getIcon(invoice),
-                              onTap: () => canPay
-                                  ? _payInvoice(invoice)
-                                  : updateInvoiceStatus(
-                                      invoice, getUpdateAction(invoice)),
-                              title: canPay ? 'Pay' : getSlidableTitle(invoice),
-                              slideController: _slideController)
-                        ]
+                  endActionPane: invoice.status != "Paid" && invoice.amount! > 0
+                      ? ActionPane(
+                          motion: const BehindMotion(),
+                          extentRatio: 0.25,
+                          children: [
+                              SlideActionButton(
+                                  backgroundColor: getBgColor(invoice),
+                                  icon: getIcon(invoice),
+                                  onTap: () => canPay
+                                      ? _payInvoice(invoice)
+                                      : updateInvoiceStatus(
+                                          invoice, getUpdateAction(invoice)),
+                                  title: canPay
+                                      ? 'Pay'
+                                      : getSlidableTitle(invoice),
+                                  slideController: _slideController)
+                            ])
                       : null,
                   child: InvoiceTile(
                     invoice: invoice,
@@ -434,10 +436,6 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
       });
     }
   }
-
-  void handleSlideAnimationChanged(Animation<double>? slideAnimation) {}
-
-  void handleSlideIsOpenChanged(bool? isOpen) {}
 
   void _payInvoice(InvoiceModel invoice) {
     if (appConfigurationModel?.enablePayment == true) {

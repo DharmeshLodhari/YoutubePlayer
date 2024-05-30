@@ -27,17 +27,22 @@ class CustomSlydoUserCard extends StatefulWidget {
   State<CustomSlydoUserCard> createState() => _CustomSlydoUserCardState();
 }
 
-class _CustomSlydoUserCardState extends State<CustomSlydoUserCard> {
+class _CustomSlydoUserCardState extends State<CustomSlydoUserCard>
+    with SingleTickerProviderStateMixin {
   late UserBloc userBloc;
   List<String> userConnectionNames = [];
   AppConfigurationModel? appConfigurationModel;
-  SlidableController slidableController = SlidableController();
+  late final SlidableController _slideController = SlidableController(this);
 
   @override
   void initState() {
     super.initState();
     appConfigurationModel = getIt<AppConfigurationBloc>().appConfigurationModel;
 
+    // _slideController = SlidableController(
+    //   onSlideAnimationChanged: handleSlideAnimationChanged,
+    //   onSlideIsOpenChanged: handleSlideIsOpenChanged,
+    // );
     getUserConnectionNames();
   }
 
@@ -139,16 +144,30 @@ class _CustomSlydoUserCardState extends State<CustomSlydoUserCard> {
 
   Widget getSlidableWithCard(BuildContext context) {
     return Slidable(
-      controller: slidableController,
+      controller: _slideController,
       direction: Axis.horizontal,
-      actionPane: const SlidableBehindActionPane(),
-      actionExtentRatio: 0.25,
-      actions: widget.user.userName.toString().toLowerCase() == "slydo"
-          ? []
-          : listActionSlideActions(),
-      secondaryActions: widget.user.userName.toString().toLowerCase() == "slydo"
-          ? []
-          : listSecondaryActions(),
+      // actionPane: const SlidableBehindActionPane(),
+      // actionExtentRatio: 0.25,
+      // actions: widget.user.userName.toString().toLowerCase() == "slydo"
+      //     ? []
+      //     : listActionSlideActions(),
+      // secondaryActions: widget.user.userName.toString().toLowerCase() == "slydo"
+      //     ? []
+      //     : listSecondaryActions(),
+      startActionPane: widget.user.userName.toString().toLowerCase() == "slydo"
+          ? null
+          : ActionPane(
+              motion: const BehindMotion(),
+              extentRatio: 0.25,
+              children: listActionSlideActions(),
+            ),
+      endActionPane: widget.user.userName.toString().toLowerCase() == "slydo"
+          ? null
+          : ActionPane(
+              motion: const BehindMotion(),
+              extentRatio: 0.25,
+              children: listSecondaryActions(),
+            ),
       child: userCard(),
     );
   }
@@ -176,7 +195,7 @@ class _CustomSlydoUserCardState extends State<CustomSlydoUserCard> {
           },
           title: AppLocalization.of(context)!.request,
           backgroundColor: navyBlue,
-          slideController: slidableController,
+          slideController: _slideController,
         ),
       if (isNotCurrentUser)
         SlideActionButton(
@@ -193,7 +212,7 @@ class _CustomSlydoUserCardState extends State<CustomSlydoUserCard> {
           },
           title: AppLocalization.of(context)!.send,
           backgroundColor: naturalGreen,
-          slideController: slidableController,
+          // slideController: slidableController,
         ),
     ];
   }
@@ -209,7 +228,7 @@ class _CustomSlydoUserCardState extends State<CustomSlydoUserCard> {
           },
           title: 'Connect',
           backgroundColor: naturalGreen,
-          slideController: slidableController,
+          slideController: _slideController,
         ),
       if (userBloc.user.userName != widget.user.userName)
         SlideActionButton(
@@ -219,7 +238,7 @@ class _CustomSlydoUserCardState extends State<CustomSlydoUserCard> {
           },
           title: 'Block',
           backgroundColor: mateRed,
-          slideController: slidableController,
+          slideController: _slideController,
         ),
     ];
   }
@@ -244,8 +263,8 @@ class _CustomSlydoUserCardState extends State<CustomSlydoUserCard> {
       actionTwoBgColor: greyBorderColor,
       actionTwoTextColor: blackFont,
       title: AppLocalization.of(context)!.block,
-      description: AppLocalization.of(context)!.areYouSureWantToBlock +
-          " ${user.displayName()}",
+      description:
+          "${AppLocalization.of(context)!.areYouSureWantToBlock} ${user.displayName()}",
       actionOneText: AppLocalization.of(context)!.block,
       actionTwoText: AppLocalization.of(context)!.cancel,
     );
@@ -253,8 +272,8 @@ class _CustomSlydoUserCardState extends State<CustomSlydoUserCard> {
       final bool done = await UserAuth().blockUser(user);
       if (done) {
         showSnackbar(context,
-            message: "${user.displayName()} " +
-                AppLocalization.of(context)!.isBlockedSuccessfully);
+            message:
+                "${user.displayName()} ${AppLocalization.of(context)!.isBlockedSuccessfully}");
 
         final ConnectionListBloc connectionListBloc =
             Provider.of<ConnectionListBloc>(context, listen: false);

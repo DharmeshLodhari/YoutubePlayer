@@ -25,8 +25,9 @@ class ApplicantList extends StatefulWidget {
   State<ApplicantList> createState() => _ApplicantListState();
 }
 
-class _ApplicantListState extends State<ApplicantList> {
-  final SlidableController _slideController = SlidableController();
+class _ApplicantListState extends State<ApplicantList>
+    with SingleTickerProviderStateMixin {
+  late final SlidableController _slideController = SlidableController(this);
   JobApplicantModel? applicants;
 
   bool isLoading = false;
@@ -352,11 +353,17 @@ class _ApplicantListState extends State<ApplicantList> {
     return Slidable(
       controller: _slideController,
       direction: Axis.horizontal,
-      actionPane: const SlidableBehindActionPane(),
-      actionExtentRatio: 0.25,
       enabled: widget.job!.assignee == null,
-      actions: listActionSlideActions(index),
-      secondaryActions: listSecondaryActions(index),
+      startActionPane: ActionPane(
+        motion: const BehindMotion(),
+        extentRatio: 0.25,
+        children: listActionSlideActions(index),
+      ),
+      endActionPane: ActionPane(
+        motion: const BehindMotion(),
+        extentRatio: 0.25,
+        children: listSecondaryActions(index),
+      ),
       child: VerticalListItem(
         applicant: applicantList[index],
       ),
