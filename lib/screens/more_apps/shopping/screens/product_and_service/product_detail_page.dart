@@ -98,7 +98,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
   Variant? selectedVariant;
 
-  String price = "";
   String moreInformation = "";
   int stockLeft = 0;
 
@@ -1478,8 +1477,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
   Widget buildDiscountPrice() {
     if (product?.discountedPrice != null && product?.discountedPrice != 0) {
-      if (checkDiscount(product?.discountIsActive ?? false,
-          product?.discountedPrice ?? 0, product?.price ?? 0)) {
+      if (product?.checkProductDiscount() ?? false) {
         return Positioned(
             top: 20,
             right: 10,
@@ -1564,8 +1562,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
         //     Variant.convertToVariantList(product!.variantModels!);
 
-        //get the price and more information to string
-        price = product!.price.toString();
         moreInformation = product!.description.toString();
 
         // addOnList = product!.addOns != null
@@ -1619,7 +1615,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   //
   //   return colorGroups;
   // }
-
+  //
   // bool hasVariantsWithoutColor(
   //     List<Variant> productVariantList, String variantId) {
   //   // Iterate through the productVariantList
@@ -1673,176 +1669,179 @@ class _ProductDetailPageState extends State<ProductDetailPage>
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Text(
-                    //name,
-                    messageDecoderWithEmoji(product?.name) ?? "",
-                    style: TextStyle(
-                        fontSize: 16,
-                        color: blackFont,
-                        fontWeight: FontWeight.bold),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 4.0),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        Text(
-                          worldCurrencies[product?.currency] ?? "0",
-                          style: TextStyle(
-                              fontFamily: "Inter",
-                              fontSize: 18.0,
-                              color: navyBlue,
-                              fontWeight: FontWeight.bold),
-                        ),
-                        Text(
-                          moneyDisplayNormalizer((checkDiscount(
-                                  product!.discountIsActive!,
-                                  product!.discountedPrice!,
-                                  product!.price!))
-                              ? product!.discountedPrice
-                              : product!.price!),
-                          style: TextStyle(
-                              fontSize: 18.0,
-                              color: navyBlue,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Row(
-                    children: [
-                      if (checkDiscount(product!.discountIsActive!,
-                          product!.discountedPrice!, product!.price!))
-                        Row(
-                          children: [
-                            Text(
-                              worldCurrencies[product!.currency!]!,
-                              style: TextStyle(
-                                fontFamily: "Inter",
-                                fontWeight: FontWeight.w400,
-                                fontSize: 12.8,
-                                color: navyBlue,
-                                decoration: TextDecoration.lineThrough,
-                              ),
-                            ),
-                            Text(
-                              moneyDisplayNormalizer(product!.price!),
-                              style: TextStyle(
-                                fontWeight: FontWeight.w400,
-                                fontSize: 12,
-                                color: navyBlue,
-                                decoration: TextDecoration.lineThrough,
-                              ),
-                            ),
-                          ],
-                        ),
-                    ],
-                  ),
+                  _buildProductName(),
+                  _buildDiscountedPrice(),
+                  if ((product?.checkProductDiscount() ?? false) ||
+                      (product?.checkVariantDiscount(selectedVariant) ?? false))
+                    _buildOriginalPrice(),
                   const SizedBox(height: 5),
                   getRating(numberOfRating: product?.rating!.toInt()),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (stockLeft >= 10) ...[
-                        const SizedBox(
-                          height: 10.0,
-                        ),
-                        Text(
-                          'In Stock',
-                          style: TextStyle(
-                              fontSize: 16,
-                              color: naturalGreen,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ] else if (stockLeft == 0) ...[
-                        const SizedBox.shrink()
-                      ] else if (stockLeft <= 9) ...[
-                        const SizedBox(
-                          height: 10.0,
-                        ),
-                        Text(
-                          'Only ${stockLeft.toString()} left in stock',
-                          style: TextStyle(
-                              fontSize: 16,
-                              color: mateRed,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ]
-                    ],
-                  ),
+                  stockStatus(),
                 ],
               ),
             ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                qrCodeIcon(),
-              ],
+            qrCodeIcon(),
+          ],
+        ),
+        if (!allKeysAreNullOrEmptyColor) _buildVariantColor(),
+        if (!allKeysAreNullOrEmpty) _buildVariantSize(),
+      ],
+    );
+  }
+
+  Widget _buildProductName() {
+    return Text(
+      //name,
+      messageDecoderWithEmoji(product?.name) ?? "",
+      style: TextStyle(
+          fontSize: 16, color: blackFont, fontWeight: FontWeight.bold),
+    );
+  }
+
+  Widget _buildDiscountedPrice() {
+    return Padding(
+      padding: const EdgeInsets.only(top: 4.0),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Text(
+            worldCurrencies[product?.currency] ?? "NGN",
+            style: TextStyle(
+                fontFamily: "Inter",
+                fontSize: 18.0,
+                color: navyBlue,
+                fontWeight: FontWeight.bold),
+          ),
+          Text(
+            moneyDisplayNormalizer(
+                product?.getDiscountedPrice(selectedVariant)),
+            style: TextStyle(
+                fontSize: 18.0, color: navyBlue, fontWeight: FontWeight.bold),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildOriginalPrice() {
+    return Row(
+      children: [
+        Text(
+          worldCurrencies[product!.currency] ?? "NGN",
+          style: TextStyle(
+            fontFamily: "Inter",
+            fontWeight: FontWeight.w400,
+            fontSize: 12.8,
+            color: navyBlue,
+            decoration: TextDecoration.lineThrough,
+          ),
+        ),
+        Text(
+          moneyDisplayNormalizer(product?.getOriginalPrice(selectedVariant)),
+          style: TextStyle(
+            fontWeight: FontWeight.w400,
+            fontSize: 12,
+            color: navyBlue,
+            decoration: TextDecoration.lineThrough,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget stockStatus() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (stockLeft >= 10) ...[
+          const SizedBox(
+            height: 10.0,
+          ),
+          Text(
+            'In Stock',
+            style: TextStyle(
+                fontSize: 16, color: naturalGreen, fontWeight: FontWeight.bold),
+          ),
+        ] else if (stockLeft == 0) ...[
+          const SizedBox.shrink()
+        ] else if (stockLeft <= 9) ...[
+          const SizedBox(
+            height: 10.0,
+          ),
+          Text(
+            'Only ${stockLeft.toString()} left in stock',
+            style: TextStyle(
+                fontSize: 16, color: mateRed, fontWeight: FontWeight.bold),
+          ),
+        ]
+      ],
+    );
+  }
+
+  Widget _buildVariantColor() {
+    return Column(
+      children: [
+        const SizedBox(
+          height: 10.0,
+        ),
+        Row(
+          children: [
+            Text(
+              'Color : ',
+              style: TextStyle(
+                  fontSize: 16,
+                  fontFamily: "Inter",
+                  color: darkGrey,
+                  fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(
+              width: 5.0,
+            ),
+            Text(
+              selectedVariant?.getColor() ?? "",
+              style: TextStyle(
+                  fontSize: 14, color: blackFont, fontWeight: FontWeight.bold),
             ),
           ],
         ),
-        if (!allKeysAreNullOrEmptyColor) ...[
-          const SizedBox(
-            height: 10.0,
-          ),
-          Row(
-            children: [
-              Text(
-                'Color : ',
-                style: TextStyle(
-                    fontSize: 16,
-                    fontFamily: "Inter",
-                    color: darkGrey,
-                    fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(
-                width: 5.0,
-              ),
-              Text(
-                selectedVariant?.getColor() ?? "",
-                style: TextStyle(
-                    fontSize: 14,
-                    color: blackFont,
-                    fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
-          const SizedBox(
-            height: 10.0,
-          ),
-          showVariantColorSelection(),
-        ],
-        if (!allKeysAreNullOrEmpty) ...[
-          const SizedBox(
-            height: 10.0,
-          ),
-          Row(
-            children: [
-              Text(
-                'Size : ',
-                style: TextStyle(
-                    fontSize: 16,
-                    fontFamily: 'Inter',
-                    color: darkGrey,
-                    fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(
-                width: 5.0,
-              ),
-              Text(
-                selectedVariant?.getSize() ?? "",
-                style: TextStyle(
-                    fontSize: 14,
-                    color: blackFont,
-                    fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
-          const SizedBox(
-            height: 10.0,
-          ),
-          showVariantSizes(),
-        ],
+        const SizedBox(
+          height: 10.0,
+        ),
+        showVariantColorSelection(),
+      ],
+    );
+  }
+
+  Widget _buildVariantSize() {
+    return Column(
+      children: [
+        const SizedBox(
+          height: 10.0,
+        ),
+        Row(
+          children: [
+            Text(
+              'Size : ',
+              style: TextStyle(
+                  fontSize: 16,
+                  fontFamily: 'Inter',
+                  color: darkGrey,
+                  fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(
+              width: 5.0,
+            ),
+            Text(
+              selectedVariant?.getSize() ?? "",
+              style: TextStyle(
+                  fontSize: 14, color: blackFont, fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+        const SizedBox(
+          height: 10.0,
+        ),
+        showVariantSizes(),
       ],
     );
   }
@@ -1951,7 +1950,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                   //     index++) {
                   final Variant variant = availableVariant;
                   // Update price or any other state based on the selected variant
-                  price = variant.price!;
                   stockLeft = variant.getQuantity();
                   // }
                 } else {
@@ -1963,7 +1961,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 sizeGroups = {};
 
                 sizeGroups = product?.getVariants(
-                        variantType: VariantTypes.ColorAndSize,
+                        variantType: VariantTypes.Size,
                         selectedColor: selectedVariant.getColor()) ??
                     {};
 
@@ -2052,9 +2050,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
             onTap: () {
               for (int index = 0; index < variantsWithSize.length; index++) {
                 final Variant variant = variantsWithSize[index];
-
-                // Update price or any other state based on the selected variant
-                price = variant.price!;
 
                 stockLeft = variant.getQuantity();
               }

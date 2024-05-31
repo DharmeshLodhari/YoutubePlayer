@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/discount/discount_model.dart';
 import 'package:Slydo/utils/cache_manager.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -21,16 +22,16 @@ import 'package:provider/provider.dart';
 import '../../../../../widget/rounded_background_icon.dart';
 import '../../shopping_auth.dart';
 
-class ProductVariantUpdate extends StatefulWidget {
+class EditProductVariant extends StatefulWidget {
   var arguments;
 
-  ProductVariantUpdate({this.arguments, Key? key}) : super(key: key);
+  EditProductVariant({this.arguments, Key? key}) : super(key: key);
 
   @override
-  _ProductVariantUpdateState createState() => _ProductVariantUpdateState();
+  _EditProductVariantState createState() => _EditProductVariantState();
 }
 
-class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
+class _EditProductVariantState extends State<EditProductVariant> {
   final _auth = ShoppingAuthService();
   final _formKey = GlobalKey<FormState>();
 
@@ -53,7 +54,21 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
   bool isAPILoading = false;
   int inventoryCount = 1;
 
-  // var typeList = ['Size', 'Color'];
+  bool isDiscountLoading = false;
+  bool isDiscountAvailable = false;
+  int? discountItemCount = 0;
+  String? discountNext = "";
+  String? discountPrevious = "";
+  List<DiscountModel> discountList = [];
+  List<DiscountModel> discountListCopy = [];
+  bool noItemInList = false;
+  DiscountModel? pressedDiscount;
+  DiscountModel? selectedDiscount;
+  String discountName = "";
+  String? discountId;
+  final GlobalKey<ScaffoldMessengerState> _messengerScaffoldKey =
+      GlobalKey<ScaffoldMessengerState>();
+
   List<VariantTypes> typeList = [
     VariantTypes.Size,
     VariantTypes.Color,
@@ -92,6 +107,7 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
         moneyNormalizer(int.parse(variant!.price!)).toString();
     availableFromController.text = variant!.availableFrom!.toString();
     productIsAvailable = variant!.isAvailable!;
+    isDiscountAvailable = variant!.discountIsActive!;
     inventoryIsAvailable = variant!.trackInventory!;
     inventoryCount = variant!.quantity!;
     if (variant!.availableFrom!.isNotEmpty) {
@@ -101,6 +117,7 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
     }
     productImagesFromServer.addAll(variant!.serverImages!);
 
+    discountId = variant!.discountId!.toString();
     title = variant!.title!.toString();
     size = variant!.value!.toString();
     color = variant!.colour!.toString();
@@ -109,7 +126,65 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
     // inventoryIsAvailable = variant!.trackInventory!;
     // inventoryCount = variant!.quantity!;
 
+    getDiscountList(discountId);
+
     super.initState();
+  }
+
+  void getDiscountList(String? discountId) async {
+    if (!isDiscountLoading) {
+      if (discountNext != null && !isDiscountLoading) {
+        isDiscountLoading = true;
+        if (mounted) setState(() {});
+
+        final Map<String, dynamic>? result = await ShoppingAuthService()
+            .listOfDiscounts(discountNext, discountPrevious);
+
+        if (result == null) {
+          isDiscountLoading = false;
+          noItemInList = true;
+          if (mounted) {
+            setState(() {});
+          }
+          return;
+        }
+
+        discountItemCount = result['count'];
+        discountNext = result['next'];
+        discountPrevious = result['previous'];
+        final tempList = result['results'];
+        if (mounted) {
+          setState(() {
+            noItemInList = false;
+            isDiscountLoading = false;
+            discountList.addAll(tempList);
+
+            discountListCopy = discountList;
+
+            if (discountId != null) {
+              for (DiscountModel discount in discountList) {
+                if (discount.id == discountId) {
+                  selectedDiscount = discount;
+                }
+              }
+            }
+          });
+        }
+      }
+      if (discountList.isEmpty) {
+        if (mounted) {
+          setState(() {
+            noItemInList = true;
+          });
+        }
+      } else if (discountNext == null && discountList.length > 6) {
+        _messengerScaffoldKey.currentState?.showSnackBar(SnackBar(
+          content:
+              Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
+          duration: const Duration(milliseconds: 500),
+        ));
+      }
+    }
   }
 
   @override
@@ -206,13 +281,19 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
                       //   height: 10,
                       // ),
                       // getComparePriceField(),
-
                       const SizedBox(height: 16),
-                      getAvailableFromField(),
-                      const SizedBox(height: 40),
+                      getDiscountField(),
+                      const SizedBox(height: 16),
+                      if (isDiscountAvailable == true) ...[
+                        getDiscountListField(),
+                        const SizedBox(height: 16),
+                      ],
                       getIsAvailableField(),
-
                       const SizedBox(height: 16),
+                      if (productIsAvailable == true) ...[
+                        getAvailableFromField(),
+                        const SizedBox(height: 16),
+                      ],
                       getInventoryFormField(),
                       const SizedBox(height: 16),
                       getIsInventoryAvailableField(),
@@ -226,6 +307,160 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
               ),
             ),
           );
+  }
+
+  Widget getDiscountField() {
+    return CustomizedCheckBoxField(
+      onTap: () {
+        isDiscountAvailable = !isDiscountAvailable;
+        setState(() {});
+      },
+      isChecked: isDiscountAvailable,
+      title: AppLocalization.of(context)!.discount,
+    );
+  }
+
+  Widget getDiscountListField() {
+    return CustomizedDropDownField(
+      title: 'Discount',
+      fontSize: 12,
+      titleColor: blackFont,
+      fontWeight: FontWeight.w400,
+      child: ListTile(
+        dense: true,
+        title: Text(
+          selectedDiscount != null
+              ? messageDecoderWithEmoji(selectedDiscount?.name) ??
+                  selectedDiscount?.merchant ??
+                  ""
+              : "",
+          style: TextStyle(
+              color: blackFont,
+              fontSize: 16,
+              fontFamily: "Inter",
+              fontWeight: FontWeight.w600),
+        ),
+        trailing: Icon(
+          Icons.keyboard_arrow_down,
+          color: darkGrey,
+        ),
+        onTap: () {
+          discountAndroidSheet();
+        },
+      ),
+    );
+  }
+
+  void discountAndroidSheet() {
+    discountList = discountListCopy;
+    androidBottomSheet(
+      context: context,
+      child: StatefulBuilder(
+        builder: (context, changeState) {
+          return SizedBox(
+            height: MediaQuery.of(context).size.height * 0.75,
+            child: Column(
+              children: [
+                CustomizedTextFormField(
+                  hintText: 'Search discount',
+                  onChanged: (value) {
+                    if (value.isNotEmpty) {
+                      discountList = discountListCopy
+                          .where((element) =>
+                              (messageDecoderWithEmoji(element.name) ??
+                                      element.merchant ??
+                                      "")
+                                  .toLowerCase()
+                                  .startsWith(value.toString().toLowerCase()))
+                          .toList();
+                      changeState(
+                          () {}); // To upgrade the product categories in the bottom sheet.
+                    } else {
+                      discountList = discountListCopy;
+                      changeState(() {});
+                    }
+                  },
+                ),
+                const SizedBox(height: 20),
+                Expanded(
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: discountList.length,
+                    itemBuilder: (context, index) {
+                      final DiscountModel discount = discountList[index];
+                      if (selectedDiscount == discount) {
+                        return Container(
+                          color: selectedListItemBackgroundBlue,
+                          child: ListTile(
+                            dense: true,
+                            title: Text(
+                              messageDecoderWithEmoji(discount.name) ??
+                                  discount.merchant ??
+                                  "",
+                              overflow: TextOverflow.fade,
+                              softWrap: false,
+                              style: TextStyle(
+                                  color: navyBlue,
+                                  fontSize: 16,
+                                  fontFamily: "Inter",
+                                  fontWeight: FontWeight.w600),
+                            ),
+                            trailing: Icon(
+                              SlydoAppIcon.checked,
+                              color: navyBlue,
+                              size: 12,
+                            ),
+                            onTap: () {
+                              pressedDiscount = discount;
+                              Navigator.pop(context);
+                              if (pressedDiscount != null) {
+                                selectedDiscount = pressedDiscount;
+                                discountName = messageDecoderWithEmoji(
+                                        selectedDiscount?.name) ??
+                                    selectedDiscount?.merchant ??
+                                    "";
+                                setState(() {});
+                              }
+                            },
+                          ),
+                        );
+                      }
+                      return ListTile(
+                        title: Text(
+                          messageDecoderWithEmoji(discount.name) ??
+                              discount.merchant ??
+                              "",
+                          softWrap: false,
+                          overflow: TextOverflow.fade,
+                          style: TextStyle(
+                              color: blackFont,
+                              fontSize: 16,
+                              fontFamily: "Inter",
+                              fontWeight: FontWeight.w400),
+                        ),
+                        dense: true,
+                        onTap: () {
+                          pressedDiscount = discount;
+                          Navigator.pop(context);
+                          if (pressedDiscount != null) {
+                            selectedDiscount = pressedDiscount;
+                            discountName = messageDecoderWithEmoji(
+                                    selectedDiscount?.name) ??
+                                selectedDiscount?.merchant ??
+                                "";
+                            setState(() {});
+                          }
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
   }
 
   Widget showBackArrow() {
@@ -966,6 +1201,8 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
           variant.quantity = inventoryCount;
           variant.type = selectedType;
           variant.price = moneyInputNormalizer(variantPrice).toString();
+          // variant.discount = selectedDiscount;
+          variant.discountId = selectedDiscount?.id;
           variant.isAvailable = productIsAvailable;
           variant.availableFrom = productAvailableFrom;
           variant.trackInventory = inventoryIsAvailable;

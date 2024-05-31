@@ -90,9 +90,9 @@ class _AddProductState extends State<AddProduct> {
   int inventoryCount = 1;
   List<Variant> productVariantList = [];
   List<AddOns> productAddOnsList = [];
-  var weightSi = ['Grams', 'Kilograms'];
-  var widthSi = ['Centimetres', 'Metres'];
-  var heightSi = ['Centimetres', 'Metres'];
+  List<String> weightSi = ['Grams', 'Kilograms'];
+  List<String> widthSi = ['Centimetres', 'Metres'];
+  List<String> heightSi = ['Centimetres', 'Metres'];
   List<String> measurementList = ['Weight', 'Height', 'Width'];
   Map<String, bool> measurementCheckMark = {};
   List<String> pickedMeasurementList = [];
@@ -2116,7 +2116,7 @@ class _AddProductState extends State<AddProduct> {
                   : '';
 
           product.trackInventory = trackInventory;
-          product.discount = selectedDiscount;
+          product.discountId = selectedDiscount?.id;
           product.quantity = inventoryCount;
           product.addressId = defaultAddress?.id;
           product.searchKeywords = searchKeyword.split(", ");
@@ -2449,7 +2449,8 @@ class _AddProductState extends State<AddProduct> {
           // Use `physics` property to prevent nested scrolling
           physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,
-          itemCount: productVariantList.length,
+          itemCount:
+              productVariantList.length >= 2 ? 2 : productVariantList.length,
           itemBuilder: (BuildContext context, int index) {
             return FormVariantsTile(
                 productVariantList: productVariantList,
@@ -2883,7 +2884,7 @@ class _AddProductState extends State<AddProduct> {
                 }
               },
               child: Text(
-                'See all',
+                'Add more',
                 maxLines: 1,
                 style: TextStyle(
                     color: navyBlue, fontWeight: FontWeight.w400, fontSize: 14),
@@ -2907,7 +2908,8 @@ class _AddProductState extends State<AddProduct> {
               physics: const NeverScrollableScrollPhysics(),
               padding: const EdgeInsets.symmetric(vertical: 10),
               //+1 for progressbar
-              itemCount: productAddOnsList.length + 1,
+              itemCount:
+                  productAddOnsList.length >= 2 ? 2 : productAddOnsList.length,
               itemBuilder: (BuildContext context, int index) {
                 if (index == productAddOnsList.length) {
                   return buildJumpingLoadingIndicator(isLoading: isLoading);

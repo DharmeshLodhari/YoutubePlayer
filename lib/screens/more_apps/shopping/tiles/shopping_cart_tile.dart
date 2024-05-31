@@ -222,19 +222,6 @@ class ShoppingCartTileForProduct extends StatelessWidget {
     );
   }
 
-  String getProductPrice() {
-    var totalPrice = 0;
-    if (product.isProduct) {
-      if (basketItem.variants != null) {
-        totalPrice = int.parse(basketItem.variants?.first.price ?? "0");
-      } else {
-        totalPrice = product.getProductRealPrice();
-      }
-    }
-
-    return totalPrice.toString();
-  }
-
   String getTotalPrice() {
     int totalPrice = 0;
     int AddOnTotal = 0;
@@ -246,10 +233,11 @@ class ShoppingCartTileForProduct extends StatelessWidget {
           }
         }
         final int priceQuantity =
-            (basketItem.qty ?? 0) * int.parse(getProductPrice());
+            (basketItem.qty ?? 0) * product.getProductRealPrice();
         totalPrice += AddOnTotal + priceQuantity;
       } else {
-        totalPrice = (basketItem.qty ?? 0) * int.parse(getProductPrice());
+        totalPrice = (basketItem.qty ?? 0) *
+            (product.getDiscountedPrice(basketItem.variants?.first) ?? 0);
       }
     }
 
@@ -334,8 +322,6 @@ class ShoppingCartTileForProduct extends StatelessWidget {
               fontSize: 14),
         ),
         Text(
-          // appendStringDot(
-          //     moneyDisplayNormalizer(int.parse(getProductPrice())), 8),
           moneyDisplayNormalizer(int.parse(getTotalPrice())),
           style: TextStyle(
             color: blackFont,
@@ -361,9 +347,8 @@ class ShoppingCartTileForProduct extends StatelessWidget {
               fontSize: 14),
         ),
         Text(
-          moneyDisplayNormalizer(int.parse(getProductPrice())),
-          // appendStringDot(
-          //     moneyDisplayNormalizer(int.parse(getProductPrice())), 8),
+          moneyDisplayNormalizer(
+              product.getDiscountedPrice(basketItem.variants?.first) ?? 0),
           style: TextStyle(
             color: black,
             fontWeight: FontWeight.w500,

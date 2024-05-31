@@ -309,9 +309,8 @@ class _SharedCartDetailsState extends State<SharedCartDetails> {
         ),
       ),
       onPressed: () {
-        if (appConfigurationModel?.enableCheckout == true &&
-            sharedCartBloc.getSharedCartModel().getSharedCartTotalPrice() !=
-                0) {
+        if (sharedCartBloc.getSharedCartModel().getSharedCartTotalPrice() !=
+            0) {
           if (sharedCartBloc.getSharedCartModel().metaData?.userData != null &&
               sharedCartBloc
                       .getSharedCartModel()

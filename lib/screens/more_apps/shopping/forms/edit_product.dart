@@ -133,7 +133,7 @@ class _EditProductState extends State<EditProduct> {
   bool isEmpty = false;
 
   bool isDiscountLoading = false;
-  bool discountView = false;
+  bool isDiscountAvailable = false;
   int? discountItemCount = 0;
   String? discountNext = "";
   String? discountPrevious = "";
@@ -143,6 +143,7 @@ class _EditProductState extends State<EditProduct> {
   DiscountModel? pressedDiscount;
   DiscountModel? selectedDiscount;
   String discountName = "";
+  String? discountId;
   final GlobalKey<ScaffoldMessengerState> _messengerScaffoldKey =
       GlobalKey<ScaffoldMessengerState>();
 
@@ -157,7 +158,7 @@ class _EditProductState extends State<EditProduct> {
     productId = arguments['productId'];
     getCategories();
     Future.delayed(const Duration(seconds: 2), () {
-      getDiscountList();
+      getDiscountList(discountId);
       obtainCategories();
       obtainCustomCategory();
       getAddressList();
@@ -245,7 +246,9 @@ class _EditProductState extends State<EditProduct> {
                   : 'Metres';
 
           trackInventoryView = currentProduct.trackInventory!;
-          selectedDiscount = currentProduct.discount;
+          // selectedDiscount = currentProduct.discount;
+          isDiscountAvailable = currentProduct.discountIsActive ?? false;
+          discountId = currentProduct.discountId;
 
           weightController.text = currentProduct.weight != 0.0
               ? currentProduct.weight.toString()
@@ -312,7 +315,7 @@ class _EditProductState extends State<EditProduct> {
     });
   }
 
-  void getDiscountList() async {
+  void getDiscountList(String? discountId) async {
     if (!isDiscountLoading) {
       if (discountNext != null && !isDiscountLoading) {
         isDiscountLoading = true;
@@ -341,6 +344,14 @@ class _EditProductState extends State<EditProduct> {
             discountList.addAll(tempList);
 
             discountListCopy = discountList;
+
+            if (discountId != null) {
+              for (DiscountModel discount in discountList) {
+                if (discount.id == discountId) {
+                  selectedDiscount = discount;
+                }
+              }
+            }
           });
         }
       }
@@ -609,7 +620,7 @@ class _EditProductState extends State<EditProduct> {
 
                       getDiscountField(),
                       const SizedBox(height: 16),
-                      if (discountView == true) ...[
+                      if (isDiscountAvailable == true) ...[
                         getDiscountListField(),
                         const SizedBox(height: 16),
                       ],
@@ -2367,7 +2378,7 @@ class _EditProductState extends State<EditProduct> {
               : selectedWidth == 'Metres'
                   ? 'm'
                   : '';
-          currentProduct.discount = selectedDiscount;
+          currentProduct.discountId = selectedDiscount?.id;
           currentProduct.trackInventory = trackInventoryView;
           currentProduct.quantity = inventoryCount;
           currentProduct.addressId = defaultAddress?.id;
@@ -2526,10 +2537,10 @@ class _EditProductState extends State<EditProduct> {
   Widget getDiscountField() {
     return CustomizedCheckBoxField(
       onTap: () {
-        discountView = !discountView;
+        isDiscountAvailable = !isDiscountAvailable;
         setState(() {});
       },
-      isChecked: discountView,
+      isChecked: isDiscountAvailable,
       title: AppLocalization.of(context)!.discount,
     );
   }
@@ -2870,17 +2881,17 @@ class _EditProductState extends State<EditProduct> {
                 });
 
                 // Handle the result (map) received from PRODUCT_VARIANT_LIST
-                if (data != null && data is Variant) {
+                if (data != null && data is List<Variant>) {
                   //clear previous list, update the list
                   // debugPrint('fola data::: ${data}');
                   // debugPrint('fola data 2::: ${data.runtimeType}');
 
-                  // productVariantList = [];
+                  productVariantList = [];
                   // productVariantList = Variant.convertToVariantList(data);
-                  // productVariantList = data;
+                  productVariantList = data;
 
                   // variantData = data;
-                  productVariantList.add(data);
+                  // productVariantList.add(data);
                   if (mounted) setState(() {});
                 }
               },
@@ -2911,7 +2922,8 @@ class _EditProductState extends State<EditProduct> {
             controller: scrollControllerVariant,
             physics: const NeverScrollableScrollPhysics(),
             shrinkWrap: true,
-            itemCount: productVariantList.length,
+            itemCount:
+                productVariantList.length >= 2 ? 2 : productVariantList.length,
             itemBuilder: (BuildContext context, int index) {
               if (index == productVariantList.length) {
                 return buildJumpingLoadingIndicator(isLoading: isLoading);
@@ -3064,7 +3076,8 @@ class _EditProductState extends State<EditProduct> {
               physics: const NeverScrollableScrollPhysics(),
               padding: const EdgeInsets.symmetric(vertical: 10),
               //+1 for progressbar
-              itemCount: productAddOnsList.length + 1,
+              itemCount:
+                  productAddOnsList.length >= 2 ? 2 : productAddOnsList.length,
               controller: scrollControllerVariant,
               itemBuilder: (BuildContext context, int index) {
                 if (index == productAddOnsList.length) {

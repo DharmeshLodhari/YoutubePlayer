@@ -18,7 +18,7 @@ class SearchItemWithFilterModel {
   CustomerProfile? searchedUser;
 
   SearchItemWithFilterModel({
-    this.category = "All categories",
+    this.category = "",
     this.categoryId,
     this.subCategory = "",
     this.subCategoryId,

@@ -318,6 +318,7 @@ class ShoppingAuthService extends AuthService {
     product.trackInventory = item["track_inventory"] ?? false;
     product.quantity = item["quantity"];
     product.pricePercentageChange = item["price_percentage_change"] ?? 0.0;
+    product.discountId = item['discount'];
     product.discountValue = item['discount_value'];
     product.discountType = item['discount_type'];
     product.discountIsActive = item['discount_is_active'];
@@ -426,7 +427,8 @@ class ShoppingAuthService extends AuthService {
     if (next == "") {
       url = AppConfig.baseUrl + "/api/v1/products/by-seller/$userName/?";
 
-      if (filterOptions!.category != "All categories") {
+      if (filterOptions!.category != "" &&
+          filterOptions.category != "All categories") {
         url = url + "category=${filterOptions.categoryId}";
       }
       if (filterOptions.subCategory != "" &&
@@ -574,7 +576,8 @@ class ShoppingAuthService extends AuthService {
       url = AppConfig.baseUrl +
           "/api/v1/business/discounts/$discountedId/merchant-discounted-consumables/product/?";
 
-      if (filterOptions!.category != "All categories") {
+      if (filterOptions!.category != "" &&
+          filterOptions.category != "All categories") {
         url = url + "category=${filterOptions.categoryId}";
       }
       if (filterOptions.subCategory != "" &&
@@ -1948,7 +1951,8 @@ class ShoppingAuthService extends AuthService {
           filterOptions!.userName ?? filterOptions.searchedUser!.userName!;
       url = AppConfig.baseUrl + "/api/v1/products/by-seller/" + userName + "/?";
 
-      if (filterOptions.category != "All categories") {
+      if (filterOptions.category != "" &&
+          filterOptions.category != "All categories") {
         url = url + "category=${filterOptions.categoryId}";
       }
       if (filterOptions.subCategory != "" &&
@@ -2305,9 +2309,12 @@ class ShoppingAuthService extends AuthService {
 
   Future<Map<String, dynamic>> getMerchantSubProductCategories(
       int? categoryId, String? next, String? previous) async {
-    final String url =
-        AppConfig.baseUrl + "/api/v1/products/sub-categories/$categoryId/";
-
+    final String url;
+    if (categoryId != null) {
+      url = AppConfig.baseUrl + "/api/v1/products/sub-categories/$categoryId/";
+    } else {
+      url = AppConfig.baseUrl + "/api/v1/products/sub-categories/";
+    }
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
 
@@ -3139,7 +3146,8 @@ class ShoppingAuthService extends AuthService {
           DiscountModel.fromJson(json.decode(responseBody));
       return item;
     }
-    return null;
+
+    return Future.error(responseBody);
   }
 
   // delete discount

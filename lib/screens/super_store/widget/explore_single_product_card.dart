@@ -7,7 +7,6 @@ import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/models/shared_cart_model.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/tiles/all_active_cart.dart';
-import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/dialog.dart';
@@ -186,10 +185,7 @@ class _ExploreSingleProductState extends State<ExploreSingleProduct> {
                 ),
                 Text(
                   moneyDisplayNormalizer(widget.product.discountedPrice != null
-                      ? ((checkDiscount(
-                              widget.product.discountIsActive!,
-                              widget.product.discountedPrice!,
-                              widget.product.price!))
+                      ? (widget.product.checkProductDiscount()
                           ? widget.product.discountedPrice
                           : widget.product.price!)
                       : widget.product.price!),
@@ -205,8 +201,7 @@ class _ExploreSingleProductState extends State<ExploreSingleProduct> {
               height: 3,
             ),
             if (widget.product.discountedPrice != null)
-              (checkDiscount(widget.product.discountIsActive!,
-                      widget.product.discountedPrice!, widget.product.price!))
+              (widget.product.checkProductDiscount())
                   ? Row(
                       children: [
                         Text(

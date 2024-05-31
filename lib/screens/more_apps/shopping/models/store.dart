@@ -3,9 +3,7 @@ import 'dart:io';
 import 'package:Slydo/screens/more_apps/shipping_process/models/shared_cart_model.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/Picture.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/basket_item_model.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/discount/discount_model.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
-import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 
@@ -284,7 +282,8 @@ class Product extends PurchasableItem {
   double? width;
   String? widthSiUnit;
   bool? trackInventory;
-  DiscountModel? discount;
+  // DiscountModel? discount;
+  String? discountId;
   int? quantity;
   double? pricePercentageChange;
   int? discountValue;
@@ -358,7 +357,7 @@ class Product extends PurchasableItem {
     this.width = 0.0,
     this.widthSiUnit,
     this.trackInventory,
-    this.discount,
+    // this.discount,
     this.quantity,
     this.pricePercentageChange,
     this.canRate = false,
@@ -408,10 +407,7 @@ class Product extends PurchasableItem {
       'track_inventory': trackInventory,
       'quantity': quantity,
       'price_percentage_change': pricePercentageChange ?? 0.0,
-      "discount_value": discountValue,
-      "discount_type": discountType,
-      "discount_is_active": discountIsActive,
-      "discounted_price": discountedPrice,
+      "discount": discountId,
       'old_price': oldPrice,
       'is_shippable': isShippable,
       'address_id': addressId,
@@ -498,6 +494,73 @@ class Product extends PurchasableItem {
     int? totalPrice = 0;
     totalPrice = getProductRealPrice();
     return totalPrice;
+  }
+
+  bool checkProductDiscount() {
+    if (discountIsActive == true && discountedPrice != null) {
+      return true;
+    }
+    return false;
+  }
+
+  bool checkVariantDiscount(Variant? selectedVariant) {
+    if (selectedVariant?.discountIsActive == true &&
+        selectedVariant?.discountedPrice != null) {
+      return true;
+    }
+    return false;
+  }
+
+  int getProductRealPrice() {
+    if (discountedPrice != null || discountedPrice != 0) {
+      if (checkProductDiscount()) {
+        return discountedPrice ?? 0;
+      }
+    }
+    return price ?? 0;
+  }
+
+  int? getOriginalPrice(Variant? selectedVariant) {
+    if (selectedVariant != null) {
+      return int.parse(selectedVariant.price ?? "0");
+    } else {
+      return price;
+    }
+  }
+
+  int? getDiscountedPrice(Variant? selectedVariant) {
+    if (selectedVariant != null) {
+      if (selectedVariant.price != null) {
+        if (checkVariantDiscount(selectedVariant)) {
+          return selectedVariant.discountedPrice;
+        } else {
+          if (checkProductDiscount()) {
+            return getCalDiscountedPrice(discountType, discountValue,
+                int.parse(selectedVariant.price ?? "0"));
+          } else {
+            return int.parse(selectedVariant.price ?? "0");
+          }
+        }
+      } else {
+        if (checkVariantDiscount(selectedVariant)) {
+          return getCalDiscountedPrice(selectedVariant.discountType,
+              selectedVariant.discountValue, price ?? 0);
+        } else {
+          return getProductRealPrice();
+        }
+      }
+    } else {
+      return getProductRealPrice();
+    }
+  }
+
+  int getCalDiscountedPrice(
+      String? discountType, int? discountValue, int price) {
+    if (discountType == "percentage") {
+      return (price * (discountValue ?? 0)) ~/ 100;
+    } else {
+      return price - (discountValue ?? 0);
+    }
   }
 
   factory Product.fromJson(object) {
@@ -603,16 +666,6 @@ class Product extends PurchasableItem {
     );
   }
 
-  int getProductRealPrice() {
-    if (discountedPrice != null || discountedPrice != 0) {
-      if (checkDiscount(
-          discountIsActive ?? false, discountedPrice ?? 0, price ?? 0)) {
-        return discountedPrice ?? 0;
-      }
-    }
-    return price ?? 0;
-  }
-
   bool isProductAvailableNow() {
     if ((isAvailable ?? false) &&
         quantity! >= 1 &&
@@ -627,14 +680,6 @@ class Product extends PurchasableItem {
     if (short.length > 100) return long;
 
     return short;
-  }
-
-  String? getMerchantUserName() {
-    return seller;
-  }
-
-  String? getMerchantName() {
-    return sellerFullName;
   }
 
   List<String> getProductImages(List? data) {
@@ -723,10 +768,10 @@ class Product extends PurchasableItem {
       quantity: quantity ?? this.quantity,
       pricePercentageChange: this.pricePercentageChange ?? 0.0,
       // isSelected: this.isSelected ?? 0.0,
-      // discountedPrice: object["discounted_price"],
-      // discountIsActive: object["discount_is_active"],
-      // discountType: object["discount_type"],
-      // discountValue: object["discount_value"],
+      discountedPrice: this.discountedPrice,
+      discountIsActive: this.discountIsActive,
+      discountType: this.discountType,
+      discountValue: this.discountValue,
       oldPrice: this.oldPrice,
       isShippable: this.isShippable,
       addressId: this.addressId,
@@ -937,6 +982,8 @@ class Variant {
   VariantTypes? type;
   String? price;
   String? value;
+  // DiscountModel? discount;
+  String? discountId;
   List<File>? localImages;
   List<String?>? serverImages;
   int? quantity;
@@ -949,10 +996,10 @@ class Variant {
   // DateTime? createdAt;
   // String? merchant;
   // int? oldPrice;
-  // int? discountValue;
-  // String? discountType;
-  // bool? discountIsActive;
-  // int? discountedPrice;
+  int? discountValue;
+  String? discountType;
+  bool? discountIsActive;
+  int? discountedPrice;
 
   Variant({
     this.id,
@@ -962,6 +1009,8 @@ class Variant {
     this.type,
     this.price,
     this.value,
+    // this.discount,
+    this.discountId,
     this.quantity,
     this.localImages,
     this.serverImages,
@@ -970,6 +1019,10 @@ class Variant {
     this.currency,
     this.addedBy,
     this.pictures,
+    this.discountValue,
+    this.discountType,
+    this.discountIsActive,
+    this.discountedPrice,
   });
 
   Map toMap() {
@@ -984,6 +1037,7 @@ class Variant {
       "price": price,
       "type": type?.toName(),
       "value": value,
+      "discount": discountId,
       "quantity": quantity,
       "is_available": isAvailable,
       "available_from": availableFrom,
@@ -1010,6 +1064,10 @@ class Variant {
       "currency": currency,
       "added_by": addedBy,
       "pictures": pictures,
+      "discount_value": discountValue,
+      "discount_type": discountType,
+      "discount_is_active": discountIsActive,
+      "discounted_price": discountedPrice,
     };
   }
 
@@ -1057,6 +1115,11 @@ class Variant {
           : List<Picture>.from(
               object['pictures'].map((i) => Picture.fromJson(i))),
       type: getVariantType(object),
+      discountId: object['discount'],
+      discountValue: object['discount_value'],
+      discountType: object['discount_type'],
+      discountIsActive: object['discount_is_active'],
+      discountedPrice: object['discounted_price'],
     );
   }
 
@@ -1189,23 +1252,26 @@ class Variant {
     return null;
   }
 
-  Variant copyWith({
-    String? id,
-    String? title,
-    String? size,
-    String? colour,
-    VariantTypes? type,
-    String? price,
-    String? value,
-    List<File>? localImages,
-    List<String?>? serverImages,
-    int? quantity,
-    bool? isAvailable,
-    DateTime? availableFrom,
-    String? currency,
-    List<AddedBy>? addedBy,
-    bool? trackInventory,
-  }) {
+  Variant copyWith(
+      {String? id,
+      String? title,
+      String? size,
+      String? colour,
+      VariantTypes? type,
+      String? price,
+      String? value,
+      List<File>? localImages,
+      List<String?>? serverImages,
+      int? quantity,
+      bool? isAvailable,
+      DateTime? availableFrom,
+      String? currency,
+      List<AddedBy>? addedBy,
+      bool? trackInventory,
+      int? discountValue,
+      String? discountType,
+      bool? discountIsActive,
+      int? discountedPrice}) {
     return Variant(
       id: id ?? this.id,
       title: title ?? this.title,
@@ -1221,6 +1287,10 @@ class Variant {
       currency: currency ?? this.currency,
       addedBy: addedBy ?? this.addedBy,
       trackInventory: trackInventory ?? this.trackInventory,
+      discountedPrice: discountedPrice ?? this.discountedPrice,
+      discountIsActive: discountIsActive ?? this.discountIsActive,
+      discountType: discountType ?? this.discountType,
+      discountValue: discountValue ?? this.discountValue,
     );
   }
 

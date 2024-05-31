@@ -388,7 +388,7 @@ class _AddEditDiscountState extends State<AddEditDiscount> {
   Widget addTitleField() {
     return CustomizedTextFormField(
       labelText: "Title",
-      initialValue: discountModel.name ?? "",
+      initialValue: messageDecoderWithEmoji(discountModel.name) ?? "",
       validator: (val) {
         if (val.isNotEmpty) {
           return null;

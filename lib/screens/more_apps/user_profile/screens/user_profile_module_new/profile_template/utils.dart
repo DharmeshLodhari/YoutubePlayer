@@ -313,12 +313,3 @@ Widget showColoredLabeledWidget({required String text, required Color color}) {
     ),
   );
 }
-
-bool checkDiscount(bool discountIsActive, num discountedPrice, num price) {
-  if (discountIsActive &
-      (discountedPrice != null) &
-      (price != discountedPrice)) {
-    return true;
-  }
-  return false;
-}

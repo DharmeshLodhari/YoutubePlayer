@@ -215,9 +215,9 @@ import '../screens/more_apps/shopping/forms/product_add_on/product_add_on_list.d
 import '../screens/more_apps/shopping/forms/product_add_on/product_add_on_option_create.dart';
 import '../screens/more_apps/shopping/forms/product_add_on/product_add_on_option_update.dart';
 import '../screens/more_apps/shopping/forms/product_add_on/update_add_on.dart';
-import '../screens/more_apps/shopping/forms/product_variant/product_add_new_option.dart';
+import '../screens/more_apps/shopping/forms/product_variant/add_product_variant.dart';
+import '../screens/more_apps/shopping/forms/product_variant/edit_product_variant.dart';
 import '../screens/more_apps/shopping/forms/product_variant/product_variant_list.dart';
-import '../screens/more_apps/shopping/forms/product_variant/product_variant_update.dart';
 import '../screens/more_apps/user_profile/screens/customize_profile.dart';
 import '../screens/more_apps/user_profile/screens/subscriptions/pre_account_upgrade.dart';
 import '../screens/super_store/near_by_list_screen.dart';
@@ -1711,7 +1711,7 @@ class RouteGenerator {
 
       case Routes.PRODUCT_NEW_OPTION:
         return PageTransition(
-          child: ProductAddNewOption(
+          child: AddProductVariant(
             arguments: settings.arguments,
           ),
           type: PageTransitionType.bottomToTop,
@@ -1721,7 +1721,7 @@ class RouteGenerator {
 
       case Routes.PRODUCT_VARIANT_UPDATE:
         return PageTransition(
-          child: ProductVariantUpdate(
+          child: EditProductVariant(
             arguments: settings.arguments,
           ),
           type: PageTransitionType.bottomToTop,

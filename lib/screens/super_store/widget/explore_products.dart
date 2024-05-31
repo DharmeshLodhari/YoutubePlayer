@@ -69,7 +69,7 @@ class _ExploreProductsState extends State<ExploreProducts> {
             padding: const EdgeInsets.all(0.0),
             physics: const NeverScrollableScrollPhysics(),
             scrollDirection: Axis.vertical,
-            itemCount: result.length > 4 ? 3 : result.length,
+            itemCount: result.length >= 3 ? 3 : result.length,
             itemBuilder: (context, index) {
               if (index == result.length) {
                 return buildLoadingIndicator(isLoading: isLoading);

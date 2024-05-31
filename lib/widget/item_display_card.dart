@@ -177,7 +177,8 @@ class _DisplayProductState extends State<DisplayProduct> {
                                   children: [
                                     Text(
                                       worldCurrencies[
-                                          widget.product.currency!]!,
+                                              widget.product.currency] ??
+                                          "NGN",
                                       style: TextStyle(
                                         fontFamily: "Inter",
                                         fontWeight: FontWeight.bold,
@@ -187,17 +188,7 @@ class _DisplayProductState extends State<DisplayProduct> {
                                     ),
                                     Text(
                                       moneyDisplayNormalizer(
-                                          widget.product.discountedPrice != null
-                                              ? ((checkDiscount(
-                                                      widget.product
-                                                          .discountIsActive!,
-                                                      widget.product
-                                                          .discountedPrice!,
-                                                      widget.product.price!))
-                                                  ? widget
-                                                      .product.discountedPrice
-                                                  : widget.product.price!)
-                                              : widget.product.price!),
+                                          widget.product.getProductRealPrice()),
                                       style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 14,
@@ -207,40 +198,39 @@ class _DisplayProductState extends State<DisplayProduct> {
                                   ],
                                 ),
                                 const SizedBox(height: 4),
-                                widget.product.discountedPrice != null
-                                    ? (checkDiscount(
-                                            widget.product.discountIsActive!,
-                                            widget.product.discountedPrice!,
-                                            widget.product.price!))
-                                        ? Row(
-                                            children: [
-                                              Text(
-                                                worldCurrencies[
-                                                    widget.product.currency!]!,
-                                                style: TextStyle(
-                                                  fontFamily: "Inter",
-                                                  fontWeight: FontWeight.w400,
-                                                  fontSize: 12,
-                                                  color: navyBlue,
-                                                  decoration: TextDecoration
-                                                      .lineThrough,
-                                                ),
+                                if (widget.product.discountedPrice != null)
+                                  widget.product.checkProductDiscount()
+                                      ? Row(
+                                          children: [
+                                            Text(
+                                              worldCurrencies[widget
+                                                      .product.currency] ??
+                                                  "NGN",
+                                              style: TextStyle(
+                                                fontFamily: "Inter",
+                                                fontWeight: FontWeight.w400,
+                                                fontSize: 12,
+                                                color: navyBlue,
+                                                decoration:
+                                                    TextDecoration.lineThrough,
                                               ),
-                                              Text(
-                                                moneyDisplayNormalizer(
-                                                    widget.product.price!),
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.w400,
-                                                  fontSize: 12,
-                                                  color: navyBlue,
-                                                  decoration: TextDecoration
-                                                      .lineThrough,
-                                                ),
+                                            ),
+                                            Text(
+                                              moneyDisplayNormalizer(
+                                                  widget.product.price!),
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.w400,
+                                                fontSize: 12,
+                                                color: navyBlue,
+                                                decoration:
+                                                    TextDecoration.lineThrough,
                                               ),
-                                            ],
-                                          )
-                                        : const SizedBox()
-                                    : const SizedBox(),
+                                            ),
+                                          ],
+                                        )
+                                      : const SizedBox()
+                                else
+                                  const SizedBox(),
                               ],
                             ),
                             displayShoppingAddingToCartControl()
@@ -451,8 +441,7 @@ class _DisplayProductState extends State<DisplayProduct> {
   Widget buildDiscountPrice() {
     if (widget.product.discountedPrice != null &&
         widget.product.discountedPrice != 0) {
-      if (checkDiscount(widget.product.discountIsActive!,
-          widget.product.discountedPrice!, widget.product.price!)) {
+      if (widget.product.checkProductDiscount()) {
         return Positioned(
             top: 10,
             right: 10,
