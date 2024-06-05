@@ -5,8 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class DeliveryOrderTile extends StatefulWidget {
-  final DeliveryModel? jobListing;
-  DeliveryOrderTile({required this.jobListing, super.key});
+  DeliveryModel? jobListing;
+  bool earning;
+  bool showRightArrow;
+  DeliveryOrderTile(
+      {required this.jobListing,
+      this.earning = false,
+      this.showRightArrow = true,
+      super.key});
 
   @override
   State<DeliveryOrderTile> createState() => _DeliveryOrderTileState();
@@ -172,7 +178,7 @@ class _DeliveryOrderTileState extends State<DeliveryOrderTile> {
   Widget _buildIconImage() {
     return SvgPicture.asset(
       'assets/images/rider/ic_route.svg',
-      height: 65,
+      height: widget.earning ? 45 : 65,
     );
   }
 
@@ -191,14 +197,15 @@ class _DeliveryOrderTileState extends State<DeliveryOrderTile> {
           overflow: TextOverflow.ellipsis,
         ),
         const SizedBox(height: 3),
-        Text(
-            'Pickup by ${widget.jobListing?.convertDateFormat(widget.jobListing?.expectedPickupTime.toString() ?? "")}',
-            style: TextStyle(
-              color: navyBlue,
-              fontSize: 12,
-              fontWeight: FontWeight.w400,
-              fontFamily: "Inter",
-            )),
+        if (!widget.earning)
+          Text(
+              'Pickup by ${widget.jobListing?.convertDateFormat(widget.jobListing?.expectedPickupTime.toString() ?? "")}',
+              style: TextStyle(
+                color: navyBlue,
+                fontSize: 12,
+                fontWeight: FontWeight.w400,
+                fontFamily: "Inter",
+              )),
         const SizedBox(height: 20),
         Text(
           '${widget.jobListing?.deliveryAddress?.addressLineOne}, ${widget.jobListing?.deliveryAddress?.addressLineTwo}',
@@ -210,27 +217,29 @@ class _DeliveryOrderTileState extends State<DeliveryOrderTile> {
           ),
           overflow: TextOverflow.ellipsis,
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Deliver by ${widget.jobListing?.convertDateFormat(widget.jobListing?.expectedDeliveryTime.toString() ?? "")}',
-              style: TextStyle(
-                color: navyBlue,
-                fontSize: 12,
-                fontWeight: FontWeight.w400,
-                fontFamily: "Inter",
+        if (!widget.earning)
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Deliver by ${widget.jobListing?.convertDateFormat(widget.jobListing?.expectedDeliveryTime.toString() ?? "")}',
+                style: TextStyle(
+                  color: navyBlue,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w400,
+                  fontFamily: "Inter",
+                ),
               ),
-            ),
-            const Padding(
-              padding: EdgeInsets.only(right: 10.0),
-              child: Icon(
-                Icons.keyboard_arrow_right_outlined,
-                size: 20,
-              ),
-            ),
-          ],
-        ),
+              if (widget.showRightArrow)
+                const Padding(
+                  padding: EdgeInsets.only(right: 10.0),
+                  child: Icon(
+                    Icons.keyboard_arrow_right_outlined,
+                    size: 20,
+                  ),
+                ),
+            ],
+          ),
       ],
     );
   }

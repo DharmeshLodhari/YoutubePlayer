@@ -10,6 +10,7 @@ import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/custom_box_shadow.dart';
+import 'package:Slydo/widget/customized_checkbox_field.dart';
 import 'package:Slydo/widget/customized_dropdown_field.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/dialog.dart';
@@ -51,6 +52,7 @@ class _AddEditDiscountState extends State<AddEditDiscount> {
   bool isAllProductSelected = false;
   bool isAllServiceSelected = false;
   bool isItemSelected = false;
+  bool isTimeAvailable = false;
 
   List<PickedFile> discountImages = [];
   final ScrollController _scrollController = ScrollController();
@@ -147,20 +149,24 @@ class _AddEditDiscountState extends State<AddEditDiscount> {
                 const SizedBox(height: 16),
                 Row(
                   children: [
-                    Expanded(child: startTime()),
-                    const SizedBox(width: 16),
-                    Expanded(child: endTime())
-                  ],
-                ),
-                const SizedBox(height: 16),
-                Row(
-                  children: [
                     Expanded(child: startDate()),
                     const SizedBox(width: 16),
                     Expanded(child: endDate())
                   ],
                 ),
                 const SizedBox(height: 16),
+                getIsTimeAvailableField(),
+                const SizedBox(height: 16),
+                if (isTimeAvailable == true) ...[
+                  Row(
+                    children: [
+                      Expanded(child: startTime()),
+                      const SizedBox(width: 16),
+                      Expanded(child: endTime())
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                ],
                 toggleActiveTag(),
                 const SizedBox(height: 16),
                 productSelection(),
@@ -388,7 +394,7 @@ class _AddEditDiscountState extends State<AddEditDiscount> {
   Widget addTitleField() {
     return CustomizedTextFormField(
       labelText: "Title",
-      initialValue: discountModel.name ?? "",
+      initialValue: messageDecoderWithEmoji(discountModel.name) ?? "",
       validator: (val) {
         if (val.isNotEmpty) {
           return null;
@@ -499,6 +505,17 @@ class _AddEditDiscountState extends State<AddEditDiscount> {
     }
   }
 
+  Widget getIsTimeAvailableField() {
+    return CustomizedCheckBoxField(
+      onTap: () {
+        isTimeAvailable = !isTimeAvailable;
+        setState(() {});
+      },
+      isChecked: isTimeAvailable,
+      title: "Schedule (Discount will only run during this time daily).",
+    );
+  }
+
   Widget valueField() {
     return CustomizedTextFormField(
       labelText: "Value",
@@ -546,21 +563,35 @@ class _AddEditDiscountState extends State<AddEditDiscount> {
                   ? () {}
                   : () async {
                       FocusScope.of(context).unfocus();
+                      if (!isTimeAvailable) {
+                        discountModel.onlyFrom = null;
+                        discountModel.onlyTo = null;
+                        startTimeFrom = null;
+                        endTimeTo = null;
+                      }
                       if (startTimeFrom != null) {
                         if (endTimeTo != null) {
-                          FocusScope.of(context).unfocus();
-                          isAPILoading = true;
-                          if (mounted) setState(() {});
+                          if (isTimeAfter(startTimeFrom!, endTimeTo!)) {
+                            isAPILoading = true;
+                            if (mounted) setState(() {});
 
-                          await addEditItem();
+                            await addEditItem();
 
-                          isAPILoading = false;
-                          if (mounted) setState(() {});
+                            isAPILoading = false;
+                            if (mounted) setState(() {});
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'Start time cannot be greater than end time',
+                                ),
+                              ),
+                            );
+                          }
                         } else {
                           showToast(message: 'Select end time');
                         }
                       } else {
-                        FocusScope.of(context).unfocus();
                         isAPILoading = true;
                         if (mounted) setState(() {});
 
@@ -584,21 +615,36 @@ class _AddEditDiscountState extends State<AddEditDiscount> {
       onPressed: isAPILoading
           ? () {}
           : () async {
+              FocusScope.of(context).unfocus();
+              if (!isTimeAvailable) {
+                discountModel.onlyFrom = null;
+                discountModel.onlyTo = null;
+                startTimeFrom = null;
+                endTimeTo = null;
+              }
               if (startTimeFrom != null) {
                 if (endTimeTo != null) {
-                  FocusScope.of(context).unfocus();
-                  isAPILoading = true;
-                  if (mounted) setState(() {});
+                  if (isTimeAfter(startTimeFrom!, endTimeTo!)) {
+                    isAPILoading = true;
+                    if (mounted) setState(() {});
 
-                  await addEditItem();
+                    await addEditItem();
 
-                  isAPILoading = false;
-                  if (mounted) setState(() {});
+                    isAPILoading = false;
+                    if (mounted) setState(() {});
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text(
+                          'Start time cannot be greater than end time',
+                        ),
+                      ),
+                    );
+                  }
                 } else {
                   showToast(message: 'Select end time');
                 }
               } else {
-                FocusScope.of(context).unfocus();
                 isAPILoading = true;
                 if (mounted) setState(() {});
 
@@ -865,10 +911,18 @@ class _AddEditDiscountState extends State<AddEditDiscount> {
           context: context,
           initialTime: TimeOfDay.now(),
         ).then((value) {
-          startTimeFrom = DateTime(DateTime.now().year, DateTime.now().month,
-              DateTime.now().day, value!.hour, value.minute);
-          discountModel.onlyFrom = startTimeFrom;
-          setState(() {});
+          if (value != null) {
+            setState(() {
+              startTimeFrom = DateTime(
+                DateTime.now().year,
+                DateTime.now().month,
+                DateTime.now().day,
+                value.hour,
+                value.minute,
+              );
+              discountModel.onlyFrom = startTimeFrom;
+            });
+          }
         }).catchError((error) {});
 
         // showDatePicker(
@@ -887,20 +941,22 @@ class _AddEditDiscountState extends State<AddEditDiscount> {
       },
       child: CustomizedDropDownField(
         title: "Start Time",
-        child: ListTile(
-          dense: true,
-          title: Text(
-            startTimeFrom != null ? formatTime(startTimeFrom.toString()) : "",
-            style: TextStyle(
-              color: blackFont,
-              fontWeight: FontWeight.w600,
-              fontSize: 16,
+        child: Container(
+          child: ListTile(
+            dense: true,
+            title: Text(
+              startTimeFrom != null ? formatTime24hrs(startTimeFrom) : "",
+              style: TextStyle(
+                color: blackFont,
+                fontWeight: FontWeight.w600,
+                fontSize: 16,
+              ),
             ),
-          ),
-          trailing: Icon(
-            SlydoAppIcon.clock,
-            size: 16,
-            color: darkGrey,
+            trailing: Icon(
+              SlydoAppIcon.clock,
+              size: 16,
+              color: darkGrey,
+            ),
           ),
         ),
       ),
@@ -932,10 +988,18 @@ class _AddEditDiscountState extends State<AddEditDiscount> {
           context: context,
           initialTime: TimeOfDay.now(),
         ).then((value) {
-          endTimeTo = DateTime(DateTime.now().year, DateTime.now().month,
-              DateTime.now().day, value!.hour, value.minute);
-          discountModel.onlyTo = endTimeTo;
-          setState(() {});
+          if (value != null) {
+            setState(() {
+              endTimeTo = DateTime(
+                DateTime.now().year,
+                DateTime.now().month,
+                DateTime.now().day,
+                value.hour,
+                value.minute,
+              );
+              discountModel.onlyTo = endTimeTo;
+            });
+          }
         }).catchError((error) {});
 
         // showDatePicker(
@@ -954,20 +1018,22 @@ class _AddEditDiscountState extends State<AddEditDiscount> {
       },
       child: CustomizedDropDownField(
         title: "End Time",
-        child: ListTile(
-          dense: true,
-          title: Text(
-            endTimeTo != null ? formatTime(endTimeTo.toString()) : "",
-            style: TextStyle(
-              color: blackFont,
-              fontWeight: FontWeight.w600,
-              fontSize: 16,
+        child: Container(
+          child: ListTile(
+            dense: true,
+            title: Text(
+              endTimeTo != null ? formatTime24hrs(endTimeTo) : "",
+              style: TextStyle(
+                color: blackFont,
+                fontWeight: FontWeight.w600,
+                fontSize: 16,
+              ),
             ),
-          ),
-          trailing: Icon(
-            SlydoAppIcon.clock,
-            size: 16,
-            color: darkGrey,
+            trailing: Icon(
+              SlydoAppIcon.clock,
+              size: 16,
+              color: darkGrey,
+            ),
           ),
         ),
       ),

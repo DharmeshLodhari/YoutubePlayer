@@ -208,7 +208,10 @@ class _AddOnOptionListState extends State<AddOnOptionList>
       title: Text(
         AppLocalization.of(context)!.option,
         style: TextStyle(
-            color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
+          color: blackFont,
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+        ),
       ),
       actions: <Widget>[
         addOptionBtn(),

@@ -96,7 +96,7 @@ class _ServiceHubDashboardState extends State<ServiceHubDashboard> {
           const SizedBox(
             width: 20,
           ),
-          _buildRiderOption(),
+          _earningInfoBtn(),
           const SizedBox(
             width: 20,
           ),
@@ -106,17 +106,17 @@ class _ServiceHubDashboardState extends State<ServiceHubDashboard> {
     );
   }
 
-  Widget _buildRiderOption() {
+  Widget _earningInfoBtn() {
     if (userBloc.user.rider != null &&
         userBloc.user.rider?.isStatusApproved() == true) {
       return GestureDetector(
         child: Icon(
-          Icons.history,
-          size: 24,
+          Icons.info_outline_rounded,
+          size: 22,
           color: blackFont,
         ),
         onTap: () {
-          Navigator.pushNamed(context, Routes.DELIVERY_HISTORY);
+          Navigator.pushNamed(context, Routes.RIDER_DASHBOARD);
         },
       );
     } else {

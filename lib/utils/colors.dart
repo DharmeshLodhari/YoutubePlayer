@@ -15,6 +15,7 @@ class HexColor extends Color {
 Color white = HexColor("#FFFFFF");
 Color navyBlue = HexColor("#3F61DB");
 Color navyBlueLight = HexColor("#BEC2F4");
+Color lightGreen = HexColor("#40B869");
 Color naturalGreen = HexColor("#46CE7C");
 Color naturalGreenLight = HexColor("#E9FFF2");
 Color brownLight = HexColor("#FFEFE0");
@@ -51,6 +52,7 @@ Color lightGreyYarn = HexColor("#E5E5E5");
 Color verifyBlue = HexColor("#4aadf4");
 Color verifyGreen = HexColor("#46CE7C");
 Color red = HexColor("#FF3F3F");
+Color lightBlue = HexColor("#ECEFFB");
 Color deepBlue = HexColor("#4060DB");
 Color orange = HexColor("#F08770");
 Color darkRed = HexColor("#33FF0000");

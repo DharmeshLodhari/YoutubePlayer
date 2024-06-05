@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/discount/discount_model.dart';
 import 'package:Slydo/utils/cache_manager.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -21,29 +22,30 @@ import 'package:provider/provider.dart';
 import '../../../../../widget/rounded_background_icon.dart';
 import '../../shopping_auth.dart';
 
-class ProductVariantUpdate extends StatefulWidget {
+class AddProductVariant extends StatefulWidget {
   var arguments;
 
-  ProductVariantUpdate({this.arguments, Key? key}) : super(key: key);
+  AddProductVariant({this.arguments, Key? key}) : super(key: key);
 
   @override
-  _ProductVariantUpdateState createState() => _ProductVariantUpdateState();
+  _AddProductVariantState createState() => _AddProductVariantState();
 }
 
-class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
+class _AddProductVariantState extends State<AddProductVariant> {
   final _auth = ShoppingAuthService();
   final _formKey = GlobalKey<FormState>();
 
   UserBloc? userBloc;
+
   int imageCount = 5;
   final ScrollController _scrollController = ScrollController();
-  List<PickedFile> productLocalImages = [];
-  List<String?> productImagesFromServer = [];
+  List<PickedFile> productImages = [];
   List<String> croppedImageList = [];
   String size = "";
   String variantPrice = "";
   String comparePrice = "";
   String color = "";
+  String? value = "";
   bool productIsAvailable = false;
   bool inventoryIsAvailable = false;
   bool trackInventory = false;
@@ -52,24 +54,29 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
   bool isLoading = false;
   bool isAPILoading = false;
   int inventoryCount = 1;
-
-  // var typeList = ['Size', 'Color'];
+  bool isDiscountAvailable = false;
+  DiscountModel? pressedDiscount;
+  DiscountModel? selectedDiscount;
+  List<DiscountModel> discountList = [];
+  List<DiscountModel> discountListCopy = [];
+  String discountName = "";
+  bool isDiscountLoading = false;
+  String? discountNext = "";
+  String? discountPrevious = "";
+  int? discountItemCount = 0;
+  bool noItemInList = false;
   List<VariantTypes> typeList = [
     VariantTypes.Size,
     VariantTypes.Color,
     VariantTypes.ColorAndSize
   ];
   VariantTypes? selectedType;
-  String title = "";
-  String value = "";
-  String id = "";
-  Variant? variant;
-  final TextEditingController titleController = TextEditingController();
-  final TextEditingController sizeController = TextEditingController();
-  final TextEditingController colorController = TextEditingController();
-  final TextEditingController priceController = TextEditingController();
-  final TextEditingController comparePriceController = TextEditingController();
-  final TextEditingController availableFromController = TextEditingController();
+  String? title;
+
+  String? optionOnWhatToDo;
+
+  final GlobalKey<ScaffoldMessengerState> _messengerScaffoldKey =
+      new GlobalKey<ScaffoldMessengerState>();
 
   @override
   void deactivate() {
@@ -79,37 +86,59 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
 
   @override
   void initState() {
-    variant = widget.arguments["variant"];
-
-    // debugPrint('Fola varaint::: ${variant!.toJson()}');
-
-    id = variant!.id.toString();
-    selectedType = variant?.type;
-    titleController.text = variant!.title!.toString();
-    sizeController.text = variant!.value!.toString();
-    colorController.text = variant!.colour!.toString();
-    priceController.text =
-        moneyNormalizer(int.parse(variant!.price!)).toString();
-    availableFromController.text = variant!.availableFrom!.toString();
-    productIsAvailable = variant!.isAvailable!;
-    inventoryIsAvailable = variant!.trackInventory!;
-    inventoryCount = variant!.quantity!;
-    if (variant!.availableFrom!.isNotEmpty) {
-      productAvailableFrom = variant!.availableFrom!;
-    } else {
-      productAvailableFrom = DateFormat('yyyy-MM-dd').format(todayDate);
-    }
-    productImagesFromServer.addAll(variant!.serverImages!);
-
-    title = variant!.title!.toString();
-    size = variant!.value!.toString();
-    color = variant!.colour!.toString();
-    variantPrice = moneyNormalizer(int.parse(variant!.price!)).toString();
-    // productIsAvailable = variant!.isAvailable!;
-    // inventoryIsAvailable = variant!.trackInventory!;
-    // inventoryCount = variant!.quantity!;
-
+    //get value if its form edit or add product
+    optionOnWhatToDo = widget.arguments["option"];
+    productAvailableFrom = DateFormat('yyyy-MM-dd').format(todayDate);
+    getDiscountList();
     super.initState();
+  }
+
+  void getDiscountList() async {
+    if (!isDiscountLoading) {
+      if (discountNext != null && !isDiscountLoading) {
+        isDiscountLoading = true;
+        if (mounted) setState(() {});
+
+        final Map<String, dynamic>? result = await ShoppingAuthService()
+            .listOfDiscounts(discountNext, discountPrevious);
+
+        if (result == null) {
+          isDiscountLoading = false;
+          noItemInList = true;
+          if (mounted) {
+            setState(() {});
+          }
+          return;
+        }
+
+        discountItemCount = result['count'];
+        discountNext = result['next'];
+        discountPrevious = result['previous'];
+        final tempList = result['results'];
+        if (mounted) {
+          setState(() {
+            noItemInList = false;
+            isDiscountLoading = false;
+            discountList.addAll(tempList);
+
+            discountListCopy = discountList;
+          });
+        }
+      }
+      if (discountList.isEmpty) {
+        if (mounted) {
+          setState(() {
+            noItemInList = true;
+          });
+        }
+      } else if (discountNext == null && discountList.length > 6) {
+        _messengerScaffoldKey.currentState?.showSnackBar(SnackBar(
+          content:
+              Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
+          duration: const Duration(milliseconds: 500),
+        ));
+      }
+    }
   }
 
   @override
@@ -133,6 +162,7 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,
+      centerTitle: false,
       automaticallyImplyLeading: false,
       leading: IconButton(
         icon: Icon(
@@ -145,7 +175,7 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
         },
       ),
       title: Text(
-        AppLocalization.of(context)!.updateVariant,
+        AppLocalization.of(context)!.newOption,
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
@@ -166,23 +196,12 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      if (productImagesFromServer.isNotEmpty)
-                        checkImageLimitForServerImage()
-                            ? viewServerImages()
-                            : Container(),
-
                       const SizedBox(height: 10),
-                      if (checkImageLimitForLocalImage())
-                        addLocalImages()
-                      else
-                        Container(),
-                      // addImages(),
-
+                      addImages(),
                       const SizedBox(height: 10),
                       addTitleField(),
                       const SizedBox(height: 10),
                       getTypeField(),
-
                       if (selectedType == VariantTypes.Size) ...[
                         const SizedBox(height: 10),
                         addSizeField(),
@@ -197,26 +216,26 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
                         const SizedBox(height: 10),
                         addSizeField(),
                       ],
-
                       const SizedBox(
                         height: 10,
                       ),
                       getAmountField(),
-                      // const SizedBox(
-                      //   height: 10,
-                      // ),
-                      // getComparePriceField(),
-
                       const SizedBox(height: 16),
-                      getAvailableFromField(),
-                      const SizedBox(height: 40),
+                      getDiscountField(),
+                      const SizedBox(height: 16),
+                      if (isDiscountAvailable == true) ...[
+                        getDiscountListField(),
+                        const SizedBox(height: 16),
+                      ],
                       getIsAvailableField(),
-
                       const SizedBox(height: 16),
+                      if (productIsAvailable == true) ...[
+                        getAvailableFromField(),
+                        const SizedBox(height: 16),
+                      ],
                       getInventoryFormField(),
                       const SizedBox(height: 16),
                       getIsInventoryAvailableField(),
-
                       const SizedBox(height: 30),
                       getSubmitButton(),
                       const SizedBox(height: 40),
@@ -228,6 +247,162 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
           );
   }
 
+  Widget getDiscountListField() {
+    return CustomizedDropDownField(
+      title: 'Discount',
+      fontSize: 12,
+      titleColor: blackFont,
+      fontWeight: FontWeight.w400,
+      child: ListTile(
+        dense: true,
+        title: Text(
+          selectedDiscount != null
+              ? messageDecoderWithEmoji(selectedDiscount?.name) ??
+                  selectedDiscount?.merchant ??
+                  ""
+              : "",
+          style: TextStyle(
+              color: blackFont,
+              fontSize: 16,
+              fontFamily: "Inter",
+              fontWeight: FontWeight.w600),
+        ),
+        trailing: Icon(
+          Icons.keyboard_arrow_down,
+          color: darkGrey,
+        ),
+        onTap: () {
+          discountAndroidSheet();
+        },
+      ),
+    );
+  }
+
+  void discountAndroidSheet() {
+    discountList = discountListCopy;
+    androidBottomSheet(
+      context: context,
+      child: StatefulBuilder(
+        builder: (context, changeState) {
+          return SizedBox(
+            height: MediaQuery.of(context).size.height * 0.75,
+            child: Column(
+              children: [
+                CustomizedTextFormField(
+                  hintText: 'Search discount',
+                  onChanged: (value) {
+                    if (value.isNotEmpty) {
+                      discountList = discountListCopy
+                          .where((element) =>
+                              (messageDecoderWithEmoji(element.name) ??
+                                      element.merchant ??
+                                      "")
+                                  .toLowerCase()
+                                  .startsWith(value.toString().toLowerCase()))
+                          .toList();
+                      changeState(
+                          () {}); // To upgrade the product categories in the bottom sheet.
+                    } else {
+                      discountList = discountListCopy;
+                      changeState(() {});
+                    }
+                  },
+                ),
+                const SizedBox(height: 20),
+                Expanded(
+                  child: discountList.isNotEmpty
+                      ? ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: discountList.length,
+                          itemBuilder: (context, index) {
+                            final DiscountModel discount = discountList[index];
+                            if (selectedDiscount == discount) {
+                              return Container(
+                                color: selectedListItemBackgroundBlue,
+                                child: ListTile(
+                                  dense: true,
+                                  title: Text(
+                                    messageDecoderWithEmoji(discount.name) ??
+                                        discount.merchant ??
+                                        "",
+                                    overflow: TextOverflow.fade,
+                                    softWrap: false,
+                                    style: TextStyle(
+                                        color: navyBlue,
+                                        fontSize: 16,
+                                        fontFamily: "Inter",
+                                        fontWeight: FontWeight.w600),
+                                  ),
+                                  trailing: Icon(
+                                    SlydoAppIcon.checked,
+                                    color: navyBlue,
+                                    size: 12,
+                                  ),
+                                  onTap: () {
+                                    pressedDiscount = discount;
+                                    Navigator.pop(context);
+                                    if (pressedDiscount != null) {
+                                      selectedDiscount = pressedDiscount;
+                                      discountName = messageDecoderWithEmoji(
+                                              selectedDiscount?.name) ??
+                                          selectedDiscount?.merchant ??
+                                          "";
+                                      setState(() {});
+                                    }
+                                  },
+                                ),
+                              );
+                            }
+                            return ListTile(
+                              title: Text(
+                                messageDecoderWithEmoji(discount.name) ??
+                                    discount.merchant ??
+                                    "",
+                                softWrap: false,
+                                overflow: TextOverflow.fade,
+                                style: TextStyle(
+                                    color: blackFont,
+                                    fontSize: 16,
+                                    fontFamily: "Inter",
+                                    fontWeight: FontWeight.w400),
+                              ),
+                              dense: true,
+                              onTap: () {
+                                pressedDiscount = discount;
+                                Navigator.pop(context);
+                                if (pressedDiscount != null) {
+                                  selectedDiscount = pressedDiscount;
+                                  discountName = messageDecoderWithEmoji(
+                                          selectedDiscount?.name) ??
+                                      selectedDiscount?.merchant ??
+                                      "";
+                                  setState(() {});
+                                }
+                              },
+                            );
+                          },
+                        )
+                      : const Text("No Found Discount Data"),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget getDiscountField() {
+    return CustomizedCheckBoxField(
+      onTap: () {
+        isDiscountAvailable = !isDiscountAvailable;
+        setState(() {});
+      },
+      isChecked: isDiscountAvailable,
+      title: AppLocalization.of(context)!.discount,
+    );
+  }
+
   Widget showBackArrow() {
     return IconButton(
       icon: const Icon(Icons.arrow_back_ios),
@@ -237,24 +412,24 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
     );
   }
 
-  // Widget addImages() {
-  //   return Container(
-  //     height: 100,
-  //     child: ListView.builder(
-  //       controller: _scrollController,
-  //       scrollDirection: Axis.horizontal,
-  //       itemCount: croppedImageList.length + 1,
-  //       itemBuilder: (context, index) => Container(
-  //         padding: const EdgeInsets.only(right: 6),
-  //         child: index != croppedImageList.length
-  //             ? showImage(index)
-  //             : croppedImageList.length != imageCount
-  //             ? addImageButton()
-  //             : null,
-  //       ),
-  //     ),
-  //   );
-  // }
+  Widget addImages() {
+    return SizedBox(
+      height: 100,
+      child: ListView.builder(
+        controller: _scrollController,
+        scrollDirection: Axis.horizontal,
+        itemCount: croppedImageList.length + 1,
+        itemBuilder: (context, index) => Container(
+          padding: const EdgeInsets.only(right: 6),
+          child: index != croppedImageList.length
+              ? showImage(index)
+              : croppedImageList.length != imageCount
+                  ? addImageButton()
+                  : null,
+        ),
+      ),
+    );
+  }
 
   Widget addImageButton() {
     return CustomBoxShadow(
@@ -320,113 +495,33 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
             return;
           }
 
+          // productImages.add(PickedFile(croppedImage));
           croppedImageList.add(croppedImage);
-          // productLocalImages.add(PickedFile(croppedImage));
           if (mounted) setState(() {});
         }
       });
     }
   }
 
-  // Widget showImage(int index) {
-  //   return SizedBox(
-  //     height: 100,
-  //     child: Stack(
-  //       children: <Widget>[
-  //         Card(
-  //           elevation: 2,
-  //           shape: RoundedRectangleBorder(
-  //             borderRadius: BorderRadius.circular(10),
-  //           ),
-  //           shadowColor: dividerColor,
-  //           margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
-  //           child: Container(
-  //             width: 100,
-  //             // decoration: BoxDecoration(
-  //             //   borderRadius: BorderRadius.circular(10),
-  //             //   image: DecorationImage(
-  //             //       image: FileImage(
-  //             //         File(productLocalImages[index].path),
-  //             //       ),
-  //             //       fit: BoxFit.fill),
-  //             // ),
-  //             child: Image.asset(
-  //               croppedImageList[index],
-  //               width: 100,
-  //               height: 100,
-  //               fit: BoxFit.cover,
-  //             ),
-  //           ),
-  //         ),
-  //         Positioned(
-  //           right: 0,
-  //           top: 0,
-  //           child: IconButton(
-  //             padding: const EdgeInsets.only(right: 6, top: 6),
-  //             alignment: Alignment.topRight,
-  //             icon: Container(
-  //               padding: const EdgeInsets.all(2.0),
-  //               decoration: BoxDecoration(
-  //                 color: iconBtnGrey,
-  //                 borderRadius: BorderRadius.circular(5),
-  //               ),
-  //               child: Icon(
-  //                 SlydoAppIcon.remove,
-  //                 color: blackFont,
-  //                 size: 15,
-  //               ),
-  //             ),
-  //             onPressed: () {
-  //               setState(() {
-  //                 croppedImageList.removeAt(index);
-  //               });
-  //             },
-  //           ),
-  //         )
-  //       ],
-  //     ),
-  //   );
-  // }
-
-  Widget viewServerImages() {
-    return SizedBox(
-      height: 100,
-      child: ListView.builder(
-        controller: _scrollController,
-        scrollDirection: Axis.horizontal,
-        itemCount: productImagesFromServer.length,
-        itemBuilder: (context, index) => Container(
-          padding: const EdgeInsets.only(right: 6),
-          child: showServerImage(index),
-        ),
-      ),
-    );
-  }
-
-  Widget showServerImage(int index) {
+  Widget showImage(int index) {
     return SizedBox(
       height: 100,
       child: Stack(
         children: <Widget>[
-          CustomBoxShadow(
-            child: Card(
-              elevation: 3,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-              shadowColor: boxShadowTwo,
-              margin:
-                  const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
-              child: Container(
+          Card(
+            elevation: 2,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            shadowColor: dividerColor,
+            margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+            child: SizedBox(
+              width: 100,
+              child: Image.file(
+                File(croppedImageList[index]),
                 width: 100,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  image: DecorationImage(
-                      image: NetworkImage(
-                        productImagesFromServer[index]!,
-                      ),
-                      fit: BoxFit.fill),
-                ),
+                height: 100,
+                fit: BoxFit.cover,
               ),
             ),
           ),
@@ -448,20 +543,9 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
                   size: 15,
                 ),
               ),
-              onPressed: () async {
-                final imageId =
-                    variant?.getImageId(productImagesFromServer[index]) ?? "";
-                debugPrint("imageId:- $imageId");
-                _auth.deleteProductOrServiceImage(imageId).then((value) {
-                  if (value) {
-                    if (mounted) {
-                      setState(() {
-                        productImagesFromServer.removeAt(index);
-                      });
-                    }
-                  }
-                }).catchError((error) {
-                  debugPrint("ERROR $error");
+              onPressed: () {
+                setState(() {
+                  croppedImageList.removeAt(index);
                 });
               },
             ),
@@ -471,100 +555,9 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
     );
   }
 
-  bool checkImageLimitForServerImage() {
-    if (croppedImageList.length + productImagesFromServer.length !=
-            imageCount ||
-        productImagesFromServer.isNotEmpty) {
-      return true;
-    }
-    return false;
-  }
-
-  // decide that localImage List is need to be show or not
-  bool checkImageLimitForLocalImage() {
-    if (croppedImageList.length + productImagesFromServer.length !=
-            imageCount ||
-        croppedImageList.isNotEmpty) {
-      return true;
-    }
-    return false;
-  }
-
-  Widget addLocalImages() {
-    return SizedBox(
-      height: 100,
-      child: ListView.builder(
-        controller: _scrollController,
-        scrollDirection: Axis.horizontal,
-        itemCount: croppedImageList.length + 1,
-        itemBuilder: (context, index) => Container(
-          padding: const EdgeInsets.only(right: 6),
-          child: index != croppedImageList.length
-              ? showLocalImage(index)
-              : croppedImageList.length + productImagesFromServer.length !=
-                      imageCount
-                  ? addImageButton()
-                  : null,
-        ),
-      ),
-    );
-  }
-
-  Widget showLocalImage(int index) {
-    return Stack(
-      children: <Widget>[
-        Card(
-          elevation: 2,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          shadowColor: dividerColor,
-          margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
-          child: SizedBox(
-            width: 100,
-            child: Image.file(
-              File(croppedImageList[index]),
-              width: 100,
-              height: 100,
-              fit: BoxFit.cover,
-            ),
-          ),
-        ),
-        Positioned(
-          right: 0,
-          top: 0,
-          child: IconButton(
-            padding: const EdgeInsets.only(right: 6, top: 6),
-            alignment: Alignment.topRight,
-            icon: Container(
-              padding: const EdgeInsets.all(2.0),
-              decoration: BoxDecoration(
-                color: iconBtnGrey,
-                borderRadius: BorderRadius.circular(5),
-              ),
-              child: Icon(
-                SlydoAppIcon.remove,
-                color: blackFont,
-                size: 15,
-              ),
-            ),
-            onPressed: () {
-              if (mounted) {
-                setState(() {
-                  croppedImageList.removeAt(index);
-                });
-              }
-            },
-          ),
-        )
-      ],
-    );
-  }
-
   Widget addTitleField() {
     return CustomizedTextFormField(
       labelText: AppLocalization.of(context)!.title,
-      controller: titleController,
       validator: (val) {
         if (val.isNotEmpty) {
           return null;
@@ -580,7 +573,6 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
   Widget addSizeField() {
     return CustomizedTextFormField(
       labelText: AppLocalization.of(context)!.size,
-      controller: sizeController,
       validator: (val) {
         if (val.isNotEmpty) {
           return null;
@@ -596,7 +588,6 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
   Widget getColorField() {
     return CustomizedTextFormField(
       labelText: AppLocalization.of(context)!.color,
-      controller: colorController,
       validator: (val) {
         if (val.isNotEmpty) {
           return null;
@@ -616,7 +607,6 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
           ? const TextInputType.numberWithOptions(decimal: true)
           : TextInputType.number,
       isAmountField: true,
-      controller: priceController,
       onChanged: (val) {
         if (val.isNotEmpty) {
           try {
@@ -671,7 +661,7 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
   }
 
   bool validateDropdown() {
-    if (selectedType != null && selectedType != '') {
+    if (selectedType != null) {
       return true;
     } else {
       showToast(message: AppLocalization.of(context)!.pleaseSelectCategory);
@@ -686,7 +676,7 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
         setState(() {});
       },
       isChecked: productIsAvailable,
-      title: "Is product available now?",
+      title: "Available",
     );
   }
 
@@ -713,11 +703,9 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
               DateTime.now().year, DateTime.now().month, DateTime.now().day),
           lastDate: DateTime(2101),
         ).then((value) {
-          final DateTime selectedDate =
-              DateTime(value!.year, value.month, value.day);
+          DateTime selectedDate = DateTime(value!.year, value.month, value.day);
 
           productAvailableFrom = DateFormat('yyyy-MM-dd').format(selectedDate);
-          // productAvailableFrom = DateTime(value!.year, value.month, value.day);
           setState(() {});
         }).catchError((error) {});
       },
@@ -937,50 +925,73 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
               isAPILoading = true;
               if (mounted) setState(() {});
 
-              await updateVariant();
+              await addVariant();
 
               isAPILoading = false;
               if (mounted) setState(() {});
             },
       backgroundColor: navyBlue,
       textColor: Colors.white,
-      text: "Update",
+      text: "Save",
       isLoading: isAPILoading,
     );
   }
 
-  Future<void> updateVariant() async {
+  Future<void> addVariant() async {
     if (_formKey.currentState!.validate()) {
-      if (croppedImageList.isNotEmpty || productImagesFromServer.isNotEmpty) {
-        if (validateDropdown()) {
-          final Variant variant = Variant();
-          variant.id = id;
-          // variant.localImages = productLocalImages.map((file) => File(file.path)).toList();
-          variant.localImages =
-              croppedImageList.map((filePath) => File(filePath)).toList();
-          variant.title = title;
-          variant.colour = color;
-          variant.value = value;
-          variant.quantity = inventoryCount;
-          variant.type = selectedType;
-          variant.price = moneyInputNormalizer(variantPrice).toString();
-          variant.isAvailable = productIsAvailable;
-          variant.availableFrom = productAvailableFrom;
-          variant.trackInventory = inventoryIsAvailable;
-          variant.currency = 'NGN';
-
-          await _auth.updateVariant(variant, id).then((value) {
-            Navigator.pop(context, variant);
-            return true;
-          }).catchError((error) {
-            debugPrint(error.toString());
-            showToast(message: error.toString());
-          });
+      // if (croppedImageList.length >= 1) {
+      // if (productImages.length >= 1) {
+      if (validateDropdown()) {
+        final Variant variant = Variant();
+        // variant.localImages = productImages.map((file) => File(file.path)).toList();
+        variant.localImages =
+            croppedImageList.map((filePath) => File(filePath)).toList();
+        variant.title = title;
+        variant.colour = color;
+        variant.value = value;
+        variant.quantity = inventoryCount;
+        variant.type = selectedType;
+        variant.price = moneyInputNormalizer(variantPrice).toString();
+        // variant.discount = selectedDiscount;
+        if (isDiscountAvailable) {
+          variant.discountId = selectedDiscount?.id;
+        } else {
+          variant.discountId = "";
         }
-      } else {
-        showToast(message: AppLocalization.of(context)!.pleaseAddImage);
+        variant.isAvailable = productIsAvailable;
+        variant.availableFrom = productAvailableFrom;
+        variant.trackInventory = inventoryIsAvailable;
+        variant.currency = 'NGN';
+        if (optionOnWhatToDo == 'new') {
+          //send the variant detail back to the previous page
+          debugPrint('file path::: ${variant.localImages}');
+
+          Navigator.pop(context, variant);
+        } else if (optionOnWhatToDo == 'edit') {
+          final String productId = widget.arguments["productId"];
+          //make api call to save the variant details
+          saveVariant(productId, variant);
+        }
       }
+    } else {
+      isAPILoading = false;
+      if (mounted) setState(() {});
+      // showToast(message: AppLocalization.of(context)!.pleaseAddImage);
     }
+    // }
+  }
+
+  Future<void> saveVariant(String productId, Variant item) async {
+    await _auth.addVariant(item, productId).then((value) {
+      Navigator.pop(context, item);
+      return true;
+    }).catchError((error) {
+      debugPrint(error.toString());
+      isAPILoading = false;
+      if (mounted) setState(() {});
+      showToast(message: error.toString());
+      // backValue = false;
+    });
   }
 
   @override

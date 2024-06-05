@@ -88,11 +88,15 @@ import 'package:Slydo/screens/more_apps/rider_delivery/dispatch/screens/your_tri
 import 'package:Slydo/screens/more_apps/rider_delivery/screens/delivery_completed.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/screens/delivery_details.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/screens/delivery_history.dart';
+import 'package:Slydo/screens/more_apps/rider_delivery/screens/earning_list.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/screens/preview_delivery_proof_screen.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/screens/response_received.dart';
+import 'package:Slydo/screens/more_apps/rider_delivery/screens/rider_dashboard.dart';
+import 'package:Slydo/screens/more_apps/rider_delivery/screens/rider_earning_weekly_list.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/screens/rider_map_status.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/screens/share_experience.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/screens/take_delivery_proof.dart';
+import 'package:Slydo/screens/more_apps/rider_delivery/screens/view_completed_delivery.dart';
 import 'package:Slydo/screens/more_apps/rider_registration/screens/completed_upload_photo.dart';
 import 'package:Slydo/screens/more_apps/rider_registration/screens/preview_screen.dart';
 import 'package:Slydo/screens/more_apps/rider_registration/screens/require_steps.dart';
@@ -215,9 +219,9 @@ import '../screens/more_apps/shopping/forms/product_add_on/product_add_on_list.d
 import '../screens/more_apps/shopping/forms/product_add_on/product_add_on_option_create.dart';
 import '../screens/more_apps/shopping/forms/product_add_on/product_add_on_option_update.dart';
 import '../screens/more_apps/shopping/forms/product_add_on/update_add_on.dart';
-import '../screens/more_apps/shopping/forms/product_variant/product_add_new_option.dart';
+import '../screens/more_apps/shopping/forms/product_variant/add_product_variant.dart';
+import '../screens/more_apps/shopping/forms/product_variant/edit_product_variant.dart';
 import '../screens/more_apps/shopping/forms/product_variant/product_variant_list.dart';
-import '../screens/more_apps/shopping/forms/product_variant/product_variant_update.dart';
 import '../screens/more_apps/user_profile/screens/customize_profile.dart';
 import '../screens/more_apps/user_profile/screens/subscriptions/pre_account_upgrade.dart';
 import '../screens/super_store/near_by_list_screen.dart';
@@ -1711,7 +1715,7 @@ class RouteGenerator {
 
       case Routes.PRODUCT_NEW_OPTION:
         return PageTransition(
-          child: ProductAddNewOption(
+          child: AddProductVariant(
             arguments: settings.arguments,
           ),
           type: PageTransitionType.bottomToTop,
@@ -1721,7 +1725,7 @@ class RouteGenerator {
 
       case Routes.PRODUCT_VARIANT_UPDATE:
         return PageTransition(
-          child: ProductVariantUpdate(
+          child: EditProductVariant(
             arguments: settings.arguments,
           ),
           type: PageTransitionType.bottomToTop,
@@ -2030,6 +2034,15 @@ class RouteGenerator {
           curve: Curves.ease,
           settings: settings,
         );
+      case Routes.VIEW_COMPLETED_DELIVERY:
+        return PageTransition(
+          child: ViewCompletedDelivery(
+            arguments: settings.arguments,
+          ),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
       case Routes.DELIVERY_COMPLETED:
         return PageTransition(
           child: DeliveryCompleted(
@@ -2049,6 +2062,27 @@ class RouteGenerator {
       case Routes.SHARE_EXPERIENCE:
         return PageTransition(
           child: ShareExperience(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+      case Routes.RIDER_DASHBOARD:
+        return PageTransition(
+          child: const RiderDashboard(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+      case Routes.RIDER_EARNING_WEEKLY_LIST:
+        return PageTransition(
+          child: const RiderEarningWeeklyList(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+      case Routes.EARNING_LIST:
+        return PageTransition(
+          child: const EarningList(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,

@@ -274,7 +274,8 @@ String getGroupUsername(String channelUsername) {
   }
 }
 
-Widget showDiscountValue(String discountType, num discountValue, currency) {
+Widget showDiscountValue(
+    String discountType, num discountValue, String? currency) {
   return Container(
     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
     decoration: BoxDecoration(
@@ -310,13 +311,4 @@ Widget showColoredLabeledWidget({required String text, required Color color}) {
       ),
     ),
   );
-}
-
-bool checkDiscount(bool discountIsActive, num discountedPrice, num price) {
-  if (discountIsActive &
-      (discountedPrice != null) &
-      (price != discountedPrice)) {
-    return true;
-  }
-  return false;
 }

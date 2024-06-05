@@ -5,8 +5,9 @@ import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/auth/rider_delivery_auth.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/models/delivery_model.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/tiles/delivery_order_tile.dart';
+import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_shimmer.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/loading_indicator.dart';
+import 'package:Slydo/widget/customized_popup_menu.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -33,6 +34,12 @@ class _DeliveryHistoryState extends State<DeliveryHistory> {
   String? listPrevious = "";
   List<DeliveryModel> jobListing = [];
   bool noJobsInList = false;
+
+  GlobalKey _key = LabeledGlobalKey("deliveryHistoryPopUpMenu");
+  late CustomizedPopUpMenu menu;
+  int selectedMenuItemIndex = 0;
+  bool isPopMenuOpen = false;
+  DateTimeRange? newDateTimeRange;
 
   @override
   void initState() {
@@ -103,6 +110,22 @@ class _DeliveryHistoryState extends State<DeliveryHistory> {
 
   @override
   Widget build(BuildContext context) {
+    menu = CustomizedPopUpMenu(
+      buttonKey: _key,
+      context: context,
+      childList: [
+        CustomizedPopUpMenuItem(title: "All", value: "all"),
+        CustomizedPopUpMenuItem(title: "Received", value: "received"),
+        CustomizedPopUpMenuItem(title: "Sent", value: "sent"),
+        CustomizedPopUpMenuItem(title: "Clear All", value: 'clear_all'),
+        CustomizedPopUpMenuItem(title: "Clear Date", value: 'clear_date'),
+      ],
+      selectedIndex: selectedMenuItemIndex,
+      right: 16,
+    );
+    menu.onChange = menuItemSelectionChange;
+    menu.menuState = menuStateChange;
+
     return ColorfulSafeArea(
       bottom: Platform.isIOS ? true : false,
       top: false,
@@ -149,6 +172,49 @@ class _DeliveryHistoryState extends State<DeliveryHistory> {
       ),
       shadowColor: greySecondaryYarn,
       elevation: 0.5,
+      actions: [
+        dateFilterIcon(),
+        const SizedBox(width: 10.0),
+        popUpMenuButton(),
+        const SizedBox(
+          width: 16,
+        ),
+      ],
+    );
+  }
+
+  Widget dateFilterIcon() {
+    return SizedBox(
+      height: 34,
+      width: 34,
+      child: Card(
+        color: iconBtnGrey,
+        elevation: 0,
+        margin: const EdgeInsets.symmetric(vertical: 10),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: IconButton(
+          icon: const Icon(
+            Icons.date_range_rounded,
+            color: Colors.black,
+            size: 20,
+          ),
+          onPressed: () async {
+            newDateTimeRange = await showDateRangePicker(
+              context: context,
+              firstDate: DateTime.parse("2020-01-01"),
+              lastDate: DateTime.now(),
+              builder: customThemeBuilder,
+            );
+
+            if (newDateTimeRange != null) {
+              setState(() {});
+              // _onRefresh();
+            }
+          },
+        ),
+      ),
     );
   }
 
@@ -170,9 +236,7 @@ class _DeliveryHistoryState extends State<DeliveryHistory> {
 
   Widget _buildHistoryList() {
     if (isLoading) {
-      return Center(
-        child: CircularLoadingIndicator(),
-      );
+      return const YarnShimmer();
     } else {
       if (!noJobsInList) {
         return SingleChildScrollView(
@@ -191,11 +255,12 @@ class _DeliveryHistoryState extends State<DeliveryHistory> {
                     return InkWell(
                       onTap: () {
                         if (jobListing[index].deliveryEvidence != null) {
-                          Navigator.of(context)
-                              .pushNamed(Routes.DELIVERY_COMPLETED, arguments: {
-                            'journeyId': jobListing[index].id,
-                            'isCallAPI': true,
-                          });
+                          Navigator.of(context).pushNamed(
+                              Routes.VIEW_COMPLETED_DELIVERY,
+                              arguments: {
+                                'journeyId': jobListing[index].id,
+                                'isCallAPI': true,
+                              });
                         } else {
                           Navigator.of(context)
                               .pushNamed(Routes.RIDER_JOB_DETAILS, arguments: {
@@ -222,7 +287,9 @@ class _DeliveryHistoryState extends State<DeliveryHistory> {
                                   child: _buildDateAndWaitingButton(index),
                                 ),
                                 DeliveryOrderTile(
-                                    jobListing: jobListing[index]),
+                                  jobListing: jobListing[index],
+                                  earning: true,
+                                ),
                               ],
                             ),
                           ),
@@ -259,7 +326,7 @@ class _DeliveryHistoryState extends State<DeliveryHistory> {
     return Text(
       date,
       style: TextStyle(
-        fontWeight: FontWeight.w700,
+        fontWeight: FontWeight.w600,
         color: darkGrey,
         fontSize: 12,
         fontFamily: "Inter",
@@ -298,6 +365,8 @@ class _DeliveryHistoryState extends State<DeliveryHistory> {
         return navyBlue;
       case 'Completed':
         return naturalGreen;
+      case 'Delivered':
+        return naturalGreen;
       case 'Canceled':
         return mateRed;
       default:
@@ -324,5 +393,77 @@ class _DeliveryHistoryState extends State<DeliveryHistory> {
         _refreshController.refreshCompleted();
       }
     });
+  }
+
+  Widget popUpMenuButton() {
+    return SizedBox(
+      key: _key,
+      height: 34,
+      width: 34,
+      child: Card(
+        color: isPopMenuOpen ? navyBlue : iconBtnGrey,
+        elevation: 0,
+        margin: const EdgeInsets.symmetric(vertical: 10),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: IconButton(
+          icon: Icon(
+            Icons.filter_alt_rounded,
+            color: isPopMenuOpen ? Colors.white : Colors.black,
+            size: 20,
+          ),
+          onPressed: () {
+            // if (menu.isMenuOpen) {
+            //   menu.closeMenu();
+            // } else {
+            //   menu.openMenu();
+            // }
+          },
+        ),
+      ),
+    );
+  }
+
+  void menuItemSelectionChange(String value, int index) {
+    if (index == 4) {
+      newDateTimeRange = null;
+    } else {
+      selectedMenuItemIndex = index;
+    }
+
+    switch (value) {
+      case "received":
+        // moneyIn = true;
+        break;
+      case "sent":
+        // moneyIn = false;
+        break;
+
+      case "clear_date":
+        // moneyIn =
+        //     moneyIn; // To maintain the 'filter value' when you clear the date.
+        break;
+
+      case "clear_all":
+        // moneyIn = null;
+        // userName = null;
+        newDateTimeRange = null;
+
+        selectedMenuItemIndex = 0;
+
+        break;
+
+      default:
+        // moneyIn = null;
+        break;
+    }
+
+    setState(() {});
+  }
+
+  void menuStateChange(bool isOpen) {
+    isPopMenuOpen = isOpen;
+    setState(() {});
   }
 }

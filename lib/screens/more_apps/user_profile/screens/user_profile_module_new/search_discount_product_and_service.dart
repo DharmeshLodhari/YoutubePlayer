@@ -9,7 +9,6 @@ import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/discount/discount_model.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/search_user_item_with_filter.dart';
-import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
@@ -79,7 +78,6 @@ class _SearchDiscountProductAndServiceState
   String? manufacturerPrevious = "";
   bool noManufacturerInList = false;
   List<String> manufacturerList = [];
-  // List<ProductCategory> manufacturerList = [];
 
   bool isSubCategoryLoading = false;
   int? subCategoryCount = 0;
@@ -161,7 +159,7 @@ class _SearchDiscountProductAndServiceState
     if (mounted) setState(() {});
   }
 
-  void getProductAPI() async {
+  Future<void> getProductAPI() async {
     await merchantProductCategoryList();
     await obtainCustomCategory();
     await getManufacturerList();
@@ -199,7 +197,7 @@ class _SearchDiscountProductAndServiceState
               ProductCategory(tempList[i]['name']!, id: tempList[i]['id']));
         }
 
-        updateCategoryList();
+        // updateCategoryList();
       }
       if (productCategoryList.isEmpty) {
         if (mounted) {
@@ -218,6 +216,7 @@ class _SearchDiscountProductAndServiceState
   }
 
   Future<void> getManufacturerList() async {
+    manufacturerList.clear();
     if (!isManufacturerLoading) {
       if (manufacturerNext != null && !isManufacturerLoading) {
         isManufacturerLoading = true;
@@ -252,7 +251,7 @@ class _SearchDiscountProductAndServiceState
           'All',
         );
 
-        updateCategoryList();
+        // updateCategoryList();
       }
       if (manufacturerList.isEmpty) {
         if (mounted) {
@@ -270,7 +269,9 @@ class _SearchDiscountProductAndServiceState
     }
   }
 
-  Future<void> merchantProductSubCategoryList(int? categoryId) async {
+  Future<void> merchantProductSubCategoryList({int? categoryId}) async {
+    productSubCategoryList.clear();
+    subCategoryList.clear();
     if (!isSubCategoryLoading) {
       if (subCategoryNext != null && !isSubCategoryLoading) {
         isSubCategoryLoading = true;
@@ -343,23 +344,23 @@ class _SearchDiscountProductAndServiceState
     setState(() {});
   }
 
-  void updateCategoryList() {
-    filterModel.category = "All categories";
+  Future<void> updateCategoryList() async {
+    // filterModel.category = "All categories";
     if (selectedMenuItemIndex == 0) {
-      filterModel.customCategory = "";
-      filterModel.subCategory = "";
-      filterModel.condition = "";
-      selectedProductCondition = null;
-      filterModel.rating = "";
-      filterModel.manufacturer = "";
-      filterModel.minAmount = null;
-      minAmountTextController.clear();
-      filterModel.maxAmount = null;
-      maxAmountTextController.clear();
-      selectedRating = "";
+      // filterModel.customCategory = "";
+      // filterModel.subCategory = "";
+      // filterModel.condition = "";
+      // selectedProductCondition = null;
+      // filterModel.rating = "";
+      // filterModel.manufacturer = "";
+      // filterModel.minAmount = null;
+      // minAmountTextController.clear();
+      // filterModel.maxAmount = null;
+      // maxAmountTextController.clear();
+      // selectedRating = "";
+      await getProductAPI();
       categoryList = productCategoryList.map((e) => e.name).toList();
       categoryList.insert(0, 'All categories');
-      getProductAPI();
     } else if (selectedMenuItemIndex == 1) {
       categoryList = serviceCategoryList;
     }
@@ -431,7 +432,7 @@ class _SearchDiscountProductAndServiceState
         child: ListTile(
           dense: true,
           title: Text(
-            filterModel.category,
+            messageDecoderWithEmoji(filterModel.category) ?? "",
             style: TextStyle(
                 color: blackFont,
                 fontSize: 16,
@@ -457,7 +458,7 @@ class _SearchDiscountProductAndServiceState
         child: ListTile(
           dense: true,
           title: Text(
-            filterModel.subCategory,
+            messageDecoderWithEmoji(filterModel.subCategory) ?? "",
             maxLines: 1,
             style: TextStyle(
                 color: blackFont,
@@ -484,7 +485,7 @@ class _SearchDiscountProductAndServiceState
         child: ListTile(
           dense: true,
           title: Text(
-            filterModel.customCategory,
+            messageDecoderWithEmoji(filterModel.customCategory) ?? "",
             maxLines: 1,
             style: TextStyle(
                 color: blackFont,
@@ -514,7 +515,8 @@ class _SearchDiscountProductAndServiceState
             children: [
               Text(
                 selectedProductCondition != null
-                    ? selectedProductCondition!.name
+                    ? messageDecoderWithEmoji(selectedProductCondition!.name) ??
+                        ""
                     : "",
                 style: TextStyle(
                     color: blackFont,
@@ -557,7 +559,7 @@ class _SearchDiscountProductAndServiceState
         child: ListTile(
           dense: true,
           title: Text(
-            filterModel.manufacturer,
+            messageDecoderWithEmoji(filterModel.manufacturer) ?? "",
             maxLines: 1,
             style: TextStyle(
                 color: blackFont,
@@ -688,24 +690,29 @@ class _SearchDiscountProductAndServiceState
       final pressedCategory =
           await buildCardListWidget(categoryList, filterModel.category);
       if (pressedCategory != null) {
-        setState(() {
-          subCategoryList = [];
-          productSubCategoryList = [];
-          filterModel.subCategoryId = 0;
-          filterModel.subCategory = "";
-          subCategoryNext = "";
+        subCategoryList = [];
+        productSubCategoryList = [];
+        filterModel.subCategoryId = null;
+        filterModel.subCategory = "";
+        subCategoryNext = "";
 
-          filterModel.category = pressedCategory;
+        filterModel.category = pressedCategory;
+        if (pressedCategory == 'All categories') {
+          await merchantProductSubCategoryList();
+        } else {
           if (selectedMenuItemIndex == 0) {
             final ProductCategory category = productCategoryList
                 .where((element) => element.name == pressedCategory)
                 .toList()
                 .first;
             filterModel.categoryId = category.id;
-            merchantProductSubCategoryList(category.id);
+            await merchantProductSubCategoryList(categoryId: category.id);
           }
-          changeState(() {});
-        });
+        }
+        debugPrint("sub category === >${filterModel.subCategory}");
+        debugPrint("sub category ID === >${filterModel.subCategoryId}");
+        changeState(() {});
+        setState(() {});
       }
     } else {
       showToast(message: "No category Found..");
@@ -1201,7 +1208,10 @@ class _SearchDiscountProductAndServiceState
         title: Text(
           "Search",
           style: TextStyle(
-              color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
+            color: blackFont,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         actions: [filterItemBtn(), const SizedBox(width: 8)]);
   }
@@ -1376,7 +1386,7 @@ class _SearchDiscountProductAndServiceState
       onPressed: () {
         Navigator.pop(context);
 
-        filterModel.category = "All categories";
+        filterModel.category = "";
         filterModel.categoryId = null;
         filterModel.subCategoryId = null;
         filterModel.subCategory = "";
@@ -1489,7 +1499,7 @@ class _SearchDiscountProductAndServiceState
   }
 
   void checkForFilterAppliedOrNot() {
-    if (filterModel.category != "All categories") {
+    if (filterModel.category != "") {
       isFilterApplied = true;
       if (mounted) setState(() {});
       return;
@@ -1746,8 +1756,7 @@ class _SearchDiscountProductAndServiceState
         ),
         Text(
           moneyDisplayNormalizer(product.discountedPrice != null
-              ? ((checkDiscount(product.discountIsActive ?? false,
-                      product.discountedPrice ?? 0, product.price ?? 0))
+              ? (product.checkProductDiscount()
                   ? product.discountedPrice
                   : product.price!)
               : product.price!),
