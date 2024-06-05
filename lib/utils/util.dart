@@ -780,6 +780,25 @@ String formatTime(String date) {
   return time;
 }
 
+bool isTimeAfter(DateTime startTime, DateTime endTime) {
+  TimeOfDay start = TimeOfDay.fromDateTime(startTime);
+  TimeOfDay end = TimeOfDay.fromDateTime(endTime);
+
+  if (start.hour < end.hour) {
+    return true;
+  } else if (start.hour == end.hour && start.minute < end.minute) {
+    return true;
+  }
+  return false;
+}
+
+String formatTime24hrs(DateTime? date) {
+  if (date == null) {
+    return '';
+  }
+  return DateFormat("HH:mm").format(date);
+}
+
 String formatDate(DateTime? dateTime) {
   if (dateTime == null) {
     return '';

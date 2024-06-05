@@ -276,7 +276,8 @@ String getGroupUsername(String channelUsername) {
   }
 }
 
-Widget showDiscountValue(String discountType, num discountValue, currency) {
+Widget showDiscountValue(
+    String discountType, num discountValue, String? currency) {
   return Container(
     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
     decoration: BoxDecoration(

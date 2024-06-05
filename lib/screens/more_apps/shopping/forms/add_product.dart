@@ -106,7 +106,7 @@ class _AddProductState extends State<AddProduct> {
 
   // bool trackInventoryView = false;
   bool measurementView = false;
-  bool discountView = false;
+  bool isDiscountAvailable = false;
   List<Tags> userTags = [];
   ShippingAddress? defaultAddress;
   bool isEmpty = false;
@@ -421,7 +421,7 @@ class _AddProductState extends State<AddProduct> {
                       ],
                       getDiscountField(),
                       const SizedBox(height: 16),
-                      if (discountView == true) ...[
+                      if (isDiscountAvailable == true) ...[
                         getDiscountListField(),
                         const SizedBox(height: 16),
                       ],
@@ -2116,7 +2116,11 @@ class _AddProductState extends State<AddProduct> {
                   : '';
 
           product.trackInventory = trackInventory;
-          product.discountId = selectedDiscount?.id;
+          if (isDiscountAvailable) {
+            product.discountId = selectedDiscount?.id;
+          } else {
+            product.discountId = "";
+          }
           product.quantity = inventoryCount;
           product.addressId = defaultAddress?.id;
           product.searchKeywords = searchKeyword.split(", ");
@@ -2251,10 +2255,10 @@ class _AddProductState extends State<AddProduct> {
   Widget getDiscountField() {
     return CustomizedCheckBoxField(
       onTap: () {
-        discountView = !discountView;
+        isDiscountAvailable = !isDiscountAvailable;
         setState(() {});
       },
-      isChecked: discountView,
+      isChecked: isDiscountAvailable,
       title: AppLocalization.of(context)!.discount,
     );
   }
@@ -2572,10 +2576,11 @@ class _AddProductState extends State<AddProduct> {
                                     overflow: TextOverflow.fade,
                                     softWrap: false,
                                     style: TextStyle(
-                                        color: navyBlue,
-                                        fontSize: 16,
-                                        fontFamily: "Inter",
-                                        fontWeight: FontWeight.w600),
+                                      color: navyBlue,
+                                      fontSize: 16,
+                                      fontFamily: "Inter",
+                                      fontWeight: FontWeight.w600,
+                                    ),
                                   ),
                                   trailing: Icon(
                                     SlydoAppIcon.checked,

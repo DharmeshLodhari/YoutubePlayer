@@ -100,28 +100,28 @@ class _EditProductVariantState extends State<EditProductVariant> {
 
     id = variant!.id.toString();
     selectedType = variant?.type;
-    titleController.text = variant!.title!.toString();
-    sizeController.text = variant!.value!.toString();
-    colorController.text = variant!.colour!.toString();
+    titleController.text = variant!.title.toString();
+    sizeController.text = variant!.value.toString();
+    colorController.text = variant!.colour.toString();
     priceController.text =
-        moneyNormalizer(int.parse(variant!.price!)).toString();
-    availableFromController.text = variant!.availableFrom!.toString();
-    productIsAvailable = variant!.isAvailable!;
-    isDiscountAvailable = variant!.discountIsActive!;
-    inventoryIsAvailable = variant!.trackInventory!;
-    inventoryCount = variant!.quantity!;
-    if (variant!.availableFrom!.isNotEmpty) {
-      productAvailableFrom = variant!.availableFrom!;
+        moneyNormalizer(int.parse(variant!.price ?? "0")).toString();
+    availableFromController.text = variant!.availableFrom.toString();
+    productIsAvailable = variant!.isAvailable ?? false;
+    isDiscountAvailable = variant!.discountIsActive ?? false;
+    inventoryIsAvailable = variant!.trackInventory ?? false;
+    inventoryCount = variant!.quantity ?? 1;
+    if (variant!.availableFrom != null) {
+      productAvailableFrom = variant!.availableFrom;
     } else {
       productAvailableFrom = DateFormat('yyyy-MM-dd').format(todayDate);
     }
     productImagesFromServer.addAll(variant!.serverImages!);
 
-    discountId = variant!.discountId!.toString();
-    title = variant!.title!.toString();
-    size = variant!.value!.toString();
-    color = variant!.colour!.toString();
-    variantPrice = moneyNormalizer(int.parse(variant!.price!)).toString();
+    discountId = variant!.discountId.toString();
+    title = variant!.title.toString();
+    size = variant!.value.toString();
+    color = variant!.colour.toString();
+    variantPrice = moneyNormalizer(int.parse(variant!.price ?? "0")).toString();
     // productIsAvailable = variant!.isAvailable!;
     // inventoryIsAvailable = variant!.trackInventory!;
     // inventoryCount = variant!.quantity!;
@@ -1202,7 +1202,11 @@ class _EditProductVariantState extends State<EditProductVariant> {
           variant.type = selectedType;
           variant.price = moneyInputNormalizer(variantPrice).toString();
           // variant.discount = selectedDiscount;
-          variant.discountId = selectedDiscount?.id;
+          if (isDiscountAvailable) {
+            variant.discountId = selectedDiscount?.id;
+          } else {
+            variant.discountId = "";
+          }
           variant.isAvailable = productIsAvailable;
           variant.availableFrom = productAvailableFrom;
           variant.trackInventory = inventoryIsAvailable;

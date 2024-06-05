@@ -1297,6 +1297,8 @@ class ShoppingAuthService extends AuthService {
     service.qrCode = item['qr_code'];
     service.isAvailable = item["is_available"];
     service.availableFrom = DateTime.parse(item['available_from']);
+    service.discountId = item['discount'];
+    service.discountIsActive = item['discount_is_active'];
     service.description = item['description'];
     service.shortDescription = item["short_description"];
     service.category = item['category'];

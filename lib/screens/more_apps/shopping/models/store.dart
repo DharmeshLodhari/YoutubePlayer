@@ -1712,6 +1712,8 @@ class Service extends PurchasableItem {
   String? category;
   bool? isAvailable;
   DateTime? availableFrom;
+  String? discountId;
+  bool? discountIsActive;
   String? currency;
   List<dynamic>? pictureMap;
   double? rating;
@@ -1735,6 +1737,8 @@ class Service extends PurchasableItem {
     this.category,
     this.isAvailable,
     this.availableFrom,
+    this.discountId,
+    this.discountIsActive,
     this.currency,
     this.pictureMap,
     this.rating = 0.0,
@@ -1790,6 +1794,8 @@ class Service extends PurchasableItem {
       "category": category,
       "is_available": isAvailable,
       "available_from": availableFrom,
+      "discount": discountId,
+      "discount_is_active": discountIsActive,
       "provider_avatar": providerAvatar,
       "provider_fullname": providerFullName,
       "search_keywords": searchKeywords,
@@ -1808,6 +1814,7 @@ class Service extends PurchasableItem {
       "category": category,
       "is_available": isAvailable,
       "available_from": availableFrom.toString(),
+      "discount_is_active": discountIsActive,
       "cover": cover,
       "provider": provider,
       "currency": currency,
@@ -1837,6 +1844,7 @@ class Service extends PurchasableItem {
     category = object["category"] ?? "";
     isAvailable = object["is_available"] ?? true;
     availableFrom = getServiceDateTime(object["available_from"]);
+    discountIsActive = object["discount_is_active"] ?? false;
     currency = object["currency"] ?? "";
     pictureMap = object["pictureMap"] ?? [];
     rating = formatRating(double.parse(object['rating']?.toString() ?? "0"));

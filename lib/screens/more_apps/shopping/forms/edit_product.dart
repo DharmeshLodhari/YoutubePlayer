@@ -158,7 +158,6 @@ class _EditProductState extends State<EditProduct> {
     productId = arguments['productId'];
     getCategories();
     Future.delayed(const Duration(seconds: 2), () {
-      getDiscountList(discountId);
       obtainCategories();
       obtainCustomCategory();
       getAddressList();
@@ -310,6 +309,8 @@ class _EditProductState extends State<EditProduct> {
             pickedMeasurementList.add('Width');
           }
           measurementView = pickedMeasurementList.isEmpty ? false : true;
+
+          getDiscountList(discountId);
         });
       }
     });
@@ -2378,7 +2379,11 @@ class _EditProductState extends State<EditProduct> {
               : selectedWidth == 'Metres'
                   ? 'm'
                   : '';
-          currentProduct.discountId = selectedDiscount?.id;
+          if (isDiscountAvailable) {
+            currentProduct.discountId = selectedDiscount?.id;
+          } else {
+            currentProduct.discountId = "";
+          }
           currentProduct.trackInventory = trackInventoryView;
           currentProduct.quantity = inventoryCount;
           currentProduct.addressId = defaultAddress?.id;

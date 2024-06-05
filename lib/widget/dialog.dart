@@ -665,9 +665,10 @@ Future<bool> showInAppLocationAlertPopUp(
                 Text(
                   "Use your location",
                   style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w600,
-                      color: blackFont),
+                    fontSize: 22,
+                    fontWeight: FontWeight.w600,
+                    color: blackFont,
+                  ),
                 ),
                 const SizedBox(
                   height: 20,

@@ -1468,7 +1468,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     } else if ((product?.discountedPrice != null &&
             product?.discountedPrice != 0) ||
         (product?.pricePercentageChange != null &&
-            product?.pricePercentageChange != 0.0)) {
+                product?.pricePercentageChange != 0.0 ||
+            selectedVariant != null)) {
       return buildDiscountPrice();
     } else {
       return const SizedBox();
@@ -1476,13 +1477,32 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   Widget buildDiscountPrice() {
-    if (product?.discountedPrice != null && product?.discountedPrice != 0) {
+    if (selectedVariant != null) {
+      if (product?.checkVariantDiscount(selectedVariant) ?? false) {
+        return Positioned(
+          top: 20,
+          right: 10,
+          child: showDiscountValue(
+            selectedVariant?.discountType ?? "",
+            selectedVariant?.discountValue ?? 0,
+            selectedVariant?.currency,
+          ),
+        );
+      } else {
+        return const SizedBox();
+      }
+    } else if (product?.discountedPrice != null &&
+        product?.discountedPrice != 0) {
       if (product?.checkProductDiscount() ?? false) {
         return Positioned(
-            top: 20,
-            right: 10,
-            child: showDiscountValue(product?.discountType ?? "",
-                product?.discountValue ?? 0, product?.currency));
+          top: 20,
+          right: 10,
+          child: showDiscountValue(
+            product?.discountType ?? "",
+            product?.discountValue ?? 0,
+            product?.currency,
+          ),
+        );
       } else {
         return const SizedBox();
       }
@@ -1925,6 +1945,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
             padding: const EdgeInsets.only(right: 2.0),
             child: GestureDetector(
               onTap: () {
+                /// IMAGE DISPLAY ACCORDING TO COLOR STARTS
                 //update the price, more information and list of images
                 displayProductImages = [];
 
@@ -1941,6 +1962,10 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 final List<String?>? allImages = selectedVariant.serverImages;
                 // Now you have all the images for the selected variant
                 displayProductImages = allImages;
+
+                /// IMAGE DISPLAY ACCORDING TO COLOR ENDS
+
+                /// STOCK AVAILABILITY CHECK START
                 final bool allKeysAreNullOrEmpty =
                     areAllKeysNullOrEmpty(sizeGroups);
 
@@ -1958,10 +1983,12 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                   // this.selectedVariant = null;
                 }
 
+                /// STOCK AVAILABILITY CHECK ENDS
+
                 sizeGroups = {};
 
                 sizeGroups = product?.getVariants(
-                        variantType: VariantTypes.Size,
+                        variantType: VariantTypes.ColorAndSize,
                         selectedColor: selectedVariant.getColor()) ??
                     {};
 
@@ -2061,7 +2088,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
               height: 20.0,
               child: Container(
                 // height: 20.0,
-                margin: const EdgeInsets.symmetric(vertical: 1),
+                margin: const EdgeInsets.symmetric(vertical: 2),
                 decoration: BoxDecoration(
                   color: selectedVariant?.value == size ? black : white,
                   borderRadius: const BorderRadius.all(Radius.circular(3)),
@@ -2074,11 +2101,12 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                   child: Text(
                     messageDecoderWithEmoji(size) ?? "",
                     style: TextStyle(
-                        fontSize: 14,
-                        color: selectedVariant?.value == size
-                            ? white
-                            : blackFont.withOpacity(0.5),
-                        fontWeight: FontWeight.w600),
+                      fontSize: 14,
+                      color: selectedVariant?.value == size
+                          ? white
+                          : blackFont.withOpacity(0.5),
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ),

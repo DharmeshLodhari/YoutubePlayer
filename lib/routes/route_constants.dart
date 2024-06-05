@@ -219,9 +219,13 @@ class Routes {
   static const String TAKE_PROOF_PHOTO = "/take-proof-photo";
   static const String PREVIEW_SCREEN = "/preview-screen";
   static const String COMPLETED_UPLOAD_PHOTO = "/completed-upload-photo";
+  static const String VIEW_COMPLETED_DELIVERY = "/view-completed-delivery";
   static const String DELIVERY_COMPLETED = "/delivery-completed";
   static const String RESPONSE_RECEIVED = "/response-received";
   static const String SHARE_EXPERIENCE = "/share-experience";
+  static const String RIDER_DASHBOARD = "/rider-dashboard";
+  static const String RIDER_EARNING_WEEKLY_LIST = "/rider-earning-weekly-list";
+  static const String EARNING_LIST = "/earning-list";
   static const String DELIVERY_HISTORY = "/delivery-history";
   static const String RIDERS_UPDATE = "/riders-update";
   static const String ADD_TAGS = "/add-tags";

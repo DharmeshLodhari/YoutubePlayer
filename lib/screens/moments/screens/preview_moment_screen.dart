@@ -656,9 +656,10 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
                   Text(
                     title,
                     style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: blackFont),
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: blackFont,
+                    ),
                   ),
                   Text(
                     description,
@@ -793,34 +794,31 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
                           }
                         });
                       },
-                      child: Container(
-                        color: Colors.red,
-                        child: Stack(children: [
-                          VideoPlayer(videoPlayerController!),
-                          if (selectedImageThumb != null && isTapped == false)
-                            Center(
-                              child: Image(
-                                width: double.infinity,
-                                height: 250,
-                                image: FileImage(
-                                  File(selectedImageThumb ?? ""),
-                                ),
-                                fit: BoxFit.cover,
+                      child: Stack(children: [
+                        VideoPlayer(videoPlayerController!),
+                        if (selectedImageThumb != null && isTapped == false)
+                          Center(
+                            child: Image(
+                              width: double.infinity,
+                              height: 250,
+                              image: FileImage(
+                                File(selectedImageThumb ?? ""),
                               ),
+                              fit: BoxFit.cover,
                             ),
-                          if (isTapped == false)
-                            Align(
-                              alignment: Alignment.center,
-                              child: SvgPicture.asset(
-                                "yarn/cam_vec".toSVG(),
-                                height: 50,
-                                width: 50,
-                              ),
-                            )
-                          else
-                            const SizedBox.shrink(),
-                        ]),
-                      ),
+                          ),
+                        if (isTapped == false)
+                          Align(
+                            alignment: Alignment.center,
+                            child: SvgPicture.asset(
+                              "yarn/cam_vec".toSVG(),
+                              height: 50,
+                              width: 50,
+                            ),
+                          )
+                        else
+                          const SizedBox.shrink(),
+                      ]),
                     ),
                   ),
                   GestureDetector(

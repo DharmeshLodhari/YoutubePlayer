@@ -54,7 +54,7 @@ class _AddProductVariantState extends State<AddProductVariant> {
   bool isLoading = false;
   bool isAPILoading = false;
   int inventoryCount = 1;
-  bool discountView = false;
+  bool isDiscountAvailable = false;
   DiscountModel? pressedDiscount;
   DiscountModel? selectedDiscount;
   List<DiscountModel> discountList = [];
@@ -223,7 +223,7 @@ class _AddProductVariantState extends State<AddProductVariant> {
                       const SizedBox(height: 16),
                       getDiscountField(),
                       const SizedBox(height: 16),
-                      if (discountView == true) ...[
+                      if (isDiscountAvailable == true) ...[
                         getDiscountListField(),
                         const SizedBox(height: 16),
                       ],
@@ -395,10 +395,10 @@ class _AddProductVariantState extends State<AddProductVariant> {
   Widget getDiscountField() {
     return CustomizedCheckBoxField(
       onTap: () {
-        discountView = !discountView;
+        isDiscountAvailable = !isDiscountAvailable;
         setState(() {});
       },
-      isChecked: discountView,
+      isChecked: isDiscountAvailable,
       title: AppLocalization.of(context)!.discount,
     );
   }
@@ -955,7 +955,11 @@ class _AddProductVariantState extends State<AddProductVariant> {
         variant.type = selectedType;
         variant.price = moneyInputNormalizer(variantPrice).toString();
         // variant.discount = selectedDiscount;
-        variant.discountId = selectedDiscount?.id;
+        if (isDiscountAvailable) {
+          variant.discountId = selectedDiscount?.id;
+        } else {
+          variant.discountId = "";
+        }
         variant.isAvailable = productIsAvailable;
         variant.availableFrom = productAvailableFrom;
         variant.trackInventory = inventoryIsAvailable;

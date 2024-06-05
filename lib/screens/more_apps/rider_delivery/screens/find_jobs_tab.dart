@@ -202,11 +202,12 @@ class FindJobsTabState extends State<FindJobsTab> {
                     return InkWell(
                       onTap: () {
                         if (jobListing[index].deliveryEvidence != null) {
-                          Navigator.of(context)
-                              .pushNamed(Routes.DELIVERY_COMPLETED, arguments: {
-                            'journeyId': jobListing[index].id,
-                            'isCallAPI': true,
-                          });
+                          Navigator.of(context).pushNamed(
+                              Routes.VIEW_COMPLETED_DELIVERY,
+                              arguments: {
+                                'journeyId': jobListing[index].id,
+                                'isCallAPI': true,
+                              });
                         } else {
                           Navigator.of(context)
                               .pushNamed(Routes.RIDER_JOB_DETAILS, arguments: {

@@ -1211,7 +1211,10 @@ class _SearchDiscountProductAndServiceState
         title: Text(
           "Search",
           style: TextStyle(
-              color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
+            color: blackFont,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         actions: [filterItemBtn(), const SizedBox(width: 8)]);
   }
