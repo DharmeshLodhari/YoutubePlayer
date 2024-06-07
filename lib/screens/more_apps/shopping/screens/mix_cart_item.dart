@@ -505,11 +505,11 @@ class _MixCartItemState extends State<MixCartItem> {
     final String caption1 = AppLocalization.of(context)!.remove;
 
     return [
-      IconSlideAction(
-          caption: caption1,
-          color: Colors.red,
+      SlidableAction(
+          label: caption1,
+          backgroundColor: Colors.red,
           icon: Icons.remove,
-          onTap: () {
+          onPressed: (contex) {
             removeItem(index);
           }),
     ];

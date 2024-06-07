@@ -1634,7 +1634,7 @@ class _EditProductState extends State<EditProduct> {
                       //         ?.replaceAll(" ", "-")
                       //         .toLowerCase() ??
 
-                      _myController.addTag = tags.name ?? "";
+                      _myController.addTag(tags.name ?? "");
 
                       final Tags tagData = Tags(id: tags.id, name: tags.name);
                       userTags.add(tagData);
@@ -1660,7 +1660,7 @@ class _EditProductState extends State<EditProduct> {
         ),
         CustomTextFieldTag(
           initialTags: (userTags).map((e) => e.name!).toList(),
-          textfieldTagsController: _myController,
+          textFieldTagsController: _myController,
           onTap: (String tag) {
             setState(() {
               userTags.removeWhere((e) => e.name == tag);

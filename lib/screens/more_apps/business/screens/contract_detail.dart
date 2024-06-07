@@ -410,31 +410,29 @@ class _ContractDetailState extends State<ContractDetail> {
     //   ),
     // );
 
-    return Container(
-      child: ListTile(
-        dense: true,
-        leading: RoundedBackgroundIcon(
-          icon: Icon(
-            icon,
-            color: blackFont,
-            size: 18,
-          ),
-          backgroundColor: iconBtnGrey,
+    return ListTile(
+      dense: true,
+      leading: RoundedBackgroundIcon(
+        icon: Icon(
+          icon,
+          color: blackFont,
+          size: 18,
         ),
-        title: Text(
-          title,
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-            color: blackFont,
-            fontSize: 14,
-          ),
+        backgroundColor: iconBtnGrey,
+      ),
+      title: Text(
+        title,
+        style: TextStyle(
+          fontWeight: FontWeight.w600,
+          color: blackFont,
+          fontSize: 14,
         ),
-        subtitle: Text(
-          subtitle,
-          style: TextStyle(
-            color: blackFont,
-            fontSize: 14,
-          ),
+      ),
+      subtitle: Text(
+        subtitle,
+        style: TextStyle(
+          color: blackFont,
+          fontSize: 14,
         ),
       ),
     );

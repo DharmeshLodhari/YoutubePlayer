@@ -39,7 +39,7 @@ import 'package:camera/camera.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/foundation.dart' show kDebugMode;
+import 'package:flutter/foundation.dart' show BindingBase, kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
@@ -63,9 +63,11 @@ String appVersion = '';
 final logger = Logger();
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
   HttpOverrides.global = MyHttpOverrides();
   await GetStorage.init();
-  WidgetsFlutterBinding.ensureInitialized();
+  BindingBase.debugZoneErrorsAreFatal = true;
 
   final PackageInfo packageInfo = await PackageInfo.fromPlatform();
   appVersion = packageInfo.version;
@@ -79,8 +81,6 @@ void main() async {
 
   getAppFeaturesFromServer();
   await FlutterDownloader.initialize();
-
-  WidgetsFlutterBinding.ensureInitialized();
   await Firebase
       .initializeApp(); // initialize firebase before actual app get start.
 
@@ -89,6 +89,10 @@ void main() async {
   FirebaseMessaging.onBackgroundMessage(fcmBackgroundMessageHandler);
 
   await LocalNotificationService().init();
+
+  runApp(
+    MultiProvider(providers: providersList, child: const MyApp()),
+  );
 
   if (kDebugMode) {
     await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(false);
@@ -207,7 +211,7 @@ class _MyAppState extends State<MyApp> {
               fontFamily: "Inter",
               splashColor: Colors.transparent,
               highlightColor: Colors.transparent,
-              backgroundColor: navyBlue,
+              scaffoldBackgroundColor: navyBlue,
               textSelectionTheme: TextSelectionThemeData(
                 selectionHandleColor: navyBlue,
               ),

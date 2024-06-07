@@ -563,7 +563,7 @@ class _QrCodePageState extends State<QrCodePage> {
         await imagePath.writeAsBytes(image);
 
         /// Share Plugin
-        await Share.shareFiles([imagePath.path]);
+        await Share.shareXFiles([XFile(imagePath.path)]);
       }
     });
   }

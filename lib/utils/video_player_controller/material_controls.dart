@@ -134,11 +134,11 @@ class _MaterialControlsState extends State<MaterialControls> {
 
   @override
   void didChangeDependencies() {
-    final _oldController = chewieController;
+    final oldController = chewieController;
     chewieController = ChewieController.of(context);
     controller = chewieController!.videoPlayerController;
 
-    if (_oldController != chewieController) {
+    if (oldController != chewieController) {
       _dispose();
       _initialize();
     }
@@ -149,8 +149,6 @@ class _MaterialControlsState extends State<MaterialControls> {
   AnimatedOpacity _buildBottomBar(
     BuildContext context,
   ) {
-    final iconColor = Theme.of(context).textTheme.button!.color;
-
     return AnimatedOpacity(
       opacity: _hideStuff ? 0.0 : 1.0,
       duration: const Duration(milliseconds: 300),
@@ -168,7 +166,7 @@ class _MaterialControlsState extends State<MaterialControls> {
               const SizedBox()
             else
               _buildProgressBar(),
-            _buildRemainingDuration(iconColor),
+            _buildRemainingDuration(),
             // chewieController.allowMuting
             //     ? _buildMuteButton(controller)
             //     : Container(),
@@ -555,7 +553,7 @@ class _MaterialControlsState extends State<MaterialControls> {
   //   );
   // }
 
-  Widget _buildRemainingDuration(Color? iconColor) {
+  Widget _buildRemainingDuration() {
     final position =
         _latestValue != null ? _latestValue!.position : Duration.zero;
     final duration =
@@ -565,7 +563,7 @@ class _MaterialControlsState extends State<MaterialControls> {
     return Padding(
       padding: const EdgeInsets.only(right: 12.0),
       child: Text(
-        '${formatDuration(remainingDuration)}',
+        formatDuration(remainingDuration),
         style: const TextStyle(
             fontSize: 12.0, color: Colors.white, fontWeight: FontWeight.w600),
       ),
@@ -678,7 +676,8 @@ class _MaterialControlsState extends State<MaterialControls> {
               ChewieProgressColors(
                   playedColor: Theme.of(context).colorScheme.secondary,
                   handleColor: Theme.of(context).colorScheme.secondary,
-                  bufferedColor: Theme.of(context).backgroundColor,
+                  bufferedColor:
+                      Theme.of(context).colorScheme.surface.withOpacity(0.5),
                   backgroundColor: Theme.of(context).disabledColor),
         ),
       ),

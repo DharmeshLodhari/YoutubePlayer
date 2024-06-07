@@ -216,10 +216,10 @@ class YarnSmartText extends StatelessWidget {
       softWrap: true,
       text: _buildTextSpan(
         text: text,
-        style: Theme.of(context).textTheme.bodyText2!.merge(style),
+        style: Theme.of(context).textTheme.bodyMedium!.merge(style),
         linkStyle: Theme.of(context)
             .textTheme
-            .bodyText2!
+            .bodyMedium!
             .merge(style)
             .copyWith(
               color: navyBlue,
@@ -228,7 +228,7 @@ class YarnSmartText extends StatelessWidget {
             .merge(linkStyle),
         tagStyle: Theme.of(context)
             .textTheme
-            .bodyText2!
+            .bodyMedium!
             .merge(style)
             .copyWith(
               color: navyBlue,
@@ -236,7 +236,7 @@ class YarnSmartText extends StatelessWidget {
             .merge(tagStyle),
         atStyle: Theme.of(context)
             .textTheme
-            .bodyText2!
+            .bodyMedium!
             .merge(style)
             .copyWith(
               color: navyBlue,

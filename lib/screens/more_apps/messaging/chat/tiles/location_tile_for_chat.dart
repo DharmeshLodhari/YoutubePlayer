@@ -304,37 +304,55 @@ class LocationTileForChatMessage extends StatelessWidget {
                           ignoring: true,
                           child: FlutterMap(
                             options: MapOptions(
-                                zoom: 13.0,
-                                center: latLng.LatLng(
-                                  location.latitude!,
-                                  location.longitude!,
-                                ),
-                                interactiveFlags: 0),
-                            layers: [
-                              TileLayerOptions(
-                                subdomains: ['a', 'b', 'c'],
+                              initialZoom: 13.0,
+                              initialCenter: latLng.LatLng(
+                                location.latitude ?? 0,
+                                location.longitude ?? 0,
+                              ),
+                            ),
+                            children: [
+                              TileLayer(
+                                subdomains: const ['a', 'b', 'c'],
                                 errorImage: const NetworkImage(
                                     "https://i.dlpng.com/static/png/6635948_preview.png"),
-                                overrideTilesWhenUrlChanges: true,
                                 urlTemplate:
                                     "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
                               ),
-
-                              ///TODO:SOLVE MARKER ERROR
-                              // [
-                              //   Marker(
-                              //     width: 80.0,
-                              //     height: 80.0,
-                              //     point: latLng.LatLng(
-                              //         location.latitude, location.longitude),
-                              //     builder: (ctx) => Container(
-                              //       child: Icon(SlydoAppIcon.location),
-                              //     ),
-                              //   ),
-                              // ]
-                              // MarkerLayerOptions(markers: [Marker()]),
                             ],
                           ),
+                          // child: FlutterMap(
+                          //   options: MapOptions(
+                          //       zoom: 13.0,
+                          //       center: latLng.LatLng(
+                          //         location.latitude!,
+                          //         location.longitude!,
+                          //       ),
+                          //       interactiveFlags: 0),
+                          //   layers: [
+                          //     TileLayerOptions(
+                          //       subdomains: ['a', 'b', 'c'],
+                          //       errorImage: const NetworkImage(
+                          //           "https://i.dlpng.com/static/png/6635948_preview.png"),
+                          //       overrideTilesWhenUrlChanges: true,
+                          //       urlTemplate:
+                          //           "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                          //     ),
+                          //
+                          //     ///TODO:SOLVE MARKER ERROR
+                          //     // [
+                          //     //   Marker(
+                          //     //     width: 80.0,
+                          //     //     height: 80.0,
+                          //     //     point: latLng.LatLng(
+                          //     //         location.latitude, location.longitude),
+                          //     //     builder: (ctx) => Container(
+                          //     //       child: Icon(SlydoAppIcon.location),
+                          //     //     ),
+                          //     //   ),
+                          //     // ]
+                          //     // MarkerLayerOptions(markers: [Marker()]),
+                          //   ],
+                          // ),
                         ),
                       ),
                     ),

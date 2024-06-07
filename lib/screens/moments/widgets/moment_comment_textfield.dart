@@ -684,7 +684,7 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
     productOrServiceCount = 0;
     productOrServiceNext = "";
     productOrServicePrevious = "";
-    if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted) {
+    if (bottomSheetStateSetterGlobal != null && bottomSheetMounted) {
       bottomSheetStateSetterGlobal!(() {});
     }
     if (mounted) setState(() {});

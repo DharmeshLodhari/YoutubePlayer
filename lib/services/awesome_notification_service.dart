@@ -181,7 +181,12 @@ class AwesomeNotificationService {
     if (_streamController == null) {
       _streamController = BehaviorSubject<ReceivedAction>();
 
-      _streamController!.addStream(awesomeNotifications.actionStream);
+      // _streamController!.addStream(awesomeNotifications.actionStream);
+      AwesomeNotifications().setListeners(
+        onActionReceivedMethod: (ReceivedAction receivedAction) async {
+          _streamController?.add(receivedAction);
+        },
+      );
 
       _streamController!.stream.listen((receivedNotification) async {});
     }
@@ -208,16 +213,18 @@ class AwesomeNotificationService {
           ),
           actionButtons: [
             NotificationActionButton(
-                label: "Accept",
-                enabled: true,
-                key: "accept_nudge",
-                autoDismissible: true),
+              label: "Accept",
+              enabled: true,
+              key: "accept_nudge",
+              autoDismissible: true,
+            ),
             NotificationActionButton(
-                label: "Reject",
-                enabled: true,
-                key: "reject_nudge",
-                autoDismissible: true,
-                buttonType: ActionButtonType.KeepOnTop)
+              label: "Reject",
+              enabled: true,
+              key: "reject_nudge",
+              autoDismissible: true,
+              actionType: ActionType.KeepOnTop,
+            )
           ]);
     } catch (e) {
       debugPrint("ERROR:- $e");

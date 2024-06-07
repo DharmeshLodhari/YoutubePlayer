@@ -330,9 +330,9 @@ class _SearchProductState extends State<SearchProduct> {
           child: DropdownButton2(
             isExpanded: true,
             underline: const SizedBox.shrink(),
-            dropdownDecoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(14),
-            ),
+            // dropdownDecoration: BoxDecoration(
+            //   borderRadius: BorderRadius.circular(14),
+            // ),
             value: sortByMenuItemValue,
             items: sortByMenuItems.map((String item) {
               return DropdownMenuItem(

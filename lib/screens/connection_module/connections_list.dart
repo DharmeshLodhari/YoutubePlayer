@@ -148,11 +148,12 @@ class _ConnectionListState extends State<ConnectionList>
           child: Column(
             children: [
               getSearchTextField(),
-              isUserIsSearching
-                  ? Expanded(child: getSearchedUserListUI())
-                  : Expanded(
-                      child: getRefreshIndicator(),
-                    ),
+              if (isUserIsSearching)
+                Expanded(child: getSearchedUserListUI())
+              else
+                Expanded(
+                  child: getRefreshIndicator(),
+                ),
             ],
           ),
         ),
@@ -188,7 +189,7 @@ class _ConnectionListState extends State<ConnectionList>
   }
 
   Widget showFetchingMessageUI() {
-    return Container(
+    return SizedBox(
       width: double.infinity,
       height: double.infinity,
       child: Column(
@@ -285,7 +286,7 @@ class _ConnectionListState extends State<ConnectionList>
 
   Widget _buildConnectionsList() {
     try {
-      return _connectionListBloc.connectionUsers.length == 0
+      return _connectionListBloc.connectionUsers.isEmpty
           ? NoItemInList(msg: noContactMsg, isResult: true)
           : ListView.builder(
               shrinkWrap: true,
@@ -311,7 +312,7 @@ class _ConnectionListState extends State<ConnectionList>
             );
     } catch (error) {
       debugPrint("ERROR building list =>:- $error");
-      return _connectionListBloc.connectionUsers.length == 0
+      return _connectionListBloc.connectionUsers.isEmpty
           ? NoItemInList(
               msg: noContactMsg,
               isResult: true,
@@ -478,8 +479,8 @@ class _ConnectionListState extends State<ConnectionList>
       actionTwoBgColor: greyBorderColor,
       actionTwoTextColor: blackFont,
       title: AppLocalization.of(context)!.block,
-      description: AppLocalization.of(context)!.areYouSureWantToBlock +
-          " ${user.displayName()}",
+      description:
+          "${AppLocalization.of(context)!.areYouSureWantToBlock} ${user.displayName()}",
       actionOneText: AppLocalization.of(context)!.block,
       actionTwoText: AppLocalization.of(context)!.cancel,
     );
@@ -487,10 +488,8 @@ class _ConnectionListState extends State<ConnectionList>
       final bool done = await UserAuth().blockUser(user);
       // done = true;
       if (done) {
-        _showSnackBar(
-            context,
-            "${user.displayName()} " +
-                AppLocalization.of(context)!.isBlockedSuccessfully);
+        _showSnackBar(context,
+            "${user.displayName()} ${AppLocalization.of(context)!.isBlockedSuccessfully}");
         final ConnectionListBloc connectionListBloc =
             Provider.of<ConnectionListBloc>(context, listen: false);
         connectionListBloc.deleteChatConversation(
@@ -570,19 +569,16 @@ class _ConnectionListState extends State<ConnectionList>
       actionTwoBgColor: greyBorderColor,
       actionTwoTextColor: blackFont,
       title: AppLocalization.of(context)!.delete,
-      description: AppLocalization.of(context)!.areYouSureWantToDelete +
-          " ${user.displayName()} " +
-          "From Your friends List",
+      description:
+          "${AppLocalization.of(context)!.areYouSureWantToDelete} ${user.displayName()} From Your friends List",
       actionOneText: AppLocalization.of(context)!.delete,
       actionTwoText: AppLocalization.of(context)!.cancel,
     );
     if (result != null && result) {
       final bool done = await UserAuth().removeFromContactList(user);
       if (done) {
-        _showSnackBar(
-            context,
-            "${user.displayName()} " +
-                AppLocalization.of(context)!.isRemovedSuccessfully);
+        _showSnackBar(context,
+            "${user.displayName()} ${AppLocalization.of(context)!.isRemovedSuccessfully}");
 
         final ConnectionListBloc connectionListBloc =
             Provider.of<ConnectionListBloc>(context, listen: false);

@@ -108,9 +108,9 @@ class _AccountTypeState extends State<AccountType> {
                         child: DropdownButton2(
                           isExpanded: true,
                           value: accountType,
-                          dropdownDecoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(14),
-                          ),
+                          // dropdownDecoration: BoxDecoration(
+                          //   borderRadius: BorderRadius.circular(14),
+                          // ),
                           hint: const Text('Select an account type'),
                           underline: const SizedBox.shrink(),
                           items: ['Personal', 'Business'].map((String item) {

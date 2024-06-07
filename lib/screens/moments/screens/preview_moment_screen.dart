@@ -756,7 +756,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
 
   Widget mediaRenderer() {
     if (fileType == "image") {
-      return Container(
+      return SizedBox(
         width: 60,
         height: 250,
         child: Center(
@@ -775,7 +775,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
       //   borderRadius: BorderRadius.circular(20),
       //   child: Padding(
       //     padding: const EdgeInsets.fromLTRB(100, 10, 100, 10),
-      return Container(
+      return SizedBox(
           width: 60,
           height: 250,
           child: Center(
@@ -840,7 +840,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
                     child: Container(
                       width: double.infinity,
                       color: greyTagColor,
-                      padding: EdgeInsets.all(7.0),
+                      padding: const EdgeInsets.all(7.0),
                       child: Center(
                         child: Text(
                           AppLocalization.of(context)!.selectCover,
@@ -933,9 +933,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
         isPublic: isPublic,
         userTags: newUserTags,
         // mediaPoster: generatedVideoThumbnail,
-        mediaPoster: selectedImageThumb != null
-            ? selectedImageThumb
-            : generatedVideoThumbnail,
+        mediaPoster: selectedImageThumb ?? generatedVideoThumbnail,
         filePath: widget.filePath,
         text: momentTitle,
         url: urlTextCtrl.text,
@@ -997,7 +995,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
     super.dispose();
   }
 
-  pickAttachmentWidget() async {
+  Future<void> pickAttachmentWidget() async {
     final String? pickedAttachmentOption = await showPickItemDialog<String>(
       context: context,
       items: attachmentList,
@@ -1068,7 +1066,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
         insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
         contentPadding: EdgeInsets.zero,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        content: Container(
+        content: SizedBox(
           width: MediaQuery.of(context).size.width - 40,
           child: Card(
             elevation: 2,

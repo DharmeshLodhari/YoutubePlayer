@@ -61,7 +61,7 @@ class _DashboardState extends State<Dashboard> {
 
   //newUI Variables
   late DashboardBloc _dashboardBloc;
-  DatabaseHelper _db = DatabaseHelper();
+  final DatabaseHelper _db = DatabaseHelper();
 
   int _currentIndex = 0;
   var arguments;
@@ -410,7 +410,7 @@ class _DashboardState extends State<Dashboard> {
       badgeStyle: badges.BadgeStyle(
         shape: badges.BadgeShape.circle,
         badgeColor: naturalGreen,
-        padding: basketBloc.basketItems.length == 0
+        padding: basketBloc.basketItems.isEmpty
             ? const EdgeInsets.all(0)
             : const EdgeInsets.all(4),
         elevation: 0,
@@ -426,7 +426,7 @@ class _DashboardState extends State<Dashboard> {
   }
 
   Widget? getBadgeContent() {
-    if (basketBloc.basketItems.length == 0) {
+    if (basketBloc.basketItems.isEmpty) {
       return null;
     }
     return Text(

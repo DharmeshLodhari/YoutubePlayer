@@ -1,5 +1,6 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/enter_address_or_pin_page.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/models/credit_card_data_model.dart';
@@ -8,11 +9,8 @@ import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_credit_card/credit_card_widget.dart';
-import 'package:flutter_credit_card/flutter_credit_card.dart';
+import 'package:flutter_masked_text2/flutter_masked_text2.dart';
 import 'package:provider/provider.dart';
-
-import '../../../messaging/chat/utils.dart';
 
 // ignore: must_be_immutable
 class CardPaymentPage extends StatefulWidget {
@@ -334,21 +332,22 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 10),
-                showFinalAmount
-                    ? Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          getUserCurrencySymbol(context, fontSize: 30),
-                          Text(
-                            getUserFinalAmount(),
-                            style: TextStyle(
-                                fontSize: 32,
-                                color: navyBlue,
-                                fontWeight: FontWeight.bold),
-                          )
-                        ],
+                if (showFinalAmount)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      getUserCurrencySymbol(context, fontSize: 30),
+                      Text(
+                        getUserFinalAmount(),
+                        style: TextStyle(
+                            fontSize: 32,
+                            color: navyBlue,
+                            fontWeight: FontWeight.bold),
                       )
-                    : const SizedBox.shrink(),
+                    ],
+                  )
+                else
+                  const SizedBox.shrink(),
               ],
             )
           else

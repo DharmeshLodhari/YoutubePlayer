@@ -415,7 +415,7 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
 
   List<TextInputFormatter>? getInputFormatters() {
     if (widget.isAmountField) {
-      return [CurrencyTextInputFormatter(symbol: '')];
+      return [CurrencyTextInputFormatter.currency(symbol: '')];
     }
     if (widget.isNumberOnlyInput) {
       return [FilteringTextInputFormatter.digitsOnly];

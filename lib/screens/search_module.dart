@@ -1291,7 +1291,6 @@ class _SearchModuleState extends State<SearchModule>
     return Slidable(
       controller: slidableController2,
       direction: Axis.horizontal,
-      direction: Axis.horizontal,
       startActionPane: ActionPane(
         motion: const BehindMotion(),
         extentRatio: 0.25,

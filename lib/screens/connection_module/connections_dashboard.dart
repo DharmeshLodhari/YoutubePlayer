@@ -379,8 +379,8 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
       index: currentIndex,
       children: [
         ConnectionList(),
-        ConnectionRequestList(),
-        BlockedList(),
+        const ConnectionRequestList(),
+        const BlockedList(),
       ],
     );
   }

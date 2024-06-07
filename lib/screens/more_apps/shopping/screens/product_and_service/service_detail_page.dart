@@ -1172,7 +1172,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                   ),
                 ),
           onTap: () {
-            Clipboard.setData(ClipboardData(text: service?.qrCode!));
+            Clipboard.setData(ClipboardData(text: service?.qrCode ?? ""));
             showToast(message: AppLocalization.of(context)!.copied);
           },
         ),

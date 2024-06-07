@@ -60,7 +60,7 @@ class Shiddo extends StoryItem {
     Duration? duration,
     MomentsModel? momentsModel,
   }) {
-    double contrast = ContrastHelper.contrast([
+    final double contrast = ContrastHelper.contrast([
       backgroundColor.red,
       backgroundColor.green,
       backgroundColor.blue,
@@ -202,9 +202,9 @@ class Shiddo extends StoryItem {
                         const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
                     child: Align(
                       alignment: Alignment.bottomLeft,
-                      child: Container(
-                        child: caption == null ? const SizedBox() : caption,
+                      child: SizedBox(
                         width: double.infinity,
+                        child: caption ?? const SizedBox(),
                       ),
                     ),
                   ),
@@ -362,9 +362,9 @@ class Shiddo extends StoryItem {
             ),
             child: Align(
               alignment: Alignment.bottomLeft,
-              child: Container(
+              child: SizedBox(
                 width: double.infinity,
-                child: caption == null ? const SizedBox() : caption,
+                child: caption ?? const SizedBox(),
               ),
             ),
           ),
@@ -461,9 +461,9 @@ class StoryViewShiddoState extends State<StoryViewShiddo>
     // false
     final firstPage = widget.storyItems.firstWhereOrNull((it) => !it!.shown);
     if (firstPage == null) {
-      widget.storyItems.forEach((it2) {
+      for (var it2 in widget.storyItems) {
         it2!.shown = false;
-      });
+      }
     } else {
       final lastShownPos = widget.storyItems.indexOf(firstPage);
       widget.storyItems.sublist(lastShownPos).forEach((it) {
@@ -560,9 +560,9 @@ class StoryViewShiddoState extends State<StoryViewShiddo>
     }
 
     if (widget.repeat) {
-      widget.storyItems.forEach((it) {
+      for (var it in widget.storyItems) {
         it!.shown = false;
-      });
+      }
 
       _beginPlay();
     }
@@ -579,7 +579,7 @@ class StoryViewShiddoState extends State<StoryViewShiddo>
       _beginPlay();
     } else {
       _currentStory!.shown = false;
-      int lastPos = widget.storyItems.indexOf(_currentStory);
+      final int lastPos = widget.storyItems.indexOf(_currentStory);
       final previous = widget.storyItems[lastPos - 1]!;
 
       previous.shown = false;
@@ -768,7 +768,7 @@ class PageBarState extends State<PageBar> {
   void initState() {
     super.initState();
 
-    int count = widget.pages.length;
+    final int count = widget.pages.length;
     spacing = (count > 15) ? 1 : ((count > 10) ? 2 : 4);
 
     widget.animation!.addListener(() {
@@ -869,7 +869,7 @@ class IndicatorOval extends CustomPainter {
 class ContrastHelper {
   static double luminance(int? r, int? g, int? b) {
     final a = [r, g, b].map((it) {
-      double value = it!.toDouble() / 255.0;
+      final double value = it!.toDouble() / 255.0;
       return value <= 0.03928
           ? value / 12.92
           : pow((value + 0.055) / 1.055, 2.4);

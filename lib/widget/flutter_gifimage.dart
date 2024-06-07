@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'dart:ui' as ui show Codec;
+import 'dart:ui' as ui;
 import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
@@ -227,8 +227,10 @@ Future<List<ImageInfo>?> fetchGif(ImageProvider provider) async {
     data = provider.bytes;
   }
 
-  final ui.Codec codec = await PaintingBinding.instance
-      .instantiateImageCodec(data.buffer.asUint8List());
+  // final ui.Codec codec = await PaintingBinding.instance
+  //     .instantiateImageCodec(data.buffer.asUint8List());
+  final ui.Codec codec =
+      await ui.instantiateImageCodec(data.buffer.asUint8List());
   infos = [];
   for (int i = 0; i < codec.frameCount; i++) {
     final FrameInfo frameInfo = await codec.getNextFrame();

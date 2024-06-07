@@ -4,12 +4,17 @@
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/auth/rider_delivery_auth.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/models/delivery_model.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/order/tracker_stepper.dart'
     as track;
+import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/shopping/tiles/order_detail_item_tile.dart';
+import 'package:Slydo/screens/more_apps/user_profile/forms/user_address.dart';
+import 'package:Slydo/utils/global_key.dart';
+import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
@@ -26,14 +31,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-// import '../../../../../utils/date_time_and_money_converter.dart';
-import '../../../../../routes/route_constants.dart';
-import '../../../../../utils/global_key.dart';
-import '../../../../../utils/navigation_util.dart';
-// import '../../../payment_and_banking/payment_and_banking_auth.dart';
-import '../../../user_profile/forms/user_address.dart';
-import '../../shopping_auth.dart';
 
 // ignore: must_be_immutable
 class OrderDetailPage extends StatefulWidget {
@@ -68,7 +65,7 @@ class _OrderDetailPageState extends State<OrderDetailPage>
   String? statusOfOrderCopy =
       ""; //This variable is used to track if the statusOfOrder has changed.
 
-  GlobalKey _key = LabeledGlobalKey("orderDetailPagePopUpMenu");
+  final GlobalKey _key = LabeledGlobalKey("orderDetailPagePopUpMenu");
   late CustomizedPopUpMenu menu;
   int selectedMenuItemIndex = 0;
   bool isPopMenuOpen = false;
@@ -127,10 +124,10 @@ class _OrderDetailPageState extends State<OrderDetailPage>
     order = arguments['order'];
     statusOfOrder = order?.status?.toLowerCase();
     statusOfOrderCopy = order?.status?.toLowerCase();
-    _slideController = SlidableController(
-      onSlideAnimationChanged: handleSlideAnimationChanged,
-      onSlideIsOpenChanged: handleSlideIsOpenChanged,
-    );
+    // _slideController = SlidableController(
+    //   onSlideAnimationChanged: handleSlideAnimationChanged,
+    //   onSlideIsOpenChanged: handleSlideIsOpenChanged,
+    // );
     fetchOrder(order?.id.toString() ?? "");
     if (order?.journeyId != null) {
       fetchJobData();
@@ -296,7 +293,7 @@ class _OrderDetailPageState extends State<OrderDetailPage>
       ),
       centerTitle: false,
       title: Text(
-        "${"Ref # :${order?.id ?? ""}"}",
+        "Ref # :${order?.id ?? ""}",
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),

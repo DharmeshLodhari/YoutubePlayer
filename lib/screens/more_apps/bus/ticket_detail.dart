@@ -83,48 +83,46 @@ class _TicketDetailState extends State<TicketDetail> {
   }
 
   Widget ticketWithImage() {
-    return Container(
-      child: Stack(
-        children: [
-          Image.asset(
-            "assets/images/bus_ticket_background.png",
+    return Stack(
+      children: [
+        Image.asset(
+          "assets/images/bus_ticket_background.png",
+        ),
+        Container(
+          height: 470,
+          padding: const EdgeInsets.symmetric(horizontal: 36),
+          child: Column(
+            children: [
+              const SizedBox(
+                height: 40,
+              ),
+              bookingInfo(),
+              const SizedBox(
+                height: 20,
+              ),
+              MySeparator(color: dividerColor),
+              const SizedBox(
+                height: 20,
+              ),
+              boardingInfo(),
+              const SizedBox(
+                height: 24,
+              ),
+              MySeparator(color: dividerColor),
+              const SizedBox(
+                height: 40,
+              ),
+              Center(
+                child: SizedBox(
+                  height: 214,
+                  width: 214,
+                  child: CachedNetworkImage(imageUrl: tickets[0].qrCode!),
+                ),
+              )
+            ],
           ),
-          Container(
-            height: 470,
-            padding: const EdgeInsets.symmetric(horizontal: 36),
-            child: Column(
-              children: [
-                const SizedBox(
-                  height: 40,
-                ),
-                bookingInfo(),
-                const SizedBox(
-                  height: 20,
-                ),
-                MySeparator(color: dividerColor),
-                const SizedBox(
-                  height: 20,
-                ),
-                boardingInfo(),
-                const SizedBox(
-                  height: 24,
-                ),
-                MySeparator(color: dividerColor),
-                const SizedBox(
-                  height: 40,
-                ),
-                Center(
-                  child: Container(
-                    height: 214,
-                    width: 214,
-                    child: CachedNetworkImage(imageUrl: tickets[0].qrCode!),
-                  ),
-                )
-              ],
-            ),
-          )
-        ],
-      ),
+        )
+      ],
     );
   }
 
@@ -235,7 +233,7 @@ class _TicketDetailState extends State<TicketDetail> {
         const SizedBox(
           width: 12,
         ),
-        Container(
+        SizedBox(
           width: 70,
           height: 40,
           child: Stack(
@@ -243,7 +241,7 @@ class _TicketDetailState extends State<TicketDetail> {
             children: [
               Positioned(
                 top: 6,
-                child: Container(
+                child: SizedBox(
                   width: 70,
                   child: Image.asset(
                     "assets/images/arrow_right.png",

@@ -400,7 +400,7 @@ class _SignUpState extends State<SignUp> {
 
   Widget industryDropdown() {
     return DropdownButtonFormField2(
-      buttonHeight: 50,
+      // buttonHeight: 50,
       isExpanded: true,
       value: industryType,
       style: TextStyle(
@@ -1230,7 +1230,7 @@ class _SignUpState extends State<SignUp> {
     return IgnorePointer(
       ignoring: subscriptionsModelList == null,
       child: DropdownButtonFormField2(
-        buttonHeight: 50,
+        // buttonHeight: 50,
         isExpanded: true,
         value: subscriptionsModel,
         style: TextStyle(

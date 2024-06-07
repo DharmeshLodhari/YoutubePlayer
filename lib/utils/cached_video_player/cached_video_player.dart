@@ -348,6 +348,8 @@ class CachedVideoPlayerController
           break;
         case VideoEventType.unknown:
           break;
+        case VideoEventType.isPlayingStateUpdate:
+          break;
       }
     }
 

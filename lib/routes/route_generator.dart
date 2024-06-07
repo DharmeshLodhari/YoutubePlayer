@@ -384,7 +384,7 @@ class RouteGenerator {
         );
       case Routes.ADD_ACCOUNT:
         return PageTransition(
-          child: AddAccount(),
+          child: const AddAccount(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -428,7 +428,7 @@ class RouteGenerator {
         );
       case Routes.EXPLORE:
         return PageTransition(
-          child: ExploreList(),
+          child: const ExploreList(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -574,7 +574,7 @@ class RouteGenerator {
 
       case Routes.ADD_BANK_ACCOUNT:
         return PageTransition(
-          child: AddAccount(),
+          child: const AddAccount(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -662,7 +662,7 @@ class RouteGenerator {
         );
       case Routes.USER_ADDRESS:
         return PageTransition(
-          child: UserAddress(),
+          child: const UserAddress(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -1058,7 +1058,7 @@ class RouteGenerator {
         );
 
       case Routes.SELECT_RIDE_TYPE:
-        var arguments = settings.arguments as Map<String, dynamic>;
+        final arguments = settings.arguments as Map<String, dynamic>;
         return PageTransition(
           child: RideOption(),
           childCurrent: arguments['currentChild'],
@@ -1068,7 +1068,7 @@ class RouteGenerator {
         );
 
       case Routes.SEARCH_DRIVER:
-        var arguments = settings.arguments as Map<String, dynamic>;
+        final arguments = settings.arguments as Map<String, dynamic>;
         return PageTransition(
           child: SearchingForRide(),
           childCurrent: arguments['currentChild'],
@@ -1240,7 +1240,7 @@ class RouteGenerator {
 
       case Routes.MOVIE_CATEGORY:
         return PageTransition(
-          child: SpecificCategoryMovieList(),
+          child: const SpecificCategoryMovieList(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -1274,7 +1274,7 @@ class RouteGenerator {
 
       case Routes.MUSIC_CATEGORY:
         return PageTransition(
-          child: SpecificCategoryMusicList(),
+          child: const SpecificCategoryMusicList(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -1412,7 +1412,7 @@ class RouteGenerator {
 
       case Routes.PROPERTY_CATEGORY:
         return PageTransition(
-          child: SpecificCategoryPropertyList(),
+          child: const SpecificCategoryPropertyList(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -1436,7 +1436,7 @@ class RouteGenerator {
 
       case Routes.ADD_PROPERTY:
         return PageTransition(
-          child: AddProperty(),
+          child: const AddProperty(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,

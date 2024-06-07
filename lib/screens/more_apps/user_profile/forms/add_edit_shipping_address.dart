@@ -18,7 +18,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-// import 'package:location/location.dart';
 import 'package:provider/provider.dart';
 
 class AddEditShippingAddress extends StatefulWidget {
@@ -507,7 +506,7 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
 
   Widget countryDropdown() {
     return DropdownButtonFormField2(
-      buttonHeight: 50,
+      // buttonHeight: 50,
       isExpanded: true,
       value: country,
       style: TextStyle(
@@ -719,7 +718,7 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
     );
 
     return DropdownButtonFormField2(
-      buttonHeight: 50,
+      // buttonHeight: 50,
       isExpanded: true,
       value: selectedCity,
       style: TextStyle(
@@ -923,7 +922,7 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
     );
 
     return DropdownButtonFormField2(
-      buttonHeight: 50,
+      // buttonHeight: 50,
       isExpanded: true,
       value: selectedCity,
       style: TextStyle(

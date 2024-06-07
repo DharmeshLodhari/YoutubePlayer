@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/storage_permission.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/utils/video_frame_extractor/video_frame_extractor.dart';
@@ -258,13 +257,13 @@ class _SelectVideoCoverPageState extends State<SelectVideoCoverPage> {
       // Directory? downloadDirectory = await getDownloadsDirectory();
       // String? downloadPath = downloadDirectory?.path;
       // Path to the directory
-      final String downloadPath = '/storage/emulated/0/Download';
+      const String downloadPath = '/storage/emulated/0/Download';
 
       // Create a Directory object from the path
       final Directory downloadDirectory = Directory(downloadPath);
 
       // List all files in the download directory
-      final List<FileSystemEntity>? fileList = downloadDirectory.listSync();
+      final List<FileSystemEntity> fileList = downloadDirectory.listSync();
 
       // Iterate through each file and delete if it starts with "extracted_"
       for (FileSystemEntity file in fileList ?? []) {

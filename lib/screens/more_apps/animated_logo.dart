@@ -35,20 +35,18 @@ class _AnimatedLogoState extends State<AnimatedLogo>
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: AnimatedBuilder(
-        animation: _animation!,
-        builder: (BuildContext context, Widget? child) {
-          return Transform.scale(
-            scale: _animation!.value,
-            child: Image.asset(
-              widget.imagePath,
-              width: 100,
-              height: 100,
-            ),
-          );
-        },
-      ),
+    return AnimatedBuilder(
+      animation: _animation!,
+      builder: (BuildContext context, Widget? child) {
+        return Transform.scale(
+          scale: _animation!.value,
+          child: Image.asset(
+            widget.imagePath,
+            width: 100,
+            height: 100,
+          ),
+        );
+      },
     );
   }
 }

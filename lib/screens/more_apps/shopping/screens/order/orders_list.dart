@@ -71,10 +71,10 @@ class _OrdersListState extends State<OrdersList>
         getList();
       }
     });
-    _slideController = SlidableController(
-      onSlideAnimationChanged: handleSlideAnimationChanged,
-      onSlideIsOpenChanged: handleSlideIsOpenChanged,
-    );
+    // _slideController = SlidableController(
+    //   onSlideAnimationChanged: handleSlideAnimationChanged,
+    //   onSlideIsOpenChanged: handleSlideIsOpenChanged,
+    // );
 
     super.initState();
   }

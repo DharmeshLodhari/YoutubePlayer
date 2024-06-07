@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:Slydo/data/state_notifier.dart';
-import 'package:Slydo/screens/blog/quill/custom_quill_embed.dart';
 import 'package:Slydo/screens/more_apps/user_post/user_post_auth.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -13,7 +12,9 @@ import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/src/widgets/text.dart' as flutterText;
 import 'package:flutter_quill/flutter_quill.dart';
+import 'package:flutter_quill_extensions/flutter_quill_extensions.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
@@ -207,7 +208,7 @@ class _CreateOrEditPostScreenState extends State<CreateOrEditPostScreen> {
     );
   }
 
-  _scaffoldBody() {
+  Widget _scaffoldBody() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12.0),
       child: Form(
@@ -421,7 +422,7 @@ class _CreateOrEditPostScreenState extends State<CreateOrEditPostScreen> {
           }
         },
       ),
-      title: Text(
+      title: flutterText.Text(
         widget.userPost == null
             ? AppLocalization.of(context)!.createPost
             : AppLocalization.of(context)!.editPost,
@@ -445,27 +446,8 @@ class _CreateOrEditPostScreenState extends State<CreateOrEditPostScreen> {
   }
 
   Widget getEditor() {
-    // final Widget editorWidget = flutterQuill.QuillToolbar.basic(
-    //   showDirection: false,
-    //   showHeaderStyle: false,
-    //   showInlineCode: false,
-    //   showCodeBlock: false,
-    //   showStrikeThrough: false,
-    //   showJustifyAlignment: false,
-    //   showBackgroundColorButton: false,
-    //   showClearFormat: false,
-    //   showDividers: false,
-    //   showIndent: false,
-    //   showListCheck: false,
-    //   showRedo: false,
-    //   showListBullets: false,
-    //   showListNumbers: false,
-    //   showAlignmentButtons: true,
-    //   controller: _quillBodyTextController,
-    // );
     final Widget editorWidget = QuillToolbar.simple(
       configurations: QuillSimpleToolbarConfigurations(
-        controller: _quillBodyTextController,
         showDirection: false,
         showHeaderStyle: false,
         showInlineCode: false,
@@ -481,6 +463,7 @@ class _CreateOrEditPostScreenState extends State<CreateOrEditPostScreen> {
         showListBullets: false,
         showListNumbers: false,
         showAlignmentButtons: true,
+        controller: _quillBodyTextController,
       ),
     );
 
@@ -629,8 +612,8 @@ class _CreateOrEditPostScreenState extends State<CreateOrEditPostScreen> {
         setState(() {
           _imagePath = croppedImage;
           isImagePicked = true;
-          debugPrint('Fola cropped:::: ${croppedImage}');
-          debugPrint('Fola cropped 000:::: ${_imagePath}');
+          debugPrint('Fola cropped:::: $croppedImage');
+          debugPrint('Fola cropped 000:::: $_imagePath');
         });
       }
     }
@@ -709,7 +692,7 @@ class _CreateOrEditPostScreenState extends State<CreateOrEditPostScreen> {
               color: greyBorderColor,
               border: Border.all(color: greyBorderColor),
               borderRadius: BorderRadius.circular(20)),
-          child: Center(
+          child: const Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -717,7 +700,7 @@ class _CreateOrEditPostScreenState extends State<CreateOrEditPostScreen> {
                 //   Icons.add_circle,
                 //   size: 40,
                 // ),
-                const Text('Tap here to add blog post header image')
+                flutterText.Text('Tap here to add blog post header image')
               ],
             ),
           ),
@@ -825,7 +808,9 @@ class _CreateOrEditPostScreenState extends State<CreateOrEditPostScreen> {
   }
 
   Widget getTextEditorWidget() {
-    final QuillEditor quillEditor = QuillEditor.basic(
+    final QuillEditor quillEditor = QuillEditor(
+      focusNode: textEditorTextFieldFocusNode,
+      scrollController: _textEditorScrollController,
       configurations: QuillEditorConfigurations(
         autoFocus: false,
         controller: _quillBodyTextController,
@@ -834,17 +819,15 @@ class _CreateOrEditPostScreenState extends State<CreateOrEditPostScreen> {
         expands: false,
         padding: EdgeInsets.zero,
         placeholder: 'Tell your story...',
-        // scrollController: _textEditorScrollController,
-        // focusNode: textEditorTextFieldFocusNode,
         scrollBottomInset: 20,
-        embedBuilders: CustomQuillEmbed.builders(),
+        embedBuilders: FlutterQuillEmbeds.editorBuilders(),
       ),
     );
     if (widget.userPost != null) {
       if (blogBodyTextJson != null) {
         return quillEditor;
       } else {
-        return Text(widget.userPost!.text!);
+        return flutterText.Text(widget.userPost!.text!);
       }
     } else {
       return quillEditor;
@@ -870,7 +853,7 @@ class _CreateOrEditPostScreenState extends State<CreateOrEditPostScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 14),
         child: Row(
           children: [
-            Text(
+            flutterText.Text(
               showMoreOptions ? "Less options" : "More options",
               style: TextStyle(
                   color: darkGrey, fontSize: 14, fontWeight: FontWeight.w600),
@@ -950,9 +933,9 @@ class _CreateOrEditPostScreenState extends State<CreateOrEditPostScreen> {
               hasSwitch: false,
               addElevation: false,
               trailingWidget: publishedDateTime != null
-                  ? Text(
+                  ? flutterText.Text(
                       DateFormat('yyyy-MM-dd H:m').format(publishedDateTime!))
-                  : const Text(''),
+                  : const flutterText.Text(''),
               onTap: () async {
                 datePicked = await showDatePicker(
                     builder: customThemeBuilder,

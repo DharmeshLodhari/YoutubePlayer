@@ -313,7 +313,7 @@ class _MomentsScreenState extends State<MomentsScreen> {
     return InkWell(
       onTap: () async {
         if (hasPermission == PermissionType.WRITE) {
-          NavigationUtil.push(context, screen: CreateMediaMomentScreen());
+          NavigationUtil.push(context, screen: const CreateMediaMomentScreen());
         } else {
           showSnackbar(context,
               message: AppLocalization.of(context)?.doNotPermission ?? "");

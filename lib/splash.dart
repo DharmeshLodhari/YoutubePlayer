@@ -145,27 +145,27 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   void checkConnection() async {
-    await Connectivity().checkConnectivity().then((value) async {
-      final connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        hasConnection = true;
-        if (mounted) setState(() {});
-        try {
-          await getLoggedInUser();
-        } catch (error) {
-          debugPrint("ERROR1:- $error");
-          return Future.value(null);
-        }
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
+    final List<ConnectivityResult> connectivityResult =
+        await (Connectivity().checkConnectivity());
 
-        hasConnection = false;
-        if (mounted) setState(() {});
+    if (connectivityResult.contains(ConnectivityResult.wifi) ||
+        connectivityResult.contains(ConnectivityResult.ethernet) ||
+        connectivityResult.contains(ConnectivityResult.mobile)) {
+      hasConnection = true;
+      if (mounted) setState(() {});
+      try {
+        await getLoggedInUser();
+      } catch (error) {
+        debugPrint("ERROR1:- $error");
+        return Future.value(null);
       }
-    });
+    } else {
+      showToast(
+          message: AppLocalization.of(context)!.internetConnectionNotAvailable);
+
+      hasConnection = false;
+      if (mounted) setState(() {});
+    }
   }
 
   Future<void> initPlatformState() async {

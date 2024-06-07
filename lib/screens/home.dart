@@ -1596,7 +1596,7 @@ class _HomeState extends State<Home> {
 
   void copyAccountNumber() {
     Clipboard.setData(ClipboardData(
-      text: virtualAccount?.accountNumber,
+      text: virtualAccount?.accountNumber ?? "",
     ));
     showToast(message: "Account number copied !!");
   }
@@ -1618,15 +1618,15 @@ class _HomeState extends State<Home> {
             width: 1.0,
           ),
         ), //
-        child: Row(
+        child: const Row(
           children: [
-            const Icon(
+            Icon(
               SlydoAppIcon.qr_code,
               size: 15,
               color: Colors.white,
             ),
-            const SizedBox(width: 7),
-            const Text(
+            SizedBox(width: 7),
+            Text(
               'QR',
               style: TextStyle(
                 fontSize: 15,
@@ -2080,7 +2080,7 @@ class _HomeState extends State<Home> {
         bool isStaffLogin = secureUser.isStaffLogin ?? false;
 
         if (phoneNumber != "") {
-          phoneNumber = "+" + country.phoneCode! + phoneNumber;
+          phoneNumber = "+${country.phoneCode!}$phoneNumber";
         }
 
         if (phoneNumber == "" || password == "") {
@@ -2115,7 +2115,7 @@ class _HomeState extends State<Home> {
         isLoading = false;
         if (mounted) setState(() {});
         // showToast(message: err.toString());
-        debugPrint("Cannot Update Avatar : " + err.toString());
+        debugPrint("Cannot Update Avatar : $err");
       }
     }
   }

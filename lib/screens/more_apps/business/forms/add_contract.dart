@@ -148,7 +148,7 @@ class _AddContractState extends State<AddContract> {
         enableMargin: true,
       );
     }
-    return SizedBox(
+    return const SizedBox(
       height: 10,
       width: 10,
     );
@@ -179,44 +179,41 @@ class _AddContractState extends State<AddContract> {
                       border: Border.all(color: iconBtnGrey, width: 1)),
                   child: Form(
                     key: _formKey,
-                    child: Container(
-                      child: Column(
-                        children: <Widget>[
-                          getDisplayCard(),
-                          Expanded(
-                            child: Container(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 20),
-                              child: Column(
-                                children: [
-                                  flexibleSpace(),
-                                  getRecipientField(),
-                                  flexibleSpace(),
-                                  displayAmountField(),
-                                  flexibleSpace(),
-                                  getPaymentPeriodDropDown(),
-                                  flexibleSpace(),
-                                  getDateField(),
-                                  flexibleSpace(),
-                                  getNoteField(),
-                                  flexibleSpace(),
-                                  if (errorMessage == "")
-                                    Container()
-                                  else
-                                    Text(
-                                      errorMessage,
-                                      style: TextStyle(
-                                          color: mateRed,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16),
-                                    ),
-                                  flexibleSpace(),
-                                ],
-                              ),
+                    child: Column(
+                      children: <Widget>[
+                        getDisplayCard(),
+                        Expanded(
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            child: Column(
+                              children: [
+                                flexibleSpace(),
+                                getRecipientField(),
+                                flexibleSpace(),
+                                displayAmountField(),
+                                flexibleSpace(),
+                                getPaymentPeriodDropDown(),
+                                flexibleSpace(),
+                                getDateField(),
+                                flexibleSpace(),
+                                getNoteField(),
+                                flexibleSpace(),
+                                if (errorMessage == "")
+                                  Container()
+                                else
+                                  Text(
+                                    errorMessage,
+                                    style: TextStyle(
+                                        color: mateRed,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16),
+                                  ),
+                                flexibleSpace(),
+                              ],
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -224,14 +221,12 @@ class _AddContractState extends State<AddContract> {
             ),
             Expanded(
               flex: 2,
-              child: Container(
-                child: Column(
-                  children: [
-                    const SizedBox(height: 20),
-                    getSubmitButton(),
-                    flexibleSpace(flex: 2),
-                  ],
-                ),
+              child: Column(
+                children: [
+                  const SizedBox(height: 20),
+                  getSubmitButton(),
+                  flexibleSpace(flex: 2),
+                ],
               ),
             ),
           ],
@@ -250,7 +245,7 @@ class _AddContractState extends State<AddContract> {
         },
       );
     }
-    return SizedBox(
+    return const SizedBox(
       height: 1,
       width: 1,
     );
@@ -453,25 +448,23 @@ class _AddContractState extends State<AddContract> {
             },
             child: CustomizedDropDownField(
               title: "Starting date",
-              child: Container(
-                child: ListTile(
-                  dense: true,
-                  title: Text(
-                    formatDateInDigit(startingDate),
-                    style: TextStyle(
-                      color: blackFont,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
-                    ),
-                    overflow: TextOverflow.fade,
-                    softWrap: false,
-                    maxLines: 1,
+              child: ListTile(
+                dense: true,
+                title: Text(
+                  formatDateInDigit(startingDate),
+                  style: TextStyle(
+                    color: blackFont,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
                   ),
-                  trailing: Icon(
-                    SlydoAppIcon.date,
-                    size: 16,
-                    color: darkGrey,
-                  ),
+                  overflow: TextOverflow.fade,
+                  softWrap: false,
+                  maxLines: 1,
+                ),
+                trailing: Icon(
+                  SlydoAppIcon.date,
+                  size: 16,
+                  color: darkGrey,
                 ),
               ),
             ),
@@ -498,25 +491,23 @@ class _AddContractState extends State<AddContract> {
             },
             child: CustomizedDropDownField(
               title: "Ending date",
-              child: Container(
-                child: ListTile(
-                  dense: true,
-                  title: Text(
-                    formatDateInDigit(endingDate),
-                    style: TextStyle(
-                      color: blackFont,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
-                    ),
-                    overflow: TextOverflow.fade,
-                    softWrap: false,
-                    maxLines: 1,
+              child: ListTile(
+                dense: true,
+                title: Text(
+                  formatDateInDigit(endingDate),
+                  style: TextStyle(
+                    color: blackFont,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
                   ),
-                  trailing: Icon(
-                    SlydoAppIcon.date,
-                    size: 16,
-                    color: darkGrey,
-                  ),
+                  overflow: TextOverflow.fade,
+                  softWrap: false,
+                  maxLines: 1,
+                ),
+                trailing: Icon(
+                  SlydoAppIcon.date,
+                  size: 16,
+                  color: darkGrey,
                 ),
               ),
             ),

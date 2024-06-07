@@ -175,18 +175,16 @@ class _AddOrUpdateInvoiceItemState extends State<AddOrUpdateInvoiceItem> {
                 ),
               ),
             ),
-            Container(
-              child: Column(
-                children: [
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  getSubmitButton(),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                ],
-              ),
+            Column(
+              children: [
+                const SizedBox(
+                  height: 20,
+                ),
+                getSubmitButton(),
+                const SizedBox(
+                  height: 20,
+                ),
+              ],
             ),
           ],
         ),
@@ -415,7 +413,6 @@ class _AddOrUpdateInvoiceItemState extends State<AddOrUpdateInvoiceItem> {
 
         if (updated) {
           Navigator.pop(context, true); // Pop to Invoice detail page;
-
         }
       },
     ).catchError(
@@ -441,7 +438,6 @@ class _AddOrUpdateInvoiceItemState extends State<AddOrUpdateInvoiceItem> {
           Provider.of<InvoiceBloc>(context, listen: false).isRefreshing = true;
           Provider.of<InvoiceBloc>(context, listen: false).getInvoiceList();
           Navigator.pop(context, true); // Pop to Invoice detail page;
-
         }
       },
     ).catchError(

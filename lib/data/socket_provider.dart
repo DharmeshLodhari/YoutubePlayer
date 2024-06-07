@@ -96,7 +96,9 @@ class MainSocketProvider extends ChangeNotifier {
   void setupNetworkConnectionListener() {
     networkConnectionSubscription = Connectivity()
         .onConnectivityChanged
-        .listen((ConnectivityResult result) async {
+        .listen((List<ConnectivityResult> results) async {
+      final ConnectivityResult result =
+          results.isNotEmpty ? results[0] : ConnectivityResult.none;
       if (result == ConnectivityResult.none) {
         _isNetworkConnectionIsOn = false;
         notifyListeners();
@@ -354,12 +356,12 @@ class MainSocketProvider extends ChangeNotifier {
 
   /// from remove listening subscriptions from socket
   void removeStreamSubscription(StreamSubscription? streamSubscription) {
-    _streamSubscriptions.forEach((element) {
+    for (var element in _streamSubscriptions) {
       if (element == streamSubscription) {
         element?.cancel();
         // debugPrint("Stream Subscription removed successfully !");
       }
-    });
+    }
   }
 
   /// for adding data into user socket
@@ -387,9 +389,9 @@ class MainSocketProvider extends ChangeNotifier {
   Future<bool> addDataInTheCorrectOrder() async {
     try {
       if (_isConnected) {
-        _queueMessages.forEach((message) {
+        for (var message in _queueMessages) {
           _channel!.sink.add(message);
-        });
+        }
 
         _lastSent = DateTime.now();
         pingCount = 0;
@@ -423,9 +425,9 @@ class MainSocketProvider extends ChangeNotifier {
       _isConnected = false;
 
       await connect().then((value) async {
-        _queueMessages.forEach((message) {
+        for (var message in _queueMessages) {
           _channel!.sink.add(message);
-        });
+        }
 
         _lastSent = DateTime.now();
         pingCount = 0;
@@ -506,9 +508,9 @@ class MainSocketProvider extends ChangeNotifier {
         debugPrint(
             "Messages related To Conversation id found at $messagesIndex");
       }
-      messagesIndex.forEach((element) {
+      for (var element in messagesIndex) {
         _queueMessages.removeAt(element);
-      });
+      }
     }
   }
 

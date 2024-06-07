@@ -43,11 +43,11 @@ class BasketBloc extends ChangeNotifier {
   int getProductOrServiceQuantityInCart(String id) {
     int quantity = 0;
 
-    _basketItems.forEach((element) {
+    for (var element in _basketItems) {
       if (element.item?.id == id) {
         quantity = int.parse(element.qty.toString());
       }
-    });
+    }
     return quantity;
   }
 
@@ -616,7 +616,7 @@ class BasketBloc extends ChangeNotifier {
 
     bool flag = false;
 
-    _basketItems.forEach((element) {
+    for (var element in _basketItems) {
       if (element.item?.id == item.id) {
         flag = true;
 
@@ -633,9 +633,9 @@ class BasketBloc extends ChangeNotifier {
         }
 
         addedOrUpdatedItem = element;
-        return;
+        continue;
       }
-    });
+    }
 
     if (!flag) {
       if (withApiCall == true) {
@@ -1110,7 +1110,7 @@ class BasketBloc extends ChangeNotifier {
   int getSubTotalPriceByMerchant({required String merchantUserName}) {
     int subTotal = 0;
 
-    items.forEach((element) {
+    for (var element in items) {
       final item = element['item'];
 
       if (merchantUserName == item.getMerchantUserName()) {
@@ -1135,7 +1135,7 @@ class BasketBloc extends ChangeNotifier {
           }
         }
       }
-    });
+    }
 
     return subTotal;
   }

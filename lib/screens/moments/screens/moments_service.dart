@@ -4,8 +4,8 @@ import 'package:Slydo/screens/moments/models/create_moment_model.dart';
 import 'package:Slydo/screens/moments/models/moments_model.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:flutter/foundation.dart';
-import 'package:http/http.dart';
 import "package:http/http.dart" as http;
+import 'package:http/http.dart';
 
 import '../../../data/environment.dart';
 import '../../../utils/util.dart';
@@ -30,9 +30,9 @@ class MomentsService extends AuthService {
       if (url.contains("page_size")) {
         url = url;
       } else if (url.contains("?")) {
-        url = url + "&page_size=$page_size";
+        url = "$url&page_size=$page_size";
       } else {
-        url = url + "?page_size=$page_size";
+        url = "$url?page_size=$page_size";
       }
     }
     final headers = await getAuthHeaders();
@@ -44,9 +44,9 @@ class MomentsService extends AuthService {
       final List<ExploreMomentsModel> momentsList = [];
       final List jsonResult = jsonData['results'];
 
-      jsonResult.forEach((json) {
+      for (var json in jsonResult) {
         momentsList.add(ExploreMomentsModel.fromJson(json));
-      });
+      }
 
       final Map<String, dynamic> result = {
         "count": jsonData["count"],
@@ -88,9 +88,9 @@ class MomentsService extends AuthService {
       final List<MomentsModel> momentsList = [];
       final List jsonResult = jsonData['results'];
 
-      jsonResult.forEach((json) {
+      for (var json in jsonResult) {
         momentsList.add(MomentsModel.fromJson(json));
-      });
+      }
 
       final Map<String, dynamic> result = {
         "count": jsonData["count"],
@@ -175,7 +175,7 @@ class MomentsService extends AuthService {
 
     debugPrint('COMMENTS MOMENTS ::: ${response.statusCode}');
     debugPrint('COMMENTS MOMENTS ::: ${response.body}');
-    debugPrint('COMMENTS MOMENTS PINNED ::: ${pinnedYarn}');
+    debugPrint('COMMENTS MOMENTS PINNED ::: $pinnedYarn');
     if (response.statusCode == 200 || response.statusCode == 201) {
       final jsonData = jsonDecode(response.body);
       List results = jsonData['results'];
@@ -440,7 +440,7 @@ class MomentsService extends AuthService {
 
       for (var item in results) {
         final YarnComment commentsDetail = YarnComment.fromJson(item);
-        debugPrint('Fola test getAllComments::: ${item}');
+        debugPrint('Fola test getAllComments::: $item');
 
         commentsDetails.add(commentsDetail);
       }
@@ -488,7 +488,7 @@ class MomentsService extends AuthService {
       String? channelUsername}) async {
     String url = "${AppConfig.baseUrl}/api/v1/social/moments/";
 
-    debugPrint("URL FOR CREATE MOMENT test ${channelUsername}");
+    debugPrint("URL FOR CREATE MOMENT test $channelUsername");
 
     if (channelUsername!.isNotEmpty) {
       url =
@@ -731,7 +731,7 @@ class MomentsService extends AuthService {
       debugPrint('RESULT LENGTH -> ${results.length}');
 
       for (var item in results) {
-        debugPrint('RESULT searched item moment:::: ${item}');
+        debugPrint('RESULT searched item moment:::: $item');
       }
 
       return BasePaginationModel<List<SearchMomentModel>>.fromJson(

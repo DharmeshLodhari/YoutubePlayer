@@ -141,7 +141,7 @@ class _PickAttachmentScreenState extends State<PickAttachmentScreen> {
         {
           final List<dynamic> resultList = result['results'];
 
-          resultList.forEach((e) {
+          for (var e in resultList) {
             displayCardModelList.add(
               DisplayCardModel(
                   id: e['id'],
@@ -149,7 +149,7 @@ class _PickAttachmentScreenState extends State<PickAttachmentScreen> {
                   imageUrl: e['image'],
                   description: e['tag_line']),
             );
-          });
+          }
 
           break;
         }

@@ -37,15 +37,16 @@ class ShareManager {
 
   void initializeShareManager() {
     _initializeMediaStream();
-    _initializeTextStream();
+    // _initializeTextStream();
   }
 
   void _initializeMediaStream() {
     disposeSharedValue();
     // For sharing images coming from outside the app while the app is in the memory
-    _intentDataStreamSubscription = ReceiveSharingIntent.getMediaStream()
+    _intentDataStreamSubscription = ReceiveSharingIntent.instance
+        .getMediaStream()
         .listen((List<SharedMediaFile> value) {
-      debugPrint("ReceiveSharedMedia1:" + value.map((f) => f.path).join(","));
+      debugPrint("ReceiveSharedMedia1:${value.map((f) => f.path).join(",")}");
       _sharedFiles = value;
       if (_sharedFiles != null && _sharedFiles!.isNotEmpty) {
         initializeNavigationTimer();
@@ -55,8 +56,10 @@ class ShareManager {
     });
 
     // For sharing images coming from outside the app while the app is closed
-    ReceiveSharingIntent.getInitialMedia().then((List<SharedMediaFile> value) {
-      debugPrint("ReceiveSharedMedia2:" + (value.map((f) => f.path).join(",")));
+    ReceiveSharingIntent.instance
+        .getInitialMedia()
+        .then((List<SharedMediaFile> value) {
+      debugPrint("ReceiveSharedMedia2:${value.map((f) => f.path).join(",")}");
       _sharedFiles = value;
       if (_sharedFiles != null && _sharedFiles!.isNotEmpty) {
         initializeNavigationTimer();
@@ -64,29 +67,29 @@ class ShareManager {
     });
   }
 
-  void _initializeTextStream() {
-    disposeSharedValue();
-    // For sharing or opening urls/text coming from outside the app while the app is in the memory
-    _intentDataStreamSubscription =
-        ReceiveSharingIntent.getTextStream().listen((String value) {
-      debugPrint("ReceiveSharedText1: $value");
-      _sharedText = value;
-      if (_sharedText != null && _sharedText != "" && _sharedText != "null") {
-        initializeNavigationTimer();
-      }
-    }, onError: (err) {
-      debugPrint("getLinkStream error: $err");
-    });
-
-    // For sharing or opening urls/text coming from outside the app while the app is closed
-    ReceiveSharingIntent.getInitialText().then((String? value) {
-      debugPrint("ReceiveSharedText2: $value");
-      _sharedText = value;
-      if (_sharedText != null && _sharedText != "" && _sharedText != "null") {
-        initializeNavigationTimer();
-      }
-    });
-  }
+  // void _initializeTextStream() {
+  //   disposeSharedValue();
+  //   // For sharing or opening urls/text coming from outside the app while the app is in the memory
+  //   _intentDataStreamSubscription =
+  //       ReceiveSharingIntent.instance.getTextStream().listen((String value) {
+  //     debugPrint("ReceiveSharedText1: $value");
+  //     _sharedText = value;
+  //     if (_sharedText != null && _sharedText != "" && _sharedText != "null") {
+  //       initializeNavigationTimer();
+  //     }
+  //   }, onError: (err) {
+  //     debugPrint("getLinkStream error: $err");
+  //   });
+  //
+  //   // For sharing or opening urls/text coming from outside the app while the app is closed
+  //   ReceiveSharingIntent.getInitialText().then((String? value) {
+  //     debugPrint("ReceiveSharedText2: $value");
+  //     _sharedText = value;
+  //     if (_sharedText != null && _sharedText != "" && _sharedText != "null") {
+  //       initializeNavigationTimer();
+  //     }
+  //   });
+  // }
 
   void disposeShareManager() {
     _intentDataStreamSubscription?.cancel();
@@ -195,9 +198,9 @@ class ShareManager {
   }
 
   String? getFileKind(SharedMediaFile file) {
-    if (file.type == SharedMediaType.IMAGE) {
+    if (file.type == SharedMediaType.image) {
       return "image";
-    } else if (file.type == SharedMediaType.VIDEO) {
+    } else if (file.type == SharedMediaType.video) {
       return "video";
     }
     return null;

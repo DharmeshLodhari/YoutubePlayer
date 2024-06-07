@@ -429,38 +429,36 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
 
   Widget displayBodyOfTransaction() {
     final bool canEditDate = invoice.status == 'Draft';
-    return Container(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Divider(
-            color: dividerColor,
-            thickness: 1,
-            height: 0,
-          ),
-          detailTile(
-            Icons.history_edu,
-            AppLocalization.of(context)!.status,
-            invoice.status!,
-          ),
-          detailTile(
-            SlydoAppIcon.date,
-            "Invoice date",
-            formatDate(invoice.invoiceDate!),
-            editDate: canEditDate,
-            isDueDate: false,
-          ),
-          detailTile(
-            SlydoAppIcon.date,
-            "Due date",
-            formatDate(invoice.dueDate!),
-            editDate: canEditDate,
-            isDueDate: true,
-          ),
-          getInvoiceItems()
-        ],
-      ),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Divider(
+          color: dividerColor,
+          thickness: 1,
+          height: 0,
+        ),
+        detailTile(
+          Icons.history_edu,
+          AppLocalization.of(context)!.status,
+          invoice.status!,
+        ),
+        detailTile(
+          SlydoAppIcon.date,
+          "Invoice date",
+          formatDate(invoice.invoiceDate!),
+          editDate: canEditDate,
+          isDueDate: false,
+        ),
+        detailTile(
+          SlydoAppIcon.date,
+          "Due date",
+          formatDate(invoice.dueDate!),
+          editDate: canEditDate,
+          isDueDate: true,
+        ),
+        getInvoiceItems()
+      ],
     );
   }
 
@@ -731,71 +729,69 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
 
   Widget detailTile(IconData icon, String title, String subtitle,
       {bool editDate = false, bool isDueDate = false}) {
-    return Container(
-      child: ListTile(
-        dense: true,
-        leading: RoundedBackgroundIcon(
-          icon: Icon(
-            icon,
-            color: blackFont,
-            size: 18,
-          ),
-          backgroundColor: iconBtnGrey,
+    return ListTile(
+      dense: true,
+      leading: RoundedBackgroundIcon(
+        icon: Icon(
+          icon,
+          color: blackFont,
+          size: 18,
         ),
-        title: Row(
-          children: [
-            Text(
-              title,
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                color: blackFont,
-                fontSize: 14,
-              ),
+        backgroundColor: iconBtnGrey,
+      ),
+      title: Row(
+        children: [
+          Text(
+            title,
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              color: blackFont,
+              fontSize: 14,
             ),
-            const SizedBox(width: 5),
-            if (editDate)
-              InkWell(
-                onTap: () {
-                  showDatePicker(
-                    builder: customThemeBuilder,
-                    context: context,
-                    initialDate: DateTime(DateTime.now().year,
-                        DateTime.now().month, DateTime.now().day),
-                    firstDate: DateTime(DateTime.now().year,
-                        DateTime.now().month, DateTime.now().day),
-                    lastDate: DateTime(2101),
-                  ).then((value) {
-                    invoiceDate = DateTime(value!.year, value.month, value.day);
-
-                    _updateInvoiceDate(isDueDate: isDueDate);
-
-                    // setState(() {});
-                  }).catchError((error) {});
-                },
-                child: Text(
-                  'Edit',
-                  style: TextStyle(
-                    color: navyBlue,
-                    fontSize: 12,
-                  ),
-                ),
-              )
-            else
-              const SizedBox.shrink(),
-          ],
-        ),
-        subtitle: Text(
-          subtitle,
-          style: TextStyle(
-            color: blackFont,
-            fontSize: 14,
           ),
+          const SizedBox(width: 5),
+          if (editDate)
+            InkWell(
+              onTap: () {
+                showDatePicker(
+                  builder: customThemeBuilder,
+                  context: context,
+                  initialDate: DateTime(DateTime.now().year,
+                      DateTime.now().month, DateTime.now().day),
+                  firstDate: DateTime(DateTime.now().year, DateTime.now().month,
+                      DateTime.now().day),
+                  lastDate: DateTime(2101),
+                ).then((value) {
+                  invoiceDate = DateTime(value!.year, value.month, value.day);
+
+                  _updateInvoiceDate(isDueDate: isDueDate);
+
+                  // setState(() {});
+                }).catchError((error) {});
+              },
+              child: Text(
+                'Edit',
+                style: TextStyle(
+                  color: navyBlue,
+                  fontSize: 12,
+                ),
+              ),
+            )
+          else
+            const SizedBox.shrink(),
+        ],
+      ),
+      subtitle: Text(
+        subtitle,
+        style: TextStyle(
+          color: blackFont,
+          fontSize: 14,
         ),
       ),
     );
   }
 
-  _updateInvoiceDate({required bool isDueDate}) {
+  void _updateInvoiceDate({required bool isDueDate}) {
     BusinessAuth().updateInvoice(invoiceId: invoice.id.toString(), data: {
       isDueDate ? "due_date" : "invoice_date": dateToString(invoiceDate),
     }).then(

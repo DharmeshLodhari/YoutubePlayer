@@ -1151,7 +1151,8 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
         return Theme(
           data: ThemeData.light().copyWith(
             primaryColor: navyBlue,
-            backgroundColor: Colors.white,
+            cardColor: Colors.white,
+            // backgroundColor: Colors.white,
             timePickerTheme: TimePickerThemeData(
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20)),

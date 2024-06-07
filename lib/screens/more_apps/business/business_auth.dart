@@ -46,9 +46,9 @@ class BusinessAuth extends AuthService {
       final List<ContractModel> contractList = [];
       final List jsonResult = jsonData['results'];
 
-      jsonResult.forEach((json) {
+      for (var json in jsonResult) {
         contractList.add(ContractModel.fromJson(json));
-      });
+      }
 
       final Map<String, dynamic> result = {
         "count": jsonData["count"],
@@ -148,7 +148,7 @@ class BusinessAuth extends AuthService {
     }
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
-    debugPrint("${response.body}");
+    debugPrint(response.body);
     if (response.statusCode == 200 || response.statusCode == 201) {
       final List<Transaction> transactions = [];
       // This variable will hold list of transactions we got from server
@@ -201,7 +201,7 @@ class BusinessAuth extends AuthService {
     final headers = await getAuthHeaders();
 
     final _data = jsonEncode(data);
-    debugPrint("$_data");
+    debugPrint(_data);
     final response = await httpPost(url, body: _data, headers: headers);
     debugPrint('ADD CONTRACT RESPONSE ::: ${response.body}');
     if (response.statusCode == 200 || response.statusCode == 201) {
@@ -259,9 +259,9 @@ class BusinessAuth extends AuthService {
       final List<InvoiceModel> invoiceList = [];
       final List jsonResult = jsonData['results'];
 
-      jsonResult.forEach((json) {
+      for (var json in jsonResult) {
         invoiceList.add(InvoiceModel.fromJson(json));
-      });
+      }
 
       final Map<String, dynamic> result = {
         "count": jsonData["count"],

@@ -7,7 +7,6 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class UserReviewList extends StatefulWidget {
@@ -179,7 +178,7 @@ class _UserReviewListState extends State<UserReviewList> {
                   }
                 },
               );
-    StaggeredGridView.countBuilder(
+    /*StaggeredGridView.countBuilder(
       physics: const ClampingScrollPhysics(),
       controller: _reviewScrollController,
       crossAxisCount: 2,
@@ -199,7 +198,7 @@ class _UserReviewListState extends State<UserReviewList> {
       staggeredTileBuilder: (int index) => const StaggeredTile.count(2, 0.85),
     );
 
-    /*ListView.builder(
+    ListView.builder(
             physics: ClampingScrollPhysics(),
             controller: _reviewScrollController,
             itemCount: reviewList.length,

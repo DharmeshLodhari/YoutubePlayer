@@ -496,9 +496,9 @@ class _UpdateGroupNameAndProfileState extends State<UpdateGroupNameAndProfile> {
             child: DropdownButton2(
               isExpanded: true,
               value: selectedAge,
-              dropdownDecoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(14),
-              ),
+              // dropdownDecoration: BoxDecoration(
+              //   borderRadius: BorderRadius.circular(14),
+              // ),
               hint: const Text('Select an age'),
               underline: const SizedBox.shrink(),
               items: ['13+', '15+', '18+', '21+'].map((String item) {

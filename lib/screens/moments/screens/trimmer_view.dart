@@ -101,7 +101,7 @@ class _TrimmerViewState extends State<TrimmerView> {
                   child: VideoViewer(trimmer: _trimmer),
                 ),
                 Center(
-                  child: TrimEditor(
+                  child: TrimViewer(
                     trimmer: _trimmer,
                     viewerHeight: 50.0,
                     viewerWidth: MediaQuery.of(context).size.width,
@@ -133,7 +133,7 @@ class _TrimmerViewState extends State<TrimmerView> {
                         ),
                   onPressed: () async {
                     final bool playbackState =
-                        await _trimmer.videPlaybackControl(
+                        await _trimmer.videoPlaybackControl(
                       startValue: _startValue,
                       endValue: _endValue,
                     );

@@ -513,6 +513,15 @@ class _TransactionGraphState extends State<TransactionGraph> {
 
       case 6:
         return "S";
+
+      case null:
+      // TODO: Handle this case.
+
+      case double():
+      // TODO: Handle this case.
+
+      case int():
+      // TODO: Handle this case.
     }
     return AppLocalization.of(context)!.day;
   }

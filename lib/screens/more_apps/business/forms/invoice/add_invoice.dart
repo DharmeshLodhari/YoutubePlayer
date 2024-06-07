@@ -153,7 +153,7 @@ class _AddInvoiceState extends State<AddInvoice> {
         enableMargin: true,
       );
     }
-    return Container(
+    return const SizedBox(
       height: 10,
       width: 10,
     );
@@ -179,86 +179,81 @@ class _AddInvoiceState extends State<AddInvoice> {
                     border: Border.all(color: iconBtnGrey, width: 1)),
                 child: Form(
                   key: _formKey,
-                  child: Container(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        getDisplayCard(),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const SizedBox(height: 16),
-                              getRecipientField(),
-                              const SizedBox(height: 8),
-                              Text("Invoice detail",
-                                  style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
-                                      color: blackFont)),
-                              const SizedBox(height: 16),
-                              getInvoiceNumber(),
-                              // SizedBox(height: 8),
-                              // displayAmountField(),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      getDisplayCard(),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(height: 16),
+                            getRecipientField(),
+                            const SizedBox(height: 8),
+                            Text("Invoice detail",
+                                style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    color: blackFont)),
+                            const SizedBox(height: 16),
+                            getInvoiceNumber(),
+                            // SizedBox(height: 8),
+                            // displayAmountField(),
 
-                              const SizedBox(height: 8),
-                              getDateField(),
-                              const SizedBox(height: 16),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text("Items",
-                                      style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w600,
-                                          color: blackFont)),
-                                  InkWell(
-                                    onTap: () {
-                                      Navigator.of(context)
-                                          .pushNamed(Routes.ADD_INVOICE_ITEM);
-                                    },
-                                    child: const Icon(Icons.add, size: 18),
-                                  )
-                                ],
+                            const SizedBox(height: 8),
+                            getDateField(),
+                            const SizedBox(height: 16),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text("Items",
+                                    style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                        color: blackFont)),
+                                InkWell(
+                                  onTap: () {
+                                    Navigator.of(context)
+                                        .pushNamed(Routes.ADD_INVOICE_ITEM);
+                                  },
+                                  child: const Icon(Icons.add, size: 18),
+                                )
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            getInvoiceItems(),
+
+                            const SizedBox(height: 8),
+                            getInvoiceTotal(),
+                            // SizedBox(height: 16),
+                            // getPaymentPeriodDropDown(),
+                            const SizedBox(height: 8),
+                            if (errorMessage == "")
+                              Container()
+                            else
+                              Text(
+                                errorMessage,
+                                style: TextStyle(
+                                    color: mateRed,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16),
                               ),
-                              const SizedBox(height: 8),
-                              getInvoiceItems(),
-
-                              const SizedBox(height: 8),
-                              getInvoiceTotal(),
-                              // SizedBox(height: 16),
-                              // getPaymentPeriodDropDown(),
-                              const SizedBox(height: 8),
-                              if (errorMessage == "")
-                                Container()
-                              else
-                                Text(
-                                  errorMessage,
-                                  style: TextStyle(
-                                      color: mateRed,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16),
-                                ),
-                              const SizedBox(height: 8),
-                            ],
-                          ),
+                            const SizedBox(height: 8),
+                          ],
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
               ),
             ),
-            Container(
-              child: Column(
-                children: [
-                  const SizedBox(height: 20),
-                  getSubmitButton(),
-                  const SizedBox(height: 20),
-                ],
-              ),
+            Column(
+              children: [
+                const SizedBox(height: 20),
+                getSubmitButton(),
+                const SizedBox(height: 20),
+              ],
             ),
           ],
         ),
@@ -276,14 +271,14 @@ class _AddInvoiceState extends State<AddInvoice> {
         },
       );
     }
-    return Container(
+    return const SizedBox(
       height: 1,
       width: 1,
     );
   }
 
   Widget getInvoiceItems() {
-    if (_addInvoiceBloc.items.length != 0) {
+    if (_addInvoiceBloc.items.isNotEmpty) {
       if (mounted) {
         setState(() {
           errorMessage = '';
@@ -375,9 +370,9 @@ class _AddInvoiceState extends State<AddInvoice> {
             .toList(),
       );
     } else {
-      return Container(
-        child: const Center(child: Text("No item")),
+      return const SizedBox(
         height: 100,
+        child: Center(child: Text("No item")),
       );
     }
   }
@@ -427,7 +422,7 @@ class _AddInvoiceState extends State<AddInvoice> {
     var avatarImage;
     var qrCodeImage;
     if (_payee != null) {
-      avatarImage = Container(
+      avatarImage = SizedBox(
         height: 48,
         width: 48,
         child: ClipOval(
@@ -747,7 +742,7 @@ class _AddInvoiceState extends State<AddInvoice> {
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: Container(
+              content: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   elevation: 2,
@@ -879,7 +874,7 @@ class _AddInvoiceState extends State<AddInvoice> {
     }
   }
 
-  createInvoice() async {
+  Future<void> createInvoice() async {
     try {
       List<InvoiceItem?> invoiceItem = [];
 
@@ -903,12 +898,10 @@ class _AddInvoiceState extends State<AddInvoice> {
         "items": invoiceItem
       };
 
-      invoiceItem.forEach(
-        (item) {
-          final int index = invoiceItem.indexOf(item);
-          invoiceItem[index]!.amount = invoiceItem[index]!.amount! * 100;
-        },
-      );
+      for (var item in invoiceItem) {
+        final int index = invoiceItem.indexOf(item);
+        invoiceItem[index]!.amount = invoiceItem[index]!.amount! * 100;
+      }
       if (conversationId != null) {
         data['conversation_id'] = conversationId!;
       }

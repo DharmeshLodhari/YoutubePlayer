@@ -50,10 +50,10 @@ class _AddProductState extends State<AddProduct> {
   ProductCondition? selectedProductCondition;
   ProductCondition? selectedDeliveryTimeCondition;
   int imageCount = 5;
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
 
   // TextEditingController _myController = TextEditingController();
-  TextfieldTagsController _myController = TextfieldTagsController();
+  final TextfieldTagsController _myController = TextfieldTagsController();
   TextfieldTagsController textfieldTagsController = TextfieldTagsController();
   List<PickedFile> productImages = [];
   String productName = "";
@@ -1296,7 +1296,7 @@ class _AddProductState extends State<AddProduct> {
                       // _myController.addTag = tags.name
                       //         ?.replaceAll(" ", "-")
                       //         .toLowerCase() ??
-                      _myController.addTag = tags.name ?? "";
+                      _myController.addTag(tags.name ?? "");
                       final Tags tagData = Tags(id: tags.id, name: tags.name);
                       userTags.add(tagData);
                     }
@@ -1320,7 +1320,7 @@ class _AddProductState extends State<AddProduct> {
         ),
         CustomTextFieldTag(
           // initialTags: ["Test"],
-          textfieldTagsController: _myController,
+          textFieldTagsController: _myController,
           onTap: (String tag) {
             setState(() {
               userTags.removeWhere((e) => e.name == tag);

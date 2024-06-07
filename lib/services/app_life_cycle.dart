@@ -73,6 +73,8 @@ class _AppLifeCycleState extends State<AppLifeCycle>
       case AppLifecycleState.detached:
         onDetached();
         break;
+      case AppLifecycleState.hidden:
+        break;
     }
   }
 

@@ -132,7 +132,7 @@ class _SearchBusState extends State<SearchBus> {
   Widget swapPlace() {
     return PreferredSize(
       preferredSize: const Size.fromHeight(50),
-      child: Container(
+      child: SizedBox(
         width: double.infinity,
         child: Column(
           children: [

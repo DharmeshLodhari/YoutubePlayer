@@ -205,7 +205,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
   late BasketBloc basketBloc;
 
-  StreamSubscription<ConnectivityResult>? networkConnectionSubscription;
+  StreamSubscription<List<ConnectivityResult>>? networkConnectionSubscription;
 
   ///variable for message actions
   bool showMoreAction = false;
@@ -406,7 +406,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     final List<ChatMessage> messages = await ChatMessageHandler()
         .getChatMessages(chatConversation: chatConversation!);
 
-    messages.forEach((message) {
+    for (var message in messages) {
       bool isPresent = false;
       for (int i = 0; i < messageList.length; i++) {
         final Map<String, dynamic> decodePresentMessage =
@@ -427,7 +427,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         messageList.add(encodedMessage);
         storeMessagesTemporary(message: encodedMessage);
       }
-    });
+    }
 
     if (mounted) setState(() {});
 
@@ -479,7 +479,9 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   Future<void> setupNetworkConnectionListener() async {
     networkConnectionSubscription = Connectivity()
         .onConnectivityChanged
-        .listen((ConnectivityResult result) async {
+        .listen((List<ConnectivityResult> results) async {
+      final ConnectivityResult result =
+          results.isNotEmpty ? results[0] : ConnectivityResult.none;
       if (result == ConnectivityResult.none) {
         _isNetworkConnectionIsOn = false;
         debugPrint(
@@ -507,7 +509,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   Future<void> setUpAudioRecorder() async {
     await getAudioPermission();
 
-    await audioRecorder?.openAudioSession().then((value) {
+    await audioRecorder?.openRecorder().then((value) {
       isAudioRecorderInitialized = true;
       if (mounted) setState(() {});
     });
@@ -538,7 +540,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   }
 
   void disposeAudioPlayers() {
-    messageList.forEach((element) {
+    for (var element in messageList) {
       final Map<String, dynamic>? messageData = jsonDecode(element!);
 
       AssetsAudioPlayer.allPlayers().forEach((key, value) {
@@ -546,7 +548,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
           value.dispose();
         }
       });
-    });
+    }
   }
 
   @override
@@ -606,6 +608,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         break;
       case AppLifecycleState.detached:
         debugPrint("Chat is detached");
+        break;
+      case AppLifecycleState.hidden:
         break;
     }
   }
@@ -2260,11 +2264,11 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   Widget getGroupUserList() {
     final List<Participant> participantList = [];
 
-    groupDetail!.participants.forEach((element) {
+    for (var element in groupDetail!.participants) {
       if (element.userName != userBloc!.user.userName) {
         participantList.add(element);
       }
-    });
+    }
 
     return ListView.builder(
       itemBuilder: (context, index) {
@@ -2511,19 +2515,19 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         apiKey: AppConfig.gifApiKey,
         showPreviewPage: false,
         sticker: false,
-        decorator: GiphyDecorator(
-          showAppBar: false,
-          searchElevation: 4,
-          giphyTheme: ThemeData.light().copyWith(
-            inputDecorationTheme: const InputDecorationTheme(
-              border: InputBorder.none,
-              enabledBorder: InputBorder.none,
-              focusedBorder: InputBorder.none,
-              contentPadding: EdgeInsets.zero,
-            ),
-            textSelectionTheme: TextSelectionThemeData(cursorColor: navyBlue),
-          ),
-        ),
+        // decorator: GiphyDecorator(
+        //   showAppBar: false,
+        //   searchElevation: 4,
+        //   giphyTheme: ThemeData.light().copyWith(
+        //     inputDecorationTheme: const InputDecorationTheme(
+        //       border: InputBorder.none,
+        //       enabledBorder: InputBorder.none,
+        //       focusedBorder: InputBorder.none,
+        //       contentPadding: EdgeInsets.zero,
+        //     ),
+        //     textSelectionTheme: TextSelectionThemeData(cursorColor: navyBlue),
+        //   ),
+        // ),
         onError: (error) {
           debugPrint("ERROR IN GIPHY PICKER:- $error");
         },
@@ -2550,21 +2554,21 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         onError: (error) {
           debugPrint("ERROR IN GIPHY PICKER:- $error");
         },
-        decorator: GiphyDecorator(
-          showAppBar: false,
-          searchElevation: 4,
-          giphyTheme: ThemeData.light().copyWith(
-            inputDecorationTheme: const InputDecorationTheme(
-              border: InputBorder.none,
-              enabledBorder: InputBorder.none,
-              focusedBorder: InputBorder.none,
-              contentPadding: EdgeInsets.zero,
-            ),
-            textSelectionTheme: TextSelectionThemeData(cursorColor: navyBlue),
-          ),
-        ),
+        // decorator: GiphyDecorator(
+        //   showAppBar: false,
+        //   searchElevation: 4,
+        //   giphyTheme: ThemeData.light().copyWith(
+        //     inputDecorationTheme: const InputDecorationTheme(
+        //       border: InputBorder.none,
+        //       enabledBorder: InputBorder.none,
+        //       focusedBorder: InputBorder.none,
+        //       contentPadding: EdgeInsets.zero,
+        //     ),
+        //     textSelectionTheme: TextSelectionThemeData(cursorColor: navyBlue),
+        //   ),
+        // ),
         sticker: true,
-        searchText: "Search Sticker",
+        searchHintText: "Search Sticker",
         title: const Text(
           "Slydo Sticker",
           style: TextStyle(
@@ -3463,14 +3467,14 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       animationDuration: const Duration(milliseconds: 200),
       offsetDx: 8.1,
       onLeftSwipe: isSend
-          ? () {
+          ? (DragUpdateDetails details) {
               debugPrint("left Swipe");
               replyChatMessage(message: message);
             }
           : null,
       onRightSwipe: isSend
           ? null
-          : () {
+          : (DragUpdateDetails details) {
               debugPrint("Right Swipe");
               replyChatMessage(message: message);
             },
@@ -4149,12 +4153,12 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
             type: type,
             currentUser: userBloc?.user.convertToUser());
         late var mapData;
-        basketBloc.items.forEach((element) {
+        for (var element in basketBloc.items) {
           if (element["item"].checkID == item.checkID) {
             mapData = element;
-            return;
+            continue;
           }
-        });
+        }
         final Map<String, dynamic> data = {
           "type": type,
           "id": mapData["item"].checkID,
@@ -4175,7 +4179,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   }
 
   void checkMessageForRead() {
-    messageList.forEach((element) {
+    for (var element in messageList) {
       ///{id: e2230d61-c7e6-4825-a7c2-318a47671ff0,
       /// check_id: 1eb55ef5-87c3-4d85-9bd5-6f277a52b4f8,
       /// conversation: 3fe1e3b6-5802-4ade-b4f3-8f21d7b8ebd7,
@@ -4194,7 +4198,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
           storeMessagesTemporary(message: element);
         }
       }
-    });
+    }
 
     acknowledgeThatMessageAreRead();
   }
@@ -4370,13 +4374,13 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
           bottomSheetStateSetterGlobal!(() {});
         if (mounted) setState(() {});
 
-        tempList.forEach((item) {
+        for (var item in tempList) {
           if (isProductSearch) {
             searchedProductAndService.add(Product.fromJson(item));
           } else if (isServiceSearch) {
             searchedProductAndService.add(Service.fromJson(item));
           }
-        });
+        }
 
         if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
           bottomSheetStateSetterGlobal!(() {});
