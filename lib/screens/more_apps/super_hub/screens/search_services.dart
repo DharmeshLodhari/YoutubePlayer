@@ -276,48 +276,45 @@ class _SearchServicesState extends State<SearchServices> {
   }
 
   Widget scaffoldBody() {
-    return Container(
-      child: Column(
-        children: [
-          if (showSortByBox) sortByDropDown() else const SizedBox.shrink(),
-          const SizedBox(height: 6),
-          searchBox(),
-          const SizedBox(height: 12),
-          if (isLoading)
-            const CircularProgressIndicator()
-          else
-            const SizedBox.shrink(),
-          if (isSearchIsEmpty)
-            Expanded(
-              child: NoItemInList(
-                msg:
-                    AppLocalization.of(context)!.pleaseTypeSomethingToGetResult,
-                isResult: false,
-              ),
-            )
-          else
-            noItemInList
-                ? Expanded(
-                    child: NoItemInList(
-                      msg: AppLocalization.of(context)!.noResultFound,
-                    ),
-                  )
-                : Expanded(
-                    child: ListView(
-                        children: products
-                            .map(
-                              (product) => Container(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 8, horizontal: 16),
-                                child: ShoppingTileWithHeartWithService(
-                                  service: product,
-                                ),
-                              ),
-                            )
-                            .toList()),
+    return Column(
+      children: [
+        if (showSortByBox) sortByDropDown() else const SizedBox.shrink(),
+        const SizedBox(height: 6),
+        searchBox(),
+        const SizedBox(height: 12),
+        if (isLoading)
+          const CircularProgressIndicator()
+        else
+          const SizedBox.shrink(),
+        if (isSearchIsEmpty)
+          Expanded(
+            child: NoItemInList(
+              msg: AppLocalization.of(context)!.pleaseTypeSomethingToGetResult,
+              isResult: false,
+            ),
+          )
+        else
+          noItemInList
+              ? Expanded(
+                  child: NoItemInList(
+                    msg: AppLocalization.of(context)!.noResultFound,
                   ),
-        ],
-      ),
+                )
+              : Expanded(
+                  child: ListView(
+                      children: products
+                          .map(
+                            (product) => Container(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 8, horizontal: 16),
+                              child: ShoppingTileWithHeartWithService(
+                                service: product,
+                              ),
+                            ),
+                          )
+                          .toList()),
+                ),
+      ],
     );
   }
 

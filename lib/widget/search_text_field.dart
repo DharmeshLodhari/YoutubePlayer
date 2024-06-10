@@ -98,7 +98,7 @@ class _SearchTextFieldState extends State<SearchTextField> {
                       width: 1.0,
                     ),
                   ),
-                  hintStyle: widget.hintStyle ?? null),
+                  hintStyle: widget.hintStyle),
               onFieldSubmitted: (val) {
                 widget.onSubmit();
               },

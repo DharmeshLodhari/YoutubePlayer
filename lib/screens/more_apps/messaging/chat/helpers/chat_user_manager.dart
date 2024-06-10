@@ -12,8 +12,9 @@ class ChatUserManager {
     final List<ChatUserModel> dbUsers = [];
 
     /// Converting CustomerProfile in to Chat Users
-    users.forEach(
-        (user) => dbUsers.add(ChatUserModel.fromChatConversation(user)));
+    for (var user in users) {
+      dbUsers.add(ChatUserModel.fromChatConversation(user));
+    }
 
     /// adding Chat User into DataBase
     _db.saveChatUserCount(dbUsers);

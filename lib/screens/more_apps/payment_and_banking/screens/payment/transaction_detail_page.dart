@@ -37,9 +37,11 @@ class _TransactionDetailState extends State<TransactionDetail> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        return true;
+    return PopScope(
+      onPopInvoked: (didPop) async {
+        if (didPop) {
+          return;
+        }
       },
       child: Scaffold(
         backgroundColor: Colors.white,
@@ -226,39 +228,36 @@ class _TransactionDetailState extends State<TransactionDetail> {
   }
 
   Widget displayBodyOfTransaction() {
-    return Container(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Divider(
-            color: dividerColor,
-            thickness: 1,
-            height: 0,
-          ),
-          transactionOrPayoutTile('assets/images/payout/status.svg',
-              AppLocalization.of(context)!.status, transaction!.status!, true),
-          transactionOrPayoutTile(
-              'assets/images/payout/category.svg',
-              AppLocalization.of(context)!.category,
-              transaction!.category!,
-              false),
-          transactionOrPayoutTile(
-              'assets/images/payout/note.svg',
-              AppLocalization.of(context)!.note,
-              messageDecoderWithEmoji(
-                      appendStringDot(transaction!.note!, 35)) ??
-                  '---',
-              false),
-          transactionOrPayoutTile(
-              'assets/images/payout/description.svg',
-              AppLocalization.of(context)!.description,
-              messageDecoderWithEmoji(
-                      appendStringDot(transaction!.description!, 35)) ??
-                  '---',
-              false),
-        ],
-      ),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Divider(
+          color: dividerColor,
+          thickness: 1,
+          height: 0,
+        ),
+        transactionOrPayoutTile('assets/images/payout/status.svg',
+            AppLocalization.of(context)!.status, transaction!.status!, true),
+        transactionOrPayoutTile(
+            'assets/images/payout/category.svg',
+            AppLocalization.of(context)!.category,
+            transaction!.category!,
+            false),
+        transactionOrPayoutTile(
+            'assets/images/payout/note.svg',
+            AppLocalization.of(context)!.note,
+            messageDecoderWithEmoji(appendStringDot(transaction!.note!, 35)) ??
+                '---',
+            false),
+        transactionOrPayoutTile(
+            'assets/images/payout/description.svg',
+            AppLocalization.of(context)!.description,
+            messageDecoderWithEmoji(
+                    appendStringDot(transaction!.description!, 35)) ??
+                '---',
+            false),
+      ],
     );
   }
 

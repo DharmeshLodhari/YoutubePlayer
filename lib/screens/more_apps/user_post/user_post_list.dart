@@ -5,7 +5,6 @@ import 'package:Slydo/screens/more_apps/user_post/user_post_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -52,25 +51,18 @@ class _UserPostListState extends State<UserPostList> {
   }
 
   void _onPostRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
-      final connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        postCount = 0;
-        postNext = "";
-        postPrevious = "";
-        postList = [];
-        isFirstTime = true;
-        if (mounted) setState(() {});
-        getPostList();
-        _postRefreshController.refreshCompleted();
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
-        _postRefreshController.refreshCompleted();
-      }
-    });
+    if (await checkConnection(context)) {
+      postCount = 0;
+      postNext = "";
+      postPrevious = "";
+      postList = [];
+      isFirstTime = true;
+      if (mounted) setState(() {});
+      getPostList();
+      _postRefreshController.refreshCompleted();
+    } else {
+      _postRefreshController.refreshCompleted();
+    }
   }
 
   @override

@@ -390,10 +390,12 @@ class _SearchDiscountProductAndServiceState
 
     userBloc = Provider.of<UserBloc>(context);
 
-    return WillPopScope(
-      onWillPop: () {
-        filterValue = "Products";
-        return Future.value(true);
+    return PopScope(
+      onPopInvoked: (didPop) {
+        if (didPop) {
+          filterValue = "Products";
+          return;
+        }
       },
       child: ScaffoldMessenger(
         key: _scaffoldMessengerSearchKey,
@@ -587,7 +589,7 @@ class _SearchDiscountProductAndServiceState
         insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
         contentPadding: EdgeInsets.zero,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        content: Container(
+        content: SizedBox(
           width: MediaQuery.of(context).size.width - 40,
           child: Card(
             elevation: 2,
@@ -776,7 +778,7 @@ class _SearchDiscountProductAndServiceState
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: Container(
+              content: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   margin: EdgeInsets.zero,
@@ -1043,7 +1045,7 @@ class _SearchDiscountProductAndServiceState
                     searchItems();
 
                     if (itemList.isNotEmpty ||
-                        searchItemTextController.text.length != 0) {
+                        searchItemTextController.text.isNotEmpty) {
                       if (mounted) {
                         setState(() {
                           isSearchIsEmpty = false;
@@ -1056,7 +1058,7 @@ class _SearchDiscountProductAndServiceState
                         });
                       }
                     }
-                  } else if (value.length == 0) {
+                  } else if (value.isEmpty) {
                     setState(() {
                       isSearchIsEmpty = true;
                       itemList.clear();
@@ -1537,7 +1539,7 @@ class _SearchDiscountProductAndServiceState
             : isLoading && itemList.isEmpty
                 ? buildLoadingIndicator(isLoading: isLoading)
                 : ListView.builder(
-                    padding: EdgeInsets.only(bottom: 70),
+                    padding: const EdgeInsets.only(bottom: 70),
                     //+1 for progressbar
                     itemCount: itemList.length + 1,
                     // ignore: missing_return
@@ -1954,8 +1956,8 @@ class _SearchDiscountProductAndServiceState
     return CurvedButton(
       onPressed: () async {
         Map<String, dynamic>? items;
-        List<Product> productList = [];
-        List<Service> serviceList = [];
+        final List<Product> productList = [];
+        final List<Service> serviceList = [];
 
         for (var item in itemList) {
           if (item is Product && item.isChecked) {

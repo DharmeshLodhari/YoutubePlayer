@@ -48,12 +48,14 @@ class _ResetDeviceState extends State<ResetDevice> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () {
-        if (FocusScope.of(context).hasFocus) {
-          FocusScope.of(context).unfocus();
+    return PopScope(
+      onPopInvoked: (didPop) {
+        if (didPop) {
+          if (FocusScope.of(context).hasFocus) {
+            FocusScope.of(context).unfocus();
+          }
+          return;
         }
-        return Future.value(true);
       },
       child: Scaffold(
         backgroundColor: Colors.white,
@@ -158,7 +160,7 @@ class _ResetDeviceState extends State<ResetDevice> {
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: Container(
+              content: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   elevation: 2,
@@ -225,7 +227,7 @@ class _ResetDeviceState extends State<ResetDevice> {
     return Column(
       children: [
         phoneNumberField(),
-        isPhoneNumberIsVerified ? getPasswordField() : Container(),
+        if (isPhoneNumberIsVerified) getPasswordField() else Container(),
         const SizedBox(height: 20),
         getSubmitButton(),
         const SizedBox(height: 20),
@@ -350,7 +352,7 @@ class _ResetDeviceState extends State<ResetDevice> {
         const SizedBox(width: 8.0),
         Expanded(
           child: Text(
-            "(" + country.name! + ")",
+            "(${country.name!})",
             overflow: TextOverflow.fade,
             softWrap: false,
             style: TextStyle(
@@ -403,54 +405,52 @@ class _ResetDeviceState extends State<ResetDevice> {
     final BoxDecoration selectedDecoration = BoxDecoration(
         borderRadius: BorderRadius.circular(10),
         border: Border.all(color: navyBlue));
-    return Container(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(
-            "Password",
-            style: TextStyle(fontSize: 14, color: darkGrey),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          "Password",
+          style: TextStyle(fontSize: 14, color: darkGrey),
+        ),
+        const SizedBox(
+          height: 6.0,
+        ),
+        Pinput(
+          obscuringCharacter: '•',
+          validator: (val) => val!.length < 4
+              ? AppLocalization.of(context)!.invalidPassword
+              : null,
+          length: 6,
+          focusNode: _pinPutFocusNode,
+          controller: passwordController,
+          defaultPinTheme: PinTheme(
+            width: 45,
+            height: 45,
+            textStyle: TextStyle(
+              fontSize: 35,
+              color: blackFont,
+              fontWeight: FontWeight.w600,
+              fontFamily: "Inter",
+            ),
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.grey),
+              borderRadius: BorderRadius.circular(8),
+            ),
           ),
-          const SizedBox(
-            height: 6.0,
+          focusedPinTheme: PinTheme(
+            decoration: selectedDecoration,
           ),
-          Pinput(
-            obscuringCharacter: '•',
-            validator: (val) => val!.length < 4
-                ? AppLocalization.of(context)!.invalidPassword
-                : null,
-            length: 6,
-            focusNode: _pinPutFocusNode,
-            controller: passwordController,
-            defaultPinTheme: PinTheme(
-              width: 45,
-              height: 45,
-              textStyle: TextStyle(
-                fontSize: 35,
-                color: blackFont,
-                fontWeight: FontWeight.w600,
-                fontFamily: "Inter",
-              ),
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey),
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-            focusedPinTheme: PinTheme(
-              decoration: selectedDecoration,
-            ),
-            submittedPinTheme: PinTheme(
-              decoration: pinPutDecoration,
-            ),
-            followingPinTheme: PinTheme(
-              decoration: pinPutDecoration,
-            ),
-            pinAnimationType: PinAnimationType.scale,
-            textInputAction: TextInputAction.done,
-            keyboardType: TextInputType.number,
+          submittedPinTheme: PinTheme(
+            decoration: pinPutDecoration,
           ),
-        ],
-      ),
+          followingPinTheme: PinTheme(
+            decoration: pinPutDecoration,
+          ),
+          pinAnimationType: PinAnimationType.scale,
+          textInputAction: TextInputAction.done,
+          keyboardType: TextInputType.number,
+        ),
+      ],
     );
   }
 
@@ -476,7 +476,7 @@ class _ResetDeviceState extends State<ResetDevice> {
         }
 
         phoneNumber =
-            "+" + _selectedDialogCountry.phoneCode! + phoneNumberFromTextField;
+            "+${_selectedDialogCountry.phoneCode!}$phoneNumberFromTextField";
         password = passwordController!.text.trim();
 
         final data = {};
@@ -517,7 +517,7 @@ class _ResetDeviceState extends State<ResetDevice> {
       }
 
       phoneNumber =
-          "+" + _selectedDialogCountry.phoneCode! + phoneNumberFromTextField;
+          "+${_selectedDialogCountry.phoneCode!}$phoneNumberFromTextField";
 
       UserAuth().sendOTPForResetDevice(phoneNumber).then((result) async {
         Navigator.pop(context);
@@ -559,7 +559,7 @@ class _ResetDeviceState extends State<ResetDevice> {
           content: Stack(
             clipBehavior: Clip.none,
             children: [
-              Container(
+              SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   elevation: 2,

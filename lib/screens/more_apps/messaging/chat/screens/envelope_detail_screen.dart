@@ -169,10 +169,12 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
       isAuthor = true;
     }
 
-    return WillPopScope(
-      onWillPop: () async {
-        await myAudioPlayer.stopAudio();
-        return await Future.value(true);
+    return PopScope(
+      onPopInvoked: (didPop) async {
+        if (didPop) {
+          await myAudioPlayer.stopAudio();
+          return;
+        }
       },
       child: ColorfulSafeArea(
         bottom: false,
@@ -334,13 +336,11 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
   Widget getEnvelopeActions() {
     return isAuthor && envelope!.type == "empty-envelop" ||
             isAuthor && !envelope!.isOpen
-        ? Container(
-            child: CurvedButton(
-              backgroundColor: mateRed,
-              onPressed: showDialogToDeleteEnvelope,
-              text: AppLocalization.of(context)!.delete,
-              textColor: Colors.white,
-            ),
+        ? CurvedButton(
+            backgroundColor: mateRed,
+            onPressed: showDialogToDeleteEnvelope,
+            text: AppLocalization.of(context)!.delete,
+            textColor: Colors.white,
           )
         : Container();
   }
@@ -417,22 +417,20 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
               Navigator.pop(context);
             },
           ),
-          title: Container(
-            child: const Text(
-              "Details",
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 22,
-                fontWeight: FontWeight.w600,
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+          title: const Text(
+            "Details",
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 22,
+              fontWeight: FontWeight.w600,
             ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
           titleSpacing: 0,
           backgroundColor: navyBlue,
           flexibleSpace: FlexibleSpaceBar(
-            stretchModes: <StretchMode>[
+            stretchModes: const <StretchMode>[
               StretchMode.zoomBackground,
               StretchMode.blurBackground
             ],
@@ -465,7 +463,7 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
   }
 
   Widget getProfileCover() {
-    return Container(
+    return SizedBox(
       height: 206,
       child: isLoading
           ? const Center(
@@ -558,7 +556,7 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
         ),
       );
     }
-    return Container(
+    return SizedBox(
       height: 1,
       width: 1,
     );
@@ -595,7 +593,7 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
   void deleteChatMessage() async {
     final ChatMessage chatMessage = ChatMessage.fromJson(data!);
 
-    final Map<String, dynamic> deleteMessage = Map<String, dynamic>();
+    final Map<String, dynamic> deleteMessage = <String, dynamic>{};
 
     deleteMessage["check_id"] = chatMessage.checkId;
     deleteMessage["conversation_id"] = chatMessage.conversationId;

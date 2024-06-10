@@ -757,7 +757,7 @@
 // // addNoteDialog() {
 // //   showMaterialDialog<String>(
 // //     context: context,
-// //     child: WillPopScope(
+// //     child: PopScope(
 // //       onWillPop: () async {
 // //         Navigator.pop(context, 'cancel');
 // //         return false;

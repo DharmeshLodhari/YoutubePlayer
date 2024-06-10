@@ -8,7 +8,6 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/custom_box_shadow.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -39,7 +38,7 @@ class _DiscountListState extends State<DiscountList> {
 
   @override
   void initState() {
-    this.getList();
+    getList();
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
               _scrollController.position.maxScrollExtent &&
@@ -52,24 +51,17 @@ class _DiscountListState extends State<DiscountList> {
   }
 
   void _onProductRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
-      final connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        itemCount = 0;
-        next = "";
-        previous = "";
-        itemList = [];
-        debugPrint("Refresh called on discount!!  ");
-        getList();
-        _refreshController.refreshCompleted();
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
-        _refreshController.refreshCompleted();
-      }
-    });
+    if (await checkConnection(context)) {
+      itemCount = 0;
+      next = "";
+      previous = "";
+      itemList = [];
+      debugPrint("Refresh called on discount!!  ");
+      getList();
+      _refreshController.refreshCompleted();
+    } else {
+      _refreshController.refreshCompleted();
+    }
   }
 
   void getList({bool fetchFresh = false}) async {

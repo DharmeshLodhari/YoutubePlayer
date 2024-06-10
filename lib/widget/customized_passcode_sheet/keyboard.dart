@@ -55,7 +55,7 @@ class Keyboard extends StatelessWidget {
       keyboardItems = digits;
     }
     final screenSize = MediaQuery.of(context).size;
-    final keyboardHeight = 225.0;
+    const keyboardHeight = 225.0;
     final keyboardWidth = screenSize.width;
     final keyboardSize = Size(keyboardWidth, keyboardHeight);
     return Container(
@@ -127,7 +127,7 @@ class AlignedGrid extends StatelessWidget {
       spacing: spacing,
       alignment: WrapAlignment.center,
       children: children
-          .map((item) => Container(
+          .map((item) => SizedBox(
                 width: MediaQuery.of(context).size.width / 3,
                 height: 50,
                 child: item,

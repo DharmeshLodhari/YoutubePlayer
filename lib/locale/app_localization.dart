@@ -1964,7 +1964,7 @@ class AppLocalization {
 
   String get doNotPermission {
     return Intl.message(
-      "You don\'t have permission.",
+      "You don't have permission.",
       name: "doNotPermission",
     );
   }

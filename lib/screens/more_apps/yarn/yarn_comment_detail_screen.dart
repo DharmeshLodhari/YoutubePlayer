@@ -1,5 +1,4 @@
 import 'package:Slydo/data/state_notifiers/user_bloc.dart';
-import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/main.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
@@ -10,7 +9,6 @@ import 'package:Slydo/screens/more_apps/yarn/yarn_comment_reply_list.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_dashboard_bloc.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -280,22 +278,15 @@ class _YarnCommentDetailScreenState extends State<YarnCommentDetailScreen> {
   }
 
   void _onPostRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
-      final connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        yarnCommentScreenKey = GlobalKey<ScaffoldState>();
-        setState(() {
-          _postRefreshController.refreshCompleted();
-        });
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
-        setState(() {
-          _postRefreshController.refreshCompleted();
-        });
-      }
-    });
+    if (await checkConnection(context)) {
+      yarnCommentScreenKey = GlobalKey<ScaffoldState>();
+      setState(() {
+        _postRefreshController.refreshCompleted();
+      });
+    } else {
+      setState(() {
+        _postRefreshController.refreshCompleted();
+      });
+    }
   }
 }

@@ -485,7 +485,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
                   width: 0,
                 ),
               GestureDetector(
-                onTap: onReplyMessageTap as void Function()? ?? null,
+                onTap: onReplyMessageTap as void Function()?,
                 child: getRepliedMessageUI(
                     messageData: repliedTo,
                     isSend: isSend,
@@ -1559,7 +1559,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
               ),
             )
           else
-            SizedBox(
+            const SizedBox(
               width: 1,
               height: 1,
             ),

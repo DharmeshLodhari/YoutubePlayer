@@ -82,9 +82,11 @@ class _AddEditDiscountState extends State<AddEditDiscount> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        return true;
+    return PopScope(
+      onPopInvoked: (didPop) async {
+        if (didPop) {
+          return;
+        }
       },
       child: Scaffold(
         backgroundColor: Colors.white,
@@ -941,22 +943,20 @@ class _AddEditDiscountState extends State<AddEditDiscount> {
       },
       child: CustomizedDropDownField(
         title: "Start Time",
-        child: Container(
-          child: ListTile(
-            dense: true,
-            title: Text(
-              startTimeFrom != null ? formatTime24hrs(startTimeFrom) : "",
-              style: TextStyle(
-                color: blackFont,
-                fontWeight: FontWeight.w600,
-                fontSize: 16,
-              ),
+        child: ListTile(
+          dense: true,
+          title: Text(
+            startTimeFrom != null ? formatTime24hrs(startTimeFrom) : "",
+            style: TextStyle(
+              color: blackFont,
+              fontWeight: FontWeight.w600,
+              fontSize: 16,
             ),
-            trailing: Icon(
-              SlydoAppIcon.clock,
-              size: 16,
-              color: darkGrey,
-            ),
+          ),
+          trailing: Icon(
+            SlydoAppIcon.clock,
+            size: 16,
+            color: darkGrey,
           ),
         ),
       ),
@@ -1018,22 +1018,20 @@ class _AddEditDiscountState extends State<AddEditDiscount> {
       },
       child: CustomizedDropDownField(
         title: "End Time",
-        child: Container(
-          child: ListTile(
-            dense: true,
-            title: Text(
-              endTimeTo != null ? formatTime24hrs(endTimeTo) : "",
-              style: TextStyle(
-                color: blackFont,
-                fontWeight: FontWeight.w600,
-                fontSize: 16,
-              ),
+        child: ListTile(
+          dense: true,
+          title: Text(
+            endTimeTo != null ? formatTime24hrs(endTimeTo) : "",
+            style: TextStyle(
+              color: blackFont,
+              fontWeight: FontWeight.w600,
+              fontSize: 16,
             ),
-            trailing: Icon(
-              SlydoAppIcon.clock,
-              size: 16,
-              color: darkGrey,
-            ),
+          ),
+          trailing: Icon(
+            SlydoAppIcon.clock,
+            size: 16,
+            color: darkGrey,
           ),
         ),
       ),

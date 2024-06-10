@@ -42,7 +42,7 @@ class _SearchProductTileState extends State<SearchProductTile> {
             shadowColor: boxShadowTwo,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(10),
-              child: Container(
+              child: SizedBox(
                 height: 200,
                 child: Column(
                   children: <Widget>[
@@ -141,7 +141,7 @@ class _SearchServiceTileState extends State<SearchServiceTile> {
             shadowColor: boxShadowTwo,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(10),
-              child: Container(
+              child: SizedBox(
                 height: 200,
                 child: Column(
                   children: <Widget>[

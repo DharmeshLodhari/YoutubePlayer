@@ -61,12 +61,12 @@ class _PreAccountUpgradeState extends State<PreAccountUpgrade> {
                     fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 10),
-              ListTiles('Web Dashboard'),
-              ListTiles('Store Listing'),
-              ListTiles('Invoicing'),
-              ListTiles('Digital Contract'),
-              ListTiles('Seamless Payment'),
-              ListTiles('Business Visibility'),
+              listTiles('Web Dashboard'),
+              listTiles('Store Listing'),
+              listTiles('Invoicing'),
+              listTiles('Digital Contract'),
+              listTiles('Seamless Payment'),
+              listTiles('Business Visibility'),
               const SizedBox(height: 5),
               const Text(
                 'and every other social features.',
@@ -90,7 +90,7 @@ class _PreAccountUpgradeState extends State<PreAccountUpgrade> {
     );
   }
 
-  Widget ListTiles(String title) {
+  Widget listTiles(String title) {
     return ListTile(
       // contentPadding: EdgeInsets.zero,
       contentPadding:

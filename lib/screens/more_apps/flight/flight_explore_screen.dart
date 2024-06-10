@@ -238,25 +238,23 @@ class _FlightExploreScreenState extends State<FlightExploreScreen> {
             },
             child: CustomizedDropDownField(
               title: "Departure date",
-              child: Container(
-                child: ListTile(
-                  dense: true,
-                  title: Text(
-                    formatDateInDigit(departureDate),
-                    style: TextStyle(
-                      color: blackFont,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
-                    ),
-                    overflow: TextOverflow.fade,
-                    softWrap: false,
-                    maxLines: 1,
+              child: ListTile(
+                dense: true,
+                title: Text(
+                  formatDateInDigit(departureDate),
+                  style: TextStyle(
+                    color: blackFont,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
                   ),
-                  trailing: Icon(
-                    SlydoAppIcon.date,
-                    size: 16,
-                    color: darkGrey,
-                  ),
+                  overflow: TextOverflow.fade,
+                  softWrap: false,
+                  maxLines: 1,
+                ),
+                trailing: Icon(
+                  SlydoAppIcon.date,
+                  size: 16,
+                  color: darkGrey,
                 ),
               ),
             ),
@@ -287,25 +285,23 @@ class _FlightExploreScreenState extends State<FlightExploreScreen> {
               },
               child: CustomizedDropDownField(
                 title: "Arrival date",
-                child: Container(
-                  child: ListTile(
-                    dense: true,
-                    title: Text(
-                      formatDateInDigit(arrivalDate),
-                      style: TextStyle(
-                        color: blackFont,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 16,
-                      ),
-                      overflow: TextOverflow.fade,
-                      softWrap: false,
-                      maxLines: 1,
+                child: ListTile(
+                  dense: true,
+                  title: Text(
+                    formatDateInDigit(arrivalDate),
+                    style: TextStyle(
+                      color: blackFont,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16,
                     ),
-                    trailing: Icon(
-                      SlydoAppIcon.date,
-                      size: 16,
-                      color: darkGrey,
-                    ),
+                    overflow: TextOverflow.fade,
+                    softWrap: false,
+                    maxLines: 1,
+                  ),
+                  trailing: Icon(
+                    SlydoAppIcon.date,
+                    size: 16,
+                    color: darkGrey,
                   ),
                 ),
               ),

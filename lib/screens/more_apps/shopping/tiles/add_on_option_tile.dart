@@ -116,7 +116,7 @@ class AddOnOptionTile extends StatelessWidget {
           ),
           child: imageUrl != null
               ? Image.network(
-                  "$imageUrl",
+                  imageUrl,
                   fit: BoxFit.cover,
                   filterQuality: FilterQuality.high,
                 )

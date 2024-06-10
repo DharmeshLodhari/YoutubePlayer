@@ -95,9 +95,11 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
 
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
-    return WillPopScope(
-      onWillPop: () async {
-        return true;
+    return PopScope(
+      onPopInvoked: (didPop) async {
+        if (didPop) {
+          return;
+        }
       },
       child: Scaffold(
         key: cardPaymentPageKey,
@@ -362,8 +364,8 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
                     widget.isWalletFunding ? _fundWallet() : _addCreditCard();
                   } else {
                     showToast(
-                        message: AppLocalization.of(context)!.invalidDetails +
-                            " !!");
+                        message:
+                            "${AppLocalization.of(context)!.invalidDetails} !!");
                   }
                 },
                 text: AppLocalization.of(context)!.submit,

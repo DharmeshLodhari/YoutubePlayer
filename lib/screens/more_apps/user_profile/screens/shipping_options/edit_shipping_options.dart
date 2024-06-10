@@ -140,24 +140,22 @@ class _EditShippingOptionsState extends State<EditShippingOptions> {
                 ),
               ),
             ),
-            Container(
-              child: Column(
-                children: [
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  if (isEdit == true) ...[
-                    getSubmitButton()
-                  ] else if (amount == 0.0) ...[
-                    const SizedBox()
-                  ] else ...[
-                    getSubmitButton()
-                  ],
-                  const SizedBox(
-                    height: 20,
-                  ),
+            Column(
+              children: [
+                const SizedBox(
+                  height: 20,
+                ),
+                if (isEdit == true) ...[
+                  getSubmitButton()
+                ] else if (amount == 0.0) ...[
+                  const SizedBox()
+                ] else ...[
+                  getSubmitButton()
                 ],
-              ),
+                const SizedBox(
+                  height: 20,
+                ),
+              ],
             ),
           ],
         ),

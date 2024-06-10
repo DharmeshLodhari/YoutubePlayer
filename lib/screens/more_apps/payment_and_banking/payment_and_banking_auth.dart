@@ -125,7 +125,7 @@ class PaymentAndBankingAuth extends AuthService {
     }
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      final jsonData = jsonDecode(response.body);
+      // final jsonData = jsonDecode(response.body);
 
       responseString = 'successful';
     } else if (response.statusCode == 400) {
@@ -237,7 +237,7 @@ class PaymentAndBankingAuth extends AuthService {
       final jsonData = json.decode(response.body);
 
       debugPrint(
-          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${jsonData}");
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- $jsonData");
 
       final Map<String, dynamic> result = {
         "count": jsonData["count"],
@@ -934,7 +934,7 @@ class PaymentAndBankingAuth extends AuthService {
     );
     log("message${response.statusCode} and ${response.body}");
     if (response.statusCode == 201 || response.statusCode == 200) {
-      final result = jsonDecode(response.body);
+      // final result = jsonDecode(response.body);
       return true;
     } else {
       return false;
@@ -1066,11 +1066,9 @@ class PaymentAndBankingAuth extends AuthService {
       final jsonData = json.decode(response.body);
 
       for (var item in jsonData["results"]) {
-        debugPrint("Fola payout list::: ${item}");
+        debugPrint("Fola payout list::: $item");
 
-        final timeStamp = item["credited_at"] == null
-            ? item["created_at"]
-            : item["credited_at"];
+        final timeStamp = item["credited_at"] ?? item["created_at"];
 
         final Payout payout = Payout(
           uuid: item['id'],
@@ -1127,7 +1125,7 @@ class PaymentAndBankingAuth extends AuthService {
     if (response.statusCode == 200 || response.statusCode == 201) {
       return jsonDecode(response.body);
     } else {
-      return Future.error("${response.body}");
+      return Future.error(response.body);
     }
   }
 
@@ -1159,7 +1157,7 @@ class PaymentAndBankingAuth extends AuthService {
     if (response.statusCode == 200 || response.statusCode == 201) {
       return jsonDecode(response.body);
     } else {
-      return Future.error("${response.body}");
+      return Future.error(response.body);
     }
   }
 

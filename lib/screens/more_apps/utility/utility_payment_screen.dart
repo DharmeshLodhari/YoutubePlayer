@@ -54,9 +54,9 @@ class _UtilityPaymentScreenState extends State<UtilityPaymentScreen> {
         .getUtilityProviderProduct(providerId: widget.providerModel.providerId)
         .then(
       (providerDetails) {
-        providerDetails.forEach((element) {
+        for (var element in providerDetails) {
           utilityProviderDetails.add(element);
-        });
+        }
 
         if (mounted) {
           setState(() {});
@@ -122,45 +122,43 @@ class _UtilityPaymentScreenState extends State<UtilityPaymentScreen> {
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(color: iconBtnGrey, width: 1)),
-                child: Container(
-                  child: Column(
-                    children: [
-                      const SizedBox(height: 10),
-                      Container(
+                child: Column(
+                  children: [
+                    const SizedBox(height: 10),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: getProvider(),
+                    ),
+                    Divider(
+                      color: dividerColor,
+                      thickness: 1.5,
+                    ),
+                    const SizedBox(height: 30),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: utilityProviderDetails.isNotEmpty
+                          ? selectPlanDropDown()
+                          : hasError
+                              ? const Text('Something went wrong, try again')
+                              : CircularLoadingIndicator(),
+                    ),
+                    const SizedBox(height: 20),
+                    Visibility(
+                      visible: planSelected,
+                      child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: getProvider(),
+                        child: getReferenceNumber(),
                       ),
-                      Divider(
-                        color: dividerColor,
-                        thickness: 1.5,
-                      ),
-                      const SizedBox(height: 30),
-                      Container(
+                    ),
+                    Visibility(
+                      visible: planSelected,
+                      child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: utilityProviderDetails.isNotEmpty
-                            ? selectPlanDropDown()
-                            : hasError
-                                ? const Text('Something went wrong, try again')
-                                : CircularLoadingIndicator(),
+                        child: getAmount(),
                       ),
-                      const SizedBox(height: 20),
-                      Visibility(
-                        visible: planSelected,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: getReferenceNumber(),
-                        ),
-                      ),
-                      Visibility(
-                        visible: planSelected,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: getAmount(),
-                        ),
-                      ),
-                      const SizedBox(height: 50),
-                    ],
-                  ),
+                    ),
+                    const SizedBox(height: 50),
+                  ],
                 ),
               ),
             ),
@@ -280,7 +278,7 @@ class _UtilityPaymentScreenState extends State<UtilityPaymentScreen> {
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: Container(
+              content: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   elevation: 2,

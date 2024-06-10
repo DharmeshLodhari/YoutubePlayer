@@ -31,16 +31,16 @@ class _AddDocumentState extends State<AddDocument> {
   @override
   Widget build(BuildContext context) {
     _forms = [
-      WillPopScope(
-        onWillPop: () => Future.sync(onWillPop),
+      PopScope(
+        onPopInvoked: (didPop) => Future.sync(onWillPop),
         child: formOne(),
       ),
-      WillPopScope(
-        onWillPop: () => Future.sync(onWillPop),
+      PopScope(
+        onPopInvoked: (didPop) => Future.sync(onWillPop),
         child: formTwo(),
       ),
-      WillPopScope(
-        onWillPop: () => Future.sync(onWillPop),
+      PopScope(
+        onPopInvoked: (didPop) => Future.sync(onWillPop),
         child: formThree(),
       ),
     ];

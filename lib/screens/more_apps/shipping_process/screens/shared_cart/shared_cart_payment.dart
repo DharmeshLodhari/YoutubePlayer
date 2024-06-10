@@ -91,9 +91,11 @@ class _SharedCartPaymentState extends State<SharedCartPayment>
       bottom: Platform.isIOS ? true : false,
       top: false,
       color: white,
-      child: WillPopScope(
-        onWillPop: () async {
-          return true;
+      child: PopScope(
+        onPopInvoked: (didPop) async {
+          if (didPop) {
+            return;
+          }
         },
         child: Scaffold(
           resizeToAvoidBottomInset: false,

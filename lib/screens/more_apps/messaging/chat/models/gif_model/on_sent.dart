@@ -11,7 +11,7 @@ class Onsent {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['url'] = this.url;
+    data['url'] = url;
     return data;
   }
 }

@@ -13,7 +13,6 @@ import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
@@ -21,7 +20,7 @@ import '../../../widget/customized_passcode_sheet/bottomsheet_passcode.dart';
 import '../payment_and_banking/payment_and_banking_auth.dart';
 
 class WithdrawVirtualCard extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
   WithdrawVirtualCard({this.arguments, Key? key}) : super(key: key);
 
@@ -68,9 +67,11 @@ class WithdrawVirtualCardState extends State<WithdrawVirtualCard> {
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
-    return WillPopScope(
-      onWillPop: () async {
-        return true;
+    return PopScope(
+      onPopInvoked: (didPop) async {
+        if (didPop) {
+          return;
+        }
       },
       child: Scaffold(
         backgroundColor: Colors.white,
@@ -203,11 +204,11 @@ class WithdrawVirtualCardState extends State<WithdrawVirtualCard> {
   }
 
   Widget mainCreditCardContent(AllCards cardData) {
-    var cardColors = [];
+    // var cardColors = [];
     var cardColor;
 
     if (cardData.color == null) {
-      cardColors = [navyBlue, richPink, black, orange];
+      // cardColors = [navyBlue, richPink, black, orange];
       cardColor = navyBlue;
     } else {
       final String? color = cardData.color;
@@ -231,7 +232,7 @@ class WithdrawVirtualCardState extends State<WithdrawVirtualCard> {
       }
     }
 
-    return Container(
+    return SizedBox(
       height: 200,
       child: Card(
         elevation: 0,
@@ -347,67 +348,65 @@ class WithdrawVirtualCardState extends State<WithdrawVirtualCard> {
 
               // Right side with background image and text
               Expanded(
-                child: Container(
-                  child: Stack(
-                    children: [
-                      Positioned(
-                        top: 20,
-                        right: 20,
-                        child: Row(
-                          children: [
-                            Text(
-                              'Slydo',
-                              style: TextStyle(
-                                color: white,
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
+                child: Stack(
+                  children: [
+                    Positioned(
+                      top: 20,
+                      right: 20,
+                      child: Row(
+                        children: [
+                          Text(
+                            'Slydo',
+                            style: TextStyle(
+                              color: white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
                             ),
-                            const SizedBox(width: 5.0),
+                          ),
+                          const SizedBox(width: 5.0),
+                          SvgPicture.asset(
+                            "slydo".toSVG(),
+                            fit: BoxFit.cover,
+                          ),
+                        ],
+                      ),
+                    ),
+                    Positioned(
+                      bottom: 20,
+                      right: 20,
+                      child: Column(
+                        children: [
+                          if (cardData.cardBrand == 'Visa')
                             SvgPicture.asset(
-                              "slydo".toSVG(),
+                              "visa".toSVG(),
+                              fit: BoxFit.cover,
+                            )
+                          else
+                            SvgPicture.asset(
+                              "mastercard".toSVG(),
                               fit: BoxFit.cover,
                             ),
-                          ],
-                        ),
-                      ),
-                      Positioned(
-                        bottom: 20,
-                        right: 20,
-                        child: Column(
-                          children: [
-                            if (cardData.cardBrand == 'Visa')
-                              SvgPicture.asset(
-                                "visa".toSVG(),
-                                fit: BoxFit.cover,
-                              )
-                            else
-                              SvgPicture.asset(
-                                "mastercard".toSVG(),
-                                fit: BoxFit.cover,
-                              ),
-                            const SizedBox(width: 5.0),
-                            if (cardData.cardBrand == 'Visa')
-                              const SizedBox.shrink()
-                            else
-                              Column(
-                                children: [
-                                  Text(
-                                    'Mastercard',
-                                    style: TextStyle(
-                                      color: white,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                          const SizedBox(width: 5.0),
+                          if (cardData.cardBrand == 'Visa')
+                            const SizedBox.shrink()
+                          else
+                            Column(
+                              children: [
+                                Text(
+                                  'Mastercard',
+                                  style: TextStyle(
+                                    color: white,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
                                   ),
-                                  const SizedBox(width: 5.0),
-                                ],
-                              ),
-                          ],
-                        ),
+                                ),
+                                const SizedBox(width: 5.0),
+                              ],
+                            ),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ],

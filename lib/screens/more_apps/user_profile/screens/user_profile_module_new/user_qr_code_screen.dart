@@ -10,7 +10,6 @@ import 'package:Slydo/widget/custom_box_shadow.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -103,9 +102,11 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
       checkCurrentUserState();
       counter++;
     }
-    return WillPopScope(
-      onWillPop: () async {
-        return true;
+    return PopScope(
+      onPopInvoked: (didPop) async {
+        if (didPop) {
+          return;
+        }
       },
       child: Scaffold(
         key: _scaffoldUserInfoKey,
@@ -287,8 +288,8 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
       actionTwoBgColor: greyBorderColor,
       actionTwoTextColor: blackFont,
       title: AppLocalization.of(context)!.block,
-      description: AppLocalization.of(context)!.areYouSureWantToBlock +
-          " ${user.displayName()}",
+      description:
+          "${AppLocalization.of(context)!.areYouSureWantToBlock} ${user.displayName()}",
       actionOneText: AppLocalization.of(context)!.block,
       actionTwoText: AppLocalization.of(context)!.cancel,
     );
@@ -296,8 +297,8 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
       final bool done = await UserAuth().blockUser(user);
       if (done) {
         showSnackbar(context,
-            message: "${user.displayName()} " +
-                AppLocalization.of(context)!.isBlockedSuccessfully);
+            message:
+                "${user.displayName()} ${AppLocalization.of(context)!.isBlockedSuccessfully}");
 
         final ConnectionListBloc connectionListBloc =
             Provider.of<ConnectionListBloc>(context, listen: false);
@@ -616,19 +617,11 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
     return Padding(
       padding: const EdgeInsets.only(right: 4.0),
       child: InkWell(
-        onTap: () {
-          Connectivity().checkConnectivity().then((value) {
-            final connectionResult = value;
-            if (connectionResult == ConnectivityResult.wifi ||
-                connectionResult == ConnectivityResult.mobile) {
-              Navigator.of(context)
-                  .pushNamed('/scan-qr', arguments: {'isRequest': false});
-            } else {
-              showToast(
-                  message: AppLocalization.of(context)!
-                      .internetConnectionNotAvailable);
-            }
-          });
+        onTap: () async {
+          if (await checkConnection(context)) {
+            Navigator.of(context)
+                .pushNamed('/scan-qr', arguments: {'isRequest': false});
+          }
         },
         child: Image.asset(
           'assets/images/qr_code.png',

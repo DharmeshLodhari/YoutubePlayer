@@ -18,7 +18,7 @@ class SharedCartAuthService extends AuthService {
 
     final headers = await getAuthHeaders();
     final response = await httpPost(url, headers: headers, body: _data);
-    final jsonData = jsonDecode(response.body);
+    // final jsonData = jsonDecode(response.body);
 
     debugPrint(
         "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");

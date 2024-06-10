@@ -43,7 +43,7 @@ class _SearchGroupMemberState extends State<SearchGroupMember>
   String? next = "";
   String? previous = "";
   List<Participant> groupMember = [];
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
 
   TextEditingController? searchUserController;
 
@@ -60,13 +60,13 @@ class _SearchGroupMemberState extends State<SearchGroupMember>
   late MainSocketProvider mainSocketProvider;
   StreamSubscription? streamSubscription;
 
-  @protected
+  @override
   void initState() {
     searchUserController = TextEditingController();
 
     groupDetail = widget.arguments["groupDetail"];
 
-    this.getList();
+    getList();
 
     super.initState();
     _scrollController.addListener(() {
@@ -88,7 +88,7 @@ class _SearchGroupMemberState extends State<SearchGroupMember>
           getList();
         });
       }
-      if (groupMember.isNotEmpty || searchUserController!.text.length != 0) {
+      if (groupMember.isNotEmpty || searchUserController!.text.isNotEmpty) {
         if (mounted) {
           setState(() {
             isSearchIsEmpty = false;
@@ -144,11 +144,13 @@ class _SearchGroupMemberState extends State<SearchGroupMember>
     mainSocketProvider = Provider.of<MainSocketProvider>(context);
 
     initializeListener();
-    return WillPopScope(
-      onWillPop: () async {
-        mainSocketProvider.removeStreamSubscription(streamSubscription);
-        Navigator.pop(context, groupDetail);
-        return Future.value(false);
+    return PopScope(
+      onPopInvoked: (didPop) async {
+        if (didPop) {
+          mainSocketProvider.removeStreamSubscription(streamSubscription);
+          Navigator.pop(context, groupDetail);
+          return;
+        }
       },
       child: ScaffoldMessenger(
         key: _scaffoldMessengerSearchGroupMemberKey,
@@ -196,12 +198,10 @@ class _SearchGroupMemberState extends State<SearchGroupMember>
   }
 
   Widget getScaffoldBody() {
-    return Container(
-      child: Column(
-        children: [
-          Expanded(child: _buildConnectionsList()),
-        ],
-      ),
+    return Column(
+      children: [
+        Expanded(child: _buildConnectionsList()),
+      ],
     );
   }
 
@@ -261,7 +261,9 @@ class _SearchGroupMemberState extends State<SearchGroupMember>
 
         final List<Participant> users = [];
 
-        tempList.forEach((element) => users.add(Participant.fromJson(element)));
+        for (var element in tempList) {
+          users.add(Participant.fromJson(element));
+        }
 
         isLoading = false;
         if (mounted) setState(() {});
@@ -620,13 +622,13 @@ class _SearchGroupMemberState extends State<SearchGroupMember>
           if (selectedUsers is List<CustomerProfile>) {
             final List<Participant> usersAdded = [];
 
-            selectedUsers.forEach((element) {
+            for (var element in selectedUsers) {
               usersAdded.add(Participant(
                   avatar: element.avatar,
                   fullName: element.displayName(),
                   type: element.type,
                   userName: element.userName));
-            });
+            }
 
             groupDetail!.participants.addAll(usersAdded);
             showToast(message: "Users are added in group !!");

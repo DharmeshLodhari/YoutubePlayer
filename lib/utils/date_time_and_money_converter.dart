@@ -14,7 +14,7 @@ DateTime getStartingOfWeek(DateTime date) {
 
 DateTime getEndingOfWeek(DateTime date) {
   final DateTime startingOfWeek = getStartingOfWeek(date);
-  return startingOfWeek.add(Duration(days: 6));
+  return startingOfWeek.add(const Duration(days: 6));
 }
 
 String moneyConverter(var amount, {bool isNotCompact = false}) {

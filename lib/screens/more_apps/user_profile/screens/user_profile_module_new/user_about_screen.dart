@@ -60,9 +60,11 @@ class _UserAboutScreenState extends State<UserAboutScreen> {
   Widget build(BuildContext context) {
     userAbout = widget.user!.userAbout;
     formatOpeningHour();
-    return WillPopScope(
-      onWillPop: () async {
-        return true;
+    return PopScope(
+      onPopInvoked: (didPop) async {
+        if (didPop) {
+          return;
+        }
       },
       child: isLoading
           ? Center(

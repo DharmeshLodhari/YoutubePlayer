@@ -105,7 +105,7 @@ class ShoppingCartTileForProduct extends StatelessWidget {
             child: CachedNetworkImage(
               height: 48,
               width: 48,
-              imageUrl: image != null ? image : defaultImage,
+              imageUrl: image ?? defaultImage,
               colorBlendMode: BlendMode.darken,
               fit: BoxFit.contain,
               errorWidget: productAndServiceErrorWidget,
@@ -126,7 +126,7 @@ class ShoppingCartTileForProduct extends StatelessWidget {
                     height: 50,
                     width: 50,
                     // imageUrl: widget.variant != null && widget.image!.isNotEmpty ? widget.image! : widget.item?.cover ?? defaultImage,
-                    imageUrl: image != null ? image : defaultImage,
+                    imageUrl: image ?? defaultImage,
                     colorBlendMode: BlendMode.darken,
                     fit: BoxFit.contain,
                     errorWidget: productAndServiceErrorWidget,

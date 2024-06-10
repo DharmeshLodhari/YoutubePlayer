@@ -86,7 +86,7 @@ class _SearchProductState extends State<SearchProduct> {
           _refreshList();
         });
       }
-      if (products.isNotEmpty || searchController.text.length != 0) {
+      if (products.isNotEmpty || searchController.text.isNotEmpty) {
         if (mounted) {
           setState(() {
             isSearchIsEmpty = false;
@@ -271,48 +271,45 @@ class _SearchProductState extends State<SearchProduct> {
   }
 
   Widget scaffoldBody() {
-    return Container(
-      child: Column(
-        children: [
-          if (showSortByBox) sortByDropDown() else const SizedBox.shrink(),
-          const SizedBox(height: 6),
-          searchBox(),
-          const SizedBox(height: 12),
-          if (isLoading)
-            const CircularProgressIndicator()
-          else
-            const SizedBox.shrink(),
-          if (isSearchIsEmpty)
-            Expanded(
-              child: NoItemInList(
-                msg:
-                    AppLocalization.of(context)!.pleaseTypeSomethingToGetResult,
-                isResult: false,
-              ),
-            )
-          else
-            noItemInList
-                ? Expanded(
-                    child: NoItemInList(
-                      msg: AppLocalization.of(context)!.noResultFound,
-                    ),
-                  )
-                : Expanded(
-                    child: ListView(
-                        children: products
-                            .map(
-                              (product) => Container(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 8, horizontal: 16),
-                                child: ShoppingTileWithHeartWithProduct(
-                                  product: product,
-                                ),
-                              ),
-                            )
-                            .toList()),
+    return Column(
+      children: [
+        if (showSortByBox) sortByDropDown() else const SizedBox.shrink(),
+        const SizedBox(height: 6),
+        searchBox(),
+        const SizedBox(height: 12),
+        if (isLoading)
+          const CircularProgressIndicator()
+        else
+          const SizedBox.shrink(),
+        if (isSearchIsEmpty)
+          Expanded(
+            child: NoItemInList(
+              msg: AppLocalization.of(context)!.pleaseTypeSomethingToGetResult,
+              isResult: false,
+            ),
+          )
+        else
+          noItemInList
+              ? Expanded(
+                  child: NoItemInList(
+                    msg: AppLocalization.of(context)!.noResultFound,
                   ),
-        ],
-      ),
+                )
+              : Expanded(
+                  child: ListView(
+                      children: products
+                          .map(
+                            (product) => Container(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 8, horizontal: 16),
+                              child: ShoppingTileWithHeartWithProduct(
+                                product: product,
+                              ),
+                            ),
+                          )
+                          .toList()),
+                ),
+      ],
     );
   }
 
@@ -603,22 +600,23 @@ class _SearchProductState extends State<SearchProduct> {
                     shrinkWrap: true,
                     itemCount: productCategories?.length,
                     itemBuilder: (context, index) {
-                      final ProductCategory category =
-                          productCategories![index];
+                      final ProductCategory? category =
+                          productCategories?[index];
                       return CheckboxListTile(
-                        value: categoryCheckMark[category.name] ?? false,
+                        value: categoryCheckMark[category?.name] ?? false,
                         onChanged: (isChecked) {
                           changeState(() {
-                            categoryCheckMark[category.name] = isChecked!;
+                            categoryCheckMark[category?.name ?? ""] =
+                                isChecked!;
                           });
-                          if (pickedCategoryList.contains(category.name)) {
-                            pickedCategoryList.remove(category.name);
+                          if (pickedCategoryList.contains(category?.name)) {
+                            pickedCategoryList.remove(category?.name);
                           } else {
-                            pickedCategoryList.add(category.name);
+                            pickedCategoryList.add(category?.name ?? "");
                           }
                         },
                         title: Text(
-                          category.name,
+                          category?.name ?? "",
                           softWrap: false,
                           overflow: TextOverflow.fade,
                           style: TextStyle(

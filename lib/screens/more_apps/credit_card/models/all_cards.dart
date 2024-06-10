@@ -1,4 +1,3 @@
-
 class AllCards {
   String? cardId;
   String? cardBrand;
@@ -23,24 +22,24 @@ class AllCards {
 
   AllCards(
       {this.cardId,
-        this.cardBrand,
-        this.cardClass,
-        this.cardNumber,
-        this.securityCode,
-        this.limitWindow,
-        this.nameLine1,
-        this.nameLine2,
-        this.expirationDate,
-        this.expiration,
-        this.terminationDate,
-        this.currencyCode,
-        this.status,
-        this.gatewayMerchantGuid,
-        this.availableBalance,
-        this.isBalanceHidden = false,
-        this.label,
-        this.color,
-        this.activated});
+      this.cardBrand,
+      this.cardClass,
+      this.cardNumber,
+      this.securityCode,
+      this.limitWindow,
+      this.nameLine1,
+      this.nameLine2,
+      this.expirationDate,
+      this.expiration,
+      this.terminationDate,
+      this.currencyCode,
+      this.status,
+      this.gatewayMerchantGuid,
+      this.availableBalance,
+      this.isBalanceHidden = false,
+      this.label,
+      this.color,
+      this.activated});
 
   AllCards.fromJson(Map<String, dynamic> json) {
     cardId = json['card_id'];
@@ -82,8 +81,8 @@ class AllCards {
     data['gateway_merchant_guid'] = gatewayMerchantGuid;
     data['available_balance'] = availableBalance;
     data['activated'] = activated;
-    data['label'] = this.label;
-    data['color'] = this.color;
+    data['label'] = label;
+    data['color'] = color;
     return data;
   }
 }

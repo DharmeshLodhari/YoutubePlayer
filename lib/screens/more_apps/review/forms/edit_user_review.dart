@@ -11,7 +11,7 @@ import 'package:flutter/material.dart';
 class EditUserReview extends StatefulWidget {
   EditUserReview({Key? key, required this.arguments}) : super(key: key);
 
-  Map<String, dynamic> arguments;
+  final Map<String, dynamic> arguments;
 
   @override
   _EditUserReviewState createState() => _EditUserReviewState();

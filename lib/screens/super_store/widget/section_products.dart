@@ -3,7 +3,6 @@ import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/super_store/super_store_industry.dart';
 import 'package:Slydo/screens/super_store/widget/single_store_card.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
@@ -23,11 +22,11 @@ class _SectionProductsState extends State<SectionProducts> {
   List<Product> result = [];
   bool isLoading = false;
 
-  getRowTitle(headers) async {
+  void getRowTitle(headers) async {
     isLoading = true;
     if (mounted) setState(() {});
     for (var item in headers['results']) {
-      Product product = await ShoppingAuthService().createProduct(item);
+      final Product product = ShoppingAuthService().createProduct(item);
       result.add(product);
     }
     isLoading = false;
@@ -159,7 +158,7 @@ class _SectionProductsState extends State<SectionProducts> {
   Widget _buildViewMore(BuildContext context) {
     return InkWell(
       onTap: () {
-        String url = AppConfig.baseUrl + widget.headers["next_url"];
+        final String url = AppConfig.baseUrl + widget.headers["next_url"];
         NavigationUtil.push(context,
             screen: SuperStoreIndustry(
                 next: url,

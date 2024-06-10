@@ -15,7 +15,7 @@ import '../../../../widget/debouncer_widget.dart';
 
 class JobsSearch extends StatefulWidget {
   JobsSearch({Key? key, this.filterMap}) : super(key: key);
-  Map<String, dynamic>? filterMap;
+  final Map<String, dynamic>? filterMap;
 
   @override
   State<JobsSearch> createState() => _JobsSearchState();

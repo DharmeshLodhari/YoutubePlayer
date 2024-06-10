@@ -18,9 +18,11 @@ class _EventDashboardState extends State<EventDashboard> {
   @override
   Widget build(BuildContext context) {
     _eventDashboardBloc = Provider.of<EventDashboardBloc>(context);
-    return WillPopScope(
-      onWillPop: () {
-        return Future.value(true);
+    return PopScope(
+      onPopInvoked: (didPop) async {
+        if (didPop) {
+          return;
+        }
       },
       child: Scaffold(
         body: PageView(
@@ -74,7 +76,7 @@ class _EventDashboardState extends State<EventDashboard> {
   BottomNavigationBarItem bottomNavigationBarItem(
       {IconData? icon, required String title}) {
     return BottomNavigationBarItem(
-      icon: Container(
+      icon: SizedBox(
         height: 50,
         width: 108,
         child: Icon(

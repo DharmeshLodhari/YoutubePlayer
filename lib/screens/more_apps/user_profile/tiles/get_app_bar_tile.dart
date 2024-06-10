@@ -176,7 +176,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
           titleSpacing: 0,
           backgroundColor: navyBlue,
           flexibleSpace: FlexibleSpaceBar(
-            stretchModes: <StretchMode>[
+            stretchModes: const <StretchMode>[
               StretchMode.zoomBackground,
               StretchMode.blurBackground,
             ],
@@ -218,7 +218,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
   }
 
   Widget getProfileCoverChannel() {
-    return Container(
+    return SizedBox(
       height: 200,
       child: widget.isLoading
           ? const Center(
@@ -241,7 +241,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
   }
 
   Widget getProfileCover() {
-    return Container(
+    return SizedBox(
       height: 200,
       child: widget.isLoading
           ? const Center(
@@ -1148,7 +1148,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
         badgeStyle: badges.BadgeStyle(
           shape: badges.BadgeShape.circle,
           badgeColor: naturalGreen,
-          padding: basketBloc.basketItems.length == 0
+          padding: basketBloc.basketItems.isEmpty
               ? const EdgeInsets.all(0)
               : const EdgeInsets.all(4),
           elevation: 0,
@@ -1170,7 +1170,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
   }
 
   Widget? getBadgeContent() {
-    if (basketBloc.basketItems.length == 0) {
+    if (basketBloc.basketItems.isEmpty) {
       return null;
     }
     return Text(
@@ -1899,7 +1899,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
             shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
             userProfile: searchedUser,
             callback: (params) async {
-              params..attachment = {"profile": searchedUser?.toJson()};
+              params.attachment = {"profile": searchedUser?.toJson()};
               final bool data =
                   await YarnAuth().addYarnAndQuestion(params, '', '');
               if (data) {

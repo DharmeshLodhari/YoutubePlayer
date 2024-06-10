@@ -72,7 +72,7 @@ class _UserLoginState extends State<UserLogin> {
 
   List<CompanyName> companyList = [];
   // String businessName = "";
-  List<String> _dropdownItems = [];
+  final List<String> _dropdownItems = [];
 
   ScrollController scrollController = ScrollController();
 
@@ -133,12 +133,14 @@ class _UserLoginState extends State<UserLogin> {
     sharedCartBloc = Provider.of<SharedCartBloc>(context);
     userBloc = Provider.of<UserBloc>(context);
 
-    return WillPopScope(
-      onWillPop: () {
-        if (FocusScope.of(context).hasFocus) {
-          FocusScope.of(context).unfocus();
+    return PopScope(
+      onPopInvoked: (didPop) async {
+        if (didPop) {
+          if (FocusScope.of(context).hasFocus) {
+            FocusScope.of(context).unfocus();
+          }
+          return;
         }
-        return Future.value(true);
       },
       child: Scaffold(
         backgroundColor: whiteBackground,
@@ -633,7 +635,7 @@ class _UserLoginState extends State<UserLogin> {
     final defaultPinTheme = PinTheme(
       width: 45,
       height: 45,
-      margin: EdgeInsets.symmetric(horizontal: 3),
+      margin: const EdgeInsets.symmetric(horizontal: 3),
       textStyle: TextStyle(
         fontSize: 35,
         color: blackFont,

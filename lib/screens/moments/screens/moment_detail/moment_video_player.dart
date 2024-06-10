@@ -148,15 +148,13 @@ class MomentVideoPlayerState extends State<MomentVideoPlayer> {
         ),
       );
     }
-    return Container(
-      child: Center(
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            _buildBackground(),
-            Center(child: CircularLoadingIndicator()),
-          ],
-        ),
+    return Center(
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          _buildBackground(),
+          Center(child: CircularLoadingIndicator()),
+        ],
       ),
     );
   }

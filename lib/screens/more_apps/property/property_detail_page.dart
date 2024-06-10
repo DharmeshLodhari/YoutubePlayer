@@ -15,7 +15,7 @@ import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 
 import 'models/user_detail_item/PropertyDetailItem.dart';
-import 'models/user_detail_item/SimilarProperty.dart';
+import 'models/user_detail_item/similar_property.dart';
 import 'property_auth.dart';
 import 'property_dashboard_bloc.dart';
 import 'property_tile.dart';
@@ -113,10 +113,12 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
   @override
   Widget build(BuildContext context) {
     _propertyDashboardBloc = Provider.of<PropertyDashboardBloc>(context);
-    return WillPopScope(
-      onWillPop: () {
-        _propertyDashboardBloc.index = 0;
-        return Future.value(true);
+    return PopScope(
+      onPopInvoked: (didPop) {
+        if(didPop) {
+          _propertyDashboardBloc.index = 0;
+          return;
+        }
       },
       child: Scaffold(
         backgroundColor: Colors.white,

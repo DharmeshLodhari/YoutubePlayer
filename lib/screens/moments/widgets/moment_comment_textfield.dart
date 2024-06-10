@@ -24,7 +24,6 @@ import 'package:Slydo/widget/customized_popup_menu.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
@@ -144,7 +143,7 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
   bool _isMessageIsGIFOrSticker = false;
   bool _isGIFLoading = false;
   bool _isMessageIsSticker = false;
-  TextEditingController _gifController = TextEditingController();
+  final TextEditingController _gifController = TextEditingController();
 
   /// variables for product or service search
   bool isBlogSearch = true;
@@ -160,12 +159,12 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
   int? productOrServiceCount = 0;
   String? productOrServiceNext = "";
   String? productOrServicePrevious = "";
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
-  ScrollController _scrollController = new ScrollController();
+  final ScrollController _scrollController = ScrollController();
 
   TextEditingController? searchItemTextController;
-  GlobalKey _key = LabeledGlobalKey("itemSearchTypeSelectionKey");
+  final GlobalKey _key = LabeledGlobalKey("itemSearchTypeSelectionKey");
   CustomizedPopUpMenu? itemSearchTypeSelectionMenu;
   int selectedMenuItemIndex = 0;
   bool isPopMenuOpen = false;
@@ -545,79 +544,77 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
   }
 
   Widget searchBox() {
-    return Container(
-      child: Theme(
-        data: Theme.of(context).copyWith(
-          textSelectionTheme: const TextSelectionThemeData()
-              .copyWith(selectionHandleColor: navyBlue),
+    return Theme(
+      data: Theme.of(context).copyWith(
+        textSelectionTheme: const TextSelectionThemeData()
+            .copyWith(selectionHandleColor: navyBlue),
+      ),
+      child: TextFormField(
+        key: searchItemTextFormField,
+        controller: searchItemTextController,
+        style: TextStyle(
+          fontSize: 16,
+          color: blackFont,
+          fontWeight: FontWeight.w600,
         ),
-        child: TextFormField(
-          key: searchItemTextFormField,
-          controller: searchItemTextController,
-          style: TextStyle(
-            fontSize: 16,
-            color: blackFont,
-            fontWeight: FontWeight.w600,
+        cursorWidth: 1.5,
+        cursorColor: navyBlue,
+        decoration: InputDecoration(
+          hintText: checkHintText(selectedMenuItemIndex),
+          fillColor: Colors.white,
+          filled: true,
+          contentPadding: const EdgeInsets.symmetric(vertical: 10),
+          prefixIcon: searchTypeSelection(),
+          prefix: const Padding(
+            padding: EdgeInsets.only(left: 12),
           ),
-          cursorWidth: 1.5,
-          cursorColor: navyBlue,
-          decoration: InputDecoration(
-            hintText: checkHintText(selectedMenuItemIndex),
-            fillColor: Colors.white,
-            filled: true,
-            contentPadding: const EdgeInsets.symmetric(vertical: 10),
-            prefixIcon: searchTypeSelection(),
-            prefix: const Padding(
-              padding: EdgeInsets.only(left: 12),
-            ),
-            suffixIcon: searchIcon(),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(
-                color: dividerColor,
-                width: 1.0,
-              ),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(
-                color: navyBlue,
-                width: 1.0,
-              ),
-            ),
-            errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(
-                color: dividerColor,
-                width: 1.0,
-              ),
-            ),
-            focusedErrorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(
-                color: dividerColor,
-                width: 1.0,
-              ),
+          suffixIcon: searchIcon(),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(
+              color: dividerColor,
+              width: 1.0,
             ),
           ),
-          onFieldSubmitted: (val) {
-            if (mounted) {
-              FocusScope.of(context).unfocus();
-              _onRefresh();
-            }
-          },
-          // onChanged: (val) {
-          //   if (val.length == 3) {
-          //     if (mounted) {
-          //       searchProductOrService();
-          //     }
-          //   } else if (val.length == 6) {
-          //     if (mounted) {
-          //       searchProductOrService();
-          //     }
-          //   }
-          // },
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(
+              color: navyBlue,
+              width: 1.0,
+            ),
+          ),
+          errorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(
+              color: dividerColor,
+              width: 1.0,
+            ),
+          ),
+          focusedErrorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(
+              color: dividerColor,
+              width: 1.0,
+            ),
+          ),
         ),
+        onFieldSubmitted: (val) {
+          if (mounted) {
+            FocusScope.of(context).unfocus();
+            _onRefresh();
+          }
+        },
+        // onChanged: (val) {
+        //   if (val.length == 3) {
+        //     if (mounted) {
+        //       searchProductOrService();
+        //     }
+        //   } else if (val.length == 6) {
+        //     if (mounted) {
+        //       searchProductOrService();
+        //     }
+        //   }
+        // },
       ),
     );
   }
@@ -732,14 +729,14 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
           }
         }
 
-        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted) {
+        if (bottomSheetStateSetterGlobal != null && bottomSheetMounted) {
           bottomSheetStateSetterGlobal!(() {});
         }
         if (mounted) setState(() {});
       }
       if (searchedProductAndService.isEmpty) {
         noSearchedItem = true;
-        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted) {
+        if (bottomSheetStateSetterGlobal != null && bottomSheetMounted) {
           bottomSheetStateSetterGlobal!(() {});
         }
         if (mounted) setState(() {});
@@ -851,25 +848,17 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
   }
 
   void _onRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
-      final connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        productOrServiceCount = 0;
-        productOrServiceNext = "";
-        productOrServicePrevious = "";
-        searchedProductAndService = [];
-        noSearchedItem = false;
-        getProductOrServiceList();
-        _refreshController.refreshCompleted();
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
-
-        _refreshController.refreshCompleted();
-      }
-    });
+    if (await checkConnection(context)) {
+      productOrServiceCount = 0;
+      productOrServiceNext = "";
+      productOrServicePrevious = "";
+      searchedProductAndService = [];
+      noSearchedItem = false;
+      getProductOrServiceList();
+      _refreshController.refreshCompleted();
+    } else {
+      _refreshController.refreshCompleted();
+    }
   }
 
   Widget pullToRefresh() {
@@ -1402,38 +1391,36 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
   }
 
   Widget checkIfProductService() {
-    return Container(
-      child: Column(
-        children: [
-          Stack(
-            children: <Widget>[
-              getPreviewContainer(),
-              Positioned(
-                right: 20,
-                top: 10,
-                child: InkWell(
-                  onTap: () {
-                    yarnDashboardBloc!.productService = null;
-                    if (mounted) setState(() {});
-                  },
-                  child: Container(
-                    height: 25,
-                    width: 25,
-                    margin: const EdgeInsets.only(right: 6, top: 6),
-                    decoration: BoxDecoration(
-                        color: HexColor("#000000"), shape: BoxShape.circle),
-                    child: Icon(
-                      Icons.close_outlined,
-                      color: white,
-                      size: 15,
-                    ),
+    return Column(
+      children: [
+        Stack(
+          children: <Widget>[
+            getPreviewContainer(),
+            Positioned(
+              right: 20,
+              top: 10,
+              child: InkWell(
+                onTap: () {
+                  yarnDashboardBloc!.productService = null;
+                  if (mounted) setState(() {});
+                },
+                child: Container(
+                  height: 25,
+                  width: 25,
+                  margin: const EdgeInsets.only(right: 6, top: 6),
+                  decoration: BoxDecoration(
+                      color: HexColor("#000000"), shape: BoxShape.circle),
+                  child: Icon(
+                    Icons.close_outlined,
+                    color: white,
+                    size: 15,
                   ),
                 ),
               ),
-            ],
-          ),
-        ],
-      ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 

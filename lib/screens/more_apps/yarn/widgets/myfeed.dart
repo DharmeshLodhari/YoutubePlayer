@@ -1,4 +1,3 @@
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -210,28 +209,21 @@ class MyFeedViewState extends State<MyFeedView> {
   }
 
   void _onPostRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
-      final connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        count = 0;
-        next = "";
-        previous = "";
-        yarnTopicList = [];
-        if (mounted) setState(() {});
+    if (await checkConnection(context)) {
+      count = 0;
+      next = "";
+      previous = "";
+      yarnTopicList = [];
+      if (mounted) setState(() {});
 
-        getYarnTopic(categoryId: selectedId);
-        setState(() {
-          _postRefreshController.refreshCompleted();
-        });
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
-        setState(() {
-          _postRefreshController.refreshCompleted();
-        });
-      }
-    });
+      getYarnTopic(categoryId: selectedId);
+      setState(() {
+        _postRefreshController.refreshCompleted();
+      });
+    } else {
+      setState(() {
+        _postRefreshController.refreshCompleted();
+      });
+    }
   }
 }

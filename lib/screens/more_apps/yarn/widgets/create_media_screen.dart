@@ -470,8 +470,8 @@ class _CreateMediaScreenState extends State<CreateMediaScreen> {
             await NavigationUtil.push(context, screen: TrimmerView(file: file));
         if (videoFilePath is String) {
           videoPath = videoFilePath;
-          final Uint8List? uInt8List =
-              await getVideoThumbnailFromUrl(videoPath!);
+          // final Uint8List? uInt8List =
+          //     await getVideoThumbnailFromUrl(videoPath!);
           final String? thumbnailImage =
               await generateThumbNailFromVideo(videoPath: videoPath!);
 
@@ -483,8 +483,9 @@ class _CreateMediaScreenState extends State<CreateMediaScreen> {
       }
     }
 
-    if (widget.addedSelectedMedia != null)
+    if (widget.addedSelectedMedia != null) {
       widget.addedSelectedMedia!(selectedMedia);
+    }
 
     cameraController?.dispose();
     videoPlayerController?.dispose();

@@ -9,7 +9,6 @@ import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:Slydo/widget/slide_action_button.dart';
 import 'package:Slydo/widget/vertical_list_item.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -38,7 +37,7 @@ class _CreditCardListState extends State<CreditCardList>
       RefreshController(initialRefresh: false);
 
   final PaymentAndBankingAuth _auth = PaymentAndBankingAuth();
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   late final SlidableController _slideController = SlidableController(this);
 
@@ -71,34 +70,29 @@ class _CreditCardListState extends State<CreditCardList>
 
   void _onRefresh() async {
     //check network connectivity and if true then refresh the list
-    Connectivity().checkConnectivity().then((value) {
-      final connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        count = 0;
-        next = "";
-        previous = "";
-        creditCardList = [];
-        getList();
-        _refreshController.refreshCompleted();
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
-        _refreshController.refreshCompleted();
-      }
-    });
+    if (await checkConnection(context)) {
+      count = 0;
+      next = "";
+      previous = "";
+      creditCardList = [];
+      getList();
+      _refreshController.refreshCompleted();
+    } else {
+      _refreshController.refreshCompleted();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        if (widget.arguments != null) {
-          Navigator.pop(context);
-          Navigator.pop(context);
+    return PopScope(
+      onPopInvoked: (didPop) async {
+        if (didPop) {
+          if (widget.arguments != null) {
+            Navigator.pop(context);
+            Navigator.pop(context);
+          }
+          return;
         }
-        return true;
       },
       child: Scaffold(
         key: _scaffoldKey,
@@ -397,10 +391,5 @@ class _CreditCardListState extends State<CreditCardList>
       showToast(message: error.toString());
     });
     _onRefresh();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
   }
 }

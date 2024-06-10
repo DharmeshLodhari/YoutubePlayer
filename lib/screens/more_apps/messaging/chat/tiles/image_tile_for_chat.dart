@@ -46,7 +46,7 @@ class ImageTileForChat extends StatelessWidget {
                     "type": "image",
                     "file": message!['media'],
                     "message": message!['text'],
-                    "poster": message!["poster"] ?? null
+                    "poster": message!["poster"]
                   },
                 );
               },

@@ -230,9 +230,11 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        return true;
+    return PopScope(
+      onPopInvoked: (didPop) async {
+        if (didPop) {
+          return;
+        }
       },
       child: Scaffold(
         backgroundColor: Colors.white,
@@ -1077,7 +1079,7 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
       //the api call will first create the product then use the id from the
       //response to save the variant
       shippingAddress.country = "NG";
-      shippingAddress.email = userBloc.user.userName! + "@slydo.co";
+      shippingAddress.email = "${userBloc.user.userName!}@slydo.co";
       shippingAddress.phone = userBloc.user.phoneNumber;
       shippingAddress.first_name = userBloc.user.fullName!.split(" ").first;
       shippingAddress.last_name = userBloc.user.fullName!.split(" ").last;

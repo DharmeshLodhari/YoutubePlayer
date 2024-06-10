@@ -39,9 +39,11 @@ class _ForgotPasswordState extends State<ForgotPassword> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-        onWillPop: () async {
-          return true;
+    return PopScope(
+        onPopInvoked: (didPop) async {
+          if (didPop) {
+            return;
+          }
         },
         child: Scaffold(
             backgroundColor: Colors.white,
@@ -101,12 +103,10 @@ class _ForgotPasswordState extends State<ForgotPassword> {
   }
 
   Widget forgotPasswordTitle() {
-    return Container(
-      child: Text(
-        AppLocalization.of(context)!.forgotPassword,
-        style: TextStyle(
-            fontSize: 22, fontWeight: FontWeight.w700, color: blackFont),
-      ),
+    return Text(
+      AppLocalization.of(context)!.forgotPassword,
+      style: TextStyle(
+          fontSize: 22, fontWeight: FontWeight.w700, color: blackFont),
     );
   }
 
@@ -212,7 +212,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
         const SizedBox(width: 8.0),
         Expanded(
           child: Text(
-            "(" + country.name! + ")",
+            "(${country.name!})",
             overflow: TextOverflow.fade,
             softWrap: false,
             style: TextStyle(
@@ -315,8 +315,8 @@ class _ForgotPasswordState extends State<ForgotPassword> {
             phoneNumberFromTextField.replaceFirst("0", "");
       }
 
-      String phoneNumber =
-          "+" + _selectedDialogCountry.phoneCode! + phoneNumberFromTextField;
+      final String phoneNumber =
+          "+${_selectedDialogCountry.phoneCode!}$phoneNumberFromTextField";
 
       UserAuth().passwordResetOtp(phoneNumber).then((value) {
         response = value;

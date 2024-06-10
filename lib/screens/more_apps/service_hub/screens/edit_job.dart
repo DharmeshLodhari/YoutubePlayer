@@ -19,7 +19,6 @@ import 'package:Slydo/widget/customized_checkbox_field.dart';
 import 'package:Slydo/widget/customized_dropdown_field.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/image_crop.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -351,24 +350,17 @@ class _EditJobState extends State<EditJob> {
   }
 
   void onRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
-      final connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        categoryCount = 0;
-        categoryNext = "";
-        categoryPrevious = "";
-        searchedCategoryList = [];
-        isItemLoading = false;
-        getCategorySearchedList();
-        refreshController.refreshCompleted();
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
-        refreshController.refreshCompleted();
-      }
-    });
+    if (await checkConnection(context)) {
+      categoryCount = 0;
+      categoryNext = "";
+      categoryPrevious = "";
+      searchedCategoryList = [];
+      isItemLoading = false;
+      getCategorySearchedList();
+      refreshController.refreshCompleted();
+    } else {
+      refreshController.refreshCompleted();
+    }
   }
 
   Widget searchIcon() {
@@ -632,9 +624,11 @@ class _EditJobState extends State<EditJob> {
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
-    return WillPopScope(
-      onWillPop: () async {
-        return true;
+    return PopScope(
+      onPopInvoked: (didPop) async {
+        if (didPop) {
+          return;
+        }
       },
       child: ScaffoldMessenger(
         key: _jobScaffoldMessengerKey,

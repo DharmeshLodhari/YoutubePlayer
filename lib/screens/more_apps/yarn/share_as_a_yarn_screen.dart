@@ -23,8 +23,6 @@ import 'package:Slydo/screens/more_apps/yarn/widgets/ask_enable_comment_payment.
 import 'package:Slydo/screens/more_apps/yarn/widgets/ask_mention_view.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_dashboard_bloc.dart';
-import 'package:Slydo/utils/colors.dart';
-import 'package:Slydo/utils/common.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
@@ -120,7 +118,7 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
   bool _isMessageIsGIFOrSticker = false;
   bool _isMessageIsSticker = false;
   bool _isGIFLoading = false;
-  TextEditingController _gifController = TextEditingController();
+  final TextEditingController _gifController = TextEditingController();
 
   @override
   void initState() {
@@ -418,32 +416,30 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
 
   Widget _buildYarnForm(YarnDashboardBloc model) {
     return Expanded(
-      child: Container(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.only(left: 12),
-                child: _buildTextField(),
-              ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.only(left: 12),
+              child: _buildTextField(),
             ),
-            Container(
-              margin: const EdgeInsets.only(left: 20.0, right: 20.0),
-              child: getPreviewContainer(),
-            ),
-            if (isMentionName) ...[
-              _buildUserNameContainer(),
-            ],
-            // if (selectedImages.isNotEmpty) ...[
-            //   _buildAddImages(),
-            //   SizedBox(height: 20),
-            // ],
-            _buildAddImages(),
-            if (!_isMessageIsGIFOrSticker) _buildRowForMedia(),
+          ),
+          Container(
+            margin: const EdgeInsets.only(left: 20.0, right: 20.0),
+            child: getPreviewContainer(),
+          ),
+          if (isMentionName) ...[
+            _buildUserNameContainer(),
           ],
-        ),
+          // if (selectedImages.isNotEmpty) ...[
+          //   _buildAddImages(),
+          //   SizedBox(height: 20),
+          // ],
+          _buildAddImages(),
+          if (!_isMessageIsGIFOrSticker) _buildRowForMedia(),
+        ],
       ),
     );
   }
@@ -513,8 +509,7 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
           color: HexColor("#7A7A7A"),
           fontWeight: FontWeight.w400,
         ),
-        counterText:
-            textController.text.length.toString() + "/" + 400.toString(),
+        counterText: "${textController.text.length}/${400}",
         border: InputBorder.none,
         enabledBorder: InputBorder.none,
         focusedBorder: InputBorder.none,
@@ -1038,12 +1033,11 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
       key: UniqueKey(),
       onTap: (String? tappedUser) {
         if (tappedUser != null) {
-          textController.text = textController.text.replaceRange(
-                (textController.text.length - (searchString?.length ?? 0)),
-                textController.text.length,
-                tappedUser,
-              ) +
-              " ";
+          textController.text = "${textController.text.replaceRange(
+            (textController.text.length - (searchString?.length ?? 0)),
+            textController.text.length,
+            tappedUser,
+          )} ";
           textController.selection = TextSelection.fromPosition(TextPosition(
             offset: textController.text.length,
           ));

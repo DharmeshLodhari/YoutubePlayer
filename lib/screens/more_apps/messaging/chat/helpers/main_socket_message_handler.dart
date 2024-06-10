@@ -545,9 +545,9 @@ class MainSocketMessageHandler {
   }
 
   void dispose() {
-    _audioPlayers.forEach((element) {
+    for (var element in _audioPlayers) {
       AssetsAudioPlayer.withId(element).dispose();
-    });
+    }
 
     _audioPlayers.clear();
     _nudgingUsers.clear();

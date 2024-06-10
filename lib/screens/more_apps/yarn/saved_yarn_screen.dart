@@ -1,11 +1,9 @@
 import 'package:Slydo/data/state_notifiers/user_bloc.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_search_screen.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -286,28 +284,21 @@ class SavedYarnState extends State<SavedYarn> {
   }
 
   void onRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
-      final connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        count = 0;
-        next = "";
-        previous = "";
-        yarnTopicList = [];
-        if (mounted) setState(() {});
+    if (await checkConnection(context)) {
+      count = 0;
+      next = "";
+      previous = "";
+      yarnTopicList = [];
+      if (mounted) setState(() {});
 
-        getYarnList(categoryId: selectedId);
-        setState(() {
-          refreshController.refreshCompleted();
-        });
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
-        setState(() {
-          refreshController.refreshCompleted();
-        });
-      }
-    });
+      getYarnList(categoryId: selectedId);
+      setState(() {
+        refreshController.refreshCompleted();
+      });
+    } else {
+      setState(() {
+        refreshController.refreshCompleted();
+      });
+    }
   }
 }

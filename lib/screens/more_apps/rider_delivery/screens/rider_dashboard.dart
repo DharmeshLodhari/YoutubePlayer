@@ -5,7 +5,6 @@ import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/auth/rider_delivery_auth.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/models/delivery_model.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/tiles/delivery_order_tile.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/custom_box_shadow.dart';
@@ -129,9 +128,11 @@ class _RiderDashboardState extends State<RiderDashboard> {
       bottom: Platform.isIOS ? true : false,
       top: false,
       color: white,
-      child: WillPopScope(
-        onWillPop: () async {
-          return true;
+      child: PopScope(
+        onPopInvoked: (didPop) async {
+          if (didPop) {
+            return;
+          }
         },
         child: ScaffoldMessenger(
           child: Scaffold(

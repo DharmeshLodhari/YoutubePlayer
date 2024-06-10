@@ -11,7 +11,6 @@ import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:Slydo/widget/slide_action_button.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
@@ -50,9 +49,9 @@ class _MessageListState extends State<MessageList>
   int selectedMenuItemIndex = 0;
   bool isPopMenuOpen = false;
 
-  @protected
+  @override
   void initState() {
-    this.getList();
+    getList();
 
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
@@ -68,36 +67,27 @@ class _MessageListState extends State<MessageList>
   // refresh the list when lifecycle called onResume method
   void _onRefreshOnResume() {
     _refreshBloc = Provider.of<RefreshBlocForMessages>(context);
-    _refreshBloc!
-      ..addListener(() {
-        if (_refreshBloc!.isRefresh) {
-          if (mounted) {
-            _onRefresh();
-            _refreshBloc!.isRefresh = false;
-          }
+    _refreshBloc!.addListener(() {
+      if (_refreshBloc!.isRefresh) {
+        if (mounted) {
+          _onRefresh();
+          _refreshBloc!.isRefresh = false;
         }
-      });
+      }
+    });
   }
 
   void _onRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
-      final connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        count = 0;
-        next = "";
-        previous = "";
-        messageList = [];
-        getList();
-        _refreshController.refreshCompleted();
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
-
-        _refreshController.refreshCompleted();
-      }
-    });
+    if (await checkConnection(context)) {
+      count = 0;
+      next = "";
+      previous = "";
+      messageList = [];
+      getList();
+      _refreshController.refreshCompleted();
+    } else {
+      _refreshController.refreshCompleted();
+    }
   }
 
   void menuItemSelectionChange(String value, int index) {

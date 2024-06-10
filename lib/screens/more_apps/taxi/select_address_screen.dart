@@ -57,9 +57,11 @@ class _SelectAddressScreenState extends State<SelectAddressScreen> {
   @override
   Widget build(BuildContext context) {
     taxiBloc = Provider.of<TaxiBloc>(context, listen: false);
-    return WillPopScope(
-      onWillPop: () async {
-        return Future.value(true);
+    return PopScope(
+      onPopInvoked: (didPop) async {
+        if (didPop) {
+          return;
+        }
       },
       child: Scaffold(
         resizeToAvoidBottomInset: false,
@@ -293,13 +295,13 @@ class _SelectAddressScreenState extends State<SelectAddressScreen> {
   Widget getRideOptions() {
     return Container(
         padding: const EdgeInsets.only(left: 16, right: 16, top: 20),
-        child: Column(
+        child: const Column(
           // controller: scrollController,
           children: [
-            const SizedBox(
+            SizedBox(
               height: 20,
             ),
-            const SizedBox(
+            SizedBox(
               height: 40,
             ),
           ],

@@ -4,7 +4,6 @@ import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/custom_pagination.dart';
 import 'package:Slydo/widget/empty_page.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -83,7 +82,7 @@ class ShopListScreenState extends State<ShopListScreen> {
           fontWeight: FontWeight.w700,
         ),
       ),
-      actions: [
+      actions: const [
         // _cartBtn(),
         // SizedBox(width: 12),
       ],
@@ -103,8 +102,9 @@ class ShopListScreenState extends State<ShopListScreen> {
   }
 
   void loadUrl() {
-    if (widget.nextUrl != null && widget.nextUrl != "")
+    if (widget.nextUrl != null && widget.nextUrl != "") {
       productNext = widget.nextUrl;
+    }
   }
 
   @override
@@ -241,19 +241,12 @@ class ShopListScreenState extends State<ShopListScreen> {
   }
 
   void _onRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
-      final connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        _refreshPage();
-        _refreshController.refreshCompleted();
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
-        _refreshController.refreshCompleted();
-      }
-    });
+    if (await checkConnection(context)) {
+      _refreshPage();
+      _refreshController.refreshCompleted();
+    } else {
+      _refreshController.refreshCompleted();
+    }
   }
 
   void _refreshPage() {
@@ -318,9 +311,7 @@ class ShopListScreenState extends State<ShopListScreen> {
                     // ),
 
                     if (widget.type != null && rowHeaders.isNotEmpty)
-                      ...rowHeaders
-                          .map((headers) => rowTitle(headers))
-                          .toList(),
+                      ...rowHeaders.map((headers) => rowTitle(headers)),
                     if (rowHeaders.isEmpty &&
                         !isProductLoading &&
                         widget.type != null)
@@ -518,7 +509,7 @@ class ShopListScreenState extends State<ShopListScreen> {
               // ),
             ],
           ),
-        Container(
+        SizedBox(
           height: 280,
           child: ListView.builder(
             padding: const EdgeInsets.only(bottom: 6),
@@ -663,78 +654,76 @@ class ShopListScreenState extends State<ShopListScreen> {
   }
 
   Widget searchBox() {
-    return Container(
-      child: Theme(
-        data: Theme.of(context).copyWith(
-          textSelectionTheme: TextSelectionThemeData(
-            selectionHandleColor: navyBlue,
-          ),
+    return Theme(
+      data: Theme.of(context).copyWith(
+        textSelectionTheme: TextSelectionThemeData(
+          selectionHandleColor: navyBlue,
         ),
-        child: InkWell(
-          onTap: () {
-            Navigator.of(context).pushNamed("/search-product");
-          },
-          child: IgnorePointer(
-            ignoring: true,
-            child: TextFormField(
-              readOnly: true,
-              style: TextStyle(
-                fontSize: 16,
+      ),
+      child: InkWell(
+        onTap: () {
+          Navigator.of(context).pushNamed("/search-product");
+        },
+        child: IgnorePointer(
+          ignoring: true,
+          child: TextFormField(
+            readOnly: true,
+            style: TextStyle(
+              fontSize: 16,
+              fontFamily: "Inter",
+              color: blackFont,
+              fontWeight: FontWeight.w600,
+            ),
+            cursorWidth: 1.5,
+            cursorColor: navyBlue,
+            decoration: InputDecoration(
+              hintStyle: TextStyle(
+                fontSize: 14,
                 fontFamily: "Inter",
-                color: blackFont,
                 fontWeight: FontWeight.w600,
+                color: darkGrey,
               ),
-              cursorWidth: 1.5,
-              cursorColor: navyBlue,
-              decoration: InputDecoration(
-                hintStyle: TextStyle(
-                  fontSize: 14,
-                  fontFamily: "Inter",
-                  fontWeight: FontWeight.w600,
+              suffixIcon: IconButton(
+                icon: Icon(
+                  SlydoAppIcon.search,
                   color: darkGrey,
+                  size: 14,
                 ),
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    SlydoAppIcon.search,
-                    color: darkGrey,
-                    size: 14,
-                  ),
-                  onPressed: () {},
+                onPressed: () {},
+              ),
+              hintText: "Search",
+              fillColor: Colors.white,
+              filled: true,
+              contentPadding: const EdgeInsets.symmetric(vertical: 10),
+              prefix: const Padding(
+                padding: EdgeInsets.only(left: 16),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: dividerColor,
+                  width: 1.0,
                 ),
-                hintText: "Search",
-                fillColor: Colors.white,
-                filled: true,
-                contentPadding: const EdgeInsets.symmetric(vertical: 10),
-                prefix: const Padding(
-                  padding: EdgeInsets.only(left: 16),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: navyBlue,
+                  width: 1.0,
                 ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(
-                    color: dividerColor,
-                    width: 1.0,
-                  ),
+              ),
+              errorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: dividerColor,
+                  width: 1.0,
                 ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(
-                    color: navyBlue,
-                    width: 1.0,
-                  ),
-                ),
-                errorBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(
-                    color: dividerColor,
-                    width: 1.0,
-                  ),
-                ),
-                focusedErrorBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(
-                    color: dividerColor,
-                    width: 1.0,
-                  ),
+              ),
+              focusedErrorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: dividerColor,
+                  width: 1.0,
                 ),
               ),
             ),

@@ -51,15 +51,15 @@ class _AccountTypeState extends State<AccountType> {
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
-    return WillPopScope(
-      onWillPop: () {
-        if (FocusScope.of(context).hasFocus) {
-          FocusScope.of(context).unfocus();
+    return PopScope(
+      onPopInvoked: (didPop) {
+        if (didPop) {
+          if (FocusScope.of(context).hasFocus) {
+            FocusScope.of(context).unfocus();
+          }
+
+          Navigator.pop(context);
         }
-
-        Navigator.pop(context);
-
-        return Future.value(false);
       },
       child: Scaffold(
         backgroundColor: Colors.white,

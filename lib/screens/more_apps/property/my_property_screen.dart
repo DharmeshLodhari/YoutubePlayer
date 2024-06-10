@@ -20,10 +20,12 @@ class _MyPropertiesScreenState extends State<MyPropertiesScreen> {
   @override
   Widget build(BuildContext context) {
     _propertyDashboardBloc = Provider.of<PropertyDashboardBloc>(context);
-    return WillPopScope(
-      onWillPop: () async {
-        _propertyDashboardBloc.index = 0;
-        return true;
+    return PopScope(
+      onPopInvoked: (didPop) async {
+        if(didPop) {
+          _propertyDashboardBloc.index = 0;
+          return;
+        }
       },
       child: DefaultTabController(
         length: 2,

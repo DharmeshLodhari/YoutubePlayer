@@ -305,7 +305,7 @@ class _SuperStoreState extends State<SuperStore> {
                   if (mounted) setState(() {});
                 },
                 categoryName: categoryName,
-                next_url:
+                nextUrl:
                     "${AppConfig.baseUrl}/api/v1/products/categories/?industry=${productUrl.id}"),
           ),
           const SizedBox(height: 14),

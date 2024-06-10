@@ -17,8 +17,9 @@ class ChatMessageHandler {
     final List<ChatMessage> chatMessages = [];
 
     /// Converting CustomerProfile in to Chat Users
-    messages.forEach((message) =>
-        chatMessages.add(ChatMessage.fromJson(jsonDecode(message))));
+    for (var message in messages) {
+      chatMessages.add(ChatMessage.fromJson(jsonDecode(message)));
+    }
 
     /// adding Chat User into DataBase
     final List<ChatMessage> insertedMessages =

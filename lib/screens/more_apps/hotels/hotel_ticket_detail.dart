@@ -59,10 +59,12 @@ class _EventTicketDetailState extends State<EventTicketDetail> {
 
   Widget scaffoldBody() {
     _hotelDashboardBloc = Provider.of<HotelDashboardBloc>(context);
-    return WillPopScope(
-      onWillPop: () async {
-        _hotelDashboardBloc.index = 0;
-        return Future.value(true);
+    return PopScope(
+      onPopInvoked: (didPop) async {
+        if (didPop) {
+          _hotelDashboardBloc.index = 0;
+          return;
+        }
       },
       child: SingleChildScrollView(
         child: ticketWithImage(),
@@ -71,51 +73,49 @@ class _EventTicketDetailState extends State<EventTicketDetail> {
   }
 
   Widget ticketWithImage() {
-    return Container(
-      child: Stack(
-        children: [
-          Image.asset(
-            "assets/images/event_ticket_background.png",
+    return Stack(
+      children: [
+        Image.asset(
+          "assets/images/event_ticket_background.png",
+        ),
+        Container(
+          height: 570,
+          padding: const EdgeInsets.symmetric(horizontal: 36),
+          child: Column(
+            children: [
+              const SizedBox(
+                height: 40,
+              ),
+              bookingInfo(),
+              const SizedBox(
+                height: 24,
+              ),
+              MySeparator(color: dividerColor),
+              const SizedBox(
+                height: 28,
+              ),
+              placeInfo(),
+              const SizedBox(
+                height: 16,
+              ),
+              MySeparator(color: dividerColor),
+              const SizedBox(
+                height: 40,
+              ),
+              Center(
+                child: SizedBox(
+                  height: 214,
+                  width: 214,
+                  child: CachedNetworkImage(
+                      errorWidget: imageErrorWidget,
+                      imageUrl:
+                          "https://www.pixavi.com/wp-content/uploads/2015/10/apb-qr-code.png"),
+                ),
+              )
+            ],
           ),
-          Container(
-            height: 570,
-            padding: const EdgeInsets.symmetric(horizontal: 36),
-            child: Column(
-              children: [
-                const SizedBox(
-                  height: 40,
-                ),
-                bookingInfo(),
-                const SizedBox(
-                  height: 24,
-                ),
-                MySeparator(color: dividerColor),
-                const SizedBox(
-                  height: 28,
-                ),
-                placeInfo(),
-                const SizedBox(
-                  height: 16,
-                ),
-                MySeparator(color: dividerColor),
-                const SizedBox(
-                  height: 40,
-                ),
-                Center(
-                  child: Container(
-                    height: 214,
-                    width: 214,
-                    child: CachedNetworkImage(
-                        errorWidget: imageErrorWidget,
-                        imageUrl:
-                            "https://www.pixavi.com/wp-content/uploads/2015/10/apb-qr-code.png"),
-                  ),
-                )
-              ],
-            ),
-          )
-        ],
-      ),
+        )
+      ],
     );
   }
 
@@ -337,10 +337,12 @@ class MySeparator extends StatelessWidget {
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
         final boxWidth = constraints.constrainWidth();
-        final dashWidth = 4.0;
+        const dashWidth = 4.0;
         final dashHeight = height;
         final dashCount = (boxWidth / (2 * dashWidth)).floor();
         return Flex(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          direction: Axis.horizontal,
           children: List.generate(dashCount, (_) {
             return SizedBox(
               width: dashWidth,
@@ -350,8 +352,6 @@ class MySeparator extends StatelessWidget {
               ),
             );
           }),
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          direction: Axis.horizontal,
         );
       },
     );

@@ -11,7 +11,7 @@ Map<String, dynamic> detectLinkInText(String text) {
   final Iterable<RegExpMatch> matches = exp.allMatches(text);
   String link;
   final List<String> listOfLinks = [];
-  matches.forEach((match) {
+  for (var match in matches) {
     link = text.substring(match.start, match.end);
     // will match google.com
     if (link.startsWith("@") != true && !link.contains("..")) {
@@ -29,7 +29,7 @@ Map<String, dynamic> detectLinkInText(String text) {
         listOfLinks.add(link);
       }
     }
-  });
+  }
 
   final Map<String, dynamic> linkData = {
     "hasLink": false,

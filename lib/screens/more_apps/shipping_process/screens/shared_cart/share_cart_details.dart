@@ -76,10 +76,12 @@ class _SharedCartDetailsState extends State<SharedCartDetails> {
       bottom: Platform.isIOS ? true : false,
       top: false,
       color: white,
-      child: WillPopScope(
-        onWillPop: () async {
-          Navigator.of(context).pop(isQtyChange);
-          return true;
+      child: PopScope(
+        onPopInvoked: (didPop) async {
+          if(didPop) {
+            Navigator.of(context).pop(isQtyChange);
+            return;
+          }
         },
         child: ScaffoldMessenger(
           key: _cartItemScaffoldMessengerKey,

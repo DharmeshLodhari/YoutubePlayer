@@ -10,7 +10,6 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/customized_popup_menu.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -130,9 +129,11 @@ class _DeliveryHistoryState extends State<DeliveryHistory> {
       bottom: Platform.isIOS ? true : false,
       top: false,
       color: white,
-      child: WillPopScope(
-        onWillPop: () async {
-          return true;
+      child: PopScope(
+        onPopInvoked: (didPop) async {
+          if (didPop) {
+            return;
+          }
         },
         child: ScaffoldMessenger(
           child: Scaffold(
@@ -375,24 +376,17 @@ class _DeliveryHistoryState extends State<DeliveryHistory> {
   }
 
   void _onRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
-      final connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        listNext = "";
-        listPrevious = "";
-        listCount = 0;
-        isLoading = false;
-        jobListing = [];
-        getRiderJobListing();
-        _refreshController.refreshCompleted();
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
-        _refreshController.refreshCompleted();
-      }
-    });
+    if (await checkConnection(context)) {
+      listNext = "";
+      listPrevious = "";
+      listCount = 0;
+      isLoading = false;
+      jobListing = [];
+      getRiderJobListing();
+      _refreshController.refreshCompleted();
+    } else {
+      _refreshController.refreshCompleted();
+    }
   }
 
   Widget popUpMenuButton() {

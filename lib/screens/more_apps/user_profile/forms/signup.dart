@@ -190,20 +190,22 @@ class _SignUpState extends State<SignUp> {
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
-    return WillPopScope(
-      onWillPop: () {
-        if (FocusScope.of(context).hasFocus) {
-          FocusScope.of(context).unfocus();
-        }
+    return PopScope(
+      onPopInvoked: (didPop) async {
+        if (didPop) {
+          if (FocusScope.of(context).hasFocus) {
+            FocusScope.of(context).unfocus();
+          }
 
-        if (basicAccountInfo == false) {
-          Navigator.pop(context);
-        } else {
-          basicAccountInfo = false;
-          if (mounted) setState(() {});
-        }
+          if (basicAccountInfo == false) {
+            Navigator.pop(context);
+          } else {
+            basicAccountInfo = false;
+            if (mounted) setState(() {});
+          }
 
-        return Future.value(false);
+          return Future.value(false);
+        }
       },
       child: Scaffold(
         backgroundColor: Colors.white,
@@ -1049,7 +1051,7 @@ class _SignUpState extends State<SignUp> {
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: Container(
+              content: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   margin: EdgeInsets.zero,

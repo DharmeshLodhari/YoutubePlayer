@@ -30,8 +30,8 @@ class _BankAccountTileState extends State<BankAccountTile> {
           style: const TextStyle(
               color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
         ),
-        subtitle: Text('******' +
-            widget.account!.accountNumber.toString().substring(5, 9)),
+        subtitle: Text(
+            '******${widget.account!.accountNumber.toString().substring(5, 9)}'),
         leading: ClipOval(
           child: CachedNetworkImage(
             imageUrl: widget.account!.bankAvatar!,

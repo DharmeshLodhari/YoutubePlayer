@@ -24,10 +24,12 @@ class _MyMusicScreenState extends State<MyMusicScreen> {
   @override
   Widget build(BuildContext context) {
     _musicDashboardBloc = Provider.of<MusicDashboardBloc>(context);
-    return WillPopScope(
-      onWillPop: () async {
-        _musicDashboardBloc.index = 0;
-        return true;
+    return PopScope(
+      onPopInvoked: (didPop) async {
+        if(didPop) {
+          _musicDashboardBloc.index = 0;
+          return;
+        }
       },
       child: DefaultTabController(
         length: 2,

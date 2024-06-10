@@ -268,7 +268,7 @@ class ChatGroupActionManager {
     final Participant user = Participant.fromJson(users.first);
 
     if (chatConversation != null) {
-      if (!chatConversation.participants.contains(user)) {
+      if (!chatConversation.participants.contains(user.userName)) {
         chatConversation.participants.add(user.userName);
         connectionListBloc.updateChatConversation(
             chatConversation: chatConversation);
@@ -595,8 +595,7 @@ class ChatGroupActionManagerForLiveConversation {
     }
 
     if (isGroupDetailModel) {
-      if (!groupDetailModelToUpdate!.participants
-          .contains(participant.userName)) {
+      if (!groupDetailModelToUpdate!.participants.contains(participant)) {
         groupDetailModelToUpdate!.participants.add(participant);
         return groupDetailModelToUpdate;
       }

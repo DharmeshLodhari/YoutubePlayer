@@ -193,12 +193,12 @@ class _SplashScreenState extends State<SplashScreen>
       currentLocale = await Devicelocale.currentLocale;
       debugPrint("Device current language => $currentLocale");
       late Language language;
-      languages.forEach((lang) {
+      for (var lang in languages) {
         if (lang.languageCode == currentLocale!.substring(0, 2)) {
           language = lang;
-          return;
+          continue;
         }
-      });
+      }
 
       AppLocalization.load(Locale(language.languageCode, ""));
       debugPrint("Language Set From System ${language.name}");
@@ -226,8 +226,13 @@ class _SplashScreenState extends State<SplashScreen>
     sharedCartBloc = Provider.of<SharedCartBloc>(context);
     userBloc = Provider.of<UserBloc>(context);
 
-    return WillPopScope(
-      onWillPop: () async => Future.value(false),
+    return PopScope(
+      onPopInvoked: (didPop) async {
+        if (didPop) {
+          return;
+        }
+        Future.value(false);
+      },
       child: hasConnection
           ? Scaffold(
               body: Stack(fit: StackFit.expand, children: <Widget>[
@@ -328,7 +333,7 @@ class _SplashScreenState extends State<SplashScreen>
         company = secureUser.company;
         isStaffLogin = secureUser.isStaffLogin ?? false;
 
-        final phoneNumber = "+" + country2.phoneCode! + userPhoneNumber!;
+        final phoneNumber = "+${country2.phoneCode!}${userPhoneNumber!}";
         errorText += "phoneNumber $phoneNumber\n";
 
         User? user;
@@ -355,12 +360,12 @@ class _SplashScreenState extends State<SplashScreen>
 
           if (accounts.isNotEmpty) {
             errorText += "accounts:- ${accounts.length}\n";
-            accounts.forEach((element) {
+            for (var element in accounts) {
               errorText +=
                   "element:- ${element.accountName} ${element.isDefault} \n";
-            });
+            }
 
-            if (accounts.length > 0) {
+            if (accounts.isNotEmpty) {
               bankAccountBloc.bankAccount = accounts.first;
             }
 
@@ -536,14 +541,14 @@ class _SplashScreenState extends State<SplashScreen>
     try {
       debugPrint("initializeShoppingCart called");
       final List items = await ShoppingAuthService().getShoppingCart();
-      items.forEach((element) {
+      for (var element in items) {
         final String type = element is Product ? "product" : "service";
         basketBloc.addItemToCart(
             item: element,
             type: type,
             currentUser: userBloc.user.convertToUser(),
             withApiCall: false);
-      });
+      }
       await sharedCartBloc.refreshAllCart(context);
     } catch (e) {
       errorText += "ERROR:- while loading shopping cart ITEM\n";

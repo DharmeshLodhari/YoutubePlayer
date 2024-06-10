@@ -78,7 +78,7 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
           _refreshList();
         });
       }
-      if (nearByBusiness.isNotEmpty || searchController.text.length != 0) {
+      if (nearByBusiness.isNotEmpty || searchController.text.isNotEmpty) {
         if (mounted) {
           setState(() {
             isSearchIsEmpty = false;
@@ -268,71 +268,67 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
   }
 
   Widget scaffoldBody() {
-    return Container(
-      child: Column(
-        children: [
-          const SizedBox(height: 6),
-          searchBox(),
-          const SizedBox(height: 12),
-          if (isLoading)
-            const CircularProgressIndicator()
-          else
-            const SizedBox.shrink(),
-          if (isSearchIsEmpty)
-            Expanded(
-              child: NoItemInList(
-                msg:
-                    AppLocalization.of(context)!.pleaseTypeSomethingToGetResult,
-                isResult: false,
-              ),
-            )
-          else
-            noItemInList
-                ? Expanded(
-                    child: NoItemInList(
-                      msg: AppLocalization.of(context)!.noResultFound,
-                    ),
-                  )
-                : Expanded(
-                    child: ListView(
-                        children: nearByBusiness
-                            .map(
-                              (product) => Container(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 8, horizontal: 16),
-                                child: Container(
-                                  margin: const EdgeInsets.all(8.0),
-                                  child: FindBusiness(
-                                    customerProfile: product,
-                                    tileRenderPlace:
-                                        TileRenderPlace.YarnProductService,
-                                    callback: (username, value) {
-                                      //create a list to edit
-                                      final List<CustomerProfile>
-                                          customerProfileList = nearByBusiness;
-                                      // modify customerProfileList for the username and refresh the list
-                                      // set the isFollowing for that particular user
-                                      for (var customer
-                                          in customerProfileList) {
-                                        if (customer.userName == username) {
-                                          customer.isFollowing =
-                                              value; // Modify the isFollowing property
-                                        }
+    return Column(
+      children: [
+        const SizedBox(height: 6),
+        searchBox(),
+        const SizedBox(height: 12),
+        if (isLoading)
+          const CircularProgressIndicator()
+        else
+          const SizedBox.shrink(),
+        if (isSearchIsEmpty)
+          Expanded(
+            child: NoItemInList(
+              msg: AppLocalization.of(context)!.pleaseTypeSomethingToGetResult,
+              isResult: false,
+            ),
+          )
+        else
+          noItemInList
+              ? Expanded(
+                  child: NoItemInList(
+                    msg: AppLocalization.of(context)!.noResultFound,
+                  ),
+                )
+              : Expanded(
+                  child: ListView(
+                      children: nearByBusiness
+                          .map(
+                            (product) => Container(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 8, horizontal: 16),
+                              child: Container(
+                                margin: const EdgeInsets.all(8.0),
+                                child: FindBusiness(
+                                  customerProfile: product,
+                                  tileRenderPlace:
+                                      TileRenderPlace.YarnProductService,
+                                  callback: (username, value) {
+                                    //create a list to edit
+                                    final List<CustomerProfile>
+                                        customerProfileList = nearByBusiness;
+                                    // modify customerProfileList for the username and refresh the list
+                                    // set the isFollowing for that particular user
+                                    for (var customer in customerProfileList) {
+                                      if (customer.userName == username) {
+                                        customer.isFollowing =
+                                            value; // Modify the isFollowing property
                                       }
+                                    }
 
-                                      nearByBusiness = [];
-                                      nearByBusiness = customerProfileList;
+                                    nearByBusiness = [];
+                                    nearByBusiness = customerProfileList;
 
-                                      if (mounted) setState(() {});
-                                    },
-                                  ),
+                                    if (mounted) setState(() {});
+                                  },
                                 ),
                               ),
-                            )
-                            .toList()),
-                  ),
-        ],
-      ),
+                            ),
+                          )
+                          .toList()),
+                ),
+      ],
     );
   }
 

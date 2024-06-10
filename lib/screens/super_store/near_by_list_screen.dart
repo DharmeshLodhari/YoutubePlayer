@@ -1,4 +1,3 @@
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -172,12 +171,12 @@ class _NearByListScreenState extends State<NearByListScreen> {
 
                     // modify customerProfileList for the username and refresh the list
                     // set the isFollowing for that particular user
-                    customerProfileListEdit.forEach((customer) {
+                    for (var customer in customerProfileListEdit) {
                       if (customer.userName == username) {
                         customer.isFollowing =
                             value; // Modify the isFollowing property
                       }
-                    });
+                    }
 
                     customerProfileList = [];
                     customerProfileList = customerProfileListEdit;
@@ -205,28 +204,21 @@ class _NearByListScreenState extends State<NearByListScreen> {
   }
 
   void onRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
-      final connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        nearByCount = 0;
-        nearByNext = "";
-        nearByPrevious = "";
-        customerProfileList = [];
-        if (mounted) setState(() {});
+    if (await checkConnection(context)) {
+      nearByCount = 0;
+      nearByNext = "";
+      nearByPrevious = "";
+      customerProfileList = [];
+      if (mounted) setState(() {});
 
-        getNearByBusinessList();
-        setState(() {
-          refreshController.refreshCompleted();
-        });
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
-        setState(() {
-          refreshController.refreshCompleted();
-        });
-      }
-    });
+      getNearByBusinessList();
+      setState(() {
+        refreshController.refreshCompleted();
+      });
+    } else {
+      setState(() {
+        refreshController.refreshCompleted();
+      });
+    }
   }
 }

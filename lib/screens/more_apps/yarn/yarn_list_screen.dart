@@ -4,7 +4,6 @@ import 'package:Slydo/screens/more_apps/yarn/yarn_dashboard_bloc.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -41,7 +40,7 @@ class YarnListScreenState extends State<YarnListScreen> {
   RefreshController refreshController =
       RefreshController(initialRefresh: false);
   String? selectedId;
-  ScrollController _scrollController = new ScrollController();
+  final ScrollController _scrollController = ScrollController();
   late YarnDashboardBloc yarnDashboardBloc;
   late DashboardBloc _dashboardBloc;
 
@@ -70,7 +69,7 @@ class YarnListScreenState extends State<YarnListScreen> {
         isLoading = true;
         if (mounted) setState(() {});
 
-        final String latestTrending = 'latest';
+        const String latestTrending = 'latest';
 
         final Map<String, dynamic>? result = await YarnAuth().getAllYarn(
             next, previous ?? '',
@@ -127,10 +126,11 @@ class YarnListScreenState extends State<YarnListScreen> {
             ///add createYarnTopicList to tempList if any
             if (widget.selectedCategory != null) {
               // Filter the list of createYarnTopicList by id
-              List<Yarn>? filteredListCreateYarnTopicList = yarnDashboardBloc
-                  .createYarnTopicList
-                  .where((item) => item.category!.id == widget.selectedCategory)
-                  .toList();
+              final List<Yarn> filteredListCreateYarnTopicList =
+                  yarnDashboardBloc.createYarnTopicList
+                      .where((item) =>
+                          item.category!.id == widget.selectedCategory)
+                      .toList();
 
               // Check if any matching createYarnTopicList
               if (filteredListCreateYarnTopicList.isNotEmpty) {
@@ -150,7 +150,7 @@ class YarnListScreenState extends State<YarnListScreen> {
 
             if (widget.selectedCategory != null) {
               // Filter the list of reYarnTopicList by id
-              List<Yarn>? filteredListReYarnTopicList = yarnDashboardBloc
+              final List<Yarn> filteredListReYarnTopicList = yarnDashboardBloc
                   .reYarnTopicList
                   .where((item) =>
                       item.reYarn!.category!.id == widget.selectedCategory)
@@ -331,7 +331,7 @@ class YarnListScreenState extends State<YarnListScreen> {
             ),
           );
         },
-        separatorBuilder: (context, int) {
+        separatorBuilder: (context, int0) {
           return Column(
             children: [
               const SizedBox(
@@ -353,30 +353,23 @@ class YarnListScreenState extends State<YarnListScreen> {
   }
 
   void onRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
-      final connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        count = 0;
-        next = "";
-        previous = "";
-        yarnTopicList = [];
+    if (await checkConnection(context)) {
+      count = 0;
+      next = "";
+      previous = "";
+      yarnTopicList = [];
 
-        if (mounted) setState(() {});
+      if (mounted) setState(() {});
 
-        getYarnList(categoryId: selectedId);
-        setState(() {
-          refreshController.refreshCompleted();
-        });
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
-        setState(() {
-          refreshController.refreshCompleted();
-        });
-      }
-    });
+      getYarnList(categoryId: selectedId);
+      setState(() {
+        refreshController.refreshCompleted();
+      });
+    } else {
+      setState(() {
+        refreshController.refreshCompleted();
+      });
+    }
   }
 
   void onCreateYarn(Yarn? yarnTopic) {

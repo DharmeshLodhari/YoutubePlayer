@@ -59,7 +59,7 @@ class ChatConversation {
       isVerified: json['is_verified'] ?? false,
       conversationId: json['conversation_id'],
       description: json['description'] ?? "",
-      fullName: json['full_name'] != null ? json['full_name'] : '',
+      fullName: json['full_name'] ?? '',
       isGroupConversation: json['is_group_conversation'],
       createdAt: json['created_at'] ?? DateTime.now().toUtc().toIso8601String(),
       mutedParticipants: json['muted_participants'] != null
@@ -74,13 +74,13 @@ class ChatConversation {
           : json['qr_code'],
       type: json['type'],
       conversationType: json['conversation_type'],
-      userName: json['username'] != null ? json['username'] : '',
+      userName: json['username'] ?? '',
     );
   }
 
   /// Creating Server Payload From ChatConversation
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
     data['avatar'] = avatar;
     data['banner'] = banner;
     data['conversation_id'] = conversationId;
@@ -134,7 +134,7 @@ class ChatConversation {
 
   /// Creating DB Payload From ChatConversation
   Map<String, dynamic> toDBJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
     data['avatar'] = avatar;
     data['banner'] = banner;
     data['conversation_id'] = conversationId;

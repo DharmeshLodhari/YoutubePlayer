@@ -18,10 +18,12 @@ class _FlightDashboardState extends State<FlightDashboard> {
   @override
   Widget build(BuildContext context) {
     _flightDashboardBloc = Provider.of<FlightDashboardBloc>(context);
-    return WillPopScope(
-      onWillPop: () {
-        _flightDashboardBloc.index = 0;
-        return Future.value(true);
+    return PopScope(
+      onPopInvoked: (didPop) async {
+        if (didPop) {
+          _flightDashboardBloc.index = 0;
+          return;
+        }
       },
       child: Scaffold(
         body: PageView(
@@ -75,7 +77,7 @@ class _FlightDashboardState extends State<FlightDashboard> {
   BottomNavigationBarItem bottomNavigationBarItem(
       {IconData? icon, required String title}) {
     return BottomNavigationBarItem(
-      icon: Container(
+      icon: SizedBox(
         height: 50,
         width: 108,
         child: Icon(

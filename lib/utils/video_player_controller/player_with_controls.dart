@@ -53,12 +53,11 @@ class PlayerWithControls extends StatelessWidget {
     ChewieController chewieController,
   ) {
     return chewieController.showControls
-        ? chewieController.customControls != null
-            ? chewieController.customControls
-            : MaterialControls(
-                titleName: titleName,
-                posterUrl: posterUrl,
-              )
+        ? chewieController.customControls ??
+            MaterialControls(
+              titleName: titleName,
+              posterUrl: posterUrl,
+            )
 
         // : Theme.of(context).platform == TargetPlatform.android
         //         ? MaterialControls()

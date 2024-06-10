@@ -8,9 +8,11 @@ import 'package:Slydo/screens/more_apps/shopping/widget/product_detail_shimmer.d
 import 'package:Slydo/screens/more_apps/user_profile/widgets/user_profile_shimmer.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_shimmer.dart';
 import 'package:Slydo/utils/date_time_and_money_converter.dart';
+import 'package:Slydo/utils/enums.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:crypto/crypto.dart';
 import 'package:external_path/external_path.dart';
 import 'package:flutter/material.dart';
@@ -22,8 +24,8 @@ import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:jumping_dot/jumping_dot.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:path_provider/path_provider.dart' as pathProvider;
+import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
@@ -160,10 +162,10 @@ Widget imageFrameBuilder(BuildContext context, Widget child, int? frame,
     return child;
   }
   return AnimatedOpacity(
-    child: child,
     opacity: frame == null ? 0 : 1,
     duration: const Duration(milliseconds: 100),
     curve: Curves.easeOut,
+    child: child,
   );
 }
 
@@ -213,7 +215,7 @@ Widget wallpaperErrorWidget(BuildContext context, String url, dynamic error) =>
       filterQuality: FilterQuality.high,
     );
 
-getLoggedInUserName(BuildContext context) {
+String? getLoggedInUserName(BuildContext context) {
   return Provider.of<UserBloc>(context, listen: false).user.userName;
 }
 
@@ -402,9 +404,7 @@ BoxDecoration decorateBox(
       Radius.circular(borderRadius),
     ),
     border: Border.all(
-        color: borderColor != null ? borderColor : lightGrey,
-        width: 1.0,
-        style: BorderStyle.solid),
+        color: borderColor ?? lightGrey, width: 1.0, style: BorderStyle.solid),
   );
 }
 
@@ -442,32 +442,30 @@ Widget transactionOrKycDetailTile(IconData icon, String title, String subtitle,
     Widget? trailingWidget,
     TextStyle? subtitleTextStyle}) {
   debugPrint("==>$subtitle");
-  return Container(
-    child: ListTile(
-      dense: true,
-      leading: RoundedBackgroundIcon(
-        icon: Icon(icon, color: blackFont, size: 18),
-        backgroundColor: iconBtnGrey,
-      ),
-      title: Text(
-        title,
-        style: TextStyle(
-          fontWeight: FontWeight.w600,
-          color: blackFont,
-          fontSize: 14,
-        ),
-      ),
-      subtitle: Text(
-        getCurrency(subtitle, transaction?.currency),
-        style: subtitleTextStyle ??
-            TextStyle(
-              color: blackFont,
-              fontSize: 14,
-              fontFamily: "Inter",
-            ),
-      ),
-      trailing: trailingWidget,
+  return ListTile(
+    dense: true,
+    leading: RoundedBackgroundIcon(
+      icon: Icon(icon, color: blackFont, size: 18),
+      backgroundColor: iconBtnGrey,
     ),
+    title: Text(
+      title,
+      style: TextStyle(
+        fontWeight: FontWeight.w600,
+        color: blackFont,
+        fontSize: 14,
+      ),
+    ),
+    subtitle: Text(
+      getCurrency(subtitle, transaction?.currency),
+      style: subtitleTextStyle ??
+          TextStyle(
+            color: blackFont,
+            fontSize: 14,
+            fontFamily: "Inter",
+          ),
+    ),
+    trailing: trailingWidget,
   );
 }
 
@@ -487,61 +485,59 @@ Widget transactionOrPayoutTile(
     status = 'cancel';
   }
 
-  return Container(
-    child: ListTile(
-      dense: true,
-      leading: Container(
-        padding: const EdgeInsets.all(10.0),
-        margin: const EdgeInsets.only(top: 5.0, bottom: 5.0),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10.0),
-          color: navyBlueLight.withOpacity(0.1),
-        ),
-        child: SvgPicture.asset(
-          path,
-          width: 14,
-          height: 14,
-          color: blackFont,
-        ),
+  return ListTile(
+    dense: true,
+    leading: Container(
+      padding: const EdgeInsets.all(10.0),
+      margin: const EdgeInsets.only(top: 5.0, bottom: 5.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10.0),
+        color: navyBlueLight.withOpacity(0.1),
       ),
-      title: Text(
-        title,
-        style: TextStyle(
-          fontWeight: FontWeight.w600,
-          color: blackFont,
-          fontSize: 14,
-        ),
+      child: SvgPicture.asset(
+        path,
+        width: 14,
+        height: 14,
+        color: blackFont,
       ),
-      subtitle: Row(
-        children: [
-          Container(
-            padding: status != ""
-                ? const EdgeInsets.only(
-                    left: 10.0, right: 10, top: 3.0, bottom: 3.0)
-                : const EdgeInsets.all(0.0),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(5.0),
-              color: checkStatusBgColor(status),
-            ),
-            child: Text(
-              getCurrency(subtitle, transaction?.currency),
-              style: subtitleTextStyle ??
-                  TextStyle(
-                    color: checkStatusForColor(status),
-                    fontSize: 14,
-                    fontFamily: "Inter",
-                  ),
-            ),
-          ),
-          Container(),
-        ],
-      ),
-      trailing: trailingWidget,
     ),
+    title: Text(
+      title,
+      style: TextStyle(
+        fontWeight: FontWeight.w600,
+        color: blackFont,
+        fontSize: 14,
+      ),
+    ),
+    subtitle: Row(
+      children: [
+        Container(
+          padding: status != ""
+              ? const EdgeInsets.only(
+                  left: 10.0, right: 10, top: 3.0, bottom: 3.0)
+              : const EdgeInsets.all(0.0),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(5.0),
+            color: checkStatusBgColor(status),
+          ),
+          child: Text(
+            getCurrency(subtitle, transaction?.currency),
+            style: subtitleTextStyle ??
+                TextStyle(
+                  color: checkStatusForColor(status),
+                  fontSize: 14,
+                  fontFamily: "Inter",
+                ),
+          ),
+        ),
+        Container(),
+      ],
+    ),
+    trailing: trailingWidget,
   );
 }
 
-checkStatusBgColor(String status) {
+Color checkStatusBgColor(String status) {
   if (status == 'done') {
     return naturalGreen.withOpacity(0.1);
   } else if (status == 'processing') {
@@ -551,9 +547,10 @@ checkStatusBgColor(String status) {
   } else if (status == "") {
     return Colors.transparent;
   }
+  return navyBlue;
 }
 
-checkStatusForColor(String status) {
+Color checkStatusForColor(String status) {
   if (status == 'done') {
     return naturalGreen;
   } else if (status == 'processing') {
@@ -563,6 +560,7 @@ checkStatusForColor(String status) {
   } else if (status == "") {
     return blackFont;
   }
+  return navyBlue;
 }
 
 Widget getSettingTile(
@@ -781,8 +779,8 @@ String formatTime(String date) {
 }
 
 bool isTimeAfter(DateTime startTime, DateTime endTime) {
-  TimeOfDay start = TimeOfDay.fromDateTime(startTime);
-  TimeOfDay end = TimeOfDay.fromDateTime(endTime);
+  final TimeOfDay start = TimeOfDay.fromDateTime(startTime);
+  final TimeOfDay end = TimeOfDay.fromDateTime(endTime);
 
   if (start.hour < end.hour) {
     return true;
@@ -894,7 +892,7 @@ Widget getAmount(amount, currency, {double fontSize = 14}) {
 }
 
 Widget getDateTime(BuildContext context, String dateTime,
-    {double fontSize = 10, color}) {
+    {double fontSize = 10}) {
   final DateTime transactionTime = DateTime.parse(dateTime).toLocal();
   final String date = DateFormat("dd/MM/yyyy").format(transactionTime);
   final String time = DateFormat("hh:mm a").format(transactionTime);
@@ -1101,7 +1099,7 @@ String truncateString(
 
   return showEllipsis
       ? '${str.substring(0, lengthToTruncateAt)}...'
-      : '${str.substring(0, lengthToTruncateAt)}';
+      : str.substring(0, lengthToTruncateAt);
 }
 
 String slydoNameMsg = 'You can not use slydo in name';
@@ -1133,10 +1131,9 @@ String? checkSlydoName(String name) {
 
 String getFormattedAccountNumber({String accountNumber = "0000000000"}) {
   if (accountNumber.length != 10) {
-    accountNumber = '0000' + accountNumber;
+    accountNumber = '0000$accountNumber';
   }
-  return '******' +
-      accountNumber.substring(accountNumber.length - 5, accountNumber.length);
+  return '******${accountNumber.substring(accountNumber.length - 5, accountNumber.length)}';
 }
 
 double formatRating(double rating) {
@@ -1272,7 +1269,7 @@ Color getRatingColor(int? numberOfRating, int i) {
       : Colors.grey;
 }
 
-String enumToString(mEnum) {
+String enumToString(UtilitiesProvidersEnum mEnum) {
   //UtilitiesProvidersEnum.Electricity
 
   return mEnum.toString().split('.')[1].replaceAll('_', ' ');
@@ -1640,7 +1637,7 @@ List<Map<String, dynamic>> nigeriaStateAndLg = [
       "Gamawa",
       "Ganjuwa",
       "Giade",
-      "Itas\/Gadau",
+      "Itas/Gadau",
       "Jama'Are",
       "Katagum",
       "Kirfi",
@@ -1697,7 +1694,7 @@ List<Map<String, dynamic>> nigeriaStateAndLg = [
       "Hawul",
       "Jere",
       "Kaga",
-      "Kala\/Balge",
+      "Kala/Balge",
       "Konduga",
       "Kukawa",
       "Kwaya-Kusar",
@@ -1717,7 +1714,7 @@ List<Map<String, dynamic>> nigeriaStateAndLg = [
     "lgas": [
       "Brass",
       "Ekeremor",
-      "Kolokuma\/Opokuma",
+      "Kolokuma/Opokuma",
       "Nembe",
       "Ogbia",
       "Sagbama",
@@ -1834,7 +1831,7 @@ List<Map<String, dynamic>> nigeriaStateAndLg = [
       "Ikere",
       "Ikole",
       "Ilejemeje",
-      "Irepodun\/Ifelodun",
+      "Irepodun/Ifelodun",
       "Ise-Orun",
       "Moba",
       "Oye"
@@ -1879,7 +1876,7 @@ List<Map<String, dynamic>> nigeriaStateAndLg = [
       "Kwami",
       "Nafada",
       "Shongom",
-      "Yamaltu\/Deba"
+      "Yamaltu/Deba"
     ]
   },
   {
@@ -1891,7 +1888,7 @@ List<Map<String, dynamic>> nigeriaStateAndLg = [
       "Ezinihitte",
       "Ideato-North",
       "Ideato-South",
-      "Ihitte\/Uboma",
+      "Ihitte/Uboma",
       "Ikeduru",
       "Isiala-Mbano",
       "Isu",
@@ -2059,12 +2056,12 @@ List<Map<String, dynamic>> nigeriaStateAndLg = [
       "Idah",
       "Igalamela-Odolu",
       "Ijumu",
-      "Kabba\/Bunu",
+      "Kabba/Bunu",
       "Kogi",
       "Lokoja",
       "Mopa-Muro",
       "Ofu",
-      "Ogori\/Magongo",
+      "Ogori/Magongo",
       "Okehi",
       "Okene",
       "Olamaboro",
@@ -2211,7 +2208,7 @@ List<Map<String, dynamic>> nigeriaStateAndLg = [
     "lgas": [
       "Abeokuta-North",
       "Abeokuta-South",
-      "Ado-Odo\/Ota",
+      "Ado-Odo/Ota",
       "Ewekoro",
       "Ifo",
       "Ijebu-East",
@@ -2351,7 +2348,7 @@ List<Map<String, dynamic>> nigeriaStateAndLg = [
   {
     "state": "Rivers",
     "lgas": [
-      "Abua\/Odual",
+      "Abua/Odual",
       "Ahoada-East",
       "Ahoada-West",
       "Akuku Toru",
@@ -2365,13 +2362,13 @@ List<Map<String, dynamic>> nigeriaStateAndLg = [
       "Gokana",
       "Ikwerre",
       "Khana",
-      "Obio\/Akpor",
+      "Obio/Akpor",
       "Ogba-Egbema-Ndoni",
-      "Ogba\/Egbema\/Ndoni",
-      "Ogu\/Bolo",
+      "Ogba/Egbema/Ndoni",
+      "Ogu/Bolo",
       "Okrika",
       "Omuma",
-      "Opobo\/Nkoro",
+      "Opobo/Nkoro",
       "Oyigbo",
       "Port-Harcourt",
       "Tai"
@@ -2479,9 +2476,9 @@ List<String> expiresList = [
 List<String> getAllStates() {
   final List<String> states = [];
 
-  nigeriaStateAndLg.forEach((element) {
+  for (var element in nigeriaStateAndLg) {
     states.add(element['state']);
-  });
+  }
 
   return states;
 }
@@ -2623,8 +2620,8 @@ Future<bool?> blockUserAlert(BuildContext context, CustomerProfile user) async {
     actionTwoBgColor: greyBorderColor,
     actionTwoTextColor: blackFont,
     title: AppLocalization.of(context)!.block,
-    description: AppLocalization.of(context)!.areYouSureWantToBlock +
-        " ${user.displayName()}",
+    description:
+        "${AppLocalization.of(context)!.areYouSureWantToBlock} ${user.displayName()}",
     actionOneText: AppLocalization.of(context)!.block,
     actionTwoText: AppLocalization.of(context)!.cancel,
     // rightButtonOnPressed: Navigator.pop(context),
@@ -2634,8 +2631,8 @@ Future<bool?> blockUserAlert(BuildContext context, CustomerProfile user) async {
 
     if (done) {
       showSnackbar(context,
-          message: "${user.displayName()} " +
-              AppLocalization.of(context)!.isBlockedSuccessfully);
+          message:
+              "${user.displayName()} ${AppLocalization.of(context)!.isBlockedSuccessfully}");
       return true;
     } else {
       showSnackbar(context, message: AppLocalization.of(context)!.error);
@@ -2676,4 +2673,19 @@ Response handleServerErrors(dynamic response) {
     showToast(message: message);
   }
   throw message;
+}
+
+Future<bool> checkConnection(BuildContext context) async {
+  final List<ConnectivityResult> connectivityResult =
+      await (Connectivity().checkConnectivity());
+
+  if (connectivityResult.contains(ConnectivityResult.wifi) ||
+      connectivityResult.contains(ConnectivityResult.ethernet) ||
+      connectivityResult.contains(ConnectivityResult.mobile)) {
+    return true;
+  } else {
+    showToast(
+        message: AppLocalization.of(context)!.internetConnectionNotAvailable);
+    return false;
+  }
 }

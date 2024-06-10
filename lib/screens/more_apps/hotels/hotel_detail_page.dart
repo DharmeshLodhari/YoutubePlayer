@@ -54,10 +54,12 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
   @override
   Widget build(BuildContext context) {
     _hotelDashboardBloc = Provider.of<HotelDashboardBloc>(context);
-    return WillPopScope(
-      onWillPop: () {
-        _hotelDashboardBloc.index = 0;
-        return Future.value(true);
+    return PopScope(
+      onPopInvoked: (didPop) async {
+        if (didPop) {
+          _hotelDashboardBloc.index = 0;
+          return;
+        }
       },
       child: Scaffold(
         backgroundColor: Colors.white,
@@ -263,36 +265,34 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
   }
 
   Widget eventPoster() {
-    return Container(
-      child: AspectRatio(
-        aspectRatio: 16 / 9,
-        child: Stack(
-          children: [
-            CachedNetworkImage(
-              width: double.infinity,
-              height: double.infinity,
-              imageUrl:
-                  "https://www.gannett-cdn.com/-mm-/05b227ad5b8ad4e9dcb53af4f31d7fbdb7fa901b/c=0-64-2119-1259/local/-/media/USATODAY/USATODAY/2014/08/13/1407953244000-177513283.jpg",
-              fit: BoxFit.fill,
-              errorWidget: imageErrorWidget,
-            ),
-            Positioned(
-              right: 12,
-              top: 12,
-              child: InkWell(
-                child: Icon(
-                  isWishList ? SlydoAppIcon.heart_1 : SlydoAppIcon.heart_empty,
-                  color: Colors.white,
-                  size: 22,
-                ),
-                onTap: () {
-                  isWishList = !isWishList;
-                  setState(() {});
-                },
+    return AspectRatio(
+      aspectRatio: 16 / 9,
+      child: Stack(
+        children: [
+          CachedNetworkImage(
+            width: double.infinity,
+            height: double.infinity,
+            imageUrl:
+                "https://www.gannett-cdn.com/-mm-/05b227ad5b8ad4e9dcb53af4f31d7fbdb7fa901b/c=0-64-2119-1259/local/-/media/USATODAY/USATODAY/2014/08/13/1407953244000-177513283.jpg",
+            fit: BoxFit.fill,
+            errorWidget: imageErrorWidget,
+          ),
+          Positioned(
+            right: 12,
+            top: 12,
+            child: InkWell(
+              child: Icon(
+                isWishList ? SlydoAppIcon.heart_1 : SlydoAppIcon.heart_empty,
+                color: Colors.white,
+                size: 22,
               ),
+              onTap: () {
+                isWishList = !isWishList;
+                setState(() {});
+              },
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -340,7 +340,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
         ),
         Row(
           children: [
-            Container(
+            SizedBox(
               height: 32,
               width: 32,
               child: ClipOval(
@@ -694,61 +694,59 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
 
   Widget rentDetail(
       {String? categoryName, String? movieName, String? moviePoster}) {
-    return Container(
-      child: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text(
-                  "Recommended for you",
-                  style: TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 18,
-                    color: blackFont,
-                  ),
-                ),
-                GestureDetector(
-                  child: Text(
-                    "See all",
-                    style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14,
-                        color: navyBlue),
-                  ),
-                  onTap: () {
-                    Navigator.of(context).pushNamed("/hotel-category");
-                  },
-                ),
-              ],
-            ),
-          ),
-          Container(
-            height: 262,
-            color: Colors.white,
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Container(
-                padding: const EdgeInsets.only(left: 16, top: 16, bottom: 16),
-                child: Row(
-                  children: hotelRoomDetailItem.recommendedItem!
-                      .map(
-                        (partialHotelRoom) => Container(
-                          margin: const EdgeInsets.only(right: 12),
-                          child: PartialHotelRoomItemTile(
-                            hotelRoom: partialHotelRoom,
-                          ),
-                        ),
-                      )
-                      .toList(),
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Text(
+                "Recommended for you",
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 18,
+                  color: blackFont,
                 ),
               ),
+              GestureDetector(
+                child: Text(
+                  "See all",
+                  style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                      color: navyBlue),
+                ),
+                onTap: () {
+                  Navigator.of(context).pushNamed("/hotel-category");
+                },
+              ),
+            ],
+          ),
+        ),
+        Container(
+          height: 262,
+          color: Colors.white,
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Container(
+              padding: const EdgeInsets.only(left: 16, top: 16, bottom: 16),
+              child: Row(
+                children: hotelRoomDetailItem.recommendedItem!
+                    .map(
+                      (partialHotelRoom) => Container(
+                        margin: const EdgeInsets.only(right: 12),
+                        child: PartialHotelRoomItemTile(
+                          hotelRoom: partialHotelRoom,
+                        ),
+                      ),
+                    )
+                    .toList(),
+              ),
             ),
-          )
-        ],
-      ),
+          ),
+        )
+      ],
     );
   }
 
@@ -768,7 +766,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
         borderRadius: const BorderRadius.all(
           Radius.circular(10.0),
         ),
-        border: new Border.all(
+        border: Border.all(
             color: isSelected ? navyBlue : lightGrey,
             width: 1.0,
             style: BorderStyle.solid),
@@ -862,90 +860,84 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
   }
 
   Widget reviewsList() {
-    return Container(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "Reviews",
-            style: TextStyle(
-              fontWeight: FontWeight.w700,
-              fontSize: 16,
-              color: blackFont,
-            ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "Reviews",
+          style: TextStyle(
+            fontWeight: FontWeight.w700,
+            fontSize: 16,
+            color: blackFont,
           ),
-          const SizedBox(
-            height: 16,
-          ),
-          Column(
-            children: hotelRoomDetailItem.reviews!
-                .map((review) => Container(
-                      margin: const EdgeInsets.only(bottom: 12),
-                      child: ReviewTile(),
-                    ))
-                .toList(),
-          ),
-        ],
-      ),
+        ),
+        const SizedBox(
+          height: 16,
+        ),
+        Column(
+          children: hotelRoomDetailItem.reviews!
+              .map((review) => Container(
+                    margin: const EdgeInsets.only(bottom: 12),
+                    child: ReviewTile(),
+                  ))
+              .toList(),
+        ),
+      ],
     );
   }
 
   Widget aboutPartnerList() {
-    return Container(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "About the partner",
-            style: TextStyle(
-              fontWeight: FontWeight.w700,
-              fontSize: 16,
-              color: blackFont,
-            ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "About the partner",
+          style: TextStyle(
+            fontWeight: FontWeight.w700,
+            fontSize: 16,
+            color: blackFont,
           ),
-          const SizedBox(
-            height: 16,
-          ),
-          Column(
-            children: hotelRoomDetailItem.partners!
-                .map((partner) => Container(
-                      margin: const EdgeInsets.only(bottom: 12),
-                      child: InkWell(
-                          onTap: () {
-                            Navigator.of(context).pushNamed("/partner-detail");
-                          },
-                          child: PartnerTile()),
-                    ))
-                .toList(),
-          ),
-        ],
-      ),
+        ),
+        const SizedBox(
+          height: 16,
+        ),
+        Column(
+          children: hotelRoomDetailItem.partners!
+              .map((partner) => Container(
+                    margin: const EdgeInsets.only(bottom: 12),
+                    child: InkWell(
+                        onTap: () {
+                          Navigator.of(context).pushNamed("/partner-detail");
+                        },
+                        child: PartnerTile()),
+                  ))
+              .toList(),
+        ),
+      ],
     );
   }
 
   Widget availabilitySection() {
-    return Container(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "Availability",
-            style: TextStyle(
-              fontWeight: FontWeight.w700,
-              fontSize: 16,
-              color: blackFont,
-            ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "Availability",
+          style: TextStyle(
+            fontWeight: FontWeight.w700,
+            fontSize: 16,
+            color: blackFont,
           ),
-          const SizedBox(
-            height: 8,
-          ),
-          OutlineCurvedButton(
-            text: "Add your dates",
-            onPressed: () {},
-            textColor: navyBlue,
-          ),
-        ],
-      ),
+        ),
+        const SizedBox(
+          height: 8,
+        ),
+        OutlineCurvedButton(
+          text: "Add your dates",
+          onPressed: () {},
+          textColor: navyBlue,
+        ),
+      ],
     );
   }
 

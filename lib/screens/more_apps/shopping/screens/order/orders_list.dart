@@ -10,7 +10,6 @@ import 'package:Slydo/widget/customized_popup_menu.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:Slydo/widget/slide_action_button.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:intl/intl.dart';
@@ -80,19 +79,12 @@ class _OrdersListState extends State<OrdersList>
   }
 
   void _onRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
-      final connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        _refresh();
-        _refreshController.refreshCompleted();
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)?.internetConnectionNotAvailable);
-        _refreshController.refreshCompleted();
-      }
-    });
+    if (await checkConnection(context)) {
+      _refresh();
+      _refreshController.refreshCompleted();
+    } else {
+      _refreshController.refreshCompleted();
+    }
   }
 
   void menuItemSelectionChange(String value, int index) {
@@ -155,9 +147,11 @@ class _OrdersListState extends State<OrdersList>
     menu.onChange = menuItemSelectionChange;
     menu.menuState = menuStateChange;
 
-    return WillPopScope(
-      onWillPop: () async {
-        return true;
+    return PopScope(
+      onPopInvoked: (didPop) async {
+        if (didPop) {
+          return;
+        }
       },
       child: ScaffoldMessenger(
         key: _scaffoldMessengerOrderListKey,
@@ -422,22 +416,14 @@ class _OrdersListState extends State<OrdersList>
     return Padding(
       padding: const EdgeInsets.only(right: 4.0),
       child: InkWell(
-        onTap: () {
-          Connectivity().checkConnectivity().then((value) {
-            final connectionResult = value;
-            if (connectionResult == ConnectivityResult.wifi ||
-                connectionResult == ConnectivityResult.mobile) {
-              Navigator.of(context).pushNamed(Routes.REQUEST_PAYMENT,
-                  arguments: <String, bool>{
-                    'isRequest': true,
-                    'isFromProfile': true
-                  });
-            } else {
-              showToast(
-                  message: AppLocalization.of(context)!
-                      .internetConnectionNotAvailable);
-            }
-          });
+        onTap: () async {
+          if (await checkConnection(context)) {
+            Navigator.of(context).pushNamed(Routes.REQUEST_PAYMENT,
+                arguments: <String, bool>{
+                  'isRequest': true,
+                  'isFromProfile': true
+                });
+          }
         },
         child: const Icon(Icons.add, color: Colors.white),
       ),

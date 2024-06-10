@@ -207,57 +207,54 @@ class _YarnServiceTileState extends State<YarnServiceTile> {
                               height: 4,
                             )
                           else
-                            Container(
-                              child: Column(
-                                children: [
-                                  const SizedBox(
-                                    height: 8,
-                                  ),
-                                  Row(
-                                    children: [
-                                      addToCartWidget(item: widget.service),
-                                      const SizedBox(
-                                        width: 5,
-                                      ),
-                                      Expanded(
-                                        child: CurvedButton(
-                                          height: getButtonSize(
-                                              widget.tileRenderPlace, context),
-                                          isPaymentBtn: true,
-                                          textColor: Colors.white,
-                                          backgroundColor: navyBlue,
-                                          text: "PAY NOW",
-                                          borderRadius: 10,
-                                          onPressed: () async {
-                                            // if (appConfigurationModel
-                                            //         ?.enablePayment ==
-                                            //     true) {
-                                            final bool result =
-                                                await showDisclaimerDialogueForGoods(
-                                                    context);
-                                            if (result) {
-                                              customerProfileBloc.customer =
-                                                  await UserAuth()
-                                                      .fetchCustomerProfile(
-                                                          widget.service!
-                                                              .provider);
+                            Column(
+                              children: [
+                                const SizedBox(
+                                  height: 8,
+                                ),
+                                Row(
+                                  children: [
+                                    addToCartWidget(item: widget.service),
+                                    const SizedBox(
+                                      width: 5,
+                                    ),
+                                    Expanded(
+                                      child: CurvedButton(
+                                        height: getButtonSize(
+                                            widget.tileRenderPlace, context),
+                                        isPaymentBtn: true,
+                                        textColor: Colors.white,
+                                        backgroundColor: navyBlue,
+                                        text: "PAY NOW",
+                                        borderRadius: 10,
+                                        onPressed: () async {
+                                          // if (appConfigurationModel
+                                          //         ?.enablePayment ==
+                                          //     true) {
+                                          final bool result =
+                                              await showDisclaimerDialogueForGoods(
+                                                  context);
+                                          if (result) {
+                                            customerProfileBloc.customer =
+                                                await UserAuth()
+                                                    .fetchCustomerProfile(widget
+                                                        .service!.provider);
 
-                                              Navigator.of(context).pushNamed(
-                                                '/send-payment',
-                                                arguments: {
-                                                  'isFromProfile': false,
-                                                  'service': widget.service
-                                                },
-                                              );
-                                            }
-                                            // }
-                                          },
-                                        ),
+                                            Navigator.of(context).pushNamed(
+                                              '/send-payment',
+                                              arguments: {
+                                                'isFromProfile': false,
+                                                'service': widget.service
+                                              },
+                                            );
+                                          }
+                                          // }
+                                        },
                                       ),
-                                    ],
-                                  ),
-                                ],
-                              ),
+                                    ),
+                                  ],
+                                ),
+                              ],
                             )
                         ],
                       ),
@@ -289,12 +286,12 @@ class _YarnServiceTileState extends State<YarnServiceTile> {
             type: type,
             currentUser: userBloc.user.convertToUser());
         late var mapData;
-        basketBloc.items.forEach((element) {
+        for (var element in basketBloc.items) {
           if (element["item"].id == item.id) {
             mapData = element;
-            return;
+            continue;
           }
-        });
+        }
         final Map<String, dynamic> data = {
           "type": type,
           "id": mapData["item"].id,

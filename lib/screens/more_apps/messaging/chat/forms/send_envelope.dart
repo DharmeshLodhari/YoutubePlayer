@@ -84,9 +84,11 @@ class _SendEnvelopeState extends State<SendEnvelope> {
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
 
-    return WillPopScope(
-      onWillPop: () async {
-        return true;
+    return PopScope(
+      onPopInvoked: (didPop) async {
+        if (didPop) {
+          return;
+        }
       },
       child: ScaffoldMessenger(
         key: _sendEnvelopeScaffoldMessenger,
@@ -128,7 +130,7 @@ class _SendEnvelopeState extends State<SendEnvelope> {
   Widget getDisplayCard() {
     var avatarImage;
     if (chatConversation != null) {
-      avatarImage = Container(
+      avatarImage = SizedBox(
         height: 48,
         width: 48,
         child: ClipOval(
@@ -207,75 +209,71 @@ class _SendEnvelopeState extends State<SendEnvelope> {
                           border: Border.all(color: iconBtnGrey, width: 1)),
                       child: Form(
                         key: _formKey,
-                        child: Container(
-                          child: Column(
-                            children: <Widget>[
-                              getDisplayCard(),
-                              Container(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 20),
-                                child: Column(
-                                  children: [
-                                    if (isEmptyEnvelope!)
-                                      Container()
-                                    else
-                                      Column(
-                                        children: [
-                                          const SizedBox(
-                                            height: 20,
-                                          ),
-                                          displayAmountField(),
-                                        ],
-                                      ),
+                        child: Column(
+                          children: <Widget>[
+                            getDisplayCard(),
+                            Container(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 20),
+                              child: Column(
+                                children: [
+                                  if (isEmptyEnvelope!)
+                                    Container()
+                                  else
+                                    Column(
+                                      children: [
+                                        const SizedBox(
+                                          height: 20,
+                                        ),
+                                        displayAmountField(),
+                                      ],
+                                    ),
+                                  const SizedBox(
+                                    height: 20,
+                                  ),
+                                  getTitleField(),
+                                  const SizedBox(
+                                    height: 20,
+                                  ),
+                                  getMessageField(),
+                                  const SizedBox(
+                                    height: 20,
+                                  ),
+                                  if (errorMessage == "")
+                                    Container()
+                                  else
+                                    Text(
+                                      errorMessage,
+                                      style: TextStyle(
+                                          color: mateRed,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16),
+                                    ),
+                                  if (errorMessage == "")
+                                    Container()
+                                  else
                                     const SizedBox(
                                       height: 20,
                                     ),
-                                    getTitleField(),
-                                    const SizedBox(
-                                      height: 20,
-                                    ),
-                                    getMessageField(),
-                                    const SizedBox(
-                                      height: 20,
-                                    ),
-                                    if (errorMessage == "")
-                                      Container()
-                                    else
-                                      Text(
-                                        errorMessage,
-                                        style: TextStyle(
-                                            color: mateRed,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 16),
-                                      ),
-                                    if (errorMessage == "")
-                                      Container()
-                                    else
-                                      const SizedBox(
-                                        height: 20,
-                                      ),
-                                  ],
-                                ),
+                                ],
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
                   ),
-                  Container(
-                    child: Column(
-                      children: [
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        getSubmitButton(),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        getConditionText(),
-                      ],
-                    ),
+                  Column(
+                    children: [
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      getSubmitButton(),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      getConditionText(),
+                    ],
                   ),
                 ],
               ),

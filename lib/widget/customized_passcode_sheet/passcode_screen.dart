@@ -46,11 +46,8 @@ class CustomizedPassCodeScreen extends StatefulWidget {
     this.backgroundColor,
     this.cancelCallback,
     this.digits,
-  })  : circleUIConfig =
-            circleUIConfig == null ? const CircleUIConfig() : circleUIConfig,
-        keyboardUIConfig = keyboardUIConfig == null
-            ? const KeyboardUIConfig()
-            : keyboardUIConfig,
+  })  : circleUIConfig = circleUIConfig ?? const CircleUIConfig(),
+        keyboardUIConfig = keyboardUIConfig ?? const KeyboardUIConfig(),
         super(key: key);
 
   @override
@@ -148,12 +145,10 @@ class _CustomizedPassCodeScreenState extends State<CustomizedPassCodeScreen>
         ),
       );
 
-  Widget _buildKeyboard() => Container(
-        child: Keyboard(
-          onKeyboardTap: _onKeyboardButtonPressed,
-          keyboardUIConfig: widget.keyboardUIConfig,
-          digits: widget.digits,
-        ),
+  Widget _buildKeyboard() => Keyboard(
+        onKeyboardTap: _onKeyboardButtonPressed,
+        keyboardUIConfig: widget.keyboardUIConfig,
+        digits: widget.digits,
       );
 
   List<Widget> _buildCircles() {

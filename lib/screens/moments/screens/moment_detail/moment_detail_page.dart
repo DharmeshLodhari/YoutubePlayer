@@ -223,7 +223,7 @@ class _MomentsDetailsScreenState extends State<MomentsDetailsScreen> {
       // Whether previous or next index depending on if the user has gotten to the top or end of the vertical list respectively.
       final int indexToWorkWith = getNextList ? nextIndex : previousIndex;
 
-      debugPrint('ERROR FETCHING MOMENT :: ${indexToWorkWith}');
+      debugPrint('ERROR FETCHING MOMENT :: $indexToWorkWith');
 
       if (widget.listOfConnectionNames.indices.contains(indexToWorkWith)) {
         try {
@@ -277,10 +277,12 @@ class _MomentsDetailsScreenState extends State<MomentsDetailsScreen> {
       );
     }
 
-    return WillPopScope(
-      onWillPop: () {
-        clearAllMedia();
-        return Future.value(true);
+    return PopScope(
+      onPopInvoked: (didPop) async {
+        if (didPop) {
+          clearAllMedia();
+          return;
+        }
       },
       child: Scaffold(
         backgroundColor: Colors.black,
@@ -463,7 +465,7 @@ class MediaRendererPageViewState extends State<MediaRendererPageView> {
 }
 
 extension ListExtensions on List {
-  Range get indices => Range.fromLength(this.length);
+  Range get indices => Range.fromLength(length);
 }
 
 class Range extends Iterable<int> {

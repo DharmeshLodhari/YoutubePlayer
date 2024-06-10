@@ -300,7 +300,7 @@ class MessageAuth extends AuthService {
     } else {
       debugPrint(
           "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
-      return Future.error("${response.body}");
+      return Future.error(response.body);
     }
   }
 
@@ -414,7 +414,7 @@ class MessageAuth extends AuthService {
           "Please upload smaller image, Your image is too large.");
     }
     final responseBody = await response.stream.bytesToString();
-    debugPrint("$responseBody");
+    debugPrint(responseBody);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       debugPrint("DATA:- ${request.fields}");
@@ -483,7 +483,7 @@ class MessageAuth extends AuthService {
           "Please upload smaller image, Your image is too large.");
     }
     final responseBody = await response.stream.bytesToString();
-    debugPrint("$responseBody");
+    debugPrint(responseBody);
 
     log("URL:- $url REQUEST FIELDS:- ${request.fields} RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- $responseBody");
 
@@ -1075,7 +1075,7 @@ class MessageAuth extends AuthService {
       {String? filter}) async {
     await Future.delayed(const Duration(seconds: 1));
 
-    final String url = "";
+    // final String url = "";
 
     // if (next == null) {
     //   return null;

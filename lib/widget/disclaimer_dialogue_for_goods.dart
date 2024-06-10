@@ -16,7 +16,7 @@ Future<bool> showDisclaimerDialogueForGoods(BuildContext context) async {
           content: Stack(
             clipBehavior: Clip.none,
             children: [
-              Container(
+              SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   elevation: 2,

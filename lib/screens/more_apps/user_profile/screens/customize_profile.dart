@@ -56,10 +56,11 @@ class CustomizeProfileScreenState extends State<CustomizeProfileScreen> {
 
     // final Function(Map<String, dynamic>) callbackProductService = widget.arguments['callbackProductService'];
 
-    return WillPopScope(
-      onWillPop: () async {
-        Navigator.pop(context, reorderedBoolMap);
-        return true;
+    return PopScope(
+      onPopInvoked: (didPop) async {
+        if (didPop) {
+          Navigator.pop(context, reorderedBoolMap);
+        }
       },
       child: Scaffold(
         key: _scaffoldGeneralSettingKey,
@@ -203,7 +204,7 @@ class CustomizeProfileScreenState extends State<CustomizeProfileScreen> {
             overflow: TextOverflow.fade,
             softWrap: false,
           ),
-          trailing: Container(
+          trailing: SizedBox(
             width: 80,
             child: Switch(
               value:

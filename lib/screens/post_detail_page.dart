@@ -87,7 +87,8 @@ class _PostDetailPageState extends State<PostDetailPage> {
     });
   }
 
-  getBlogDetailsAndInitializeVideoController({required UserPost userPost}) {
+  void getBlogDetailsAndInitializeVideoController(
+      {required UserPost userPost}) {
     if (userPost.video != null && userPost.video!.isNotEmpty) {
       _mainVideoController = VideoPlayerController.network(userPost.video!);
 
@@ -200,7 +201,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
     super.dispose();
   }
 
-  reloadPage() {
+  void reloadPage() {
     setState(() {
       getPostFuture = UserPostAuth().getSinglePost(postID: widget.postId!);
     });
@@ -523,10 +524,9 @@ class _PostDetailPageState extends State<PostDetailPage> {
             shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
             blogPost: userPost,
             callback: (yarn) async {
-              yarn
-                ..attachment = {
-                  "blog": userPost?.toJson().cast<String, dynamic>() ?? {}
-                };
+              yarn.attachment = {
+                "blog": userPost?.toJson().cast<String, dynamic>() ?? {}
+              };
               final bool data =
                   await YarnAuth().addYarnAndQuestion(yarn, '', '');
               if (data) {
@@ -535,17 +535,17 @@ class _PostDetailPageState extends State<PostDetailPage> {
             }));
   }
 
-  sendPostToUserInChat() async {
+  void sendPostToUserInChat() async {
     final List<ChatConversation?> listOfRecipient =
         await ShareInChat().selectShareCustomer(context);
     debugPrint("Selected users = ${listOfRecipient.length}");
 
-    listOfRecipient.forEach((recipient) {
+    for (var recipient in listOfRecipient) {
       addUserPostToChat(recipientUser: recipient!);
-    });
+    }
   }
 
-  addUserPostToChat({
+  void addUserPostToChat({
     required ChatConversation recipientUser,
     String? url,
   }) async {

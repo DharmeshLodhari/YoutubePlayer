@@ -5,7 +5,6 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -49,9 +48,11 @@ class _PayoutTransactionDetailState extends State<PayoutTransactionDetail> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        return true;
+    return PopScope(
+      onPopInvoked: (didPop) async {
+        if (didPop) {
+          return;
+        }
       },
       child: ScaffoldMessenger(
         key: _scaffoldMessengerKey,
@@ -77,26 +78,19 @@ class _PayoutTransactionDetailState extends State<PayoutTransactionDetail> {
 
   void _onRefresh() async {
     //check network connectivity and if true then refresh the list
-    Connectivity().checkConnectivity().then((value) {
-      final connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        payout = null;
+    if (await checkConnection(context)) {
+      payout = null;
 
-        Future.delayed(const Duration(seconds: 2), () {
-          if (mounted) {
-            fetchPayout();
-          }
-        });
+      Future.delayed(const Duration(seconds: 2), () {
+        if (mounted) {
+          fetchPayout();
+        }
+      });
 
-        _refreshController.refreshCompleted();
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
-        _refreshController.refreshCompleted();
-      }
-    });
+      _refreshController.refreshCompleted();
+    } else {
+      _refreshController.refreshCompleted();
+    }
   }
 
   Widget appBar() {

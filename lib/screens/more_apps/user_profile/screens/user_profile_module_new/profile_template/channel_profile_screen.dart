@@ -380,6 +380,7 @@ class _ChannelProfileScreenState extends State<ChannelProfileScreen>
     );
   }
 
+  @override
   Future<void> dispose() async {
     super.dispose();
     scrollController!.dispose();

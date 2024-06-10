@@ -105,12 +105,14 @@ class _VerifyRegistrationOTPScreenState
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () {
-        if (FocusScope.of(context).hasFocus) {
-          FocusScope.of(context).unfocus();
+    return PopScope(
+      onPopInvoked: (didPop) {
+        if (didPop) {
+          if (FocusScope.of(context).hasFocus) {
+            FocusScope.of(context).unfocus();
+          }
+          return;
         }
-        return Future.value(true);
       },
       child: Scaffold(
         backgroundColor: whiteBackground,
@@ -339,7 +341,7 @@ class _VerifyRegistrationOTPScreenState
 
     if (_verifyOtpFormKey.currentState!.validate()) {
       final String enteredOTP = otpController!.text.trim();
-      final String passwordToken = "false";
+      const String passwordToken = "false";
       showDialog(context: context, builder: (context) => LoadingIndicator());
 
       await UserAuth()
@@ -382,7 +384,7 @@ class _VerifyRegistrationOTPScreenState
     }
   }
 
-  _processVerifyCreditCardOtp(BuildContext context, String response) {
+  void _processVerifyCreditCardOtp(BuildContext context, String response) {
     Navigator.pop(context); // pop loading indicator;
 
     switch (response) {

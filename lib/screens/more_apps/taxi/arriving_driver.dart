@@ -88,9 +88,11 @@ class _ArrivingDriverState extends State<ArrivingDriver> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        return Future.value(true);
+    return PopScope(
+      onPopInvoked: (didPop) async {
+        if (didPop) {
+          return;
+        }
       },
       child: Scaffold(
         backgroundColor: Colors.white,
@@ -152,30 +154,30 @@ class _ArrivingDriverState extends State<ArrivingDriver> {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                 decoration: BoxDecoration(color: blackFont),
-                child: Row(
+                child: const Row(
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.arrow_upward_rounded,
                       color: Colors.white,
                       size: 30,
                     ),
-                    const SizedBox(
+                    SizedBox(
                       width: 16,
                     ),
                     Expanded(
                       child: Row(
                         children: [
-                          const Text(
+                          Text(
                             "500 miles",
                             style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
                                 color: Colors.white),
                           ),
-                          const SizedBox(
+                          SizedBox(
                             width: 4,
                           ),
-                          const Text("Head southwest on Madison St",
+                          Text("Head southwest on Madison St",
                               style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w400,

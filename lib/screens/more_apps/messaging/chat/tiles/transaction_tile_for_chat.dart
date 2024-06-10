@@ -135,41 +135,39 @@ class _TransactionTileForChatState extends State<TransactionTileForChat> {
                   const SizedBox(
                     height: 12,
                   ),
-                  Container(
-                    child: Row(
-                      children: [
-                        Icon(
-                          SlydoAppIcon.true_icon,
-                          size: 12,
-                          color: naturalGreen,
-                        ),
-                        const SizedBox(
-                          width: 4,
-                        ),
-                        Row(
-                          children: [
-                            Text(getTransactionStatus(isSend: isSend),
-                                style: TextStyle(
-                                    color: blackFont,
-                                    fontWeight: isScreenSmall
-                                        ? FontWeight.w500
-                                        : FontWeight.w600,
-                                    fontSize: isScreenSmall ? 12 : 14)),
-                            Text(
-                                getDateTime(
-                                    dateAndTime: widget.message!['created_at']),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                softWrap: false,
-                                style: TextStyle(
-                                  color: darkGrey,
-                                  fontSize: isScreenSmall ? 10 : 12,
-                                  fontWeight: FontWeight.w400,
-                                ))
-                          ],
-                        ),
-                      ],
-                    ),
+                  Row(
+                    children: [
+                      Icon(
+                        SlydoAppIcon.true_icon,
+                        size: 12,
+                        color: naturalGreen,
+                      ),
+                      const SizedBox(
+                        width: 4,
+                      ),
+                      Row(
+                        children: [
+                          Text(getTransactionStatus(isSend: isSend),
+                              style: TextStyle(
+                                  color: blackFont,
+                                  fontWeight: isScreenSmall
+                                      ? FontWeight.w500
+                                      : FontWeight.w600,
+                                  fontSize: isScreenSmall ? 12 : 14)),
+                          Text(
+                              getDateTime(
+                                  dateAndTime: widget.message!['created_at']),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              softWrap: false,
+                              style: TextStyle(
+                                color: darkGrey,
+                                fontSize: isScreenSmall ? 10 : 12,
+                                fontWeight: FontWeight.w400,
+                              ))
+                        ],
+                      ),
+                    ],
                   ),
                   if (widget.chatConversation!.isGroupConversation!)
                     Column(

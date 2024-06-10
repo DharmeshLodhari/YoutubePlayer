@@ -157,9 +157,9 @@ class _SelectCablePlanState extends State<SelectCablePlan> {
 
   @override
   void initState() {
-    cablePlansJson.forEach((element) {
+    for (var element in cablePlansJson) {
       cablePlans.add(CablePlan.fromJson(element));
-    });
+    }
     super.initState();
   }
 
@@ -173,18 +173,16 @@ class _SelectCablePlanState extends State<SelectCablePlan> {
   }
 
   Widget scaffoldBody() {
-    return Container(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 16),
-          Expanded(
-            child: Container(
-              child: getListOfProvider(),
-            ),
-          )
-        ],
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 16),
+        Expanded(
+          child: Container(
+            child: getListOfProvider(),
+          ),
+        )
+      ],
     );
   }
 

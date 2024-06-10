@@ -18,9 +18,11 @@ class _MovieDashboardState extends State<MovieDashboard> {
   @override
   Widget build(BuildContext context) {
     _movieDashboardBloc = Provider.of<MovieDashboardBloc>(context);
-    return WillPopScope(
-      onWillPop: () {
-        return Future.value(true);
+    return PopScope(
+      onPopInvoked: (didPop) async {
+        if (didPop) {
+          return;
+        }
       },
       child: Scaffold(
         body: PageView(
@@ -30,7 +32,7 @@ class _MovieDashboardState extends State<MovieDashboard> {
           },
           children: <Widget>[
             MovieExploreScreen(),
-            MyMoviesScreen(),
+            const MyMoviesScreen(),
           ],
         ),
         bottomNavigationBar: bottomNavigationBar(),
@@ -74,7 +76,7 @@ class _MovieDashboardState extends State<MovieDashboard> {
   BottomNavigationBarItem bottomNavigationBarItem(
       {IconData? icon, required String title}) {
     return BottomNavigationBarItem(
-      icon: Container(
+      icon: SizedBox(
         height: 50,
         width: 108,
         child: Icon(

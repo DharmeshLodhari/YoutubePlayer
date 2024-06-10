@@ -9,7 +9,6 @@ import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/custom_box_shadow.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -60,7 +59,7 @@ class _DispatchAddressState extends State<DispatchAddress> {
           widget.arguments?["shippingAddress"] as ShippingAddress?;
     }
 
-    this.getList();
+    getList();
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
               _scrollController.position.maxScrollExtent &&
@@ -73,24 +72,19 @@ class _DispatchAddressState extends State<DispatchAddress> {
   }
 
   void _onProductRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
-      final connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        itemCount = 0;
-        next = "";
-        previous = "";
-        itemList = [];
-        debugPrint("Refresh called on discount!!  ");
-        getList();
+    if (await checkConnection(context)) {
+      itemCount = 0;
+      next = "";
+      previous = "";
+      itemList = [];
+      debugPrint("Refresh called on discount!!  ");
+      getList();
+      _refreshController.refreshCompleted();
+    } else {
+      setState(() {
         _refreshController.refreshCompleted();
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
-        _refreshController.refreshCompleted();
-      }
-    });
+      });
+    }
   }
 
   void getList({bool fetchFresh = false}) async {

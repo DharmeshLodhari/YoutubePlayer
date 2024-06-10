@@ -15,7 +15,6 @@ import 'package:Slydo/widget/item_display_card.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shimmer/shimmer.dart';
@@ -156,25 +155,18 @@ class _UserProductListState extends State<UserProductList> {
   }
 
   void _onProductRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
-      final connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        productCount = 0;
-        productNext = "";
-        productPrevious = "";
-        productList = [];
-        debugPrint("Refresh called on products!!  ");
-        getNextUrl();
-        widget.type != null ? listOfUsersProduct() : getProductList();
-        _productsRefreshController.refreshCompleted();
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
-        _productsRefreshController.refreshCompleted();
-      }
-    });
+    if (await checkConnection(context)) {
+      productCount = 0;
+      productNext = "";
+      productPrevious = "";
+      productList = [];
+      debugPrint("Refresh called on products!!  ");
+      getNextUrl();
+      widget.type != null ? listOfUsersProduct() : getProductList();
+      _productsRefreshController.refreshCompleted();
+    } else {
+      _productsRefreshController.refreshCompleted();
+    }
   }
 
   Future<void> getProductList() async {
@@ -515,7 +507,6 @@ class _UserProductListState extends State<UserProductList> {
         if (itemList.isNotEmpty) _buildMerchantDiscount(),
         ...sectionProductList
             .map((headers) => ExploreProducts(headers: headers))
-            .toList()
       ],
     );
   }
@@ -544,15 +535,15 @@ class _UserProductListState extends State<UserProductList> {
                   .map(
                     (e) => InkWell(
                       onTap: () {
-                        final String url = AppConfig.baseUrl +
-                            "/api/v1/products/products-by-discount/${e.id}";
+                        final String url =
+                            "${AppConfig.baseUrl}/api/v1/products/products-by-discount/${e.id}";
                         NavigationUtil.push(context,
                             screen: SuperStoreIndustry(
                                 next: url,
                                 appTitle: e.name!,
                                 searchQuery: {"discount": e.id!}));
                       },
-                      child: Container(
+                      child: SizedBox(
                         width: MediaQuery.of(context).size.width,
                         height: 150,
                         child: ClipRRect(
@@ -596,7 +587,7 @@ class _UserProductListState extends State<UserProductList> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      "Found ${productCount} products",
+                      "Found $productCount products",
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 16,

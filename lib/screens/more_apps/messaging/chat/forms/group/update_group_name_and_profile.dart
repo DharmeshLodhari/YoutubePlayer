@@ -33,9 +33,9 @@ class UpdateGroupNameAndProfile extends StatefulWidget {
 
 class _UpdateGroupNameAndProfileState extends State<UpdateGroupNameAndProfile> {
   final GlobalKey<ScaffoldState> _scaffoldUpdateGroupNameAndProfileKey =
-      new GlobalKey<ScaffoldState>();
+      GlobalKey<ScaffoldState>();
 
-  final GlobalKey<FormState> _formFieldKey = new GlobalKey<FormState>();
+  final GlobalKey<FormState> _formFieldKey = GlobalKey<FormState>();
 
   List<CustomerProfile> selectedConnectionList = [];
 
@@ -59,7 +59,7 @@ class _UpdateGroupNameAndProfileState extends State<UpdateGroupNameAndProfile> {
   bool isAvatar = false;
   bool? isBanner = false;
 
-  @protected
+  @override
   void initState() {
     groupNameController = TextEditingController();
     groupDescriptionController = TextEditingController();
@@ -161,27 +161,25 @@ class _UpdateGroupNameAndProfileState extends State<UpdateGroupNameAndProfile> {
     return SingleChildScrollView(
       child: Form(
         key: _formFieldKey,
-        child: Container(
-          child: Column(
-            children: [
-              getProfileCover(),
-              getGroupNameAndProfile(),
-              getGroupDescription(),
-              Padding(
-                padding: const EdgeInsets.all(18.0),
-                child: Column(
-                  children: [
-                    getMakePublicField(),
-                    const SizedBox(height: 10),
-                    getPaidGroupChatField(),
-                    getLimitGroupMembersField(),
-                    getAgeRestrictionField(),
-                  ],
-                ),
+        child: Column(
+          children: [
+            getProfileCover(),
+            getGroupNameAndProfile(),
+            getGroupDescription(),
+            Padding(
+              padding: const EdgeInsets.all(18.0),
+              child: Column(
+                children: [
+                  getMakePublicField(),
+                  const SizedBox(height: 10),
+                  getPaidGroupChatField(),
+                  getLimitGroupMembersField(),
+                  getAgeRestrictionField(),
+                ],
               ),
-              _buildConnectionsList(),
-            ],
-          ),
+            ),
+            _buildConnectionsList(),
+          ],
         ),
       ),
     );
@@ -192,16 +190,14 @@ class _UpdateGroupNameAndProfileState extends State<UpdateGroupNameAndProfile> {
         onTap: () {
           pickWallpaper();
         },
-        child: Container(height: 150, child: getProfileWallpaper()));
+        child: SizedBox(height: 150, child: getProfileWallpaper()));
   }
 
   Widget getProfileWallpaper() {
     return isBanner == true
-        ? Container(
-            child: Image.file(
-              File(groupModel.groupProfilePhoto!),
-              fit: BoxFit.fill,
-            ),
+        ? Image.file(
+            File(groupModel.groupProfilePhoto!),
+            fit: BoxFit.fill,
           )
         : CachedNetworkImage(
             imageUrl: groupDetail!.banner == null || groupDetail!.banner == ""
@@ -319,18 +315,18 @@ class _UpdateGroupNameAndProfileState extends State<UpdateGroupNameAndProfile> {
                   isAmountField: true,
                   labelText: AppLocalization.of(context)!.amount,
                   onChanged: (value) {},
-                  validator: (val) {
-                    try {
-                      final double userAmount =
-                          double.parse(val.replaceAll(',', ''));
-                      // if (userAmount > amountLimit) {
-                      //   return 'You cannot fund more than $amountLimit';
-                      // }
-                    } catch (e) {
-                      return AppLocalization.of(context)!.invalidAmount;
-                    }
-                    return null;
-                  },
+                  // validator: (val) {
+                  // try {
+                  // final double userAmount =
+                  //     double.parse(val.replaceAll(',', ''));
+                  // if (userAmount > amountLimit) {
+                  //   return 'You cannot fund more than $amountLimit';
+                  // }
+                  // } catch (e) {
+                  //   return AppLocalization.of(context)!.invalidAmount;
+                  // }
+                  //   return null;
+                  // },
                 ),
               ],
               const SizedBox(height: 10),
@@ -533,49 +529,45 @@ class _UpdateGroupNameAndProfileState extends State<UpdateGroupNameAndProfile> {
 
   Widget getGroupNameAndProfile() {
     return Container(
-      child: Container(
-        height: 80,
-        padding: const EdgeInsets.only(right: 16, left: 16),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            Column(
-              children: [
-                const SizedBox(
-                  height: 16,
-                ),
-                getGroupProfile()
-              ],
-            ),
-            const SizedBox(
-              width: 8,
-            ),
-            Expanded(
-                child: TextFormField(
-              controller: groupNameController,
-              cursorColor: blackFont,
-              validator: (value) {
-                if (value!.isNotEmpty) return null;
-                return groupDetail!.conversationType == "channel"
-                    ? "Please Enter channel name"
-                    : "Please Enter group name";
-              },
-              style: TextStyle(
-                  color: blackFont, fontWeight: FontWeight.w700, fontSize: 16),
-              decoration: InputDecoration(
-                  contentPadding: EdgeInsets.zero,
-                  hintText: groupDetail!.conversationType == "channel"
-                      ? "Type channel name here"
-                      : "Type group name here",
-                  helperStyle: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w400,
-                      color: darkGrey),
-                  enabledBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: dividerColor))),
-            ))
-          ],
-        ),
+      height: 80,
+      padding: const EdgeInsets.only(right: 16, left: 16),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          Column(
+            children: [
+              const SizedBox(
+                height: 16,
+              ),
+              getGroupProfile()
+            ],
+          ),
+          const SizedBox(
+            width: 8,
+          ),
+          Expanded(
+              child: TextFormField(
+            controller: groupNameController,
+            cursorColor: blackFont,
+            validator: (value) {
+              if (value!.isNotEmpty) return null;
+              return groupDetail!.conversationType == "channel"
+                  ? "Please Enter channel name"
+                  : "Please Enter group name";
+            },
+            style: TextStyle(
+                color: blackFont, fontWeight: FontWeight.w700, fontSize: 16),
+            decoration: InputDecoration(
+                contentPadding: EdgeInsets.zero,
+                hintText: groupDetail!.conversationType == "channel"
+                    ? "Type channel name here"
+                    : "Type group name here",
+                helperStyle: TextStyle(
+                    fontSize: 16, fontWeight: FontWeight.w400, color: darkGrey),
+                enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: dividerColor))),
+          ))
+        ],
       ),
     );
   }
@@ -587,7 +579,7 @@ class _UpdateGroupNameAndProfileState extends State<UpdateGroupNameAndProfile> {
       },
       child: ClipOval(
           child: isAvatar == true
-              ? Container(
+              ? SizedBox(
                   height: 64,
                   width: 64,
                   child: Image.file(

@@ -1,7 +1,7 @@
-import 'Location.dart';
-import 'Partner.dart';
-import 'Review.dart';
-import 'SimilarProperty.dart';
+import 'location_model.dart';
+import 'partner.dart';
+import 'review.dart';
+import 'similar_property.dart';
 
 class PropertyDetailItem {
   String? about;

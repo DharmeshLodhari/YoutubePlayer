@@ -176,11 +176,11 @@ class ChatMessageSynchronizer {
 
     if (missedMessages.isEmpty) return;
 
-    missedMessages.forEach((element) {
+    for (var element in missedMessages) {
       final ChatMessage chatMessage = ChatMessage.fromJson(jsonDecode(element));
       debugPrint("<==== ${chatMessage.text}   <===== ${chatMessage.createdAt}");
       messageList.add(chatMessage);
-    });
+    }
 
     if (messageList.isNotEmpty) {
       for (int i = 0; i < messageList.length; i++) {

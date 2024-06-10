@@ -101,10 +101,12 @@ class _RideOptionState extends State<RideOption> {
   @override
   Widget build(BuildContext context) {
     taxiBloc = Provider.of<TaxiBloc>(context);
-    return WillPopScope(
-      onWillPop: () async {
-        taxiBloc.rideDetail = null;
-        return Future.value(true);
+    return PopScope(
+      onPopInvoked: (didPop) async {
+        if (didPop) {
+          taxiBloc.rideDetail = null;
+          return;
+        }
       },
       child: Scaffold(
         backgroundColor: Colors.white,
@@ -157,13 +159,13 @@ class _RideOptionState extends State<RideOption> {
   Widget getRideOptions() {
     return Container(
         padding: const EdgeInsets.only(left: 16, right: 16, top: 20),
-        child: Column(
+        child: const Column(
           // controller: scrollController,
           children: [
-            const SizedBox(
+            SizedBox(
               height: 20,
             ),
-            const SizedBox(
+            SizedBox(
               height: 40,
             ),
           ],

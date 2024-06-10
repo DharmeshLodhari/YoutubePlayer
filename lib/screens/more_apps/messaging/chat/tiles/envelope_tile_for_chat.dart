@@ -66,7 +66,7 @@ class _EnvelopeTileForChatState extends State<EnvelopeTileForChat> {
                   message: message, envelope: envelope, isSend: isSend),
             ),
             if (isSend)
-              Container(
+              SizedBox(
                 width: 20,
                 child: isSend
                     ? Center(
@@ -159,7 +159,7 @@ class _EnvelopeTileForChatState extends State<EnvelopeTileForChat> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        messageDecoderWithEmoji("${envelope.title ?? ""}")!,
+                        messageDecoderWithEmoji(envelope.title ?? "")!,
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
@@ -208,7 +208,7 @@ class _EnvelopeTileForChatState extends State<EnvelopeTileForChat> {
                   ),
                 ),
                 if (widget.chatConversation!.isGroupConversation!)
-                  Container(
+                  SizedBox(
                     width: 60,
                     child: Stack(
                       children: [

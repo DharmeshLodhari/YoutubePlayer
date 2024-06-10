@@ -409,48 +409,45 @@ class _HomeQuickViewState extends State<HomeQuickView> {
 
   Widget _displayShortcutCard(List<Map<String, String>> shortcuts) {
     return SingleChildScrollView(
-      child: Container(
-        // height: 250.0,
-        child: Column(
-          // padding: EdgeInsets.zero,
-          children: List.generate(
-            (shortcuts.length / 2).ceil(),
-            (index) {
-              final startIndex = index * 2;
-              final endIndex = startIndex + 2;
-              final pairShortcuts = shortcuts.sublist(
-                startIndex,
-                endIndex > shortcuts.length ? shortcuts.length : endIndex,
-              );
+      child: Column(
+        // padding: EdgeInsets.zero,
+        children: List.generate(
+          (shortcuts.length / 2).ceil(),
+          (index) {
+            final startIndex = index * 2;
+            final endIndex = startIndex + 2;
+            final pairShortcuts = shortcuts.sublist(
+              startIndex,
+              endIndex > shortcuts.length ? shortcuts.length : endIndex,
+            );
 
-              if (pairShortcuts.length == 1) {
-                // Add an empty space for the second item
-                pairShortcuts.add({});
-              }
+            if (pairShortcuts.length == 1) {
+              // Add an empty space for the second item
+              pairShortcuts.add({});
+            }
 
-              return Row(
-                children: pairShortcuts.map((shortcut) {
-                  if (shortcut.isEmpty) {
-                    // Return an empty space (SizedBox)
-                    return const Expanded(
-                      child: SizedBox(),
-                    );
-                  } else {
-                    return Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 8.0, right: 8.0),
-                        child: shortcutView(
-                          shortcut['imagePath']!,
-                          shortcut['title']!,
-                          shortcut['ForReadPermission']!,
-                        ),
+            return Row(
+              children: pairShortcuts.map((shortcut) {
+                if (shortcut.isEmpty) {
+                  // Return an empty space (SizedBox)
+                  return const Expanded(
+                    child: SizedBox(),
+                  );
+                } else {
+                  return Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                      child: shortcutView(
+                        shortcut['imagePath']!,
+                        shortcut['title']!,
+                        shortcut['ForReadPermission']!,
                       ),
-                    );
-                  }
-                }).toList(),
-              );
-            },
-          ),
+                    ),
+                  );
+                }
+              }).toList(),
+            );
+          },
         ),
       ),
     );
@@ -631,7 +628,7 @@ class _HomeQuickViewState extends State<HomeQuickView> {
             ));
         break;
       case ProtectionPermission.moment:
-        NavigationUtil.push(context, screen: CreateMediaMomentScreen());
+        NavigationUtil.push(context, screen: const CreateMediaMomentScreen());
         break;
       case ProtectionPermission.product:
         if (userBloc.user.type!.toLowerCase() == 'user') {

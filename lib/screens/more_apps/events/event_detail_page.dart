@@ -54,10 +54,12 @@ class _EventDetailPageState extends State<EventDetailPage> {
   @override
   Widget build(BuildContext context) {
     _eventDashboardBloc = Provider.of<EventDashboardBloc>(context);
-    return WillPopScope(
-      onWillPop: () {
-        _eventDashboardBloc.index = 0;
-        return Future.value(true);
+    return PopScope(
+      onPopInvoked: (didPop) {
+        if (didPop) {
+          _eventDashboardBloc.index = 0;
+          return;
+        }
       },
       child: Scaffold(
         backgroundColor: Colors.white,
@@ -224,35 +226,33 @@ class _EventDetailPageState extends State<EventDetailPage> {
   }
 
   Widget eventPoster() {
-    return Container(
-      child: AspectRatio(
-        aspectRatio: 16 / 9,
-        child: Stack(
-          children: [
-            CachedNetworkImage(
-              width: double.infinity,
-              height: double.infinity,
-              imageUrl: event.image!,
-              fit: BoxFit.fill,
-              errorWidget: imageErrorWidget,
-            ),
-            Positioned(
-              right: 12,
-              top: 12,
-              child: InkWell(
-                child: Icon(
-                  isWishList ? SlydoAppIcon.heart_1 : SlydoAppIcon.heart_empty,
-                  color: Colors.white,
-                  size: 22,
-                ),
-                onTap: () {
-                  isWishList = !isWishList;
-                  setState(() {});
-                },
+    return AspectRatio(
+      aspectRatio: 16 / 9,
+      child: Stack(
+        children: [
+          CachedNetworkImage(
+            width: double.infinity,
+            height: double.infinity,
+            imageUrl: event.image!,
+            fit: BoxFit.fill,
+            errorWidget: imageErrorWidget,
+          ),
+          Positioned(
+            right: 12,
+            top: 12,
+            child: InkWell(
+              child: Icon(
+                isWishList ? SlydoAppIcon.heart_1 : SlydoAppIcon.heart_empty,
+                color: Colors.white,
+                size: 22,
               ),
+              onTap: () {
+                isWishList = !isWishList;
+                setState(() {});
+              },
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -279,7 +279,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
         ),
         Row(
           children: [
-            Container(
+            SizedBox(
               height: 32,
               width: 32,
               child: ClipOval(
@@ -513,7 +513,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
           borderRadius: const BorderRadius.all(
             Radius.circular(10.0),
           ),
-          border: new Border.all(
+          border: Border.all(
               color: isSelected ? navyBlue : lightGrey,
               width: 1.0,
               style: BorderStyle.solid),
@@ -608,31 +608,29 @@ class _EventDetailPageState extends State<EventDetailPage> {
   }
 
   Widget moreLikeThis() {
-    return Container(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "More like this",
-            style: TextStyle(
-              fontWeight: FontWeight.w700,
-              fontSize: 18,
-              color: blackFont,
-            ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "More like this",
+          style: TextStyle(
+            fontWeight: FontWeight.w700,
+            fontSize: 18,
+            color: blackFont,
           ),
-          const SizedBox(
-            height: 12,
-          ),
-          Column(
-            children: event.similarEvent!
-                .map((element) => Container(
-                      margin: const EdgeInsets.only(bottom: 12),
-                      child: EventTileWithHeart(partialEvent: element),
-                    ))
-                .toList(),
-          ),
-        ],
-      ),
+        ),
+        const SizedBox(
+          height: 12,
+        ),
+        Column(
+          children: event.similarEvent!
+              .map((element) => Container(
+                    margin: const EdgeInsets.only(bottom: 12),
+                    child: EventTileWithHeart(partialEvent: element),
+                  ))
+              .toList(),
+        ),
+      ],
     );
   }
 

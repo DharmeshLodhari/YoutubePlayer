@@ -25,7 +25,7 @@ class _SearchingForRideState extends State<SearchingForRide> {
 
   void navigateToArrivingDriver() async {
     driverFindingTimer = Timer(const Duration(seconds: 5), () {
-      bool isDriverFound = true;
+      const bool isDriverFound = true;
       if (isDriverFound) {
         Navigator.of(context).pushNamed("/driver-arriving");
       } else {
@@ -36,9 +36,11 @@ class _SearchingForRideState extends State<SearchingForRide> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        return Future.value(true);
+    return PopScope(
+      onPopInvoked: (didPop) async {
+        if (didPop) {
+          return;
+        }
       },
       child: Scaffold(
         backgroundColor: Colors.white,

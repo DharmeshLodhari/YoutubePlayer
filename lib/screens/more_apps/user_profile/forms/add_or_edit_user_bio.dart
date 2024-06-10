@@ -189,7 +189,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
     super.initState();
   }
 
-  getProductIndustries() async {
+  Future<void> getProductIndustries() async {
     loading = true;
     if (mounted) setState(() {});
     final result = await AuthService().listOfIndustries();
@@ -264,13 +264,14 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
       isUserIsSimpleUser = true;
     }
 
-    return WillPopScope(
-      onWillPop: () async {
-        Navigator.pop(context, {
-          "userAbout": userBloc.userAbout,
-          "user_avatar": userBloc.user.avatar
-        });
-        return false;
+    return PopScope(
+      onPopInvoked: (didPop) async {
+        if (didPop) {
+          Navigator.pop(context, {
+            "userAbout": userBloc.userAbout,
+            "user_avatar": userBloc.user.avatar
+          });
+        }
       },
       child: SafeArea(
         bottom: false,
@@ -294,7 +295,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
         child: Column(
           children: [
             getUserPersonalDetail(),
-            isUserIsSimpleUser ? Container() : getUserBioDetails(),
+            if (isUserIsSimpleUser) Container() else getUserBioDetails(),
             const SizedBox(height: 20),
             getSubmitButton(),
             const SizedBox(height: 40),
@@ -582,7 +583,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
     return checkSlydoName(nickName);
   }
 
-  Widget getAppbar(var context) {
+  Widget getAppbar(BuildContext context) {
     return SliverOverlapAbsorber(
       handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
       sliver: SliverSafeArea(
@@ -763,6 +764,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
                 bottom: 0,
                 right: 0,
                 child: GestureDetector(
+                  onTap: selectProfilePictureAction,
                   child: ClipOval(
                     child: Container(
                       color: Colors.white,
@@ -774,7 +776,6 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
                       ),
                     ),
                   ),
-                  onTap: selectProfilePictureAction,
                 ),
               )
             ],
@@ -992,12 +993,10 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
   }
 
   Widget getOpeningHoursList() {
-    return Container(
-      child: Column(
-        children: userAddedOpeningHours
-            .map((element) => getOneOpeningHourTile(element))
-            .toList(),
-      ),
+    return Column(
+      children: userAddedOpeningHours
+          .map((element) => getOneOpeningHourTile(element))
+          .toList(),
     );
   }
 

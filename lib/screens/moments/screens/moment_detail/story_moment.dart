@@ -151,269 +151,267 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
           textDirection: Directionality.of(context),
           end: 15.0,
           bottom: MediaQuery.of(context).size.height * 0.13,
-          child: Container(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                const SizedBox(height: 16),
-                if (isMyMoment())
-                  CustomMomentDetailButton(
-                    iconEnabled: true,
-                    iconData: Icons.more_horiz_outlined,
-                    text: '',
-                    onPressed: () {
-                      androidBottomSheet(
-                        context: context,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            momentVisibilityOption(currentMoment!),
-                            momentPermanentOption(currentMoment!),
-                            enablePayment(currentMoment!),
-                            momentCommentingOption(currentMoment!),
-                            momentLikeOption(currentMoment!),
-                            bottomSheetItem(
-                                title: 'Share in chat',
-                                iconData: Icons.send_outlined,
-                                onTap: () async {
-                                  await sendMomentToUserInChat(
-                                      momentsModel: currentMoment!);
-                                }),
-                            bottomSheetItem(
-                              title: 'Delete',
-                              iconData: Icons.delete,
-                              onTap: () {
-                                Navigator.pop(context);
-
-                                showDialogBox(
-                                  context: context,
-                                  actionOneTextColor: blackFont,
-                                  actionOneBgColor: greyBorderColor,
-                                  actionTwoTextColor: white,
-                                  actionTwoBgColor: mateRed,
-                                  title: 'Delete Moment',
-                                  actionOneText:
-                                      AppLocalization.of(context)!.discard,
-                                  actionTwoText:
-                                      AppLocalization.of(context)!.continueMsg,
-                                  description:
-                                      'Are you sure you want to delete this moment?',
-                                  roundedBackgroundIcon: RoundedBackgroundIcon(
-                                    enableMargin: false,
-                                    width: 90,
-                                    height: 90,
-                                    image: Image.asset(
-                                        'assets/images/delete_dialog_icon.png'),
-                                  ),
-                                  rightButtonOnPressed: () {
-                                    showDialog(
-                                        context: context,
-                                        builder: (dialogLoadingContext) =>
-                                            LoadingIndicator());
-                                    MomentsService()
-                                        .deleteMoment(currentMoment!.id!, "")
-                                        .then(
-                                      (value) {
-                                        Navigator.pop(
-                                            context); // Dismiss loading indicator
-                                        Navigator.pop(context);
-                                        showToast(message: 'Moment deleted');
-                                      },
-                                    ).catchError((e) {
-                                      Navigator.pop(context);
-                                      showToast(message: e.toString());
-                                    });
-                                  },
-                                );
-                              },
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  )
-                else
-                  const SizedBox.shrink(),
-                _buildShareMomentOption(),
-                Column(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                        color: Colors.white38,
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            offset: const Offset(0.0, 0),
-                            color: Colors.black.withOpacity(0.6),
-                          ),
-                        ],
-                        // borderRadius: BorderRadius.circular(40),
-                      ),
-                      child: LikeButton(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        padding: const EdgeInsets.only(left: 5),
-                        size: 20,
-                        circleColor: CircleColor(start: white, end: white),
-                        bubblesColor: BubblesColor(
-                          dotPrimaryColor: white,
-                          dotSecondaryColor: white,
-                        ),
-                        onTap: likeEnabled()
-                            ? (isLike) {
-                                _isLiked = true;
-                                _isDisLiked = false;
-                                setState(() {});
-                                return addLikeToMoment();
-                              }
-                            : null,
-                        likeBuilder: (bool isLiked) {
-                          return SvgPicture.asset(
-                            _isLiked == true
-                                ? "yarn/likeAfter".toSVG()
-                                : "yarn/likeBefore".toSVG(),
-                            color: white,
-                            height: 25,
-                            width: 25,
-                          );
-                        },
-                        likeCount: getLikeCount(),
-                        countBuilder: (_, __, ___) {
-                          return const SizedBox.shrink();
-                        },
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 5,
-                    ),
-                    Text(
-                      likeEnabled()
-                          ? int.parse(currentMoment!.likes.toString()) < 1
-                              ? ''
-                              : getFormattedViewCount(
-                                  noOfViews: currentMoment!.likes!,
-                                  addViewText: false)
-                          : '',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        shadows: [
-                          Shadow(
-                            blurRadius: 10.0,
-                            offset: Offset(0.0, 0),
-                          ),
-                        ],
-                      ),
-                    )
-                  ],
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                Column(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                        color: Colors.white38,
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            offset: const Offset(0.0, 0),
-                            color: Colors.black.withOpacity(0.6),
-                          ),
-                        ],
-                        // borderRadius: BorderRadius.circular(40),
-                      ),
-                      child: LikeButton(
-                        padding: const EdgeInsets.only(left: 5),
-                        // crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        size: 20,
-                        circleColor: CircleColor(start: white, end: white),
-                        bubblesColor: BubblesColor(
-                          dotPrimaryColor: white,
-                          dotSecondaryColor: white,
-                        ),
-                        onTap: likeEnabled()
-                            ? (likes) {
-                                _isDisLiked = true;
-                                _isLiked = false;
-                                setState(() {});
-
-                                return addDisLikeToMoment();
-                              }
-                            : null,
-                        // : null,
-                        likeBuilder: (bool isLiked) {
-                          return SvgPicture.asset(
-                            _isDisLiked == false
-                                ? "yarn/unlikeBefore".toSVG()
-                                : "yarn/unlikeAfter".toSVG(),
-                            color: white,
-                            height: 20,
-                            width: 17,
-                          );
-                        },
-                        likeCount: getDislikeCount(),
-                        countBuilder: (_, __, ___) {
-                          return const SizedBox.shrink();
-                        },
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 5,
-                    ),
-                    Text(
-                      likeEnabled()
-                          ? int.parse(currentMoment!.dislikes.toString()) < 1
-                              ? ''
-                              : getFormattedViewCount(
-                                  noOfViews: currentMoment!.dislikes!,
-                                  addViewText: false,
-                                )
-                          : '',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        shadows: [
-                          Shadow(
-                            blurRadius: 10.0,
-                            offset: Offset(0.0, 0),
-                          ),
-                        ],
-                      ),
-                    )
-                  ],
-                ),
-                const SizedBox(
-                  height: 18,
-                ),
-                CustomMomentDetailButton(
-                  iconEnabled: commentingEnabled(),
-                  svgImage: 'yarn/yarn_comment',
-                  isSvgIcon: true,
-                  text: currentMoment?.displayComment ?? '',
-                  onPressed: commentingEnabled()
-                      ? () {
-                          widget.controller!.pause();
-                          commentSheet(context, currentMoment!.id!,
-                              currentMoment!.ownerName!,
-                              index: index - 1, currentMoment: currentMoment);
-                        }
-                      : null,
-                ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              const SizedBox(height: 16),
+              if (isMyMoment())
                 CustomMomentDetailButton(
                   iconEnabled: true,
-                  iconData: Icons.visibility_rounded,
-                  text: getFormattedViewCount(
-                    noOfViews: currentMoment!.views,
-                    addViewText: false,
+                  iconData: Icons.more_horiz_outlined,
+                  text: '',
+                  onPressed: () {
+                    androidBottomSheet(
+                      context: context,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          momentVisibilityOption(currentMoment!),
+                          momentPermanentOption(currentMoment!),
+                          enablePayment(currentMoment!),
+                          momentCommentingOption(currentMoment!),
+                          momentLikeOption(currentMoment!),
+                          bottomSheetItem(
+                              title: 'Share in chat',
+                              iconData: Icons.send_outlined,
+                              onTap: () async {
+                                await sendMomentToUserInChat(
+                                    momentsModel: currentMoment!);
+                              }),
+                          bottomSheetItem(
+                            title: 'Delete',
+                            iconData: Icons.delete,
+                            onTap: () {
+                              Navigator.pop(context);
+
+                              showDialogBox(
+                                context: context,
+                                actionOneTextColor: blackFont,
+                                actionOneBgColor: greyBorderColor,
+                                actionTwoTextColor: white,
+                                actionTwoBgColor: mateRed,
+                                title: 'Delete Moment',
+                                actionOneText:
+                                    AppLocalization.of(context)!.discard,
+                                actionTwoText:
+                                    AppLocalization.of(context)!.continueMsg,
+                                description:
+                                    'Are you sure you want to delete this moment?',
+                                roundedBackgroundIcon: RoundedBackgroundIcon(
+                                  enableMargin: false,
+                                  width: 90,
+                                  height: 90,
+                                  image: Image.asset(
+                                      'assets/images/delete_dialog_icon.png'),
+                                ),
+                                rightButtonOnPressed: () {
+                                  showDialog(
+                                      context: context,
+                                      builder: (dialogLoadingContext) =>
+                                          LoadingIndicator());
+                                  MomentsService()
+                                      .deleteMoment(currentMoment!.id!, "")
+                                      .then(
+                                    (value) {
+                                      Navigator.pop(
+                                          context); // Dismiss loading indicator
+                                      Navigator.pop(context);
+                                      showToast(message: 'Moment deleted');
+                                    },
+                                  ).catchError((e) {
+                                    Navigator.pop(context);
+                                    showToast(message: e.toString());
+                                  });
+                                },
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                )
+              else
+                const SizedBox.shrink(),
+              _buildShareMomentOption(),
+              Column(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: Colors.white38,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          offset: const Offset(0.0, 0),
+                          color: Colors.black.withOpacity(0.6),
+                        ),
+                      ],
+                      // borderRadius: BorderRadius.circular(40),
+                    ),
+                    child: LikeButton(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      padding: const EdgeInsets.only(left: 5),
+                      size: 20,
+                      circleColor: CircleColor(start: white, end: white),
+                      bubblesColor: BubblesColor(
+                        dotPrimaryColor: white,
+                        dotSecondaryColor: white,
+                      ),
+                      onTap: likeEnabled()
+                          ? (isLike) {
+                              _isLiked = true;
+                              _isDisLiked = false;
+                              setState(() {});
+                              return addLikeToMoment();
+                            }
+                          : null,
+                      likeBuilder: (bool isLiked) {
+                        return SvgPicture.asset(
+                          _isLiked == true
+                              ? "yarn/likeAfter".toSVG()
+                              : "yarn/likeBefore".toSVG(),
+                          color: white,
+                          height: 25,
+                          width: 25,
+                        );
+                      },
+                      likeCount: getLikeCount(),
+                      countBuilder: (_, __, ___) {
+                        return const SizedBox.shrink();
+                      },
+                    ),
                   ),
-                  onPressed: null,
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  Text(
+                    likeEnabled()
+                        ? int.parse(currentMoment!.likes.toString()) < 1
+                            ? ''
+                            : getFormattedViewCount(
+                                noOfViews: currentMoment!.likes!,
+                                addViewText: false)
+                        : '',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      shadows: [
+                        Shadow(
+                          blurRadius: 10.0,
+                          offset: Offset(0.0, 0),
+                        ),
+                      ],
+                    ),
+                  )
+                ],
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              Column(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: Colors.white38,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          offset: const Offset(0.0, 0),
+                          color: Colors.black.withOpacity(0.6),
+                        ),
+                      ],
+                      // borderRadius: BorderRadius.circular(40),
+                    ),
+                    child: LikeButton(
+                      padding: const EdgeInsets.only(left: 5),
+                      // crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      size: 20,
+                      circleColor: CircleColor(start: white, end: white),
+                      bubblesColor: BubblesColor(
+                        dotPrimaryColor: white,
+                        dotSecondaryColor: white,
+                      ),
+                      onTap: likeEnabled()
+                          ? (likes) {
+                              _isDisLiked = true;
+                              _isLiked = false;
+                              setState(() {});
+
+                              return addDisLikeToMoment();
+                            }
+                          : null,
+                      // : null,
+                      likeBuilder: (bool isLiked) {
+                        return SvgPicture.asset(
+                          _isDisLiked == false
+                              ? "yarn/unlikeBefore".toSVG()
+                              : "yarn/unlikeAfter".toSVG(),
+                          color: white,
+                          height: 20,
+                          width: 17,
+                        );
+                      },
+                      likeCount: getDislikeCount(),
+                      countBuilder: (_, __, ___) {
+                        return const SizedBox.shrink();
+                      },
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  Text(
+                    likeEnabled()
+                        ? int.parse(currentMoment!.dislikes.toString()) < 1
+                            ? ''
+                            : getFormattedViewCount(
+                                noOfViews: currentMoment!.dislikes!,
+                                addViewText: false,
+                              )
+                        : '',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      shadows: [
+                        Shadow(
+                          blurRadius: 10.0,
+                          offset: Offset(0.0, 0),
+                        ),
+                      ],
+                    ),
+                  )
+                ],
+              ),
+              const SizedBox(
+                height: 18,
+              ),
+              CustomMomentDetailButton(
+                iconEnabled: commentingEnabled(),
+                svgImage: 'yarn/yarn_comment',
+                isSvgIcon: true,
+                text: currentMoment?.displayComment ?? '',
+                onPressed: commentingEnabled()
+                    ? () {
+                        widget.controller!.pause();
+                        commentSheet(context, currentMoment!.id!,
+                            currentMoment!.ownerName!,
+                            index: index - 1, currentMoment: currentMoment);
+                      }
+                    : null,
+              ),
+              CustomMomentDetailButton(
+                iconEnabled: true,
+                iconData: Icons.visibility_rounded,
+                text: getFormattedViewCount(
+                  noOfViews: currentMoment!.views,
+                  addViewText: false,
                 ),
-              ],
-            ),
+                onPressed: null,
+              ),
+            ],
           ),
         ),
         Positioned(
@@ -607,7 +605,7 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
                       onTap: () async {
                         toggleMediaPlayingState();
                         await NavigationUtil.push(context,
-                            screen: CreateMediaMomentScreen());
+                            screen: const CreateMediaMomentScreen());
                         toggleMediaPlayingState();
                       },
                       child: Container(
@@ -703,10 +701,10 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
         await ShareInChat().selectShareCustomer(context);
     debugPrint("Selected users = ${listOfRecipient.length}");
 
-    listOfRecipient.forEach((recipient) {
+    for (var recipient in listOfRecipient) {
       addMomentPostToChat(
           recipientUser: recipient!, momentsModel: momentsModel);
-    });
+    }
   }
 
   Future<void> addMomentPostToChat({
@@ -974,9 +972,9 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
     if (currentMoment!.tags != null) {
       currentMoment!.tags!.join(', ');
 
-      currentMoment!.tags!.forEach((tag) {
+      for (var tag in currentMoment!.tags!) {
         formattedTagList.add('#$tag ');
-      });
+      }
 
       return ReadMoreText(
         formattedTagList.join(' '),
@@ -1128,8 +1126,7 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
   }
 
   bool commentingEnabled() {
-    return currentMoment!.enableCommenting != null &&
-        currentMoment!.enableCommenting;
+    return currentMoment!.enableCommenting;
   }
 
   Widget getPayMeBtn() {

@@ -102,7 +102,7 @@ class _ChatConnectionSettingsState extends State<ChatConnectionSettings> {
           const SizedBox(
             height: 12,
           ),
-          Container(
+          SizedBox(
             width: 340,
             child: Text(
               "Automatically save photos and videos you receive to your iPhone’s Camera Roll.",

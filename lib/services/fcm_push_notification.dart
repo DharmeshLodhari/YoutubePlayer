@@ -204,7 +204,7 @@ class PushNotificationService {
   StreamSubscription? streamListen;
 
   static final PushNotificationService _singleton =
-      new PushNotificationService._internal();
+      PushNotificationService._internal();
 
   factory PushNotificationService() {
     return _singleton;
@@ -234,7 +234,7 @@ class PushNotificationService {
       debugPrint("FCM Token:- $token");
       // this piece of code convert Map<dynamic,dynamic> data to Map<String,String> tempData
       // so we can store that data into database
-      final Map<String, dynamic> tempData = new Map<String, dynamic>();
+      final Map<String, dynamic> tempData = <String, dynamic>{};
       tempData['firebaseToken'] = data['token'];
       tempData['type'] = data['type'];
       tempData['mode'] = data['mode'];
@@ -282,7 +282,7 @@ class PushNotificationService {
               ? notification["data"]
               : jsonDecode(notification["data"]);
 
-          debugPrint('FRANK DECODED MESSAGE ---> ${decodeMessage}');
+          debugPrint('FRANK DECODED MESSAGE ---> $decodeMessage');
         } catch (error) {
           debugPrint("ERROR:- while adding data to db from FCM $notification");
         }
@@ -315,7 +315,7 @@ class PushNotificationService {
                   context: myGlobals.scaffoldKey.currentContext!,
                   notification: notification);
 
-              if (result != null && result as bool && result == true) {
+              if (result != null && result == true) {
                 isDialogueOpen = false;
               } else {
                 isDialogueOpen = false;
@@ -334,7 +334,7 @@ class PushNotificationService {
                   context: myGlobals.scaffoldKey.currentContext!,
                   notification: notification);
 
-              if (result != null && result as bool && result == true) {
+              if (result != null && result == true) {
                 isDialogueOpen = false;
               } else {
                 isDialogueOpen = false;
@@ -344,7 +344,7 @@ class PushNotificationService {
           default:
         }
       } else {
-        debugPrint('FRANK ELSE BLOCK LINE 265 ---> ${notification}');
+        debugPrint('FRANK ELSE BLOCK LINE 265 ---> $notification');
 
         if ((notification["body"].toString().toLowerCase() == "hello" ||
                     notification["body"].toString().toLowerCase() == "null") &&

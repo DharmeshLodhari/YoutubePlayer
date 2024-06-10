@@ -3,7 +3,6 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -39,7 +38,7 @@ class TrendingListScreenState extends State<TrendingListScreen> {
       RefreshController(initialRefresh: false);
   String? selectedId;
   final ScrollController _trendingScrollController = ScrollController();
-  late DashboardBloc _dashboardBloc;
+  // late DashboardBloc _dashboardBloc;
 
   @override
   void initState() {
@@ -67,7 +66,7 @@ class TrendingListScreenState extends State<TrendingListScreen> {
         isLoading = true;
         if (mounted) setState(() {});
 
-        final String latestTrending = 'trending';
+        const String latestTrending = 'trending';
 
         final Map<String, dynamic>? result = await YarnAuth().getAllYarn(
             next, previous ?? '',
@@ -125,7 +124,7 @@ class TrendingListScreenState extends State<TrendingListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    _dashboardBloc = Provider.of<DashboardBloc>(context);
+    // _dashboardBloc = Provider.of<DashboardBloc>(context);
 
     // /// check if yarn bottom navigation is clicked
     // /// scroll back to the top of the page
@@ -230,7 +229,7 @@ class TrendingListScreenState extends State<TrendingListScreen> {
             ),
           );
         },
-        separatorBuilder: (context, int) {
+        separatorBuilder: (context, int1) {
           return Column(
             children: [
               const SizedBox(
@@ -252,28 +251,21 @@ class TrendingListScreenState extends State<TrendingListScreen> {
   }
 
   void onPostRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
-      final connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        count = 0;
-        next = "";
-        previous = "";
-        yarnTopicList = [];
-        if (mounted) setState(() {});
+    if (await checkConnection(context)) {
+      count = 0;
+      next = "";
+      previous = "";
+      yarnTopicList = [];
+      if (mounted) setState(() {});
 
-        getYarnTopic(categoryId: selectedId);
-        setState(() {
-          _postRefreshController.refreshCompleted();
-        });
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
-        setState(() {
-          _postRefreshController.refreshCompleted();
-        });
-      }
-    });
+      getYarnTopic(categoryId: selectedId);
+      setState(() {
+        _postRefreshController.refreshCompleted();
+      });
+    } else {
+      setState(() {
+        _postRefreshController.refreshCompleted();
+      });
+    }
   }
 }

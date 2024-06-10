@@ -26,7 +26,7 @@ class _UserFollowersViewState extends State<UserFollowersView> {
         isLoading = true;
         if (mounted) setState(() {});
 
-        final Map<String, dynamic>? result =
+        final Map<String, dynamic> result =
             await UserAuth().fetchCustomerFollowers(userName);
 
         if (result == null) {

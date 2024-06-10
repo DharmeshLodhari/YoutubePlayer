@@ -78,17 +78,15 @@ class _BarChartState extends State<BarChart> {
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
     return isLoading
-        ? Container(
-            child: Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Center(
-                child: Column(
-                  children: <Widget>[
-                    const SizedBox(height: 125.0),
-                    CircularLoadingIndicator(),
-                    const SizedBox(height: 125.0),
-                  ],
-                ),
+        ? Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Center(
+              child: Column(
+                children: <Widget>[
+                  const SizedBox(height: 125.0),
+                  CircularLoadingIndicator(),
+                  const SizedBox(height: 125.0),
+                ],
               ),
             ),
           )
@@ -193,7 +191,7 @@ class _BarChartState extends State<BarChart> {
   Widget noDataPresent() {
     return Padding(
         padding: const EdgeInsets.all(20.0),
-        child: Container(
+        child: SizedBox(
           height: 200,
           child: Center(
             child: Text(
@@ -237,21 +235,21 @@ class _BarState extends State<Bar> {
       },
       child: Column(
         children: <Widget>[
-          showAmount
-              ? Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8), color: blackFont),
-                  child: Text(
-                    moneyConverter(widget.amountSpent),
-                    style: const TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white),
-                  ),
-                )
-              : Container(height: 20),
+          if (showAmount)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8), color: blackFont),
+              child: Text(
+                moneyConverter(widget.amountSpent),
+                style: const TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white),
+              ),
+            )
+          else
+            Container(height: 20),
           const SizedBox(height: 6.0),
           Container(
             height: barHeight,

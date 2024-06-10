@@ -209,7 +209,7 @@ class SharedCartModel {
     /// add or update this item to the server
     if (withApiCall && addedOrUpdatedItem != null) {
       final BasketListModifierPayload data = _basketItems.toPayload(
-          addedOrUpdatedItem!,
+          addedOrUpdatedItem,
           actionType: BasketListModifierAction.increaseQty);
       if (data.payload.isNotEmpty) {
         SharedCartAuthService().addItemToSharedCart(id, data.payload);

@@ -4,7 +4,6 @@ import 'package:Slydo/screens/more_apps/review/tiles/review_tile.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -46,24 +45,17 @@ class _EventListState extends State<EventList> {
   }
 
   void _onReviewRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
-      final connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        eventCount = 0;
-        eventNext = "";
-        eventPrevious = "";
-        eventList = [];
-        debugPrint("Refresh called on reviews!!  ");
-        getReviewList();
-        _eventRefreshController.refreshCompleted();
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
-        _eventRefreshController.refreshCompleted();
-      }
-    });
+    if (await checkConnection(context)) {
+      eventCount = 0;
+      eventNext = "";
+      eventPrevious = "";
+      eventList = [];
+      debugPrint("Refresh called on reviews!!  ");
+      getReviewList();
+      _eventRefreshController.refreshCompleted();
+    } else {
+      _eventRefreshController.refreshCompleted();
+    }
   }
 
   @override

@@ -56,9 +56,11 @@ class _AddMoneyToSlydoTwoState extends State<AddMoneyToSlydoTwo> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        return true;
+    return PopScope(
+      onPopInvoked: (didPop) async {
+        if (didPop) {
+          return;
+        }
       },
       child: Scaffold(
         backgroundColor: Colors.white,
@@ -453,7 +455,7 @@ class _AddMoneyToSlydoTwoState extends State<AddMoneyToSlydoTwo> {
           size: 22,
         ),
         Text(
-          " " + moneyDisplayNormalizer(int.parse(amount)),
+          " ${moneyDisplayNormalizer(int.parse(amount))}",
           style: TextStyle(
               fontSize: 36, color: navyBlue, fontWeight: FontWeight.w700),
         ),

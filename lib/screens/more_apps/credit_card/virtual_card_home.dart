@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ui';
 
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
@@ -20,7 +19,6 @@ import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
@@ -76,7 +74,7 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
   final Map<int, FocusNode> _focusNodes = {};
   Timer? _debounce;
 
-  @protected
+  @override
   void initState() {
     getList();
     _scrollController.addListener(() {
@@ -577,7 +575,7 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
                       ),
                     const SizedBox(width: 5.0),
                     if (cardData.cardBrand == 'Visa')
-                      SizedBox.shrink()
+                      const SizedBox.shrink()
                     else
                       Column(
                         children: [
@@ -671,68 +669,65 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
 
   Widget _buildOtherView() {
     return SingleChildScrollView(
-      child: Container(
-        // margin: const EdgeInsets.symmetric(horizontal: 20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 10.0),
-            Container(
-              padding: const EdgeInsets.only(left: 20.0, right: 8.0),
-              child: Text(
-                appLocalization.quickActions,
-                style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                    color: HexColor("#151515")),
-                textAlign: TextAlign.left,
-              ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 10.0),
+          Container(
+            padding: const EdgeInsets.only(left: 20.0, right: 8.0),
+            child: Text(
+              appLocalization.quickActions,
+              style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: HexColor("#151515")),
+              textAlign: TextAlign.left,
             ),
-            const SizedBox(
-              height: 10,
-            ),
+          ),
+          const SizedBox(
+            height: 10,
+          ),
 
-            Container(
-                padding: const EdgeInsets.only(left: 8.0, right: 8.0),
-                child: _displayCardQuickActionButtons()),
-            const SizedBox(
-              height: 25,
-            ),
+          Container(
+              padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+              child: _displayCardQuickActionButtons()),
+          const SizedBox(
+            height: 25,
+          ),
 
-            //transactions and search
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  padding: const EdgeInsets.only(left: 20.0),
-                  child: Text(
-                    appLocalization.transaction,
-                    style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                        color: HexColor("#151515")),
-                    textAlign: TextAlign.left,
-                  ),
+          //transactions and search
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: const EdgeInsets.only(left: 20.0),
+                child: Text(
+                  appLocalization.transaction,
+                  style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      color: HexColor("#151515")),
+                  textAlign: TextAlign.left,
                 ),
-                Container(
-                    padding: const EdgeInsets.only(right: 20.0),
-                    child: _searchBtn()),
-              ],
-            ),
+              ),
+              Container(
+                  padding: const EdgeInsets.only(right: 20.0),
+                  child: _searchBtn()),
+            ],
+          ),
 
-            _buildTransactionList(),
-            const SizedBox(
-              height: 10,
-            ),
-          ],
-        ),
+          _buildTransactionList(),
+          const SizedBox(
+            height: 10,
+          ),
+        ],
       ),
     );
   }
 
   Widget _displayCardQuickActionButtons() {
-    final double opacity = 0.07;
+    const double opacity = 0.07;
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Row(
@@ -1037,19 +1032,12 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
   }
 
   void _onRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
-      final connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        _refresh();
-        _refreshController.refreshCompleted();
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
-        _refreshController.refreshCompleted();
-      }
-    });
+    if (await checkConnection(context)) {
+      _refresh();
+      _refreshController.refreshCompleted();
+    } else {
+      _refreshController.refreshCompleted();
+    }
   }
 
   void _refresh() {

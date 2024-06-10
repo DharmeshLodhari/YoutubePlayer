@@ -1,20 +1,18 @@
-import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/events/event_auth.dart';
 import 'package:Slydo/screens/more_apps/events/event_tile.dart';
 import 'package:Slydo/screens/more_apps/events/models/EventPoster.dart';
 import 'package:Slydo/screens/more_apps/events/models/PartialEventItem.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/custom_box_shadow.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-import '../messaging/chat/utils.dart';
 import 'models/CityData.dart';
 
 class EventExploreScreen extends StatefulWidget {
@@ -35,10 +33,10 @@ class _EventExploreScreenState extends State<EventExploreScreen> {
   List<PartialEventItem> eventList = [];
   bool isEventListLoading = false;
 
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
-  CarouselController _carouselController = CarouselController();
+  final CarouselController _carouselController = CarouselController();
 
   @override
   void initState() {
@@ -98,20 +96,12 @@ class _EventExploreScreenState extends State<EventExploreScreen> {
   }
 
   void _onRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
-      final connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        getResult();
-        _refreshController.refreshCompleted();
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
-
-        _refreshController.refreshCompleted();
-      }
-    });
+    if (await checkConnection(context)) {
+      getResult();
+      _refreshController.refreshCompleted();
+    } else {
+      _refreshController.refreshCompleted();
+    }
   }
 
   @override
@@ -272,7 +262,7 @@ class _EventExploreScreenState extends State<EventExploreScreen> {
   Widget eventCarouselSlider() {
     return Container(
       child: isSliderLoading
-          ? Container(
+          ? SizedBox(
               height: 180,
               child: Center(
                 child: CircularLoadingIndicator(),
@@ -316,63 +306,61 @@ class _EventExploreScreenState extends State<EventExploreScreen> {
   }
 
   Widget exploreByCity() {
-    return Container(
-      child: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text(
-                  "Explore by City",
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Text(
+                "Explore by City",
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 18,
+                  color: blackFont,
+                ),
+              ),
+              GestureDetector(
+                child: Text(
+                  "See all",
                   style: TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 18,
-                    color: blackFont,
-                  ),
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                      color: navyBlue),
                 ),
-                GestureDetector(
-                  child: Text(
-                    "See all",
-                    style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14,
-                        color: navyBlue),
-                  ),
-                  onTap: () {
-                    Navigator.of(context).pushNamed("/event-category");
-                  },
-                ),
-              ],
-            ),
+                onTap: () {
+                  Navigator.of(context).pushNamed("/event-category");
+                },
+              ),
+            ],
           ),
-          Container(
-            height: 210,
-            color: Colors.white,
-            child: isExploreByCityLoading
-                ? Center(
-                    child: CircularLoadingIndicator(),
-                  )
-                : SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Container(
-                      padding: const EdgeInsets.only(left: 16),
-                      child: Row(
-                        children: listOfCity
-                            .map(
-                              (cityData) => Container(
-                                margin: const EdgeInsets.only(right: 12),
-                                child: cityCard(cityData: cityData),
-                              ),
-                            )
-                            .toList(),
-                      ),
+        ),
+        Container(
+          height: 210,
+          color: Colors.white,
+          child: isExploreByCityLoading
+              ? Center(
+                  child: CircularLoadingIndicator(),
+                )
+              : SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Container(
+                    padding: const EdgeInsets.only(left: 16),
+                    child: Row(
+                      children: listOfCity
+                          .map(
+                            (cityData) => Container(
+                              margin: const EdgeInsets.only(right: 12),
+                              child: cityCard(cityData: cityData),
+                            ),
+                          )
+                          .toList(),
                     ),
                   ),
-          )
-        ],
-      ),
+                ),
+        )
+      ],
     );
   }
 
@@ -426,249 +414,244 @@ class _EventExploreScreenState extends State<EventExploreScreen> {
   }
 
   Widget nearByEvents() {
-    return Container(
-      child: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text(
-                  "Popular in London",
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Text(
+                "Popular in London",
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 18,
+                  color: blackFont,
+                ),
+              ),
+              GestureDetector(
+                child: Text(
+                  "See all",
                   style: TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 18,
-                    color: blackFont,
-                  ),
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                      color: navyBlue),
                 ),
-                GestureDetector(
-                  child: Text(
-                    "See all",
-                    style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14,
-                        color: navyBlue),
-                  ),
-                  onTap: () {
-                    Navigator.of(context).pushNamed("/event-category");
-                  },
-                ),
-              ],
-            ),
+                onTap: () {
+                  Navigator.of(context).pushNamed("/event-category");
+                },
+              ),
+            ],
           ),
-          Container(
-            color: Colors.white,
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            child: isPopularInLocationLoading
-                ? Container(
-                    height: 100,
-                    child: Center(
-                      child: CircularLoadingIndicator(),
-                    ),
-                  )
-                : SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Container(
-                      padding: const EdgeInsets.only(left: 16),
-                      child: Row(
-                        children: popularInLocation
-                            .map((element) => Container(
-                                  margin: const EdgeInsets.only(right: 12),
-                                  child: eventPoster(eventPoster: element),
-                                ))
-                            .toList(),
-                      ),
+        ),
+        Container(
+          color: Colors.white,
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          child: isPopularInLocationLoading
+              ? SizedBox(
+                  height: 100,
+                  child: Center(
+                    child: CircularLoadingIndicator(),
+                  ),
+                )
+              : SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Container(
+                    padding: const EdgeInsets.only(left: 16),
+                    child: Row(
+                      children: popularInLocation
+                          .map((element) => Container(
+                                margin: const EdgeInsets.only(right: 12),
+                                child: eventPoster(eventPoster: element),
+                              ))
+                          .toList(),
                     ),
                   ),
-          )
-        ],
-      ),
+                ),
+        )
+      ],
     );
   }
 
   Widget foodFestivalEvent({required String categoryName}) {
-    return Container(
-      child: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text(
-                  categoryName,
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Text(
+                categoryName,
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 18,
+                  color: blackFont,
+                ),
+              ),
+              GestureDetector(
+                child: Text(
+                  "See all",
                   style: TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 18,
-                    color: blackFont,
-                  ),
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                      color: navyBlue),
                 ),
-                GestureDetector(
-                  child: Text(
-                    "See all",
-                    style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14,
-                        color: navyBlue),
-                  ),
-                  onTap: () {
-                    Navigator.of(context).pushNamed(Routes.EVENT_CATEGORY);
-                  },
-                ),
-              ],
-            ),
+                onTap: () {
+                  Navigator.of(context).pushNamed(Routes.EVENT_CATEGORY);
+                },
+              ),
+            ],
           ),
-          Container(
-            color: Colors.white,
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.vertical,
-              child: Container(
-                padding: const EdgeInsets.only(left: 16, right: 16),
-                child: Column(
-                  children: [
-                    Container(
-                      height: 244,
-                      child: isEventListLoading
-                          ? Center(
-                              child: CircularLoadingIndicator(),
-                            )
-                          : CustomBoxShadow(
-                              child: Card(
-                                  elevation: 3,
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10)),
-                                  margin: EdgeInsets.zero,
-                                  shadowColor: boxShadowTwo,
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(10),
-                                    child: Column(
-                                      children: <Widget>[
-                                        Expanded(
-                                          child: InkWell(
-                                            child: CachedNetworkImage(
-                                              width: double.infinity,
-                                              imageUrl: eventList[0].image!,
-                                              errorWidget: imageErrorWidget,
-                                              fit: BoxFit.fill,
-                                              filterQuality: FilterQuality.high,
-                                            ),
-                                            onTap: () {
-                                              Navigator.of(context)
-                                                  .pushNamed("/event-detail");
-                                            },
+        ),
+        Container(
+          color: Colors.white,
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          child: SingleChildScrollView(
+            scrollDirection: Axis.vertical,
+            child: Container(
+              padding: const EdgeInsets.only(left: 16, right: 16),
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: 244,
+                    child: isEventListLoading
+                        ? Center(
+                            child: CircularLoadingIndicator(),
+                          )
+                        : CustomBoxShadow(
+                            child: Card(
+                                elevation: 3,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10)),
+                                margin: EdgeInsets.zero,
+                                shadowColor: boxShadowTwo,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(10),
+                                  child: Column(
+                                    children: <Widget>[
+                                      Expanded(
+                                        child: InkWell(
+                                          child: CachedNetworkImage(
+                                            width: double.infinity,
+                                            imageUrl: eventList[0].image!,
+                                            errorWidget: imageErrorWidget,
+                                            fit: BoxFit.fill,
+                                            filterQuality: FilterQuality.high,
                                           ),
+                                          onTap: () {
+                                            Navigator.of(context)
+                                                .pushNamed("/event-detail");
+                                          },
                                         ),
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 16, vertical: 0),
-                                          child: Row(
-                                            children: [
-                                              Expanded(
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
+                                      ),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 16, vertical: 0),
+                                        child: Row(
+                                          children: [
+                                            Expanded(
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    eventList[0].dateTime!,
+                                                    softWrap: false,
+                                                    overflow: TextOverflow.fade,
+                                                    style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      fontSize: 12,
+                                                      color: mateRed,
+                                                    ),
+                                                  ),
+                                                  const SizedBox(
+                                                    height: 2,
+                                                  ),
+                                                  Text(
+                                                    eventList[0].title!,
+                                                    softWrap: false,
+                                                    overflow: TextOverflow.fade,
+                                                    style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.w700,
+                                                      fontSize: 14,
+                                                      color: blackFont,
+                                                    ),
+                                                  ),
+                                                  const SizedBox(
+                                                    height: 2,
+                                                  ),
+                                                  Text(
+                                                    eventList[0]
+                                                        .shortDescription!,
+                                                    style: TextStyle(
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w400,
+                                                      color: darkGrey,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              height: 86,
+                                              child: Center(
+                                                child: Row(
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
                                                   children: [
+                                                    getUserCurrencySymbol(
+                                                        context),
                                                     Text(
-                                                      eventList[0].dateTime!,
-                                                      softWrap: false,
-                                                      overflow:
-                                                          TextOverflow.fade,
-                                                      style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.w600,
-                                                        fontSize: 12,
-                                                        color: mateRed,
-                                                      ),
-                                                    ),
-                                                    const SizedBox(
-                                                      height: 2,
-                                                    ),
-                                                    Text(
-                                                      eventList[0].title!,
-                                                      softWrap: false,
-                                                      overflow:
-                                                          TextOverflow.fade,
+                                                      eventList[0].price!,
                                                       style: TextStyle(
                                                         fontWeight:
                                                             FontWeight.w700,
                                                         fontSize: 14,
-                                                        color: blackFont,
-                                                      ),
-                                                    ),
-                                                    const SizedBox(
-                                                      height: 2,
-                                                    ),
-                                                    Text(
-                                                      eventList[0]
-                                                          .shortDescription!,
-                                                      style: TextStyle(
-                                                        fontSize: 14,
-                                                        fontWeight:
-                                                            FontWeight.w400,
-                                                        color: darkGrey,
+                                                        color: navyBlue,
                                                       ),
                                                     ),
                                                   ],
                                                 ),
                                               ),
-                                              Container(
-                                                height: 86,
-                                                child: Center(
-                                                  child: Row(
-                                                    mainAxisSize:
-                                                        MainAxisSize.min,
-                                                    children: [
-                                                      getUserCurrencySymbol(
-                                                          context),
-                                                      Text(
-                                                        eventList[0].price!,
-                                                        style: TextStyle(
-                                                          fontWeight:
-                                                              FontWeight.w700,
-                                                          fontSize: 14,
-                                                          color: navyBlue,
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              )
-                                            ],
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                  )),
-                            ),
-                    ),
-                    const SizedBox(
-                      height: 12,
-                    ),
-                    isEventListLoading
-                        ? Container(
-                            height: 180,
-                            child: Center(
-                              child: CircularLoadingIndicator(),
-                            ),
-                          )
-                        : Column(
-                            children: eventList
-                                .map((partialEvent) => Container(
-                                      margin: const EdgeInsets.only(bottom: 12),
-                                      child: EventTileWithHeart(
-                                          partialEvent: partialEvent),
-                                    ))
-                                .toList(),
+                                            )
+                                          ],
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                )),
                           ),
-                  ],
-                ),
+                  ),
+                  const SizedBox(
+                    height: 12,
+                  ),
+                  if (isEventListLoading)
+                    SizedBox(
+                      height: 180,
+                      child: Center(
+                        child: CircularLoadingIndicator(),
+                      ),
+                    )
+                  else
+                    Column(
+                      children: eventList
+                          .map((partialEvent) => Container(
+                                margin: const EdgeInsets.only(bottom: 12),
+                                child: EventTileWithHeart(
+                                    partialEvent: partialEvent),
+                              ))
+                          .toList(),
+                    ),
+                ],
               ),
             ),
-          )
-        ],
-      ),
+          ),
+        )
+      ],
     );
   }
 
@@ -677,7 +660,7 @@ class _EventExploreScreenState extends State<EventExploreScreen> {
       onTap: () {
         Navigator.of(context).pushNamed("/event-detail");
       },
-      child: Container(
+      child: SizedBox(
         height: 132,
         width: 218,
         child: Stack(

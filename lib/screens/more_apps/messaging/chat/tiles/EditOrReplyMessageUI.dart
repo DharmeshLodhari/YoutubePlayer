@@ -915,7 +915,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  messageDecoderWithEmoji("${envelope.title ?? ""}")!,
+                  messageDecoderWithEmoji(envelope.title ?? "")!,
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,

@@ -71,7 +71,7 @@ class PlaceModal {
 
   Map<String, dynamic> toJson() {
     // ignore: unnecessary_new
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
     data['business_status'] = businessStatus;
     data['formatted_address'] = formattedAddress;
     data['icon'] = icon;

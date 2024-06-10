@@ -37,12 +37,14 @@ class _VerifyResetDeviceOTPScreenState
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () {
-        if (FocusScope.of(context).hasFocus) {
-          FocusScope.of(context).unfocus();
+    return PopScope(
+      onPopInvoked: (didPop) {
+        if (didPop) {
+          if (FocusScope.of(context).hasFocus) {
+            FocusScope.of(context).unfocus();
+          }
+          return;
         }
-        return Future.value(true);
       },
       child: Scaffold(
         backgroundColor: whiteBackground,

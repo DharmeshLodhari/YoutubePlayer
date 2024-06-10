@@ -59,16 +59,14 @@ class _PhotoViewerState extends State<PhotoViewer> {
         backgroundDecoration: const BoxDecoration(color: Colors.black),
         loadingBuilder: (context, event) {
           if (event != null) {
-            return Container(
-              child: Center(
-                child: CircularProgressIndicator(
-                  value: ((100 * event.cumulativeBytesLoaded) /
-                          event.expectedTotalBytes!) /
-                      100,
-                  strokeWidth: 2.5,
-                  valueColor: AlwaysStoppedAnimation(navyBlue),
-                  backgroundColor: Colors.transparent,
-                ),
+            return Center(
+              child: CircularProgressIndicator(
+                value: ((100 * event.cumulativeBytesLoaded) /
+                        event.expectedTotalBytes!) /
+                    100,
+                strokeWidth: 2.5,
+                valueColor: AlwaysStoppedAnimation(navyBlue),
+                backgroundColor: Colors.transparent,
               ),
             );
           }

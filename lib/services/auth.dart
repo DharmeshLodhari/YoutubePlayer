@@ -35,7 +35,7 @@ class AuthService {
   final Duration timeOutDuration = const Duration(seconds: 12);
   final String timeOutErrorMessage = "Server is not responding";
 
-  DatabaseHelper _db = DatabaseHelper();
+  final DatabaseHelper _db = DatabaseHelper();
   // Location location = Location();
 
   static const int API_CALL_RETRY_COUNT = 5;
@@ -171,7 +171,7 @@ class AuthService {
       uri = "${AppConfig.baseUrl}/api/v1/user/auth/get-staff-token/";
     }
 
-    final uuid = const Uuid();
+    const uuid = Uuid();
     final transactionId = uuid.v4();
     final headers = {
       "TransactionId": transactionId,
@@ -243,7 +243,7 @@ class AuthService {
       if (jsonData["detail"] != null) {
         return Future.error("${jsonData["detail"]}");
       } else {
-        return Future.error("${response.body}");
+        return Future.error(response.body);
       }
     } catch (e) {
       return Future.error("Something went wrong, please try again.");
@@ -377,11 +377,11 @@ class AuthService {
 
     Jwt? jwt = await _db.getJwt();
 
-    final String? expirationTime = jwt?.expiration ?? null;
+    final String? expirationTime = jwt?.expiration;
 
     final startTime = DateTime.now();
 
-    if ((jwt?.access ?? null) != null && (jwt?.access ?? "") != "") {
+    if ((jwt?.access) != null && (jwt?.access ?? "") != "") {
       isNewTokenNeeded = true;
     }
 
@@ -406,7 +406,7 @@ class AuthService {
 
     final String bearer = "Bearer ${jwt!.access!}";
     // log("$bearer");
-    final uuid = const Uuid();
+    const uuid = Uuid();
     final transactionId = uuid.v4();
 
     // debugPrint('BEARER :: $bearer');
@@ -488,7 +488,7 @@ class AuthService {
       if (!response.body.contains('results')) {
         final Map<String, dynamic> result = {"product": []};
 
-        debugPrint('CALLING OTHER check 2 ---> ${result}');
+        debugPrint('CALLING OTHER check 2 ---> $result');
 
         return result;
       }
@@ -584,7 +584,7 @@ class AuthService {
   }
 
   Map getNonAuthHeader() {
-    final uuid = const Uuid();
+    const uuid = Uuid();
     final transactionId = uuid.v4();
     final headers = {
       "Content-type": "application/json",

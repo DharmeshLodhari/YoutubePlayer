@@ -13,7 +13,6 @@ import 'package:Slydo/widget/customized_passcode_sheet/bottomsheet_passcode.dart
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
@@ -48,23 +47,16 @@ class _MixCartItemState extends State<MixCartItem> {
 
   void _onRefresh() async {
     //check network connectivity and if true then refresh the list
-    Connectivity().checkConnectivity().then((value) {
-      final connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        //clear old items
-        basketBloc.items.clear();
-        basketBloc.total = 0;
-        //fetch items again
-        initializeShoppingCart();
-        _refreshController.refreshCompleted();
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)?.internetConnectionNotAvailable);
-        _refreshController.refreshCompleted();
-      }
-    });
+    if (await checkConnection(context)) {
+      //clear old items
+      basketBloc.items.clear();
+      basketBloc.total = 0;
+      //fetch items again
+      initializeShoppingCart();
+      _refreshController.refreshCompleted();
+    } else {
+      _refreshController.refreshCompleted();
+    }
   }
 
   void initializeShoppingCart() async {
@@ -531,10 +523,11 @@ class _MixCartItemState extends State<MixCartItem> {
   void addNoteDialog() {
     showMaterialDialog<String>(
       context: context,
-      child: WillPopScope(
-        onWillPop: () async {
-          Navigator.pop(context, 'cancel');
-          return false;
+      child: PopScope(
+        onPopInvoked: (didPop) async {
+          if (didPop) {
+            Navigator.pop(context, 'cancel');
+          }
         },
         child: AlertDialog(
           titlePadding:

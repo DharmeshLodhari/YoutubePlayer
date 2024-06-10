@@ -47,8 +47,9 @@ class _ListCategoryProductState extends State<ListCategoryProduct> {
   }
 
   void loadUrl() {
-    if (widget.nextUrl != null && widget.nextUrl != "")
+    if (widget.nextUrl != null && widget.nextUrl != "") {
       nextUrl = widget.nextUrl;
+    }
   }
 
   void getProducts() async {

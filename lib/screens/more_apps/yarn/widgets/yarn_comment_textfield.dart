@@ -22,7 +22,6 @@ import 'package:Slydo/utils/storage_permission.dart';
 import 'package:Slydo/widget/customized_popup_menu.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
@@ -152,12 +151,12 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
   int? productOrServiceCount = 0;
   String? productOrServiceNext = "";
   String? productOrServicePrevious = "";
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
-  ScrollController _scrollController = new ScrollController();
+  final ScrollController _scrollController = ScrollController();
 
   TextEditingController? searchItemTextController;
-  GlobalKey _key = LabeledGlobalKey("itemSearchTypeSelectionKey");
+  final GlobalKey _key = LabeledGlobalKey("itemSearchTypeSelectionKey");
   CustomizedPopUpMenu? itemSearchTypeSelectionMenu;
   int selectedMenuItemIndex = 0;
   bool isPopMenuOpen = false;
@@ -171,7 +170,7 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
   UserPost? userPostMode;
   YarnDashboardBloc? yarnDashboardBloc;
 
-  FocusNode _focus = FocusNode();
+  final FocusNode _focus = FocusNode();
 
   void _onFocusChange() {
     if (_focus.hasFocus) {
@@ -783,25 +782,17 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
   }
 
   void _onRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
-      final connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        productOrServiceCount = 0;
-        productOrServiceNext = "";
-        productOrServicePrevious = "";
-        searchedProductAndService = [];
-        noSearchedItem = false;
-        getProductOrServiceList();
-        _refreshController.refreshCompleted();
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
-
-        _refreshController.refreshCompleted();
-      }
-    });
+    if (await checkConnection(context)) {
+      productOrServiceCount = 0;
+      productOrServiceNext = "";
+      productOrServicePrevious = "";
+      searchedProductAndService = [];
+      noSearchedItem = false;
+      getProductOrServiceList();
+      _refreshController.refreshCompleted();
+    } else {
+      _refreshController.refreshCompleted();
+    }
   }
 
   Widget pullToRefresh() {
@@ -898,7 +889,7 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
   }
 
   Widget _buildAddImages() {
-    return Container(
+    return SizedBox(
       height: 100,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
@@ -968,7 +959,7 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
   }
 
   Widget showImage(int index) {
-    return Container(
+    return SizedBox(
       height: 100,
       child: Stack(
         children: <Widget>[
@@ -1029,7 +1020,7 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
     );
   }
 
-  pickFileFromMedia() async {
+  Future<void> pickFileFromMedia() async {
     // List<Media>? res = await ImagesPicker.pick(
     //   count: 4,
     //   pickType: PickType.all,
@@ -1252,7 +1243,7 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
     );
   }
 
-  sendMessageBtn() {
+  Widget sendMessageBtn() {
     return widget.isLoading!
         ? Padding(
             padding: const EdgeInsets.only(right: 12.0),
@@ -1277,7 +1268,7 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
           );
   }
 
-  textMessageField() {
+  Widget textMessageField() {
     return TextFormField(
       textAlignVertical: TextAlignVertical.center,
       onEditingComplete: widget.function,
@@ -1312,38 +1303,36 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
   }
 
   Widget checkIfProductService() {
-    return Container(
-      child: Column(
-        children: [
-          Stack(
-            children: <Widget>[
-              getPreviewContainer(),
-              Positioned(
-                right: 20,
-                top: 10,
-                child: InkWell(
-                  onTap: () {
-                    yarnDashboardBloc!.productService = null;
-                    if (mounted) setState(() {});
-                  },
-                  child: Container(
-                    height: 25,
-                    width: 25,
-                    margin: const EdgeInsets.only(right: 6, top: 6),
-                    decoration: BoxDecoration(
-                        color: HexColor("#000000"), shape: BoxShape.circle),
-                    child: Icon(
-                      Icons.close_outlined,
-                      color: white,
-                      size: 15,
-                    ),
+    return Column(
+      children: [
+        Stack(
+          children: <Widget>[
+            getPreviewContainer(),
+            Positioned(
+              right: 20,
+              top: 10,
+              child: InkWell(
+                onTap: () {
+                  yarnDashboardBloc!.productService = null;
+                  if (mounted) setState(() {});
+                },
+                child: Container(
+                  height: 25,
+                  width: 25,
+                  margin: const EdgeInsets.only(right: 6, top: 6),
+                  decoration: BoxDecoration(
+                      color: HexColor("#000000"), shape: BoxShape.circle),
+                  child: Icon(
+                    Icons.close_outlined,
+                    color: white,
+                    size: 15,
                   ),
                 ),
               ),
-            ],
-          ),
-        ],
-      ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 
@@ -1543,7 +1532,7 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
     );
   }
 
-  checkHintText(int selectedMenuItemIndex) {
+  String checkHintText(int selectedMenuItemIndex) {
     if (selectedMenuItemIndex == 0) {
       return 'Search blog';
     } else if (selectedMenuItemIndex == 1) {
@@ -1553,6 +1542,7 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
     } else if (selectedMenuItemIndex == 3) {
       return 'Search user';
     }
+    return "";
   }
 }
 

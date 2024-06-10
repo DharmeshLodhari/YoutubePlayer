@@ -91,9 +91,11 @@ class _PutMoneyInEnvelopeState extends State<PutMoneyInEnvelope> {
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
 
-    return WillPopScope(
-      onWillPop: () async {
-        return true;
+    return PopScope(
+      onPopInvoked: (didPop) async {
+        if (didPop) {
+          return;
+        }
       },
       child: ScaffoldMessenger(
         key: _putMoneyInEnvelopeScaffoldMessenger,
@@ -136,7 +138,7 @@ class _PutMoneyInEnvelopeState extends State<PutMoneyInEnvelope> {
     var avatarImage;
     var qrCodeImage;
     if (customerProfile != null) {
-      avatarImage = Container(
+      avatarImage = SizedBox(
         height: 48,
         width: 48,
         child: ClipOval(
@@ -225,72 +227,68 @@ class _PutMoneyInEnvelopeState extends State<PutMoneyInEnvelope> {
                           border: Border.all(color: iconBtnGrey, width: 1)),
                       child: Form(
                         key: _formKey,
-                        child: Container(
-                          child: Column(
-                            children: <Widget>[
-                              getDisplayCard(),
-                              Container(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 20),
-                                child: Column(
-                                  children: [
+                        child: Column(
+                          children: <Widget>[
+                            getDisplayCard(),
+                            Container(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 20),
+                              child: Column(
+                                children: [
+                                  const SizedBox(
+                                    height: 20,
+                                  ),
+                                  getEnvelopeTitleAndMessage(),
+                                  const SizedBox(
+                                    height: 20,
+                                  ),
+                                  displayAmountField(),
+                                  const SizedBox(
+                                    height: 20,
+                                  ),
+                                  getTitleField(),
+                                  const SizedBox(
+                                    height: 20,
+                                  ),
+                                  getMessageField(),
+                                  const SizedBox(
+                                    height: 20,
+                                  ),
+                                  if (errorMessage == "")
+                                    Container()
+                                  else
+                                    Text(
+                                      errorMessage,
+                                      style: TextStyle(
+                                          color: mateRed,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16),
+                                    ),
+                                  if (errorMessage == "")
+                                    Container()
+                                  else
                                     const SizedBox(
                                       height: 20,
                                     ),
-                                    getEnvelopeTitleAndMessage(),
-                                    const SizedBox(
-                                      height: 20,
-                                    ),
-                                    displayAmountField(),
-                                    const SizedBox(
-                                      height: 20,
-                                    ),
-                                    getTitleField(),
-                                    const SizedBox(
-                                      height: 20,
-                                    ),
-                                    getMessageField(),
-                                    const SizedBox(
-                                      height: 20,
-                                    ),
-                                    if (errorMessage == "")
-                                      Container()
-                                    else
-                                      Text(
-                                        errorMessage,
-                                        style: TextStyle(
-                                            color: mateRed,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 16),
-                                      ),
-                                    if (errorMessage == "")
-                                      Container()
-                                    else
-                                      const SizedBox(
-                                        height: 20,
-                                      ),
-                                  ],
-                                ),
+                                ],
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
                   ),
-                  Container(
-                    child: Column(
-                      children: [
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        getSubmitButton(),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        getConditionText(),
-                      ],
-                    ),
+                  Column(
+                    children: [
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      getSubmitButton(),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      getConditionText(),
+                    ],
                   ),
                 ],
               ),
@@ -308,37 +306,35 @@ class _PutMoneyInEnvelopeState extends State<PutMoneyInEnvelope> {
   }
 
   Widget getEnvelopeTitleAndMessage() {
-    return Container(
-      child: Column(
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Expanded(
-                  flex: 1,
-                  child: Text(
-                    "Title",
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-                  )),
-              Expanded(flex: 4, child: Text("${envelope!.title}")),
-            ],
-          ),
-          const SizedBox(
-            height: 8,
-          ),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Expanded(
-                  child: Text(
-                "Message",
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-              )),
-              Expanded(flex: 4, child: Text("${envelope!.message}")),
-            ],
-          ),
-        ],
-      ),
+    return Column(
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Expanded(
+                flex: 1,
+                child: Text(
+                  "Title",
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                )),
+            Expanded(flex: 4, child: Text("${envelope!.title}")),
+          ],
+        ),
+        const SizedBox(
+          height: 8,
+        ),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Expanded(
+                child: Text(
+              "Message",
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+            )),
+            Expanded(flex: 4, child: Text("${envelope!.message}")),
+          ],
+        ),
+      ],
     );
   }
 

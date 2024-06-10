@@ -108,10 +108,12 @@ class _ComposeMessageState extends State<ComposeMessage> {
     userBloc = Provider.of<UserBloc>(context);
     _dashboardBloc = Provider.of<DashboardBloc>(context);
 
-    return WillPopScope(
-      onWillPop: () async {
-        messageReceiver = null;
-        return true;
+    return PopScope(
+      onPopInvoked: (didPop) async {
+        if (didPop) {
+          messageReceiver = null;
+          return;
+        }
       },
       child: Scaffold(
           backgroundColor: Colors.white,
@@ -205,14 +207,12 @@ class _ComposeMessageState extends State<ComposeMessage> {
             ),
             Expanded(
                 flex: 3,
-                child: Container(
-                  child: Column(
-                    children: [
-                      flexibleSpace(),
-                      getSubmitButton(),
-                      flexibleSpace(flex: 2),
-                    ],
-                  ),
+                child: Column(
+                  children: [
+                    flexibleSpace(),
+                    getSubmitButton(),
+                    flexibleSpace(flex: 2),
+                  ],
                 )),
           ],
         ),

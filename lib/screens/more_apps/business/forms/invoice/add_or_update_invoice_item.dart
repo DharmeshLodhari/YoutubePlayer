@@ -78,9 +78,11 @@ class _AddOrUpdateInvoiceItemState extends State<AddOrUpdateInvoiceItem> {
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
     addInvoiceBloc = Provider.of<AddInvoiceBloc>(context);
-    return WillPopScope(
-      onWillPop: () async {
-        return true;
+    return PopScope(
+      onPopInvoked: (didPop) async {
+        if (didPop) {
+          return;
+        }
       },
       child: Scaffold(
         backgroundColor: Colors.white,

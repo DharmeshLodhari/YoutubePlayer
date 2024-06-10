@@ -1,5 +1,5 @@
-import '../models/PropertyAmenity.dart';
-import '../models/PropertyType.dart';
+import '../models/property_amenity.dart';
+import '../models/property_type.dart';
 
 List<PropertyType> propertyTypes = [
   PropertyType(

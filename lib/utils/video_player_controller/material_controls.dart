@@ -76,7 +76,7 @@ class _MaterialControlsState extends State<MaterialControls> {
                       ? 0.0
                       : 1.0,
                   duration: const Duration(milliseconds: 10),
-                  child: Container(
+                  child: SizedBox(
                     height: double.infinity,
                     width: double.infinity,
                     child: widget.posterUrl!.startsWith('http')
@@ -263,7 +263,7 @@ class _MaterialControlsState extends State<MaterialControls> {
           : AnimatedOpacity(
               opacity: _hideStuff ? 0.0 : 1.0,
               duration: const Duration(milliseconds: 300),
-              child: Container(
+              child: SizedBox(
                 height: barHeight,
                 child: Center(
                   child: Icon(

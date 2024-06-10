@@ -6,7 +6,6 @@ import 'package:Slydo/screens/more_apps/service_hub/models/active_job_listing.da
 import 'package:Slydo/screens/more_apps/service_hub/models/list_of_categories.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/debouncer_widget.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:lottie/lottie.dart';
@@ -79,19 +78,12 @@ class _JobsDashboardState extends State<JobsDashboard> {
   final _debouncer = Debouncer(milliseconds: 500);
 
   void _onRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
-      final connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        _refreshPage();
-        _refreshController.refreshCompleted();
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
-        _refreshController.refreshCompleted();
-      }
-    });
+    if (await checkConnection(context)) {
+      _refreshPage();
+      refreshController.refreshCompleted();
+    } else {
+      refreshController.refreshCompleted();
+    }
   }
 
   void getActiveJobListing({category}) async {
@@ -725,26 +717,18 @@ class _JobsDashboardState extends State<JobsDashboard> {
   }
 
   void onRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
-      final connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        categoryCount = 0;
-        categoryNext = "";
-        categoryPrevious = "";
-        searchedCategoryList = [];
-        isItemLoading = false;
-        noSearchedItem = false;
-        getCategorySearchedList();
-        refreshController.refreshCompleted();
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
-
-        refreshController.refreshCompleted();
-      }
-    });
+    if (await checkConnection(context)) {
+      categoryCount = 0;
+      categoryNext = "";
+      categoryPrevious = "";
+      searchedCategoryList = [];
+      isItemLoading = false;
+      noSearchedItem = false;
+      getCategorySearchedList();
+      refreshController.refreshCompleted();
+    } else {
+      refreshController.refreshCompleted();
+    }
   }
 
   Widget pullToRefresh() {

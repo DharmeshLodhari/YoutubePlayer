@@ -15,9 +15,9 @@ class Location {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['latitude'] = this.latitude;
-    data['longitude'] = this.longitude;
-    data['name'] = this.name;
+    data['latitude'] = latitude;
+    data['longitude'] = longitude;
+    data['name'] = name;
     return data;
   }
 }

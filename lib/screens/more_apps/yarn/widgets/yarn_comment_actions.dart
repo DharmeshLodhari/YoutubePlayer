@@ -260,7 +260,7 @@ class _YarnCommentActionsState extends State<YarnCommentActions> {
                       'defaultReferenceText': 'Payment from  "${truncateString(
                         str: widget.comment.comment!,
                         lengthToTruncateAt: 8,
-                      )}\" comment'
+                      )}" comment'
                     },
                   );
                   // } else {

@@ -78,7 +78,7 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
 
         linkToBePreview = linkData['links'][0];
         if (!linkToBePreview!.contains("http")) {
-          linkToBePreview = "http://" + linkToBePreview!;
+          linkToBePreview = "http://${linkToBePreview!}";
         }
       }
     }
@@ -313,7 +313,7 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
                     width: 4,
                   ),
                   Text(
-                    '${getGetYarnQuestionDateTime(widget.yarnComment.createdAt!)}',
+                    getGetYarnQuestionDateTime(widget.yarnComment.createdAt!),
                     overflow: TextOverflow.fade,
                     style: TextStyle(
                         fontSize: 12,
@@ -607,12 +607,10 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(
-          child: Icon(
-            Icons.push_pin,
-            color: greySecondaryYarn,
-            size: 15,
-          ),
+        Icon(
+          Icons.push_pin,
+          color: greySecondaryYarn,
+          size: 15,
         ),
         const SizedBox(
           width: 5,

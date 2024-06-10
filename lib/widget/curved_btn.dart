@@ -36,7 +36,7 @@ class CurvedButton extends StatelessWidget {
     backgroundColor ??= navyBlue;
     textColor ??= Colors.white;
     text ??= "Button";
-    return Container(
+    return SizedBox(
       width: width ?? 100.w,
       height: height,
       child: MaterialButton(
@@ -105,7 +105,7 @@ class OutlineCurvedButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: width ?? 100.w,
       height: 42,
       child: MaterialButton(

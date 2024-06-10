@@ -46,27 +46,22 @@ class _QRCodeViewState extends State<QRCodeView> {
   AppConfigurationModel? appConfigurationModel;
 
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
-  var qrText = "";
   QRViewController? controller;
-  late DashboardBloc _dashboardBloc;
+  // late DashboardBloc _dashboardBloc;
 
   @override
   void initState() {
     appConfigurationModel = getIt<AppConfigurationBloc>().appConfigurationModel;
 
     canShowDialogBox = true;
-    isRequest = arguments != null
-        ? arguments['isRequest'] != null
-            ? arguments['isRequest']
-            : false
-        : false;
+    isRequest = arguments != null ? arguments['isRequest'] ?? false : false;
 
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    _dashboardBloc = Provider.of<DashboardBloc>(context);
+    // _dashboardBloc = Provider.of<DashboardBloc>(context);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -76,7 +71,7 @@ class _QRCodeViewState extends State<QRCodeView> {
           AppBar(
             backgroundColor: Colors.transparent,
             elevation: 0.0,
-            actions: <Widget>[],
+            actions: const <Widget>[],
           ),
           Align(
             alignment: Alignment.bottomCenter,

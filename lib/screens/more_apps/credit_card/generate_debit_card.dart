@@ -17,7 +17,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class GenerateDebitCard extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
   GenerateDebitCard({this.arguments, Key? key}) : super(key: key);
 
@@ -58,9 +58,11 @@ class GenerateDebitCardState extends State<GenerateDebitCard> {
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
 
-    return WillPopScope(
-      onWillPop: () async {
-        return true;
+    return PopScope(
+      onPopInvoked: (didPop) async {
+        if (didPop) {
+          return;
+        }
       },
       child: Scaffold(
         backgroundColor: Colors.white,
@@ -189,53 +191,48 @@ class GenerateDebitCardState extends State<GenerateDebitCard> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  Container(
-                    child: Column(
-                      children: [
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        canCashOut(nairaCheck, balance)
-                            ? getSubmitButton()
-                            : Container(
-                                child: Center(
-                                    child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 16.0),
-                                        child: Text.rich(TextSpan(
-                                            text: AppLocalization.of(context)!
-                                                .availableFund,
-                                            style: TextStyle(
-                                                fontSize: 12,
-                                                color: blackFont,
-                                                fontWeight: FontWeight.w600),
-                                            children: <InlineSpan>[
-                                              TextSpan(
-                                                text: double.parse(
-                                                            moneyDisplayNormalizer(
-                                                                displayPossibleCashOutAmount(
-                                                                    balance))) >=
-                                                        35.00
-                                                    ? worldCurrencies[userBloc!
-                                                            .user.currency!]! +
-                                                        moneyDisplayNormalizer(
-                                                            displayPossibleCashOutAmount(
-                                                                balance))
-                                                    : '${worldCurrencies[userBloc!.user.currency!]!}0.00',
-                                                style: TextStyle(
-                                                    fontSize: 12,
-                                                    color: blackFont,
-                                                    fontFamily: "Inter",
-                                                    fontWeight:
-                                                        FontWeight.w600),
-                                              )
-                                            ])))),
-                              ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                      ],
-                    ),
+                  Column(
+                    children: [
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      if (canCashOut(nairaCheck, balance))
+                        getSubmitButton()
+                      else
+                        Center(
+                            child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 16.0),
+                                child: Text.rich(TextSpan(
+                                    text: AppLocalization.of(context)!
+                                        .availableFund,
+                                    style: TextStyle(
+                                        fontSize: 12,
+                                        color: blackFont,
+                                        fontWeight: FontWeight.w600),
+                                    children: <InlineSpan>[
+                                      TextSpan(
+                                        text: double.parse(moneyDisplayNormalizer(
+                                                    displayPossibleCashOutAmount(
+                                                        balance))) >=
+                                                35.00
+                                            ? worldCurrencies[
+                                                    userBloc!.user.currency!]! +
+                                                moneyDisplayNormalizer(
+                                                    displayPossibleCashOutAmount(
+                                                        balance))
+                                            : '${worldCurrencies[userBloc!.user.currency!]!}0.00',
+                                        style: TextStyle(
+                                            fontSize: 12,
+                                            color: blackFont,
+                                            fontFamily: "Inter",
+                                            fontWeight: FontWeight.w600),
+                                      )
+                                    ])))),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -335,7 +332,7 @@ class GenerateDebitCardState extends State<GenerateDebitCard> {
     );
   }
 
-  createCard() async {
+  Future<void> createCard() async {
     if (_formKey.currentState!.validate()) {
       BottomSheetPassCode(
           context: context,
@@ -390,7 +387,7 @@ class GenerateDebitCardState extends State<GenerateDebitCard> {
     await PaymentAndBankingAuth().getAccountBalance().then((value) {
       final data = value!;
       final spendableBalance = data["spendable_balance"];
-      final actualBalance = data["balance"];
+      // final actualBalance = data["balance"];
 
       balance = spendableBalance;
       // isLoading = false;

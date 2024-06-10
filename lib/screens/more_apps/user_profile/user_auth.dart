@@ -241,9 +241,9 @@ class UserAuth extends AuthService {
     final _getData = await getDeviceInfo();
     data.addAll(_body);
 
-    _getData.entries.forEach((element) {
+    for (var element in _getData.entries) {
       data[element.key] = element.value.toString();
-    });
+    }
 
     final _data = jsonEncode(data);
 
@@ -564,7 +564,7 @@ class UserAuth extends AuthService {
       if (userAbout != null) {
         data = userAbout.toJson();
       }
-      debugPrint("USER DATA -->  ${data}");
+      debugPrint("USER DATA -->  $data");
 
       data['nickname'] = nickName;
       final _data = jsonEncode(data);

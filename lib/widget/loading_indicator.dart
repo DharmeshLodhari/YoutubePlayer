@@ -37,9 +37,7 @@ class CircularLoadingIndicator extends StatefulWidget {
 class _CircularLoadingIndicatorState extends State<CircularLoadingIndicator> {
   @override
   Widget build(BuildContext context) {
-    if (widget.color == null) {
-      widget.color = navyBlue;
-    }
+    widget.color ??= navyBlue;
 
     return CircularProgressIndicator(
       strokeWidth: 2.5,

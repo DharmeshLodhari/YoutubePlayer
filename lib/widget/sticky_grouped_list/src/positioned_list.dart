@@ -163,7 +163,7 @@ class _PositionedListState extends State<PositionedList> {
 
   List<Widget> getItems() {
     final List<Widget> items = [];
-    if (widget.positionedIndex > 0)
+    if (widget.positionedIndex > 0) {
       items.add(SliverPadding(
         padding: _leadingSliverPadding,
         sliver: SliverList(
@@ -181,6 +181,7 @@ class _PositionedListState extends State<PositionedList> {
           ),
         ),
       ));
+    }
 
     items.add(SliverPadding(
       key: _centerKey,
@@ -199,7 +200,7 @@ class _PositionedListState extends State<PositionedList> {
     ));
 
     if (widget.positionedIndex >= 0 &&
-        widget.positionedIndex < widget.itemCount - 1)
+        widget.positionedIndex < widget.itemCount - 1) {
       items.add(SliverPadding(
         padding: _trailingSliverPadding,
         sliver: SliverList(
@@ -217,6 +218,7 @@ class _PositionedListState extends State<PositionedList> {
           ),
         ),
       ));
+    }
 
     return items;
   }

@@ -511,14 +511,12 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
   Widget _buildSingleImage({required BuildContext context}) {
     return SizedBox(
       width: double.infinity,
-      child: Container(
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(10),
-          child: CachedNetworkImage(
-            imageUrl: yarnQuestionForChatModel.media!.first.file!,
-            fit: BoxFit.cover,
-            errorWidget: imageErrorWidget,
-          ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(10),
+        child: CachedNetworkImage(
+          imageUrl: yarnQuestionForChatModel.media!.first.file!,
+          fit: BoxFit.cover,
+          errorWidget: imageErrorWidget,
         ),
       ),
     );
@@ -872,7 +870,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
       // debugPrint(ch);
     });
 
-    list.forEach((data) {
+    for (var data in list) {
       if (data.toString().contains('.') &&
           !data.toString().trim().contains('@') &&
           !data.toString().trim().contains('..') &&
@@ -886,7 +884,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
       } else {
         newString = '$newString $data';
       }
-    });
+    }
 
     if (isUrlPresent) {
       return Column(

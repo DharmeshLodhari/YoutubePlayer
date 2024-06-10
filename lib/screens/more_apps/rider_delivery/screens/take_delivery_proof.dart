@@ -86,9 +86,11 @@ class _TakeDeliveryProofState extends State<TakeDeliveryProof> {
       bottom: Platform.isIOS ? true : false,
       top: false,
       color: Colors.white,
-      child: WillPopScope(
-        onWillPop: () async {
-          return true;
+      child: PopScope(
+        onPopInvoked: (didPop) async {
+          if (didPop) {
+            return;
+          }
         },
         child: Scaffold(
           appBar: _buildAppbar() as PreferredSizeWidget?,

@@ -29,7 +29,7 @@ import '../../../../routes/route_constants.dart';
 import '../shopping_auth.dart';
 
 class AddProduct extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
   AddProduct({Key? key, this.arguments}) : super(key: key);
 
@@ -268,9 +268,11 @@ class _AddProductState extends State<AddProduct> {
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
-    return WillPopScope(
-      onWillPop: () async {
-        return true;
+    return PopScope(
+      onPopInvoked: (didPop) async {
+        if (didPop) {
+          return;
+        }
       },
       child: Scaffold(
         backgroundColor: Colors.white,

@@ -31,7 +31,7 @@ import 'moments_service.dart';
 
 class PreviewMomentScreen extends StatefulWidget {
   final String filePath;
-  var arguments;
+  final dynamic arguments;
 
   PreviewMomentScreen({Key? key, required this.filePath, this.arguments})
       : super(key: key);
@@ -483,7 +483,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
                                     focusNode.unfocus();
                                     await Future.delayed(
                                         const Duration(milliseconds: 200));
-                                    final bool? _pickedColor =
+                                    final bool? pickColor =
                                         await showDialog<bool>(
                                       context: context,
                                       builder: (context) => AlertDialog(
@@ -505,8 +505,8 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
                                         ),
                                       ),
                                     );
-                                    if (_pickedColor != null &&
-                                        _pickedColor == true) {
+                                    if (pickColor != null &&
+                                        pickColor == true) {
                                       // Calling setState here so that ONLY if they click the select button
                                       // in the dialog should the color of the container change.
 

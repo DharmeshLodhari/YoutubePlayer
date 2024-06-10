@@ -36,67 +36,62 @@ class _CablePlanDetailState extends State<CablePlanDetail> {
   }
 
   Widget scaffoldBody() {
-    return Container(
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const SizedBox(
-              height: 16,
-            ),
-            Text(
-              plan!.name!,
-              style: TextStyle(
-                  fontSize: 26, fontWeight: FontWeight.w700, color: blackFont),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  "₦",
-                  style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      color: navyBlue,
-                      fontFamily: "Inter"),
-                ),
-                Text(
-                  plan!.price!.replaceAll("₦", ""),
-                  style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      color: navyBlue),
-                ),
-              ],
-            ),
-            const SizedBox(
-              height: 36,
-            ),
-            Card(
-              elevation: 0,
-              color: lightGrey,
-              margin: const EdgeInsets.symmetric(horizontal: 20),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          const SizedBox(
+            height: 16,
+          ),
+          Text(
+            plan!.name!,
+            style: TextStyle(
+                fontSize: 26, fontWeight: FontWeight.w700, color: blackFont),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                "₦",
+                style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: navyBlue,
+                    fontFamily: "Inter"),
               ),
-              shadowColor: lightGrey,
+              Text(
+                plan!.price!.replaceAll("₦", ""),
+                style: TextStyle(
+                    fontSize: 16, fontWeight: FontWeight.w700, color: navyBlue),
+              ),
+            ],
+          ),
+          const SizedBox(
+            height: 36,
+          ),
+          Card(
+            elevation: 0,
+            color: lightGrey,
+            margin: const EdgeInsets.symmetric(horizontal: 20),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            shadowColor: lightGrey,
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 36),
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: lightGrey, width: 0.2)),
               child: Container(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 24, horizontal: 36),
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: lightGrey, width: 0.2)),
-                child: Container(
-                  child: getPlanFeatures(plan: plan!),
-                ),
+                child: getPlanFeatures(plan: plan!),
               ),
             ),
-            const SizedBox(
-              height: 36,
-            ),
-            getSubscribeBtn()
-          ],
-        ),
+          ),
+          const SizedBox(
+            height: 36,
+          ),
+          getSubscribeBtn()
+        ],
       ),
     );
   }

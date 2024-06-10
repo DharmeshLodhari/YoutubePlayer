@@ -8,7 +8,6 @@ import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/custom_box_shadow.dart';
 import 'package:Slydo/widget/item_display_service_for_discount.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -50,7 +49,7 @@ class _UserServicesDiscountState extends State<UserServicesDiscount> {
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       userBloc = Provider.of<UserBloc>(context, listen: false);
-      this.getServiceList();
+      getServiceList();
     });
 
     _serviceScrollController.addListener(() {
@@ -67,31 +66,24 @@ class _UserServicesDiscountState extends State<UserServicesDiscount> {
   void toggleSelectAll() {
     isSelectAll = !isSelectAll;
 
-    serviceList.forEach((element) {
+    for (var element in serviceList) {
       element.isChecked = isSelectAll;
-    });
+    }
     if (mounted) setState(() {});
   }
 
   void _onServiceRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
-      final connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        serviceCount = 0;
-        serviceNext = "";
-        servicePrevious = "";
-        serviceList = [];
-        debugPrint("Refresh called on services!!  ");
-        getServiceList();
-        _serviceRefreshController.refreshCompleted();
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
-        _serviceRefreshController.refreshCompleted();
-      }
-    });
+    if (await checkConnection(context)) {
+      serviceCount = 0;
+      serviceNext = "";
+      servicePrevious = "";
+      serviceList = [];
+      debugPrint("Refresh called on services!!  ");
+      getServiceList();
+      _serviceRefreshController.refreshCompleted();
+    } else {
+      _serviceRefreshController.refreshCompleted();
+    }
   }
 
   void getServiceList() async {

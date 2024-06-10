@@ -6,7 +6,6 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/custom_box_shadow.dart';
 import 'package:Slydo/widget/item_display_card.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shimmer/shimmer.dart';
@@ -40,29 +39,24 @@ class _UserServiceListState extends State<UserServiceList> {
   bool noServiceInList = false;
 
   void _onServiceRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
-      final connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        serviceCount = 0;
-        serviceNext = "";
-        servicePrevious = "";
-        serviceList = [];
-        debugPrint("Refresh called on Service!!  ");
-        getServiceList();
+    if (await checkConnection(context)) {
+      serviceCount = 0;
+      serviceNext = "";
+      servicePrevious = "";
+      serviceList = [];
+      debugPrint("Refresh called on Service!!  ");
+      getServiceList();
+      _servicesRefreshController.refreshCompleted();
+    } else {
+      setState(() {
         _servicesRefreshController.refreshCompleted();
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
-        _servicesRefreshController.refreshCompleted();
-      }
-    });
+      });
+    }
   }
 
   @override
   void initState() {
-    this.getServiceList();
+    getServiceList();
     _serviceScrollController.addListener(() {
       if (_serviceScrollController.position.pixels ==
               _serviceScrollController.position.maxScrollExtent &&
@@ -99,11 +93,11 @@ class _UserServiceListState extends State<UserServiceList> {
   }
 
   Widget _buildList() {
-    if (noServiceInList)
+    if (noServiceInList) {
       return NoItemInList(
         msg: AppLocalization.of(context)!.noProducts,
       );
-    else
+    } else {
       return ListView(
         children: [
           Container(child: _buildServiceList()),
@@ -135,6 +129,7 @@ class _UserServiceListState extends State<UserServiceList> {
             const SizedBox.shrink(),
         ],
       );
+    }
   }
 
   Widget _buildServiceList() {

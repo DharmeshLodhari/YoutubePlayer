@@ -100,28 +100,26 @@ class AppTutorialController {
         contents: [
           TargetContent(
               align: ContentAlign.bottom,
-              child: Container(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    const Text(
-                      "User Profile",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          fontSize: 20.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  const Text(
+                    "User Profile",
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        fontSize: 20.0),
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.only(top: 10.0),
+                    child: Text(
+                      "Click here to navigate to user profile.",
+                      style: TextStyle(color: Colors.white),
                     ),
-                    const Padding(
-                      padding: EdgeInsets.only(top: 10.0),
-                      child: Text(
-                        "Click here to navigate to user profile.",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                    nextButton()
-                  ],
-                ),
+                  ),
+                  nextButton()
+                ],
               ))
         ]);
   }

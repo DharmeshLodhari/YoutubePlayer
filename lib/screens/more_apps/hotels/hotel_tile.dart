@@ -39,7 +39,7 @@ class HotelTile extends StatelessWidget {
                   width: 16,
                 ),
                 Expanded(
-                  child: Container(
+                  child: SizedBox(
                     height: 86,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -104,7 +104,7 @@ class _HotelTileWithHeartState extends State<HotelTileWithHeart> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        Container(
+        SizedBox(
           width: MediaQuery.of(context).size.width - 40,
           child: CustomBoxShadow(
             child: Card(
@@ -309,7 +309,7 @@ class _HotelRoomImagesTileState extends State<HotelRoomImagesTile> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: MediaQuery.of(context).size.width - 40,
       child: CustomBoxShadow(
         child: Card(
@@ -654,112 +654,110 @@ class CityItemCard extends StatelessWidget {
 class ReviewTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    height: 20,
-                    width: 20,
-                    child: ClipOval(
-                      child: CachedNetworkImage(
-                        imageUrl:
-                            "https://d2qp0siotla746.cloudfront.net/img/use-cases/profile-picture/template_3.jpg",
-                        fit: BoxFit.fill,
-                        width: double.infinity,
-                        height: double.infinity,
-                      ),
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                SizedBox(
+                  height: 20,
+                  width: 20,
+                  child: ClipOval(
+                    child: CachedNetworkImage(
+                      imageUrl:
+                          "https://d2qp0siotla746.cloudfront.net/img/use-cases/profile-picture/template_3.jpg",
+                      fit: BoxFit.fill,
+                      width: double.infinity,
+                      height: double.infinity,
                     ),
                   ),
-                  const SizedBox(
-                    width: 12,
-                  ),
-                  Text(
-                    "Jamé Smith",
-                    style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: blackFont),
-                  )
-                ],
-              ),
-              Text(
-                "20 Aug",
-                style: TextStyle(
-                    fontSize: 12, fontWeight: FontWeight.w400, color: darkGrey),
-              )
-            ],
-          ),
-          const SizedBox(
-            height: 16,
-          ),
-          Row(
-            children: [
-              Icon(
-                SlydoAppIcon.star,
-                color: starYellow,
-                size: 11,
-              ),
-              const SizedBox(
-                width: 4,
-              ),
-              Icon(
-                SlydoAppIcon.star,
-                color: starYellow,
-                size: 11,
-              ),
-              const SizedBox(
-                width: 4,
-              ),
-              Icon(
-                SlydoAppIcon.star,
-                color: starYellow,
-                size: 11,
-              ),
-              const SizedBox(
-                width: 4,
-              ),
-              Icon(
-                SlydoAppIcon.star,
-                color: starYellow,
-                size: 11,
-              ),
-              const SizedBox(
-                width: 4,
-              ),
-              Icon(
-                SlydoAppIcon.star,
-                color: greyBorderColor,
-                size: 11,
-              ),
-              const SizedBox(
-                width: 4,
-              ),
-            ],
-          ),
-          const SizedBox(
-            height: 8,
-          ),
-          Text(
-            "Very knowledgeable about all the history, really friendly, always smile, and always up for a chat.",
-            style: TextStyle(
-                fontSize: 14, fontWeight: FontWeight.w400, color: blackFont),
-            textAlign: TextAlign.justify,
-          ),
-          const SizedBox(
-            height: 8,
-          ),
-          Divider(
-            thickness: 1,
-            height: 4,
-            color: dividerColor,
-          ),
-        ],
-      ),
+                ),
+                const SizedBox(
+                  width: 12,
+                ),
+                Text(
+                  "Jamé Smith",
+                  style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: blackFont),
+                )
+              ],
+            ),
+            Text(
+              "20 Aug",
+              style: TextStyle(
+                  fontSize: 12, fontWeight: FontWeight.w400, color: darkGrey),
+            )
+          ],
+        ),
+        const SizedBox(
+          height: 16,
+        ),
+        Row(
+          children: [
+            Icon(
+              SlydoAppIcon.star,
+              color: starYellow,
+              size: 11,
+            ),
+            const SizedBox(
+              width: 4,
+            ),
+            Icon(
+              SlydoAppIcon.star,
+              color: starYellow,
+              size: 11,
+            ),
+            const SizedBox(
+              width: 4,
+            ),
+            Icon(
+              SlydoAppIcon.star,
+              color: starYellow,
+              size: 11,
+            ),
+            const SizedBox(
+              width: 4,
+            ),
+            Icon(
+              SlydoAppIcon.star,
+              color: starYellow,
+              size: 11,
+            ),
+            const SizedBox(
+              width: 4,
+            ),
+            Icon(
+              SlydoAppIcon.star,
+              color: greyBorderColor,
+              size: 11,
+            ),
+            const SizedBox(
+              width: 4,
+            ),
+          ],
+        ),
+        const SizedBox(
+          height: 8,
+        ),
+        Text(
+          "Very knowledgeable about all the history, really friendly, always smile, and always up for a chat.",
+          style: TextStyle(
+              fontSize: 14, fontWeight: FontWeight.w400, color: blackFont),
+          textAlign: TextAlign.justify,
+        ),
+        const SizedBox(
+          height: 8,
+        ),
+        Divider(
+          thickness: 1,
+          height: 4,
+          color: dividerColor,
+        ),
+      ],
     );
   }
 }
@@ -767,75 +765,73 @@ class ReviewTile extends StatelessWidget {
 class PartnerTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Row(
-        children: [
-          Container(
-            height: 32,
-            width: 32,
-            child: ClipOval(
-              child: CachedNetworkImage(
-                imageUrl:
-                    "https://d2qp0siotla746.cloudfront.net/img/use-cases/profile-picture/template_3.jpg",
-                fit: BoxFit.fill,
-                width: double.infinity,
-                height: double.infinity,
-              ),
+    return Row(
+      children: [
+        SizedBox(
+          height: 32,
+          width: 32,
+          child: ClipOval(
+            child: CachedNetworkImage(
+              imageUrl:
+                  "https://d2qp0siotla746.cloudfront.net/img/use-cases/profile-picture/template_3.jpg",
+              fit: BoxFit.fill,
+              width: double.infinity,
+              height: double.infinity,
             ),
           ),
-          const SizedBox(
-            width: 16,
-          ),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(
-                  "Bond street dojo",
-                  style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: blackFont),
-                ),
-                const SizedBox(
-                  width: 8,
-                ),
-                Row(
-                  children: [
-                    Icon(
-                      SlydoAppIcon.star,
-                      color: starYellow,
-                      size: 11,
-                    ),
-                    const SizedBox(
-                      width: 4,
-                    ),
-                    Text(
-                      "7.8 • Renter Friendly",
-                      style: TextStyle(
-                          fontSize: 12,
-                          color: blackFont,
-                          fontWeight: FontWeight.w400),
-                    )
-                  ],
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(
-            width: 16,
-          ),
-          Column(
+        ),
+        const SizedBox(
+          width: 16,
+        ),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Icon(
-                Icons.arrow_forward_ios_rounded,
-                color: navyBlue,
-                size: 16,
-              )
+              Text(
+                "Bond street dojo",
+                style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: blackFont),
+              ),
+              const SizedBox(
+                width: 8,
+              ),
+              Row(
+                children: [
+                  Icon(
+                    SlydoAppIcon.star,
+                    color: starYellow,
+                    size: 11,
+                  ),
+                  const SizedBox(
+                    width: 4,
+                  ),
+                  Text(
+                    "7.8 • Renter Friendly",
+                    style: TextStyle(
+                        fontSize: 12,
+                        color: blackFont,
+                        fontWeight: FontWeight.w400),
+                  )
+                ],
+              ),
             ],
           ),
-        ],
-      ),
+        ),
+        const SizedBox(
+          width: 16,
+        ),
+        Column(
+          children: <Widget>[
+            Icon(
+              Icons.arrow_forward_ios_rounded,
+              color: navyBlue,
+              size: 16,
+            )
+          ],
+        ),
+      ],
     );
   }
 }

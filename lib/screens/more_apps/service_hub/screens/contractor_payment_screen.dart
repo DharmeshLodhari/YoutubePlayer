@@ -27,7 +27,7 @@ import '../models/jobs.dart';
 
 class ContractorPaymentScreen extends StatefulWidget {
   ContractorPaymentScreen({Key? key, this.arguments}) : super(key: key);
-  var arguments;
+  final dynamic arguments;
 
   @override
   State<ContractorPaymentScreen> createState() =>

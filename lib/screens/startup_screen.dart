@@ -46,23 +46,24 @@ class _StartupScreenState extends State<StartupScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        final bool? result = await showDialogBox(
-          context: context,
-          actionOneBgColor: mateRed,
-          actionOneTextColor: Colors.white,
-          actionTwoBgColor: greyBorderColor,
-          actionTwoTextColor: blackFont,
-          title: "Exit app",
-          description: "Are you sure want to exit app?",
-          actionOneText: AppLocalization.of(context)!.exit,
-          actionTwoText: AppLocalization.of(context)!.cancel,
-        );
-        if (result != null && result) {
-          SystemChannels.platform.invokeMethod<void>('SystemNavigator.pop');
+    return PopScope(
+      onPopInvoked: (didPop) async {
+        if (didPop) {
+          final bool? result = await showDialogBox(
+            context: context,
+            actionOneBgColor: mateRed,
+            actionOneTextColor: Colors.white,
+            actionTwoBgColor: greyBorderColor,
+            actionTwoTextColor: blackFont,
+            title: "Exit app",
+            description: "Are you sure want to exit app?",
+            actionOneText: AppLocalization.of(context)!.exit,
+            actionTwoText: AppLocalization.of(context)!.cancel,
+          );
+          if (result != null && result) {
+            SystemChannels.platform.invokeMethod<void>('SystemNavigator.pop');
+          }
         }
-        return false;
       },
       child: Scaffold(
           backgroundColor: navyBlue,

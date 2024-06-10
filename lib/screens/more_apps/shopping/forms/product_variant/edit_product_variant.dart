@@ -23,7 +23,7 @@ import '../../../../../widget/rounded_background_icon.dart';
 import '../../shopping_auth.dart';
 
 class EditProductVariant extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
   EditProductVariant({this.arguments, Key? key}) : super(key: key);
 
@@ -190,9 +190,11 @@ class _EditProductVariantState extends State<EditProductVariant> {
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
-    return WillPopScope(
-      onWillPop: () async {
-        return true;
+    return PopScope(
+      onPopInvoked: (didPop) async {
+        if (didPop) {
+          return;
+        }
       },
       child: Scaffold(
         backgroundColor: Colors.white,

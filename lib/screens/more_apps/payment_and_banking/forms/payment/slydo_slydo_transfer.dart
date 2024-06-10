@@ -35,7 +35,7 @@ import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
 class SlydoSlydoTransfer extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
   final Function(bool)? callback;
 
   SlydoSlydoTransfer({this.arguments, this.callback});
@@ -117,9 +117,8 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
     isFromMoment = widget.arguments != null
         ? widget.arguments['isFromMoment'] ?? false
         : false;
-    conversationId = widget.arguments != null
-        ? widget.arguments['conversationId'] ?? null
-        : null;
+    conversationId =
+        widget.arguments != null ? widget.arguments['conversationId'] : null;
     product = widget.arguments != null ? widget.arguments['product'] : null;
     service = widget.arguments != null ? widget.arguments['service'] : null;
     itemIndex = widget.arguments != null ? widget.arguments['itemIndex'] : null;
@@ -274,7 +273,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
         enableMargin: true,
       );
     }
-    return SizedBox(
+    return const SizedBox(
       height: 10,
       width: 10,
     );
@@ -538,28 +537,26 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
           if (canDoSlydoTransfer(amount!, currentBalance?.toDouble() ?? 0))
             getSubmitButton()
           else
-            Container(
-              child: Center(
-                  child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 16.0),
-                      child: Text.rich(TextSpan(
-                          text: AppLocalization.of(context)!.minimumTransfer,
-                          style: TextStyle(
-                              fontSize: 12,
-                              color: blackFont,
-                              fontWeight: FontWeight.w600),
-                          children: <InlineSpan>[
-                            TextSpan(
-                              text: worldCurrencies[userBloc.user.currency!]! +
-                                  moneyDisplayNormalizer(availableTransfer()),
-                              style: TextStyle(
-                                  fontSize: 12,
-                                  color: blackFont,
-                                  fontFamily: "Inter",
-                                  fontWeight: FontWeight.w600),
-                            )
-                          ])))),
-            ),
+            Center(
+                child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 16.0),
+                    child: Text.rich(TextSpan(
+                        text: AppLocalization.of(context)!.minimumTransfer,
+                        style: TextStyle(
+                            fontSize: 12,
+                            color: blackFont,
+                            fontWeight: FontWeight.w600),
+                        children: <InlineSpan>[
+                          TextSpan(
+                            text: worldCurrencies[userBloc.user.currency!]! +
+                                moneyDisplayNormalizer(availableTransfer()),
+                            style: TextStyle(
+                                fontSize: 12,
+                                color: blackFont,
+                                fontFamily: "Inter",
+                                fontWeight: FontWeight.w600),
+                          )
+                        ])))),
         ],
 
         // getSubmitButton(),
@@ -627,7 +624,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
         },
       );
     }
-    return SizedBox(
+    return const SizedBox(
       height: 1,
       width: 1,
     );
@@ -1421,7 +1418,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
       try {
         basketBloc.removeItemFromCart(basketBloc.items[itemIndex!]);
       } catch (e) {
-        debugPrint("SendPayment PopFromShopping cart : " + e.toString());
+        debugPrint("SendPayment PopFromShopping cart : $e");
       }
     }
   }

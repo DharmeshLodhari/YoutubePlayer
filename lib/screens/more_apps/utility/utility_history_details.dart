@@ -54,9 +54,11 @@ class _UtilityHistoryDetailScreenState
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        return true;
+    return PopScope(
+      onPopInvoked: (didPop) async {
+        if (didPop) {
+          return;
+        }
       },
       child: Scaffold(
         backgroundColor: Colors.white,
@@ -136,22 +138,20 @@ class _UtilityHistoryDetailScreenState
                     'assets/images/utility_history_details_background_card.png',
                   ),
                   SingleChildScrollView(
-                    child: Container(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 12.0),
-                        child: Column(
-                          children: [
-                            Row(
-                              children: [
-                                displayUtilityImage(),
-                                const SizedBox(width: 10),
-                                displayUtilityName(),
-                              ],
-                            ),
-                            const SizedBox(height: 12),
-                            displayUtilityHistoryBody(),
-                          ],
-                        ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 12.0),
+                      child: Column(
+                        children: [
+                          Row(
+                            children: [
+                              displayUtilityImage(),
+                              const SizedBox(width: 10),
+                              displayUtilityName(),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                          displayUtilityHistoryBody(),
+                        ],
                       ),
                     ),
                   ),

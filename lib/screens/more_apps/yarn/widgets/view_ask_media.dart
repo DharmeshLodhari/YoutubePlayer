@@ -91,9 +91,11 @@ class _ViewAskMediaState extends State<ViewAskMedia> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: WillPopScope(
-        onWillPop: () async {
-          return Future.value(true);
+      child: PopScope(
+        onPopInvoked: (didPop) async {
+          if (didPop) {
+            return;
+          }
         },
         child: Scaffold(
           backgroundColor: Colors.black,
@@ -104,37 +106,35 @@ class _ViewAskMediaState extends State<ViewAskMedia> {
   }
 
   Widget scaffoldBody() {
-    return Container(
-      child: Column(
-        children: [
-          Expanded(
-              child: Stack(
-            children: [
-              getMediaItem(),
-              Positioned(
-                top: 4,
-                left: 4,
-                child: InkWell(
-                  child: ClipOval(
-                    child: Container(
-                      height: 36,
-                      width: 36,
-                      child: const Icon(
-                        Icons.arrow_back_ios_rounded,
-                        color: Colors.white,
-                        size: 18,
-                      ),
+    return Column(
+      children: [
+        Expanded(
+            child: Stack(
+          children: [
+            getMediaItem(),
+            Positioned(
+              top: 4,
+              left: 4,
+              child: InkWell(
+                child: const ClipOval(
+                  child: SizedBox(
+                    height: 36,
+                    width: 36,
+                    child: Icon(
+                      Icons.arrow_back_ios_rounded,
+                      color: Colors.white,
+                      size: 18,
                     ),
                   ),
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
                 ),
+                onTap: () {
+                  Navigator.pop(context);
+                },
               ),
-            ],
-          )),
-        ],
-      ),
+            ),
+          ],
+        )),
+      ],
     );
   }
 
@@ -147,10 +147,8 @@ class _ViewAskMediaState extends State<ViewAskMedia> {
     }
     if (type == "video") {
       return isLoading
-          ? Container(
-              child: Center(
-                child: CircularLoadingIndicator(),
-              ),
+          ? Center(
+              child: CircularLoadingIndicator(),
             )
           : Chewie(
               controller: _chewieController!,

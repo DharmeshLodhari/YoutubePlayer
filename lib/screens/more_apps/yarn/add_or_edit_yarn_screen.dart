@@ -25,7 +25,6 @@ import 'package:Slydo/screens/more_apps/yarn/widgets/ask_enable_comment_payment.
 import 'package:Slydo/screens/more_apps/yarn/widgets/ask_mention_view.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/create_media_screen.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
@@ -40,7 +39,6 @@ import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dialogs/flutter_dialogs.dart';
@@ -136,7 +134,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
   String? productOrServicePrevious = "";
   final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
-  final ScrollController _scrollController = new ScrollController();
+  final ScrollController _scrollController = ScrollController();
 
   TextEditingController? searchItemTextController;
   final GlobalKey _key = LabeledGlobalKey("itemSearchTypeSelectionKey");
@@ -298,9 +296,11 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     itemSearchTypeSelectionMenu!.onChange = menuItemSelectionChange;
     itemSearchTypeSelectionMenu!.menuState = menuStateChange;
 
-    return WillPopScope(
-      onWillPop: () async {
-        return checkShowBackDialog(context);
+    return PopScope(
+      onPopInvoked: (didPop) async {
+        if (didPop) {
+          return checkShowBackDialog(context);
+        }
       },
       child: Scaffold(
         backgroundColor: Colors.white,
@@ -1302,7 +1302,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     _showListAlert(context);
   }
 
-  _showListAlert(BuildContext context) {
+  void _showListAlert(BuildContext context) {
     showPlatformDialog(
       context: context,
       builder: (_) => BasicDialogAlert(
@@ -1873,67 +1873,65 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
   }
 
   Widget searchBox() {
-    return Container(
-      child: Theme(
-        data: Theme.of(context).copyWith(
-          textSelectionTheme: const TextSelectionThemeData()
-              .copyWith(selectionHandleColor: navyBlue),
+    return Theme(
+      data: Theme.of(context).copyWith(
+        textSelectionTheme: const TextSelectionThemeData()
+            .copyWith(selectionHandleColor: navyBlue),
+      ),
+      child: TextFormField(
+        key: searchItemTextFormField,
+        controller: searchItemTextController,
+        style: TextStyle(
+          fontSize: 16,
+          color: blackFont,
+          fontWeight: FontWeight.w600,
         ),
-        child: TextFormField(
-          key: searchItemTextFormField,
-          controller: searchItemTextController,
-          style: TextStyle(
-            fontSize: 16,
-            color: blackFont,
-            fontWeight: FontWeight.w600,
+        cursorWidth: 1.5,
+        cursorColor: navyBlue,
+        decoration: InputDecoration(
+          hintText: checkHintText(selectedMenuItemIndex),
+          fillColor: Colors.white,
+          filled: true,
+          contentPadding: const EdgeInsets.symmetric(vertical: 10),
+          prefixIcon: searchTypeSelection(),
+          prefix: const Padding(
+            padding: EdgeInsets.only(left: 12),
           ),
-          cursorWidth: 1.5,
-          cursorColor: navyBlue,
-          decoration: InputDecoration(
-            hintText: checkHintText(selectedMenuItemIndex),
-            fillColor: Colors.white,
-            filled: true,
-            contentPadding: const EdgeInsets.symmetric(vertical: 10),
-            prefixIcon: searchTypeSelection(),
-            prefix: const Padding(
-              padding: EdgeInsets.only(left: 12),
-            ),
-            suffixIcon: searchIcon(),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(
-                color: dividerColor,
-                width: 1.0,
-              ),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(
-                color: navyBlue,
-                width: 1.0,
-              ),
-            ),
-            errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(
-                color: dividerColor,
-                width: 1.0,
-              ),
-            ),
-            focusedErrorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(
-                color: dividerColor,
-                width: 1.0,
-              ),
+          suffixIcon: searchIcon(),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(
+              color: dividerColor,
+              width: 1.0,
             ),
           ),
-          onFieldSubmitted: (val) {
-            if (mounted) setState(() {});
-            FocusScope.of(context).unfocus();
-            _onRefresh();
-          },
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(
+              color: navyBlue,
+              width: 1.0,
+            ),
+          ),
+          errorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(
+              color: dividerColor,
+              width: 1.0,
+            ),
+          ),
+          focusedErrorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(
+              color: dividerColor,
+              width: 1.0,
+            ),
+          ),
         ),
+        onFieldSubmitted: (val) {
+          if (mounted) setState(() {});
+          FocusScope.of(context).unfocus();
+          _onRefresh();
+        },
       ),
     );
   }
@@ -2167,25 +2165,19 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
   }
 
   void _onRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
-      final connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        productOrServiceCount = 0;
-        productOrServiceNext = "";
-        productOrServicePrevious = "";
-        searchedProductAndService = [];
-        noSearchedItem = false;
-        getProductOrServiceList();
+    if (await checkConnection(context)) {
+      productOrServiceCount = 0;
+      productOrServiceNext = "";
+      productOrServicePrevious = "";
+      searchedProductAndService = [];
+      noSearchedItem = false;
+      getProductOrServiceList();
+      _refreshController.refreshCompleted();
+    } else {
+      setState(() {
         _refreshController.refreshCompleted();
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
-
-        _refreshController.refreshCompleted();
-      }
-    });
+      });
+    }
   }
 
   Widget pullToRefresh() {
@@ -2477,7 +2469,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     }
   }
 
-  checkHintText(int selectedMenuItemIndex) {
+  String checkHintText(int selectedMenuItemIndex) {
     if (selectedMenuItemIndex == 0) {
       return 'Search blog';
     } else if (selectedMenuItemIndex == 1) {
@@ -2487,9 +2479,10 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     } else if (selectedMenuItemIndex == 3) {
       return 'Search user';
     }
+    return "";
   }
 
-  buildCreateMediaScreen() {
+  Future<void> buildCreateMediaScreen() {
     return NavigationUtil.push(context,
         screen: CreateMediaScreen(
           imageCount: existingMediaList.length + newMediaList.length,
@@ -2518,7 +2511,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
         ));
   }
 
-  Future<bool> checkShowBackDialog(BuildContext context) async {
+  Future<void> checkShowBackDialog(BuildContext context) async {
     if (yarnDashboardBloc!.productService != null ||
         textController!.text.isNotEmpty ||
         newMediaList.isNotEmpty ||
@@ -2539,11 +2532,12 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
           yarnDashboardBloc!.productService == null;
         }
         Navigator.of(context).pop();
+      } else {
+        return Future.value(false);
       }
-      return false;
     } else {
       Navigator.of(context).pop();
-      return true;
+      return Future.value(true);
     }
   }
 }

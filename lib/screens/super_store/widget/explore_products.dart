@@ -3,7 +3,6 @@ import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/super_store/super_store_industry.dart';
 import 'package:Slydo/screens/super_store/widget/explore_single_product_card.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
@@ -23,11 +22,11 @@ class _ExploreProductsState extends State<ExploreProducts> {
   List<Product> result = [];
   bool isLoading = false;
 
-  getRowTitle(headers) async {
+  Future<void> getRowTitle(headers) async {
     isLoading = true;
     if (mounted) setState(() {});
     for (var item in headers['results']) {
-      final Product product = await ShoppingAuthService().createProduct(item);
+      final Product product = ShoppingAuthService().createProduct(item);
       result.add(product);
     }
     isLoading = false;

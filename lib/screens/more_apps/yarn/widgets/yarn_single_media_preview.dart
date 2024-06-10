@@ -46,11 +46,9 @@ class YarnSingleMediaPreview extends StatelessWidget {
                 imageUrl: mediaType == 'video' ? imagePoster ?? '' : imageUrl,
                 fit: BoxFit.cover,
                 errorWidget: imageErrorWidget,
-                progressIndicatorBuilder: (context, url, progress) => Container(
-                  child: Center(
-                    child: CircularProgressIndicator(
-                      color: yarnBlack,
-                    ),
+                progressIndicatorBuilder: (context, url, progress) => Center(
+                  child: CircularProgressIndicator(
+                    color: yarnBlack,
                   ),
                 ),
               ),
@@ -88,7 +86,7 @@ class YarnSingleMediaPreview extends StatelessWidget {
         ],
       );
     }
-    return Container(
+    return SizedBox(
       height: (MediaQuery.of(context).size.width - 32) / 2,
       width: (MediaQuery.of(context).size.width - 32) / 2,
       child: Container(
@@ -112,11 +110,9 @@ class YarnSingleMediaPreview extends StatelessWidget {
                   height: double.infinity,
                   width: double.infinity,
                   errorWidget: imageErrorWidget,
-                  progressIndicatorBuilder: (context, url, progress) => Container(
-                    child: Center(
-                      child: CircularProgressIndicator(
-                        color: yarnBlack,
-                      ),
+                  progressIndicatorBuilder: (context, url, progress) => Center(
+                    child: CircularProgressIndicator(
+                      color: yarnBlack,
                     ),
                   ),
                 ),

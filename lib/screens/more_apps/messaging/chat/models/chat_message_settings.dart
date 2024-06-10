@@ -32,21 +32,18 @@ class ChatMessageSettings {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['playIncomingMessageSound'] = this.playIncomingMessageSound;
-    data['playOutgoingMessageSound'] = this.playOutgoingMessageSound;
-    data['accountBalanceVisibility'] = this.accountBalanceVisibility;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['playIncomingMessageSound'] = playIncomingMessageSound;
+    data['playOutgoingMessageSound'] = playOutgoingMessageSound;
+    data['accountBalanceVisibility'] = accountBalanceVisibility;
     return data;
   }
 
   Map<String, dynamic> toDBJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['playIncomingMessageSound'] =
-        this.playIncomingMessageSound == true ? 1 : 0;
-    data['playOutgoingMessageSound'] =
-        this.playOutgoingMessageSound == true ? 1 : 0;
-    data['accountBalanceVisibility'] =
-        this.accountBalanceVisibility == true ? 1 : 0;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['playIncomingMessageSound'] = playIncomingMessageSound == true ? 1 : 0;
+    data['playOutgoingMessageSound'] = playOutgoingMessageSound == true ? 1 : 0;
+    data['accountBalanceVisibility'] = accountBalanceVisibility == true ? 1 : 0;
     return data;
   }
 }

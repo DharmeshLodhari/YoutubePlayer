@@ -66,7 +66,7 @@ class CustomizedAlert {
                     Theme.of(context).dialogBackgroundColor,
                 shape: style.alertBorder ?? _defaultShape(),
                 titlePadding: const EdgeInsets.all(0.0),
-                title: Container(
+                title: SizedBox(
                   width: MediaQuery.of(context).size.width - 40,
                   child: Center(
                     child: content ??
@@ -161,35 +161,32 @@ class CustomizedAlert {
 
 // Returns alert image for icon
   Widget? _getImage() {
-    return roundedBackgroundIcon != null
-        ? roundedBackgroundIcon
-        : image != null
-            ? Container(
-                child: ClipOval(
-                  child: Image.network(
-                    image ?? "",
-                    height: 170,
-                    width: 170,
-                    fit: BoxFit.fill,
-                    filterQuality: FilterQuality.high,
-                    cacheHeight: 170,
-                    cacheWidth: 170,
-                    frameBuilder: imageFrameBuilder,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Image.network(
-                          defaultImage,
-                          colorBlendMode: BlendMode.darken,
-                          fit: BoxFit.fill,
-                          filterQuality: FilterQuality.high,
-                        ),
-                      );
-                    },
-                  ),
+    return roundedBackgroundIcon ??
+        (image != null
+            ? ClipOval(
+                child: Image.network(
+                  image ?? "",
+                  height: 170,
+                  width: 170,
+                  fit: BoxFit.fill,
+                  filterQuality: FilterQuality.high,
+                  cacheHeight: 170,
+                  cacheWidth: 170,
+                  frameBuilder: imageFrameBuilder,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Image.network(
+                        defaultImage,
+                        colorBlendMode: BlendMode.darken,
+                        fit: BoxFit.fill,
+                        filterQuality: FilterQuality.high,
+                      ),
+                    );
+                  },
                 ),
               )
-            : Container();
+            : Container());
   }
 
 // Shows alert with selected animation

@@ -1,4 +1,3 @@
-import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/news/CustomChip.dart';
 import 'package:Slydo/screens/more_apps/news/models/news_detail_item.dart';
 import 'package:Slydo/screens/more_apps/news/news_tile.dart';
@@ -9,7 +8,6 @@ import 'package:Slydo/utils/video_player_controller/chewie_progress_colors.dart'
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -43,19 +41,12 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
   }
 
   void _onRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        getResult();
-        _refreshController.refreshCompleted();
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
-        _refreshController.refreshCompleted();
-      }
-    });
+    if (await checkConnection(context)) {
+      getResult();
+      _refreshController.refreshCompleted();
+    } else {
+      _refreshController.refreshCompleted();
+    }
   }
 
   void getResult() async {
@@ -408,17 +399,15 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
   Widget relatedPost() {
     return Column(
         children: newsDetailItem.newsListItems!
-            .map((news) => Container(
-                  child: Column(
-                    children: [
-                      NewsTile(
-                        newsListItem: news,
-                      ),
-                      const SizedBox(
-                        height: 16,
-                      )
-                    ],
-                  ),
+            .map((news) => Column(
+                  children: [
+                    NewsTile(
+                      newsListItem: news,
+                    ),
+                    const SizedBox(
+                      height: 16,
+                    )
+                  ],
                 ))
             .toList());
   }

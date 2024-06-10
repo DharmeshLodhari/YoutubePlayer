@@ -69,204 +69,197 @@ class _YarnProductTileState extends State<YarnProductTile> {
               shadowColor: boxShadowTwo,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(10),
-                child: Container(
-                  child: Column(
-                    children: <Widget>[
-                      Expanded(
-                        child: Stack(children: [
-                          CachedNetworkImage(
-                            width: double.infinity,
-                            imageUrl: widget.product!.cover!,
-                            fit: BoxFit.cover,
-                            filterQuality: FilterQuality.high,
-                            progressIndicatorBuilder:
-                                (context, url, downloadProgress) => Center(
-                              child: CircularProgressIndicator(
-                                value: downloadProgress.progress,
-                                strokeWidth: 2.5,
-                                valueColor: AlwaysStoppedAnimation(navyBlue),
-                                backgroundColor: Colors.transparent,
-                              ),
+                child: Column(
+                  children: <Widget>[
+                    Expanded(
+                      child: Stack(children: [
+                        CachedNetworkImage(
+                          width: double.infinity,
+                          imageUrl: widget.product!.cover!,
+                          fit: BoxFit.cover,
+                          filterQuality: FilterQuality.high,
+                          progressIndicatorBuilder:
+                              (context, url, downloadProgress) => Center(
+                            child: CircularProgressIndicator(
+                              value: downloadProgress.progress,
+                              strokeWidth: 2.5,
+                              valueColor: AlwaysStoppedAnimation(navyBlue),
+                              backgroundColor: Colors.transparent,
                             ),
-                            errorWidget: productAndServiceErrorWidget,
                           ),
-                          Positioned(
-                            left: 10,
-                            bottom: 10,
-                            child: InkWell(
-                              onTap: () {
-                                // Navigator.pushNamed(
-                                //     context, Routes.SERVICE_DETAIL, arguments: {
-                                //   "searchedUserName": widget.service!.description
-                                // });
-                              },
-                              child: Row(
-                                children: [
-                                  SizedBox(
-                                    width: 25,
-                                    height: 25,
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(50),
-                                      child: CachedNetworkImage(
-                                        fit: BoxFit.cover,
-                                        imageUrl: widget.product!.sellerAvatar!,
-                                        errorWidget: imageErrorWidget,
-                                      ),
+                          errorWidget: productAndServiceErrorWidget,
+                        ),
+                        Positioned(
+                          left: 10,
+                          bottom: 10,
+                          child: InkWell(
+                            onTap: () {
+                              // Navigator.pushNamed(
+                              //     context, Routes.SERVICE_DETAIL, arguments: {
+                              //   "searchedUserName": widget.service!.description
+                              // });
+                            },
+                            child: Row(
+                              children: [
+                                SizedBox(
+                                  width: 25,
+                                  height: 25,
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(50),
+                                    child: CachedNetworkImage(
+                                      fit: BoxFit.cover,
+                                      imageUrl: widget.product!.sellerAvatar!,
+                                      errorWidget: imageErrorWidget,
                                     ),
                                   ),
-                                  const SizedBox(width: 8),
-                                  userNameWithVerifiedIcon(
-                                    name: widget.product?.sellerFullName ?? '',
-                                    isVerified: false,
-                                    textStyle: TextStyle(
-                                      fontWeight: FontWeight.w600,
+                                ),
+                                const SizedBox(width: 8),
+                                userNameWithVerifiedIcon(
+                                  name: widget.product?.sellerFullName ?? '',
+                                  isVerified: false,
+                                  textStyle: TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: getFontSize(
+                                        widget.tileRenderPlace, context),
+                                    color: Colors.white,
+                                    shadows: [
+                                      Shadow(
+                                        blurRadius: 2.0,
+                                        color: blackFont,
+                                        offset: const Offset(0.0, 0),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        )
+                      ]),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  messageDecoderWithEmoji(
+                                          widget.product?.name) ??
+                                      "",
+                                  maxLines: 1,
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w700,
                                       fontSize: getFontSize(
                                           widget.tileRenderPlace, context),
-                                      color: Colors.white,
-                                      shadows: [
-                                        Shadow(
-                                          blurRadius: 2.0,
-                                          color: blackFont,
-                                          offset: const Offset(0.0, 0),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
+                                      color: blackFont),
+                                  softWrap: false,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ),
-                            ),
-                          )
-                        ]),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 8),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    messageDecoderWithEmoji(
-                                            widget.product?.name) ??
-                                        "",
-                                    maxLines: 1,
-                                    style: TextStyle(
+                              RichText(
+                                text: TextSpan(children: [
+                                  TextSpan(
+                                      text: worldCurrencies[
+                                          widget.product!.currency!],
+                                      style: TextStyle(
+                                        fontFamily: "Inter",
+                                        color: navyBlue,
                                         fontWeight: FontWeight.w700,
                                         fontSize: getFontSize(
                                             widget.tileRenderPlace, context),
-                                        color: blackFont),
-                                    softWrap: false,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                                RichText(
-                                  text: TextSpan(children: [
-                                    TextSpan(
-                                        text: worldCurrencies[
-                                            widget.product!.currency!],
-                                        style: TextStyle(
-                                          fontFamily: "Inter",
-                                          color: navyBlue,
-                                          fontWeight: FontWeight.w700,
-                                          fontSize: getFontSize(
-                                              widget.tileRenderPlace, context),
-                                        )),
-                                    TextSpan(
-                                        // text: widget.product.price.toString(),
-                                        text: moneyDisplayNormalizer(int.parse(
-                                            widget.product!.price.toString())),
-                                        style: TextStyle(
-                                          color: navyBlue,
-                                          fontSize: getFontSize(
-                                              widget.tileRenderPlace, context),
-                                          fontWeight: FontWeight.w700,
-                                        ))
-                                  ]),
-                                )
-                              ],
-                            ),
-                            SizedBox(
-                              height: getSizeBoxHeight(
-                                  widget.tileRenderPlace, context),
-                            ),
-                            Text(
-                              messageDecoderWithEmoji(
-                                  widget.product!.shortDescription!)!,
-                              maxLines: 2,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: getFontSize(
-                                      widget.tileRenderPlace, context),
-                                  color: blackFont),
-                              softWrap: false,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            if (widget.product!.seller ==
-                                userBloc.user.userName)
-                              Container(
-                                height: 4,
+                                      )),
+                                  TextSpan(
+                                      // text: widget.product.price.toString(),
+                                      text: moneyDisplayNormalizer(int.parse(
+                                          widget.product!.price.toString())),
+                                      style: TextStyle(
+                                        color: navyBlue,
+                                        fontSize: getFontSize(
+                                            widget.tileRenderPlace, context),
+                                        fontWeight: FontWeight.w700,
+                                      ))
+                                ]),
                               )
-                            else
-                              Container(
-                                child: Column(
+                            ],
+                          ),
+                          SizedBox(
+                            height: getSizeBoxHeight(
+                                widget.tileRenderPlace, context),
+                          ),
+                          Text(
+                            messageDecoderWithEmoji(
+                                widget.product!.shortDescription!)!,
+                            maxLines: 2,
+                            style: TextStyle(
+                                fontWeight: FontWeight.w400,
+                                fontSize: getFontSize(
+                                    widget.tileRenderPlace, context),
+                                color: blackFont),
+                            softWrap: false,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          if (widget.product!.seller == userBloc.user.userName)
+                            Container(
+                              height: 4,
+                            )
+                          else
+                            Column(
+                              children: [
+                                const SizedBox(
+                                  height: 5,
+                                ),
+                                Row(
                                   children: [
+                                    addToCartWidget(item: widget.product),
                                     const SizedBox(
-                                      height: 5,
+                                      width: 8,
                                     ),
-                                    Row(
-                                      children: [
-                                        addToCartWidget(item: widget.product),
-                                        const SizedBox(
-                                          width: 8,
-                                        ),
-                                        Expanded(
-                                          child: CurvedButton(
-                                            height: getButtonSize(
-                                                widget.tileRenderPlace,
-                                                context),
-                                            isPaymentBtn: true,
-                                            textColor: Colors.white,
-                                            backgroundColor: navyBlue,
-                                            text: "BUY NOW",
-                                            borderRadius: 10,
-                                            onPressed: () async {
-                                              // if (appConfigurationModel
-                                              //         ?.enablePayment ==
-                                              //     true) {
-                                              final bool result =
-                                                  await showDisclaimerDialogueForGoods(
-                                                      context);
-                                              if (result) {
-                                                customerProfileBloc.customer =
-                                                    await UserAuth()
-                                                        .fetchCustomerProfile(
-                                                            widget.product!
-                                                                .seller);
+                                    Expanded(
+                                      child: CurvedButton(
+                                        height: getButtonSize(
+                                            widget.tileRenderPlace, context),
+                                        isPaymentBtn: true,
+                                        textColor: Colors.white,
+                                        backgroundColor: navyBlue,
+                                        text: "BUY NOW",
+                                        borderRadius: 10,
+                                        onPressed: () async {
+                                          // if (appConfigurationModel
+                                          //         ?.enablePayment ==
+                                          //     true) {
+                                          final bool result =
+                                              await showDisclaimerDialogueForGoods(
+                                                  context);
+                                          if (result) {
+                                            customerProfileBloc.customer =
+                                                await UserAuth()
+                                                    .fetchCustomerProfile(
+                                                        widget.product!.seller);
 
-                                                Navigator.of(context).pushNamed(
-                                                  '/send-payment',
-                                                  arguments: {
-                                                    'isFromProfile': false,
-                                                    'product': widget.product
-                                                  },
-                                                );
-                                              }
-                                              // }
-                                            },
-                                          ),
-                                        ),
-                                      ],
+                                            Navigator.of(context).pushNamed(
+                                              '/send-payment',
+                                              arguments: {
+                                                'isFromProfile': false,
+                                                'product': widget.product
+                                              },
+                                            );
+                                          }
+                                          // }
+                                        },
+                                      ),
                                     ),
                                   ],
                                 ),
-                              )
-                          ],
-                        ),
+                              ],
+                            )
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               )),
         ),
@@ -291,12 +284,12 @@ class _YarnProductTileState extends State<YarnProductTile> {
         basketBloc.addItemToCart(
             item: item, type: type, currentUser: userBloc.user.convertToUser());
         late var mapData;
-        basketBloc.items.forEach((element) {
+        for (var element in basketBloc.items) {
           if (element["item"].id == item.id) {
             mapData = element;
-            return;
+            continue;
           }
-        });
+        }
         final Map<String, dynamic> data = {
           "type": type,
           "id": mapData["item"].id,

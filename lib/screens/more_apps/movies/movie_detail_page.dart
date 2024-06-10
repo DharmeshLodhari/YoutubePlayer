@@ -84,10 +84,12 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () {
-        _videoController.pause();
-        return Future.value(true);
+    return PopScope(
+      onPopInvoked: (didPop) {
+        if(didPop) {
+          _videoController.pause();
+          return;
+        }
       },
       child: Scaffold(
         backgroundColor: Colors.white,

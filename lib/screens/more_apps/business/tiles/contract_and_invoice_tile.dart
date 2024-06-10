@@ -253,7 +253,7 @@ class _ContractTileState extends State<ContractTile> {
     final String date = DateFormat("dd/MM/yyyy").format(transactionTime);
     // String time = DateFormat("hh:mm a").format(transactionTime);
     return Text(
-      "$date",
+      date,
       softWrap: false,
       overflow: TextOverflow.visible,
       style: TextStyle(color: darkGrey, fontSize: 10),
@@ -277,8 +277,8 @@ class _InvoiceTileState extends State<InvoiceTile> {
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
-    final bool isReceiver = widget.invoice.fromCustomer !=
-        userBloc!.user.userName; //The person who receives the invoice.
+    // final bool isReceiver = widget.invoice.fromCustomer !=
+    //     userBloc!.user.userName; //The person who receives the invoice.
 
     return Stack(
       children: [

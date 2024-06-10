@@ -116,7 +116,7 @@ class _CustomizeCategoryButtonState extends State<CustomizeCategoryButton> {
                 ),
               ),
             )
-          : Container(
+          : SizedBox(
               height: 25,
               width: 60,
               child: Center(

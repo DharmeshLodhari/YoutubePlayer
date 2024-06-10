@@ -70,7 +70,7 @@ class _SearchModuleState extends State<SearchModule>
   int? count = 0;
   String? next = "";
   String? previous = "";
-  final ScrollController _scrollController = new ScrollController();
+  final ScrollController _scrollController = ScrollController();
   bool isLoading = false;
   bool noItemInList = false;
 
@@ -253,7 +253,7 @@ class _SearchModuleState extends State<SearchModule>
       index: currentIndex,
       children: [
         searchTab(),
-        ChatChannels(),
+        const ChatChannels(),
       ],
     );
   }
@@ -582,7 +582,7 @@ class _SearchModuleState extends State<SearchModule>
             for (var result in tempList!) {
               results.add(getResultTile(result));
             }
-            debugPrint('FINAL RESULT-> ${results}');
+            debugPrint('FINAL RESULT-> $results');
           } catch (e) {
             debugPrint('CANNOT SHOW SEARCH RESULT -> ${e.toString()}');
           }

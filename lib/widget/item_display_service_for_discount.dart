@@ -19,7 +19,6 @@ class DisplayServiceForDiscount extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print("${DateTime.now().toString()}");
     return GestureDetector(
       onTap: () {
         Navigator.pushNamed(context, Routes.SERVICE_DETAIL,
@@ -50,7 +49,7 @@ class DisplayServiceForDiscount extends StatelessWidget {
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(4)),
                 ),
-                Container(
+                SizedBox(
                   height: 80,
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(15),

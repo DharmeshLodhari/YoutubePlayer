@@ -55,7 +55,7 @@ class _VideoRecorderState extends State<VideoRecorder> {
     availableCameras().then((availableCameras) {
       cameras = availableCameras;
 
-      if (cameras!.length > 0) {
+      if (cameras!.isNotEmpty) {
         setState(() {
           selectedCameraIdx = 0;
         });
@@ -89,12 +89,14 @@ class _VideoRecorderState extends State<VideoRecorder> {
   @override
   Widget build(BuildContext context) {
     timerService = Provider.of<TimerService>(context);
-    return WillPopScope(
-      onWillPop: () async {
-        timerService.stop();
-        timerService.reset();
+    return PopScope(
+      onPopInvoked: (didPop) async {
+        if (didPop) {
+          timerService.stop();
+          timerService.reset();
 
-        return Future.value(true);
+          return;
+        }
       },
       child: Scaffold(
         key: _scaffoldKey,
@@ -104,15 +106,10 @@ class _VideoRecorderState extends State<VideoRecorder> {
           if (orientation == Orientation.portrait) {
             return Stack(
               children: <Widget>[
-                Container(
-                  child: Center(
-                    child: _cameraPreviewWidget(),
-                  ),
+                Center(
+                  child: _cameraPreviewWidget(),
                 ),
                 Container(
-                  child: const Padding(
-                    padding: EdgeInsets.all(1.0),
-                  ),
                   height: MediaQuery.of(context).size.height,
                   width: MediaQuery.of(context).size.width,
                   decoration: BoxDecoration(
@@ -124,6 +121,9 @@ class _VideoRecorderState extends State<VideoRecorder> {
                           : dividerColor,
                       width: 1.0,
                     ),
+                  ),
+                  child: const Padding(
+                    padding: EdgeInsets.all(1.0),
                   ),
                 ),
                 Positioned(
@@ -161,15 +161,10 @@ class _VideoRecorderState extends State<VideoRecorder> {
           }
           return Stack(
             children: <Widget>[
-              Container(
-                child: Center(
-                  child: _cameraPreviewWidget(),
-                ),
+              Center(
+                child: _cameraPreviewWidget(),
               ),
               Container(
-                child: const Padding(
-                  padding: EdgeInsets.all(1.0),
-                ),
                 height: MediaQuery.of(context).size.height,
                 width: MediaQuery.of(context).size.width,
                 decoration: BoxDecoration(
@@ -181,6 +176,9 @@ class _VideoRecorderState extends State<VideoRecorder> {
                             : dividerColor,
                     width: 1.0,
                   ),
+                ),
+                child: const Padding(
+                  padding: EdgeInsets.all(1.0),
                 ),
               ),
               Positioned(
@@ -284,7 +282,7 @@ class _VideoRecorderState extends State<VideoRecorder> {
   /// Display a row of toggle to select the camera (or a message if no camera is available).
   Widget _cameraTogglesRowWidget() {
     if (cameras == null) {
-      return Row();
+      return const Row();
     }
 
     final CameraDescription selectedCamera = cameras![selectedCameraIdx!];
@@ -320,12 +318,12 @@ class _VideoRecorderState extends State<VideoRecorder> {
                   : null,
               child: ClipOval(
                 child: AnimatedSwitcher(
-                  child: recordingButton,
                   transitionBuilder: (child, animation) => ScaleTransition(
                     scale: animation,
                     child: child,
                   ),
                   duration: const Duration(microseconds: 500),
+                  child: recordingButton,
                 ),
               ),
             ),
@@ -502,6 +500,7 @@ class _VideoRecorderState extends State<VideoRecorder> {
     showToast(message: 'Error: ${e.code}\n${e.description}');
   }
 
+  @override
   void dispose() {
     timer?.cancel();
     timerService.stop();

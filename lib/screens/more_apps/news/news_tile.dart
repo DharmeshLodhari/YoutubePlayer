@@ -28,76 +28,74 @@ class _NewsTileState extends State<NewsTile> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         child: Container(
           decoration: decorateBox(),
-          child: Container(
-            child: Column(
-              children: [
-                Stack(
-                  children: [
-                    ClipRRect(
-                      borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(10),
-                          topRight: Radius.circular(10)),
-                      child: CachedNetworkImage(
-                        height: 150,
-                        width: double.infinity,
-                        fit: BoxFit.fill,
-                        errorWidget: imageErrorWidget,
-                        imageUrl: widget.newsListItem?.image ?? "",
-                      ),
+          child: Column(
+            children: [
+              Stack(
+                children: [
+                  ClipRRect(
+                    borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(10),
+                        topRight: Radius.circular(10)),
+                    child: CachedNetworkImage(
+                      height: 150,
+                      width: double.infinity,
+                      fit: BoxFit.fill,
+                      errorWidget: imageErrorWidget,
+                      imageUrl: widget.newsListItem?.image ?? "",
                     ),
-                    Positioned(
-                      right: 0,
-                      top: -5,
-                      child: IconButton(
-                        icon: Icon(
-                          isSelected
-                              ? SlydoAppIcon.heart_1
-                              : SlydoAppIcon.heart_empty,
-                          color: Colors.white,
-                          size: 20,
-                        ),
-                        onPressed: () {
-                          isSelected = !isSelected;
-                          setState(() {});
-                        },
+                  ),
+                  Positioned(
+                    right: 0,
+                    top: -5,
+                    child: IconButton(
+                      icon: Icon(
+                        isSelected
+                            ? SlydoAppIcon.heart_1
+                            : SlydoAppIcon.heart_empty,
+                        color: Colors.white,
+                        size: 20,
                       ),
+                      onPressed: () {
+                        isSelected = !isSelected;
+                        setState(() {});
+                      },
+                    ),
+                  )
+                ],
+              ),
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.newsListItem?.title ?? "",
+                      style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          color: blackFont),
+                      maxLines: 2,
+                      softWrap: true,
+                      overflow: TextOverflow.clip,
+                    ),
+                    const SizedBox(
+                      height: 4,
+                    ),
+                    Text(
+                      widget.newsListItem?.description ?? "",
+                      style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                          color: darkGrey),
+                      maxLines: 2,
+                      softWrap: true,
+                      overflow: TextOverflow.clip,
                     )
                   ],
                 ),
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        widget.newsListItem?.title ?? "",
-                        style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w700,
-                            color: blackFont),
-                        maxLines: 2,
-                        softWrap: true,
-                        overflow: TextOverflow.clip,
-                      ),
-                      const SizedBox(
-                        height: 4,
-                      ),
-                      Text(
-                        widget.newsListItem?.description ?? "",
-                        style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                            color: darkGrey),
-                        maxLines: 2,
-                        softWrap: true,
-                        overflow: TextOverflow.clip,
-                      )
-                    ],
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ));
   }
@@ -110,7 +108,7 @@ class SubscriptionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Widget avatarImage = Container(
+    final Widget avatarImage = SizedBox(
         height: 48,
         width: 48,
         child: ClipOval(

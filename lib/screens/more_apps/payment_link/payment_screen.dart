@@ -385,7 +385,7 @@ class _PaymentLinkScreenState extends State<PaymentLinkScreen> {
 
               await Future.delayed(const Duration(seconds: 3));
 
-              const String description = 'General Payment';
+              // const String description = 'General Payment';
               final data = {
                 "currency": userBloc.user.currency,
                 "amount": moneyInputNormalizer(amount.toString()),

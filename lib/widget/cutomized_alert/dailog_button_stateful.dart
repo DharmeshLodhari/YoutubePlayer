@@ -37,7 +37,7 @@ class _DialogButtonStateFulState extends State<DialogButtonStateFul> {
   /// Creates alert buttons based on constructor params
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: double.infinity,
       height: 42,
       child: Material(

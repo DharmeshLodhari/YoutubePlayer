@@ -11,7 +11,6 @@ import 'package:Slydo/widget/customized_popup_menu.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:Slydo/widget/slide_action_button.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:intl/intl.dart';
@@ -95,19 +94,12 @@ class _SlydoTransactionListState extends State<SlydoTransactionList>
 
   void _onRefresh() async {
     //check network connectivity and if true then refresh the list
-    Connectivity().checkConnectivity().then((value) {
-      final connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        _refresh();
-        _refreshController.refreshCompleted();
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
-        _refreshController.refreshCompleted();
-      }
-    });
+    if (await checkConnection(context)) {
+      _refresh();
+      _refreshController.refreshCompleted();
+    } else {
+      _refreshController.refreshCompleted();
+    }
   }
 
   void menuItemSelectionChange(String value, int index) {
@@ -173,11 +165,13 @@ class _SlydoTransactionListState extends State<SlydoTransactionList>
     menu.onChange = menuItemSelectionChange;
     menu.menuState = menuStateChange;
 
-    return WillPopScope(
-      onWillPop: () async {
-        menu.closeMenu();
-        customerProfileBloc.customer = null;
-        return true;
+    return PopScope(
+      onPopInvoked: (didPop) async {
+        if (didPop) {
+          menu.closeMenu();
+          customerProfileBloc.customer = null;
+          return;
+        }
       },
       child: Scaffold(
         key: _scaffoldTransactionKey,

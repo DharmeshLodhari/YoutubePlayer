@@ -5,7 +5,6 @@ import 'package:Slydo/screens/more_apps/review/tiles/review_tile.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -35,7 +34,7 @@ class _UserReviewListState extends State<UserReviewList> {
 
   @override
   void initState() {
-    this.getReviewList();
+    getReviewList();
     _reviewScrollController.addListener(() {
       if (_reviewScrollController.position.pixels ==
               _reviewScrollController.position.maxScrollExtent &&
@@ -48,24 +47,17 @@ class _UserReviewListState extends State<UserReviewList> {
   }
 
   void _onReviewRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
-      final connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        reviewCount = 0;
-        reviewNext = "";
-        reviewPrevious = "";
-        reviewList = [];
-        debugPrint("Refresh called on reviews!!  ");
-        getReviewList();
-        _reviewRefreshController.refreshCompleted();
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
-        _reviewRefreshController.refreshCompleted();
-      }
-    });
+    if (await checkConnection(context)) {
+      reviewCount = 0;
+      reviewNext = "";
+      reviewPrevious = "";
+      reviewList = [];
+      debugPrint("Refresh called on reviews!!  ");
+      getReviewList();
+      _reviewRefreshController.refreshCompleted();
+    } else {
+      _reviewRefreshController.refreshCompleted();
+    }
   }
 
   @override

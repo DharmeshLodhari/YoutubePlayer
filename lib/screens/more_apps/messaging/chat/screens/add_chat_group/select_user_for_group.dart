@@ -59,7 +59,7 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
   String cartName = "";
   final _formKey = GlobalKey<FormState>();
 
-  @protected
+  @override
   void initState() {
     isForAddingUserInGroup = widget.arguments != null
         ? widget.arguments["isForAddingUserInGroup"] ?? false
@@ -71,7 +71,7 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
 
     searchUserController = TextEditingController();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      this.getList();
+      getList();
 
       _scrollController.addListener(() {
         if (_scrollController.position.pixels ==
@@ -94,7 +94,7 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
           getList();
         });
       }
-      if (connectionList.isNotEmpty || searchUserController!.text.length != 0) {
+      if (connectionList.isNotEmpty || searchUserController!.text.isNotEmpty) {
         if (mounted) {
           setState(() {
             isSearchIsEmpty = false;
@@ -256,14 +256,12 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
 
   Widget getScaffoldBody() {
     return SafeArea(
-      child: Container(
-        child: Column(
-          children: [
-            getAppBar(),
-            getSelectedUserList(),
-            Expanded(child: _buildConnectionsList()),
-          ],
-        ),
+      child: Column(
+        children: [
+          getAppBar(),
+          getSelectedUserList(),
+          Expanded(child: _buildConnectionsList()),
+        ],
       ),
     );
   }
@@ -315,8 +313,7 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
   }
 
   Widget showSelectedUser(String imageUrl, String fullName) {
-    if (imageUrl == null ||
-        imageUrl == "" ||
+    if (imageUrl == "" ||
         imageUrl ==
             "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png") {
       return CircleAvatar(
@@ -329,7 +326,7 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
       );
     } else {
       return ClipOval(
-        child: Container(
+        child: SizedBox(
           height: 64,
           width: 64,
           child: CachedNetworkImage(
@@ -395,7 +392,7 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
 
         final List<CustomerProfile> users = [];
 
-        tempList.forEach((element) {
+        for (var element in tempList) {
           final CustomerProfile customerProfile =
               CustomerProfile.fromJson(element);
 
@@ -403,15 +400,14 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
               customerProfile.userName != "slydo") {
             users.add(customerProfile);
           }
-        });
+        }
 
-        if (widget.arguments["create"] == "addMember" &&
-            sharedCartBloc.getSharedCartModel() != null) {
+        if (widget.arguments["create"] == "addMember") {
           for (int i = 0; i < users.length; i++) {
-            final List<SharedCartMemberModel>? memberList =
+            final List<SharedCartMemberModel> memberList =
                 sharedCartBloc.getSharedCartModel().members ?? [];
-            for (int j = 0; j < (memberList?.length ?? 0); j++) {
-              if (users[i].userName == memberList?[j].userName) {
+            for (int j = 0; j < (memberList.length ?? 0); j++) {
+              if (users[i].userName == memberList[j].userName) {
                 selectedConnectionList.add(users[i]);
               }
             }
@@ -523,11 +519,11 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
   Future<void> addCartGroup() async {
     final List<String> result = [];
     for (int i = 0; i < selectedConnectionList.length; i++) {
-      final List<SharedCartMemberModel>? memberList =
+      final List<SharedCartMemberModel> memberList =
           sharedCartBloc.getSharedCartModel().members ?? [];
       bool isExist = false;
-      for (int j = 0; j < (memberList?.length ?? 0); j++) {
-        if (selectedConnectionList[i].userName == memberList?[j].userName) {
+      for (int j = 0; j < (memberList.length ?? 0); j++) {
+        if (selectedConnectionList[i].userName == memberList[j].userName) {
           isExist = true;
           break;
         }

@@ -157,12 +157,12 @@ class ChatMessage {
     data['message_id'] = messageId;
     data['kind'] = kind;
     data['media'] = media;
-    data['meta_data'] = metaData == null ? "{}" : metaData;
+    data['meta_data'] = metaData ?? "{}";
     data['poster'] = poster;
     data['read_by_author'] = convertBoolToInt(readByAuthor, defaultValue: true);
     data['read_by_recipient'] =
         convertBoolToInt(readByRecipient, defaultValue: false);
-    data['replied_to'] = repliedTo == null ? "{}" : repliedTo;
+    data['replied_to'] = repliedTo ?? "{}";
     data['text'] = text;
     data['type'] = type ?? "chatroom_message";
     data['updated_at'] = convertStringToMillisecondsSinceEpoch(updatedAt);

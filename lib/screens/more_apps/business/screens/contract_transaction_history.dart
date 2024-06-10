@@ -1,12 +1,9 @@
-import 'dart:async';
-
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/business/business_auth.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/tiles/transaction.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:flutter/material.dart';
-
-import '../business_auth.dart';
 
 class ContractTransactionHistory extends StatefulWidget {
   @override
@@ -108,9 +105,11 @@ class _ContractTransactionHistoryState
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        return Future.value(true);
+    return PopScope(
+      onPopInvoked: (didPop) async {
+        if (didPop) {
+          return;
+        }
       },
       child: ScaffoldMessenger(
         key: _scaffoldMessengerKey,

@@ -1,5 +1,4 @@
 import 'package:Slydo/data/state_notifiers/user_bloc.dart';
-import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/moments/models/moments_model.dart';
 import 'package:Slydo/screens/moments/screens/moments_service.dart';
 import 'package:Slydo/screens/moments/tiles/moment_comment_tile.dart';
@@ -13,7 +12,6 @@ import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_shimmer.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_dashboard_bloc.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -67,7 +65,7 @@ class _MomentCommentScreenState extends State<MomentCommentScreen> {
       GlobalKey<MomentCommentTextFieldState>();
   bool? enableComment = false, enablePayment = false;
   bool? enableAdult = false, viewerAdvice = false;
-  var ageRating;
+  int? ageRating;
 
   ScrollController scrollController = ScrollController();
   List<YarnMedia> selectedMedia = [];
@@ -89,8 +87,7 @@ class _MomentCommentScreenState extends State<MomentCommentScreen> {
     super.initState();
   }
 
-  Widget commentListWidget(
-      {avatar, username, comment, createAt, YarnComment? yarnComment}) {
+  Widget commentListWidget() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -239,7 +236,7 @@ class _MomentCommentScreenState extends State<MomentCommentScreen> {
     //   isLoading = true;
 
     if (!isLoading) {
-      if (next != null && !isLoading) {
+      if (!isLoading) {
         isLoading = true;
         if (mounted) setState(() {});
 
@@ -481,22 +478,15 @@ class _MomentCommentScreenState extends State<MomentCommentScreen> {
   }
 
   void _onPostRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
-      final connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        yarnCommentScreenKey = GlobalKey<ScaffoldState>();
-        setState(() {
-          _postRefreshController.refreshCompleted();
-        });
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
-        setState(() {
-          _postRefreshController.refreshCompleted();
-        });
-      }
-    });
+    if (await checkConnection(context)) {
+      yarnCommentScreenKey = GlobalKey<ScaffoldState>();
+      setState(() {
+        _postRefreshController.refreshCompleted();
+      });
+    } else {
+      setState(() {
+        _postRefreshController.refreshCompleted();
+      });
+    }
   }
 }

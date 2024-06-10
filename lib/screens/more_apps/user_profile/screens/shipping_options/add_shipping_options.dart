@@ -88,65 +88,61 @@ class _AddShippingOptionsState extends State<AddShippingOptions> {
                     border: Border.all(color: iconBtnGrey, width: 1)),
                 child: Form(
                   key: _formKey,
-                  child: Container(
-                    child: Column(
-                      children: <Widget>[
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: Column(
-                            children: [
+                  child: Column(
+                    children: <Widget>[
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Column(
+                          children: [
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            getLocation(),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            displayAmountField(),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            if (errorMessage == "")
+                              Container()
+                            else
+                              Text(
+                                errorMessage,
+                                style: TextStyle(
+                                    color: mateRed,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16),
+                              ),
+                            if (errorMessage == "")
+                              Container()
+                            else
                               const SizedBox(
                                 height: 20,
                               ),
-                              getLocation(),
-                              const SizedBox(
-                                height: 20,
-                              ),
-                              displayAmountField(),
-                              const SizedBox(
-                                height: 20,
-                              ),
-                              if (errorMessage == "")
-                                Container()
-                              else
-                                Text(
-                                  errorMessage,
-                                  style: TextStyle(
-                                      color: mateRed,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16),
-                                ),
-                              if (errorMessage == "")
-                                Container()
-                              else
-                                const SizedBox(
-                                  height: 20,
-                                ),
-                            ],
-                          ),
+                          ],
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
               ),
             ),
-            Container(
-              child: Column(
-                children: [
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  if (amount == 0.0) ...[
-                    const SizedBox()
-                  ] else ...[
-                    getSubmitButton()
-                  ],
-                  const SizedBox(
-                    height: 20,
-                  ),
+            Column(
+              children: [
+                const SizedBox(
+                  height: 20,
+                ),
+                if (amount == 0.0) ...[
+                  const SizedBox()
+                ] else ...[
+                  getSubmitButton()
                 ],
-              ),
+                const SizedBox(
+                  height: 20,
+                ),
+              ],
             ),
           ],
         ),

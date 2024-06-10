@@ -15,14 +15,14 @@ class CacheManager {
     final List<FileSystemEntity> list =
         tempDir.listSync(followLinks: false, recursive: clearAll);
     final List<FileSystemEntity> temp = [];
-    list.forEach((element) {
+    for (var element in list) {
       if (element is File) {
         temp.add(element);
       }
-    });
-    temp.forEach((element) {
+    }
+    for (var element in temp) {
       element.deleteSync(recursive: true);
-    });
+    }
 
     /*try {
       MyGlobals.notificationStream?.cancel();

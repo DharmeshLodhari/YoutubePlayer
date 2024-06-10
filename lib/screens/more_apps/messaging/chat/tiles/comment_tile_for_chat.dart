@@ -783,7 +783,8 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
                         ),
                         Text(
                           yarnComment.createdAt != null
-                              ? '${getGetYarnQuestionDateTime(yarnComment.createdAt!)}'
+                              ? getGetYarnQuestionDateTime(
+                                  yarnComment.createdAt!)
                               : "",
                           overflow: TextOverflow.fade,
                           style: TextStyle(fontSize: 12, color: yarnBlack),
@@ -838,7 +839,7 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
       // debugPrint(ch);
     });
 
-    list.forEach((data) {
+    for (var data in list) {
       if (data.toString().contains('.') &&
           !data.toString().trim().contains('@') &&
           !data.toString().trim().contains('..') &&
@@ -852,7 +853,7 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
       } else {
         newString = '$newString $data';
       }
-    });
+    }
 
     if (isUrlPresent) {
       return Column(

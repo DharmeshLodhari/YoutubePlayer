@@ -19,10 +19,12 @@ class _MyMoviesScreenState extends State<MyMoviesScreen> {
   @override
   Widget build(BuildContext context) {
     movieDashboardBloc = Provider.of<MovieDashboardBloc>(context);
-    return WillPopScope(
-      onWillPop: () async {
-        movieDashboardBloc.index = 0;
-        return true;
+    return PopScope(
+      onPopInvoked: (didPop) async {
+        if(didPop) {
+          movieDashboardBloc.index = 0;
+          return;
+        }
       },
       child: DefaultTabController(
         length: 2,

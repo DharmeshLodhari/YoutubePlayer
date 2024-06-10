@@ -14,8 +14,6 @@ import 'package:Slydo/screens/more_apps/yarn/widgets/rich_text.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/url_reader_of_yarn.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_media_renderer.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_search_screen.dart';
-import 'package:Slydo/utils/colors.dart';
-import 'package:Slydo/utils/common.dart';
 import 'package:Slydo/utils/link_preview/flutter_link_preview.dart';
 import 'package:Slydo/utils/link_preview/web_analyzer.dart';
 import 'package:Slydo/utils/navigation_util.dart';
@@ -59,7 +57,7 @@ class _ReYarnTileState extends State<ReYarnTile> {
 
         linkToBePreview = linkData['links'][0];
         if (!linkToBePreview!.contains("http")) {
-          linkToBePreview = "http://" + linkToBePreview!;
+          linkToBePreview = "http://${linkToBePreview!}";
         }
       }
     } else {}
@@ -165,7 +163,7 @@ class _ReYarnTileState extends State<ReYarnTile> {
                         ),
                         Expanded(
                           child: Text(
-                            '${getGetYarnQuestionDateTime(widget.yarn.createdAt!)}',
+                            getGetYarnQuestionDateTime(widget.yarn.createdAt!),
                             overflow: TextOverflow.fade,
                             style: TextStyle(fontSize: 12, color: yarnBlack),
                           ),

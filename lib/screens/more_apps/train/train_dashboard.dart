@@ -18,10 +18,12 @@ class _TrainDashboardState extends State<TrainDashboard> {
   @override
   Widget build(BuildContext context) {
     _trainDashboardBloc = Provider.of<TrainDashboardBloc>(context);
-    return WillPopScope(
-      onWillPop: () {
-        _trainDashboardBloc.index = 0;
-        return Future.value(true);
+    return PopScope(
+      onPopInvoked: (didPop) {
+        if (didPop) {
+          _trainDashboardBloc.index = 0;
+          return;
+        }
       },
       child: Scaffold(
         body: PageView(

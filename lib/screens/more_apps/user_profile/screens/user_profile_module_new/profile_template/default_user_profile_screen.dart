@@ -348,6 +348,7 @@ class _DefaultUserProfileScreenState extends State<DefaultUserProfileScreen>
     return tabs;
   }
 
+  @override
   Future<void> dispose() async {
     super.dispose();
     scrollController!.dispose();

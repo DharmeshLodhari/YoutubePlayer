@@ -6,7 +6,6 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -173,27 +172,22 @@ class _UtilityHistoryState extends State<UtilityHistory> {
 
   void _onRefresh() async {
     //check network connectivity and if true then refresh the list
-    Connectivity().checkConnectivity().then((value) {
-      final connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        count = 0;
-        next = "";
-        previous = "";
-        utilityHistoryList = [];
-        noItemInList = false;
-        isFirstTime = true;
-        if (mounted) setState(() {});
-        isLoading = false;
-        getList();
+    if (await checkConnection(context)) {
+      count = 0;
+      next = "";
+      previous = "";
+      utilityHistoryList = [];
+      noItemInList = false;
+      isFirstTime = true;
+      if (mounted) setState(() {});
+      isLoading = false;
+      getList();
+      _refreshController.refreshCompleted();
+    } else {
+      setState(() {
         _refreshController.refreshCompleted();
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
-        _refreshController.refreshCompleted();
-      }
-    });
+      });
+    }
   }
 
   void showReachedToBottomSnackBar() {
@@ -289,7 +283,7 @@ class _UtilityHistoryState extends State<UtilityHistory> {
           Navigator.pop(context);
         },
       ),
-      actions: [
+      actions: const [
         // utilityHistoryBtn(),
         // SizedBox(
         //   width: 16,

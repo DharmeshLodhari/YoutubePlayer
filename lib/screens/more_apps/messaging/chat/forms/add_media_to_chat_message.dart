@@ -135,9 +135,11 @@ class _AddMediaToChatMessageState extends State<AddMediaToChatMessage> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: WillPopScope(
-        onWillPop: () async {
-          return Future.value(true);
+      child: PopScope(
+        onPopInvoked: (didPop) async {
+          if (didPop) {
+            return;
+          }
         },
         child: Scaffold(
           backgroundColor: Colors.black,
@@ -158,69 +160,67 @@ class _AddMediaToChatMessageState extends State<AddMediaToChatMessage> {
   }
 
   Widget scaffoldBody() {
-    return Container(
-      child: Column(
-        children: [
-          Expanded(
-            child: Stack(
-              children: [
-                getMediaRenderer(),
-                Positioned(
-                  top: 4,
-                  left: 4,
-                  child: InkWell(
-                    child: ClipOval(
-                      child: Container(
-                        height: 36,
-                        width: 36,
-                        child: Icon(
-                          Icons.arrow_back_ios_rounded,
-                          color: mediaType == "file" ? blackFont : Colors.white,
-                          size: 18,
-                        ),
+    return Column(
+      children: [
+        Expanded(
+          child: Stack(
+            children: [
+              getMediaRenderer(),
+              Positioned(
+                top: 4,
+                left: 4,
+                child: InkWell(
+                  child: ClipOval(
+                    child: SizedBox(
+                      height: 36,
+                      width: 36,
+                      child: Icon(
+                        Icons.arrow_back_ios_rounded,
+                        color: mediaType == "file" ? blackFont : Colors.white,
+                        size: 18,
                       ),
                     ),
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
+                  ),
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+        if (mediaType != "audio")
+          Container(
+            color: Colors.white,
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            constraints: const BoxConstraints(
+              maxHeight: 100,
+            ),
+            child: Row(
+              children: <Widget>[
+                const SizedBox(
+                  width: 8,
+                ),
+                Expanded(child: getMessageTextFormField()),
+                InkWell(
+                  onTap: sendMessage,
+                  child: Row(
+                    children: [
+                      const SizedBox(width: 8),
+                      Icon(
+                        Icons.send,
+                        color: navyBlue,
+                      ),
+                      const SizedBox(width: 8),
+                    ],
                   ),
                 ),
               ],
             ),
-          ),
-          if (mediaType != "audio")
-            Container(
-              color: Colors.white,
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              constraints: const BoxConstraints(
-                maxHeight: 100,
-              ),
-              child: Row(
-                children: <Widget>[
-                  const SizedBox(
-                    width: 8,
-                  ),
-                  Expanded(child: getMessageTextFormField()),
-                  InkWell(
-                    onTap: sendMessage,
-                    child: Row(
-                      children: [
-                        const SizedBox(width: 8),
-                        Icon(
-                          Icons.send,
-                          color: navyBlue,
-                        ),
-                        const SizedBox(width: 8),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            )
-          else
-            Container(),
-        ],
-      ),
+          )
+        else
+          Container(),
+      ],
     );
   }
 

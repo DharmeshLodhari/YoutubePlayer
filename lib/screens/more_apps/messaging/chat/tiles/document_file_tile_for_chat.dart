@@ -58,7 +58,7 @@ class _DocumentFileTileForChatState extends State<DocumentFileTileForChat> {
                   chatConversation: widget.chatConversation!,
                 ),
                 if (isSend)
-                  Container(
+                  SizedBox(
                       width: 20, child: getMessageTick(message: widget.message))
                 else
                   Container(),
@@ -325,7 +325,7 @@ class _FileTileForChatState extends State<FileTileForChat> {
     }
   }
 
-  _downloadAndSaveFileNameToDb() async {
+  void _downloadAndSaveFileNameToDb() async {
     final PermissionStatus status = await Permission.storage.request();
 
     var downloadsDirectoryPath;

@@ -93,7 +93,7 @@ double getBgHeightOfAppBar(String bio, bool hasAddress, bool hasContact) {
   return height;
 }
 
-fetchYarnData(String? searchedUserName, String isChannel) async {
+Future<List> fetchYarnData(String? searchedUserName, String isChannel) async {
   Map<String, dynamic>? data;
   try {
     data = await YarnAuth().getAllYarn("", "",
@@ -112,7 +112,7 @@ fetchYarnData(String? searchedUserName, String isChannel) async {
   return [];
 }
 
-fetchChannelData(String? searchedUserName) async {
+Future<List> fetchChannelData(String? searchedUserName) async {
   BasePaginationModel<List<ChannelModel>>? basePaginationModel;
   try {
     basePaginationModel = await MessageAuth()
@@ -128,7 +128,8 @@ fetchChannelData(String? searchedUserName) async {
   return [];
 }
 
-fetchPostData(String? searchedUserName, String? channelUserName) async {
+Future<List> fetchPostData(
+    String? searchedUserName, String? channelUserName) async {
   Map<String, dynamic>? data;
   try {
     data = await UserPostAuth().listUserPosts(
@@ -148,7 +149,8 @@ fetchPostData(String? searchedUserName, String? channelUserName) async {
   return [];
 }
 
-fetchMomentData(String? searchedUserName, String? channelUsername) async {
+Future<List> fetchMomentData(
+    String? searchedUserName, String? channelUsername) async {
   List<MomentsModel> momentsModel = [];
   try {
     momentsModel = await MomentsService().getMomentsWithOwnerName(
@@ -164,7 +166,7 @@ fetchMomentData(String? searchedUserName, String? channelUsername) async {
   return [];
 }
 
-fetchProductData(String? searchedUserName, bool? isChannel) async {
+Future<List> fetchProductData(String? searchedUserName, bool? isChannel) async {
   Map<String, dynamic>? data;
   try {
     data = await ShoppingAuthService()
@@ -179,7 +181,7 @@ fetchProductData(String? searchedUserName, bool? isChannel) async {
   return [];
 }
 
-fetchServiceData(String? searchedUserName) async {
+Future<List> fetchServiceData(String? searchedUserName) async {
   Map<String, dynamic>? data;
   try {
     data = await ShoppingAuthService()
@@ -268,7 +270,7 @@ String getInitials(String fullName) {
 
 String getGroupUsername(String channelUsername) {
   if (channelUsername.contains(' ')) {
-    return "${channelUsername.replaceAll(' ', '')}";
+    return channelUsername.replaceAll(' ', '');
   } else {
     return channelUsername;
   }
@@ -281,11 +283,7 @@ Widget showDiscountValue(
     decoration: BoxDecoration(
         color: verifyGreen, borderRadius: BorderRadius.circular(5)),
     child: Text(
-      "-" +
-          (discountType == "percentage"
-              ? discountValue.toString() + "% off"
-              : worldCurrencies[currency!]! +
-                  moneyDisplayNormalizer(discountValue.toInt()).toString()),
+      "-${discountType == "percentage" ? discountValue.toString() + "% off" : worldCurrencies[currency!]! + moneyDisplayNormalizer(discountValue.toInt()).toString()}",
       style: TextStyle(
         color: white,
         fontSize: 10,

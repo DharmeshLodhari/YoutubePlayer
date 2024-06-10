@@ -9,10 +9,11 @@ class ConfirmDelete extends StatelessWidget {
     return Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: WillPopScope(
-          onWillPop: () async {
-            Navigator.pop(context, false);
-            return false;
+        child: PopScope(
+          onPopInvoked: (didPop) async {
+            if (didPop) {
+              Navigator.pop(context, false);
+            }
           },
           child: Container(
             decoration: const BoxDecoration(

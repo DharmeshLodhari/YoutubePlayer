@@ -38,12 +38,14 @@ class _VerifyResetPasswordOTPScreenState
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () {
-        if (FocusScope.of(context).hasFocus) {
-          FocusScope.of(context).unfocus();
+    return PopScope(
+      onPopInvoked: (didPop) {
+        if (didPop) {
+          if (FocusScope.of(context).hasFocus) {
+            FocusScope.of(context).unfocus();
+          }
+          return;
         }
-        return Future.value(true);
       },
       child: Scaffold(
         backgroundColor: whiteBackground,
@@ -207,7 +209,7 @@ class _VerifyResetPasswordOTPScreenState
   void verifyOTP() {
     if (_verifyOtpFormKey.currentState!.validate()) {
       final String enteredOTP = otpController!.text.trim();
-      final String passwordToken = "true";
+      const String passwordToken = "true";
 
       UserAuth()
           .verifyPhoneNumber(phoneNumber, enteredOTP, passwordToken)

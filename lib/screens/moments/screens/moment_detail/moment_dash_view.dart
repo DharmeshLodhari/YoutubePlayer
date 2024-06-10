@@ -1,9 +1,8 @@
 //The dashes at the top of the moment's page (similar to Whatsapp's)
 import 'dart:async';
 
+import 'package:Slydo/utils/colors.dart';
 import 'package:flutter/material.dart';
-
-import '../../../../utils/colors.dart';
 
 class MomentDashView extends StatefulWidget {
   final int currentPageViewIndex;

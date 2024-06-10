@@ -33,7 +33,7 @@ class BottomSheetPassCode {
         ),
         clipBehavior: Clip.hardEdge,
         context: context,
-        builder: (context) => Container(
+        builder: (context) => SizedBox(
               height: 375,
               child: CustomizedPassCodeScreen(
                 title: Text(
@@ -77,8 +77,8 @@ class BottomSheetPassCode {
             ));
   }
 
-  _onPassCodeEntered(String enteredPassCode) {
-    bool isValid = userBloc.user.password == enteredPassCode;
+  void _onPassCodeEntered(String enteredPassCode) {
+    final bool isValid = userBloc.user.password == enteredPassCode;
     _verificationNotifier.add(isValid);
   }
 }

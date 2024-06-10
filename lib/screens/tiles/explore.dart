@@ -7,6 +7,7 @@ class ExploreTile extends StatefulWidget {
 }
 
 class _ExploreTileState extends State<ExploreTile> {
+  @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(top: 8.0),

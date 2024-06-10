@@ -21,7 +21,7 @@ import 'package:swipe_image_gallery/swipe_image_gallery.dart';
 import 'package:video_player/video_player.dart';
 
 class ViewCompletedDelivery extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
   ViewCompletedDelivery({Key? key, this.arguments}) : super(key: key);
 
@@ -104,9 +104,11 @@ class _ViewCompletedDeliveryState extends State<ViewCompletedDelivery> {
       bottom: Platform.isIOS ? true : false,
       top: false,
       color: white,
-      child: WillPopScope(
-        onWillPop: () async {
-          return true;
+      child: PopScope(
+        onPopInvoked: (didPop) async {
+          if (didPop) {
+            return;
+          }
         },
         child: SafeArea(
           child: Scaffold(

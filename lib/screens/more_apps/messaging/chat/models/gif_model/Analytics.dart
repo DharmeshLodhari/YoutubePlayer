@@ -19,15 +19,15 @@ class Analytics {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    if (this.onclick != null) {
-      data['onclick'] = this.onclick!.toJson();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    if (onclick != null) {
+      data['onclick'] = onclick!.toJson();
     }
-    if (this.onload != null) {
-      data['onload'] = this.onload!.toJson();
+    if (onload != null) {
+      data['onload'] = onload!.toJson();
     }
-    if (this.onsent != null) {
-      data['onsent'] = this.onsent!.toJson();
+    if (onsent != null) {
+      data['onsent'] = onsent!.toJson();
     }
     return data;
   }

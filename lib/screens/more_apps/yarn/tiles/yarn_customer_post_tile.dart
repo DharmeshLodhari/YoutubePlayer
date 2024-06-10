@@ -82,11 +82,6 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile>
     return _buildProfileCard();
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
   Widget _buildProfileCard() {
     return Card(
       margin: EdgeInsets.zero,
@@ -94,151 +89,145 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile>
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       child: Container(
         decoration: decorateBox(borderColor: greySecondaryYarn),
-        child: Container(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  ClipRRect(
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(10),
-                      topRight: Radius.circular(10),
-                    ),
-                    child: CachedNetworkImage(
-                        height: getWallPaperCoverHeight(
-                            widget.tileRenderPlace, context),
-                        width: double.infinity,
-                        fit: BoxFit.cover,
-                        placeholder: (context, url) =>
-                            Center(child: CircularLoadingIndicator()),
-                        errorWidget: wallpaperErrorWidget,
-                        imageUrl: searchedUser!.wallpaper ?? ""),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Stack(
+              clipBehavior: Clip.none,
+              children: [
+                ClipRRect(
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(10),
+                    topRight: Radius.circular(10),
                   ),
-                  Positioned(
-                    top: getAvatarTop(widget.tileRenderPlace, context),
-                    left: 22,
-                    child: InkWell(
-                      onTap: () {
-                        Navigator.pushNamed(
-                            context, Routes.USER_PROFILE, arguments: {
-                          "searchedUserName": widget.customerProfile?.userName
-                        });
-                      },
-                      child: Container(
-                        width: 50,
-                        height: 50,
-                        decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(width: 3, color: white)),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(50),
-                          child: CachedNetworkImage(
-                            fit: BoxFit.cover,
-                            imageUrl: searchedUser!.avatar ?? '',
-                            errorWidget: imageErrorWidget,
-                          ),
+                  child: CachedNetworkImage(
+                      height: getWallPaperCoverHeight(
+                          widget.tileRenderPlace, context),
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) =>
+                          Center(child: CircularLoadingIndicator()),
+                      errorWidget: wallpaperErrorWidget,
+                      imageUrl: searchedUser!.wallpaper ?? ""),
+                ),
+                Positioned(
+                  top: getAvatarTop(widget.tileRenderPlace, context),
+                  left: 22,
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.pushNamed(context, Routes.USER_PROFILE,
+                          arguments: {
+                            "searchedUserName": widget.customerProfile?.userName
+                          });
+                    },
+                    child: Container(
+                      width: 50,
+                      height: 50,
+                      decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(width: 3, color: white)),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(50),
+                        child: CachedNetworkImage(
+                          fit: BoxFit.cover,
+                          imageUrl: searchedUser!.avatar ?? '',
+                          errorWidget: imageErrorWidget,
                         ),
                       ),
                     ),
-                  )
-                ],
-              ),
-              const SizedBox(height: 20),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 22),
-                child: GestureDetector(
-                  onTap: () {
-                    Navigator.pushNamed(context, Routes.USER_PROFILE,
-                        arguments: {
-                          "searchedUserName": widget.customerProfile?.userName
-                        });
-                  },
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  messageDecoderWithEmoji(
-                                          widget.customerProfile?.fullName ??
-                                              "") ??
-                                      '',
-                                  style: TextStyle(
-                                    fontSize: getFontSize(
-                                        widget.tileRenderPlace, context),
-                                    fontWeight: FontWeight.w400,
-                                    color: blackFont,
-                                  ),
-                                  maxLines: 2,
-                                  softWrap: true,
-                                  overflow: TextOverflow.clip,
-                                ),
-                                const SizedBox(height: 2),
-                                userNameWithVerifiedIcon(
-                                    name:
-                                        '@${searchedUser!.displayName() ?? ""}',
-                                    isVerified: searchedUser!.isVerified,
-                                    textStyle: TextStyle(
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: getFontSize(
-                                            widget.tileRenderPlace, context),
-                                        color: blackFont))
-                              ],
-                            ),
-                          ),
-                          Container(
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                getActionOnUsersBtn(),
-                                // getFollowUnFollowBtn(),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      YarnSmartText(
-                        text: messageDecoderWithEmoji(searchedUser!.bio)!,
-                        style: TextStyle(
-                            color: blackFont,
-                            fontSize: 16,
-                            fontFamily: "OpenSans"),
-                        maxLines: 6,
-                        // atStyle: TextStyle(color: navyBlue, fontSize: 17, fontFamily: "OpenSans"),
-                        disableAt: false,
-                        onTagClick: (tag) {
-                          NavigationUtil.push(context,
-                              screen: SearchScreen(searchText: tag.trim()));
-                        },
-                        onUrlClicked: (open) {
-                          // launch  url
-                          launchUrl(Uri.parse(open.toString()));
-                        },
-                        onAtClick: (at) {
-                          Navigator.pushNamed(context, Routes.USER_PROFILE,
-                              arguments: {
-                                "searchedUserName":
-                                    at.replaceAll(RegExp('@'), '').trim()
-                              });
-                        },
-                      ),
-                      const SizedBox(height: 10),
-                    ],
                   ),
+                )
+              ],
+            ),
+            const SizedBox(height: 20),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 22),
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.pushNamed(context, Routes.USER_PROFILE, arguments: {
+                    "searchedUserName": widget.customerProfile?.userName
+                  });
+                },
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                messageDecoderWithEmoji(
+                                        widget.customerProfile?.fullName ??
+                                            "") ??
+                                    '',
+                                style: TextStyle(
+                                  fontSize: getFontSize(
+                                      widget.tileRenderPlace, context),
+                                  fontWeight: FontWeight.w400,
+                                  color: blackFont,
+                                ),
+                                maxLines: 2,
+                                softWrap: true,
+                                overflow: TextOverflow.clip,
+                              ),
+                              const SizedBox(height: 2),
+                              userNameWithVerifiedIcon(
+                                  name: '@${searchedUser!.displayName() ?? ""}',
+                                  isVerified: searchedUser!.isVerified,
+                                  textStyle: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: getFontSize(
+                                          widget.tileRenderPlace, context),
+                                      color: blackFont))
+                            ],
+                          ),
+                        ),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            getActionOnUsersBtn(),
+                            // getFollowUnFollowBtn(),
+                          ],
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    YarnSmartText(
+                      text: messageDecoderWithEmoji(searchedUser!.bio)!,
+                      style: TextStyle(
+                          color: blackFont,
+                          fontSize: 16,
+                          fontFamily: "OpenSans"),
+                      maxLines: 6,
+                      // atStyle: TextStyle(color: navyBlue, fontSize: 17, fontFamily: "OpenSans"),
+                      disableAt: false,
+                      onTagClick: (tag) {
+                        NavigationUtil.push(context,
+                            screen: SearchScreen(searchText: tag.trim()));
+                      },
+                      onUrlClicked: (open) {
+                        // launch  url
+                        launchUrl(Uri.parse(open.toString()));
+                      },
+                      onAtClick: (at) {
+                        Navigator.pushNamed(context, Routes.USER_PROFILE,
+                            arguments: {
+                              "searchedUserName":
+                                  at.replaceAll(RegExp('@'), '').trim()
+                            });
+                      },
+                    ),
+                    const SizedBox(height: 10),
+                  ],
                 ),
-              )
-            ],
-          ),
+              ),
+            )
+          ],
         ),
       ),
     );

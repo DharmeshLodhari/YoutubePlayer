@@ -92,7 +92,7 @@ class _YarnTileState extends State<YarnTile> {
         linkToBePreview = linkData['links'][0];
 
         if (!linkToBePreview!.contains("http")) {
-          linkToBePreview = "http://" + linkToBePreview!;
+          linkToBePreview = "http://${linkToBePreview!}";
         }
       }
     } else {}
@@ -280,7 +280,7 @@ class _YarnTileState extends State<YarnTile> {
                         ),
                         Expanded(
                           child: Text(
-                            '${getGetYarnQuestionDateTime(widget.yarn.createdAt!)}',
+                            getGetYarnQuestionDateTime(widget.yarn.createdAt!),
                             overflow: TextOverflow.fade,
                             style: TextStyle(fontSize: 12, color: yarnBlack),
                           ),
@@ -380,7 +380,7 @@ class _YarnTileState extends State<YarnTile> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         _checkCategoryTypeChip(),
-        if (viewers.length != 0) ...[
+        if (viewers.isNotEmpty) ...[
           Container(
             child: followersWidget(userImages: viewers),
           ),

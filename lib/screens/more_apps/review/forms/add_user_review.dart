@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 class AddReview extends StatefulWidget {
   AddReview({Key? key, required this.arguments}) : super(key: key);
 
-  Map<String, dynamic> arguments;
+  final Map<String, dynamic> arguments;
 
   @override
   _AddReviewState createState() => _AddReviewState();

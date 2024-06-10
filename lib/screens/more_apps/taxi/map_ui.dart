@@ -205,7 +205,7 @@ class _MapUIState extends State<MapUI> {
   void updateMarkerAndCircle(LocationData newLocalData, Uint8List imageData) {
     final LatLng latlng =
         LatLng(newLocalData.latitude!, newLocalData.longitude!);
-    this.setState(() {
+    setState(() {
       _riderMarker = Marker(
           markerId: const MarkerId("home"),
           position: latlng,

@@ -37,7 +37,7 @@ class GroupDetailScreen extends StatefulWidget {
 class _GroupDetailScreenState extends State<GroupDetailScreen>
     with SingleTickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _scaffoldGroupDetailScreen =
-      new GlobalKey<ScaffoldState>();
+      GlobalKey<ScaffoldState>();
 
   late final SlidableController _slideController = SlidableController(this);
 
@@ -155,11 +155,13 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
     mainSocketProvider = Provider.of<MainSocketProvider>(context);
 
     initializeListener();
-    return WillPopScope(
-      onWillPop: () async {
-        mainSocketProvider.removeStreamSubscription(streamSubscription);
-        Navigator.of(context).pop(groupDetail);
-        return false;
+    return PopScope(
+      onPopInvoked: (didPop) async {
+        if (didPop) {
+          mainSocketProvider.removeStreamSubscription(streamSubscription);
+          Navigator.of(context).pop(groupDetail);
+          return;
+        }
       },
       child: Scaffold(
         key: _scaffoldGroupDetailScreen,
@@ -189,27 +191,25 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
       leadingWidth: 40,
       title: Padding(
         padding: const EdgeInsets.only(right: 30.0),
-        child: Container(
-          child: Row(
-            children: [
-              getUserIcon(),
-              const SizedBox(
-                width: 12,
+        child: Row(
+          children: [
+            getUserIcon(),
+            const SizedBox(
+              width: 12,
+            ),
+            Expanded(
+              child: Text(
+                messageDecoderWithEmoji(groupDetail?.fullName ?? "") ?? "",
+                style: TextStyle(
+                    color: blackFont,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold),
+                overflow: TextOverflow.ellipsis,
+                softWrap: false,
+                maxLines: 1,
               ),
-              Expanded(
-                child: Text(
-                  messageDecoderWithEmoji(groupDetail?.fullName ?? "") ?? "",
-                  style: TextStyle(
-                      color: blackFont,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold),
-                  overflow: TextOverflow.ellipsis,
-                  softWrap: false,
-                  maxLines: 1,
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
       actions: getGroupActions(),
@@ -243,7 +243,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
           Navigator.of(context)
               .pushNamed(Routes.PHOTO_VIEWER, arguments: groupDetail!.avatar);
         },
-        child: Container(
+        child: SizedBox(
           height: 36,
           width: 36,
           child: Container(
@@ -278,7 +278,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
       );
     }
 
-    return Container(
+    return SizedBox(
       height: 36,
       width: 36,
       child: Container(
@@ -373,12 +373,10 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
         ? Center(
             child: CircularLoadingIndicator(),
           )
-        : Container(
-            child: Column(
-              children: [
-                Expanded(child: _buildConnectionsList()),
-              ],
-            ),
+        : Column(
+            children: [
+              Expanded(child: _buildConnectionsList()),
+            ],
           );
   }
 
@@ -530,7 +528,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
             overflow: TextOverflow.fade,
             softWrap: false,
           ),
-          trailing: Container(
+          trailing: SizedBox(
             width: 60,
             child: Switch(
               value: muteNotification,

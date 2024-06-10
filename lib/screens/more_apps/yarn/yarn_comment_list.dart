@@ -157,9 +157,9 @@ class _YarnCommentListState extends State<YarnCommentList> {
               menu.openMenu();
             }
           },
-          child: Row(
+          child: const Row(
             children: [
-              const Text(
+              Text(
                 "Top Comments",
                 style: TextStyle(
                   fontSize: 10,
@@ -167,7 +167,7 @@ class _YarnCommentListState extends State<YarnCommentList> {
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              const Icon(
+              Icon(
                 Icons.arrow_drop_down_outlined,
               )
             ],
@@ -204,8 +204,8 @@ class _YarnCommentListState extends State<YarnCommentList> {
         }
 
         count = result['count'];
-        next = result['next'] != null ? result['next'] : "";
-        previous = result['previous'] != null ? result['previous'] : "";
+        next = result['next'] ?? "";
+        previous = result['previous'] ?? "";
         final tempList = result['results'];
         yarnComments = [];
         if (mounted) {

@@ -155,7 +155,7 @@ class _SearchUserState extends State<SearchUser> {
   }
 
   Widget getUserLeading(CustomerProfile user) {
-    final Color borderColor = getUserTypeColor(user: user);
+    // final Color borderColor = getUserTypeColor(user: user);
 
     return GestureDetector(
       onTap: () {
@@ -175,7 +175,7 @@ class _SearchUserState extends State<SearchUser> {
   }
 
   String getSearchUrl(String searchedText) {
-    return AppConfig.baseUrl + "/api/v1/search/users/?search=" + searchedText;
+    return "${AppConfig.baseUrl}/api/v1/search/users/?search=$searchedText";
   }
 
   @override
@@ -196,7 +196,7 @@ class _SearchUserState extends State<SearchUser> {
 
       setState(() => _isRefreshing());
 
-      if (results.isNotEmpty || searchItemTextController.text.length != 0) {
+      if (results.isNotEmpty || searchItemTextController.text.isNotEmpty) {
         if (mounted) {
           setState(() {
             isSearchIsEmpty = false;

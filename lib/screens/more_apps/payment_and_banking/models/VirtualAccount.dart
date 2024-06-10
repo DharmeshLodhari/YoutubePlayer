@@ -64,7 +64,7 @@ class VirtualAccount {
 
   Map<String, dynamic> toJson() {
     // ignore: unnecessary_new
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
     data['account_name'] = accountName;
     data['account_number'] = accountNumber;
     data['created_at'] = createdAt;

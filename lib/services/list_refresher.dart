@@ -20,8 +20,9 @@ class ListRefresher {
 
     _timerForListRefresher = Timer.periodic(_refreshDurationInterval, (time) {
       if (myGlobals.scaffoldKey.currentContext != null) {
-        if (AppConfig.enableLogs.value)
+        if (AppConfig.enableLogs.value) {
           debugPrint("<====== Refreshing list ======>");
+        }
         final RouteProvider routeProvider = Provider.of<RouteProvider>(
           myGlobals.scaffoldKey.currentContext!,
           listen: false,

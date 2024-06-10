@@ -211,7 +211,7 @@ class _MyAppState extends State<MyApp> {
               fontFamily: "Inter",
               splashColor: Colors.transparent,
               highlightColor: Colors.transparent,
-              scaffoldBackgroundColor: navyBlue,
+              scaffoldBackgroundColor: lightGrey,
               textSelectionTheme: TextSelectionThemeData(
                 selectionHandleColor: navyBlue,
               ),

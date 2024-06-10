@@ -110,9 +110,9 @@ class SearchTransactionCardState extends State<SearchTransactionCard> {
         if (mounted) {
           isLoading = false;
           try {
-            tempList!.forEach((result) {
+            for (var result in tempList!) {
               transactionList.add(result);
-            });
+            }
           } catch (e) {
             debugPrint("error adding products $e");
           }

@@ -153,52 +153,55 @@ class _CreateOrEditPostScreenState extends State<CreateOrEditPostScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        if (_userUpdatingPost) {
-          showDialogBox(
-            context: context,
-            actionOneTextColor: white,
-            actionOneBgColor: mateRed,
-            actionTwoTextColor: blackFont,
-            actionTwoBgColor: greyBorderColor,
-            title: 'Exit editing post',
-            actionTwoText: AppLocalization.of(context)!.cancel,
-            actionOneText: AppLocalization.of(context)!.exit,
-            description: 'Are you sure you want to exit editing this post?',
-            roundedBackgroundIcon: RoundedBackgroundIcon(
-              enableMargin: false,
-              width: 90,
-              height: 90,
-              image: const Icon(SlydoAppIcon.remove),
-            ),
-            leftButtonOnPressed: () {
-              Navigator.pop(context);
-            },
-          );
-        } else if (_quillBodyTextController.document.toPlainText().length > 1) {
-          showDialogBox(
-            context: context,
-            actionOneTextColor: white,
-            actionOneBgColor: mateRed,
-            actionTwoTextColor: blackFont,
-            actionTwoBgColor: greyBorderColor,
-            title: 'Exit creating post',
-            actionTwoText: AppLocalization.of(context)!.cancel,
-            actionOneText: AppLocalization.of(context)!.exit,
-            description: 'Are you sure you want to exit creating this post?',
-            roundedBackgroundIcon: RoundedBackgroundIcon(
-              enableMargin: false,
-              width: 90,
-              height: 90,
-              image: Icon(SlydoAppIcon.remove, color: mateRed),
-            ),
-            leftButtonOnPressed: () {
-              Navigator.pop(context);
-            },
-          );
+    return PopScope(
+      onPopInvoked: (didPop) async {
+        if (didPop) {
+          if (_userUpdatingPost) {
+            showDialogBox(
+              context: context,
+              actionOneTextColor: white,
+              actionOneBgColor: mateRed,
+              actionTwoTextColor: blackFont,
+              actionTwoBgColor: greyBorderColor,
+              title: 'Exit editing post',
+              actionTwoText: AppLocalization.of(context)!.cancel,
+              actionOneText: AppLocalization.of(context)!.exit,
+              description: 'Are you sure you want to exit editing this post?',
+              roundedBackgroundIcon: RoundedBackgroundIcon(
+                enableMargin: false,
+                width: 90,
+                height: 90,
+                image: const Icon(SlydoAppIcon.remove),
+              ),
+              leftButtonOnPressed: () {
+                Navigator.pop(context);
+              },
+            );
+          } else if (_quillBodyTextController.document.toPlainText().length >
+              1) {
+            showDialogBox(
+              context: context,
+              actionOneTextColor: white,
+              actionOneBgColor: mateRed,
+              actionTwoTextColor: blackFont,
+              actionTwoBgColor: greyBorderColor,
+              title: 'Exit creating post',
+              actionTwoText: AppLocalization.of(context)!.cancel,
+              actionOneText: AppLocalization.of(context)!.exit,
+              description: 'Are you sure you want to exit creating this post?',
+              roundedBackgroundIcon: RoundedBackgroundIcon(
+                enableMargin: false,
+                width: 90,
+                height: 90,
+                image: Icon(SlydoAppIcon.remove, color: mateRed),
+              ),
+              leftButtonOnPressed: () {
+                Navigator.pop(context);
+              },
+            );
+          }
+          return;
         }
-        return true;
       },
       child: Scaffold(
         backgroundColor: Colors.white,

@@ -50,7 +50,7 @@ class _VariantOverlayState extends State<VariantOverlay> {
                   color: Colors.white,
                 ),
               ),
-              Container(
+              SizedBox(
                 // margin: EdgeInsets.all(20.0),
                 height: 400,
                 // height: screenHeight * 0.5,
@@ -75,7 +75,7 @@ class _VariantOverlayState extends State<VariantOverlay> {
                                 imageUrl: item['image'],
                                 height: 150,
                                 // fit: BoxFit.contain,
-                                placeholder: (context, url) => Container(
+                                placeholder: (context, url) => SizedBox(
                                     height: 20.0,
                                     width: 20.0,
                                     child: const Center(

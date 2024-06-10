@@ -148,16 +148,16 @@ class _YarnCommentReplyListState extends State<YarnCommentReplyList> {
               menu.openMenu();
             }
           },
-          child: Row(
+          child: const Row(
             children: [
-              const Text(
+              Text(
                 "Top Comments",
                 style: TextStyle(
                   fontSize: 10,
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              const Icon(
+              Icon(
                 Icons.arrow_drop_down_outlined,
               )
             ],
@@ -194,8 +194,8 @@ class _YarnCommentReplyListState extends State<YarnCommentReplyList> {
         }
 
         count = result['count'] ?? 0;
-        next = result['next'] != null ? result['next'] : "";
-        previous = result['previous'] != null ? result['previous'] : "";
+        next = result['next'] ?? "";
+        previous = result['previous'] ?? "";
         final tempList = result['results'];
         yarnComments = [];
         if (mounted) {

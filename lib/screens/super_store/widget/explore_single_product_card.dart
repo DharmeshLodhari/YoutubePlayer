@@ -233,9 +233,10 @@ class _ExploreSingleProductState extends State<ExploreSingleProduct> {
         const SizedBox(
           height: 5,
         ),
-        isInCart() == false
-            ? displayShoppingAddingToCartControl()
-            : displayShoppingCartControls(),
+        if (isInCart() == false)
+          displayShoppingAddingToCartControl()
+        else
+          displayShoppingCartControls(),
       ],
     );
   }

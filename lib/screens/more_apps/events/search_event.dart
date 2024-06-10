@@ -129,42 +129,41 @@ class _SearchEventState extends State<SearchEvent> {
   }
 
   Widget scaffoldBody() {
-    return Container(
-      child: Column(
-        children: [
-          const SizedBox(
-            height: 6,
-          ),
-          searchBox(),
-          const SizedBox(
-            height: 12,
-          ),
-          isLoading
-              ? Expanded(
-                  child: Center(
-                    child: CircularLoadingIndicator(),
-                  ),
-                )
-              : eventList.isEmpty
-                  ? Expanded(child: searchBackground())
-                  : Expanded(
-                      child: SingleChildScrollView(
-                        child: Column(
-                          children: eventList
-                              .map(
-                                (element) => Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 8, horizontal: 16),
-                                    child: EventTileWithHeart(
-                                      partialEvent: element,
-                                    )),
-                              )
-                              .toList(),
-                        ),
-                      ),
+    return Column(
+      children: [
+        const SizedBox(
+          height: 6,
+        ),
+        searchBox(),
+        const SizedBox(
+          height: 12,
+        ),
+        if (isLoading)
+          Expanded(
+            child: Center(
+              child: CircularLoadingIndicator(),
+            ),
+          )
+        else
+          eventList.isEmpty
+              ? Expanded(child: searchBackground())
+              : Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: eventList
+                          .map(
+                            (element) => Container(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 8, horizontal: 16),
+                                child: EventTileWithHeart(
+                                  partialEvent: element,
+                                )),
+                          )
+                          .toList(),
                     ),
-        ],
-      ),
+                  ),
+                ),
+      ],
     );
   }
 
@@ -364,7 +363,7 @@ class _SearchEventState extends State<SearchEvent> {
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: Container(
+              content: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   elevation: 2,
@@ -485,7 +484,7 @@ class _SearchEventState extends State<SearchEvent> {
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: Container(
+              content: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   elevation: 2,

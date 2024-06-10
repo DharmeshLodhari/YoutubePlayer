@@ -29,10 +29,11 @@ class _CablePlanPaymentDetailState extends State<CablePlanPaymentDetail> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        Navigator.of(context).popAndPushNamed("/utility-history");
-        return false;
+    return PopScope(
+      onPopInvoked: (didPop) async {
+        if (didPop) {
+          Navigator.of(context).popAndPushNamed("/utility-history");
+        }
       },
       child: Scaffold(
         backgroundColor: lightGrey,
@@ -73,34 +74,32 @@ class _CablePlanPaymentDetailState extends State<CablePlanPaymentDetail> {
   }
 
   Widget ticketWithImage() {
-    return Container(
-      child: Stack(
-        children: [
-          Image.asset(
-            "assets/images/utility/cable_payment_background.png",
+    return Stack(
+      children: [
+        Image.asset(
+          "assets/images/utility/cable_payment_background.png",
+        ),
+        Container(
+          height: 470,
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Column(
+            children: [
+              const SizedBox(
+                height: 30,
+              ),
+              providerInfo(),
+              const SizedBox(
+                height: 15,
+              ),
+              MySeparator(color: dividerColor),
+              const SizedBox(
+                height: 20,
+              ),
+              Expanded(child: paymentInfo()),
+            ],
           ),
-          Container(
-            height: 470,
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: Column(
-              children: [
-                const SizedBox(
-                  height: 30,
-                ),
-                providerInfo(),
-                const SizedBox(
-                  height: 15,
-                ),
-                MySeparator(color: dividerColor),
-                const SizedBox(
-                  height: 20,
-                ),
-                Expanded(child: paymentInfo()),
-              ],
-            ),
-          )
-        ],
-      ),
+        )
+      ],
     );
   }
 
@@ -293,7 +292,7 @@ class MySeparator extends StatelessWidget {
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
         final boxWidth = constraints.constrainWidth();
-        final dashWidth = 4.0;
+        const dashWidth = 4.0;
         final dashHeight = height;
         final dashCount = (boxWidth / (2 * dashWidth)).floor();
         return Flex(

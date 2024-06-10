@@ -98,7 +98,7 @@ class OrderTile extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 2),
       child: Text(
-        AppLocalization.of(context)!.ref + " # : ${order!.id}",
+        "${AppLocalization.of(context)!.ref} # : ${order!.id}",
         style: TextStyle(
             color: blackFont, fontWeight: FontWeight.bold, fontSize: 15),
       ),

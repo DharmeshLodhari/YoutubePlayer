@@ -15,7 +15,7 @@ class AppConfigurationBloc {
 
 class AppFeaturesService extends AuthService {
   Future<AppConfigurationModel> getAppFeatures() async {
-    final String url = AppConfig.baseUrl + "/api/v1/user/app-settings";
+    final String url = "${AppConfig.baseUrl}/api/v1/user/app-settings";
 
     final headers = getNonAuthHeader();
     final response =
@@ -160,5 +160,4 @@ class AppConfigurationModel {
   // "enable_empty_envelope":false,
   // "enable_location_sharing":false,
   // "country_name":"Nigeria"}
-
 }

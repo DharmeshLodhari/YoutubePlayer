@@ -22,12 +22,14 @@ class _PropertyDashboardState extends State<PropertyDashboard> {
   Widget build(BuildContext context) {
     _propertyDashboardBloc = Provider.of<PropertyDashboardBloc>(context);
     _propertyFilterBloc = Provider.of<PropertyFilterBloc>(context);
-    return WillPopScope(
-      onWillPop: () {
-        _propertyDashboardBloc.index = 0;
-        _propertyFilterBloc.resetFilter();
+    return PopScope(
+      onPopInvoked: (didPop) {
+        if(didPop) {
+          _propertyDashboardBloc.index = 0;
+          _propertyFilterBloc.resetFilter();
 
-        return Future.value(true);
+          return;
+        }
       },
       child: Scaffold(
         body: PageView(

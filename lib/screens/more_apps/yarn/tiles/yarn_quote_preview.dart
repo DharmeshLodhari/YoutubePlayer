@@ -183,9 +183,10 @@ class _YarnQuotePreviewState extends State<YarnQuotePreview> {
             height: 8,
           ),
         ],
-        widget.yarn.factChecked == true
-            ? _buildFactCheckWidget()
-            : const SizedBox.shrink(),
+        if (widget.yarn.factChecked == true)
+          _buildFactCheckWidget()
+        else
+          const SizedBox.shrink(),
         const SizedBox(height: 6),
         // _buildTopActions(),
       ],
@@ -246,7 +247,7 @@ class _YarnQuotePreviewState extends State<YarnQuotePreview> {
                       ),
                       Expanded(
                         child: Text(
-                          '${getGetYarnQuestionDateTime(widget.yarn.createdAt!)}',
+                          getGetYarnQuestionDateTime(widget.yarn.createdAt!),
                           overflow: TextOverflow.fade,
                           style: TextStyle(fontSize: 12, color: yarnBlack),
                         ),
@@ -383,7 +384,7 @@ class _YarnQuotePreviewState extends State<YarnQuotePreview> {
       // debugPrint(ch);
     });
 
-    list.forEach((data) {
+    for (var data in list) {
       if (data.toString().contains('.') &&
           !data.toString().contains('@') &&
           !data.toString().contains('..') &&
@@ -396,7 +397,7 @@ class _YarnQuotePreviewState extends State<YarnQuotePreview> {
       } else {
         newString = '$newString $data';
       }
-    });
+    }
 
     if (isUrlPresent) {
       return Column(

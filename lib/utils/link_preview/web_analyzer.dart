@@ -87,10 +87,11 @@ class WebAnalyzer {
     InfoBase? info = getInfoFromCache(url);
     if (info != null) return info;
     try {
-      if (useMultithread)
+      if (useMultithread) {
         info = await _getInfoByIsolate(url, multimedia);
-      else
+      } else {
         info = await _getInfo(url!, multimedia);
+      }
 
       if (info != null) {
         info._timeout = DateTime.now().add(cache);
@@ -299,10 +300,10 @@ class WebAnalyzer {
     final matchs = _metaReg.allMatches(html);
     final StringBuffer head = StringBuffer("<html><head>");
     if (matchs.isNotEmpty) {
-      matchs.forEach((element) {
+      for (var element in matchs) {
         final String str = element.group(0)!;
         if (str.contains(_titleReg)) head.writeln(str);
-      });
+      }
     }
     head.writeln("</head></html>");
     return head.toString();

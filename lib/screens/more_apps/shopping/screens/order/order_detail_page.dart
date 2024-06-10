@@ -262,9 +262,11 @@ class _OrderDetailPageState extends State<OrderDetailPage>
     menu.onChange = menuItemSelectionChange;
     menu.menuState = menuStateChange;
 
-    return WillPopScope(
-      onWillPop: () async {
-        return true;
+    return PopScope(
+      onPopInvoked: (didPop) async {
+        if (didPop) {
+          return;
+        }
       },
       child: Scaffold(
         key: scaffoldKey,
@@ -1815,7 +1817,7 @@ class VerticalListItem extends StatelessWidget {
 
   VerticalListItem(Widget child, var item) {
     this.child = child;
-    this.type = item["type"];
+    type = item["type"];
     this.item = item["item"];
   }
 

@@ -227,11 +227,12 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     shippingProcessBloc = Provider.of<ShippingProcessBloc>(context);
 
     isValidCustomer = userBloc.user.userName != product?.seller;
-    return WillPopScope(
-      onWillPop: () async {
-        customerProfileBloc.customer = null;
-        Navigator.pop(context, "back pressed");
-        return true;
+    return PopScope(
+      onPopInvoked: (didPop) async {
+        if (didPop) {
+          customerProfileBloc.customer = null;
+          return;
+        }
       },
       child: Scaffold(
         backgroundColor: Colors.white,
@@ -700,7 +701,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   Future<void> addToCart() async {
-    final String type = "product";
+    const String type = "product";
 
     debugPrint("BASKETBLOC:- ${basketBloc.basketItems}");
     final Product products =
@@ -716,7 +717,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   Future<void> addToSharedCart(SharedCartModel result) async {
-    final String type = "product";
+    const String type = "product";
 
     final Product products =
         product!.copyWith(quantity: 1, withSelectedAddOn: true);
@@ -1912,7 +1913,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   Widget showVariantColorSelection() {
     final int itemCount =
         colorGroups.length; // Replace with your actual item count
-    final int maxItemsPerRow = 5;
+    const int maxItemsPerRow = 5;
     final int totalColumns = calculateColumnCount(itemCount, maxItemsPerRow);
 
     return SizedBox(
@@ -2040,7 +2041,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   Widget showVariantSizes() {
     final int itemCount =
         sizeGroups.length; // Replace with your actual item count
-    final int maxItemsPerRow = 3;
+    const int maxItemsPerRow = 3;
     final int totalColumns = calculateColumnCount(itemCount, maxItemsPerRow);
 
     return SizedBox(

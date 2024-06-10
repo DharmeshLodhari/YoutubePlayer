@@ -34,7 +34,7 @@ class _ViewChatMediaState extends State<ViewChatMedia> {
     type = widget.arguments["type"];
     url = widget.arguments["file"];
     message = widget.arguments["message"];
-    poster = widget.arguments["poster"] ?? null;
+    poster = widget.arguments["poster"];
 
     message = messageDecoderWithEmoji(message);
 
@@ -97,9 +97,11 @@ class _ViewChatMediaState extends State<ViewChatMedia> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: WillPopScope(
-        onWillPop: () async {
-          return Future.value(true);
+      child: PopScope(
+        onPopInvoked: (didPop) async {
+          if(didPop) {
+            return;
+          }
         },
         child: Scaffold(
           backgroundColor: Colors.black,
@@ -110,69 +112,66 @@ class _ViewChatMediaState extends State<ViewChatMedia> {
   }
 
   Widget scaffoldBody() {
-    return Container(
-      child: Column(
-        children: [
-          Expanded(
-              child: Stack(
-            children: [
-              getMediaItem(),
-              Positioned(
-                top: 4,
-                left: 4,
-                child: InkWell(
-                  child: const ClipOval(
-                    child: SizedBox(
-                      height: 36,
-                      width: 36,
-                      child: Icon(
-                        Icons.arrow_back_ios_rounded,
-                        color: Colors.white,
-                        size: 18,
-                      ),
+    return Column(
+      children: [
+        Expanded(
+            child: Stack(
+          children: [
+            getMediaItem(),
+            Positioned(
+              top: 4,
+              left: 4,
+              child: InkWell(
+                child: const ClipOval(
+                  child: SizedBox(
+                    height: 36,
+                    width: 36,
+                    child: Icon(
+                      Icons.arrow_back_ios_rounded,
+                      color: Colors.white,
+                      size: 18,
                     ),
                   ),
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
                 ),
+                onTap: () {
+                  Navigator.pop(context);
+                },
               ),
-              if (message != "")
-                Positioned(
-                  bottom: 0,
-                  child: Container(
-                    width: MediaQuery.of(context).size.width,
-                    color: Colors.black38,
-                    constraints: BoxConstraints(
-                        maxHeight: MediaQuery.of(context).size.height / 5),
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    child: SingleChildScrollView(
-                      child: Row(
-                        children: [
-                          Expanded(
-                              child: Center(
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 16),
-                              child: Text(
-                                message!,
-                                style: const TextStyle(
-                                    color: Colors.white, fontSize: 16),
-                                textAlign: TextAlign.justify,
-                              ),
+            ),
+            if (message != "")
+              Positioned(
+                bottom: 0,
+                child: Container(
+                  width: MediaQuery.of(context).size.width,
+                  color: Colors.black38,
+                  constraints: BoxConstraints(
+                      maxHeight: MediaQuery.of(context).size.height / 5),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  child: SingleChildScrollView(
+                    child: Row(
+                      children: [
+                        Expanded(
+                            child: Center(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: Text(
+                              message!,
+                              style: const TextStyle(
+                                  color: Colors.white, fontSize: 16),
+                              textAlign: TextAlign.justify,
                             ),
-                          )),
-                        ],
-                      ),
+                          ),
+                        )),
+                      ],
                     ),
                   ),
-                )
-              else
-                Container(),
-            ],
-          )),
-        ],
-      ),
+                ),
+              )
+            else
+              Container(),
+          ],
+        )),
+      ],
     );
   }
 
@@ -185,10 +184,8 @@ class _ViewChatMediaState extends State<ViewChatMedia> {
     }
     if (type == "video") {
       return isLoading
-          ? Container(
-              child: Center(
-                child: CircularLoadingIndicator(),
-              ),
+          ? Center(
+              child: CircularLoadingIndicator(),
             )
           : Chewie(
               controller: _chewieController!,

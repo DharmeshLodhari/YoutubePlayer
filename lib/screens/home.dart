@@ -267,7 +267,7 @@ class _HomeState extends State<Home> {
         }
         final Map<String, dynamic>? result = await MomentsService()
             .getExploreMoments(nextExploreMoments, previousExploreMoments,
-                page_size: 10);
+                pageSize: 10);
         if (result == null) {
           isExploreMomentsLoading = false;
           return;
@@ -606,7 +606,7 @@ class _HomeState extends State<Home> {
       },
     ];
 
-    return Container(
+    return SizedBox(
       height: 100.0,
       child: ListView(
         scrollDirection: Axis.horizontal,
@@ -1116,7 +1116,7 @@ class _HomeState extends State<Home> {
         badgeStyle: badges.BadgeStyle(
           shape: badges.BadgeShape.circle,
           badgeColor: naturalGreen,
-          padding: basketBloc.basketItems.length == 0
+          padding: basketBloc.basketItems.isEmpty
               ? const EdgeInsets.all(0)
               : const EdgeInsets.all(4),
           elevation: 0,
@@ -1290,7 +1290,7 @@ class _HomeState extends State<Home> {
   }
 
   Widget? getBadgeContent() {
-    if (basketBloc.basketItems.length == 0) {
+    if (basketBloc.basketItems.isEmpty) {
       return null;
     }
     return Text(
@@ -1605,7 +1605,7 @@ class _HomeState extends State<Home> {
     return GestureDetector(
       onTap: () {
         NavigationUtil.push(context,
-            screen: QRCodeView(arguments: {'isRequest': false}));
+            screen: QRCodeView(arguments: const {'isRequest': false}));
         // NavigationUtil.push(context, screen: QrCodePage(arguments: {'isProfile': 'false', 'virtualAccount': virtualAccount}));
       },
       child: Container(

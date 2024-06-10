@@ -62,28 +62,27 @@ class _AddContractState extends State<AddContract> {
 
   @override
   void initState() {
-    _recipientFocus
-      ..addListener(() {
-        if (!_recipientFocus.hasFocus) {
-          if (mounted) {
-            setState(() {
-              _recipientController.text =
-                  _recipientController.text.toLowerCase();
-            });
-          }
+    _recipientFocus.addListener(() {
+      if (!_recipientFocus.hasFocus) {
+        if (mounted) {
+          setState(() {
+            _recipientController.text = _recipientController.text.toLowerCase();
+          });
         }
-      });
+      }
+    });
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
-    return WillPopScope(
-      onWillPop: () async {
-        _payee = null;
-
-        return true;
+    return PopScope(
+      onPopInvoked: (didPop) async {
+        if (didPop) {
+          _payee = null;
+          return;
+        }
       },
       child: Scaffold(
         backgroundColor: Colors.white,

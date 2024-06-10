@@ -76,7 +76,7 @@ class _AskMentionViewState extends State<AskMentionView> {
   Widget _buildUserListTile(CustomerProfile customerProfile) {
     return InkWell(
       onTap: () {
-        widget.onTap(customerProfile.userName ?? null);
+        widget.onTap(customerProfile.userName);
         cleanList();
       },
       child: Container(

@@ -8,8 +8,8 @@ import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:http/http.dart';
 import "package:http/http.dart" as http;
+import 'package:http/http.dart';
 
 import 'models/Topics/CommentDetails.dart';
 import 'models/Topics/Notifications.dart';
@@ -332,9 +332,9 @@ class YarnAuth extends AuthService {
       if (url.contains("page_size")) {
         url = url;
       } else if (url.contains("?")) {
-        url = url + "&page_size=$pageSize";
+        url = "$url&page_size=$pageSize";
       } else {
-        url = url + "?page_size=$pageSize";
+        url = "$url?page_size=$pageSize";
       }
     }
 
@@ -780,8 +780,8 @@ class YarnAuth extends AuthService {
       "age_restriction": jsonEncode(addYarnAndQuestion.ageRestriction ?? 13),
     };
     if (addYarnAndQuestion.attachment != null) {
-      mapValue['attachment'] = messageDecoderWithEmoji(
-          jsonEncode(addYarnAndQuestion.attachment ?? null))!;
+      mapValue['attachment'] =
+          messageDecoderWithEmoji(jsonEncode(addYarnAndQuestion.attachment))!;
     }
 
     // if (addYarnAndQuestion.userReyarned != null) {

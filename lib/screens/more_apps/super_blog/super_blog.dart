@@ -8,7 +8,6 @@ import 'package:Slydo/screens/more_apps/user_post/user_post_auth.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -35,7 +34,7 @@ class _SuperBlogState extends State<SuperBlog> {
   List<UserPost> postList = [];
   final ScrollController _postScrollController = ScrollController();
 
-  final GlobalKey<ScaffoldState> _postScaffoldKey = GlobalKey<ScaffoldState>();
+  // final GlobalKey<ScaffoldState> _postScaffoldKey = GlobalKey<ScaffoldState>();
   final RefreshController _postRefreshController =
       RefreshController(initialRefresh: false);
 
@@ -120,7 +119,7 @@ class _SuperBlogState extends State<SuperBlog> {
   void initState() {
     _pageViewCtrl = PageController(initialPage: 0);
 
-    this.getListOfBlogs();
+    getListOfBlogs();
     _postScrollController.addListener(() {
       if (_postScrollController.position.pixels ==
               _postScrollController.position.maxScrollExtent &&
@@ -133,26 +132,19 @@ class _SuperBlogState extends State<SuperBlog> {
   }
 
   void _onPostRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
-      final connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        postCount = 0;
-        postNext = "";
-        postPrevious = "";
-        postList = [];
-        isFirstTime = true;
-        if (mounted) setState(() {});
+    if (await checkConnection(context)) {
+      postCount = 0;
+      postNext = "";
+      postPrevious = "";
+      postList = [];
+      isFirstTime = true;
+      if (mounted) setState(() {});
 
-        getListOfBlogs();
-        _postRefreshController.refreshCompleted();
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
-        _postRefreshController.refreshCompleted();
-      }
-    });
+      getListOfBlogs();
+      _postRefreshController.refreshCompleted();
+    } else {
+      _postRefreshController.refreshCompleted();
+    }
   }
 
   AppBar appBar() {
@@ -447,11 +439,11 @@ class _SlydoBlogsListState extends State<SlydoBlogsList> {
   List<UserPost> postList = [];
   final ScrollController _postScrollController = ScrollController();
 
-  final GlobalKey<ScaffoldState> _postScaffoldKey = GlobalKey<ScaffoldState>();
+  // final GlobalKey<ScaffoldState> _postScaffoldKey = GlobalKey<ScaffoldState>();
   final RefreshController _postRefreshController =
       RefreshController(initialRefresh: false);
 
-  resetAndGetListOfBlogs(String value) {
+  void resetAndGetListOfBlogs(String value) {
     titleToSearch = value;
     postCount = 0;
     postNext = '';
@@ -530,7 +522,7 @@ class _SlydoBlogsListState extends State<SlydoBlogsList> {
 
   @override
   void initState() {
-    this.getListOfBlogs();
+    getListOfBlogs();
     _postScrollController.addListener(() {
       if (_postScrollController.position.pixels ==
               _postScrollController.position.maxScrollExtent &&
@@ -543,26 +535,19 @@ class _SlydoBlogsListState extends State<SlydoBlogsList> {
   }
 
   void _onPostRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
-      final connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        postCount = 0;
-        postNext = "";
-        postPrevious = "";
-        postList = [];
-        isFirstTime = true;
-        if (mounted) setState(() {});
+    if (await checkConnection(context)) {
+      postCount = 0;
+      postNext = "";
+      postPrevious = "";
+      postList = [];
+      isFirstTime = true;
+      if (mounted) setState(() {});
 
-        getListOfBlogs();
-        _postRefreshController.refreshCompleted();
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
-        _postRefreshController.refreshCompleted();
-      }
-    });
+      getListOfBlogs();
+      _postRefreshController.refreshCompleted();
+    } else {
+      _postRefreshController.refreshCompleted();
+    }
   }
 
   @override

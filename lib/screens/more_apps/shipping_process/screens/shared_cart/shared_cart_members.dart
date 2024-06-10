@@ -59,10 +59,12 @@ class _SharedCartMembersState extends State<SharedCartMembers>
   @override
   Widget build(BuildContext context) {
     sharedCartBloc = Provider.of<SharedCartBloc>(context);
-    return WillPopScope(
-      onWillPop: () async {
-        Navigator.of(context).pop(isMemberChange);
-        return true;
+    return PopScope(
+      onPopInvoked: (didPop) async {
+        if(didPop) {
+          Navigator.of(context).pop(isMemberChange);
+          return;
+        }
       },
       child: ScaffoldMessenger(
         key: _scaffoldMessengerKey,

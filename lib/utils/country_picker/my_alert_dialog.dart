@@ -158,9 +158,10 @@ class MyAlertDialog<T> extends StatelessWidget {
       children: children,
     );
 
-    if (label != null)
+    if (label != null) {
       dialogChild =
           Semantics(namesRoute: true, label: label, child: dialogChild);
+    }
 
     return Dialog(child: dialogChild);
   }

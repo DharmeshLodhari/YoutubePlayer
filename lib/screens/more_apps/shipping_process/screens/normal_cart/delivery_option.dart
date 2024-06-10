@@ -46,10 +46,12 @@ class _DeliveryOptionState extends State<DeliveryOption> {
       bottom: Platform.isIOS ? true : false,
       top: false,
       color: white,
-      child: WillPopScope(
-        onWillPop: () async {
-          shippingProcessBloc.clearBuyNowData();
-          return true;
+      child: PopScope(
+        onPopInvoked: (didPop) async {
+          if(didPop) {
+            shippingProcessBloc.clearBuyNowData();
+            return;
+          }
         },
         child: Scaffold(
           backgroundColor: lightGrey,

@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
@@ -11,7 +9,6 @@ import 'package:provider/provider.dart';
 import 'music_dashboard_bloc.dart';
 import 'music_player.dart';
 
-// ignore: must_be_immutable
 class MusicDetailPage extends StatefulWidget {
   final dynamic arguments;
 
@@ -65,10 +62,12 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
   @override
   Widget build(BuildContext context) {
     _musicDashboardBloc = Provider.of<MusicDashboardBloc>(context);
-    return WillPopScope(
-      onWillPop: () {
-        _musicDashboardBloc.index = 0;
-        return Future.value(true);
+    return PopScope(
+      onPopInvoked: (didPop) {
+        if(didPop) {
+          _musicDashboardBloc.index = 0;
+          return;
+        }
       },
       child: Scaffold(
         backgroundColor: Colors.white,
@@ -427,30 +426,28 @@ class _PositionSeekWidgetState extends State<PositionSeekWidget> {
             bottom: -16,
             left: 20,
             right: 20,
-            child: Container(
-              child: Row(
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  Text(
-                    durationToString(widget.currentPosition),
-                    style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w400,
-                        color: darkGrey),
-                  ),
-                  const Expanded(
-                      child: SizedBox(
-                    width: 8,
-                  )),
-                  Text(
-                    durationToString(widget.duration),
-                    style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w400,
-                        color: darkGrey),
-                  )
-                ],
-              ),
+            child: Row(
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Text(
+                  durationToString(widget.currentPosition),
+                  style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w400,
+                      color: darkGrey),
+                ),
+                const Expanded(
+                    child: SizedBox(
+                  width: 8,
+                )),
+                Text(
+                  durationToString(widget.duration),
+                  style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w400,
+                      color: darkGrey),
+                )
+              ],
             ),
           )
         ],

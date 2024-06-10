@@ -14,7 +14,6 @@ import 'package:Slydo/widget/customized_popup_menu.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:Slydo/widget/slide_action_button.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
@@ -218,9 +217,11 @@ class _InvoiceScreenState extends State<InvoiceScreen>
     menu.onChange = menuItemSelectionChange;
     menu.menuState = menuStateChange;
 
-    return WillPopScope(
-      onWillPop: () async {
-        return Future.value(true);
+    return PopScope(
+      onPopInvoked: (didPop) async {
+        if (didPop) {
+          return;
+        }
       },
       child: Scaffold(
         appBar: appBar() as PreferredSizeWidget?,
@@ -268,21 +269,13 @@ class _InvoiceScreenState extends State<InvoiceScreen>
   }
 
   void _onRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
-      final connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        invoiceBloc.isRefreshing = true;
-        invoiceBloc.getInvoiceList();
-        _refreshController.refreshCompleted();
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
-
-        _refreshController.refreshCompleted();
-      }
-    });
+    if (await checkConnection(context)) {
+      invoiceBloc.isRefreshing = true;
+      invoiceBloc.getInvoiceList();
+      _refreshController.refreshCompleted();
+    } else {
+      _refreshController.refreshCompleted();
+    }
   }
 
   Widget getConsumerChildWidget(InvoiceBloc invoiceBloc) {

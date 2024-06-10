@@ -14,9 +14,11 @@ class _NewsDashboardState extends State<NewsDashboard> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        return true;
+    return PopScope(
+      onPopInvoked: (didPop) async {
+        if (didPop) {
+          return;
+        }
       },
       child: DefaultTabController(
         length: 3,

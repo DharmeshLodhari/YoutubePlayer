@@ -43,7 +43,7 @@ class AskCategoryPick extends StatelessWidget {
                 .map(
                   (e) => GestureDetector(
                     onTap: () => onCategoryPick!(e['category']),
-                    child: Container(
+                    child: SizedBox(
                       height: 90,
                       width: 90,
                       child: e['icon'],

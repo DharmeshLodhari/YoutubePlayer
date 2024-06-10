@@ -194,7 +194,6 @@ class _YarnActionsState extends State<YarnActions> {
   Widget _buildReYarnButton() {
     bool canReYarn = true;
     bool canReYarnTemp = true;
-    final bool canReYarnMain = true;
     if (widget.yarn.reYarn != null) {
       canReYarn = false;
     }
@@ -464,9 +463,9 @@ class _YarnActionsState extends State<YarnActions> {
         await ShareInChat().selectShareCustomer(context);
     debugPrint("Selected users = ${listOfRecipient.length}");
 
-    listOfRecipient.forEach((recipient) {
+    for (var recipient in listOfRecipient) {
       addMomentPostToChat(recipientUser: recipient!, yarnTopic: yarnTopic);
-    });
+    }
   }
 
   Future<void> addMomentPostToChat({

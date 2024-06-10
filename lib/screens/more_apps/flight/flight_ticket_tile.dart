@@ -20,7 +20,7 @@ class FlightTicketTile extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
+            SizedBox(
                 height: 20,
                 width: 20,
                 child: ClipOval(

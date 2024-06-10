@@ -9,7 +9,6 @@ import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
@@ -44,7 +43,7 @@ class _CustomCategoryListState extends State<CustomCategoryList> {
   @override
   void initState() {
     Future.delayed(const Duration(seconds: 1), () {
-      this.getList();
+      getList();
     });
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
@@ -64,24 +63,17 @@ class _CustomCategoryListState extends State<CustomCategoryList> {
   }
 
   void _onProductRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
-      final connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        itemCount = 0;
-        next = "";
-        previous = "";
-        itemList = [];
-        debugPrint("Refresh called on discount!!  ");
-        getList();
-        _refreshController.refreshCompleted();
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
-        _refreshController.refreshCompleted();
-      }
-    });
+    if (await checkConnection(context)) {
+      itemCount = 0;
+      next = "";
+      previous = "";
+      itemList = [];
+      debugPrint("Refresh called on discount!!  ");
+      getList();
+      _refreshController.refreshCompleted();
+    } else {
+      _refreshController.refreshCompleted();
+    }
   }
 
   void getList({bool fetchFresh = false}) async {
@@ -137,7 +129,7 @@ class _CustomCategoryListState extends State<CustomCategoryList> {
     }
   }
 
-  addCategory() {
+  void addCategory() {
     showDialogBoxWithInput(
       context: context,
       actionOneTextColor: white,
@@ -198,7 +190,7 @@ class _CustomCategoryListState extends State<CustomCategoryList> {
     );
   }
 
-  deleteOrEditCategory(ProductCategory prod) {
+  void deleteOrEditCategory(ProductCategory prod) {
     _controller.text = prod.name;
     showDialogBoxWithInput(
         context: context,

@@ -18,10 +18,12 @@ class _MyEventsScreenState extends State<MyEventsScreen> {
   @override
   Widget build(BuildContext context) {
     eventDashboardBloc = Provider.of<EventDashboardBloc>(context);
-    return WillPopScope(
-      onWillPop: () async {
-        eventDashboardBloc.index = 0;
-        return true;
+    return PopScope(
+      onPopInvoked: (didPop) async {
+        if (didPop) {
+          eventDashboardBloc.index = 0;
+          return;
+        }
       },
       child: DefaultTabController(
         length: 2,

@@ -33,10 +33,11 @@ class _SendPaymentState extends State<SendPayment> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        Navigator.pop(context, "back pressed");
-        return true;
+    return PopScope(
+      onPopInvoked: (didPop) async {
+        if(didPop) {
+          return;
+        }
       },
       child: Scaffold(
         backgroundColor: Colors.white,

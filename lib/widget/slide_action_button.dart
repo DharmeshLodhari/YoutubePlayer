@@ -20,42 +20,36 @@ class SlideActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (iconColor == null) {
-      iconColor = Colors.white;
-    }
+    iconColor ??= Colors.white;
 
-    return Container(
-      child: InkWell(
-        child: Card(
-          color: backgroundColor,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              Icon(
-                icon,
-                size: 16,
-                color: iconColor,
-              ),
-              const SizedBox(
-                height: 6,
-              ),
-              Text(
-                title!,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: iconColor),
-              )
-            ],
-          ),
+    return InkWell(
+      child: Card(
+        color: backgroundColor,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            Icon(
+              icon,
+              size: 16,
+              color: iconColor,
+            ),
+            const SizedBox(
+              height: 6,
+            ),
+            Text(
+              title!,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  fontSize: 12, fontWeight: FontWeight.w600, color: iconColor),
+            )
+          ],
         ),
-        onTap: () {
-          slideController!.close();
-          onTap!();
-        },
       ),
+      onTap: () {
+        slideController!.close();
+        onTap!();
+      },
     );
   }
 }

@@ -7,7 +7,6 @@ import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shimmer/shimmer.dart';
@@ -28,7 +27,7 @@ class _MomentsTabState extends State<MomentsTab> {
   int? myMomentsCount = 0;
   bool isMyMomentsLoading = false;
   List<MomentsModel> myMomentsList = [];
-  final ScrollController _myMomentsScrollController = new ScrollController();
+  final ScrollController _myMomentsScrollController = ScrollController();
 
   final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
@@ -40,7 +39,7 @@ class _MomentsTabState extends State<MomentsTab> {
     getSearchedUserMoments();
   }
 
-  getSearchedUserMoments() async {
+  void getSearchedUserMoments() async {
     if (!isMyMomentsLoading) {
       if (myMomentsNext != null && !isMyMomentsLoading) {
         if (mounted) {
@@ -80,23 +79,15 @@ class _MomentsTabState extends State<MomentsTab> {
   }
 
   void _onRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        _refreshPage();
-        _refreshController.refreshCompleted();
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)?.internetConnectionNotAvailable ??
-                    "");
-        _refreshController.refreshCompleted();
-      }
-    });
+    if (await checkConnection(context)) {
+      _refreshPage();
+      _refreshController.refreshCompleted();
+    } else {
+      _refreshController.refreshCompleted();
+    }
   }
 
-  _refreshPage() {
+  void _refreshPage() {
     isFirstTime = true;
     myMomentsNext = "";
     myMomentsCount = 0;

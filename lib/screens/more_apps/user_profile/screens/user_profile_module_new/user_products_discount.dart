@@ -8,7 +8,6 @@ import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/custom_box_shadow.dart';
 import 'package:Slydo/widget/item_display_product_for_discount.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -74,24 +73,17 @@ class _UserProductsDiscountState extends State<UserProductDiscount> {
   }
 
   void _onProductRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
-      final connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        productCount = 0;
-        productNext = "";
-        productPrevious = "";
-        productList = [];
-        debugPrint("Refresh called on products!!  ");
-        getProductList();
-        _productsRefreshController.refreshCompleted();
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
-        _productsRefreshController.refreshCompleted();
-      }
-    });
+    if (await checkConnection(context)) {
+      productCount = 0;
+      productNext = "";
+      productPrevious = "";
+      productList = [];
+      debugPrint("Refresh called on products!!  ");
+      getProductList();
+      _productsRefreshController.refreshCompleted();
+    } else {
+      _productsRefreshController.refreshCompleted();
+    }
   }
 
   void getProductList() async {

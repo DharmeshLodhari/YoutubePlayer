@@ -16,7 +16,6 @@ import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_dashboard_bloc.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_list_screen.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_report_screen.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/util.dart';
@@ -338,7 +337,7 @@ class _YarnOptionsState extends State<YarnOptions> {
     );
   }
 
-  showDeleteYarnDialog() {
+  void showDeleteYarnDialog() {
     showDialogBox(
         context: context,
         actionOneTextColor: blackFont,
@@ -361,7 +360,7 @@ class _YarnOptionsState extends State<YarnOptions> {
         });
   }
 
-  showDeleteYarnCommentDialog() {
+  void showDeleteYarnCommentDialog() {
     showDialogBox(
         context: context,
         actionOneTextColor: blackFont,
@@ -615,7 +614,6 @@ class _YarnOptionsState extends State<YarnOptions> {
 
   Widget _buildTile(
       {String? icon,
-      double? width,
       String? title,
       String? subTitle,
       GestureTapCallback? onTap}) {
@@ -628,7 +626,7 @@ class _YarnOptionsState extends State<YarnOptions> {
             Container(
               padding: const EdgeInsets.all(10.0),
               width: 40,
-              decoration: new BoxDecoration(
+              decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: Colors.blue.withOpacity(0.05),
               ),
@@ -700,9 +698,9 @@ class _YarnOptionsState extends State<YarnOptions> {
         await ShareInChat().selectShareCustomer(context);
     debugPrint("Selected users = ${listOfRecipient.length}");
 
-    listOfRecipient.forEach((recipient) {
+    for (var recipient in listOfRecipient) {
       addMomentPostToChat(recipientUser: recipient!, yarnTopic: yarnTopic);
-    });
+    }
   }
 
   Future<void> addMomentPostToChat({
@@ -762,7 +760,7 @@ class _YarnOptionsState extends State<YarnOptions> {
   }
 
   Future deleteYarnAndQuestion() async {
-    final bool? isQuestion = widget.yarnTopic!.isQuestion;
+    final bool isQuestion = widget.yarnTopic!.isQuestion;
     final bool? data =
         await YarnAuth().deleteSingleTopics(yarnId: widget.yarnTopic!.id);
     if (data != null && data) {
@@ -813,7 +811,6 @@ class _YarnOptionsState extends State<YarnOptions> {
         widget.onUpdateMomentComment!(widget.commentDetail!, true);
       }
       // Navigator.pop(context);
-
     } else {
       showToast(message: "Comment pinned failed");
       Navigator.pop(context);

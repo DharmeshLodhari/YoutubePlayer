@@ -16,7 +16,6 @@ import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:Slydo/widget/slide_action_button.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:intl/intl.dart';
@@ -103,7 +102,7 @@ class _PaymentRequestListState extends State<PaymentRequestList>
     });
   }
 
-  _refresh() {
+  void _refresh() {
     count = 0;
     next = "";
     previous = "";
@@ -119,21 +118,12 @@ class _PaymentRequestListState extends State<PaymentRequestList>
   }
 
   void _onRefresh() async {
-    await Connectivity().checkConnectivity().then((value) {
-      final connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        debugPrint('_onRefresh()');
-
-        _refresh();
-        _refreshController.refreshCompleted();
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
-        _refreshController.refreshCompleted();
-      }
-    });
+    if (await checkConnection(context)) {
+      _refresh();
+      _refreshController.refreshCompleted();
+    } else {
+      _refreshController.refreshCompleted();
+    }
   }
 
   void menuItemSelectionChange(String value, int index) {
@@ -604,22 +594,14 @@ class _PaymentRequestListState extends State<PaymentRequestList>
     return Padding(
       padding: const EdgeInsets.only(right: 4.0),
       child: InkWell(
-        onTap: () {
-          Connectivity().checkConnectivity().then((value) {
-            final connectionResult = value;
-            if (connectionResult == ConnectivityResult.wifi ||
-                connectionResult == ConnectivityResult.mobile) {
-              Navigator.of(context).pushNamed('/request-payment',
-                  arguments: <String, bool>{
-                    'isRequest': true,
-                    'isFromProfile': true
-                  });
-            } else {
-              showToast(
-                  message: AppLocalization.of(context)!
-                      .internetConnectionNotAvailable);
-            }
-          });
+        onTap: () async {
+          if (await checkConnection(context)) {
+            Navigator.of(context).pushNamed('/request-payment',
+                arguments: <String, bool>{
+                  'isRequest': true,
+                  'isFromProfile': true
+                });
+          }
         },
         child: const Icon(Icons.add, color: Colors.white),
       ),

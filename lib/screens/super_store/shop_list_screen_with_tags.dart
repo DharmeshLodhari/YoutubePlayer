@@ -10,7 +10,6 @@ import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -76,7 +75,7 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
   String _currentCategory = '';
   late DashboardBloc _dashboardBloc;
 
-  CarouselController _controller = CarouselController();
+  final CarouselController _controller = CarouselController();
   int currentIndex = 0;
 
   AppBar appBar() {
@@ -94,7 +93,7 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
           fontWeight: FontWeight.w700,
         ),
       ),
-      actions: [
+      actions: const [
         // _cartBtn(),
         // SizedBox(width: 12),
       ],
@@ -403,7 +402,6 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
         // for(var item in customerProfileListNearBy){
         //   debugPrint('Fola near by:::: ${item.toJson()}');
         // }
-
       }
       if (customerProfileListNearBy.isEmpty) {
         // noNearByInList = true;
@@ -437,19 +435,12 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
   }
 
   void _onRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
-      final connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        _refreshPage();
-        _refreshController.refreshCompleted();
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
-        _refreshController.refreshCompleted();
-      }
-    });
+    if (await checkConnection(context)) {
+      _refreshPage();
+      _refreshController.refreshCompleted();
+    } else {
+      _refreshController.refreshCompleted();
+    }
   }
 
   @override
@@ -667,8 +658,7 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
                   rowTitle(headers, isLast: i == rowHeaders.length - 1),
                 ),
               )
-              .values
-              .toList(),
+              .values,
       ],
     );
   }
@@ -676,7 +666,7 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
   Future<List<Product>> getRowTitle(headers) async {
     final List<Product> result = [];
     for (var item in headers['results']) {
-      final Product product = await ShoppingAuthService().createProduct(item);
+      final Product product = ShoppingAuthService().createProduct(item);
       result.add(product);
     }
     return result;
@@ -790,7 +780,7 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
         if (noItemInList)
           const SizedBox.shrink()
         else
-          Row(
+          const Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               // Row(
@@ -830,7 +820,7 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
               // ),
             ],
           ),
-        Container(
+        SizedBox(
           height: 280,
           child: ListView.builder(
             padding: const EdgeInsets.only(bottom: 6),
@@ -980,77 +970,75 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
   }
 
   Widget searchBox() {
-    return Container(
-      child: Theme(
-        data: Theme.of(context).copyWith(
-          textSelectionTheme: TextSelectionThemeData(
-            selectionHandleColor: navyBlue,
-          ),
+    return Theme(
+      data: Theme.of(context).copyWith(
+        textSelectionTheme: TextSelectionThemeData(
+          selectionHandleColor: navyBlue,
         ),
-        child: InkWell(
-          onTap: () {
-            Navigator.of(context).pushNamed("/search-product");
-          },
-          child: IgnorePointer(
-            ignoring: true,
-            child: TextFormField(
-              readOnly: true,
-              style: TextStyle(
-                fontSize: 16,
-                fontFamily: "Inter",
-                color: blackFont,
+      ),
+      child: InkWell(
+        onTap: () {
+          Navigator.of(context).pushNamed("/search-product");
+        },
+        child: IgnorePointer(
+          ignoring: true,
+          child: TextFormField(
+            readOnly: true,
+            style: TextStyle(
+              fontSize: 16,
+              fontFamily: "Inter",
+              color: blackFont,
+              fontWeight: FontWeight.w600,
+            ),
+            cursorWidth: 1.5,
+            cursorColor: navyBlue,
+            decoration: InputDecoration(
+              hintStyle: TextStyle(
+                fontSize: 14,
                 fontWeight: FontWeight.w600,
+                color: darkGrey,
               ),
-              cursorWidth: 1.5,
-              cursorColor: navyBlue,
-              decoration: InputDecoration(
-                hintStyle: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
+              suffixIcon: IconButton(
+                icon: Icon(
+                  SlydoAppIcon.search,
                   color: darkGrey,
+                  size: 14,
                 ),
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    SlydoAppIcon.search,
-                    color: darkGrey,
-                    size: 14,
-                  ),
-                  onPressed: () {},
+                onPressed: () {},
+              ),
+              hintText: "Search",
+              fillColor: Colors.white,
+              filled: true,
+              contentPadding: const EdgeInsets.symmetric(vertical: 10),
+              prefix: const Padding(
+                padding: EdgeInsets.only(left: 16),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: dividerColor,
+                  width: 1.0,
                 ),
-                hintText: "Search",
-                fillColor: Colors.white,
-                filled: true,
-                contentPadding: const EdgeInsets.symmetric(vertical: 10),
-                prefix: const Padding(
-                  padding: EdgeInsets.only(left: 16),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: navyBlue,
+                  width: 1.0,
                 ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(
-                    color: dividerColor,
-                    width: 1.0,
-                  ),
+              ),
+              errorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: dividerColor,
+                  width: 1.0,
                 ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(
-                    color: navyBlue,
-                    width: 1.0,
-                  ),
-                ),
-                errorBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(
-                    color: dividerColor,
-                    width: 1.0,
-                  ),
-                ),
-                focusedErrorBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(
-                    color: dividerColor,
-                    width: 1.0,
-                  ),
+              ),
+              focusedErrorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: dividerColor,
+                  width: 1.0,
                 ),
               ),
             ),
@@ -1060,7 +1048,7 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
     );
   }
 
-  onPageFunction(int index, CarouselPageChangedReason reason) {
+  void onPageFunction(int index, CarouselPageChangedReason reason) {
     currentIndex = index;
     setState(() {});
   }

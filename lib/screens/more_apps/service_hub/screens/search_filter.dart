@@ -26,7 +26,6 @@ class JobsSearchFilter extends StatefulWidget {
 }
 
 class _JobsSearchFilterState extends State<JobsSearchFilter> {
-  final TextEditingController _controller = TextEditingController();
   String productPrice = "";
   String priceFrom = "";
   String priceTo = "";

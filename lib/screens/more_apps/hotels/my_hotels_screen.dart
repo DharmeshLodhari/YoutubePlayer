@@ -18,10 +18,12 @@ class _MyHotelsScreenState extends State<MyHotelsScreen> {
   @override
   Widget build(BuildContext context) {
     _hotelDashboardBloc = Provider.of<HotelDashboardBloc>(context);
-    return WillPopScope(
-      onWillPop: () async {
-        _hotelDashboardBloc.index = 0;
-        return true;
+    return PopScope(
+      onPopInvoked: (didPop) async {
+        if (didPop) {
+          _hotelDashboardBloc.index = 0;
+          return;
+        }
       },
       child: DefaultTabController(
         length: 2,

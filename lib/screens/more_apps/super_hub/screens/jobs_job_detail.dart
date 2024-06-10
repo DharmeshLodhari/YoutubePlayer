@@ -50,8 +50,8 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
               Column(
                 // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
-                    children: const [
+                  const Row(
+                    children: [
                       Expanded(
                         flex: 3,
                         child: CustomText(title: 'Category'),
@@ -87,8 +87,8 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
                             borderRadius: BorderRadius.circular(10),
                             color: const Color(0xfffafbff),
                           ),
-                          child: Row(
-                            children: const [
+                          child: const Row(
+                            children: [
                               Icon(
                                 Icons.calendar_today,
                                 size: 18,
@@ -114,11 +114,11 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
               const SizedBox(
                 height: 25,
               ),
-              Column(
+              const Column(
                 // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Row(
-                    children: const [
+                    children: [
                       Expanded(flex: 3, child: CustomText(title: 'Fee')),
                       SizedBox(
                         height: 10,
@@ -126,11 +126,11 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
                       Expanded(flex: 2, child: CustomText(title: 'Location')),
                     ],
                   ),
-                  const SizedBox(
+                  SizedBox(
                     height: 6,
                   ),
                   Row(
-                    children: const [
+                    children: [
                       Expanded(
                         flex: 3,
                         child: Text(
@@ -165,8 +165,8 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
               Column(
                 // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
-                    children: const [
+                  const Row(
+                    children: [
                       Expanded(flex: 3, child: CustomText(title: 'posted by')),
                       SizedBox(
                         height: 10,
@@ -218,9 +218,9 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
               const SizedBox(
                 height: 25,
               ),
-              Column(
+              const Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
+                children: [
                   CustomText(title: 'Applied by'),
                   SizedBox(
                     height: 6,
@@ -239,9 +239,9 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
               const SizedBox(
                 height: 25,
               ),
-              Column(
+              const Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
+                children: [
                   CustomText(title: 'Description'),
                   SizedBox(
                     height: 6,
@@ -411,84 +411,82 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
         showModalBottomSheet(
             context: context,
             builder: (context) {
-              return Container(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    ListTile(
-                      leading: Container(
-                          width: 32,
-                          height: 32,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
-                            color: const Color(0xfffafbff),
-                          ),
-                          child: SvgPicture.asset(
-                            'assets/images/copy_links.svg',
-                            height: 20,
-                            width: 20,
-                            fit: BoxFit.none,
-                          )),
-                      title: const Text(
-                        "Copy link",
-                        style: TextStyle(
-                          color: Color(0xff030e36),
-                          fontSize: 16,
-                          fontFamily: "Inter",
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                    ListTile(
-                      leading: Container(
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ListTile(
+                    leading: Container(
                         width: 32,
                         height: 32,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(12),
                           color: const Color(0xfffafbff),
                         ),
-                        child: const Icon(
-                          Icons.share,
-                          color: Colors.black,
-                          size: 20,
-                        ),
-                      ),
-                      title: const Text(
-                        "Send Via",
-                        style: TextStyle(
-                          color: Color(0xff030e36),
-                          fontSize: 16,
-                          fontFamily: "Inter",
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                    ListTile(
-                      leading: Container(
-                        width: 32,
-                        height: 32,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          color: const Color(0xfffafbff),
-                        ),
-                        child: const Icon(
-                          Icons.send,
-                          color: Colors.black,
-                          size: 20,
-                        ),
-                      ),
-                      title: const Text(
-                        "Share in chat",
-                        style: TextStyle(
-                          color: Color(0xff030e36),
-                          fontSize: 16,
-                          fontFamily: "Inter",
-                          fontWeight: FontWeight.w600,
-                        ),
+                        child: SvgPicture.asset(
+                          'assets/images/copy_links.svg',
+                          height: 20,
+                          width: 20,
+                          fit: BoxFit.none,
+                        )),
+                    title: const Text(
+                      "Copy link",
+                      style: TextStyle(
+                        color: Color(0xff030e36),
+                        fontSize: 16,
+                        fontFamily: "Inter",
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                  ListTile(
+                    leading: Container(
+                      width: 32,
+                      height: 32,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        color: const Color(0xfffafbff),
+                      ),
+                      child: const Icon(
+                        Icons.share,
+                        color: Colors.black,
+                        size: 20,
+                      ),
+                    ),
+                    title: const Text(
+                      "Send Via",
+                      style: TextStyle(
+                        color: Color(0xff030e36),
+                        fontSize: 16,
+                        fontFamily: "Inter",
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                  ListTile(
+                    leading: Container(
+                      width: 32,
+                      height: 32,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        color: const Color(0xfffafbff),
+                      ),
+                      child: const Icon(
+                        Icons.send,
+                        color: Colors.black,
+                        size: 20,
+                      ),
+                    ),
+                    title: const Text(
+                      "Share in chat",
+                      style: TextStyle(
+                        color: Color(0xff030e36),
+                        fontSize: 16,
+                        fontFamily: "Inter",
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
               );
             });
       },

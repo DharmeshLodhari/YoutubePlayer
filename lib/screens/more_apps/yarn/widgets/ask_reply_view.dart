@@ -18,14 +18,12 @@ class AskReplyView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 5),
-        child: Column(
-          children: [
-            _buildUserInfoRow(context: context),
-          ],
-        ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 5),
+      child: Column(
+        children: [
+          _buildUserInfoRow(context: context),
+        ],
       ),
     );
   }

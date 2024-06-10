@@ -421,10 +421,12 @@ class _SearchUsersProductAndServiceState
 
     userBloc = Provider.of<UserBloc>(context);
 
-    return WillPopScope(
-      onWillPop: () {
-        filterValue = "Products";
-        return Future.value(true);
+    return PopScope(
+      onPopInvoked: (didPop) {
+        if (didPop) {
+          filterValue = "Products";
+          return;
+        }
       },
       child: ScaffoldMessenger(
         key: _scaffoldMessengerSearchKey,
@@ -615,7 +617,7 @@ class _SearchUsersProductAndServiceState
         insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
         contentPadding: EdgeInsets.zero,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        content: Container(
+        content: SizedBox(
           width: MediaQuery.of(context).size.width - 40,
           child: Card(
             elevation: 2,
@@ -803,7 +805,7 @@ class _SearchUsersProductAndServiceState
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: Container(
+              content: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   margin: EdgeInsets.zero,
@@ -1070,7 +1072,7 @@ class _SearchUsersProductAndServiceState
                     searchItems();
 
                     if (results.isNotEmpty ||
-                        searchItemTextController.text.length != 0) {
+                        searchItemTextController.text.isNotEmpty) {
                       if (mounted) {
                         setState(() {
                           isSearchIsEmpty = false;
@@ -1083,7 +1085,7 @@ class _SearchUsersProductAndServiceState
                         });
                       }
                     }
-                  } else if (value.length == 0) {
+                  } else if (value.isEmpty) {
                     setState(() {
                       isSearchIsEmpty = true;
                       results.clear();

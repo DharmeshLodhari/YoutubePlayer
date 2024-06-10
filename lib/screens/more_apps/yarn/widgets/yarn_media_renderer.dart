@@ -54,33 +54,31 @@ class _YarnMediaRenderState extends State<YarnMediaRender> {
   }
 
   Widget _buildTwoImageView() {
-    return Container(
-      child: Row(
-        children: [
-          Expanded(
-            child: _buildCommonImageView(
-              imageUrl: widget.yarnTopic.media[0].mediaUrl ?? '',
-              mediaType: widget.yarnTopic.media[0].mediaType ?? '',
-              imagePoster: widget.yarnTopic.media[0].mediaPoster ?? '',
-            ),
+    return Row(
+      children: [
+        Expanded(
+          child: _buildCommonImageView(
+            imageUrl: widget.yarnTopic.media[0].mediaUrl ?? '',
+            mediaType: widget.yarnTopic.media[0].mediaType ?? '',
+            imagePoster: widget.yarnTopic.media[0].mediaPoster ?? '',
           ),
-          const SizedBox(
-            width: 8,
+        ),
+        const SizedBox(
+          width: 8,
+        ),
+        Expanded(
+          child: _buildCommonImageView(
+            imageUrl: widget.yarnTopic.media[1].mediaUrl ?? '',
+            mediaType: widget.yarnTopic.media[1].mediaType ?? '',
+            imagePoster: widget.yarnTopic.media[1].mediaPoster ?? '',
           ),
-          Expanded(
-            child: _buildCommonImageView(
-              imageUrl: widget.yarnTopic.media[1].mediaUrl ?? '',
-              mediaType: widget.yarnTopic.media[1].mediaType ?? '',
-              imagePoster: widget.yarnTopic.media[1].mediaPoster ?? '',
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
   Widget _buildThreeImageView() {
-    return Container(
+    return SizedBox(
       height: 175,
       child: Row(
         children: [
@@ -117,56 +115,54 @@ class _YarnMediaRenderState extends State<YarnMediaRender> {
   }
 
   Widget _buildFourImageView() {
-    return Container(
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: _buildCommonImageView(
-                  imageUrl: widget.yarnTopic.media[0].mediaUrl ?? '',
-                  mediaType: widget.yarnTopic.media[0].mediaType ?? '',
-                  imagePoster: widget.yarnTopic.media[0].mediaPoster ?? '',
-                ),
+    return Column(
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: _buildCommonImageView(
+                imageUrl: widget.yarnTopic.media[0].mediaUrl ?? '',
+                mediaType: widget.yarnTopic.media[0].mediaType ?? '',
+                imagePoster: widget.yarnTopic.media[0].mediaPoster ?? '',
               ),
-              const SizedBox(
-                width: 8,
+            ),
+            const SizedBox(
+              width: 8,
+            ),
+            Expanded(
+              child: _buildCommonImageView(
+                imageUrl: widget.yarnTopic.media[1].mediaUrl ?? '',
+                mediaType: widget.yarnTopic.media[1].mediaType ?? '',
+                imagePoster: widget.yarnTopic.media[1].mediaPoster ?? '',
               ),
-              Expanded(
-                child: _buildCommonImageView(
-                  imageUrl: widget.yarnTopic.media[1].mediaUrl ?? '',
-                  mediaType: widget.yarnTopic.media[1].mediaType ?? '',
-                  imagePoster: widget.yarnTopic.media[1].mediaPoster ?? '',
-                ),
+            ),
+          ],
+        ),
+        const SizedBox(
+          height: 8,
+        ),
+        Row(
+          children: [
+            Expanded(
+              child: _buildCommonImageView(
+                imageUrl: widget.yarnTopic.media[2].mediaUrl ?? '',
+                mediaType: widget.yarnTopic.media[2].mediaType ?? '',
+                imagePoster: widget.yarnTopic.media[2].mediaPoster ?? '',
               ),
-            ],
-          ),
-          const SizedBox(
-            height: 8,
-          ),
-          Row(
-            children: [
-              Expanded(
-                child: _buildCommonImageView(
-                  imageUrl: widget.yarnTopic.media[2].mediaUrl ?? '',
-                  mediaType: widget.yarnTopic.media[2].mediaType ?? '',
-                  imagePoster: widget.yarnTopic.media[2].mediaPoster ?? '',
-                ),
+            ),
+            const SizedBox(
+              width: 8,
+            ),
+            Expanded(
+              child: _buildCommonImageView(
+                imageUrl: widget.yarnTopic.media[3].mediaUrl ?? '',
+                mediaType: widget.yarnTopic.media[3].mediaType ?? '',
+                imagePoster: widget.yarnTopic.media[3].mediaPoster ?? '',
               ),
-              const SizedBox(
-                width: 8,
-              ),
-              Expanded(
-                child: _buildCommonImageView(
-                  imageUrl: widget.yarnTopic.media[3].mediaUrl ?? '',
-                  mediaType: widget.yarnTopic.media[3].mediaType ?? '',
-                  imagePoster: widget.yarnTopic.media[3].mediaPoster ?? '',
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 
@@ -199,7 +195,7 @@ class _YarnMediaRenderState extends State<YarnMediaRender> {
 
           for (var item in widget.yarnTopic.media) {
             if (item.mediaType == 'image') {
-              imageList.add(Image.network('${item.mediaUrl.toString()}'));
+              imageList.add(Image.network(item.mediaUrl.toString()));
             }
           }
 

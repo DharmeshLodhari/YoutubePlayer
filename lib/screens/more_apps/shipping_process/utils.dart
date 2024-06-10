@@ -40,16 +40,14 @@ Future<List<SharedCartModel>> getCartList() async {
   String? listNext = "";
   String? listPrevious = "";
   final List<SharedCartModel> cartNameListing = [];
-  if (listNext != null) {
-    final Map<String, dynamic>? result =
-        await SharedCartAuthService().getSharedCartList(listNext, listPrevious);
+  final Map<String, dynamic>? result =
+      await SharedCartAuthService().getSharedCartList(listNext, listPrevious);
 
-    listCount = result!['count'];
-    listNext = result['next'];
-    listPrevious = result['previous'];
-    final tempList = result['results'];
-    cartNameListing.addAll(tempList);
-  }
+  listCount = result!['count'];
+  listNext = result['next'];
+  listPrevious = result['previous'];
+  final tempList = result['results'];
+  cartNameListing.addAll(tempList);
   return cartNameListing;
 }
 

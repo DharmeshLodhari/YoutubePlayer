@@ -65,7 +65,7 @@ class CustomizedAlertForNudge {
                   Theme.of(context!).dialogBackgroundColor,
               shape: style.alertBorder ?? _defaultShape(),
               titlePadding: const EdgeInsets.all(0.0),
-              title: Container(
+              title: SizedBox(
                 width: MediaQuery.of(context!).size.width - 40,
                 child: Center(
                   child: Column(

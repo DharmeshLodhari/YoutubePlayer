@@ -59,9 +59,11 @@ class DesignVirtualCardState extends State<DesignVirtualCard> {
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
 
-    return WillPopScope(
-      onWillPop: () async {
-        return true;
+    return PopScope(
+      onPopInvoked: (didPop) async {
+        if (didPop) {
+          return;
+        }
       },
       child: Scaffold(
         backgroundColor: Colors.white,
@@ -173,18 +175,16 @@ class DesignVirtualCardState extends State<DesignVirtualCard> {
                       ),
                     ),
                   ),
-                  Container(
-                    child: Column(
-                      children: [
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        getSubmitButton(),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                      ],
-                    ),
+                  Column(
+                    children: [
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      getSubmitButton(),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -235,7 +235,7 @@ class DesignVirtualCardState extends State<DesignVirtualCard> {
   }
 
   Widget creditCard(Color color) {
-    return Container(
+    return SizedBox(
       height: 200,
       child: Card(
         elevation: 0,
@@ -345,57 +345,55 @@ class DesignVirtualCardState extends State<DesignVirtualCard> {
 
         // Right side with background image and text
         Expanded(
-          child: Container(
-            child: Stack(
-              children: [
-                Positioned(
-                  top: 20,
-                  right: 20,
-                  child: Row(
-                    children: [
-                      Text(
-                        'Slydo',
-                        style: TextStyle(
-                          color: white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
+          child: Stack(
+            children: [
+              Positioned(
+                top: 20,
+                right: 20,
+                child: Row(
+                  children: [
+                    Text(
+                      'Slydo',
+                      style: TextStyle(
+                        color: white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
                       ),
-                      const SizedBox(width: 5.0),
+                    ),
+                    const SizedBox(width: 5.0),
+                    SvgPicture.asset(
+                      "slydo".toSVG(),
+                      fit: BoxFit.cover,
+                    ),
+                  ],
+                ),
+              ),
+              Positioned(
+                  bottom: 20,
+                  right: 20,
+                  child: Column(
+                    children: [
                       SvgPicture.asset(
-                        "slydo".toSVG(),
+                        "mastercard".toSVG(),
                         fit: BoxFit.cover,
                       ),
-                    ],
-                  ),
-                ),
-                Positioned(
-                    bottom: 20,
-                    right: 20,
-                    child: Column(
-                      children: [
-                        SvgPicture.asset(
-                          "mastercard".toSVG(),
-                          fit: BoxFit.cover,
-                        ),
-                        const SizedBox(width: 5.0),
-                        Column(
-                          children: [
-                            Text(
-                              'Mastercard',
-                              style: TextStyle(
-                                color: white,
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                              ),
+                      const SizedBox(width: 5.0),
+                      Column(
+                        children: [
+                          Text(
+                            'Mastercard',
+                            style: TextStyle(
+                              color: white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
                             ),
-                            const SizedBox(width: 5.0),
-                          ],
-                        ),
-                      ],
-                    )),
-              ],
-            ),
+                          ),
+                          const SizedBox(width: 5.0),
+                        ],
+                      ),
+                    ],
+                  )),
+            ],
           ),
         ),
       ],

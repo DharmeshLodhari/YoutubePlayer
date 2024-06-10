@@ -82,8 +82,8 @@ class _SearchScreenState extends State<SearchScreen> {
         }
 
         count = result['count'];
-        next = result['next'] != null ? result['next'] : "";
-        previous = result['previous'] != null ? result['previous'] : "";
+        next = result['next'] ?? "";
+        previous = result['previous'] ?? "";
         final tempList = result['results'];
         yarnTopicList = [];
         // if (mounted) {
@@ -157,7 +157,7 @@ class _SearchScreenState extends State<SearchScreen> {
           _refreshList();
         });
       }
-      if (yarnTopicList.isNotEmpty || searchController.text.length != 0) {
+      if (yarnTopicList.isNotEmpty || searchController.text.isNotEmpty) {
         if (mounted) {
           setState(() {
             isSearchIsEmpty = false;

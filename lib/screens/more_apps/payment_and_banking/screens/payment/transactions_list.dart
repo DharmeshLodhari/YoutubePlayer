@@ -116,11 +116,13 @@ class _TransactionListState extends State<TransactionList> {
     menu.onChange = menuItemSelectionChange;
     menu.menuState = menuStateChange;
 
-    return WillPopScope(
-      onWillPop: () async {
-        menu.closeMenu();
-        customerProfileBloc.customer = null;
-        return true;
+    return PopScope(
+      onPopInvoked: (didPop) async {
+        if(didPop) {
+          menu.closeMenu();
+          customerProfileBloc.customer = null;
+          return;
+        }
       },
       child: Scaffold(
         key: _scaffoldTransactionKey,

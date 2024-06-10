@@ -76,7 +76,7 @@ class CustomizedPopUpMenu {
             Positioned(
               top: 0,
               left: 0,
-              child: Container(
+              child: SizedBox(
                 height: MediaQuery.of(context).size.height,
                 width: MediaQuery.of(context).size.width,
                 child: GestureDetector(
@@ -88,8 +88,8 @@ class CustomizedPopUpMenu {
             ),
             Positioned(
               top: buttonPosition.dy + buttonSize.height - top,
-              right: right != null ? right : null,
-              left: left != null ? left : null,
+              right: right,
+              left: left,
               width: 180,
               child: Material(
                 color: Colors.transparent,

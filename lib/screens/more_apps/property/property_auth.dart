@@ -1,8 +1,8 @@
 import 'package:Slydo/services/auth.dart';
 
-import 'models/CityData.dart';
-import 'models/PartialPropertyItem.dart';
-import 'models/PropertyItem.dart';
+import 'models/city_data.dart';
+import 'models/partial_property_item.dart';
+import 'models/property_item.dart';
 import 'models/user_detail_item/PropertyDetailItem.dart';
 
 class PropertyAuthService extends AuthService {

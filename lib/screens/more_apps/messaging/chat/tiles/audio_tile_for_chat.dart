@@ -184,7 +184,7 @@ class _AudioTileForChatState extends State<AudioTileForChat> {
               ),
             ),
             if (isSend)
-              Container(
+              SizedBox(
                 width: 20,
                 child: isSend
                     ? Center(

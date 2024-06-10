@@ -7,11 +7,11 @@ import 'package:provider/provider.dart';
 
 class ProductCategorySelection extends StatefulWidget {
   final Function(String, dynamic, bool)? callback;
-  final String? next_url;
+  final String? nextUrl;
   final String? categoryName;
 
   ProductCategorySelection(
-      {Key? key, this.callback, this.next_url, this.categoryName})
+      {Key? key, this.callback, this.nextUrl, this.categoryName})
       : super(key: key);
 
   @override
@@ -53,47 +53,45 @@ class _ProductCategorySelectionState extends State<ProductCategorySelection> {
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
-      child: Container(
-        child: Row(
-          children: [
-            const SizedBox(
-              width: 16,
-            ),
-            ...List.generate(
-              yarnDashboardBloc.productCategories.length,
-              (i) {
-                return Row(
-                  children: [
-                    const SizedBox(
-                      width: 5,
-                    ),
-                    CategoryChip(
-                      onTap: () {
-                        // Call the callback function and pass the values
-                        widget.callback!(
-                            yarnDashboardBloc.productCategories[i].name,
-                            yarnDashboardBloc.productCategories[i].id,
-                            true);
-                        selectedCategory =
-                            yarnDashboardBloc.productCategories[i].name;
-                        if (mounted) setState(() {});
-                      },
-                      title: yarnDashboardBloc.productCategories[i].name,
-                      categoryColor: selectedCategory ==
-                              yarnDashboardBloc.productCategories[i].name
-                          ? darkGreyYarn
-                          : greyBackground,
-                      selectedCategoryTextColor: HexColor("#000000"),
-                      borderColor: greySecondaryYarn,
-                      selected: selectedCategory ==
+      child: Row(
+        children: [
+          const SizedBox(
+            width: 16,
+          ),
+          ...List.generate(
+            yarnDashboardBloc.productCategories.length,
+            (i) {
+              return Row(
+                children: [
+                  const SizedBox(
+                    width: 5,
+                  ),
+                  CategoryChip(
+                    onTap: () {
+                      // Call the callback function and pass the values
+                      widget.callback!(
                           yarnDashboardBloc.productCategories[i].name,
-                    ),
-                  ],
-                );
-              },
-            ),
-          ],
-        ),
+                          yarnDashboardBloc.productCategories[i].id,
+                          true);
+                      selectedCategory =
+                          yarnDashboardBloc.productCategories[i].name;
+                      if (mounted) setState(() {});
+                    },
+                    title: yarnDashboardBloc.productCategories[i].name,
+                    categoryColor: selectedCategory ==
+                            yarnDashboardBloc.productCategories[i].name
+                        ? darkGreyYarn
+                        : greyBackground,
+                    selectedCategoryTextColor: HexColor("#000000"),
+                    borderColor: greySecondaryYarn,
+                    selected: selectedCategory ==
+                        yarnDashboardBloc.productCategories[i].name,
+                  ),
+                ],
+              );
+            },
+          ),
+        ],
       ),
     );
   }
@@ -105,7 +103,7 @@ class _ProductCategorySelectionState extends State<ProductCategorySelection> {
         if (mounted) setState(() {});
 
         final Map<String, dynamic>? result =
-            await YarnAuth().getProductCategories(widget.next_url, previous!);
+            await YarnAuth().getProductCategories(widget.nextUrl, previous!);
         if (result == null) {
           noCategoriesList = true;
 

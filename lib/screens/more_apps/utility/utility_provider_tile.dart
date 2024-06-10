@@ -1,5 +1,4 @@
 import 'package:Slydo/screens/more_apps/utility/utility_payment_screen.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
@@ -79,7 +78,7 @@ class UtilityProviderTile extends StatelessWidget {
     try {
       providerName = "${splitString[0]} ${splitString[1]}";
     } catch (e) {
-      providerName = "${splitString[0]}";
+      providerName = splitString[0];
     }
 
     if (providerModel.name.toLowerCase().contains('electricity')) {

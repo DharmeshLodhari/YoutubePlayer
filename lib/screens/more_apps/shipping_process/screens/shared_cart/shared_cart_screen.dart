@@ -8,7 +8,6 @@ import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -251,28 +250,21 @@ class SharedCartScreenState extends State<SharedCartScreen> {
   }
 
   void _onRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
-      final connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        listCount = 0;
-        listNext = "";
-        listPrevious = "";
-        sharedCartBloc.cartList = [];
-        if (mounted) setState(() {});
-        getSharedCartListing();
-        setState(() {
-          // Call the callback function with the updated list
-          //to pass the list back to edit product page
-          // widget.onListRefreshed!(productVariantList);
-          _refreshController.refreshCompleted();
-        });
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
+    if (await checkConnection(context)) {
+      listCount = 0;
+      listNext = "";
+      listPrevious = "";
+      sharedCartBloc.cartList = [];
+      if (mounted) setState(() {});
+      getSharedCartListing();
+      setState(() {
+        // Call the callback function with the updated list
+        //to pass the list back to edit product page
+        // widget.onListRefreshed!(productVariantList);
         _refreshController.refreshCompleted();
-      }
-    });
+      });
+    } else {
+      _refreshController.refreshCompleted();
+    }
   }
 }

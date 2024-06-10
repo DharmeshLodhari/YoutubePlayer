@@ -43,7 +43,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
   TabController? _tabController;
   PageController? _pageController;
   int _currentIndex = 0;
-  final PageStorageBucket _bucket = new PageStorageBucket();
+  final PageStorageBucket _bucket = PageStorageBucket();
 
   // Define a list to store the UserTab objects
   List<UserTab> userTabs = [];
@@ -287,10 +287,10 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
     );
   }
 
-  void obtainCustomCategory(user) async {
+  void obtainCustomCategory(String user) async {
     try {
       final List<ProductCategory> result =
-          await ShoppingAuthService().obtainCustomCategory(user!);
+          await ShoppingAuthService().obtainCustomCategory(user);
       final List<ProductCategory> initial = [];
       initial.add(const ProductCategory("Explore", id: "main"));
       initial.add(const ProductCategory("All", id: "all"));
@@ -498,54 +498,50 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
               shrinkWrap: true,
               scrollDirection: Axis.horizontal,
               children: [
-                ...customCategories
-                    .map((e) => InkWell(
-                          onTap: () {
-                            setState(() {
-                              selectedCategory = e.id;
-                            });
-                          },
-                          child: Container(
-                            decoration: selectedCategory == e.id
-                                ? BoxDecoration(
-                                    border: Border(
-                                      bottom: BorderSide(
-                                        color: navyBlue,
-                                        width:
-                                            2.5, // This would be the width of the underline
-                                      ),
-                                    ),
-                                  )
-                                : BoxDecoration(
-                                    border: Border(
-                                      bottom: BorderSide(
-                                        color:
-                                            greySecondaryYarn.withOpacity(0.5),
-                                        width:
-                                            1, // This would be the width of the underline
-                                      ),
-                                    ),
+                ...customCategories.map((e) => InkWell(
+                      onTap: () {
+                        setState(() {
+                          selectedCategory = e.id;
+                        });
+                      },
+                      child: Container(
+                        decoration: selectedCategory == e.id
+                            ? BoxDecoration(
+                                border: Border(
+                                  bottom: BorderSide(
+                                    color: navyBlue,
+                                    width:
+                                        2.5, // This would be the width of the underline
                                   ),
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 12.0),
-                              child: Text(
-                                e.name.toTitleCase(),
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontFamily: "Inter",
-                                  color: selectedCategory == e.id
-                                      ? navyBlue
-                                      : darkGrey,
-                                  fontWeight: selectedCategory == e.id
-                                      ? FontWeight.w600
-                                      : FontWeight.w500,
+                                ),
+                              )
+                            : BoxDecoration(
+                                border: Border(
+                                  bottom: BorderSide(
+                                    color: greySecondaryYarn.withOpacity(0.5),
+                                    width:
+                                        1, // This would be the width of the underline
+                                  ),
                                 ),
                               ),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                          child: Text(
+                            e.name.toTitleCase(),
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontFamily: "Inter",
+                              color: selectedCategory == e.id
+                                  ? navyBlue
+                                  : darkGrey,
+                              fontWeight: selectedCategory == e.id
+                                  ? FontWeight.w600
+                                  : FontWeight.w500,
                             ),
                           ),
-                        ))
-                    .toList()
+                        ),
+                      ),
+                    ))
               ],
             ),
           ),
@@ -681,6 +677,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
     );
   }
 
+  @override
   Future<void> dispose() async {
     super.dispose();
     scrollController?.dispose();
@@ -736,7 +733,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
     }
   }
 
-  productServiceTabReload(Map<String, dynamic> val) {
+  void productServiceTabReload(Map<String, dynamic> val) {
     productLabel = val['product_label'].toString();
     serviceLabel = val['service_label'].toString();
     if (mounted) setState(() {});
@@ -782,7 +779,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
         padding: const EdgeInsets.symmetric(vertical: 14),
         child: TextScroll(
           flashTagString.length <= 90
-              ? "$flashTagString".padRight(90, " ")
+              ? flashTagString.padRight(90, " ")
               : flashTagString,
           style: TextStyle(color: white, fontWeight: FontWeight.w600),
           mode: TextScrollMode.endless,

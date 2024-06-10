@@ -96,7 +96,7 @@ class _DisplayProductState extends State<DisplayProduct> {
               children: <Widget>[
                 Stack(
                   children: [
-                    Container(
+                    SizedBox(
                       height: 155,
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(15),
@@ -146,9 +146,6 @@ class _DisplayProductState extends State<DisplayProduct> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const SizedBox(
-                        height: 4,
-                      ),
                       Text(
                         truncateString(
                           str: messageDecoderWithEmoji(
@@ -165,7 +162,7 @@ class _DisplayProductState extends State<DisplayProduct> {
                         ),
                       ),
                       const SizedBox(
-                        height: 5,
+                        height: 2,
                       ),
                       Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -197,7 +194,6 @@ class _DisplayProductState extends State<DisplayProduct> {
                                     ),
                                   ],
                                 ),
-                                const SizedBox(height: 4),
                                 if (widget.product.discountedPrice != null)
                                   widget.product.checkProductDiscount()
                                       ? Row(
@@ -338,11 +334,10 @@ class _DisplayProductState extends State<DisplayProduct> {
             askCategories: yarnDashboardBloc.yarnCategories,
             shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
             callback: (params) async {
-              params..body = widget.product.name ?? "";
-              params
-                ..attachment = {
-                  "product": widget.product.toJson().cast<String, dynamic>()
-                };
+              params.body = widget.product.name ?? "";
+              params.attachment = {
+                "product": widget.product.toJson().cast<String, dynamic>()
+              };
               final bool data =
                   await YarnAuth().addYarnAndQuestion(params, '', '');
               if (data) {
@@ -377,7 +372,7 @@ class _DisplayProductState extends State<DisplayProduct> {
           message: AppLocalization.of(context)!.cantPurchaseYourOwnServices);
     }
     if (widget.product.isProductAvailableNow()) {
-      final String type = "product";
+      const String type = "product";
       if (widget.product.variantModels?.isNotEmpty ?? false) {
         showToast(message: AppLocalization.of(context)!.selectVariantColorSize);
         Navigator.pushNamed(context, '/product',
@@ -399,7 +394,7 @@ class _DisplayProductState extends State<DisplayProduct> {
   }
 
   Future<void> addToSharedCart(SharedCartModel result) async {
-    final String type = "product";
+    const String type = "product";
 
     final Product products =
         widget.product.copyWith(quantity: 1, withSelectedAddOn: true);
@@ -626,7 +621,7 @@ class _DisplayProductState extends State<DisplayProduct> {
     );
   }
 
-  showBottomSheetDialog() async {
+  void showBottomSheetDialog() async {
     final result = await androidBottomSheet(
       enableDrag: true,
       context: context,
@@ -663,15 +658,15 @@ class _DisplayProductState extends State<DisplayProduct> {
   }
 
   void removeProductFromCartOld() async {
-    final String type = "product";
+    const String type = "product";
 
     late var mapData;
-    basketBloc.items.forEach((element) {
+    for (var element in basketBloc.items) {
       if (element["item"].id == widget.product.id) {
         mapData = element;
-        return;
+        continue;
       }
-    });
+    }
     final Map data = {
       "type": type,
       "id": mapData["item"].id,
@@ -765,7 +760,7 @@ class _DisplayServiceState extends State<DisplayService> {
               children: <Widget>[
                 Stack(
                   children: [
-                    Container(
+                    SizedBox(
                       height: 155,
                       child: ClipRRect(
                         borderRadius: const BorderRadius.only(
@@ -1090,15 +1085,15 @@ class _DisplayServiceState extends State<DisplayService> {
   }
 
   void removeServiceFromCart() async {
-    final String type = "service";
+    const String type = "service";
 
     late var mapData;
-    basketBloc.items.forEach((element) {
+    for (var element in basketBloc.items) {
       if (element["item"].id == widget.service.id) {
         mapData = element;
-        return;
+        continue;
       }
-    });
+    }
     final Map data = {
       "type": type,
       "id": mapData["item"].id,
@@ -1116,18 +1111,18 @@ class _DisplayServiceState extends State<DisplayService> {
           message: AppLocalization.of(context)!.cantPurchaseYourOwnServices);
     }
     if (widget.service.isAvailable!) {
-      final String type = "service";
+      const String type = "service";
       basketBloc.addItemToCart(
         item: widget.service,
         type: type,
       );
       late var mapData;
-      basketBloc.items.forEach((element) {
+      for (var element in basketBloc.items) {
         if (element["item"].id == widget.service.id) {
           mapData = element;
-          return;
+          continue;
         }
-      });
+      }
       final Map<String, dynamic> data = {
         "type": type,
         "id": mapData["item"].id,
@@ -1146,11 +1141,10 @@ class _DisplayServiceState extends State<DisplayService> {
             askCategories: yarnDashboardBloc.yarnCategories,
             shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
             callback: (params) async {
-              params..body = widget.service.name ?? "";
-              params
-                ..attachment = {
-                  "service": widget.service.toJson().cast<String, dynamic>()
-                };
+              params.body = widget.service.name ?? "";
+              params.attachment = {
+                "service": widget.service.toJson().cast<String, dynamic>()
+              };
               final bool data =
                   await YarnAuth().addYarnAndQuestion(params, '', '');
               if (data) {
@@ -1210,7 +1204,7 @@ class _FindBusinessState extends State<FindBusiness> {
             clipBehavior: Clip.none,
             alignment: Alignment.topCenter,
             children: [
-              Container(
+              SizedBox(
                   height: getContainerHeight(widget.tileRenderPlace, context),
                   child: getWallpaper()),
               Positioned(
@@ -1265,59 +1259,56 @@ class _FindBusinessState extends State<FindBusiness> {
                             "searchedUserName": widget.customerProfile.userName
                           });
                         },
-                        child: Container(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: Text(
-                                    appendStringDot(
-                                        messageDecoderWithEmoji(widget
-                                                    .customerProfile.fullName ??
-                                                "") ??
-                                            "",
-                                        widget.tileRenderPlace ==
-                                                TileRenderPlace.Thiny
-                                            ? 13
-                                            : 20),
-                                    style: TextStyle(
-                                        fontSize: widget.tileRenderPlace ==
-                                                TileRenderPlace.Thiny
-                                            ? 12
-                                            : 16,
-                                        fontWeight: FontWeight.w700,
-                                        color: yarnBlack),
-                                  )),
-                              Align(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Align(
                                 alignment: Alignment.centerLeft,
-                                child: userNameWithVerifiedIcon(
-                                    name: appendStringDot(
-                                        messageDecoderWithEmoji(
-                                                '@${widget.customerProfile.userName}') ??
-                                            "",
-                                        widget.tileRenderPlace ==
-                                                TileRenderPlace.Thiny
-                                            ? 13
-                                            : 20),
-                                    isVerified:
-                                        widget.customerProfile.isVerified,
-                                    textStyle: TextStyle(
+                                child: Text(
+                                  appendStringDot(
+                                      messageDecoderWithEmoji(
+                                              widget.customerProfile.fullName ??
+                                                  "") ??
+                                          "",
+                                      widget.tileRenderPlace ==
+                                              TileRenderPlace.Thiny
+                                          ? 13
+                                          : 20),
+                                  style: TextStyle(
                                       fontSize: widget.tileRenderPlace ==
                                               TileRenderPlace.Thiny
-                                          ? 11
-                                          : 14,
-                                      color: HexColor("#151515"),
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                    verifiedIconColor: verifyGreen,
-                                    verifiedIconSize: widget.tileRenderPlace ==
+                                          ? 12
+                                          : 16,
+                                      fontWeight: FontWeight.w700,
+                                      color: yarnBlack),
+                                )),
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: userNameWithVerifiedIcon(
+                                  name: appendStringDot(
+                                      messageDecoderWithEmoji(
+                                              '@${widget.customerProfile.userName}') ??
+                                          "",
+                                      widget.tileRenderPlace ==
+                                              TileRenderPlace.Thiny
+                                          ? 13
+                                          : 20),
+                                  isVerified: widget.customerProfile.isVerified,
+                                  textStyle: TextStyle(
+                                    fontSize: widget.tileRenderPlace ==
                                             TileRenderPlace.Thiny
-                                        ? 12
-                                        : 15),
-                              ),
-                            ],
-                          ),
+                                        ? 11
+                                        : 14,
+                                    color: HexColor("#151515"),
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                  verifiedIconColor: verifyGreen,
+                                  verifiedIconSize: widget.tileRenderPlace ==
+                                          TileRenderPlace.Thiny
+                                      ? 12
+                                      : 15),
+                            ),
+                          ],
                         ),
                       ),
                     ),

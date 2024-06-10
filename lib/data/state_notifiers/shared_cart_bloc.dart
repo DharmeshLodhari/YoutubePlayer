@@ -172,7 +172,7 @@ class SharedCartBloc extends ChangeNotifier {
 
     final UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
 
-    final SharedCartMemberModel? currentUser = userBloc.user.convertToUser();
+    final SharedCartMemberModel currentUser = userBloc.user.convertToUser();
 
     if (tempList != null && (tempList as List).isNotEmpty) {
       final List items = tempList;

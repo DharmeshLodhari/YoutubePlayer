@@ -63,17 +63,15 @@ class _AddInvoiceState extends State<AddInvoice> {
 
   @override
   void initState() {
-    _recipientFocus
-      ..addListener(() {
-        if (!_recipientFocus.hasFocus) {
-          if (mounted) {
-            setState(() {
-              _recipientController.text =
-                  _recipientController.text.toLowerCase();
-            });
-          }
+    _recipientFocus.addListener(() {
+      if (!_recipientFocus.hasFocus) {
+        if (mounted) {
+          setState(() {
+            _recipientController.text = _recipientController.text.toLowerCase();
+          });
         }
-      });
+      }
+    });
     super.initState();
   }
 
@@ -82,12 +80,13 @@ class _AddInvoiceState extends State<AddInvoice> {
     userBloc = Provider.of<UserBloc>(context);
     _addInvoiceBloc = Provider.of<AddInvoiceBloc>(context);
 
-    return WillPopScope(
-      onWillPop: () async {
-        _payee = null;
-        _addInvoiceBloc.clearItems();
-
-        return true;
+    return PopScope(
+      onPopInvoked: (didPop) async {
+        if (didPop) {
+          _payee = null;
+          _addInvoiceBloc.clearItems();
+          return;
+        }
       },
       child: Scaffold(
         backgroundColor: Colors.white,

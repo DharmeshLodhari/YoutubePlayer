@@ -7,7 +7,7 @@ import 'package:flutter/widgets.dart';
 
 /// cache gif fetched image
 class GifCache {
-  final Map<String, List<ImageInfo>?> caches = Map();
+  final Map<String, List<ImageInfo>?> caches = {};
 
   void clear() {
     caches.clear();
@@ -112,7 +112,7 @@ class GifImageState extends State<GifImage> {
     super.didUpdateWidget(oldWidget);
     if (widget.image != oldWidget.image) {
       fetchGif(widget.image).then((imageInfors) {
-        if (mounted)
+        if (mounted) {
           setState(() {
             _infos = imageInfors;
             _fetchComplete = true;
@@ -121,6 +121,7 @@ class GifImageState extends State<GifImage> {
               widget.onFetchCompleted!();
             }
           });
+        }
       });
     }
     if (widget.controller != oldWidget.controller) {
@@ -131,10 +132,11 @@ class GifImageState extends State<GifImage> {
 
   void _listener() {
     if (_curIndex != widget.controller!.value && _fetchComplete) {
-      if (mounted)
+      if (mounted) {
         setState(() {
           _curIndex = widget.controller!.value.toInt();
         });
+      }
     }
   }
 
@@ -143,7 +145,7 @@ class GifImageState extends State<GifImage> {
     super.didChangeDependencies();
     if (_infos == null) {
       fetchGif(widget.image).then((imageInfors) {
-        if (mounted)
+        if (mounted) {
           setState(() {
             _infos = imageInfors;
             _fetchComplete = true;
@@ -152,6 +154,7 @@ class GifImageState extends State<GifImage> {
               widget.onFetchCompleted!();
             }
           });
+        }
       });
     }
   }
@@ -175,7 +178,7 @@ class GifImageState extends State<GifImage> {
     return Semantics(
       container: widget.semanticLabel != null,
       image: true,
-      label: widget.semanticLabel == null ? '' : widget.semanticLabel,
+      label: widget.semanticLabel ?? '',
       child: image,
     );
   }
@@ -186,8 +189,9 @@ final HttpClient _sharedHttpClient = HttpClient()..autoUncompress = false;
 HttpClient get _httpClient {
   HttpClient client = _sharedHttpClient;
   assert(() {
-    if (debugNetworkImageHttpClientProvider != null)
+    if (debugNetworkImageHttpClientProvider != null) {
       client = debugNetworkImageHttpClientProvider!();
+    }
     return true;
   }());
   return client;

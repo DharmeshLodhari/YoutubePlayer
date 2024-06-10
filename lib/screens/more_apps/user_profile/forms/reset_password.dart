@@ -49,9 +49,11 @@ class _ResetPasswordState extends State<ResetPassword> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-        onWillPop: () async {
-          return true;
+    return PopScope(
+        onPopInvoked: (didPop) async {
+          if (didPop) {
+            return;
+          }
         },
         child: Scaffold(
             backgroundColor: Colors.white,
@@ -192,54 +194,52 @@ class _ResetPasswordState extends State<ResetPassword> {
     final BoxDecoration selectedDecoration = BoxDecoration(
         borderRadius: BorderRadius.circular(10),
         border: Border.all(color: navyBlue));
-    return Container(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(
-            "Reset Password OTP",
-            style: TextStyle(fontSize: 14, color: darkGrey),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          "Reset Password OTP",
+          style: TextStyle(fontSize: 14, color: darkGrey),
+        ),
+        const SizedBox(
+          height: 6.0,
+        ),
+        Pinput(
+          obscuringCharacter: '•',
+          validator: (val) => val!.length < 4
+              ? AppLocalization.of(context)!.invalidPassword
+              : null,
+          length: 6,
+          focusNode: _pinPutFocusNode,
+          controller: _resetTokenController,
+          defaultPinTheme: PinTheme(
+            width: 45,
+            height: 45,
+            textStyle: TextStyle(
+              fontSize: 35,
+              color: blackFont,
+              fontWeight: FontWeight.w600,
+              fontFamily: "Inter",
+            ),
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.grey),
+              borderRadius: BorderRadius.circular(8),
+            ),
           ),
-          const SizedBox(
-            height: 6.0,
+          focusedPinTheme: PinTheme(
+            decoration: selectedDecoration,
           ),
-          Pinput(
-            obscuringCharacter: '•',
-            validator: (val) => val!.length < 4
-                ? AppLocalization.of(context)!.invalidPassword
-                : null,
-            length: 6,
-            focusNode: _pinPutFocusNode,
-            controller: _resetTokenController,
-            defaultPinTheme: PinTheme(
-              width: 45,
-              height: 45,
-              textStyle: TextStyle(
-                fontSize: 35,
-                color: blackFont,
-                fontWeight: FontWeight.w600,
-                fontFamily: "Inter",
-              ),
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey),
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-            focusedPinTheme: PinTheme(
-              decoration: selectedDecoration,
-            ),
-            submittedPinTheme: PinTheme(
-              decoration: pinPutDecoration,
-            ),
-            followingPinTheme: PinTheme(
-              decoration: pinPutDecoration,
-            ),
-            pinAnimationType: PinAnimationType.scale,
-            textInputAction: TextInputAction.done,
-            keyboardType: TextInputType.number,
+          submittedPinTheme: PinTheme(
+            decoration: pinPutDecoration,
           ),
-        ],
-      ),
+          followingPinTheme: PinTheme(
+            decoration: pinPutDecoration,
+          ),
+          pinAnimationType: PinAnimationType.scale,
+          textInputAction: TextInputAction.done,
+          keyboardType: TextInputType.number,
+        ),
+      ],
     );
   }
 

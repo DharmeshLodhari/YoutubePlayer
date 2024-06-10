@@ -429,7 +429,7 @@ Widget dropDownPickItemWidget(
         child: ListTile(
           dense: true,
           title: Text(
-            selectedItem != null ? selectedItem : "",
+            selectedItem ?? "",
             softWrap: false,
             overflow: TextOverflow.fade,
             style: TextStyle(
@@ -465,7 +465,7 @@ Future<T?> showPickItemDialog<T>({
       insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
       contentPadding: EdgeInsets.zero,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      content: Container(
+      content: SizedBox(
         width: MediaQuery.of(context).size.width - 40,
         child: Card(
           margin: EdgeInsets.zero,
@@ -542,7 +542,7 @@ void showSwipeHintCard({required BuildContext context}) {
     builder: (context) => Dialog(
       elevation: 0,
       insetPadding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Container(
+      child: SizedBox(
         width: MediaQuery.of(context).size.width,
         child: Image.asset(
           "assets/images/card_swipe_hint.png",
@@ -559,7 +559,7 @@ void showHoldHintCard({required BuildContext context}) {
     builder: (context) => Dialog(
       elevation: 0,
       insetPadding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Container(
+      child: SizedBox(
         width: MediaQuery.of(context).size.width,
         child: Image.asset(
           "assets/images/card_hold_hint.png",
@@ -575,10 +575,12 @@ void showUserLogoutCard({required BuildContext context}) {
   showDialog(
     barrierDismissible: true,
     context: context,
-    builder: (context) => WillPopScope(
-      onWillPop: () {
-        //  logoutUser(context);
-        return Future.value(true);
+    builder: (context) => PopScope(
+      onPopInvoked: (didPop) {
+        if (didPop) {
+          //  logoutUser(context);
+          return;
+        }
       },
       child: Dialog(
         elevation: 0,
@@ -628,15 +630,16 @@ Future<bool> showInAppLocationAlertPopUp(
   final bool? result = await showDialog<bool>(
     barrierDismissible: false,
     context: context,
-    builder: (context) => WillPopScope(
-      onWillPop: () async {
-        Navigator.pop(context, false);
-        return false;
+    builder: (context) => PopScope(
+      onPopInvoked: (didPop) async {
+        if (didPop) {
+          Navigator.pop(context, false);
+        }
       },
       child: Dialog(
         elevation: 0,
         insetPadding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-        child: Container(
+        child: SizedBox(
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height,
           child: Container(

@@ -8,7 +8,6 @@ import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:Slydo/widget/slide_action_button.dart';
 import 'package:Slydo/widget/vertical_list_item.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
@@ -22,7 +21,7 @@ import '../../models/store.dart';
 import '../../shopping_auth.dart';
 
 class AddOnOptionList extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
   AddOnOptionList({this.arguments, Key? key}) : super(key: key);
 
@@ -129,39 +128,34 @@ class _AddOnOptionListState extends State<AddOnOptionList>
   // refresh the list when lifecycle called onResume method
   void _onRefresh() async {
     //check network connectivity and if true then refresh the list
-    Connectivity().checkConnectivity().then((value) {
-      final connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        count = 0;
-        next = "";
-        previous = "";
-        addOnOptionList = [];
-        if (mounted) setState(() {});
-        getAddOnOptionList();
-        setState(() {
-          // Call the callback function with the updated list
-          //to pass the list back to edit product page
-          // widget.onListRefreshed!(productVariantList);
-          _refreshController.refreshCompleted();
-        });
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
+    if (await checkConnection(context)) {
+      count = 0;
+      next = "";
+      previous = "";
+      addOnOptionList = [];
+      if (mounted) setState(() {});
+      getAddOnOptionList();
+      setState(() {
+        // Call the callback function with the updated list
+        //to pass the list back to edit product page
+        // widget.onListRefreshed!(productVariantList);
         _refreshController.refreshCompleted();
-      }
-    });
+      });
+    } else {
+      _refreshController.refreshCompleted();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
 
-    return WillPopScope(
-      onWillPop: () async {
-        Navigator.pop(context, addOnOptionList);
-        return true;
+    return PopScope(
+      onPopInvoked: (didPop) async {
+        if (didPop) {
+          Navigator.pop(context, addOnOptionList);
+          return;
+        }
       },
       child: ScaffoldMessenger(
         key: _scaffoldMessengerKey,

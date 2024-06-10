@@ -43,7 +43,7 @@ import '../../shopping_auth.dart';
 
 // ignore: must_be_immutable
 class ServiceDetailPage extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
   ServiceDetailPage({required this.arguments});
 
@@ -56,7 +56,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
     with TickerProviderStateMixin {
   var arguments;
   bool canRate = false;
-  late DashboardBloc _dashboardBloc;
+  // late DashboardBloc _dashboardBloc;
   bool noReviewInList = false;
 
   _ServiceDetailPageState({this.arguments});
@@ -114,10 +114,11 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   void fetchService(String serviceId) async {
     debugPrint('SERVICE ID :: $serviceId');
 
-    if (mounted)
+    if (mounted) {
       setState(() {
         serviceIsLoading = true;
       });
+    }
     _auth.getService(serviceId).then((value) {
       if (mounted) {
         service = value;
@@ -126,14 +127,14 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
         if (mounted) setState(() {});
       }
     }).catchError((e) {
-      if (mounted)
+      if (mounted) {
         setState(() {
           serviceIsLoading = false;
         });
+      }
       Navigator.pop(context);
       showToast(message: e.toString());
     });
-    ;
   }
 
   Future canReviewService() async {
@@ -143,7 +144,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
     data['type'] = 'services';
     data['id'] = service?.id ?? "";
 
-    debugPrint('service data :: ${data}');
+    debugPrint('service data :: $data');
 
     ReviewAuth().checkIfCanReviewProductOrService(data).then((value) {
       canRate = value;
@@ -159,7 +160,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
     if (mounted) setState(() {});
 
     await ReviewAuth().fetchServiceReviews(serviceId: serviceId).then((value) {
-      final List? tempList =
+      final List tempList =
           value.containsKey('results') ? value['results'] as List : [];
       value.containsKey('count') ? reviewCount = value["count"] : 0;
       canRate = value['can_rate'];
@@ -204,15 +205,16 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   @override
   Widget build(BuildContext context) {
     customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
-    _dashboardBloc = Provider.of<DashboardBloc>(context);
+    // _dashboardBloc = Provider.of<DashboardBloc>(context);
     basketBloc = Provider.of<BasketBloc>(context);
     yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context, listen: false);
     isValidCustomer = userBloc.user.userName != service?.provider;
-    return WillPopScope(
-      onWillPop: () async {
-        customerProfileBloc.customer = null;
-        Navigator.pop(context, "back pressed");
-        return true;
+    return PopScope(
+      onPopInvoked: (didPop) async {
+        if (didPop) {
+          customerProfileBloc.customer = null;
+          return;
+        }
       },
       child: Scaffold(
         backgroundColor: Colors.white,
@@ -421,10 +423,9 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
             shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
             serviceModel: service,
             callback: (params) async {
-              params
-                ..attachment = {
-                  "service": service?.toJson().cast<String, dynamic>() ?? {}
-                };
+              params.attachment = {
+                "service": service?.toJson().cast<String, dynamic>() ?? {}
+              };
               logger.d(params.toAddMap());
               final bool data =
                   await YarnAuth().addYarnAndQuestion(params, '', '');

@@ -37,9 +37,11 @@ class _SelectVideoCoverPageState extends State<SelectVideoCoverPage> {
       bottom: Platform.isIOS ? true : false,
       top: false,
       color: white,
-      child: WillPopScope(
-        onWillPop: () async {
-          return true;
+      child: PopScope(
+        onPopInvoked: (didPop) async {
+          if (didPop) {
+            return;
+          }
         },
         child: Scaffold(
           backgroundColor: lightGrey,
@@ -128,7 +130,7 @@ class _SelectVideoCoverPageState extends State<SelectVideoCoverPage> {
                 if (frames.isEmpty)
                   const SizedBox.shrink()
                 else
-                  Container(
+                  SizedBox(
                     height: 75,
                     child: ListView.builder(
                       scrollDirection: Axis.horizontal,

@@ -59,7 +59,7 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   String createTitle = "";
 
-  @protected
+  @override
   void initState() {
     groupNameController = TextEditingController();
     groupDescriptionController = TextEditingController();
@@ -136,31 +136,29 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
   }
 
   Widget getScaffoldBody() {
-    return Container(
-      child: Form(
-        key: _formKey,
-        child: Column(
-          children: [
-            getProfileCover(),
-            getGroupNameAndProfile(),
-            getGroupDescription(),
-            Container(
-                height: (100 * selectedConnectionList.length).toDouble(),
-                child: _buildConnectionsList()),
-            Padding(
-              padding: const EdgeInsets.all(18.0),
-              child: Column(
-                children: [
-                  getMakePublicField(),
-                  const SizedBox(height: 10),
-                  getPaidGroupChatField(),
-                  getLimitGroupMembersField(),
-                  getAgeRestrictionField(),
-                ],
-              ),
+    return Form(
+      key: _formKey,
+      child: Column(
+        children: [
+          getProfileCover(),
+          getGroupNameAndProfile(),
+          getGroupDescription(),
+          SizedBox(
+              height: (100 * selectedConnectionList.length).toDouble(),
+              child: _buildConnectionsList()),
+          Padding(
+            padding: const EdgeInsets.all(18.0),
+            child: Column(
+              children: [
+                getMakePublicField(),
+                const SizedBox(height: 10),
+                getPaidGroupChatField(),
+                getLimitGroupMembersField(),
+                getAgeRestrictionField(),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -170,7 +168,7 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
         onTap: () {
           pickWallpaper();
         },
-        child: Container(height: 150, child: getProfileWallpaper()));
+        child: SizedBox(height: 150, child: getProfileWallpaper()));
   }
 
   Widget getProfileWallpaper() {
@@ -204,11 +202,9 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
               ],
             ),
           )
-        : Container(
-            child: Image.file(
-              File(groupModel.groupProfilePhoto!),
-              fit: BoxFit.fill,
-            ),
+        : Image.file(
+            File(groupModel.groupProfilePhoto!),
+            fit: BoxFit.fill,
           );
   }
 
@@ -252,50 +248,44 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
 
   Widget getGroupNameAndProfile() {
     return Container(
-      child: Container(
-        height: 80,
-        padding: const EdgeInsets.only(right: 16, left: 16),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            Column(
-              children: [
-                const SizedBox(
-                  height: 16,
-                ),
-                getGroupProfile()
-              ],
-            ),
-            const SizedBox(
-              width: 8,
-            ),
-            Expanded(
-                child: TextField(
-              controller: groupNameController,
-              cursorColor: blackFont,
-              onChanged: (value) {
-                setState(() {});
-              },
-              style: TextStyle(
-                  color: blackFont, fontWeight: FontWeight.w700, fontSize: 16),
-              decoration: InputDecoration(
-                  contentPadding: EdgeInsets.zero,
-                  hintText: widget.arguments["create"] == "group"
-                      ? "Type group name here"
-                      : "Type channel name here",
-                  hintStyle: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w300,
-                      color: darkGrey),
-                  helperStyle: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w400,
-                      color: darkGrey),
-                  enabledBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: dividerColor))),
-            ))
-          ],
-        ),
+      height: 80,
+      padding: const EdgeInsets.only(right: 16, left: 16),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          Column(
+            children: [
+              const SizedBox(
+                height: 16,
+              ),
+              getGroupProfile()
+            ],
+          ),
+          const SizedBox(
+            width: 8,
+          ),
+          Expanded(
+              child: TextField(
+            controller: groupNameController,
+            cursorColor: blackFont,
+            onChanged: (value) {
+              setState(() {});
+            },
+            style: TextStyle(
+                color: blackFont, fontWeight: FontWeight.w700, fontSize: 16),
+            decoration: InputDecoration(
+                contentPadding: EdgeInsets.zero,
+                hintText: widget.arguments["create"] == "group"
+                    ? "Type group name here"
+                    : "Type channel name here",
+                hintStyle: TextStyle(
+                    fontSize: 16, fontWeight: FontWeight.w300, color: darkGrey),
+                helperStyle: TextStyle(
+                    fontSize: 16, fontWeight: FontWeight.w400, color: darkGrey),
+                enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: dividerColor))),
+          ))
+        ],
       ),
     );
   }
@@ -317,7 +307,7 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
                   size: 18,
                 ),
               )
-            : Container(
+            : SizedBox(
                 height: 64,
                 width: 64,
                 child: Image.file(
@@ -498,18 +488,18 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
                   isAmountField: true,
                   labelText: AppLocalization.of(context)!.amount,
                   onChanged: (value) {},
-                  validator: (val) {
-                    try {
-                      final double userAmount =
-                          double.parse(val.replaceAll(',', ''));
-                      // if (userAmount > amountLimit) {
-                      //   return 'You cannot fund more than $amountLimit';
-                      // }
-                    } catch (e) {
-                      return AppLocalization.of(context)!.invalidAmount;
-                    }
-                    return null;
-                  },
+                  // validator: (val) {
+                  //   try {
+                  //     final double userAmount =
+                  //         double.parse(val.replaceAll(',', ''));
+                  // if (userAmount > amountLimit) {
+                  //   return 'You cannot fund more than $amountLimit';
+                  // }
+                  //   } catch (e) {
+                  //     return AppLocalization.of(context)!.invalidAmount;
+                  //   }
+                  //   return null;
+                  // },
                 ),
               ],
               const SizedBox(height: 10),

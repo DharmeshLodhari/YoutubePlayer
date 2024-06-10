@@ -8,9 +8,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 
-import 'models/CityData.dart';
-import 'models/PartialPropertyItem.dart';
-import 'models/PropertyItem.dart';
+import 'models/city_data.dart';
+import 'models/partial_property_item.dart';
+import 'models/property_item.dart';
 
 // ignore: must_be_immutable
 class PropertyTileWithHeart extends StatefulWidget {
@@ -368,9 +368,7 @@ class _PropertyImagesTileState extends State<PropertyImagesTile> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              widget.property!.address1! +
-                                  ", " +
-                                  widget.property!.address2!,
+                              "${widget.property!.address1!}, ${widget.property!.address2!}",
                               softWrap: false,
                               overflow: TextOverflow.fade,
                               style: TextStyle(
@@ -591,9 +589,7 @@ class _RentPropertyTileState extends State<RentPropertyTile> {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    widget.property!.address1! +
-                                        ", " +
-                                        widget.property!.address2!,
+                                    "${widget.property!.address1!}, ${widget.property!.address2!}",
                                     softWrap: false,
                                     overflow: TextOverflow.fade,
                                     style: TextStyle(
@@ -1046,9 +1042,7 @@ class _RentPropertyTileWithoutHeartState
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    widget.property!.address1! +
-                                        ", " +
-                                        widget.property!.address2!,
+                                    "${widget.property!.address1!}, ${widget.property!.address2!}",
                                     softWrap: false,
                                     overflow: TextOverflow.fade,
                                     style: TextStyle(

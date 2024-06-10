@@ -48,8 +48,9 @@ class ConnectionSynchronizer {
 
       final List<ChatConversation> users = [];
 
-      tempList
-          .forEach((element) => users.add(ChatConversation.fromJson(element)));
+      for (var element in tempList) {
+        users.add(ChatConversation.fromJson(element));
+      }
 
       debugPrint('USERS ::: $users');
 
@@ -83,9 +84,9 @@ class ConnectionSynchronizer {
     if (chatConversations == null) return;
 
     final List<ChatConversation> chatConversationToBeAdded = [];
-    chatConversations.forEach((element) {
+    for (var element in chatConversations) {
       chatConversationToBeAdded.add(ChatConversation.fromJson(element));
-    });
+    }
 
     if (chatConversations.isNotEmpty) {
       await ConnectionListManager()

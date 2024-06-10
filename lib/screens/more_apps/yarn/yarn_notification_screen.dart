@@ -3,7 +3,6 @@ import 'package:Slydo/screens/more_apps/yarn/widgets/notification_view.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -168,28 +167,21 @@ class _YarnNotificationState extends State<YarnNotification> {
   }
 
   void onRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
-      final connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        count = 0;
-        next = "";
-        previous = "";
-        notificationList = [];
-        if (mounted) setState(() {});
+    if (await checkConnection(context)) {
+      count = 0;
+      next = "";
+      previous = "";
+      notificationList = [];
+      if (mounted) setState(() {});
 
-        getAllNotification();
-        setState(() {
-          refreshController.refreshCompleted();
-        });
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
-        setState(() {
-          refreshController.refreshCompleted();
-        });
-      }
-    });
+      getAllNotification();
+      setState(() {
+        refreshController.refreshCompleted();
+      });
+    } else {
+      setState(() {
+        refreshController.refreshCompleted();
+      });
+    }
   }
 }
