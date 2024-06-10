@@ -22,7 +22,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'payment_transaction_info.dart';
 
 class PaymentLink extends StatefulWidget {
-  PaymentLink({Key? key, this.listMap}) : super(key: key);
+  PaymentLink({super.key, this.listMap});
   List? listMap = [];
 
   @override

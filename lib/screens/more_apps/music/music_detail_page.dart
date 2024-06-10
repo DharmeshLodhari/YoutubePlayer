@@ -12,10 +12,10 @@ import 'music_player.dart';
 class MusicDetailPage extends StatefulWidget {
   final dynamic arguments;
 
-  MusicDetailPage({this.arguments});
+  const MusicDetailPage({super.key, this.arguments});
 
   @override
-  _MusicDetailPageState createState() => _MusicDetailPageState();
+  State<MusicDetailPage> createState() => _MusicDetailPageState();
 }
 
 class _MusicDetailPageState extends State<MusicDetailPage> {
@@ -344,13 +344,14 @@ class PositionSeekWidget extends StatefulWidget {
   final Function(Duration?) seekTo;
 
   const PositionSeekWidget({
+    super.key,
     required this.currentPosition,
     required this.duration,
     required this.seekTo,
   });
 
   @override
-  _PositionSeekWidgetState createState() => _PositionSeekWidgetState();
+  State<PositionSeekWidget> createState() => _PositionSeekWidgetState();
 }
 
 class _PositionSeekWidgetState extends State<PositionSeekWidget> {

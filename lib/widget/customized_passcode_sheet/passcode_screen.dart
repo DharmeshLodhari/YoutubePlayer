@@ -32,7 +32,7 @@ class CustomizedPassCodeScreen extends StatefulWidget {
   final List<String>? digits;
 
   CustomizedPassCodeScreen({
-    Key? key,
+    super.key,
     required this.title,
     this.passwordDigits = 6,
     required this.passwordEnteredCallback,
@@ -47,8 +47,7 @@ class CustomizedPassCodeScreen extends StatefulWidget {
     this.cancelCallback,
     this.digits,
   })  : circleUIConfig = circleUIConfig ?? const CircleUIConfig(),
-        keyboardUIConfig = keyboardUIConfig ?? const KeyboardUIConfig(),
-        super(key: key);
+        keyboardUIConfig = keyboardUIConfig ?? const KeyboardUIConfig();
 
   @override
   State<StatefulWidget> createState() => _CustomizedPassCodeScreenState();

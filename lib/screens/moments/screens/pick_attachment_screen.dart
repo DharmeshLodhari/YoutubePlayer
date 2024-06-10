@@ -15,8 +15,8 @@ import '../../more_apps/user_post/user_post_auth.dart';
 
 class PickAttachmentScreen extends StatefulWidget {
   final AttachmentType attachmentType;
-  const PickAttachmentScreen({Key? key, required this.attachmentType})
-      : super(key: key);
+  const PickAttachmentScreen({super.key, required this.attachmentType})
+     ;
 
   @override
   State<PickAttachmentScreen> createState() => _PickAttachmentScreenState();

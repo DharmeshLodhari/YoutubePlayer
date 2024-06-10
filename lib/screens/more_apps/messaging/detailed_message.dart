@@ -19,8 +19,7 @@ class DetailedMessage extends StatefulWidget {
   const DetailedMessage({super.key, this.arguments});
 
   @override
-  _DetailedMessageState createState() =>
-      _DetailedMessageState(id: arguments['id']);
+  State<DetailedMessage> createState() => _DetailedMessageState();
 }
 
 class _DetailedMessageState extends State<DetailedMessage> {
@@ -35,6 +34,7 @@ class _DetailedMessageState extends State<DetailedMessage> {
 
   @override
   void initState() {
+    id = widget.arguments['id'];
     fetchMessage();
     super.initState();
   }
@@ -169,7 +169,7 @@ class _DetailedMessageState extends State<DetailedMessage> {
 
   Widget getRecipientWidget() {
     return Text(
-      AppLocalization.of(context)!.to + ": ${message.recipient}",
+      "${AppLocalization.of(context)!.to}: ${message.recipient}",
       maxLines: 1,
       softWrap: false,
       overflow: TextOverflow.fade,

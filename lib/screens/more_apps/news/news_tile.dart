@@ -1,7 +1,7 @@
 import 'dart:math';
 
-import 'package:Slydo/screens/more_apps/news/models/NewsListItem.dart';
-import 'package:Slydo/screens/more_apps/news/models/SubscriptionItem.dart';
+import 'package:Slydo/screens/more_apps/news/models/news_list_item.dart';
+import 'package:Slydo/screens/more_apps/news/models/subscription_item.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -11,10 +11,10 @@ import 'package:flutter/material.dart';
 class NewsTile extends StatefulWidget {
   final NewsListItem? newsListItem;
 
-  const NewsTile({Key? key, this.newsListItem}) : super(key: key);
+  const NewsTile({super.key, this.newsListItem});
 
   @override
-  _NewsTileState createState() => _NewsTileState();
+  State<NewsTile> createState() => _NewsTileState();
 }
 
 class _NewsTileState extends State<NewsTile> {
@@ -104,7 +104,7 @@ class _NewsTileState extends State<NewsTile> {
 class SubscriptionTile extends StatelessWidget {
   final SubscriptionItem? subscriptionItem;
 
-  const SubscriptionTile({Key? key, this.subscriptionItem}) : super(key: key);
+  const SubscriptionTile({super.key, this.subscriptionItem});
 
   @override
   Widget build(BuildContext context) {

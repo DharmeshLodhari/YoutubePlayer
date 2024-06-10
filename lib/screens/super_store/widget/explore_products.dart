@@ -10,8 +10,8 @@ import 'package:flutter/material.dart';
 class ExploreProducts extends StatefulWidget {
   final dynamic headers;
 
-  const ExploreProducts({Key? key, this.headers, this.isLast = false})
-      : super(key: key);
+  const ExploreProducts({super.key, this.headers, this.isLast = false})
+     ;
   final bool isLast;
 
   @override

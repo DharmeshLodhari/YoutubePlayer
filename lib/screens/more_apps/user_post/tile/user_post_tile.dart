@@ -1,5 +1,5 @@
 import 'package:Slydo/data/state_notifier.dart';
-import 'package:Slydo/screens/more_apps/news/CustomChip.dart';
+import 'package:Slydo/screens/more_apps/news/custom_chip.dart';
 import 'package:Slydo/screens/more_apps/user_post/models/user_post.dart';
 import 'package:Slydo/screens/more_apps/user_post/user_post_auth.dart';
 import 'package:Slydo/screens/more_apps/user_post/user_post_utils.dart';
@@ -36,13 +36,12 @@ class PostTile extends StatefulWidget {
   final bool disableClick;
 
   PostTile(
-      {Key? key,
+      {super.key,
       this.post,
       this.showAuthorDetails = true,
       required this.onDeleteBlog,
       this.isNavigable = true,
-      this.disableClick = true})
-      : super(key: key);
+      this.disableClick = true});
 
   @override
   _PostTileState createState() => _PostTileState();

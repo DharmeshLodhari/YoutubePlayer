@@ -6,13 +6,13 @@ import 'package:flutter/material.dart';
 import '../../../../../data/database_helper.dart';
 import '../../../../../utils/util.dart';
 import '../../../../../widget/curved_btn.dart';
-import '../../models/VirtualAccount.dart';
+import '../../models/virtual_account.dart';
 import '../../payment_and_banking_auth.dart';
 import 'models/kyc_model.dart';
 
 class UserKyc extends StatefulWidget {
   final KycModel kycModel;
-  const UserKyc({Key? key, required this.kycModel}) : super(key: key);
+  const UserKyc({super.key, required this.kycModel});
 
   @override
   State<UserKyc> createState() => _UserKycState();

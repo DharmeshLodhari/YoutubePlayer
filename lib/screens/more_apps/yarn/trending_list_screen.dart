@@ -14,8 +14,8 @@ class TrendingListScreen extends StatefulWidget {
   final String? selectedCategory;
   Function(bool)? onPageRefresh;
 
-  TrendingListScreen({Key? key, this.selectedCategory, this.onPageRefresh})
-      : super(key: key);
+  TrendingListScreen({super.key, this.selectedCategory, this.onPageRefresh})
+     ;
 
   @override
   State<TrendingListScreen> createState() => TrendingListScreenState(key: key);

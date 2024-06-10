@@ -20,7 +20,7 @@ class PaymentRequestTile extends StatelessWidget {
   Key? key;
 
   PaymentRequestTile({this.paymentRequest, this.expandedWidget, this.key})
-      : super(key: key);
+     ;
 
   @override
   Widget build(BuildContext context) {
@@ -181,7 +181,7 @@ class CardTransactionTile extends StatelessWidget {
   Widget? expandedWidget = Container();
 
   CardTransactionTile({this.transaction, this.expandedWidget, this.key})
-      : super(key: key);
+     ;
 
   @override
   Key? key;
@@ -308,7 +308,7 @@ class TransactionTile extends StatelessWidget {
   Widget? expandedWidget = Container();
 
   TransactionTile({this.transaction, this.expandedWidget, this.key})
-      : super(key: key);
+     ;
 
   Key? key;
 

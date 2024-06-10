@@ -12,7 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class SuperBlog extends StatefulWidget {
-  const SuperBlog({Key? key}) : super(key: key);
+  const SuperBlog({Key? key});
 
   @override
   _SuperBlogState createState() => _SuperBlogState();
@@ -419,8 +419,8 @@ class _SuperBlogState extends State<SuperBlog> {
 
 class SlydoBlogsList extends StatefulWidget {
   final SlydoBlogsMenu slydoBlogsMenu;
-  const SlydoBlogsList({Key? key, required this.slydoBlogsMenu})
-      : super(key: key);
+  const SlydoBlogsList({super.key, required this.slydoBlogsMenu})
+     ;
 
   @override
   _SlydoBlogsListState createState() => _SlydoBlogsListState();

@@ -13,8 +13,8 @@ import 'package:shimmer/shimmer.dart';
 
 class JobsCategoryJobsList extends StatefulWidget {
   final String categoryId;
-  const JobsCategoryJobsList({Key? key, required this.categoryId})
-      : super(key: key);
+  const JobsCategoryJobsList({super.key, required this.categoryId})
+     ;
 
   @override
   State<JobsCategoryJobsList> createState() => _JobsCategoryJobsListState();

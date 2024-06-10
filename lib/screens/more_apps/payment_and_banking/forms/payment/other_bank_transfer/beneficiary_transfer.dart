@@ -26,20 +26,20 @@ import '../../../../../../widget/slide_action_button.dart';
 import '../../../../../../widget/vertical_list_item.dart';
 import '../../../../payment_loading_screen.dart';
 import '../../../../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
-import '../../../models/VirtualAccount.dart';
 import '../../../models/transactions.dart';
+import '../../../models/virtual_account.dart';
 import '../../../payment_and_banking_auth.dart';
 
 // ignore: must_be_immutable
 class BeneficiaryTransfer extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
   final Function(bool)? callback;
 
-  BeneficiaryTransfer({this.arguments, this.callback});
+  const BeneficiaryTransfer({super.key, this.arguments, this.callback});
 
   // Declare a field that holds the userData.
   @override
-  _BeneficiaryTransferState createState() => _BeneficiaryTransferState();
+  State<BeneficiaryTransfer> createState() => _BeneficiaryTransferState();
 }
 
 class _BeneficiaryTransferState extends State<BeneficiaryTransfer>

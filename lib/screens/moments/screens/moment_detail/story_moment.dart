@@ -47,11 +47,11 @@ class StoryMomentScreen extends StatefulWidget {
   final MomentsModel? currentMoment;
 
   StoryMomentScreen(
-      {Key? key,
+      {super.key,
       required this.controller,
       required this.storyItems,
       required this.currentMoment})
-      : super(key: key);
+     ;
 
   @override
   State<StoryMomentScreen> createState() => _StoryMomentScreenState();

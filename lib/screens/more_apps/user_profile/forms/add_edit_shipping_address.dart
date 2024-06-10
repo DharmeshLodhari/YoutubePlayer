@@ -21,7 +21,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 
 class AddEditShippingAddress extends StatefulWidget {
-  AddEditShippingAddress({Key? key, this.shippingAddress}) : super(key: key);
+  AddEditShippingAddress({super.key, this.shippingAddress});
 
   final ShippingAddress? shippingAddress;
 

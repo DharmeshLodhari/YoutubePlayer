@@ -21,7 +21,7 @@ import '../bloc/contract_bloc.dart';
 import '../business_auth.dart';
 
 class ContractScreen extends StatefulWidget {
-  const ContractScreen({Key? key}) : super(key: key);
+  const ContractScreen({Key? key});
 
   @override
   State<ContractScreen> createState() => _ContractScreenState();

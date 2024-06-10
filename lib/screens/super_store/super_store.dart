@@ -23,7 +23,7 @@ import '../../widget/tab_selection.dart';
 class SuperStore extends StatefulWidget {
   final dynamic arguments;
 
-  SuperStore({Key? key, this.arguments}) : super(key: key);
+  SuperStore({super.key, this.arguments});
 
   @override
   State<SuperStore> createState() => _SuperStoreState();

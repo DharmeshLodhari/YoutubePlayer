@@ -10,8 +10,10 @@ import 'music_player.dart';
 import 'my_music_screen.dart';
 
 class MusicDashboard extends StatefulWidget {
+  const MusicDashboard({super.key});
+
   @override
-  _MusicDashboardState createState() => _MusicDashboardState();
+  State<MusicDashboard> createState() => _MusicDashboardState();
 }
 
 class _MusicDashboardState extends State<MusicDashboard> {
@@ -25,7 +27,7 @@ class _MusicDashboardState extends State<MusicDashboard> {
     musicPlayer = Provider.of<MusicPlayer>(context);
     return PopScope(
       onPopInvoked: (didPop) {
-        if(didPop) {
+        if (didPop) {
           _hotelDashboardBloc.index = 0;
           return;
         }
@@ -84,7 +86,7 @@ class _MusicDashboardState extends State<MusicDashboard> {
   BottomNavigationBarItem bottomNavigationBarItem(
       {IconData? icon, required String title}) {
     return BottomNavigationBarItem(
-      icon: Container(
+      icon: SizedBox(
         height: 50,
         width: 108,
         child: Icon(

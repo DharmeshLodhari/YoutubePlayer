@@ -13,12 +13,12 @@ class MomentVideoPlayer extends StatefulWidget {
   final double? value;
 
   MomentVideoPlayer(
-      {Key? key,
+      {super.key,
       required this.momentsModel,
       required this.videoPlayerControllers,
       required this.value,
       required this.controller})
-      : super(key: key);
+     ;
 
   @override
   MomentVideoPlayerState createState() => MomentVideoPlayerState(key: key);

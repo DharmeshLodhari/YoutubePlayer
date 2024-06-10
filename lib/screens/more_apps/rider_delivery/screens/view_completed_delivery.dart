@@ -23,7 +23,7 @@ import 'package:video_player/video_player.dart';
 class ViewCompletedDelivery extends StatefulWidget {
   final dynamic arguments;
 
-  ViewCompletedDelivery({Key? key, this.arguments}) : super(key: key);
+  const ViewCompletedDelivery({this.arguments, super.key});
 
   @override
   State<ViewCompletedDelivery> createState() => _ViewCompletedDeliveryState();

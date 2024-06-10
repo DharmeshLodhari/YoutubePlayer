@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class RotatedImage extends StatefulWidget {
   final String image;
 
-  const RotatedImage(this.image, {Key? key}) : super(key: key);
+  const RotatedImage(this.image, {Key? key});
 
   @override
   _RotatedImageState createState() => _RotatedImageState();

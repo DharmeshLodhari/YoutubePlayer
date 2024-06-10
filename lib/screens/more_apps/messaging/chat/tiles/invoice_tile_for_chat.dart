@@ -16,9 +16,8 @@ class PostTileForInvoice extends StatefulWidget {
   final Map<String, dynamic>? message;
   final ChatConversation? chatConversation;
 
-  PostTileForInvoice(
-      {Key? key, required this.message, required this.chatConversation})
-      : super(key: key);
+  const PostTileForInvoice(
+      {super.key, required this.message, required this.chatConversation});
 
   @override
   State<PostTileForInvoice> createState() => _PostTileForInvoiceState();

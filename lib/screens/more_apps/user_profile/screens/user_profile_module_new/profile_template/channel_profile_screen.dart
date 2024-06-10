@@ -17,14 +17,14 @@ class ChannelProfileScreen extends StatefulWidget {
   // Map<String, dynamic>? result = {};
 
   ChannelProfileScreen({
-    Key? key,
+    super.key,
     this.searchedUser,
     this.channelDetail,
     required this.searchedUserName,
     required this.isOwner,
     required this.isLoading,
     // required this.result,
-  }) : super(key: key);
+  });
 
   @override
   State<ChannelProfileScreen> createState() => _ChannelProfileScreenState();

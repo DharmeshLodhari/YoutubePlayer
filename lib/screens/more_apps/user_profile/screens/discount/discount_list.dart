@@ -15,7 +15,7 @@ import 'package:shimmer/shimmer.dart';
 
 // ignore: must_be_immutable
 class DiscountList extends StatefulWidget {
-  DiscountList({Key? key}) : super(key: key);
+  DiscountList({Key? key});
 
   @override
   _DiscountListState createState() => _DiscountListState();

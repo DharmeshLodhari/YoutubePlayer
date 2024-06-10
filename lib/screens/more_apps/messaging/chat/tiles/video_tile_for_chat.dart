@@ -15,7 +15,8 @@ class VideoTileForChat extends StatelessWidget {
   final Map<String, dynamic>? message;
   final ChatConversation? chatConversation;
 
-  VideoTileForChat({required this.message, this.chatConversation});
+  const VideoTileForChat(
+      {super.key, required this.message, this.chatConversation});
 
   @override
   Widget build(BuildContext context) {

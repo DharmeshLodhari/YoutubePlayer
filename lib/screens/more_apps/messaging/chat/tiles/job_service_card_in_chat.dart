@@ -13,8 +13,7 @@ import '../../../../../utils/util.dart';
 import '../../../user_profile/models/job_service_model.dart';
 
 class JobCardChatDescription extends StatefulWidget {
-  JobCardChatDescription({Key? key, required this.jobMessage})
-      : super(key: key);
+  const JobCardChatDescription({super.key, required this.jobMessage});
   final jobMessage;
 
   @override

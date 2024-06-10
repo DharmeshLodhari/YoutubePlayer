@@ -6,11 +6,11 @@ import '../../../../../data/database_helper.dart';
 import '../../../../../routes/route_constants.dart';
 import '../../../../../utils/slydo_app_icon_icons.dart';
 import '../../../../../widget/customized_dropdown_field.dart';
-import '../../models/VirtualAccount.dart';
+import '../../models/virtual_account.dart';
 import '../../payment_and_banking_auth.dart';
 
 class UpgradeAccount extends StatefulWidget {
-  const UpgradeAccount({Key? key}) : super(key: key);
+  const UpgradeAccount({Key? key});
 
   @override
   State<UpgradeAccount> createState() => _UpgradeAccountState();

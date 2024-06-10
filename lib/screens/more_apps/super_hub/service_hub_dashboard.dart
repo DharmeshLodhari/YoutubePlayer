@@ -14,7 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class ServiceHubDashboard extends StatefulWidget {
-  const ServiceHubDashboard({Key? key}) : super(key: key);
+  const ServiceHubDashboard({Key? key});
 
   @override
   State<ServiceHubDashboard> createState() => _ServiceHubDashboardState();

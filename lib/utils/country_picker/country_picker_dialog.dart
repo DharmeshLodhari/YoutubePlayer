@@ -89,8 +89,8 @@ class CountryPickerDialog extends StatefulWidget {
 
   final bool isForLogin;
 
-  CountryPickerDialog({
-    Key? key,
+  const CountryPickerDialog({
+    super.key,
     this.onValuePicked,
     this.title,
     this.titlePadding,
@@ -110,7 +110,7 @@ class CountryPickerDialog extends StatefulWidget {
     this.searchInputDecoration,
     this.searchCursorColor,
     this.searchEmptyView,
-  }) : super(key: key);
+  });
 
   @override
   SingleChoiceDialogState createState() {

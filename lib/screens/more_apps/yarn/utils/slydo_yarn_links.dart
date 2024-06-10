@@ -127,7 +127,7 @@ class YarnSmartText extends StatelessWidget {
   final bool disableHashTag;
 
   const YarnSmartText({
-    Key? key,
+    super.key,
     required this.text,
     this.style,
     this.linkStyle,
@@ -140,7 +140,7 @@ class YarnSmartText extends StatelessWidget {
     this.disableLinks = false,
     this.disableAt = false,
     this.disableHashTag = false,
-  }) : super(key: key);
+  });
 
   /// Raw TextSpan builder for more control on the RichText
   TextSpan _buildTextSpan({

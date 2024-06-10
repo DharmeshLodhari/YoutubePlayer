@@ -4,12 +4,14 @@ import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-import 'models/MovieItem.dart';
+import 'models/movie_item.dart';
 import 'movie_auth.dart';
 
 class MyMovieList extends StatefulWidget {
+  const MyMovieList({super.key});
+
   @override
-  _MyMovieListState createState() => _MyMovieListState();
+  State<MyMovieList> createState() => _MyMovieListState();
 }
 
 class _MyMovieListState extends State<MyMovieList> {

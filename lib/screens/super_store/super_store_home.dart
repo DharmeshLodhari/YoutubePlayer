@@ -19,7 +19,7 @@ import '../../utils/util.dart';
 import '../../widget/rounded_background_icon.dart';
 
 class SuperStoreHome extends StatefulWidget {
-  const SuperStoreHome({Key? key}) : super(key: key);
+  const SuperStoreHome({Key? key});
 
   @override
   State<SuperStoreHome> createState() => _SuperStoreHomeState();

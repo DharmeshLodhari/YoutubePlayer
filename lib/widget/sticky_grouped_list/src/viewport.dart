@@ -10,7 +10,7 @@ import 'package:flutter/widgets.dart';
 /// for more information.
 class UnboundedViewport extends Viewport {
   UnboundedViewport({
-    Key? key,
+    super.key,
     AxisDirection axisDirection = AxisDirection.down,
     AxisDirection? crossAxisDirection,
     double anchor = 0.0,
@@ -20,7 +20,6 @@ class UnboundedViewport extends Viewport {
     List<Widget> slivers = const <Widget>[],
   })  : _anchor = anchor,
         super(
-            key: key,
             axisDirection: axisDirection,
             crossAxisDirection: crossAxisDirection,
             offset: offset,

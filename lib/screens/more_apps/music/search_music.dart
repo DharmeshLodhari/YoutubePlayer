@@ -9,13 +9,15 @@ import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-import 'models/PartialMusicItem.dart';
+import 'models/partial_music_item.dart';
 import 'music_auth.dart';
 import 'music_tile.dart';
 
 class SearchMusic extends StatefulWidget {
+  const SearchMusic({super.key});
+
   @override
-  _SearchMusicState createState() => _SearchMusicState();
+  State<SearchMusic> createState() => _SearchMusicState();
 }
 
 class _SearchMusicState extends State<SearchMusic> {

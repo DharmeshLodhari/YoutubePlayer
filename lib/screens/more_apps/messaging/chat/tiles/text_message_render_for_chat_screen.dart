@@ -4,9 +4,11 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_conversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/post_title_for_chat.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
-import 'package:Slydo/screens/more_apps/payment_and_banking/models/Envelope.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/models/envelope_model.dart';
+import 'package:Slydo/screens/more_apps/service_hub/models/jobs.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/screens/more_apps/yarn/widgets/url_reader_of_yarn.dart';
 import 'package:Slydo/utils/link_preview/flutter_link_preview.dart';
 import 'package:Slydo/utils/link_preview/web_analyzer.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
@@ -18,20 +20,16 @@ import 'package:linkwell/linkwell.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../../service_hub/models/jobs.dart';
-import '../../../yarn/widgets/url_reader_of_yarn.dart';
-
 // ignore: must_be_immutable
 class TextMessageRendererForChat extends StatefulWidget {
   Map<String, dynamic>? message;
   ChatConversation? chatConversation;
   Function? onReplyMessageTap;
   TextMessageRendererForChat(
-      {Key? key, this.message, this.chatConversation, this.onReplyMessageTap})
-      : super(key: key);
+      {super.key, this.message, this.chatConversation, this.onReplyMessageTap});
 
   @override
-  _TextMessageRendererForChatState createState() =>
+  State<TextMessageRendererForChat> createState() =>
       _TextMessageRendererForChatState();
 }
 
@@ -1479,7 +1477,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  messageDecoderWithEmoji("${envelope.title ?? ""}")!,
+                  messageDecoderWithEmoji(envelope.title ?? "")!,
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,

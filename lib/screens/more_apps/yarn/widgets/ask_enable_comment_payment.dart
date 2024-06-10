@@ -16,7 +16,7 @@ class AskEnableCommentAndPayment extends StatefulWidget {
   final Function(bool?) onTap;
 
   AskEnableCommentAndPayment(
-      {Key? key,
+      {super.key,
       this.title,
       this.image,
       this.icon,
@@ -27,7 +27,7 @@ class AskEnableCommentAndPayment extends StatefulWidget {
       this.baseBGColor,
       this.highLightBGColor,
       required this.onTap})
-      : super(key: key);
+     ;
 
   @override
   State<AskEnableCommentAndPayment> createState() =>

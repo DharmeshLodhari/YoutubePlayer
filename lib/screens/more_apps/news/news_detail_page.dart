@@ -1,4 +1,4 @@
-import 'package:Slydo/screens/more_apps/news/CustomChip.dart';
+import 'package:Slydo/screens/more_apps/news/custom_chip.dart';
 import 'package:Slydo/screens/more_apps/news/models/news_detail_item.dart';
 import 'package:Slydo/screens/more_apps/news/news_tile.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
@@ -16,8 +16,10 @@ import 'package:video_player/video_player.dart';
 import 'news_auth.dart';
 
 class NewsDetailPage extends StatefulWidget {
+  const NewsDetailPage({super.key});
+
   @override
-  _NewsDetailPageState createState() => _NewsDetailPageState();
+  State<NewsDetailPage> createState() => _NewsDetailPageState();
 }
 
 class _NewsDetailPageState extends State<NewsDetailPage> {
@@ -31,7 +33,7 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
 
   NewsDetailItem newsDetailItem = NewsDetailItem();
   bool isLoading = false;
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
   @override
@@ -299,7 +301,7 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
   Widget bloggerDetail() {
     return ListTile(
       contentPadding: EdgeInsets.zero,
-      leading: Container(
+      leading: SizedBox(
         height: 32,
         width: 32,
         child: ClipOval(

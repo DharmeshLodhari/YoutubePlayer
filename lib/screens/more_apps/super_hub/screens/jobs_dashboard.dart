@@ -7,7 +7,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import '../tiles/jos_description_card.dart';
 
 class JobsDashboard extends StatefulWidget {
-  const JobsDashboard({Key? key}) : super(key: key);
+  const JobsDashboard({Key? key});
 
   @override
   State<JobsDashboard> createState() => _JobsDashboardState();

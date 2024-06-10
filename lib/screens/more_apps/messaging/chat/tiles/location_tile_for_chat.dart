@@ -188,7 +188,8 @@ class LocationTileForChatMessage extends StatelessWidget {
   final Map<String, dynamic>? message;
   final ChatConversation? chatConversation;
 
-  LocationTileForChatMessage({this.message, this.chatConversation});
+  const LocationTileForChatMessage(
+      {super.key, this.message, this.chatConversation});
 
   @override
   Widget build(BuildContext context) {

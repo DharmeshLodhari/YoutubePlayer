@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_conversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
-import 'package:Slydo/screens/more_apps/payment_and_banking/models/Envelope.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/models/envelope_model.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -14,10 +14,10 @@ class EnvelopeTileForChat extends StatefulWidget {
   final Map<String, dynamic>? message;
   final ChatConversation? chatConversation;
 
-  EnvelopeTileForChat({this.message, this.chatConversation});
+  const EnvelopeTileForChat({super.key, this.message, this.chatConversation});
 
   @override
-  _EnvelopeTileForChatState createState() => _EnvelopeTileForChatState();
+  State<EnvelopeTileForChat> createState() => _EnvelopeTileForChatState();
 }
 
 class _EnvelopeTileForChatState extends State<EnvelopeTileForChat> {
@@ -267,19 +267,19 @@ class _EnvelopeTileForChatState extends State<EnvelopeTileForChat> {
       onTap: () {
         if (isEmptyEnvelope) {
           if (envelope.toCustomer == userBloc.user.userName) {
-            final ChatConversation _chatConversation =
+            final ChatConversation chatConversation =
                 ChatConversation.fromChatConversation(widget.chatConversation!);
 
             if (widget.chatConversation!.isGroupConversation!) {
-              _chatConversation.userName = userBloc.user.userName;
-              _chatConversation.fullName = userBloc.user.fullName;
-              _chatConversation.avatar = userBloc.user.avatar;
-              _chatConversation.qrCode = userBloc.user.qrCode;
+              chatConversation.userName = userBloc.user.userName;
+              chatConversation.fullName = userBloc.user.fullName;
+              chatConversation.avatar = userBloc.user.avatar;
+              chatConversation.qrCode = userBloc.user.qrCode;
             }
 
             Navigator.of(context).pushNamed("/put-money-in-envelope",
                 arguments: {
-                  "chatConversation": _chatConversation,
+                  "chatConversation": chatConversation,
                   "message": message,
                   "envelope": envelope
                 });

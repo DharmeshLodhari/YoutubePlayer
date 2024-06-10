@@ -17,7 +17,7 @@ import 'package:shimmer/shimmer.dart';
 
 // ignore: must_be_immutable
 class DispatchAddress extends StatefulWidget {
-  DispatchAddress({Key? key, this.arguments}) : super(key: key);
+  DispatchAddress({super.key, this.arguments});
 
   final dynamic arguments;
 

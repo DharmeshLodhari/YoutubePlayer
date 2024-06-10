@@ -6,7 +6,7 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/moments/models/moments_model.dart';
 import 'package:Slydo/screens/moments/screens/moments_service.dart';
-import 'package:Slydo/screens/more_apps/payment_and_banking/models/VirtualAccount.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/models/virtual_account.dart';
 import 'package:Slydo/screens/more_apps/rider_registration/auth/rider_registration_auth.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/add_edit_shipping_address.dart';
@@ -57,7 +57,7 @@ import 'more_apps/user_profile/user_auth.dart';
 import 'more_apps/yarn/yarn_dashboard.dart';
 
 class Home extends StatefulWidget {
-  Home({Key? key}) : super(key: key);
+  Home({Key? key});
 
   @override
   _HomeState createState() => _HomeState();

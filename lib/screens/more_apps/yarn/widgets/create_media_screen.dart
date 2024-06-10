@@ -19,8 +19,8 @@ class CreateMediaScreen extends StatefulWidget {
   final Function(List<YarnMedia>)? addedSelectedMedia;
   int? imageCount;
 
-  CreateMediaScreen({Key? key, this.addedSelectedMedia, this.imageCount})
-      : super(key: key);
+  CreateMediaScreen({super.key, this.addedSelectedMedia, this.imageCount})
+     ;
 
   @override
   _CreateMediaScreenState createState() => _CreateMediaScreenState();

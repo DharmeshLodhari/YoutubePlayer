@@ -23,16 +23,11 @@ class ComposeMessage extends StatefulWidget {
   ComposeMessage({super.key, this.arguments, this.username});
 
   @override
-  _ComposeMessageState createState() =>
-      _ComposeMessageState(arguments: arguments);
+  State<ComposeMessage> createState() => _ComposeMessageState();
 }
 
 class _ComposeMessageState extends State<ComposeMessage> {
-  final dynamic arguments;
-
   late DashboardBloc _dashboardBloc;
-
-  _ComposeMessageState({this.arguments});
 
   final TextEditingController _recipientController = TextEditingController();
   final TextEditingController _subjectController = TextEditingController();
@@ -59,13 +54,13 @@ class _ComposeMessageState extends State<ComposeMessage> {
     // checking if the message is replay message then we fetch recipient and subject Details
     // and set into recipient field and subject field and also display the recipent data tile
 
-    if (arguments != null) {
+    if (widget.arguments != null) {
       setState(() {
-        isReplyMessage = arguments['isReply'] == 1 ? true : false;
+        isReplyMessage = widget.arguments['isReply'] == 1 ? true : false;
       });
-      recipient = arguments['recipient'];
+      recipient = widget.arguments['recipient'];
       _recipientController.text = recipient!;
-      subject = arguments['subject'];
+      subject = widget.arguments['subject'];
       if (subject != "") {
         setState(() {
           isSubjectIsPresent = true;
@@ -93,14 +88,13 @@ class _ComposeMessageState extends State<ComposeMessage> {
   void makeUsernameLowercase() {
     /* adding listener on recipientFocus when user unFocus
     From Recipient Field then value of that field should be in lowerCase */
-    _recipientFocus
-      ..addListener(() {
-        if (!_recipientFocus.hasFocus) {
-          setState(() {
-            _recipientController.text = _recipientController.text.toLowerCase();
-          });
-        }
-      });
+    _recipientFocus.addListener(() {
+      if (!_recipientFocus.hasFocus) {
+        setState(() {
+          _recipientController.text = _recipientController.text.toLowerCase();
+        });
+      }
+    });
   }
 
   @override

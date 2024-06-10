@@ -14,7 +14,7 @@ class MyMusicScreen extends StatefulWidget {
   MyMusicScreen({super.key, this.musicPlayer});
 
   @override
-  _MyMusicScreenState createState() => _MyMusicScreenState();
+  State<MyMusicScreen> createState() => _MyMusicScreenState();
 }
 
 class _MyMusicScreenState extends State<MyMusicScreen> {
@@ -26,7 +26,7 @@ class _MyMusicScreenState extends State<MyMusicScreen> {
     _musicDashboardBloc = Provider.of<MusicDashboardBloc>(context);
     return PopScope(
       onPopInvoked: (didPop) async {
-        if(didPop) {
+        if (didPop) {
           _musicDashboardBloc.index = 0;
           return;
         }

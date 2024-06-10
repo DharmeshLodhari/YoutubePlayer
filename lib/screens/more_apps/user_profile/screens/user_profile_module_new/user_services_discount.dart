@@ -19,8 +19,8 @@ class UserServicesDiscount extends StatefulWidget {
 
   UserServicesDiscount({
     required this.item,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   _UserServicesDiscountState createState() => _UserServicesDiscountState();

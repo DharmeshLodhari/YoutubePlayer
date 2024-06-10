@@ -18,8 +18,8 @@ class FindBusinessListScreen extends StatefulWidget {
   final String? industry;
 
   FindBusinessListScreen(
-      {Key? key, this.onPageRefresh, this.category, this.industry})
-      : super(key: key);
+      {super.key, this.onPageRefresh, this.category, this.industry})
+     ;
 
   @override
   State<FindBusinessListScreen> createState() => FindBusinessListScreenState();

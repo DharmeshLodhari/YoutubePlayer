@@ -18,13 +18,13 @@ class DialogButton extends StatelessWidget {
   final String? text;
 
   /// DialogButton constructor
-  DialogButton({
-    Key? key,
+  const DialogButton({
+    super.key,
     this.backgroundColor,
     this.text,
     this.textColor,
     required this.onPressed,
-  }) : super(key: key);
+  });
 
   /// Creates alert buttons based on constructor params
   @override

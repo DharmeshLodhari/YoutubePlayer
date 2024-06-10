@@ -9,8 +9,10 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import '../../payment_and_banking_auth.dart';
 
 class PayoutTransactions extends StatefulWidget {
+  const PayoutTransactions({super.key});
+
   @override
-  _PayoutTransactionsState createState() => _PayoutTransactionsState();
+  State<PayoutTransactions> createState() => _PayoutTransactionsState();
 }
 
 class _PayoutTransactionsState extends State<PayoutTransactions> {

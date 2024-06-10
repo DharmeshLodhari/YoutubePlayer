@@ -26,7 +26,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 class SharedCartDetails extends StatefulWidget {
   // final dynamic arguments;
   //
-  // SharedCartDetails({Key? key, this.arguments}) : super(key: key);
+  // SharedCartDetails({super.key, this.arguments});
 
   @override
   State<SharedCartDetails> createState() => _SharedCartDetailsState();

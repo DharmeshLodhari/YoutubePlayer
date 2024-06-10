@@ -1446,7 +1446,7 @@ class TopicTextField extends StatelessWidget {
   final ValueChanged<String>? onChanged;
 
   const TopicTextField({
-    Key? key,
+    super.key,
     required this.controller,
     this.hint,
     this.validator,
@@ -1462,7 +1462,7 @@ class TopicTextField extends StatelessWidget {
     this.onTap,
     this.suffix = true,
     this.suffixIcon,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

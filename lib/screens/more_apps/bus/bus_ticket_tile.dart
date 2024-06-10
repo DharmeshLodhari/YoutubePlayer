@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 class BusTicketTile extends StatelessWidget {
   final Transport? transport;
 
-  const BusTicketTile({Key? key, this.transport}) : super(key: key);
+  const BusTicketTile({super.key, this.transport});
   @override
   Widget build(BuildContext context) {
     final UserBloc userBloc = Provider.of<UserBloc>(context);

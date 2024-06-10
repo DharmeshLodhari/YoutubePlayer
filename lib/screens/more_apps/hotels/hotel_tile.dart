@@ -90,7 +90,7 @@ class HotelTile extends StatelessWidget {
 class HotelTileWithHeart extends StatefulWidget {
   final HotelRoomItem? hotelRoom;
 
-  const HotelTileWithHeart({Key? key, this.hotelRoom}) : super(key: key);
+  const HotelTileWithHeart({super.key, this.hotelRoom});
   @override
   _HotelTileWithHeartState createState() => _HotelTileWithHeartState();
 }
@@ -299,7 +299,7 @@ class _HotelTileWithHeartState extends State<HotelTileWithHeart> {
 class HotelRoomImagesTile extends StatefulWidget {
   final HotelRoomItem? hotelRoom;
 
-  const HotelRoomImagesTile({Key? key, this.hotelRoom}) : super(key: key);
+  const HotelRoomImagesTile({super.key, this.hotelRoom});
   @override
   _HotelRoomImagesTileState createState() => _HotelRoomImagesTileState();
 }

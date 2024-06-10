@@ -7,7 +7,7 @@ import 'models/Transport.dart';
 class FlightTicketTile extends StatelessWidget {
   final Transport? transport;
 
-  const FlightTicketTile({Key? key, this.transport}) : super(key: key);
+  const FlightTicketTile({super.key, this.transport});
   @override
   Widget build(BuildContext context) {
     return Card(

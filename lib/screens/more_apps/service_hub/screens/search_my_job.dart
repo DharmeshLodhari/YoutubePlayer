@@ -12,8 +12,8 @@ import '../tiles/jos_description_card.dart';
 
 class SearchMyJobs extends StatefulWidget {
   const SearchMyJobs({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   _SearchMyJobsState createState() => _SearchMyJobsState();

@@ -20,11 +20,11 @@ class ExploreSingleProduct extends StatefulWidget {
   final Function()? onProductRefresh;
 
   const ExploreSingleProduct(
-      {Key? key,
+      {super.key,
       required this.product,
       this.giveRightPadding = false,
       this.onProductRefresh})
-      : super(key: key);
+     ;
 
   @override
   State<ExploreSingleProduct> createState() => _ExploreSingleProductState();

@@ -78,7 +78,7 @@ class MomentCommentTextField extends StatefulWidget {
   bool isScrolling;
 
   MomentCommentTextField({
-    Key? key,
+    super.key,
     required this.controller,
     this.hint,
     this.validator,
@@ -114,7 +114,7 @@ class MomentCommentTextField extends StatefulWidget {
     this.onChanged,
     required this.onTapAgeRestriction,
     this.resetScrollingValue,
-  }) : super(key: key);
+  });
 
   @override
   State<MomentCommentTextField> createState() =>

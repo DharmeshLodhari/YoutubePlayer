@@ -11,11 +11,11 @@ class OtherBankTransfer extends StatefulWidget {
   final dynamic arguments;
   final Function(bool)? callback;
 
-  OtherBankTransfer({this.arguments, this.callback});
+  const OtherBankTransfer({super.key, this.arguments, this.callback});
 
   // Declare a field that holds the userData.
   @override
-  _OtherBankTransferState createState() => _OtherBankTransferState();
+  State<OtherBankTransfer> createState() => _OtherBankTransferState();
 }
 
 class _OtherBankTransferState extends State<OtherBankTransfer> {

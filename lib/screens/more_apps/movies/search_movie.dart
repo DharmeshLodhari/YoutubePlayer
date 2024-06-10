@@ -1,6 +1,6 @@
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/movies/custom_slider_thumb_circle_for_range_slider.dart';
-import 'package:Slydo/screens/more_apps/movies/models/MovieItem.dart';
+import 'package:Slydo/screens/more_apps/movies/models/movie_item.dart';
 import 'package:Slydo/screens/more_apps/movies/movie_auth.dart';
 import 'package:Slydo/screens/more_apps/movies/movie_tile.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
@@ -13,8 +13,10 @@ import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class SearchMovie extends StatefulWidget {
+  const SearchMovie({super.key});
+
   @override
-  _SearchMovieState createState() => _SearchMovieState();
+  State<SearchMovie> createState() => _SearchMovieState();
 }
 
 class _SearchMovieState extends State<SearchMovie> {
@@ -36,7 +38,7 @@ class _SearchMovieState extends State<SearchMovie> {
 
   List<MovieItem> movieList = [];
 
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
   bool isLoading = false;
@@ -633,7 +635,7 @@ class _SearchMovieState extends State<SearchMovie> {
     );
   }
 
-  Widget getPriceSelection(bottomSheetSetState) {
+  Widget getPriceSelection(StateSetter bottomSheetSetState) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Text(
         "Price",

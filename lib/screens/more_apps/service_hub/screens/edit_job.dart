@@ -2358,11 +2358,11 @@ class _EditJobState extends State<EditJob> {
 
 class CustomRadioTile extends StatelessWidget {
   const CustomRadioTile({
-    Key? key,
+    super.key,
     required this.groupVal,
     required this.value,
     required this.callbackFunction,
-  }) : super(key: key);
+  });
 
   final String groupVal;
   final String value;
@@ -2394,9 +2394,9 @@ class CustomRadioTile extends StatelessWidget {
 
 class CustomizedRadioButtonRow extends StatelessWidget {
   const CustomizedRadioButtonRow({
-    Key? key,
+    super.key,
     required this.groupValue,
-  }) : super(key: key);
+  });
 
   final String groupValue;
 

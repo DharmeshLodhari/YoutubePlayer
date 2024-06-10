@@ -21,9 +21,9 @@ class PreviewDeliveryProofScreen extends StatefulWidget {
   final dynamic arguments;
 
   PreviewDeliveryProofScreen({
-    Key? key,
+    super.key,
     this.arguments,
-  }) : super(key: key);
+  });
 
   @override
   State<PreviewDeliveryProofScreen> createState() =>

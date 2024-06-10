@@ -20,9 +20,9 @@
 //
 // class NormalCartScreen extends StatefulWidget {
 //   NormalCartScreen({
-//     Key? key,
+//     super.key,
 //     this.onPageRefresh,
-//   }) : super(key: key);
+//   });
 //
 //   Function(bool)? onPageRefresh;
 //

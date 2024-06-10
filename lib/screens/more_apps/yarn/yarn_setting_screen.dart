@@ -12,7 +12,7 @@ import 'package:provider/provider.dart';
 import 'yarn_customize_screen.dart';
 
 class YarnSettingsScreen extends StatefulWidget {
-  YarnSettingsScreen({Key? key}) : super(key: key);
+  YarnSettingsScreen({Key? key});
 
   @override
   State<YarnSettingsScreen> createState() => _YarnSettingsScreenState();

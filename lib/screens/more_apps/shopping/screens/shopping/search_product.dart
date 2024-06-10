@@ -16,7 +16,7 @@ import '../../models/store.dart';
 
 class SearchProduct extends StatefulWidget {
   final dynamic arguments;
-  SearchProduct({Key? key, this.arguments}) : super(key: key);
+  SearchProduct({super.key, this.arguments});
 
   @override
   _SearchProductState createState() => _SearchProductState();

@@ -23,13 +23,13 @@ class CommentListWidget extends StatefulWidget {
   final Function(bool, int)? callbackUpdateCommentCount;
 
   const CommentListWidget(
-      {Key? key,
+      {super.key,
       required this.index,
       required this.momentID,
       required this.username,
       this.callbackUpdateCommentCount,
       this.moment})
-      : super(key: key);
+     ;
 
   @override
   _CommentListWidgetState createState() => _CommentListWidgetState();

@@ -1164,7 +1164,7 @@ class BlogSettingsTitles extends StatefulWidget {
       this.trailingWidget,
       this.addElevation = true,
       Key? key})
-      : super(key: key);
+     ;
 
   @override
   State<BlogSettingsTitles> createState() => _BlogSettingsTitlesState();

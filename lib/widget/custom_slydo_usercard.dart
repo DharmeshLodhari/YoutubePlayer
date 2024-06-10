@@ -21,7 +21,7 @@ import 'loading_indicator.dart';
 
 class CustomSlydoUserCard extends StatefulWidget {
   final CustomerProfile user;
-  const CustomSlydoUserCard({Key? key, required this.user}) : super(key: key);
+  const CustomSlydoUserCard({super.key, required this.user});
 
   @override
   State<CustomSlydoUserCard> createState() => _CustomSlydoUserCardState();

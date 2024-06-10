@@ -1,4 +1,3 @@
-import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_dashboard_bloc.dart';
 import 'package:Slydo/utils/navigation_util.dart';
@@ -18,10 +17,10 @@ class YarnListScreen extends StatefulWidget {
   Function(bool)? onPageRefresh;
 
   YarnListScreen({
-    Key? key,
+    super.key,
     this.selectedCategory,
     this.onPageRefresh,
-  }) : super(key: key);
+  });
 
   @override
   State<YarnListScreen> createState() => YarnListScreenState(key: key);
@@ -42,7 +41,7 @@ class YarnListScreenState extends State<YarnListScreen> {
   String? selectedId;
   final ScrollController _scrollController = ScrollController();
   late YarnDashboardBloc yarnDashboardBloc;
-  late DashboardBloc _dashboardBloc;
+  // late DashboardBloc _dashboardBloc;
 
   @override
   void initState() {
@@ -223,7 +222,7 @@ class YarnListScreenState extends State<YarnListScreen> {
   @override
   Widget build(BuildContext context) {
     yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context);
-    _dashboardBloc = Provider.of<DashboardBloc>(context);
+    // _dashboardBloc = Provider.of<DashboardBloc>(context);
 
     // /// check if yarn bottom navigation is clicked
     // /// scroll back to the top of the page

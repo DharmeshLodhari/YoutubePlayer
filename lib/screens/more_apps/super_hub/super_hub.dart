@@ -15,7 +15,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shimmer/shimmer.dart';
 
 class SuperHub extends StatefulWidget {
-  const SuperHub({Key? key}) : super(key: key);
+  const SuperHub({Key? key});
 
   @override
   State<SuperHub> createState() => _SuperHubState();
@@ -589,8 +589,8 @@ class _SuperHubState extends State<SuperHub> {
 
 class SuperStoreSingleCard extends StatelessWidget {
   final Service service;
-  const SuperStoreSingleCard({Key? key, required this.service})
-      : super(key: key);
+  const SuperStoreSingleCard({super.key, required this.service})
+     ;
 
   @override
   Widget build(BuildContext context) {

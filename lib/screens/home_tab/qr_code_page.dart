@@ -22,14 +22,14 @@ import '../../utils/slydo_app_icon_icons.dart';
 import '../../widget/bottom_sheet_item.dart';
 import '../../widget/curved_btn.dart';
 import '../../widget/rounded_background_icon.dart';
-import '../more_apps/payment_and_banking/models/VirtualAccount.dart';
+import '../more_apps/payment_and_banking/models/virtual_account.dart';
 import '../more_apps/user_profile/models/user.dart';
 import '../more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 
 class QrCodePage extends StatefulWidget {
   final dynamic arguments;
 
-  const QrCodePage({this.arguments, Key? key}) : super(key: key);
+  const QrCodePage({this.arguments, super.key});
 
   @override
   State<QrCodePage> createState() => _QrCodePageState();

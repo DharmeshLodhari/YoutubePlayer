@@ -444,7 +444,7 @@ class _SlydoTransactionListState extends State<SlydoTransactionList>
 }
 
 class VerticalListItem extends StatefulWidget {
-  const VerticalListItem(this.transaction, {this.key}) : super(key: key);
+  const VerticalListItem(this.transaction, {this.key});
 
   final Transaction transaction;
   @override

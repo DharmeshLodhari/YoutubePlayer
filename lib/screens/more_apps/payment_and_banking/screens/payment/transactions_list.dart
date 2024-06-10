@@ -18,7 +18,7 @@ import 'package:provider/provider.dart';
 class TransactionList extends StatefulWidget {
   final dynamic arguments;
 
-  TransactionList({Key? key, this.arguments}) : super(key: key);
+  TransactionList({super.key, this.arguments});
 
   @override
   _TransactionListState createState() => _TransactionListState();
@@ -118,7 +118,7 @@ class _TransactionListState extends State<TransactionList> {
 
     return PopScope(
       onPopInvoked: (didPop) async {
-        if(didPop) {
+        if (didPop) {
           menu.closeMenu();
           customerProfileBloc.customer = null;
           return;

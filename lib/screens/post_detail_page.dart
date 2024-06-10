@@ -30,8 +30,8 @@ import '../widget/dialog.dart';
 import '../widget/loading_indicator.dart';
 import '../widget/rounded_background_icon.dart';
 import 'more_apps/messaging/chat/share_in_chat/ShareInChat.dart';
-import 'more_apps/news/CustomChip.dart';
-import 'more_apps/news/models/NewsListItem.dart';
+import 'more_apps/news/custom_chip.dart';
+import 'more_apps/news/models/news_list_item.dart';
 import 'more_apps/news/news_tile.dart';
 import 'more_apps/user_post/models/user_post.dart';
 import 'more_apps/user_post/tile/user_post_tile.dart';
@@ -48,11 +48,11 @@ class PostDetailPage extends StatefulWidget {
   final Function? onDeleteBlog;
 
   const PostDetailPage({
-    Key? key,
+    super.key,
     this.onDeleteBlog,
     required this.postId,
     required this.postType,
-  }) : super(key: key);
+  });
 
   @override
   State<PostDetailPage> createState() => _PostDetailPageState();
@@ -606,7 +606,7 @@ class PostDetailPageScaffoldBody extends StatefulWidget {
   final ChewieController? chewieMainController;
   final List<NewsListItem>? newsListRelatedPostItems;
   PostDetailPageScaffoldBody({
-    Key? key,
+    super.key,
     required this.tags,
     required this.views,
     required this.postID,
@@ -625,7 +625,7 @@ class PostDetailPageScaffoldBody extends StatefulWidget {
     required this.shortDescription,
     required this.postFullDescription,
     required this.chewieMainController,
-  }) : super(key: key);
+  });
 
   @override
   State<PostDetailPageScaffoldBody> createState() =>
@@ -1104,8 +1104,7 @@ String formatDate(DateTime dateTime) {
 class SimilarPostsForBlog extends StatefulWidget {
   final String postID;
   final CustomerProfile? postOfUser;
-  const SimilarPostsForBlog({Key? key, required this.postID, this.postOfUser})
-      : super(key: key);
+  const SimilarPostsForBlog({super.key, required this.postID, this.postOfUser});
 
   @override
   _SimilarPostsForBlogState createState() => _SimilarPostsForBlogState();

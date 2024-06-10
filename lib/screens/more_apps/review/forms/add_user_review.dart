@@ -8,7 +8,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class AddReview extends StatefulWidget {
-  AddReview({Key? key, required this.arguments}) : super(key: key);
+  AddReview({super.key, required this.arguments});
 
   final Map<String, dynamic> arguments;
 

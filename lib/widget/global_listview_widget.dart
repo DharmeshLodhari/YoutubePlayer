@@ -10,8 +10,8 @@ class GlobalListViewWidget extends StatefulWidget {
   final Widget Function(dynamic) customWidget;
   final Future<BasePaginationModel<List>> apiFunc;
   const GlobalListViewWidget(
-      {Key? key, required this.customWidget, required this.apiFunc})
-      : super(key: key);
+      {super.key, required this.customWidget, required this.apiFunc})
+     ;
 
   @override
   _GlobalListViewWidgetState createState() => _GlobalListViewWidgetState();

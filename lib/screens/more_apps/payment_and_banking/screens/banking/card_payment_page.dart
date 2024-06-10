@@ -15,10 +15,10 @@ import 'package:provider/provider.dart';
 // ignore: must_be_immutable
 class CardPaymentPage extends StatefulWidget {
   dynamic isWalletFunding;
-  CardPaymentPage({this.isWalletFunding = false});
+  CardPaymentPage({super.key, this.isWalletFunding = false});
 
   @override
-  _CardPaymentPageState createState() => _CardPaymentPageState();
+  State<CardPaymentPage> createState() => _CardPaymentPageState();
 }
 
 class _CardPaymentPageState extends State<CardPaymentPage> {
@@ -93,6 +93,7 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
     return verified;
   }
 
+  @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
     return PopScope(

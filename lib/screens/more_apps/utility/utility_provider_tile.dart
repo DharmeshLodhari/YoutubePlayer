@@ -9,8 +9,8 @@ import 'models/provider_model.dart';
 
 class UtilityProviderTile extends StatelessWidget {
   final ProviderModel providerModel;
-  const UtilityProviderTile({Key? key, required this.providerModel})
-      : super(key: key);
+  const UtilityProviderTile({super.key, required this.providerModel})
+     ;
 
   @override
   Widget build(BuildContext context) {

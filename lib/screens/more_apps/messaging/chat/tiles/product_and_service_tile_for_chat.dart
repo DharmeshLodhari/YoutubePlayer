@@ -24,10 +24,11 @@ class ProductTileForChatMessage extends StatefulWidget {
   final Map<String, dynamic>? message;
   final ChatConversation? chatConversation;
 
-  ProductTileForChatMessage({required this.message, this.chatConversation});
+  const ProductTileForChatMessage(
+      {super.key, required this.message, this.chatConversation});
 
   @override
-  _ProductTileForChatMessageState createState() =>
+  State<ProductTileForChatMessage> createState() =>
       _ProductTileForChatMessageState();
 }
 
@@ -357,12 +358,12 @@ class _ProductTileForChatMessageState extends State<ProductTileForChatMessage> {
           currentUser: userBloc.user.convertToUser(),
         );
         late var mapData;
-        basketBloc.items.forEach((element) {
+        for (var element in basketBloc.items) {
           if (element["item"].id == item.id) {
             mapData = element;
-            return;
+            continue;
           }
-        });
+        }
         final Map<String, dynamic> data = {
           "type": type,
           "id": mapData["item"].id,
@@ -380,10 +381,11 @@ class ServiceTileChatMessage extends StatefulWidget {
   final Map<String, dynamic>? message;
   final ChatConversation? chatConversation;
 
-  ServiceTileChatMessage({required this.message, this.chatConversation});
+  const ServiceTileChatMessage(
+      {super.key, required this.message, this.chatConversation});
 
   @override
-  _ServiceTileChatMessageState createState() => _ServiceTileChatMessageState();
+  State<ServiceTileChatMessage> createState() => _ServiceTileChatMessageState();
 }
 
 class _ServiceTileChatMessageState extends State<ServiceTileChatMessage> {
@@ -709,12 +711,12 @@ class _ServiceTileChatMessageState extends State<ServiceTileChatMessage> {
           currentUser: userBloc.user.convertToUser(),
         );
         late var mapData;
-        basketBloc.items.forEach((element) {
+        for (var element in basketBloc.items) {
           if (element["item"].checkID == item.checkID) {
             mapData = element;
-            return;
+            continue;
           }
-        });
+        }
         final Map<String, dynamic> data = {
           "type": type,
           "id": mapData["item"].checkID,

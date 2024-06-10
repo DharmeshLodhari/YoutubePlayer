@@ -1,8 +1,8 @@
 import 'dart:math';
 
-import 'package:Slydo/screens/more_apps/music/models/PartialCelebrityItem.dart';
-import 'package:Slydo/screens/more_apps/music/models/PartialMusicAlbum.dart';
-import 'package:Slydo/screens/more_apps/music/models/PartialMusicItem.dart';
+import 'package:Slydo/screens/more_apps/music/models/partial_celebrity_item.dart';
+import 'package:Slydo/screens/more_apps/music/models/partial_music_album.dart';
+import 'package:Slydo/screens/more_apps/music/models/partial_music_item.dart';
 import 'package:Slydo/screens/more_apps/music/music_auth.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -18,10 +18,10 @@ import 'music_player.dart';
 class MusicExploreScreen extends StatefulWidget {
   MusicPlayer? musicPlayer;
 
-  MusicExploreScreen({this.musicPlayer});
+  MusicExploreScreen({super.key, this.musicPlayer});
 
   @override
-  _MusicExploreScreenState createState() => _MusicExploreScreenState();
+  State<MusicExploreScreen> createState() => _MusicExploreScreenState();
 }
 
 class _MusicExploreScreenState extends State<MusicExploreScreen> {

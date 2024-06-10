@@ -9,7 +9,7 @@ class MyMoviesScreen extends StatefulWidget {
   const MyMoviesScreen({super.key});
 
   @override
-  _MyMoviesScreenState createState() => _MyMoviesScreenState();
+  State<MyMoviesScreen> createState() => _MyMoviesScreenState();
 }
 
 class _MyMoviesScreenState extends State<MyMoviesScreen> {
@@ -21,7 +21,7 @@ class _MyMoviesScreenState extends State<MyMoviesScreen> {
     movieDashboardBloc = Provider.of<MovieDashboardBloc>(context);
     return PopScope(
       onPopInvoked: (didPop) async {
-        if(didPop) {
+        if (didPop) {
           movieDashboardBloc.index = 0;
           return;
         }
@@ -127,7 +127,7 @@ class _MyMoviesScreenState extends State<MyMoviesScreen> {
   Widget tabViews() {
     return IndexedStack(
       index: currentIndex,
-      children: [
+      children: const [
         MyMovieList(),
         MyWishList(),
       ],

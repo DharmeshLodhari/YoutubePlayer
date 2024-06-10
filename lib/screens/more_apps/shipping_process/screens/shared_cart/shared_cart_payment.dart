@@ -30,7 +30,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import '../../../../../widget/vertical_list_item.dart';
 
 class SharedCartPayment extends StatefulWidget {
-  const SharedCartPayment({Key? key}) : super(key: key);
+  const SharedCartPayment({Key? key});
 
   @override
   State<SharedCartPayment> createState() => _SharedCartPaymentState();

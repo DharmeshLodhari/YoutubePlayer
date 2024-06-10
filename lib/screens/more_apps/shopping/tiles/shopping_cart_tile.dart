@@ -25,12 +25,12 @@ class ShoppingCartTileForProduct extends StatelessWidget {
   List<UserFollowers>? membersDetails;
 
   ShoppingCartTileForProduct({
-    Key? key,
+    super.key,
     required this.basketItem,
     required this.onIncreaseQty,
     required this.onDecreaseQty,
     required this.isSharedCart,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

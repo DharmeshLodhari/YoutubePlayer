@@ -13,7 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 class ReviewListScreen extends StatefulWidget {
-  ReviewListScreen({Key? key, required this.arguments}) : super(key: key);
+  ReviewListScreen({super.key, required this.arguments});
 
   final Map<String, dynamic> arguments;
 

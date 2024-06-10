@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 
 class JobDescriptionCard extends StatelessWidget {
   const JobDescriptionCard({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -18,8 +18,8 @@ class JobDescriptionCard extends StatelessWidget {
           color: const Color(0xfffafbff),
           width: 1,
         ),
-        boxShadow: [
-          const BoxShadow(
+        boxShadow: const [
+          BoxShadow(
             color: Color(0x0c31378c),
             blurRadius: 20,
             offset: Offset(0, 8),

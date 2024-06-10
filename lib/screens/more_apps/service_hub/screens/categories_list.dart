@@ -8,7 +8,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shimmer/shimmer.dart';
 
 class CategoriesList extends StatefulWidget {
-  const CategoriesList({Key? key}) : super(key: key);
+  const CategoriesList({Key? key});
 
   @override
   State<CategoriesList> createState() => _CategoriesListState();
@@ -246,10 +246,10 @@ class _CategoriesListState extends State<CategoriesList> {
 
 class CategoryCard extends StatelessWidget {
   const CategoryCard({
-    Key? key,
+    super.key,
     required this.imageUrl,
     required this.title,
-  }) : super(key: key);
+  });
 
   final String? imageUrl;
   final String? title;

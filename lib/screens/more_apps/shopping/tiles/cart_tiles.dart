@@ -1,4 +1,4 @@
-import 'package:Slydo/screens/more_apps/movies/models/MovieItem.dart';
+import 'package:Slydo/screens/more_apps/movies/models/movie_item.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -9,7 +9,7 @@ import '../../music/models/music_album.dart';
 class CartAlbumTile extends StatelessWidget {
   final MusicAlbum? album;
 
-  const CartAlbumTile({Key? key, this.album}) : super(key: key);
+  const CartAlbumTile({super.key, this.album});
 
   @override
   Widget build(BuildContext context) {
@@ -83,7 +83,7 @@ class CartAlbumTile extends StatelessWidget {
 class CartMusicTile extends StatelessWidget {
   final Audio? audio;
 
-  const CartMusicTile({Key? key, this.audio}) : super(key: key);
+  const CartMusicTile({super.key, this.audio});
 
   @override
   Widget build(BuildContext context) {
@@ -157,7 +157,7 @@ class CartMusicTile extends StatelessWidget {
 class CartMovieTile extends StatelessWidget {
   final MovieItem? movie;
 
-  const CartMovieTile({Key? key, this.movie}) : super(key: key);
+  const CartMovieTile({super.key, this.movie});
 
   @override
   Widget build(BuildContext context) {

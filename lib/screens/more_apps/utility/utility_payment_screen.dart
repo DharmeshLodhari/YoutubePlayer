@@ -13,8 +13,8 @@ import 'models/provider_model.dart';
 
 class UtilityPaymentScreen extends StatefulWidget {
   final ProviderModel providerModel;
-  const UtilityPaymentScreen({Key? key, required this.providerModel})
-      : super(key: key);
+  const UtilityPaymentScreen({super.key, required this.providerModel})
+     ;
 
   @override
   State<UtilityPaymentScreen> createState() => _UtilityPaymentScreenState();

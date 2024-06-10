@@ -1,6 +1,7 @@
 /// tier_type : "1"
 /// daily_cumulative_transaction_limit : "50000"
 /// cumulative_balance : "300000"
+library;
 
 class AccountTier {
   AccountTier({

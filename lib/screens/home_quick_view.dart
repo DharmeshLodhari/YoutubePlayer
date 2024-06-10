@@ -32,7 +32,7 @@ import 'more_apps/yarn/yarn_dashboard_bloc.dart';
 class HomeQuickView extends StatefulWidget {
   final dynamic arguments;
 
-  const HomeQuickView({this.arguments, Key? key}) : super(key: key);
+  const HomeQuickView({this.arguments, super.key});
 
   @override
   State<HomeQuickView> createState() => _HomeQuickViewState();

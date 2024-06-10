@@ -14,7 +14,7 @@ import '../../shopping_auth.dart';
 class ShoppingTile extends StatelessWidget {
   final ShoppingProduct? product;
 
-  const ShoppingTile({Key? key, this.product}) : super(key: key);
+  const ShoppingTile({super.key, this.product});
 
   @override
   Widget build(BuildContext context) {
@@ -108,7 +108,7 @@ class ShoppingTile extends StatelessWidget {
 class ShoppingTileWithHeart extends StatefulWidget {
   final ShoppingProduct? product;
 
-  const ShoppingTileWithHeart({Key? key, this.product}) : super(key: key);
+  const ShoppingTileWithHeart({super.key, this.product});
   @override
   _ShoppingTileWithHeartState createState() => _ShoppingTileWithHeartState();
 }
@@ -231,8 +231,8 @@ class _ShoppingTileWithHeartState extends State<ShoppingTileWithHeart> {
 class ShoppingTileWithHeartWithProduct extends StatefulWidget {
   final Product? product;
 
-  const ShoppingTileWithHeartWithProduct({Key? key, this.product})
-      : super(key: key);
+  const ShoppingTileWithHeartWithProduct({super.key, this.product})
+     ;
   @override
   State<ShoppingTileWithHeartWithProduct> createState() =>
       _ShoppingTileWithHeartWithProductState();
@@ -475,8 +475,8 @@ class _MovieTileGeneralState extends State<MovieTileGeneral> {
 class ShoppingTileWithHeartWithService extends StatefulWidget {
   final Service? service;
 
-  const ShoppingTileWithHeartWithService({Key? key, this.service})
-      : super(key: key);
+  const ShoppingTileWithHeartWithService({super.key, this.service})
+     ;
   @override
   _ShoppingTileWithHeartWithServiceState createState() =>
       _ShoppingTileWithHeartWithServiceState();

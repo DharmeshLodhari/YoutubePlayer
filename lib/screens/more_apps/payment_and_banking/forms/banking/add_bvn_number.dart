@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
-import 'package:Slydo/screens/more_apps/payment_and_banking/models/VirtualAccount.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/models/virtual_account.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -25,7 +25,7 @@ class AddBvnNumber extends StatefulWidget {
   const AddBvnNumber({super.key, this.arguments});
 
   @override
-  _AddBvnNumberState createState() => _AddBvnNumberState();
+  State<AddBvnNumber> createState() => _AddBvnNumberState();
 }
 
 class _AddBvnNumberState extends State<AddBvnNumber> {

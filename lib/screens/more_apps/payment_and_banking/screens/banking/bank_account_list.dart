@@ -18,8 +18,10 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import '../../payment_and_banking_auth.dart';
 
 class BankAccountList extends StatefulWidget {
+  const BankAccountList({super.key});
+
   @override
-  _BankAccountListState createState() => _BankAccountListState();
+  State<BankAccountList> createState() => _BankAccountListState();
 }
 
 class _BankAccountListState extends State<BankAccountList>
@@ -46,7 +48,7 @@ class _BankAccountListState extends State<BankAccountList>
   @override
   void initState() {
     // secureScreen();
-    this.getList();
+    getList();
 
     super.initState();
     _scrollController.addListener(() {

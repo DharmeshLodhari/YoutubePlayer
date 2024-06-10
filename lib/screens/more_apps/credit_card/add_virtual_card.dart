@@ -14,7 +14,7 @@ import 'package:provider/provider.dart';
 import '../../../../routes/route_constants.dart';
 
 class AddVirtualCard extends StatefulWidget {
-  const AddVirtualCard({Key? key}) : super(key: key);
+  const AddVirtualCard({Key? key});
 
   @override
   State<AddVirtualCard> createState() => _AddVirtualCardState();

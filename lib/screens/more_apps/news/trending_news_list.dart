@@ -4,12 +4,14 @@ import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-import 'models/NewsListItem.dart';
+import 'models/news_list_item.dart';
 import 'news_auth.dart';
 
 class TrendingNewsList extends StatefulWidget {
+  const TrendingNewsList({super.key});
+
   @override
-  _TrendingNewsListState createState() => _TrendingNewsListState();
+  State<TrendingNewsList> createState() => _TrendingNewsListState();
 }
 
 class _TrendingNewsListState extends State<TrendingNewsList> {

@@ -76,7 +76,7 @@ class YarnCommentTextField extends StatefulWidget {
   bool isScrolling;
 
   YarnCommentTextField({
-    Key? key,
+    super.key,
     required this.controller,
     this.hint,
     this.validator,
@@ -112,7 +112,7 @@ class YarnCommentTextField extends StatefulWidget {
     this.onChanged,
     required this.onTapAgeRestriction,
     this.resetScrollingValue,
-  }) : super(key: key);
+  });
 
   @override
   State<YarnCommentTextField> createState() =>

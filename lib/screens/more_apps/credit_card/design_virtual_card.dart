@@ -18,7 +18,7 @@ import 'package:provider/provider.dart';
 class DesignVirtualCard extends StatefulWidget {
   final dynamic arguments;
 
-  DesignVirtualCard({this.arguments, Key? key}) : super(key: key);
+  const DesignVirtualCard({this.arguments, super.key});
 
   @override
   DesignVirtualCardState createState() => DesignVirtualCardState();

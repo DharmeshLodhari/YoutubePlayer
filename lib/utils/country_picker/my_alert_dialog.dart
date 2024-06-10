@@ -10,7 +10,7 @@ class MyAlertDialog<T> extends StatelessWidget {
   /// null, which implies a default that depends on the values of the other
   /// properties. See the documentation of [titlePadding] for details.
   const MyAlertDialog({
-    Key? key,
+    super.key,
     this.title,
     this.titlePadding,
     this.content,
@@ -21,8 +21,7 @@ class MyAlertDialog<T> extends StatelessWidget {
       height: 0.0,
     ),
     this.isDividerEnabled = true,
-  })  : assert(contentPadding != null),
-        super(key: key);
+  }) : assert(contentPadding != null);
 
   /// The (optional) title of the dialog is displayed in a large font at the top
   /// of the dialog.

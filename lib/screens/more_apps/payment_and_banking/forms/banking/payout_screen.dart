@@ -5,8 +5,8 @@ import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/screens/more_apps/payment_and_banking/models/VirtualAccount.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/models/virtual_account.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
 import 'package:Slydo/screens/more_apps/payment_loading_screen.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
@@ -24,8 +24,10 @@ import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
 class PayoutScreen extends StatefulWidget {
+  const PayoutScreen({super.key});
+
   @override
-  _PayoutScreenState createState() => _PayoutScreenState();
+  State<PayoutScreen> createState() => _PayoutScreenState();
 }
 
 class _PayoutScreenState extends State<PayoutScreen> {

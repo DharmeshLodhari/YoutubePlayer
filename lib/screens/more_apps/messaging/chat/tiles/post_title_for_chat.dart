@@ -20,9 +20,8 @@ class PostTileForChat extends StatefulWidget {
   final Map<String, dynamic>? message;
   final ChatConversation? chatConversation;
 
-  PostTileForChat(
-      {Key? key, required this.message, required this.chatConversation})
-      : super(key: key);
+  const PostTileForChat(
+      {super.key, required this.message, required this.chatConversation});
 
   @override
   State<PostTileForChat> createState() => _PostTileForChatState();
@@ -75,7 +74,7 @@ class _PostTileForChatState extends State<PostTileForChat> {
     userBloc = Provider.of<UserBloc>(context);
     yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context, listen: false);
 
-    bool isSend = widget.message!["author"] == userBloc.user.userName;
+    final bool isSend = widget.message!["author"] == userBloc.user.userName;
 
     return GestureDetector(
       onTap: () {

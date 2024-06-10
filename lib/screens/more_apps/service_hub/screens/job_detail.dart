@@ -8,8 +8,8 @@ import 'package:intl/intl.dart';
 import '../models/active_job_listing.dart';
 
 class JobsJobDetail extends StatefulWidget {
-  const JobsJobDetail({Key? key, required this.activeListingData})
-      : super(key: key);
+  const JobsJobDetail({super.key, required this.activeListingData})
+     ;
   final ActiveListingData activeListingData;
 
   @override
@@ -548,9 +548,9 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
 
 class CustomText extends StatelessWidget {
   const CustomText({
-    Key? key,
+    super.key,
     required this.title,
-  }) : super(key: key);
+  });
 
   final String title;
 

@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class PackageDetails extends StatefulWidget {
-  const PackageDetails({Key? key}) : super(key: key);
+  const PackageDetails({Key? key});
 
   @override
   State<PackageDetails> createState() => _PackageDetailsState();

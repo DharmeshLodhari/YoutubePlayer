@@ -1,8 +1,8 @@
 import 'dart:math';
 
-import 'package:Slydo/screens/more_apps/music/models/PartialMusicItem.dart';
 import 'package:Slydo/screens/more_apps/music/models/music_album.dart'
     as musicAlbum;
+import 'package:Slydo/screens/more_apps/music/models/partial_music_item.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:assets_audio_player/assets_audio_player.dart';
@@ -95,10 +95,10 @@ class MusicTile extends StatelessWidget {
 class MusicTileWithHeart extends StatefulWidget {
   final PartialMusicItem? musicItem;
 
-  const MusicTileWithHeart({Key? key, this.musicItem}) : super(key: key);
+  const MusicTileWithHeart({super.key, this.musicItem});
 
   @override
-  _MusicTileWithHeartState createState() => _MusicTileWithHeartState();
+  State<MusicTileWithHeart> createState() => _MusicTileWithHeartState();
 }
 
 class _MusicTileWithHeartState extends State<MusicTileWithHeart> {
@@ -188,10 +188,10 @@ class _MusicTileWithHeartState extends State<MusicTileWithHeart> {
 class MusicTileGeneral extends StatefulWidget {
   final PartialMusicItem? partialMusicItem;
 
-  const MusicTileGeneral({Key? key, this.partialMusicItem}) : super(key: key);
+  const MusicTileGeneral({super.key, this.partialMusicItem});
 
   @override
-  _MusicTileGeneralState createState() => _MusicTileGeneralState();
+  State<MusicTileGeneral> createState() => _MusicTileGeneralState();
 }
 
 class _MusicTileGeneralState extends State<MusicTileGeneral> {
@@ -275,10 +275,11 @@ class AlbumSongTile extends StatefulWidget {
   musicAlbum.Audio? audio;
   int? count;
   int? index;
-  AlbumSongTile({this.audio, this.count, this.musicPlayer, this.index});
+  AlbumSongTile(
+      {super.key, this.audio, this.count, this.musicPlayer, this.index});
 
   @override
-  _AlbumSongTileState createState() => _AlbumSongTileState();
+  State<AlbumSongTile> createState() => _AlbumSongTileState();
 }
 
 class _AlbumSongTileState extends State<AlbumSongTile> {

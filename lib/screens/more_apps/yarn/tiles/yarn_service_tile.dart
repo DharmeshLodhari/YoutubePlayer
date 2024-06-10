@@ -23,10 +23,10 @@ class YarnServiceTile extends StatefulWidget {
   final TileRenderPlace tileRenderPlace;
 
   const YarnServiceTile({
-    Key? key,
+    super.key,
     this.service,
     this.tileRenderPlace = TileRenderPlace.YarnTimeLine,
-  }) : super(key: key);
+  });
 
   @override
   State<YarnServiceTile> createState() => _YarnServiceTileState();

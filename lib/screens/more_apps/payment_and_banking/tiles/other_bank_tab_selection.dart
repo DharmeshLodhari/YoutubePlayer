@@ -8,8 +8,8 @@ class OtherBankTabSelection extends StatefulWidget {
   const OtherBankTabSelection({
     required this.onTap,
     this.currentIndex = 0,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<OtherBankTabSelection> createState() => _OtherBankTabSelectionState();

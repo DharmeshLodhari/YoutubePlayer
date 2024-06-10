@@ -20,10 +20,10 @@ import 'music_tile.dart';
 class AlbumDetailPage extends StatefulWidget {
   final dynamic arguments;
 
-  AlbumDetailPage({this.arguments});
+  const AlbumDetailPage({super.key, this.arguments});
 
   @override
-  _AlbumDetailPageState createState() => _AlbumDetailPageState();
+  State<AlbumDetailPage> createState() => _AlbumDetailPageState();
 }
 
 class _AlbumDetailPageState extends State<AlbumDetailPage> {

@@ -27,7 +27,7 @@ import '../payment_loading_screen.dart';
 import '../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 
 class PaymentLinkCashOut extends StatefulWidget {
-  PaymentLinkCashOut({Key? key, this.id}) : super(key: key);
+  PaymentLinkCashOut({super.key, this.id});
   String? id;
 
   @override

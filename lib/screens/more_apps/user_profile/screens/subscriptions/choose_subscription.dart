@@ -23,7 +23,7 @@ import '../../../../../widget/rounded_background_icon.dart';
 import '../../user_auth.dart';
 
 class ChooseSubscription extends StatefulWidget {
-  const ChooseSubscription({Key? key}) : super(key: key);
+  const ChooseSubscription({Key? key});
 
   @override
   State<ChooseSubscription> createState() => _ChooseSubscriptionState();
@@ -425,7 +425,7 @@ class SubscriptionTile extends StatelessWidget {
   final bool freeSubscription;
   final String subscriptionType;
   const SubscriptionTile({
-    Key? key,
+    super.key,
     this.freeSubscription = false,
     required this.isVisible,
     required this.currency,
@@ -434,7 +434,7 @@ class SubscriptionTile extends StatelessWidget {
     required this.onTap,
     required this.amount,
     required this.subscriptionType,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -12,9 +12,9 @@ import '../../../../routes/route_constants.dart';
 
 class JobDescriptionCard extends StatelessWidget {
   JobDescriptionCard({
-    Key? key,
+    super.key,
     required this.job,
-  }) : super(key: key);
+  });
   final JobModel? job;
   String? user;
 

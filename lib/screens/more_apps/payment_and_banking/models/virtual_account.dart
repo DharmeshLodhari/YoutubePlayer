@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:Slydo/screens/more_apps/payment_and_banking/models/FinancialInstitution.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/account_tier.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/models/financial_institution.dart';
 
 class VirtualAccount {
   String? accountName;

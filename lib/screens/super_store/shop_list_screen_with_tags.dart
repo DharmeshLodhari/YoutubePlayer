@@ -27,8 +27,8 @@ class ShopListScreenWithTags extends StatefulWidget {
   Function(bool)? onPageRefresh;
   String? category;
 
-  ShopListScreenWithTags({Key? key, this.onPageRefresh, this.category})
-      : super(key: key);
+  ShopListScreenWithTags({super.key, this.onPageRefresh, this.category})
+     ;
 
   @override
   State<ShopListScreenWithTags> createState() => ShopListScreenState();
@@ -1058,8 +1058,8 @@ class SuperStoreSingleCard extends StatelessWidget {
   final Product product;
 
   // final String? next;
-  const SuperStoreSingleCard({Key? key, required this.product})
-      : super(key: key);
+  const SuperStoreSingleCard({super.key, required this.product})
+     ;
 
   @override
   Widget build(BuildContext context) {

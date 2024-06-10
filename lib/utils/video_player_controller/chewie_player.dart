@@ -23,8 +23,7 @@ class Chewie extends StatefulWidget {
   String? posterUrl;
   String? titleName;
 
-  Chewie({Key? key, required this.controller, this.posterUrl, this.titleName})
-      : super(key: key);
+  Chewie({super.key, required this.controller, this.posterUrl, this.titleName});
 
   /// The [ChewieController]
   final ChewieController controller;
@@ -362,10 +361,10 @@ class ChewieController extends ChangeNotifier {
 
 class _ChewieControllerProvider extends InheritedWidget {
   const _ChewieControllerProvider({
-    Key? key,
+    super.key,
     required this.controller,
-    required Widget child,
-  }) : super(key: key, child: child);
+    required super.child,
+  });
 
   final ChewieController controller;
 

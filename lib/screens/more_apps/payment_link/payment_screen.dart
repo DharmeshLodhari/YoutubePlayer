@@ -6,7 +6,7 @@ import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/state_notifiers/user_bloc.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
-import 'package:Slydo/screens/more_apps/payment_and_banking/models/VirtualAccount.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/models/virtual_account.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
 import 'package:Slydo/screens/more_apps/payment_link/payment_link.dart';
 import 'package:Slydo/screens/more_apps/payment_loading_screen.dart';
@@ -29,7 +29,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class PaymentLinkScreen extends StatefulWidget {
-  const PaymentLinkScreen({Key? key}) : super(key: key);
+  const PaymentLinkScreen({Key? key});
 
   @override
   State<PaymentLinkScreen> createState() => _PaymentLinkScreenState();

@@ -23,7 +23,7 @@ import '../../shopping_auth.dart';
 class AddOnOptionList extends StatefulWidget {
   final dynamic arguments;
 
-  AddOnOptionList({this.arguments, Key? key}) : super(key: key);
+  AddOnOptionList({this.arguments, super.key});
 
   @override
   _AddOnOptionListState createState() => _AddOnOptionListState();

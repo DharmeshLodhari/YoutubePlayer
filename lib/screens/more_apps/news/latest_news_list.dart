@@ -6,14 +6,14 @@ import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-import 'models/NewsListItem.dart';
+import 'models/news_list_item.dart';
 import 'news_tile.dart';
 
 class LatestNewsList extends StatefulWidget {
   const LatestNewsList({super.key});
 
   @override
-  _LatestNewsListState createState() => _LatestNewsListState();
+  State<LatestNewsList> createState() => _LatestNewsListState();
 }
 
 class _LatestNewsListState extends State<LatestNewsList> {

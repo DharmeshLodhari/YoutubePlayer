@@ -5,8 +5,10 @@ import 'package:Slydo/utils/colors.dart';
 import 'package:flutter/material.dart';
 
 class NewsDashboard extends StatefulWidget {
+  const NewsDashboard({super.key});
+
   @override
-  _NewsDashboardState createState() => _NewsDashboardState();
+  State<NewsDashboard> createState() => _NewsDashboardState();
 }
 
 class _NewsDashboardState extends State<NewsDashboard> {
@@ -141,8 +143,8 @@ class _NewsDashboardState extends State<NewsDashboard> {
   Widget tabViews() {
     return IndexedStack(
       index: currentIndex,
-      children: [
-        const LatestNewsList(),
+      children: const [
+        LatestNewsList(),
         TrendingNewsList(),
         SubscriptionList(),
       ],

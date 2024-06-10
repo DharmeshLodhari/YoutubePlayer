@@ -19,7 +19,7 @@ import 'package:shimmer/shimmer.dart';
 import 'payment_transaction_info.dart';
 
 class PaymentLinkSearch extends StatefulWidget {
-  const PaymentLinkSearch({Key? key}) : super(key: key);
+  const PaymentLinkSearch({Key? key});
 
   @override
   State<PaymentLinkSearch> createState() => _PaymentLinkSearchState();

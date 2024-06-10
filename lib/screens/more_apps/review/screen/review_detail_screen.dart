@@ -7,7 +7,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class ReviewDetailScreen extends StatefulWidget {
-  ReviewDetailScreen({Key? key, required this.arguments}) : super(key: key);
+  ReviewDetailScreen({super.key, required this.arguments});
   final Map<String, dynamic> arguments;
 
   @override

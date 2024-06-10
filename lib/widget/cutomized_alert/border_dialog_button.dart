@@ -19,14 +19,14 @@ class BorderDialogButton extends StatelessWidget {
   final String? text;
 
   /// DialogButton constructor
-  BorderDialogButton({
-    Key? key,
+  const BorderDialogButton({
+    super.key,
     this.backgroundColor,
     this.text,
     this.textColor,
     this.outlineBorder = false,
     required this.onPressed,
-  }) : super(key: key);
+  });
 
   /// Creates alert buttons based on constructor params
   @override

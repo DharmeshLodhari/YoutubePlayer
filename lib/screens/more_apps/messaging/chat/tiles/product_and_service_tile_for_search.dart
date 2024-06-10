@@ -12,7 +12,7 @@ class SearchProductTile extends StatefulWidget {
   SearchProductTile({super.key, required this.product});
 
   @override
-  _SearchProductTileState createState() => _SearchProductTileState();
+  State<SearchProductTile> createState() => _SearchProductTileState();
 }
 
 class _SearchProductTileState extends State<SearchProductTile> {
@@ -109,10 +109,10 @@ class _SearchProductTileState extends State<SearchProductTile> {
 class SearchServiceTile extends StatefulWidget {
   Service service;
 
-  SearchServiceTile({required this.service});
+  SearchServiceTile({super.key, required this.service});
 
   @override
-  _SearchServiceTileState createState() => _SearchServiceTileState();
+  State<SearchServiceTile> createState() => _SearchServiceTileState();
 }
 
 class _SearchServiceTileState extends State<SearchServiceTile> {

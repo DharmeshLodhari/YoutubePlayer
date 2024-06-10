@@ -149,7 +149,7 @@ class StickyGroupedListView<T, E> extends StatefulWidget {
     this.semanticChildCount,
     this.initialAlignment = 0,
     this.initialScrollIndex = 0,
-  }) : super(key: key);
+  });
 
   @override
   State<StatefulWidget> createState() => _StickyGroupedListViewState<T, E>();

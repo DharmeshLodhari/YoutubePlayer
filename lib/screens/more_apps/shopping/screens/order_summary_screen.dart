@@ -16,7 +16,8 @@ import '../utils.dart';
 
 class OrderSummaryScreen extends StatefulWidget {
   final ShippingAddress address;
-  const OrderSummaryScreen({Key? key, required this.address}) : super(key: key);
+  const OrderSummaryScreen({super.key, required this.address})
+     ;
 
   @override
   State<OrderSummaryScreen> createState() => _OrderSummaryScreenState();

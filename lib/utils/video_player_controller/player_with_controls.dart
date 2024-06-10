@@ -9,8 +9,8 @@ class PlayerWithControls extends StatelessWidget {
   String? posterUrl;
   String? titleName;
 
-  PlayerWithControls({Key? key, this.posterUrl, this.titleName})
-      : super(key: key);
+  PlayerWithControls({super.key, this.posterUrl, this.titleName})
+     ;
 
   @override
   Widget build(BuildContext context) {

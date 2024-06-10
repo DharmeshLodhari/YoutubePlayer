@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class CustomWebView extends StatefulWidget {
-  CustomWebView({Key? key, this.webUrl = "https://slydo.co/"})
-      : super(key: key);
+  const CustomWebView({super.key, this.webUrl = "https://slydo.co/"});
 
   final String webUrl;
   @override

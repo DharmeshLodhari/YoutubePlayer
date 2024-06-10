@@ -15,7 +15,7 @@ import 'yarn_detail_screen.dart';
 class SavedYarn extends StatefulWidget {
   final String? selectedCategory;
 
-  SavedYarn({Key? key, this.selectedCategory}) : super(key: key);
+  SavedYarn({super.key, this.selectedCategory});
 
   @override
   State<SavedYarn> createState() => SavedYarnState(key: key);

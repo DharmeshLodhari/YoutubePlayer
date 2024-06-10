@@ -41,7 +41,7 @@ import 'package:Slydo/screens/more_apps/messaging/chat/tiles/user_profile_tile_f
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/video_tile_for_chat.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
-import 'package:Slydo/screens/more_apps/payment_and_banking/models/Envelope.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/models/envelope_model.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
@@ -102,7 +102,7 @@ import '../tiles/post_title_for_chat.dart';
 import '../tiles/yarn_question_tile.dart';
 
 class ChatScreenGroupMessage extends StatefulWidget {
-  final arguments;
+  final dynamic arguments;
 
   ChatScreenGroupMessage({this.arguments});
 
@@ -2884,7 +2884,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
   void addProductOrServiceToChat(var item) async {
     final String url =
-        "${"${AppConfig.baseUrl}/api/v1/${item is Product ? "products" : "services"}/" + item.id}/";
+        "${AppConfig.baseUrl}/api/v1/${item is Product ? "products" : "services"}/${item.id}/";
 
     final Map<String, dynamic>? itemData =
         await ShoppingAuthService().getProductOrService(url);

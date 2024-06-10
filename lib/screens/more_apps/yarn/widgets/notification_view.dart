@@ -15,8 +15,8 @@ class AskNotificationView extends StatelessWidget {
   final Notifications? notification;
   final Function(Notifications)? onDeleteNotification;
 
-  AskNotificationView({Key? key, this.notification, this.onDeleteNotification})
-      : super(key: key);
+  AskNotificationView({super.key, this.notification, this.onDeleteNotification})
+     ;
 
   @override
   Widget build(BuildContext context) {

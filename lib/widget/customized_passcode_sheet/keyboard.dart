@@ -38,11 +38,11 @@ class Keyboard extends StatelessWidget {
   final List<String>? digits;
 
   Keyboard({
-    Key? key,
+    super.key,
     required this.keyboardUIConfig,
     required this.onKeyboardTap,
     this.digits,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) => _buildKeyboard(context);
@@ -116,9 +116,8 @@ class AlignedGrid extends StatelessWidget {
   final Size keyboardSize;
 
   const AlignedGrid(
-      {Key? key, required this.children, required this.keyboardSize})
-      : listSize = children.length,
-        super(key: key);
+      {super.key, required this.children, required this.keyboardSize})
+      : listSize = children.length;
 
   @override
   Widget build(BuildContext context) {

@@ -28,7 +28,7 @@ import 'more_apps/user_profile/user_auth.dart';
 class QRCodeView extends StatefulWidget {
   var arguments;
 
-  QRCodeView({this.arguments, Key? key}) : super(key: key);
+  QRCodeView({this.arguments, super.key});
 
   @override
   State<StatefulWidget> createState() => _QRCodeViewState(arguments: arguments);

@@ -3,7 +3,7 @@ import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-import 'models/PartialMusicItem.dart';
+import 'models/partial_music_item.dart';
 import 'music_auth.dart';
 import 'music_tile.dart';
 
@@ -11,7 +11,7 @@ class SpecificCategoryMusicList extends StatefulWidget {
   const SpecificCategoryMusicList({super.key});
 
   @override
-  _SpecificCategoryMusicListState createState() =>
+  State<SpecificCategoryMusicList> createState() =>
       _SpecificCategoryMusicListState();
 }
 

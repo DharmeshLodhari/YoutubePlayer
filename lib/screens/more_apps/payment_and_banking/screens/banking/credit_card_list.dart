@@ -13,15 +13,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-import '../../models/VirtualAccount.dart';
+import '../../models/virtual_account.dart';
 
 class CreditCardList extends StatefulWidget {
-  final arguments;
+  final dynamic arguments;
 
-  CreditCardList({this.arguments});
+  const CreditCardList({super.key, this.arguments});
 
   @override
-  _CreditCardListState createState() => _CreditCardListState();
+  State<CreditCardList> createState() => _CreditCardListState();
 }
 
 class _CreditCardListState extends State<CreditCardList>

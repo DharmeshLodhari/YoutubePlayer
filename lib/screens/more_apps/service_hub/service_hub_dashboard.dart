@@ -20,7 +20,7 @@ import '../../../widget/tab_selection.dart';
 class ServiceHubDashboard extends StatefulWidget {
   final dynamic arguments;
 
-  ServiceHubDashboard({Key? key, this.arguments}) : super(key: key);
+  ServiceHubDashboard({super.key, this.arguments});
 
   @override
   State<ServiceHubDashboard> createState() => _ServiceHubDashboardState();

@@ -12,7 +12,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
 class TakeProofPhoto extends StatefulWidget {
-  TakeProofPhoto({Key? key}) : super(key: key);
+  TakeProofPhoto({Key? key});
 
   @override
   State<TakeProofPhoto> createState() => _TakeProofPhotoState();

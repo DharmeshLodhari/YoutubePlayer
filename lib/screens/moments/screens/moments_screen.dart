@@ -31,7 +31,7 @@ import '../../more_apps/user_profile/models/user.dart';
 import 'moment_search_screen.dart';
 
 class MomentsScreen extends StatefulWidget {
-  const MomentsScreen({Key? key}) : super(key: key);
+  const MomentsScreen({Key? key});
 
   @override
   State<MomentsScreen> createState() => _MomentsScreenState();
@@ -616,12 +616,12 @@ class ContactMomentsCard extends StatefulWidget {
   final List<String> listOfConnectionsNames;
 
   ContactMomentsCard({
-    Key? key,
+    super.key,
     required this.index,
     required this.nextPageUrl,
     required this.userMomentModel,
     required this.listOfConnectionsNames,
-  }) : super(key: key);
+  });
 
   @override
   State<ContactMomentsCard> createState() => _ContactMomentsCardState();
@@ -770,13 +770,13 @@ class ExploreMomentsCard extends StatefulWidget {
   final List<ExploreMomentsModel> exploreMomentsModelList;
 
   ExploreMomentsCard(
-      {Key? key,
+      {super.key,
       this.onTap,
       this.showProfileAvatar =
           true, // We do not show profile avatar on profile page moment's tab.
       required this.index,
       required this.exploreMomentsModelList})
-      : super(key: key);
+     ;
 
   @override
   State<ExploreMomentsCard> createState() => _ExploreMomentsCardState();

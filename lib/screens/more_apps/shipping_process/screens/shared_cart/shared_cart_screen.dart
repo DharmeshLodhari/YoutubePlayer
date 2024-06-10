@@ -14,9 +14,9 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class SharedCartScreen extends StatefulWidget {
   SharedCartScreen({
-    Key? key,
+    super.key,
     this.onPageRefresh,
-  }) : super(key: key);
+  });
 
   final Function(bool)? onPageRefresh;
 

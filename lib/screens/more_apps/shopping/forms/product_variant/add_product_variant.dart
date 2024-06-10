@@ -25,7 +25,7 @@ import '../../shopping_auth.dart';
 class AddProductVariant extends StatefulWidget {
   final dynamic arguments;
 
-  AddProductVariant({this.arguments, Key? key}) : super(key: key);
+  AddProductVariant({this.arguments, super.key});
 
   @override
   _AddProductVariantState createState() => _AddProductVariantState();

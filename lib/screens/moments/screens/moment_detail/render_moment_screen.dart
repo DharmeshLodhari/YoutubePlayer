@@ -24,7 +24,7 @@ class RenderMoment extends StatefulWidget {
   final AnimationController controller;
 
   const RenderMoment(
-      {Key? key,
+      {super.key,
       required this.momentsModel,
       required this.videoPlayerControllers,
       required this.onRightSwipe,
@@ -33,7 +33,7 @@ class RenderMoment extends StatefulWidget {
       required this.pageCtrl,
       required this.controller,
       required this.momentsModelList})
-      : super(key: key);
+     ;
 
   @override
   RenderMomentState createState() => RenderMomentState(key: key);

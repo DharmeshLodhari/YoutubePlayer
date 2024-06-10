@@ -34,7 +34,7 @@ import 'package:textfield_tags/textfield_tags.dart';
 class EditProduct extends StatefulWidget {
   var arguments;
 
-  EditProduct({Key? key, this.arguments}) : super(key: key);
+  EditProduct({super.key, this.arguments});
 
   @override
   _EditProductState createState() => _EditProductState(arguments: arguments);

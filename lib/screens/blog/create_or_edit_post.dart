@@ -31,8 +31,8 @@ class CreateOrEditPostScreen extends StatefulWidget {
   final UserPost? userPost;
   final String? channel;
 
-  CreateOrEditPostScreen({Key? key, this.userPost, this.channel})
-      : super(key: key);
+  CreateOrEditPostScreen({super.key, this.userPost, this.channel})
+     ;
 
   @override
   State<CreateOrEditPostScreen> createState() => _CreateOrEditPostScreenState();
@@ -1177,8 +1177,8 @@ class ChooseOptionsCard extends StatelessWidget {
   final IconData iconData;
 
   const ChooseOptionsCard(
-      {Key? key, required this.iconData, required this.onTap})
-      : super(key: key);
+      {super.key, required this.iconData, required this.onTap})
+     ;
 
   @override
   Widget build(BuildContext context) {

@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class YarnCategorySelection extends StatefulWidget {
-  const YarnCategorySelection({Key? key}) : super(key: key);
+  const YarnCategorySelection({Key? key});
 
   @override
   State<YarnCategorySelection> createState() => _YarnCategorySelectionState();

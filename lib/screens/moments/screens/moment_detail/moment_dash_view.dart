@@ -12,13 +12,12 @@ class MomentDashView extends StatefulWidget {
   final double value;
 
   const MomentDashView(
-      {Key? key,
+      {super.key,
       required this.currentPageViewIndex,
       required this.lengthOfMoment,
       required this.controller,
       required this.value,
-      required this.pageController})
-      : super(key: key);
+      required this.pageController});
 
   @override
   State<MomentDashView> createState() => _MomentDashViewState();

@@ -17,7 +17,7 @@ import 'package:shimmer/shimmer.dart';
 
 // ignore: must_be_immutable
 class CustomCategoryList extends StatefulWidget {
-  CustomCategoryList({Key? key}) : super(key: key);
+  CustomCategoryList({Key? key});
 
   @override
   _CustomCategoryListState createState() => _CustomCategoryListState();

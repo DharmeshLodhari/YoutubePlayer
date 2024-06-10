@@ -13,7 +13,7 @@ import '../../user_profile/models/user.dart';
 import '../../user_profile/screens/user_profile_module_new/user_service_list.dart';
 
 class MyServices extends StatefulWidget {
-  const MyServices({Key? key}) : super(key: key);
+  const MyServices({Key? key});
 
   @override
   State<MyServices> createState() => _MyServicesState();

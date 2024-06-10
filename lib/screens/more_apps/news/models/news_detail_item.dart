@@ -1,4 +1,4 @@
-import 'package:Slydo/screens/more_apps/news/models/NewsListItem.dart';
+import 'package:Slydo/screens/more_apps/news/models/news_list_item.dart';
 
 class NewsDetailItem {
   String? image;

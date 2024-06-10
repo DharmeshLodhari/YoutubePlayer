@@ -12,9 +12,9 @@ class YarnCommentReplyList extends StatefulWidget {
       {required this.yarn,
       required this.yarnComment,
       required this.commentScrollController,
-      Key? key,
+      super.key,
       this.onCountChanged})
-      : super(key: key);
+     ;
   final Yarn yarn;
   final ScrollController commentScrollController;
   final YarnComment yarnComment;

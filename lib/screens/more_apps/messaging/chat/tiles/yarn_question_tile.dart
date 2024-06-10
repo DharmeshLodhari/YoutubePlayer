@@ -37,9 +37,8 @@ class YarnQuestionTileForChat extends StatefulWidget {
   final Map<String, dynamic>? message;
   final ChatConversation? chatConversation;
 
-  YarnQuestionTileForChat(
-      {Key? key, required this.message, required this.chatConversation})
-      : super(key: key);
+  const YarnQuestionTileForChat(
+      {super.key, required this.message, required this.chatConversation});
 
   @override
   State<YarnQuestionTileForChat> createState() =>
@@ -878,7 +877,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
           !data.toString().trim().startsWith('http') &&
           !data.toString().trim().contains('.\n') &&
           !data.toString().trim().endsWith('.')) {
-        final replaceWith = 'http://' + data;
+        final replaceWith = 'http://$data';
 
         newString = '$newString $replaceWith';
       } else {

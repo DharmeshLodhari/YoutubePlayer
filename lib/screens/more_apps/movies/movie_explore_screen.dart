@@ -1,5 +1,5 @@
-import 'package:Slydo/screens/more_apps/movies/models/MovieItem.dart';
-import 'package:Slydo/screens/more_apps/movies/models/PartialMovieItem.dart';
+import 'package:Slydo/screens/more_apps/movies/models/movie_item.dart';
+import 'package:Slydo/screens/more_apps/movies/models/partial_movie_item.dart';
 import 'package:Slydo/screens/more_apps/movies/movie_auth.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -12,8 +12,10 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import '../messaging/chat/utils.dart';
 
 class MovieExploreScreen extends StatefulWidget {
+  const MovieExploreScreen({super.key});
+
   @override
-  _MovieExploreScreenState createState() => _MovieExploreScreenState();
+  State<MovieExploreScreen> createState() => _MovieExploreScreenState();
 }
 
 class _MovieExploreScreenState extends State<MovieExploreScreen> {

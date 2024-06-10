@@ -1,4 +1,4 @@
-import 'package:Slydo/screens/more_apps/music/models/PartialMusicItem.dart';
+import 'package:Slydo/screens/more_apps/music/models/partial_music_item.dart';
 import 'package:Slydo/screens/more_apps/music/music_auth.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
@@ -11,7 +11,7 @@ class MyWishList extends StatefulWidget {
   const MyWishList({super.key});
 
   @override
-  _MyWishListState createState() => _MyWishListState();
+  State<MyWishList> createState() => _MyWishListState();
 }
 
 class _MyWishListState extends State<MyWishList> {

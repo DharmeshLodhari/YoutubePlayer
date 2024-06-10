@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 
 class VirtualCardShimmer extends StatelessWidget {
-  const VirtualCardShimmer({Key? key}) : super(key: key);
+  const VirtualCardShimmer({Key? key});
 
   @override
   Widget build(BuildContext context) {

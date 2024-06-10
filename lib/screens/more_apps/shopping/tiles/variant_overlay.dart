@@ -13,13 +13,13 @@ class VariantOverlay extends StatefulWidget {
   final String? currency;
 
   VariantOverlay(
-      {Key? key,
+      {super.key,
       required this.variant,
       required this.onClose,
       required this.currency,
       required this.onAdd,
       required this.onSubtract})
-      : super(key: key);
+     ;
 
   @override
   State<VariantOverlay> createState() => _VariantOverlayState();

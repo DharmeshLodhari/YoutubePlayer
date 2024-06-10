@@ -12,8 +12,8 @@ class AskMentionView extends StatefulWidget {
   AskMentionView({
     required this.onTap,
     required this.searchText,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<AskMentionView> createState() => _AskMentionViewState();

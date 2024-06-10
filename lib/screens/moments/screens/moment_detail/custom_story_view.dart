@@ -118,7 +118,6 @@ class Shiddo extends StoryItem {
       MomentsModel? momentsModel}) {
     return Shiddo(
         Container(
-          key: key,
           color: Colors.black,
           child: Stack(
             children: <Widget>[
@@ -169,7 +168,6 @@ class Shiddo extends StoryItem {
       {required String url,
       Text? caption,
       required StoryController controller,
-      Key? key,
       BoxFit imageFit = BoxFit.cover,
       Map<String, dynamic>? requestHeaders,
       bool shown = false,
@@ -179,7 +177,6 @@ class Shiddo extends StoryItem {
       MomentsModel? momentsModel}) {
     return Shiddo(
         ClipRRect(
-          key: key,
           borderRadius: BorderRadius.vertical(
             top: Radius.circular(roundedTop ? 8 : 0),
             bottom: Radius.circular(roundedBottom ? 8 : 0),
@@ -231,7 +228,6 @@ class Shiddo extends StoryItem {
       MomentsModel? momentsModel}) {
     return Shiddo(
         Container(
-          key: key,
           color: Colors.black,
           child: Stack(
             children: <Widget>[
@@ -281,7 +277,6 @@ class Shiddo extends StoryItem {
       MomentsModel? momentsModel}) {
     return Shiddo(
         Container(
-          key: key,
           color: Colors.black,
           child: Stack(
             children: <Widget>[
@@ -752,8 +747,8 @@ class PageBar extends StatefulWidget {
     this.indicatorHeight = IndicatorHeight.large,
     this.indicatorColor,
     this.indicatorForegroundColor,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<StatefulWidget> createState() {

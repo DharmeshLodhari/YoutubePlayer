@@ -8,12 +8,12 @@ import 'package:flutter/services.dart';
 
 // ignore: must_be_immutable
 class AddMoneyToSlydoTwo extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
-  AddMoneyToSlydoTwo({this.arguments});
+  const AddMoneyToSlydoTwo({super.key, this.arguments});
 
   @override
-  _AddMoneyToSlydoTwoState createState() => _AddMoneyToSlydoTwoState();
+  State<AddMoneyToSlydoTwo> createState() => _AddMoneyToSlydoTwoState();
 }
 
 class _AddMoneyToSlydoTwoState extends State<AddMoneyToSlydoTwo> {

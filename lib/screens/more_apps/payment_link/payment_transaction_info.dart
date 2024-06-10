@@ -4,7 +4,6 @@ import 'dart:developer';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
 import 'package:Slydo/services/app_tutorial_controller.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -19,7 +18,7 @@ import '../service_hub/screens/my_job_details.dart';
 
 class TransactionPaymentLink extends StatefulWidget {
   TransactionPaymentLink(
-      {Key? key,
+      {super.key,
       this.date,
       this.id,
       this.amount,
@@ -29,7 +28,7 @@ class TransactionPaymentLink extends StatefulWidget {
       this.category,
       this.link,
       this.passcode})
-      : super(key: key);
+     ;
   final String? date;
   final String? id;
   final String? amount;

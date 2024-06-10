@@ -29,12 +29,11 @@ import 'package:provider/provider.dart';
 class RequestPayment extends StatefulWidget {
   final dynamic arguments;
 
-  RequestPayment({this.arguments});
+  const RequestPayment({super.key, this.arguments});
 
   // Declare a field that holds the userData.
   @override
-  State<RequestPayment> createState() =>
-      _RequestPaymentState(arguments: arguments);
+  State<RequestPayment> createState() => _RequestPaymentState();
 }
 
 class _RequestPaymentState extends State<RequestPayment> {
@@ -43,11 +42,9 @@ class _RequestPaymentState extends State<RequestPayment> {
   final TextEditingController _recipientController = TextEditingController();
   final FocusNode _recipientFocus = FocusNode();
 
-  final dynamic arguments;
+  late dynamic arguments;
 
   late DashboardBloc _dashboardBloc;
-
-  _RequestPaymentState({this.arguments});
 
   final _auth = PaymentAndBankingAuth();
   final _formKey = GlobalKey<FormState>();
@@ -75,6 +72,7 @@ class _RequestPaymentState extends State<RequestPayment> {
 
   @override
   void initState() {
+    arguments = widget.arguments;
     isFromProfile =
         arguments != null ? arguments['isFromProfile'] ?? false : false;
     isFromChat = widget.arguments != null

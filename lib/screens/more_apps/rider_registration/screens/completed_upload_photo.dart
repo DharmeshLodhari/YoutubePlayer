@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 
 class CompletedUploadPhoto extends StatefulWidget {
-  CompletedUploadPhoto({Key? key}) : super(key: key);
+  CompletedUploadPhoto({Key? key});
 
   @override
   State<CompletedUploadPhoto> createState() => _CompletedUploadPhotoState();

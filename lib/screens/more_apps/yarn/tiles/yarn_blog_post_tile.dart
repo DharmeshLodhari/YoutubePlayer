@@ -1,5 +1,5 @@
 import 'package:Slydo/data/state_notifier.dart';
-import 'package:Slydo/screens/more_apps/news/CustomChip.dart';
+import 'package:Slydo/screens/more_apps/news/custom_chip.dart';
 import 'package:Slydo/screens/more_apps/user_post/models/user_post.dart';
 import 'package:Slydo/screens/more_apps/user_post/user_post_auth.dart';
 import 'package:Slydo/screens/more_apps/user_post/user_post_utils.dart';
@@ -34,13 +34,12 @@ class YarnBlogPostTile extends StatefulWidget {
   final TileRenderPlace tileRenderPlace;
 
   YarnBlogPostTile(
-      {Key? key,
+      {super.key,
       this.post,
       this.showAuthorDetails = true,
       required this.onDeleteBlog,
       this.tileRenderPlace = TileRenderPlace.YarnTimeLine,
-      this.isNavigable = true})
-      : super(key: key);
+      this.isNavigable = true});
 
   @override
   _YarnBlogPostTileState createState() => _YarnBlogPostTileState();

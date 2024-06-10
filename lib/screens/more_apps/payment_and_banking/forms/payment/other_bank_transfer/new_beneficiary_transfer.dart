@@ -27,9 +27,9 @@ import '../../../../../../widget/dialog.dart';
 import '../../../../../../widget/no_item_in_list.dart';
 import '../../../../payment_loading_screen.dart';
 import '../../../../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
-import '../../../models/VirtualAccount.dart';
 import '../../../models/bank.dart';
 import '../../../models/bank_list.dart';
+import '../../../models/virtual_account.dart';
 import '../../../payment_and_banking_auth.dart';
 
 // ignore: must_be_immutable
@@ -37,11 +37,11 @@ class NewBeneficiaryTransfer extends StatefulWidget {
   var arguments;
   final Function(bool)? callback;
 
-  NewBeneficiaryTransfer({this.arguments, this.callback});
+  NewBeneficiaryTransfer({super.key, this.arguments, this.callback});
 
   // Declare a field that holds the userData.
   @override
-  _NewBeneficiaryTransferState createState() => _NewBeneficiaryTransferState();
+  State<NewBeneficiaryTransfer> createState() => _NewBeneficiaryTransferState();
 }
 
 class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
@@ -1122,7 +1122,7 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
                     },
                     child: Column(
                       children: [
-                        if (bankList.length >= 1) ...[
+                        if (bankList.isNotEmpty) ...[
                           bankCardDisplay(bankList[index]),
                         ] else ...[
                           // debugPrint('The array does not have a second element.');

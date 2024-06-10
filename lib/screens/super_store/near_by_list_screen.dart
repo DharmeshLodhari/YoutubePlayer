@@ -12,7 +12,7 @@ import '../more_apps/yarn/utils/yarn_enum.dart';
 class NearByListScreen extends StatefulWidget {
   final dynamic arguments;
 
-  NearByListScreen({this.arguments, Key? key}) : super(key: key);
+  NearByListScreen({this.arguments, super.key});
 
   @override
   State<NearByListScreen> createState() => _NearByListScreenState();

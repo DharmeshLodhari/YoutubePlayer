@@ -8,8 +8,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class MovieDashboard extends StatefulWidget {
+  const MovieDashboard({super.key});
+
   @override
-  _MovieDashboardState createState() => _MovieDashboardState();
+  State<MovieDashboard> createState() => _MovieDashboardState();
 }
 
 class _MovieDashboardState extends State<MovieDashboard> {
@@ -30,9 +32,9 @@ class _MovieDashboardState extends State<MovieDashboard> {
           onPageChanged: (index) {
             _movieDashboardBloc.index = index;
           },
-          children: <Widget>[
+          children: const <Widget>[
             MovieExploreScreen(),
-            const MyMoviesScreen(),
+            MyMoviesScreen(),
           ],
         ),
         bottomNavigationBar: bottomNavigationBar(),

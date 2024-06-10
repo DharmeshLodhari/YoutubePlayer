@@ -19,7 +19,7 @@ class UserProfileTileForChat extends StatefulWidget {
       {super.key, this.message, this.chatConversation});
 
   @override
-  _UserProfileTileForChatState createState() => _UserProfileTileForChatState();
+  State<UserProfileTileForChat> createState() => _UserProfileTileForChatState();
 }
 
 class _UserProfileTileForChatState extends State<UserProfileTileForChat> {
@@ -162,7 +162,7 @@ class UserProfileTile extends StatefulWidget {
   const UserProfileTile({super.key, this.user});
 
   @override
-  _UserProfileTileState createState() => _UserProfileTileState();
+  State<UserProfileTile> createState() => _UserProfileTileState();
 }
 
 class _UserProfileTileState extends State<UserProfileTile> {

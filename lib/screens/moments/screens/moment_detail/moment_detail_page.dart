@@ -28,12 +28,12 @@ class MomentsDetailsScreen extends StatefulWidget {
   List<List<MomentsModel>> momentsModelList;
 
   MomentsDetailsScreen({
-    Key? key,
+    super.key,
     this.nextPageUrl,
     this.listOfConnectionNames = const [],
     required this.indexOfMoment,
     this.momentsModelList = const [],
-  }) : super(key: key);
+  });
 
   @override
   _MomentsDetailsScreenState createState() => _MomentsDetailsScreenState();
@@ -382,13 +382,13 @@ class MediaRendererPageView extends StatefulWidget {
   final void Function() onMomentPop;
 
   const MediaRendererPageView({
-    Key? key,
+    super.key,
     required this.onPageChanged,
     required this.videoPlayerControllers,
     required this.photoViewController,
     required this.momentsModelList,
     required this.onMomentPop,
-  }) : super(key: key);
+  });
 
   @override
   MediaRendererPageViewState createState() => MediaRendererPageViewState();

@@ -17,7 +17,7 @@ class OrderTile extends StatelessWidget {
   final Order? order;
   Key? key;
 
-  OrderTile({this.order, this.key}) : super(key: key);
+  OrderTile({this.order, this.key});
 
   @override
   Widget build(BuildContext context) {

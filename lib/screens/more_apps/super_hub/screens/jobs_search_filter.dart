@@ -2,7 +2,7 @@ import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 
 class JobsSearchFilter extends StatefulWidget {
-  const JobsSearchFilter({Key? key}) : super(key: key);
+  const JobsSearchFilter({Key? key});
 
   @override
   State<JobsSearchFilter> createState() => _JobsSearchFilterState();
@@ -124,12 +124,12 @@ class _JobsSearchFilterState extends State<JobsSearchFilter> {
 
 class FilterDropdown extends StatelessWidget {
   const FilterDropdown({
-    Key? key,
+    super.key,
     required this.selectedFilter,
     required this.list,
     required this.onChangedCallback,
     required this.hintText,
-  }) : super(key: key);
+  });
 
   final String? selectedFilter;
   final List list;

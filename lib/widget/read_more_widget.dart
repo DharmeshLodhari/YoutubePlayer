@@ -9,7 +9,7 @@ enum TrimMode {
 class ReadMoreText extends StatefulWidget {
   const ReadMoreText(
     this.data, {
-    Key? key,
+    super.key,
     this.trimExpandedText = 'show less',
     this.trimCollapsedText = 'read more',
     this.colorClickableText,
@@ -27,7 +27,7 @@ class ReadMoreText extends StatefulWidget {
     this.delimiter = '...',
     this.delimiterStyle,
     this.callback,
-  }) : super(key: key);
+  });
 
   final String delimiter;
   final String data;

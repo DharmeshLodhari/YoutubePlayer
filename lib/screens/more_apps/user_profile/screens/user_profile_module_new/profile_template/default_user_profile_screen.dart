@@ -16,12 +16,12 @@ class DefaultUserProfileScreen extends StatefulWidget {
   final bool isLoading;
 
   DefaultUserProfileScreen({
-    Key? key,
+    super.key,
     required this.searchedUser,
     required this.searchedUserName,
     required this.isOwner,
     required this.isLoading,
-  }) : super(key: key);
+  });
 
   @override
   State<DefaultUserProfileScreen> createState() =>

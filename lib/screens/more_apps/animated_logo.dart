@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class AnimatedLogo extends StatefulWidget {
   final String imagePath;
 
-  const AnimatedLogo({Key? key, required this.imagePath}) : super(key: key);
+  const AnimatedLogo({super.key, required this.imagePath});
 
   @override
   _AnimatedLogoState createState() => _AnimatedLogoState();

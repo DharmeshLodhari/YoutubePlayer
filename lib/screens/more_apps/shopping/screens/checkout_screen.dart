@@ -14,7 +14,7 @@ import '../../../../utils/navigation_util.dart';
 import '../../../../utils/slydo_app_icon_icons.dart';
 
 class CheckoutScreen extends StatefulWidget {
-  const CheckoutScreen({Key? key}) : super(key: key);
+  const CheckoutScreen({Key? key});
 
   @override
   State<CheckoutScreen> createState() => _CheckoutScreenState();

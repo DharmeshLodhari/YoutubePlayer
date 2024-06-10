@@ -33,8 +33,8 @@ class UserProductList extends StatefulWidget {
     this.channel = false,
     this.next,
     this.type,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   _UserProductListState createState() => _UserProductListState();

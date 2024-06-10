@@ -25,13 +25,13 @@ class ShopListScreen extends StatefulWidget {
   final String? type;
 
   ShopListScreen({
-    Key? key,
+    super.key,
     this.onPageRefresh,
     this.category,
     required this.industry,
     this.nextUrl,
     this.type,
-  }) : super(key: key);
+  });
 
   @override
   State<ShopListScreen> createState() => ShopListScreenState();
@@ -737,8 +737,8 @@ class ShopListScreenState extends State<ShopListScreen> {
 class SuperStoreSingleCard extends StatelessWidget {
   final Product product;
 
-  const SuperStoreSingleCard({Key? key, required this.product})
-      : super(key: key);
+  const SuperStoreSingleCard({super.key, required this.product})
+     ;
 
   @override
   Widget build(BuildContext context) {

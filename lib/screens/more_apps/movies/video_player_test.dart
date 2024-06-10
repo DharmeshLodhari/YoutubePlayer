@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
 class ChewieDemo extends StatefulWidget {
-  ChewieDemo({this.title = 'Chewie Demo'});
+  const ChewieDemo({super.key, this.title = 'Chewie Demo'});
 
   final String title;
 

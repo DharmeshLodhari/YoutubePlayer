@@ -14,8 +14,8 @@ class DisplayServiceForDiscount extends StatelessWidget {
     required this.service,
     required this.onChange,
     required this.isSelected,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

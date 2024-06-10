@@ -19,8 +19,10 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'message_auth.dart';
 
 class MessageList extends StatefulWidget {
+  const MessageList({super.key});
+
   @override
-  _MessageListState createState() => _MessageListState();
+  State<MessageList> createState() => _MessageListState();
 }
 
 class _MessageListState extends State<MessageList>
@@ -475,12 +477,12 @@ class _MessageListState extends State<MessageList>
 }
 
 class VerticalListItem extends StatefulWidget {
-  VerticalListItem(this.partialMessage);
+  const VerticalListItem(this.partialMessage, {super.key});
 
   final PartialMessage partialMessage;
 
   @override
-  _VerticalListItemState createState() => _VerticalListItemState();
+  State<VerticalListItem> createState() => _VerticalListItemState();
 }
 
 class _VerticalListItemState extends State<VerticalListItem> {

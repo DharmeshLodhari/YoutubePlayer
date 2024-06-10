@@ -17,7 +17,7 @@ import 'package:shimmer/shimmer.dart';
 import '../../../../routes/route_constants.dart';
 
 class ApplicantList extends StatefulWidget {
-  const ApplicantList({Key? key, this.job}) : super(key: key);
+  const ApplicantList({super.key, this.job});
   final JobModel? job;
 
   @override

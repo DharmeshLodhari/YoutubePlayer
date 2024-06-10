@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:Slydo/data/environment.dart';
-import 'package:Slydo/screens/more_apps/payment_and_banking/models/VirtualAccount.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/fee_structure.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/models/virtual_account.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/models/credit_card_data_model.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/models/kyc_model.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/shipping_option_list_model.dart';
@@ -256,7 +256,7 @@ class PaymentAndBankingAuth extends AuthService {
   // update bank account information
   Future<bool> updateBankAccount(Map data) async {
     final String url =
-        "${AppConfig.baseUrl + "/api/v1/transactions/set-default-bank-account/" + data['uuid']}/";
+        "${AppConfig.baseUrl}/api/v1/transactions/set-default-bank-account/${data['uuid']}/";
     final headers = await getAuthHeaders();
     late var response;
     final _data = jsonEncode(data);
@@ -521,10 +521,8 @@ class PaymentAndBankingAuth extends AuthService {
 
   // delete credit card
   Future<bool> deleteCreditCard(int cardId) async {
-    final String url = AppConfig.baseUrl +
-        "/api/v1/transactions/credit-card/" +
-        '$cardId' +
-        "/";
+    final String url =
+        "${AppConfig.baseUrl}/api/v1/transactions/credit-card/$cardId'/";
     final headers = await getAuthHeaders();
     final response = await httpDelete(url, headers: headers);
 
@@ -540,7 +538,7 @@ class PaymentAndBankingAuth extends AuthService {
   // update credit card information
   Future<bool> updateCreditCard(int id) async {
     final String url =
-        AppConfig.baseUrl + "/api/v1/transactions/credit-card/" + '$id' + '/';
+        "${AppConfig.baseUrl}/api/v1/transactions/credit-card/$id/";
     final headers = await getAuthHeaders();
     late var response;
     final _data = jsonEncode({"is_default_cc": true});

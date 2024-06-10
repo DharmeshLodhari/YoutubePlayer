@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 class SearchTransactionCard extends StatefulWidget {
   final dynamic arguments;
 
-  SearchTransactionCard({this.arguments, Key? key}) : super(key: key);
+  SearchTransactionCard({this.arguments, super.key});
 
   @override
   SearchTransactionCardState createState() => SearchTransactionCardState();

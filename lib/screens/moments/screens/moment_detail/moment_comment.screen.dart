@@ -19,14 +19,13 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 //reply to comment for moment, full screen
 class MomentCommentScreen extends StatefulWidget {
   MomentCommentScreen(
-      {Key? key,
+      {super.key,
       this.yarnComment,
       this.momentId,
       this.addedSelectedMedia,
       this.minusComment,
       this.callbackUpdateCommentCount,
-      this.onDeleteComment})
-      : super(key: key);
+      this.onDeleteComment});
 
   final YarnComment? yarnComment;
   final String? momentId;

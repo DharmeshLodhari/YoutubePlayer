@@ -10,12 +10,12 @@ class CustomTextFieldTag extends StatefulWidget {
   final Function(String) onTap;
 
   CustomTextFieldTag({
-    Key? key,
+    super.key,
     this.initialTags,
     this.readOnly = true,
     required this.textFieldTagsController,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   _CustomTextFieldTagState createState() => _CustomTextFieldTagState();

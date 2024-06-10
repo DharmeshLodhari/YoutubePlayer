@@ -14,7 +14,7 @@ import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 
 class ShippingOption extends StatefulWidget {
-  ShippingOption({Key? key}) : super(key: key);
+  ShippingOption({Key? key});
 
   @override
   State<ShippingOption> createState() => _ShippingOptionState();

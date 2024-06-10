@@ -20,12 +20,12 @@ class DialogButtonStateFul extends StatefulWidget {
 
   /// DialogButton constructor
   DialogButtonStateFul({
-    Key? key,
+    super.key,
     this.backgroundColor,
     this.text,
     this.textColor,
     required this.onPressed,
-  }) : super(key: key);
+  });
 
   @override
   State<DialogButtonStateFul> createState() => _DialogButtonStateFulState();

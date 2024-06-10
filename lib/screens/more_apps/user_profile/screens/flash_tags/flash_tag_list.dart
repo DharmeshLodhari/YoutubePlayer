@@ -19,7 +19,7 @@ class FlashTagList extends StatefulWidget {
   final dynamic arguments;
   CustomerProfile? user;
 
-  FlashTagList({required this.arguments, Key? key}) : super(key: key) {
+  FlashTagList({required this.arguments, super.key}) {
     user = arguments["user"] as CustomerProfile;
   }
 

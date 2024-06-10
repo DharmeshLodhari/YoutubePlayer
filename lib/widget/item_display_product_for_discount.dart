@@ -14,8 +14,8 @@ class DisplayProductForDiscount extends StatelessWidget {
     required this.product,
     required this.onChange,
     required this.isSelected,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

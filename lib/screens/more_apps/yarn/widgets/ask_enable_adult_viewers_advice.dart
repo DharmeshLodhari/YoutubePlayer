@@ -15,8 +15,8 @@ class AskEnableAdultAndViewerAdvice extends StatefulWidget {
   final Color? baseBGColor, highLightBGColor;
   final Function(bool?) onTap;
 
-  AskEnableAdultAndViewerAdvice(
-      {Key? key,
+  const AskEnableAdultAndViewerAdvice(
+      {super.key,
       this.title,
       this.image,
       this.icon,
@@ -26,8 +26,7 @@ class AskEnableAdultAndViewerAdvice extends StatefulWidget {
       this.highLightBorderColor,
       this.baseBGColor,
       this.highLightBGColor,
-      required this.onTap})
-      : super(key: key);
+      required this.onTap});
 
   @override
   State<AskEnableAdultAndViewerAdvice> createState() =>

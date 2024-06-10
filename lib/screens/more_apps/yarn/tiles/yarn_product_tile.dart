@@ -23,10 +23,10 @@ class YarnProductTile extends StatefulWidget {
   final TileRenderPlace tileRenderPlace;
 
   const YarnProductTile({
-    Key? key,
+    super.key,
     this.product,
     this.tileRenderPlace = TileRenderPlace.YarnTimeLine,
-  }) : super(key: key);
+  });
 
   @override
   State<YarnProductTile> createState() => _YarnProductTileState();

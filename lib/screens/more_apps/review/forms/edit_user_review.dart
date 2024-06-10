@@ -9,7 +9,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class EditUserReview extends StatefulWidget {
-  EditUserReview({Key? key, required this.arguments}) : super(key: key);
+  EditUserReview({super.key, required this.arguments});
 
   final Map<String, dynamic> arguments;
 

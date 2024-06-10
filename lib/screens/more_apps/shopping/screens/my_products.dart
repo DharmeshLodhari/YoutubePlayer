@@ -15,7 +15,7 @@ import '../../user_profile/models/user.dart';
 import '../../user_profile/screens/user_profile_module_new/user_product_list.dart';
 
 class MyProducts extends StatefulWidget {
-  const MyProducts({Key? key}) : super(key: key);
+  const MyProducts({Key? key});
 
   @override
   State<MyProducts> createState() => _MyProductsState();

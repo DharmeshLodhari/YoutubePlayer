@@ -1,4 +1,4 @@
-import 'package:Slydo/screens/more_apps/movies/models/MovieDetailItem.dart';
+import 'package:Slydo/screens/more_apps/movies/models/movie_detail_item.dart';
 import 'package:Slydo/screens/more_apps/movies/movie_auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
@@ -14,8 +14,10 @@ import 'package:video_player/video_player.dart';
 import '../messaging/chat/utils.dart';
 
 class MovieDetailPage extends StatefulWidget {
+  const MovieDetailPage({super.key});
+
   @override
-  _MovieDetailPageState createState() => _MovieDetailPageState();
+  State<MovieDetailPage> createState() => _MovieDetailPageState();
 }
 
 class _MovieDetailPageState extends State<MovieDetailPage> {
@@ -86,7 +88,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
   Widget build(BuildContext context) {
     return PopScope(
       onPopInvoked: (didPop) {
-        if(didPop) {
+        if (didPop) {
           _videoController.pause();
           return;
         }

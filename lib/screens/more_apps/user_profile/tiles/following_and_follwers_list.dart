@@ -13,8 +13,8 @@ class FollowingAndFollowersList extends StatefulWidget {
   final String userName;
   final int index;
   const FollowingAndFollowersList(
-      {Key? key, required this.userName, this.index = 0})
-      : super(key: key);
+      {super.key, required this.userName, this.index = 0})
+     ;
 
   @override
   _FollowingAndFollowersListState createState() =>
@@ -166,8 +166,8 @@ class FollowAndFollowersList extends StatefulWidget {
   final String userName;
   final bool isFollowing;
   const FollowAndFollowersList(
-      {Key? key, required this.userName, required this.isFollowing})
-      : super(key: key);
+      {super.key, required this.userName, required this.isFollowing})
+     ;
 
   @override
   _FollowAndFollowersListState createState() => _FollowAndFollowersListState();

@@ -6,7 +6,7 @@ import 'package:Slydo/screens/more_apps/shipping_process/models/shared_cart_mode
 import 'package:Slydo/screens/more_apps/user_profile/models/UserAbout.dart';
 import 'package:Slydo/utils/util.dart';
 
-import '../../payment_and_banking/models/FinancialInstitution.dart';
+import '../../payment_and_banking/models/financial_institution.dart';
 
 enum UserStatus { ACTIVE, AWAY, UNKNOWN }
 

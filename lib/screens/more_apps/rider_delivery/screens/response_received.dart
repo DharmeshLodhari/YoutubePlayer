@@ -11,7 +11,7 @@ import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 
 class ResponseReceived extends StatefulWidget {
-  const ResponseReceived({Key? key}) : super(key: key);
+  const ResponseReceived({Key? key});
 
   @override
   State<ResponseReceived> createState() => _ResponseReceivedState();

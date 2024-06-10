@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 /// Link Preview Widget
 class FlutterLinkPreview extends StatefulWidget {
   const FlutterLinkPreview({
-    Key? key,
+    super.key,
     required this.url,
     this.cache = const Duration(hours: 24),
     this.builder,
@@ -14,7 +14,7 @@ class FlutterLinkPreview extends StatefulWidget {
     this.bodyStyle,
     this.showMultimedia = true,
     this.useMultithread = false,
-  }) : super(key: key);
+  });
 
   /// Web address, HTTP and HTTPS support
   final String url;

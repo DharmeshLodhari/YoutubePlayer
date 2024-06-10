@@ -13,7 +13,7 @@ class ImageTileForChat extends StatelessWidget {
   final Map<String, dynamic>? message;
   final ChatConversation? chatConversation;
 
-  ImageTileForChat({this.message, this.chatConversation});
+  const ImageTileForChat({super.key, this.message, this.chatConversation});
 
   @override
   Widget build(BuildContext context) {

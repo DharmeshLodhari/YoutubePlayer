@@ -17,8 +17,8 @@ import '../../../../../../widget/rounded_background_icon.dart';
 
 class SearchServices extends StatefulWidget {
   SearchServices({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   _SearchServicesState createState() => _SearchServicesState();

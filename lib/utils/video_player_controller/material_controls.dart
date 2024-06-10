@@ -17,8 +17,8 @@ class MaterialControls extends StatefulWidget {
   String? posterUrl;
   String? titleName;
 
-  MaterialControls({Key? key, this.posterUrl, this.titleName})
-      : super(key: key);
+  MaterialControls({super.key, this.posterUrl, this.titleName})
+     ;
 
   @override
   State<StatefulWidget> createState() {

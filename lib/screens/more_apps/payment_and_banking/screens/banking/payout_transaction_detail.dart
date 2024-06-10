@@ -16,15 +16,15 @@ import '../../models/payout.dart';
 class PayoutTransactionDetail extends StatefulWidget {
   final dynamic arguments;
 
-  PayoutTransactionDetail({required this.arguments});
+  const PayoutTransactionDetail({super.key, required this.arguments});
 
   @override
-  _PayoutTransactionDetailState createState() =>
-      _PayoutTransactionDetailState(arguments: arguments);
+  State<PayoutTransactionDetail> createState() =>
+      _PayoutTransactionDetailState();
 }
 
 class _PayoutTransactionDetailState extends State<PayoutTransactionDetail> {
-  Map<String, dynamic> arguments;
+  late Map<String, dynamic> arguments;
   Payout? payout;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey =
@@ -34,10 +34,9 @@ class _PayoutTransactionDetailState extends State<PayoutTransactionDetail> {
       RefreshController(initialRefresh: false);
   bool isLoading = false;
 
-  _PayoutTransactionDetailState({required this.arguments});
-
   @override
   void initState() {
+    arguments = widget.arguments;
     fetchPayout();
     super.initState();
   }

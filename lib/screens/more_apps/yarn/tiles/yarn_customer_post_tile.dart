@@ -33,13 +33,13 @@ class YarnCustomerPostTile extends StatefulWidget {
   final TileRenderPlace tileRenderPlace;
 
   YarnCustomerPostTile({
-    Key? key,
+    super.key,
     this.customerProfile,
     this.showAuthorDetails = true,
     required this.onDeleteBlog,
     this.isNavigable = true,
     this.tileRenderPlace = TileRenderPlace.YarnTimeLine,
-  }) : super(key: key);
+  });
 
   @override
   _YarnCustomerPostTileState createState() => _YarnCustomerPostTileState();

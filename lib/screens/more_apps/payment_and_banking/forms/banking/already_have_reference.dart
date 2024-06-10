@@ -10,8 +10,10 @@ import 'package:provider/provider.dart';
 import '../../payment_and_banking_auth.dart';
 
 class AlreadyHaveReferenceScreen extends StatefulWidget {
+  const AlreadyHaveReferenceScreen({super.key});
+
   @override
-  _AlreadyHaveReferenceScreenState createState() =>
+  State<AlreadyHaveReferenceScreen> createState() =>
       _AlreadyHaveReferenceScreenState();
 }
 
@@ -116,10 +118,7 @@ class _AlreadyHaveReferenceScreenState
                 color: blackFont, fontWeight: FontWeight.w600, fontSize: 14),
           ),
           subtitle: Text(
-            '******' +
-                bankAccountBloc.bankAccount!.accountNumber
-                    .toString()
-                    .substring(5, 9),
+            '******${bankAccountBloc.bankAccount!.accountNumber.toString().substring(5, 9)}',
             style: TextStyle(color: darkGrey, fontSize: 12),
           ),
           leading: CachedNetworkImage(

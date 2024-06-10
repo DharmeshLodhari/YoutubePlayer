@@ -8,8 +8,8 @@ import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
-import 'package:Slydo/screens/more_apps/payment_and_banking/models/VirtualAccount.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/fee_structure.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/models/virtual_account.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
 import 'package:Slydo/screens/more_apps/payment_loading_screen.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
@@ -38,11 +38,11 @@ class SlydoSlydoTransfer extends StatefulWidget {
   final dynamic arguments;
   final Function(bool)? callback;
 
-  SlydoSlydoTransfer({this.arguments, this.callback});
+  const SlydoSlydoTransfer({super.key, this.arguments, this.callback});
 
   // Declare a field that holds the userData.
   @override
-  _SlydoSlydoTransferState createState() => _SlydoSlydoTransferState();
+  State<SlydoSlydoTransfer> createState() => _SlydoSlydoTransferState();
 }
 
 class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {

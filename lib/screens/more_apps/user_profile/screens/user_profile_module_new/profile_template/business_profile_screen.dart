@@ -20,12 +20,12 @@ class BusinessProfileScreen extends StatefulWidget {
   bool isLoading;
 
   BusinessProfileScreen({
-    Key? key,
+    super.key,
     required this.searchedUser,
     required this.searchedUserName,
     required this.isOwner,
     required this.isLoading,
-  }) : super(key: key);
+  });
 
   @override
   State<BusinessProfileScreen> createState() => _BusinessProfileScreenState();

@@ -16,7 +16,7 @@ import '../../../../../../widget/customized_dropdown_field.dart';
 import '../../../../../../widget/rounded_background_icon.dart';
 
 class SearchServices extends StatefulWidget {
-  const SearchServices({Key? key}) : super(key: key);
+  const SearchServices({Key? key});
 
   @override
   _SearchServicesState createState() => _SearchServicesState();

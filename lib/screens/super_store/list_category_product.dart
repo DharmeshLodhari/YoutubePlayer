@@ -15,8 +15,8 @@ class ListCategoryProduct extends StatefulWidget {
   const ListCategoryProduct({
     required this.nextUrl,
     required this.categoryName,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<ListCategoryProduct> createState() => _ListCategoryProductState();

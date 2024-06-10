@@ -7,8 +7,8 @@ import '../yarn_auth.dart';
 class CustomizeCategoryButton extends StatefulWidget {
   final YarnCategories? askCategory;
   late final UsersCategories? usersCategory;
-  CustomizeCategoryButton({Key? key, this.askCategory, this.usersCategory})
-      : super(key: key);
+  CustomizeCategoryButton({super.key, this.askCategory, this.usersCategory})
+     ;
 
   @override
   State<CustomizeCategoryButton> createState() =>

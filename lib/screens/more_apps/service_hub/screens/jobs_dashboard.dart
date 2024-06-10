@@ -19,7 +19,7 @@ import '../../../../widget/no_item_in_list.dart';
 import '../tiles/jos_description_card.dart';
 
 class JobsDashboard extends StatefulWidget {
-  const JobsDashboard({Key? key}) : super(key: key);
+  const JobsDashboard({Key? key});
 
   @override
   State<JobsDashboard> createState() => _JobsDashboardState();

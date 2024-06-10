@@ -9,7 +9,7 @@ import '../messaging/chat/utils.dart';
 class EventTile extends StatelessWidget {
   final PartialEventItem? partialEventItem;
 
-  const EventTile({Key? key, this.partialEventItem}) : super(key: key);
+  const EventTile({super.key, this.partialEventItem});
 
   @override
   Widget build(BuildContext context) {
@@ -89,7 +89,7 @@ class EventTile extends StatelessWidget {
 class EventTileWithHeart extends StatefulWidget {
   final PartialEventItem? partialEvent;
 
-  const EventTileWithHeart({Key? key, this.partialEvent}) : super(key: key);
+  const EventTileWithHeart({super.key, this.partialEvent});
   @override
   _EventTileWithHeartState createState() => _EventTileWithHeartState();
 }

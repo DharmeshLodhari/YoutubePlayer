@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import '../../../../utils/colors.dart';
 
 class CategoryChip extends StatefulWidget {
-  CategoryChip({
-    Key? key,
+  const CategoryChip({
+    super.key,
     this.onTap,
     this.title,
     this.categoryColor,
@@ -12,7 +12,7 @@ class CategoryChip extends StatefulWidget {
     this.borderColor,
     this.isIconShow = false,
     this.selected = false,
-  }) : super(key: key);
+  });
 
   final GestureTapCallback? onTap;
   final Color? categoryColor;

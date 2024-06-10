@@ -1,8 +1,8 @@
-import 'package:Slydo/screens/more_apps/movies/models/MovieDetailItem.dart';
+import 'package:Slydo/screens/more_apps/movies/models/movie_detail_item.dart';
 import 'package:Slydo/services/auth.dart';
 
-import 'models/MovieItem.dart';
-import 'models/PartialMovieItem.dart';
+import 'models/movie_item.dart';
+import 'models/partial_movie_item.dart';
 
 class MovieAuthService extends AuthService {
   Future<List<String>> getLocation() async {

@@ -3,8 +3,7 @@ import 'package:flutter/widgets.dart';
 /// Widget whose [Element] calls a callback when the element is mounted.
 class PostMountCallback extends StatelessWidget {
   /// Creates a [PostMountCallback] widget.
-  const PostMountCallback({required this.child, this.callback, Key? key})
-      : super(key: key);
+  const PostMountCallback({required this.child, this.callback, super.key});
 
   /// The widget below this widget in the tree.
   final Widget child;

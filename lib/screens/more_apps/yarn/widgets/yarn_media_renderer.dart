@@ -11,7 +11,7 @@ import '../../../../utils/navigation_util.dart';
 
 class YarnMediaRender extends StatefulWidget {
   final Yarn yarnTopic;
-  YarnMediaRender({Key? key, required this.yarnTopic}) : super(key: key);
+  YarnMediaRender({super.key, required this.yarnTopic});
 
   @override
   State<YarnMediaRender> createState() => _YarnMediaRenderState();

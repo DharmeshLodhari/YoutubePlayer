@@ -12,7 +12,7 @@ class YarnSingleMediaPreview extends StatelessWidget {
       this.imagePoster,
       required this.type,
       Key? key})
-      : super(key: key);
+     ;
 
   final String imageUrl;
   final String mediaType;

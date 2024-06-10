@@ -10,7 +10,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class UserReviewList extends StatefulWidget {
   CustomerProfile? user;
-  UserReviewList({@required this.user, Key? key}) : super(key: key);
+  UserReviewList({@required this.user, super.key});
 
   @override
   _UserReviewListState createState() => _UserReviewListState();

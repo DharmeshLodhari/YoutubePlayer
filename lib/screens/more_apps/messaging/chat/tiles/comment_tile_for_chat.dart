@@ -36,8 +36,8 @@ class CommentTileForChat extends StatefulWidget {
   final ChatConversation? chatConversation;
 
   CommentTileForChat(
-      {Key? key, required this.message, required this.chatConversation})
-      : super(key: key);
+      {super.key, required this.message, required this.chatConversation})
+     ;
 
   @override
   State<CommentTileForChat> createState() => _CommentTileForChatState();

@@ -119,8 +119,8 @@ class FileTileForChat extends StatefulWidget {
   final ChatConversation chatConversation;
 
   const FileTileForChat(
-      {Key? key, required this.message, required this.chatConversation})
-      : super(key: key);
+      {super.key, required this.message, required this.chatConversation})
+     ;
 
   @override
   State<FileTileForChat> createState() => _FileTileForChatState();

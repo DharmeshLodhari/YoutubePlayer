@@ -54,7 +54,7 @@ class SingleMomentDetailScreen extends StatefulWidget {
   final PageController pageCtrl;
 
   SingleMomentDetailScreen({
-    Key? key,
+    super.key,
     required this.index,
     required this.momentsModelList,
     required this.videoPlayerControllers,
@@ -64,7 +64,7 @@ class SingleMomentDetailScreen extends StatefulWidget {
     required this.onRightSwipe,
     required this.pageCtrl,
     required this.onMomentPop,
-  }) : super(key: key);
+  });
 
   @override
   State<SingleMomentDetailScreen> createState() =>

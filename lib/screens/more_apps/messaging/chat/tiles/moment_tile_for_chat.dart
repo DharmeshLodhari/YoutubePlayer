@@ -5,8 +5,6 @@ import 'package:Slydo/screens/moments/screens/moment_detail/moment_detail_page.d
 import 'package:Slydo/screens/moments/screens/moments_service.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_conversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
-import 'package:Slydo/utils/colors.dart';
-import 'package:Slydo/utils/common.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -17,9 +15,8 @@ class MomentTileForChat extends StatefulWidget {
   final Map<String, dynamic>? message;
   final ChatConversation? chatConversation;
 
-  MomentTileForChat(
-      {Key? key, required this.message, required this.chatConversation})
-      : super(key: key);
+  const MomentTileForChat(
+      {super.key, required this.message, required this.chatConversation});
 
   @override
   State<MomentTileForChat> createState() => _MomentTileForChatState();

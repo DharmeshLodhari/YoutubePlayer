@@ -5,7 +5,6 @@ import 'package:Slydo/data/state_notifiers/user_bloc.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/business/models/Contract.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_conversation.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -18,9 +17,8 @@ class PostTileForPaymentContract extends StatefulWidget {
   final Map<String, dynamic>? message;
   final ChatConversation? chatConversation;
 
-  PostTileForPaymentContract(
-      {Key? key, required this.message, required this.chatConversation})
-      : super(key: key);
+  const PostTileForPaymentContract(
+      {super.key, required this.message, required this.chatConversation});
 
   @override
   State<PostTileForPaymentContract> createState() =>

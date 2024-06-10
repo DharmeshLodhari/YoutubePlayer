@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-import 'models/PartialMusicItem.dart';
+import 'models/partial_music_item.dart';
 import 'music_auth.dart';
 import 'music_dashboard_bloc.dart';
 import 'music_player.dart';
@@ -17,7 +17,7 @@ class MyMusicList extends StatefulWidget {
   MyMusicList({super.key, this.musicPlayer});
 
   @override
-  _MyMusicListState createState() => _MyMusicListState();
+  State<MyMusicList> createState() => _MyMusicListState();
 }
 
 class _MyMusicListState extends State<MyMusicList> {

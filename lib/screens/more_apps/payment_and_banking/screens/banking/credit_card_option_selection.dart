@@ -8,7 +8,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../../../../../locator.dart';
 
 class CreditCardOptionSelection extends StatefulWidget {
-  CreditCardOptionSelection({Key? key}) : super(key: key);
+  const CreditCardOptionSelection({super.key});
 
   @override
   State<CreditCardOptionSelection> createState() =>

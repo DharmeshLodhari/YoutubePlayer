@@ -13,7 +13,7 @@ class TabSelection extends StatefulWidget {
       required this.firstTab,
       required this.secondTab,
       Key? key})
-      : super(key: key);
+     ;
   @override
   State<TabSelection> createState() => _TabSelectionState();
 }

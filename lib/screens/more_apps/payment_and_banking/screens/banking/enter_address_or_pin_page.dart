@@ -15,11 +15,11 @@ class EnterAddressOrPinPinPage extends StatefulWidget {
   bool isWalletFunding;
   final CreditCardData? creditCardData;
   EnterAddressOrPinPinPage(
-      {Key? key,
+      {super.key,
       this.isWalletFunding = false,
       this.isAddress = false,
       this.creditCardData})
-      : super(key: key);
+     ;
 
   @override
   State<EnterAddressOrPinPinPage> createState() =>

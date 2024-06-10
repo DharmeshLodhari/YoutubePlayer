@@ -19,9 +19,10 @@ class TransactionTileForChat extends StatefulWidget {
   final UserBloc? userBloc;
   final ChatConversation? chatConversation;
 
-  TransactionTileForChat({this.message, this.userBloc, this.chatConversation});
+  const TransactionTileForChat(
+      {super.key, this.message, this.userBloc, this.chatConversation});
   @override
-  _TransactionTileForChatState createState() => _TransactionTileForChatState();
+  State<TransactionTileForChat> createState() => _TransactionTileForChatState();
 }
 
 class _TransactionTileForChatState extends State<TransactionTileForChat> {
@@ -304,11 +305,11 @@ class PaymentRequestTileForChat extends StatefulWidget {
   final UserBloc? userBloc;
   final ChatConversation? chatConversation;
 
-  PaymentRequestTileForChat(
-      {this.message, this.userBloc, this.chatConversation});
+  const PaymentRequestTileForChat(
+      {super.key, this.message, this.userBloc, this.chatConversation});
 
   @override
-  _PaymentRequestTileForChatState createState() =>
+  State<PaymentRequestTileForChat> createState() =>
       _PaymentRequestTileForChatState();
 }
 

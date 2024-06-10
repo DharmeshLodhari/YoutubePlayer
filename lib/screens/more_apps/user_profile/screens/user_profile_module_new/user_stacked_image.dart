@@ -11,12 +11,12 @@ class StackedWidgets extends StatelessWidget {
   final double xShift;
 
   const StackedWidgets({
-    Key? key,
+    super.key,
     required this.items,
     this.direction = TextDirection.ltr,
     this.size = 100,
     this.xShift = 20,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

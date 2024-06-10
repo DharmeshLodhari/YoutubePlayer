@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class TakeDeliveryProof extends StatefulWidget {
-  TakeDeliveryProof({Key? key}) : super(key: key);
+  TakeDeliveryProof({Key? key});
 
   @override
   State<TakeDeliveryProof> createState() => _TakeDeliveryProofState();

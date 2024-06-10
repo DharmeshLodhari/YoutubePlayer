@@ -12,10 +12,10 @@ class UserTileForGroupDetail extends StatefulWidget {
 
   GroupDetailModel? groupDetail;
 
-  UserTileForGroupDetail({this.user, this.groupDetail});
+  UserTileForGroupDetail({super.key, this.user, this.groupDetail});
 
   @override
-  _UserTileForGroupDetailState createState() => _UserTileForGroupDetailState();
+  State<UserTileForGroupDetail> createState() => _UserTileForGroupDetailState();
 }
 
 class _UserTileForGroupDetailState extends State<UserTileForGroupDetail> {

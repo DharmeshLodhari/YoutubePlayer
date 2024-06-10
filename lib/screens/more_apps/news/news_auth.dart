@@ -1,8 +1,8 @@
-import 'package:Slydo/screens/more_apps/news/models/SubscriptionItem.dart';
 import 'package:Slydo/screens/more_apps/news/models/news_detail_item.dart';
+import 'package:Slydo/screens/more_apps/news/models/subscription_item.dart';
 import 'package:Slydo/services/auth.dart';
 
-import 'models/NewsListItem.dart';
+import 'models/news_list_item.dart';
 
 class NewsAuthService extends AuthService {
   List<Map<String, String>> newsList = [

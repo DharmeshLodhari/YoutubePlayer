@@ -24,13 +24,13 @@ class OverlayContainer extends StatefulWidget {
   final Color materialColor;
 
   OverlayContainer({
-    Key? key,
+    super.key,
     required this.show,
     required this.child,
     this.asWideAsParent = false,
     this.position = const OverlayContainerPosition(0.0, 0.0),
     this.materialColor = Colors.transparent,
-  }) : super(key: key);
+  });
 
   @override
   _OverlayContainerState createState() => _OverlayContainerState();

@@ -39,12 +39,12 @@ import '../../yarn/yarn_report_screen.dart';
 
 class MyJobsDetails extends StatefulWidget {
   const MyJobsDetails({
-    Key? key,
+    super.key,
     // required this.jobId,
 
     // this.listingId,
     required this.jobDetails,
-  }) : super(key: key);
+  });
   // final String jobId;
   final Map<dynamic, dynamic> jobDetails;
   // final String? listingId;

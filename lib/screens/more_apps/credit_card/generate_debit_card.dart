@@ -19,7 +19,7 @@ import 'package:provider/provider.dart';
 class GenerateDebitCard extends StatefulWidget {
   final dynamic arguments;
 
-  GenerateDebitCard({this.arguments, Key? key}) : super(key: key);
+  GenerateDebitCard({this.arguments, super.key});
 
   @override
   GenerateDebitCardState createState() => GenerateDebitCardState();

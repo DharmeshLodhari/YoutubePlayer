@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:Slydo/screens/more_apps/movies/models/MovieItem.dart';
+import 'package:Slydo/screens/more_apps/movies/models/movie_item.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -11,7 +11,7 @@ import '../messaging/chat/utils.dart';
 class MovieTile extends StatelessWidget {
   final MovieItem? movieItem;
 
-  const MovieTile({Key? key, this.movieItem}) : super(key: key);
+  const MovieTile({super.key, this.movieItem});
 
   @override
   Widget build(BuildContext context) {
@@ -97,10 +97,10 @@ class MovieTile extends StatelessWidget {
 class MovieTileWithHeart extends StatefulWidget {
   final MovieItem? movieItem;
 
-  const MovieTileWithHeart({Key? key, this.movieItem}) : super(key: key);
+  const MovieTileWithHeart({super.key, this.movieItem});
 
   @override
-  _MovieTileWithHeartState createState() => _MovieTileWithHeartState();
+  State<MovieTileWithHeart> createState() => _MovieTileWithHeartState();
 }
 
 class _MovieTileWithHeartState extends State<MovieTileWithHeart> {
@@ -197,9 +197,9 @@ class _MovieTileWithHeartState extends State<MovieTileWithHeart> {
 class MovieTileGeneral extends StatefulWidget {
   final MovieItem? movieItem;
 
-  const MovieTileGeneral({Key? key, this.movieItem}) : super(key: key);
+  const MovieTileGeneral({super.key, this.movieItem});
   @override
-  _MovieTileGeneralState createState() => _MovieTileGeneralState();
+  State<MovieTileGeneral> createState() => _MovieTileGeneralState();
 }
 
 class _MovieTileGeneralState extends State<MovieTileGeneral> {

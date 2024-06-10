@@ -19,8 +19,8 @@ class UserProductDiscount extends StatefulWidget {
 
   UserProductDiscount({
     required this.item,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   _UserProductsDiscountState createState() => _UserProductsDiscountState();

@@ -36,11 +36,11 @@ class DisplayProduct extends StatefulWidget {
   final Function()? onProductRefresh;
 
   const DisplayProduct(
-      {Key? key,
+      {super.key,
       required this.product,
       this.giveRightPadding = false,
       this.onProductRefresh})
-      : super(key: key);
+     ;
 
   @override
   State<DisplayProduct> createState() => _DisplayProductState();
@@ -685,11 +685,11 @@ class DisplayService extends StatefulWidget {
   final Function()? onServiceRefresh;
 
   const DisplayService(
-      {Key? key,
+      {super.key,
       required this.service,
       this.giveRightPadding = false,
       this.onServiceRefresh})
-      : super(key: key);
+     ;
 
   @override
   State<DisplayService> createState() => _DisplayServiceState();
@@ -1161,12 +1161,12 @@ class FindBusiness extends StatefulWidget {
   final Function(String, bool) callback;
 
   FindBusiness(
-      {Key? key,
+      {super.key,
       required this.customerProfile,
       this.tileRenderPlace = TileRenderPlace.YarnTimeLine,
       this.onProductRefresh,
       required this.callback})
-      : super(key: key);
+     ;
 
   @override
   State<FindBusiness> createState() => _FindBusinessState();
@@ -1543,8 +1543,8 @@ class CircularUserColorImage extends StatelessWidget {
   final String name;
 
   const CircularUserColorImage(
-      {Key? key, required this.imageUrl, required this.name})
-      : super(key: key);
+      {super.key, required this.imageUrl, required this.name})
+     ;
 
   @override
   Widget build(BuildContext context) {

@@ -18,8 +18,8 @@ class SuperStoreIndustry extends StatefulWidget {
   final String appTitle;
   final Map<String, dynamic>? searchQuery;
   SuperStoreIndustry(
-      {Key? key, required this.next, required this.appTitle, this.searchQuery})
-      : super(key: key);
+      {super.key, required this.next, required this.appTitle, this.searchQuery})
+     ;
 
   @override
   State<SuperStoreIndustry> createState() => _SuperStoreState();

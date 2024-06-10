@@ -50,7 +50,7 @@ class MomentCommentTile extends StatefulWidget {
   final Function(bool)? callbackUpdateCommentCount;
 
   MomentCommentTile({
-    Key? key,
+    super.key,
     required this.yarnComment,
     this.yarnCommentReply,
     this.commentDetailsList,
@@ -66,7 +66,7 @@ class MomentCommentTile extends StatefulWidget {
     this.commentType,
     this.moment,
     this.callbackUpdateCommentCount,
-  }) : super(key: key);
+  });
 
   @override
   State<MomentCommentTile> createState() => _MomentCommentTileState();

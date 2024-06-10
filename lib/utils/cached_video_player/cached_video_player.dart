@@ -613,7 +613,7 @@ class _CachedVideoAppLifeCycleObserver extends Object
 /// Widget that displays the video controlled by [controller].
 class CachedVideoPlayer extends StatefulWidget {
   /// Uses the given [controller] for all video rendered in this widget.
-  CachedVideoPlayer(this.controller, {Key? key}) : super(key: key);
+  CachedVideoPlayer(this.controller, {Key? key});
 
   /// The [CachedVideoPlayerController] responsible for the video being rendered in
   /// this widget.
@@ -922,7 +922,7 @@ class ClosedCaption extends StatelessWidget {
   /// [CachedVideoPlayerValue.caption].
   ///
   /// If [text] is null, nothing will be displayed.
-  const ClosedCaption({Key? key, this.text, this.textStyle}) : super(key: key);
+  const ClosedCaption({super.key, this.text, this.textStyle});
 
   /// The text that will be shown in the closed caption, or null if no caption
   /// should be shown.

@@ -11,9 +11,9 @@ class YarnCommentList extends StatefulWidget {
   YarnCommentList({
     required this.yarn,
     required this.commentScrollController,
-    Key? key,
+    super.key,
     this.onCountChanged,
-  }) : super(key: key);
+  });
   final Yarn yarn;
   final ScrollController commentScrollController;
   final Function(int)? onCountChanged;

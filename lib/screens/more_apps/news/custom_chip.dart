@@ -1,14 +1,13 @@
 import 'package:Slydo/utils/colors.dart';
 import 'package:flutter/material.dart';
 
-// ignore: must_be_immutable
 class CustomChip extends StatelessWidget {
-  String text;
+  final String text;
   final Color? color;
   final Color? textColor;
   final EdgeInsets? padding;
 
-  CustomChip(
+  const CustomChip(
       {super.key, this.text = "", this.padding, this.color, this.textColor});
 
   @override

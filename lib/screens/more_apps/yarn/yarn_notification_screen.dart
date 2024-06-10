@@ -11,7 +11,7 @@ import 'models/Topics/Notifications.dart';
 class YarnNotification extends StatefulWidget {
   final Function(bool)? onDeleteNotification;
 
-  YarnNotification({Key? key, this.onDeleteNotification}) : super(key: key);
+  YarnNotification({super.key, this.onDeleteNotification});
 
   @override
   State<YarnNotification> createState() => _YarnNotificationState();

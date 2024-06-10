@@ -14,8 +14,8 @@ class SelectProviderScreen extends StatefulWidget {
   final String nameOfProvider;
   final UtilitiesProvidersEnum providerEnum;
   const SelectProviderScreen(
-      {Key? key, required this.providerEnum, required this.nameOfProvider})
-      : super(key: key);
+      {super.key, required this.providerEnum, required this.nameOfProvider})
+     ;
 
   @override
   State<SelectProviderScreen> createState() => _SelectProviderScreenState();

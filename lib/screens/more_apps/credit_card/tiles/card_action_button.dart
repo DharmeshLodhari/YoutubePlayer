@@ -7,11 +7,12 @@ class CardActionButton extends StatelessWidget {
   final String label;
   final Function()? onPressed;
 
-   const CardActionButton({Key? key,
+  const CardActionButton({
+    super.key,
     required this.iconAsset,
     required this.label,
     required this.onPressed,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -11,11 +11,11 @@ import 'package:provider/provider.dart';
 
 class MapUI extends StatefulWidget {
   MapUI({
-    Key? key,
+    super.key,
     this.showRideToStartingPointPolyline = false,
     this.showStartingPointToDestinationPolyline = false,
     this.startRide = false,
-  }) : super(key: key);
+  });
 
   final bool showStartingPointToDestinationPolyline;
   final bool showRideToStartingPointPolyline;

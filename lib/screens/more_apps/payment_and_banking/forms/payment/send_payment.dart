@@ -11,7 +11,7 @@ class SendPayment extends StatefulWidget {
   final dynamic arguments;
   final Function(bool)? callback;
 
-  SendPayment({this.arguments, this.callback});
+  const SendPayment({super.key, this.arguments, this.callback});
 
   @override
   State<SendPayment> createState() => _SendPaymentState();
@@ -35,7 +35,7 @@ class _SendPaymentState extends State<SendPayment> {
   Widget build(BuildContext context) {
     return PopScope(
       onPopInvoked: (didPop) async {
-        if(didPop) {
+        if (didPop) {
           return;
         }
       },
@@ -78,7 +78,7 @@ class _SendPaymentState extends State<SendPayment> {
           GestureDetector(
             onTap: () {
               NavigationUtil.push(context,
-                  screen: QRCodeView(arguments: {'isRequest': false}));
+                  screen: QRCodeView(arguments: const {'isRequest': false}));
             },
             child: SvgPicture.asset(
               'assets/images/rider/scan_qr.svg',

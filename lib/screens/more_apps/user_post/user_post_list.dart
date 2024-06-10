@@ -14,8 +14,11 @@ class UserPostList extends StatefulWidget {
   final String? channelUserName;
 
   const UserPostList(
-      {@required this.user, this.titleToSearch, this.channelUserName, Key? key})
-      : super(key: key);
+      {@required this.user,
+      this.titleToSearch,
+      this.channelUserName,
+      super.key})
+     ;
 
   @override
   _UserPostListState createState() => _UserPostListState();

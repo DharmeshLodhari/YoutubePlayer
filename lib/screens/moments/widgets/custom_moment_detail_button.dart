@@ -10,15 +10,14 @@ class CustomMomentDetailButton extends StatelessWidget {
   final IconData? iconData;
   final Function()? onPressed;
 
-  CustomMomentDetailButton(
-      {Key? key,
+  const CustomMomentDetailButton(
+      {super.key,
       this.iconData,
       required this.iconEnabled,
       required this.text,
       required this.onPressed,
       this.isSvgIcon = false,
-      this.svgImage})
-      : super(key: key);
+      this.svgImage});
 
   @override
   Widget build(BuildContext context) {

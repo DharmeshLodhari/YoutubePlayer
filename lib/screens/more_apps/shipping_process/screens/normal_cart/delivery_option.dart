@@ -14,8 +14,8 @@ import 'package:provider/provider.dart';
 
 class DeliveryOption extends StatefulWidget {
   DeliveryOption({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<DeliveryOption> createState() => _DeliveryOptionState();
@@ -48,7 +48,7 @@ class _DeliveryOptionState extends State<DeliveryOption> {
       color: white,
       child: PopScope(
         onPopInvoked: (didPop) async {
-          if(didPop) {
+          if (didPop) {
             shippingProcessBloc.clearBuyNowData();
             return;
           }

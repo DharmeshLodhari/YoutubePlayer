@@ -1,9 +1,9 @@
-import 'package:Slydo/screens/more_apps/music/models/PartialMusicItem.dart';
+import 'package:Slydo/screens/more_apps/music/models/partial_music_item.dart';
 import 'package:Slydo/services/auth.dart';
 
-import 'models/PartialCelebrityItem.dart';
-import 'models/PartialMusicAlbum.dart';
 import 'models/music_album.dart';
+import 'models/partial_celebrity_item.dart';
+import 'models/partial_music_album.dart';
 
 class MusicAuthService extends AuthService {
   Future<List<String>> getLocation() async {

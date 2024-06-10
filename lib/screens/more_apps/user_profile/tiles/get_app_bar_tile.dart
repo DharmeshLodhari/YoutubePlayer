@@ -38,8 +38,8 @@ import 'package:uuid/uuid.dart';
 
 import '../../../home_tab/qr_code_page.dart';
 import '../../messaging/message_auth.dart';
-import '../../payment_and_banking/models/FinancialInstitution.dart';
-import '../../payment_and_banking/models/VirtualAccount.dart';
+import '../../payment_and_banking/models/financial_institution.dart';
+import '../../payment_and_banking/models/virtual_account.dart';
 import '../../yarn/utils/slydo_yarn_links.dart';
 import '../../yarn/yarn_search_screen.dart';
 import '../screens/user_profile_module_new/utils.dart';
@@ -56,7 +56,7 @@ class GetAppbarTile extends StatefulWidget {
   final Function(Map<String, dynamic>)? callbackProductService;
 
   GetAppbarTile(
-      {Key? key,
+      {super.key,
       required this.searchedUser,
       required this.isLoading,
       required this.isShrink,
@@ -64,8 +64,7 @@ class GetAppbarTile extends StatefulWidget {
       this.userType,
       this.callback,
       this.callbackProductService,
-      this.channelDetail})
-      : super(key: key);
+      this.channelDetail});
 
   @override
   State<GetAppbarTile> createState() => _GetAppbarTileState();

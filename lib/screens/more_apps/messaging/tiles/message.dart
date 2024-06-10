@@ -15,11 +15,10 @@ class MessageTile extends StatefulWidget {
   final PartialMessage? partialMessage;
   Widget? expandedWidget = Container();
 
-  MessageTile({this.partialMessage, this.expandedWidget});
+  MessageTile({super.key, this.partialMessage, this.expandedWidget});
 
   @override
-  _MessageTileState createState() =>
-      _MessageTileState(partialMessage: partialMessage);
+  State<MessageTile> createState() => _MessageTileState();
 }
 
 class _MessageTileState extends State<MessageTile> {
@@ -27,7 +26,11 @@ class _MessageTileState extends State<MessageTile> {
   final _messageAuth = MessageAuth();
   PartialMessage? partialMessage;
 
-  _MessageTileState({this.partialMessage});
+  @override
+  void initState() {
+    partialMessage = widget.partialMessage;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

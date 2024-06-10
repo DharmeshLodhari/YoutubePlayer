@@ -13,7 +13,7 @@ import 'more_apps/user_profile/models/user.dart';
 import 'more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 
 class SearchUser extends StatefulWidget {
-  const SearchUser({Key? key}) : super(key: key);
+  const SearchUser({Key? key});
 
   @override
   State<SearchUser> createState() => _SearchUserState();

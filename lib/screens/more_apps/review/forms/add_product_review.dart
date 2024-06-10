@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 class AddReview extends StatefulWidget {
-  const AddReview({Key? key}) : super(key: key);
+  const AddReview({Key? key});
 
   @override
   _AddReviewState createState() => _AddReviewState();

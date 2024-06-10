@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_message_action.dart';
-import 'package:Slydo/screens/more_apps/payment_and_banking/models/Envelope.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/models/envelope_model.dart';
 import 'package:flutter/material.dart';
 
 /// This Helper is Responsible for getting the chat Message Actions like

@@ -11,7 +11,8 @@ import '../../../../utils/navigation_util.dart';
 
 class YarnCommentMediaRender extends StatefulWidget {
   final YarnComment yarnTopic;
-  YarnCommentMediaRender({Key? key, required this.yarnTopic}) : super(key: key);
+  YarnCommentMediaRender({super.key, required this.yarnTopic})
+     ;
 
   @override
   State<YarnCommentMediaRender> createState() => _YarnCommentMediaRenderState();

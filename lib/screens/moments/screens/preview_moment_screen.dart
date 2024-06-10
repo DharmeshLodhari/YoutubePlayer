@@ -33,8 +33,8 @@ class PreviewMomentScreen extends StatefulWidget {
   final String filePath;
   final dynamic arguments;
 
-  PreviewMomentScreen({Key? key, required this.filePath, this.arguments})
-      : super(key: key);
+  PreviewMomentScreen({super.key, required this.filePath, this.arguments})
+     ;
 
   @override
   State<PreviewMomentScreen> createState() => _PreviewMomentScreenState();

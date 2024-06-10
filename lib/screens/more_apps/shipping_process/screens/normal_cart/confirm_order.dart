@@ -17,7 +17,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
 class ConfirmOrder extends StatefulWidget {
-  ConfirmOrder({this.arguments, Key? key}) : super(key: key);
+  ConfirmOrder({this.arguments, super.key});
 
   final dynamic arguments;
 

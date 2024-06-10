@@ -7,6 +7,7 @@ import 'package:Slydo/screens/more_apps/messaging/chat/models/group_detail_model
 import 'package:Slydo/screens/more_apps/shipping_process/auth/shared_cart_auth.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/models/shared_cart_model.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 import 'package:Slydo/screens/more_apps/user_profile/tiles/user_tile.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
@@ -19,11 +20,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
-
-// ignore: must_be_immutable
 class SelectUserForGroup extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
   SelectUserForGroup({this.arguments});
 
@@ -44,7 +42,7 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
   String? previous = "";
   List<CustomerProfile> connectionList = [];
   List<CustomerProfile> selectedConnectionList = [];
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
 
   TextEditingController? searchUserController;
 
@@ -406,7 +404,7 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
           for (int i = 0; i < users.length; i++) {
             final List<SharedCartMemberModel> memberList =
                 sharedCartBloc.getSharedCartModel().members ?? [];
-            for (int j = 0; j < (memberList.length ?? 0); j++) {
+            for (int j = 0; j < (memberList.length); j++) {
               if (users[i].userName == memberList[j].userName) {
                 selectedConnectionList.add(users[i]);
               }
@@ -522,7 +520,7 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
       final List<SharedCartMemberModel> memberList =
           sharedCartBloc.getSharedCartModel().members ?? [];
       bool isExist = false;
-      for (int j = 0; j < (memberList.length ?? 0); j++) {
+      for (int j = 0; j < (memberList.length); j++) {
         if (selectedConnectionList[i].userName == memberList[j].userName) {
           isExist = true;
           break;

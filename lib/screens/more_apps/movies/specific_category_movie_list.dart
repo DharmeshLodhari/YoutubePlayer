@@ -5,13 +5,13 @@ import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-import 'models/MovieItem.dart';
+import 'models/movie_item.dart';
 
 class SpecificCategoryMovieList extends StatefulWidget {
   const SpecificCategoryMovieList({super.key});
 
   @override
-  _SpecificCategoryMovieListState createState() =>
+  State<SpecificCategoryMovieList> createState() =>
       _SpecificCategoryMovieListState();
 }
 

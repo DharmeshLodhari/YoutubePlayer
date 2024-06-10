@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 class CustomPagination extends StatelessWidget {
   const CustomPagination(
-      {required this.child, required this.onScrollEnd, Key? key})
-      : super(key: key);
+      {required this.child, required this.onScrollEnd, super.key})
+     ;
   final Widget child;
   final Function() onScrollEnd;
 

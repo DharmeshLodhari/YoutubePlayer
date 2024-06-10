@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 class OverlayYarnPhoto extends StatelessWidget {
   const OverlayYarnPhoto({
-    Key? key,
+    super.key,
     required this.title,
-  }) : super(key: key);
+  });
   final String title;
 
   @override

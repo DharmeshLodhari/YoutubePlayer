@@ -892,7 +892,7 @@ class _PaymentRequestListState extends State<PaymentRequestList>
 }
 
 class VerticalListItem extends StatefulWidget {
-  VerticalListItem(this.paymentRequest, {this.key}) : super(key: key);
+  VerticalListItem(this.paymentRequest, {this.key});
 
   final PaymentRequest paymentRequest;
   final Key? key;
