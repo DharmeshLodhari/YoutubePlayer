@@ -64,7 +64,7 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
     _musicDashboardBloc = Provider.of<MusicDashboardBloc>(context);
     return PopScope(
       onPopInvoked: (didPop) {
-        if(didPop) {
+        if (didPop) {
           _musicDashboardBloc.index = 0;
           return;
         }

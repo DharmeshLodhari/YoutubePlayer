@@ -1850,8 +1850,7 @@ class Service extends PurchasableItem {
     rating = formatRating(double.parse(object['rating']?.toString() ?? "0"));
     canRate = object["can_rate"] ?? false;
     // searchKeywords = object["search_keywords"] ?? <String>[];
-    searchKeywords =
-    object["search_keywords"] == null
+    searchKeywords = object["search_keywords"] == null
         ? <String>[]
         : List<String>.from(object["search_keywords"].map((x) => x));
     isChecked = object["is_checked"] ?? false;
