@@ -23,8 +23,7 @@ class ExploreSingleProduct extends StatefulWidget {
       {super.key,
       required this.product,
       this.giveRightPadding = false,
-      this.onProductRefresh})
-     ;
+      this.onProductRefresh});
 
   @override
   State<ExploreSingleProduct> createState() => _ExploreSingleProductState();
@@ -255,14 +254,14 @@ class _ExploreSingleProductState extends State<ExploreSingleProduct> {
                 );
               },
               child: Card(
-                color: greyBackground,
+                color: iconBtnGrey,
                 elevation: 0,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: Icon(
                   Icons.remove_rounded,
-                  size: 22,
+                  size: 20,
                   color: black,
                 ),
               ),
@@ -294,14 +293,14 @@ class _ExploreSingleProductState extends State<ExploreSingleProduct> {
                 }
               },
               child: Card(
-                color: greyBackground,
+                color: iconBtnGrey,
                 elevation: 0,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: Icon(
                   Icons.add_rounded,
-                  size: 22,
+                  size: 20,
                   color: black,
                 ),
               ),
@@ -411,14 +410,14 @@ class _ExploreSingleProductState extends State<ExploreSingleProduct> {
         addProductToCart();
       },
       child: Card(
-        color: greyBackground,
+        color: iconBtnGrey,
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(6),
         ),
         child: Icon(
           Icons.add_rounded,
-          size: 22,
+          size: 20,
           color: black,
         ),
       ),

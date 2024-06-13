@@ -29,8 +29,10 @@ import '../../../user_profile/models/user.dart';
 import '../../payment_and_banking_auth.dart';
 
 class PaymentRequestList extends StatefulWidget {
+  const PaymentRequestList({super.key});
+
   @override
-  _PaymentRequestListState createState() => _PaymentRequestListState();
+  State<PaymentRequestList> createState() => _PaymentRequestListState();
 }
 
 class _PaymentRequestListState extends State<PaymentRequestList>
@@ -41,7 +43,6 @@ class _PaymentRequestListState extends State<PaymentRequestList>
       GlobalKey<ScaffoldMessengerState>();
 
   final _auth = PaymentAndBankingAuth();
-  late final SlidableController _slideController = SlidableController(this);
   int? count = 0;
   String? next = "";
   String? previous = "";
@@ -72,7 +73,6 @@ class _PaymentRequestListState extends State<PaymentRequestList>
     // secureScreen();
     debugPrint('INIT STATE');
     getList();
-    super.initState();
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
               _scrollController.position.maxScrollExtent &&
@@ -248,84 +248,68 @@ class _PaymentRequestListState extends State<PaymentRequestList>
       ),
       actions: <Widget>[
         getSearchBtn(),
-        const SizedBox(width: 10.0),
+        const SizedBox(width: 8.0),
         dateFilterIcon(),
-        const SizedBox(width: 10.0),
+        const SizedBox(width: 8.0),
         popUpMenuButton(),
-        const SizedBox(width: 10.0),
+        const SizedBox(width: 8.0),
         paymentRequestBtn(),
-        const SizedBox(width: 16),
+        const SizedBox(width: 15),
       ],
     );
   }
 
   Widget getSearchBtn() {
-    return SizedBox(
+    return RoundedBackgroundIcon(
       height: 34,
       width: 34,
-      child: Card(
-        color: iconBtnGrey,
-        elevation: 0,
-        margin: const EdgeInsets.symmetric(vertical: 10),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: IconButton(
-          icon: const Icon(
-            Icons.search,
-            color: Colors.black,
-            size: 20,
-          ),
-          onPressed: () async {
-            final CustomerProfile? userFound = await NavigationUtil.push(
-              context,
-              screen: const SearchUser(),
-            );
-
-            if (userFound != null) {
-              userName = userFound.userName;
-              _refresh();
-            }
-          },
-        ),
+      enableMargin: false,
+      backgroundColor: iconBtnGrey,
+      icon: const Icon(
+        Icons.search,
+        color: Colors.black,
+        size: 20,
       ),
+      onTap: () async {
+        final CustomerProfile? userFound = await NavigationUtil.push(
+          context,
+          screen: const SearchUser(),
+        );
+
+        if (userFound != null) {
+          userName = userFound.userName;
+          _refresh();
+        }
+      },
     );
   }
 
   Widget dateFilterIcon() {
-    return SizedBox(
+    return RoundedBackgroundIcon(
       height: 34,
       width: 34,
-      child: Card(
-        color: iconBtnGrey,
-        elevation: 0,
-        margin: const EdgeInsets.symmetric(vertical: 10),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: IconButton(
-          icon: const Icon(
-            Icons.date_range_rounded,
-            color: Colors.black,
-            size: 20,
-          ),
-          onPressed: () async {
-            newDateTimeRange = await showDateRangePicker(
-              context: context,
-              firstDate: DateTime.parse("2020-01-01"),
-              lastDate: DateTime.now(),
-              builder: customThemeBuilder,
-            );
-
-            if (newDateTimeRange != null) {
-              setState(() {});
-              debugPrint('dateFilterIcon--->');
-
-              _onRefresh();
-            }
-          },
-        ),
+      enableMargin: false,
+      backgroundColor: iconBtnGrey,
+      icon: const Icon(
+        Icons.date_range_rounded,
+        color: Colors.black,
+        size: 20,
       ),
+      onTap: () async {
+        newDateTimeRange = await showDateRangePicker(
+          context: context,
+          firstDate: DateTime.parse("2020-01-01"),
+          lastDate: DateTime.now(),
+          builder: customThemeBuilder,
+        );
+
+        if (newDateTimeRange != null) {
+          setState(() {});
+          debugPrint('dateFilterIcon--->');
+
+          _onRefresh();
+        }
+      },
     );
   }
 
@@ -333,6 +317,8 @@ class _PaymentRequestListState extends State<PaymentRequestList>
     return RoundedBackgroundIcon(
       height: 34,
       width: 34,
+      enableMargin: false,
+      backgroundColor: iconBtnGrey,
       icon: Icon(
         SlydoAppIcon.add,
         size: 16,
@@ -352,16 +338,16 @@ class _PaymentRequestListState extends State<PaymentRequestList>
               message: AppLocalization.of(context)?.doNotPermission ?? "");
         }
       },
-      backgroundColor: iconBtnGrey,
-      enableMargin: true,
     );
   }
 
   Widget menuBtn() {
-    return SizedBox(
+    return RoundedBackgroundIcon(
       height: 34,
       width: 34,
-      child: Card(
+      enableMargin: false,
+      backgroundColor: iconBtnGrey,
+      icon: Card(
         color: lightGrey,
         elevation: 0,
         margin: const EdgeInsets.symmetric(vertical: 10),
@@ -374,32 +360,24 @@ class _PaymentRequestListState extends State<PaymentRequestList>
   }
 
   Widget popUpMenuButton() {
-    return SizedBox(
+    return RoundedBackgroundIcon(
       key: _key,
       height: 34,
       width: 34,
-      child: Card(
-        color: isPopMenuOpen ? navyBlue : iconBtnGrey,
-        elevation: 0,
-        margin: const EdgeInsets.symmetric(vertical: 10),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: IconButton(
-          icon: Icon(
-            Icons.filter_alt_rounded,
-            color: isPopMenuOpen ? Colors.white : Colors.black,
-            size: 20,
-          ),
-          onPressed: () {
-            if (menu.isMenuOpen) {
-              menu.closeMenu();
-            } else {
-              menu.openMenu();
-            }
-          },
-        ),
+      enableMargin: false,
+      backgroundColor: iconBtnGrey,
+      icon: Icon(
+        Icons.filter_alt_rounded,
+        color: isPopMenuOpen ? Colors.white : Colors.black,
+        size: 20,
       ),
+      onTap: () {
+        if (menu.isMenuOpen) {
+          menu.closeMenu();
+        } else {
+          menu.openMenu();
+        }
+      },
     );
   }
 
@@ -504,19 +482,22 @@ class _PaymentRequestListState extends State<PaymentRequestList>
                 ),
                 controller: _refreshController,
                 onRefresh: _onRefresh,
-                child: ListView.builder(
-                  padding: const EdgeInsets.symmetric(vertical: 4),
-                  //+1 for progressbar
-                  itemCount: requestPaymentList.length + 1,
-                  itemBuilder: (BuildContext context, int index) {
-                    if (index == requestPaymentList.length) {
-                      return buildJumpingLoadingIndicator(isLoading: isLoading);
-                    } else {
-                      return _getSlideLists(
-                          context, requestPaymentList[index], index);
-                    }
-                  },
-                  controller: _scrollController,
+                child: SlidableAutoCloseBehavior(
+                  closeWhenOpened: true,
+                  child: ListView.builder(
+                    padding: const EdgeInsets.all(4),
+                    //+1 for progressbar
+                    itemCount: requestPaymentList.length + 1,
+                    itemBuilder: (BuildContext context, int index) {
+                      if (index == requestPaymentList.length) {
+                        return buildJumpingLoadingIndicator(
+                            isLoading: isLoading);
+                      } else {
+                        return _getSlideLists(requestPaymentList[index], index);
+                      }
+                    },
+                    controller: _scrollController,
+                  ),
                 ),
               );
   }
@@ -570,17 +551,6 @@ class _PaymentRequestListState extends State<PaymentRequestList>
 
         if (mounted) setState(() {});
       } else if (next == null && requestPaymentList.length > 6) {
-        showReachedToBottomSnackBar();
-      }
-    }
-  }
-
-  void showReachedToBottomSnackBar() {
-    if (mounted) {
-      if (next == null &&
-          _scrollController.position.pixels ==
-              _scrollController.position.maxScrollExtent &&
-          _scrollController.position.pixels != 0) {
         _scaffoldMessengerPaymentListKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
@@ -614,26 +584,17 @@ class _PaymentRequestListState extends State<PaymentRequestList>
   }
 
   List<Widget> listSecondaryActions(PaymentRequest paymentRequest, int index) {
-    final PermissionType? hasPermission =
-        userBloc.user.hasWritePermission(ProtectionPermission.request);
-    if (hasPermission == PermissionType.WRITE) {
-      if (paymentRequest.isCredit!) {
-        return [
-          SlideActionButton(
-              backgroundColor: navyBlue,
-              icon: SlydoAppIcon.send,
-              onTap: () {
-                acceptPaymentRequestAlert(paymentRequest, index);
-              },
-              title: "Pay",
-              slideController: _slideController),
-        ];
-      } else {
-        return [];
-      }
-    } else {
-      return [];
-    }
+    return [
+      SlideActionButton(
+        borderRadius: BorderRadius.circular(5),
+        backgroundColor: navyBlue,
+        icon: SlydoAppIcon.send,
+        onPressed: (context) {
+          acceptPaymentRequestAlert(paymentRequest, index);
+        },
+        label: "Pay",
+      ),
+    ];
   }
 
   List<Widget> listActionSlideActions(
@@ -641,26 +602,21 @@ class _PaymentRequestListState extends State<PaymentRequestList>
     final String caption = paymentRequest.isCredit!
         ? AppLocalization.of(context)!.reject
         : AppLocalization.of(context)!.cancel;
-    final PermissionType? hasPermission =
-        userBloc.user.hasWritePermission(ProtectionPermission.request);
-    if (hasPermission == PermissionType.WRITE) {
-      return [
-        SlideActionButton(
-            backgroundColor: mateRed,
-            icon: SlydoAppIcon.remove,
-            onTap: () {
-              if (paymentRequest.isCredit!) {
-                rejectPaymentRequestAlert(paymentRequest, index);
-              } else {
-                cancelPaymentRequestAlert(paymentRequest, index);
-              }
-            },
-            title: caption,
-            slideController: _slideController),
-      ];
-    } else {
-      return [];
-    }
+    return [
+      SlideActionButton(
+        borderRadius: BorderRadius.circular(5),
+        backgroundColor: mateRed,
+        icon: SlydoAppIcon.remove,
+        onPressed: (context) {
+          if (paymentRequest.isCredit!) {
+            rejectPaymentRequestAlert(paymentRequest, index);
+          } else {
+            cancelPaymentRequestAlert(paymentRequest, index);
+          }
+        },
+        label: caption,
+      ),
+    ];
   }
 
   Future<bool> checkAccountBalance(PaymentRequest paymentRequest) async {
@@ -855,27 +811,29 @@ class _PaymentRequestListState extends State<PaymentRequestList>
     }
   }
 
-  Widget _getSlideLists(
-      BuildContext context, PaymentRequest paymentRequest, int index) {
+  Widget _getSlideLists(PaymentRequest paymentRequest, int index) {
     String date;
     if (paymentRequest.createdAt == null) {
       date = ' - ';
     } else {
       date = paymentRequest.createdAt!;
     }
+    final PermissionType? hasPermission =
+        userBloc.user.hasWritePermission(ProtectionPermission.request);
 
     return Slidable(
       key: Key("PaymentRequest:${paymentRequest.id! + date}"),
-      controller: _slideController,
-      direction: Axis.horizontal,
       startActionPane: ActionPane(
         motion: const BehindMotion(),
-        extentRatio: 0.25,
+        extentRatio: hasPermission == PermissionType.WRITE ? 0.25 : 0.0001,
         children: listActionSlideActions(paymentRequest, index),
       ),
       endActionPane: ActionPane(
         motion: const BehindMotion(),
-        extentRatio: 0.25,
+        extentRatio:
+            hasPermission == PermissionType.WRITE && paymentRequest.isCredit!
+                ? 0.25
+                : 0.0001,
         children: listSecondaryActions(paymentRequest, index),
       ),
       child: VerticalListItem(paymentRequest),

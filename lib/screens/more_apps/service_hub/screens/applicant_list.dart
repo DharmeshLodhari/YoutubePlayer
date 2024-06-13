@@ -26,7 +26,6 @@ class ApplicantList extends StatefulWidget {
 
 class _ApplicantListState extends State<ApplicantList>
     with SingleTickerProviderStateMixin {
-  late final SlidableController _slideController = SlidableController(this);
   JobApplicantModel? applicants;
 
   bool isLoading = false;
@@ -179,13 +178,17 @@ class _ApplicantListState extends State<ApplicantList>
   Flexible getAppicantListView() {
     return Flexible(
       fit: FlexFit.loose,
-      child: ListView.builder(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        itemCount: applicantList.length,
-        itemBuilder: (context, index) {
-          return _getSlidableWithLists(context, index);
-        },
+      child: SlidableAutoCloseBehavior(
+        closeWhenOpened: true,
+        child: ListView.builder(
+          padding: const EdgeInsets.all(4),
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: applicantList.length,
+          itemBuilder: (context, index) {
+            return _getSlidableWithLists(context, index);
+          },
+        ),
       ),
     );
   }
@@ -316,13 +319,13 @@ class _ApplicantListState extends State<ApplicantList>
   List<Widget> listActionSlideActions(int index) {
     return [
       SlideActionButton(
+        borderRadius: BorderRadius.circular(5),
         backgroundColor: mateRed,
         icon: SlydoAppIcon.close_2,
-        onTap: () {
+        onPressed: (context) {
           rejectApplicantAlert(index);
         },
-        title: "Reject",
-        slideController: _slideController,
+        label: "Reject",
       ),
     ];
   }
@@ -330,21 +333,19 @@ class _ApplicantListState extends State<ApplicantList>
   List<Widget> listSecondaryActions(int index) {
     return [
       SlideActionButton(
+        borderRadius: BorderRadius.circular(5),
         backgroundColor: const Color(0xff46ce7c),
         icon: Icons.person_add,
-        onTap: () {
+        onPressed: (context) {
           acceptApplicantAlert(index);
         },
-        title: AppLocalization.of(context)!.accept,
-        slideController: _slideController,
+        label: AppLocalization.of(context)!.accept,
       ),
     ];
   }
 
   Widget _getSlidableWithLists(BuildContext context, int index) {
     return Slidable(
-      controller: _slideController,
-      direction: Axis.horizontal,
       enabled: widget.job!.assignee == null,
       startActionPane: ActionPane(
         motion: const BehindMotion(),

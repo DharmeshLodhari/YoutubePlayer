@@ -15,7 +15,7 @@ class LoadingIndicator extends StatelessWidget {
             margin: const EdgeInsets.all(5),
             child: const LinearProgressIndicator(
               // strokeWidth: 2.0,
-              valueColor: AlwaysStoppedAnimation(Colors.white),
+              valueColor: AlwaysStoppedAnimation(Colors.indigo),
             ),
           ),
         ),

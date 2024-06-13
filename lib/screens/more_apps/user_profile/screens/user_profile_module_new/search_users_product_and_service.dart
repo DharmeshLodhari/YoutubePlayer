@@ -49,9 +49,6 @@ class _SearchUsersProductAndServiceState
   late UserBloc userBloc;
   static String filterValue = "Products";
 
-  late final SlidableController slidableController1 = SlidableController(this);
-  late final SlidableController slidableController2 = SlidableController(this);
-
   List<Widget> results = [];
 
   GlobalKey textFormField = GlobalKey();
@@ -1562,20 +1559,23 @@ class _SearchUsersProductAndServiceState
           )
         : isLoading && results.isEmpty
             ? buildLoadingIndicator(isLoading: isLoading)
-            : ListView.builder(
-                padding: EdgeInsets.zero,
-                shrinkWrap: true,
-                //+1 for progressbar
-                itemCount: results.length + 1,
-                // ignore: missing_return
-                itemBuilder: (BuildContext context, int index) {
-                  if (index == results.length) {
-                    return buildJumpingLoadingIndicator(isLoading: isLoading);
-                  } else {
-                    return results[index];
-                  }
-                },
-                controller: _scrollController,
+            : SlidableAutoCloseBehavior(
+                closeWhenOpened: true,
+                child: ListView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  shrinkWrap: true,
+                  //+1 for progressbar
+                  itemCount: results.length + 1,
+                  // ignore: missing_return
+                  itemBuilder: (BuildContext context, int index) {
+                    if (index == results.length) {
+                      return buildJumpingLoadingIndicator(isLoading: isLoading);
+                    } else {
+                      return results[index];
+                    }
+                  },
+                  controller: _scrollController,
+                ),
               );
   }
 
@@ -1941,16 +1941,14 @@ class _SearchUsersProductAndServiceState
   Widget _getSlidableWithLists1(
       BuildContext context, Widget searchCard, Product product) {
     return Slidable(
-      controller: slidableController1,
-      direction: Axis.horizontal,
       startActionPane: ActionPane(
         motion: const BehindMotion(),
-        extentRatio: 0.25,
+        extentRatio: product.seller == userBloc.user.userName ? 0.0001 : 0.25,
         children: listActionSlideActions1(product),
       ),
       endActionPane: ActionPane(
         motion: const BehindMotion(),
-        extentRatio: 0.25,
+        extentRatio: product.seller == userBloc.user.userName ? 0.0001 : 0.25,
         children: listSecondaryActions1(product),
       ),
       child: VerticalListItem1(searchCard, product),
@@ -1958,13 +1956,11 @@ class _SearchUsersProductAndServiceState
   }
 
   List<Widget> listSecondaryActions1(Product product) {
-    if (product.seller == userBloc.user.userName) {
-      return [];
-    }
     return [
       SlideActionButton(
+        borderRadius: BorderRadius.circular(5),
         icon: SlydoAppIcon.cart,
-        onTap: () async {
+        onPressed: (context) async {
           final CustomerProfileBloc customerProfileBloc =
               Provider.of<CustomerProfileBloc>(context, listen: false);
 
@@ -1973,30 +1969,25 @@ class _SearchUsersProductAndServiceState
           Navigator.of(context).pushNamed('/send-payment',
               arguments: {'isFromProfile': false, 'product': product});
         },
-        title: AppLocalization.of(context)!.buy,
+        label: AppLocalization.of(context)!.buy,
         backgroundColor: naturalGreen,
-        slideController: slidableController1,
       ),
     ];
   }
 
   List<Widget> listActionSlideActions1(Product product) {
-    if (product.seller == userBloc.user.userName) {
-      return [];
-    }
-
     return [
       SlideActionButton(
+        borderRadius: BorderRadius.circular(5),
         icon: SlydoAppIcon.text_message,
-        onTap: () async {
+        onPressed: (context) async {
           Navigator.of(context).pushNamed('/compose_message', arguments: {
             'recipient': product.seller,
             'subject': product.name,
           });
         },
-        title: "Message",
+        label: "Message",
         backgroundColor: navyBlue,
-        slideController: slidableController1,
       ),
     ];
   }
@@ -2004,16 +1995,14 @@ class _SearchUsersProductAndServiceState
   Widget _getSlidableWithLists2(
       BuildContext context, Widget searchCard, Service service) {
     return Slidable(
-      controller: slidableController2,
-      direction: Axis.horizontal,
       startActionPane: ActionPane(
         motion: const BehindMotion(),
-        extentRatio: 0.25,
+        extentRatio: service.provider == userBloc.user.userName ? 0.0001 : 0.25,
         children: listActionSlideActions2(service),
       ),
       endActionPane: ActionPane(
         motion: const BehindMotion(),
-        extentRatio: 0.25,
+        extentRatio: service.provider == userBloc.user.userName ? 0.0001 : 0.25,
         children: listSecondaryActions2(service),
       ),
       child: VerticalListItem2(searchCard, service),
@@ -2021,16 +2010,13 @@ class _SearchUsersProductAndServiceState
   }
 
   List<Widget> listSecondaryActions2(Service service) {
-    if (service.provider == userBloc.user.userName) {
-      return [];
-    }
     return [
       SlideActionButton(
-          title: AppLocalization.of(context)!.pay,
+          borderRadius: BorderRadius.circular(5),
+          label: AppLocalization.of(context)!.pay,
           backgroundColor: naturalGreen,
-          slideController: slidableController2,
           icon: SlydoAppIcon.cart,
-          onTap: () async {
+          onPressed: (context) async {
             final CustomerProfileBloc customerProfileBloc =
                 Provider.of<CustomerProfileBloc>(context, listen: false);
             customerProfileBloc.customer =
@@ -2042,16 +2028,13 @@ class _SearchUsersProductAndServiceState
   }
 
   List<Widget> listActionSlideActions2(Service service) {
-    if (service.provider == userBloc.user.userName) {
-      return [];
-    }
     return [
       SlideActionButton(
-        title: AppLocalization.of(context)!.message,
+        borderRadius: BorderRadius.circular(5),
+        label: AppLocalization.of(context)!.message,
         backgroundColor: navyBlue,
-        slideController: slidableController2,
         icon: SlydoAppIcon.text_message,
-        onTap: () async {
+        onPressed: (context) async {
           Navigator.of(context).pushNamed('/compose_message', arguments: {
             'recipient': service.provider,
             'subject': service.name,

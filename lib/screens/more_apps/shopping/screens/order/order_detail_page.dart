@@ -52,8 +52,6 @@ class _OrderDetailPageState extends State<OrderDetailPage>
   late BasketBloc basketBloc;
   late UserBloc userBloc;
 
-  late final SlidableController _slideController = SlidableController(this);
-
   String note = "";
 
   Order? order;
@@ -542,7 +540,8 @@ class _OrderDetailPageState extends State<OrderDetailPage>
               ),
               ListView.builder(
                 shrinkWrap: true,
-                padding: const EdgeInsets.symmetric(vertical: 10),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
                 itemCount: items.length,
                 itemBuilder: (BuildContext context, int index) =>
                     getItemTile(index),
@@ -1196,13 +1195,6 @@ class _OrderDetailPageState extends State<OrderDetailPage>
   Widget _getSlidableWithLists(
       BuildContext context, Widget itemTile, var item, int index) {
     return Slidable(
-      controller: _slideController,
-      direction: Axis.horizontal,
-      startActionPane: ActionPane(
-        motion: const BehindMotion(),
-        extentRatio: 0.25,
-        children: listActionSlideActions(index),
-      ),
       endActionPane: ActionPane(
         motion: const BehindMotion(),
         extentRatio: 0.25,
@@ -1224,17 +1216,18 @@ class _OrderDetailPageState extends State<OrderDetailPage>
 
     return [
       SlideActionButton(
-          backgroundColor: isValid ? naturalGreen : Colors.grey[600],
-          icon: SlydoAppIcon.text_message,
-          onTap: isValid
-              ? () {
-                  navigateToComposeMessage(conditionForUser, index);
-                }
-              : () {
-                  showToast(message: "You can not send message to yourself!!");
-                },
-          title: AppLocalization.of(context)!.message,
-          slideController: _slideController),
+        borderRadius: BorderRadius.circular(5),
+        backgroundColor: isValid ? naturalGreen : Colors.grey[600],
+        icon: SlydoAppIcon.text_message,
+        onPressed: isValid
+            ? (context) {
+                navigateToComposeMessage(conditionForUser, index);
+              }
+            : (context) {
+                showToast(message: "You can not send message to yourself!!");
+              },
+        label: AppLocalization.of(context)!.message,
+      ),
     ];
   }
 
@@ -1251,10 +1244,6 @@ class _OrderDetailPageState extends State<OrderDetailPage>
   //       message:
   //           AppLocalization.of(context)!.itemIsRemovedSuccessfullyFromCart);
   // }
-
-  List<Widget> listActionSlideActions(int index) {
-    return [];
-  }
 
   void navigateToComposeMessage(var conditionForUser, int index) async {
     Navigator.of(context).pushNamed('/compose_message', arguments: {

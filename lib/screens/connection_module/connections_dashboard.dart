@@ -209,7 +209,7 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
                           badgeStyle: badges.BadgeStyle(
                             shape: badges.BadgeShape.circle,
                             badgeColor: naturalGreen,
-                            padding: const EdgeInsets.all(2),
+                            padding: const EdgeInsets.all(1),
                           ),
                         ),
                       ),

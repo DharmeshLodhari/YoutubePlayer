@@ -13,8 +13,7 @@ import '../user_auth.dart';
 class CustomizeProfileScreen extends StatefulWidget {
   final dynamic arguments;
 
-  CustomizeProfileScreen({required this.arguments, super.key})
-     ;
+  CustomizeProfileScreen({required this.arguments, super.key});
 
   @override
   CustomizeProfileScreenState createState() => CustomizeProfileScreenState();
@@ -206,14 +205,18 @@ class CustomizeProfileScreenState extends State<CustomizeProfileScreen> {
             softWrap: false,
           ),
           trailing: SizedBox(
-            width: 80,
-            child: Switch(
-              value:
-                  switchValue, // Set the Switch value based on the boolean parameter
-              onChanged: onTapCallback, // Use the passed onTap function
-              activeTrackColor: navyBlueLight,
-              activeColor: navyBlue,
-              inactiveTrackColor: darkGrey,
+            width: 50,
+            height: 40,
+            child: FittedBox(
+              fit: BoxFit.fill,
+              child: Switch(
+                value:
+                    switchValue, // Set the Switch value based on the boolean parameter
+                onChanged: onTapCallback, // Use the passed onTap function
+                activeTrackColor: navyBlueLight,
+                activeColor: navyBlue,
+                inactiveTrackColor: navyBlueLight,
+              ),
             ),
           ),
           onTap: () {

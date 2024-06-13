@@ -35,7 +35,6 @@ class _SlydoTransactionListState extends State<SlydoTransactionList>
 
   // Get list of users transactions
   final _auth = PaymentAndBankingAuth();
-  late final SlidableController _slideController = SlidableController(this);
   int? count = 0;
   String? next = "";
   String? previous = "";
@@ -248,19 +247,23 @@ class _SlydoTransactionListState extends State<SlydoTransactionList>
                 ),
                 controller: _refreshController,
                 onRefresh: _onRefresh,
-                child: ListView.builder(
-                  padding: const EdgeInsets.symmetric(vertical: 4),
-                  //+1 for progressbar
-                  itemCount: transactionList.length + 1,
-                  itemBuilder: (BuildContext context, int index) {
-                    if (index == transactionList.length) {
-                      return buildJumpingLoadingIndicator(isLoading: isLoading);
-                    } else {
-                      return _getSlidableWithLists(
-                          context, transactionList[index], index);
-                    }
-                  },
-                  controller: _scrollController,
+                child: SlidableAutoCloseBehavior(
+                  closeWhenOpened: true,
+                  child: ListView.builder(
+                    padding: const EdgeInsets.all(4),
+                    //+1 for progressbar
+                    itemCount: transactionList.length + 1,
+                    itemBuilder: (BuildContext context, int index) {
+                      if (index == transactionList.length) {
+                        return buildJumpingLoadingIndicator(
+                            isLoading: isLoading);
+                      } else {
+                        return _getSlidableWithLists(
+                            context, transactionList[index], index);
+                      }
+                    },
+                    controller: _scrollController,
+                  ),
                 ),
               );
   }
@@ -337,8 +340,6 @@ class _SlydoTransactionListState extends State<SlydoTransactionList>
   }
 
   List<Widget> listSecondaryActions(Transaction transaction) {
-    final PermissionType? hasPermission =
-        userBloc.user.hasWritePermission(ProtectionPermission.transaction);
     if (transaction.payee! == "slydo_envelope" ||
         transaction.payee! == "slydo" ||
         transaction.displayCustomer == "slydo" ||
@@ -346,34 +347,29 @@ class _SlydoTransactionListState extends State<SlydoTransactionList>
       return [];
     }
     if (transaction.isAnonymous!) return [];
-    if (hasPermission == PermissionType.WRITE) {
-      return [
-        SlideActionButton(
-            backgroundColor: naturalGreen,
-            icon: SlydoAppIcon.send,
-            onTap: () async {
-              if (appConfigurationModel?.enablePayment == true) {
-                customerProfileBloc.customer =
-                    await UserAuth().fetchCustomerProfile(transaction.payee);
-                Navigator.of(context)
-                    .pushNamed(Routes.SEND_PAYMENT, arguments: <String, bool>{
-                  'isFromProfile': false,
-                });
-              } else {
-                showToast(message: 'Payment not available at the moment');
-              }
-            },
-            title: AppLocalization.of(context)!.send,
-            slideController: _slideController),
-      ];
-    } else {
-      return [];
-    }
+    return [
+      SlideActionButton(
+        borderRadius: BorderRadius.circular(5),
+        backgroundColor: naturalGreen,
+        icon: SlydoAppIcon.send,
+        onPressed: (context) async {
+          if (appConfigurationModel?.enablePayment == true) {
+            customerProfileBloc.customer =
+                await UserAuth().fetchCustomerProfile(transaction.payee);
+            Navigator.of(context)
+                .pushNamed(Routes.SEND_PAYMENT, arguments: <String, bool>{
+              'isFromProfile': false,
+            });
+          } else {
+            showToast(message: 'Payment not available at the moment');
+          }
+        },
+        label: AppLocalization.of(context)!.send,
+      ),
+    ];
   }
 
   List<Widget> listActionSlideActions(Transaction transaction) {
-    final PermissionType? hasPermission =
-        userBloc.user.hasWritePermission(ProtectionPermission.transaction);
     if (transaction.payee! == "slydo_envelope" ||
         transaction.payee! == "slydo" ||
         transaction.displayCustomer == "slydo" ||
@@ -382,48 +378,45 @@ class _SlydoTransactionListState extends State<SlydoTransactionList>
     }
     if (transaction.isAnonymous!) return [];
 
-    if (hasPermission == PermissionType.WRITE) {
-      return [
-        SlideActionButton(
-            backgroundColor: navyBlue,
-            icon: SlydoAppIcon.receive,
-            onTap: () async {
-              if (appConfigurationModel?.enablePayment == true) {
-                customerProfileBloc.customer =
-                    await UserAuth().fetchCustomerProfile(transaction.payee);
-                Navigator.of(context).pushNamed(
-                  Routes.REQUEST_PAYMENT,
-                  arguments: <String, bool>{
-                    'isFromProfile': false,
-                    'isRequest': true
-                  },
-                );
-              } else {
-                showToast(message: 'Payment is not currently available');
-              }
-            },
-            title: AppLocalization.of(context)!.request,
-            slideController: _slideController),
-      ];
-    } else {
-      return [];
-    }
+    return [
+      SlideActionButton(
+        borderRadius: BorderRadius.circular(5),
+        backgroundColor: navyBlue,
+        icon: SlydoAppIcon.receive,
+        onPressed: (context) async {
+          if (appConfigurationModel?.enablePayment == true) {
+            customerProfileBloc.customer =
+                await UserAuth().fetchCustomerProfile(transaction.payee);
+            Navigator.of(context).pushNamed(
+              Routes.REQUEST_PAYMENT,
+              arguments: <String, bool>{
+                'isFromProfile': false,
+                'isRequest': true
+              },
+            );
+          } else {
+            showToast(message: 'Payment is not currently available');
+          }
+        },
+        label: AppLocalization.of(context)!.request,
+      ),
+    ];
   }
 
   Widget _getSlidableWithLists(
       BuildContext context, Transaction transaction, int index) {
+    final PermissionType? hasPermission =
+        userBloc.user.hasWritePermission(ProtectionPermission.transaction);
     return Slidable(
       key: Key(transaction.payee!),
-      controller: _slideController,
-      direction: Axis.horizontal,
       startActionPane: ActionPane(
         motion: const BehindMotion(),
-        extentRatio: 0.25,
+        extentRatio: hasPermission == PermissionType.WRITE ? 0.25 : 0.0001,
         children: listActionSlideActions(transaction),
       ),
       endActionPane: ActionPane(
         motion: const BehindMotion(),
-        extentRatio: 0.25,
+        extentRatio: hasPermission == PermissionType.WRITE ? 0.25 : 0.0001,
         children: listSecondaryActions(transaction),
       ),
       child: VerticalListItem(

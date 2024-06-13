@@ -8,7 +8,6 @@ import 'package:Slydo/screens/more_apps/yarn/models/share_as_yarn_model.dart';
 import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_category_selection.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_notification_screen.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_new_icons.dart';
@@ -154,14 +153,14 @@ class _YarnDashboardState extends State<YarnDashboard> {
               screen: SearchScreen(),
             );
           },
-          height: 20,
-          width: 20,
+          height: 18,
+          width: 18,
           icon: SvgPicture.asset(
             "yarn/search".toSVG(),
             height: 12,
             width: 12,
           )),
-      const SizedBox(width: 20),
+      const SizedBox(width: 15),
       RoundedBackgroundIcon(
         height: 34,
         width: 34,
@@ -191,8 +190,8 @@ class _YarnDashboardState extends State<YarnDashboard> {
             child: Center(
               child: SvgPicture.asset(
                 "yarn/notification".toSVG(),
-                height: 16,
-                width: 16,
+                height: 20,
+                width: 20,
                 color: HexColor("#151515"),
               ),
             )),
@@ -204,10 +203,10 @@ class _YarnDashboardState extends State<YarnDashboard> {
             }),
           );
         },
-        backgroundColor: lightGrey.withOpacity(0.1),
+        backgroundColor: transparent,
         enableMargin: true,
       ),
-      const SizedBox(width: 20),
+      const SizedBox(width: 15),
       RoundedBackgroundIcon(
           backgroundColor: Colors.transparent,
           onTap: () {
@@ -216,14 +215,14 @@ class _YarnDashboardState extends State<YarnDashboard> {
               screen: YarnSettingsScreen(),
             );
           },
-          height: 20,
-          width: 20,
+          height: 18,
+          width: 18,
           icon: SvgPicture.asset(
             "yarn/setting".toSVG(),
             height: 12,
             width: 12,
           )),
-      const SizedBox(width: 30),
+      const SizedBox(width: 20),
     ];
   }
 

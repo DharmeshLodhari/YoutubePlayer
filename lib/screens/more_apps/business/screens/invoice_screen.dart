@@ -39,7 +39,6 @@ class _InvoiceScreenState extends State<InvoiceScreen>
       RefreshController(initialRefresh: false);
   final GlobalKey _key = LabeledGlobalKey("myInvoiceList");
 
-  late final SlidableController _slideController = SlidableController(this);
   final ScrollController _scrollController = ScrollController();
   AppConfigurationModel? appConfigurationModel;
 
@@ -311,71 +310,76 @@ class _InvoiceScreenState extends State<InvoiceScreen>
   Widget invoiceListWidget(InvoiceBloc invoiceBloc) {
     return invoiceBloc.isLoading && invoiceBloc.invoiceList.isEmpty
         ? buildLoadingIndicator(isLoading: invoiceBloc.isLoading)
-        : ListView.builder(
-            padding: const EdgeInsets.symmetric(vertical: 4),
-            itemCount: invoiceBloc.invoiceList.length + 1,
-            itemBuilder: (BuildContext context, int index) {
-              if (index == invoiceBloc.invoiceList.length) {
-                return buildJumpingLoadingIndicator(
-                    isLoading: invoiceBloc.isLoading);
-              } else {
-                final InvoiceModel invoice = invoiceBloc.invoiceList[index];
+        : SlidableAutoCloseBehavior(
+            closeWhenOpened: true,
+            child: ListView.builder(
+              padding: const EdgeInsets.all(4),
+              itemCount: invoiceBloc.invoiceList.length + 1,
+              itemBuilder: (BuildContext context, int index) {
+                if (index == invoiceBloc.invoiceList.length) {
+                  return buildJumpingLoadingIndicator(
+                      isLoading: invoiceBloc.isLoading);
+                } else {
+                  final InvoiceModel invoice = invoiceBloc.invoiceList[index];
 
-                final bool canDeleteInvoice =
-                    invoice.fromCustomer == userBloc.user.userName &&
-                        invoice.status == "Draft";
+                  final bool canDeleteInvoice =
+                      invoice.fromCustomer == userBloc.user.userName &&
+                          invoice.status == "Draft";
 
-                final bool canPay =
-                    invoice.fromCustomer != userBloc.user.userName &&
-                        invoice.status == "Unpaid";
+                  final bool canPay =
+                      invoice.fromCustomer != userBloc.user.userName &&
+                          invoice.status == "Unpaid";
 
-                return Slidable(
-                  controller: _slideController,
-                  direction: Axis.horizontal,
-                  startActionPane: canDeleteInvoice
-                      ? ActionPane(
-                          motion: const BehindMotion(),
-                          extentRatio: 0.25,
-                          children: [
-                              SlideActionButton(
+                  return Slidable(
+                    startActionPane: canDeleteInvoice
+                        ? ActionPane(
+                            motion: const BehindMotion(),
+                            extentRatio: 0.25,
+                            children: [
+                                SlideActionButton(
+                                  borderRadius: BorderRadius.circular(5),
                                   backgroundColor: mateRed,
                                   icon: Icons.delete,
-                                  onTap: () => deleteInvoice(invoice),
-                                  title: 'Delete',
-                                  slideController: _slideController),
-                            ])
-                      : null,
-                  endActionPane: invoice.status != "Paid" && invoice.amount! > 0
-                      ? ActionPane(
-                          motion: const BehindMotion(),
-                          extentRatio: 0.25,
-                          children: [
-                              SlideActionButton(
+                                  onPressed: (context) =>
+                                      deleteInvoice(invoice),
+                                  label: 'Delete',
+                                ),
+                              ])
+                        : null,
+                    endActionPane: invoice.status != "Paid" &&
+                            invoice.amount! > 0
+                        ? ActionPane(
+                            motion: const BehindMotion(),
+                            extentRatio: 0.25,
+                            children: [
+                                SlideActionButton(
+                                  borderRadius: BorderRadius.circular(5),
                                   backgroundColor: getBgColor(invoice),
                                   icon: getIcon(invoice),
-                                  onTap: () => canPay
+                                  onPressed: (context) => canPay
                                       ? _payInvoice(invoice)
                                       : updateInvoiceStatus(
                                           invoice, getUpdateAction(invoice)),
-                                  title: canPay
+                                  label: canPay
                                       ? 'Pay'
                                       : getSlidableTitle(invoice),
-                                  slideController: _slideController)
-                            ])
-                      : null,
-                  child: InvoiceTile(
-                    invoice: invoice,
-                    onTap: () {
-                      Navigator.of(context).pushNamed(
-                        Routes.INVOICE_DETAIL,
-                        arguments: {"id": invoice.id},
-                      );
-                    },
-                  ),
-                );
-              }
-            },
-            controller: _scrollController,
+                                )
+                              ])
+                        : null,
+                    child: InvoiceTile(
+                      invoice: invoice,
+                      onTap: () {
+                        Navigator.of(context).pushNamed(
+                          Routes.INVOICE_DETAIL,
+                          arguments: {"id": invoice.id},
+                        );
+                      },
+                    ),
+                  );
+                }
+              },
+              controller: _scrollController,
+            ),
           );
   }
 

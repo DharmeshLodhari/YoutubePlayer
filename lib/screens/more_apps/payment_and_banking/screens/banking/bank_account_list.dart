@@ -43,8 +43,6 @@ class _BankAccountListState extends State<BankAccountList>
   bool isLoading = false;
   bool noItemInList = false;
 
-  late final SlidableController _slideController = SlidableController(this);
-
   @override
   void initState() {
     // secureScreen();
@@ -167,23 +165,27 @@ class _BankAccountListState extends State<BankAccountList>
           )
         : isLoading && bankAccountList.isEmpty
             ? buildLoadingIndicator(isLoading: isLoading)
-            : ListView.builder(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                //+1 for progressbar
-                itemCount: bankAccountList.length + 1,
-                itemBuilder: (BuildContext context, int index) {
-                  if (index == bankAccountList.length) {
-                    return buildJumpingLoadingIndicator(isLoading: isLoading);
-                  } else {
-                    return _getSlidableWithLists(
-                        context,
-                        bankAccountTile(
-                          account: bankAccountList[index],
-                        ),
-                        bankAccountList[index]);
-                  }
-                },
-                controller: _scrollController,
+            : SlidableAutoCloseBehavior(
+                closeWhenOpened: true,
+                child: ListView.builder(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 16, horizontal: 4),
+                  //+1 for progressbar
+                  itemCount: bankAccountList.length + 1,
+                  itemBuilder: (BuildContext context, int index) {
+                    if (index == bankAccountList.length) {
+                      return buildJumpingLoadingIndicator(isLoading: isLoading);
+                    } else {
+                      return _getSlidableWithLists(
+                          context,
+                          bankAccountTile(
+                            account: bankAccountList[index],
+                          ),
+                          bankAccountList[index]);
+                    }
+                  },
+                  controller: _scrollController,
+                ),
               );
   }
 
@@ -351,8 +353,6 @@ class _BankAccountListState extends State<BankAccountList>
   Widget _getSlidableWithLists(
       BuildContext context, Widget bankAccountTile, BankAccount account) {
     return Slidable(
-      controller: _slideController,
-      direction: Axis.horizontal,
       startActionPane: ActionPane(
         motion: const BehindMotion(),
         extentRatio: 0.25,
@@ -370,34 +370,36 @@ class _BankAccountListState extends State<BankAccountList>
   List<Widget> listSecondaryActions({required BankAccount account}) {
     return [
       SlideActionButton(
-          backgroundColor: naturalGreen,
-          icon: Icons.device_hub,
-          onTap: account.isDefault!
-              ? () {
-                  showToast(
-                      message: AppLocalization.of(context)!
-                          .thisAccountIsAlreadyDefaultAccount);
-                }
-              : () {
-                  updateBankAccount(account);
-                },
-          title: account.isDefault!
-              ? AppLocalization.of(context)!.defaultMsg
-              : AppLocalization.of(context)!.makeDefault,
-          slideController: _slideController),
+        borderRadius: BorderRadius.circular(5),
+        backgroundColor: naturalGreen,
+        icon: Icons.device_hub,
+        onPressed: account.isDefault!
+            ? (context) {
+                showToast(
+                    message: AppLocalization.of(context)!
+                        .thisAccountIsAlreadyDefaultAccount);
+              }
+            : (context) {
+                updateBankAccount(account);
+              },
+        label: account.isDefault!
+            ? AppLocalization.of(context)!.defaultMsg
+            : AppLocalization.of(context)!.makeDefault,
+      ),
     ];
   }
 
   List<Widget> listActionSlideActions({BankAccount? account}) {
     return [
       SlideActionButton(
-          backgroundColor: mateRed,
-          icon: SlydoAppIcon.remove,
-          onTap: () {
-            deleteBankAccount(account);
-          },
-          title: AppLocalization.of(context)!.delete,
-          slideController: _slideController),
+        borderRadius: BorderRadius.circular(5),
+        backgroundColor: mateRed,
+        icon: SlydoAppIcon.remove,
+        onPressed: (context) {
+          deleteBankAccount(account);
+        },
+        label: AppLocalization.of(context)!.delete,
+      ),
     ];
   }
 

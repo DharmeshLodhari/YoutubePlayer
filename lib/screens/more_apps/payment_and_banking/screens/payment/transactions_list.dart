@@ -189,83 +189,67 @@ class _TransactionListState extends State<TransactionList> {
       ),
       actions: <Widget>[
         getSearchBtn(),
-        const SizedBox(width: 10.0),
+        const SizedBox(width: 8.0),
         openGraphBtn(),
-        const SizedBox(width: 10.0),
+        const SizedBox(width: 8.0),
         dateFilterIcon(),
-        const SizedBox(width: 10.0),
+        const SizedBox(width: 8.0),
         popUpMenuButton(),
         const SizedBox(
-          width: 16,
+          width: 15,
         ),
       ],
     );
   }
 
   Widget getSearchBtn() {
-    return SizedBox(
+    return RoundedBackgroundIcon(
       height: 34,
       width: 34,
-      child: Card(
-        color: iconBtnGrey,
-        elevation: 0,
-        margin: const EdgeInsets.symmetric(vertical: 10),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: IconButton(
-          icon: const Icon(
-            Icons.search,
-            color: Colors.black,
-            size: 20,
-          ),
-          onPressed: () async {
-            final CustomerProfile? userFound = await NavigationUtil.push(
-              context,
-              screen: const SearchUser(),
-            );
-
-            if (userFound != null) {
-              userName = userFound.userName;
-            }
-          },
-        ),
+      enableMargin: false,
+      backgroundColor: iconBtnGrey,
+      icon: const Icon(
+        Icons.search,
+        color: Colors.black,
+        size: 20,
       ),
+      onTap: () async {
+        final CustomerProfile? userFound = await NavigationUtil.push(
+          context,
+          screen: const SearchUser(),
+        );
+
+        if (userFound != null) {
+          userName = userFound.userName;
+        }
+      },
     );
   }
 
   Widget dateFilterIcon() {
-    return SizedBox(
+    return RoundedBackgroundIcon(
       height: 34,
       width: 34,
-      child: Card(
-        color: iconBtnGrey,
-        elevation: 0,
-        margin: const EdgeInsets.symmetric(vertical: 10),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: IconButton(
-          icon: const Icon(
-            Icons.date_range_rounded,
-            color: Colors.black,
-            size: 20,
-          ),
-          onPressed: () async {
-            newDateTimeRange = await showDateRangePicker(
-              context: context,
-              firstDate: DateTime.parse("2020-01-01"),
-              lastDate: DateTime.now(),
-              builder: customThemeBuilder,
-            );
-
-            if (newDateTimeRange != null) {
-              setState(() {});
-              // _onRefresh();
-            }
-          },
-        ),
+      enableMargin: false,
+      backgroundColor: iconBtnGrey,
+      icon: const Icon(
+        Icons.date_range_rounded,
+        color: Colors.black,
+        size: 20,
       ),
+      onTap: () async {
+        newDateTimeRange = await showDateRangePicker(
+          context: context,
+          firstDate: DateTime.parse("2020-01-01"),
+          lastDate: DateTime.now(),
+          builder: customThemeBuilder,
+        );
+
+        if (newDateTimeRange != null) {
+          setState(() {});
+          // _onRefresh();
+        }
+      },
     );
   }
 
@@ -273,6 +257,8 @@ class _TransactionListState extends State<TransactionList> {
     return RoundedBackgroundIcon(
       height: 34,
       width: 34,
+      enableMargin: false,
+      backgroundColor: iconBtnGrey,
       icon: Icon(
         SlydoAppIcon.graph,
         size: 16,
@@ -281,38 +267,28 @@ class _TransactionListState extends State<TransactionList> {
       onTap: () {
         Navigator.of(context).pushNamed(Routes.TRANSACTION_GRAPH);
       },
-      backgroundColor: iconBtnGrey,
-      enableMargin: true,
     );
   }
 
   Widget popUpMenuButton() {
-    return SizedBox(
+    return RoundedBackgroundIcon(
       key: _key,
       height: 34,
       width: 34,
-      child: Card(
-        color: isPopMenuOpen ? navyBlue : iconBtnGrey,
-        elevation: 0,
-        margin: const EdgeInsets.symmetric(vertical: 10),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: IconButton(
-          icon: Icon(
-            Icons.filter_alt_rounded,
-            color: isPopMenuOpen ? Colors.white : Colors.black,
-            size: 20,
-          ),
-          onPressed: () {
-            if (menu.isMenuOpen) {
-              menu.closeMenu();
-            } else {
-              menu.openMenu();
-            }
-          },
-        ),
+      enableMargin: false,
+      backgroundColor: iconBtnGrey,
+      icon: Icon(
+        Icons.filter_alt_rounded,
+        color: isPopMenuOpen ? Colors.white : Colors.black,
+        size: 20,
       ),
+      onTap: () {
+        if (menu.isMenuOpen) {
+          menu.closeMenu();
+        } else {
+          menu.openMenu();
+        }
+      },
     );
   }
 

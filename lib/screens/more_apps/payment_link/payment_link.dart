@@ -6,7 +6,6 @@ import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_
 import 'package:Slydo/screens/more_apps/payment_link/payment_screen.dart';
 import 'package:Slydo/screens/more_apps/payment_link/search_payment_link.dart';
 import 'package:Slydo/screens/more_apps/service_hub/screens/my_job_details.dart';
-import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -16,7 +15,6 @@ import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:Slydo/widget/slide_action_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import 'payment_transaction_info.dart';
@@ -46,8 +44,6 @@ class _PaymentLinkState extends State<PaymentLink>
 
   final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
-
-  late final SlidableController _slideController = SlidableController(this);
 
   Future<void> getPaymentLinks() async {
     if (!isLoading) {
@@ -225,151 +221,151 @@ class _PaymentLinkState extends State<PaymentLink>
   }
 
   Widget _moreOptionsBtn() {
-    return Container(
+    return RoundedBackgroundIcon(
       height: 34,
       width: 34,
-      alignment: Alignment.center,
-      child: IconButton(
-          onPressed: () {
-            androidBottomSheet(
-              context: context,
-              child: StatefulBuilder(
-                builder: (context, changeState) {
-                  return SizedBox(
-                    height: 370,
-                    child: Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          InkWell(
-                            onTap: () {
-                              Navigator.pop(context);
-                              filterPaymentLinks('');
-                            },
-                            child: Text(
-                              'All',
-                              style: TextStyle(
-                                  fontSize: 18,
-                                  color: black,
-                                  fontWeight: FontWeight.w600),
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 18,
-                          ),
-                          InkWell(
-                              onTap: () {
-                                Navigator.pop(context);
-                                filterPaymentLinks('Active');
-                              },
-                              child: Text(
-                                'Active',
-                                style: TextStyle(
-                                    fontSize: 18,
-                                    color: black,
-                                    fontWeight: FontWeight.w600),
-                              )),
-                          const SizedBox(
-                            height: 18,
-                          ),
-                          InkWell(
-                              onTap: () {
-                                Navigator.pop(context);
-                                filterPaymentLinks('Inactive');
-                              },
-                              child: Text(
-                                'Inactive',
-                                style: TextStyle(
-                                    fontSize: 18,
-                                    color: black,
-                                    fontWeight: FontWeight.w600),
-                              )),
-                          const SizedBox(
-                            height: 18,
-                          ),
-                          InkWell(
-                            onTap: () {
-                              Navigator.pop(context);
-                              filterPaymentLinks('Paid');
-                            },
-                            child: Text('Paid',
-                                style: TextStyle(
-                                    fontSize: 18,
-                                    color: black,
-                                    fontWeight: FontWeight.w600)),
-                          ),
-                          const SizedBox(
-                            height: 18,
-                          ),
-                          InkWell(
-                            onTap: () {
-                              Navigator.pop(context);
-                              filterPaymentLinks('Cancelled');
-                            },
-                            child: Text('Cancelled',
-                                style: TextStyle(
-                                    fontSize: 18,
-                                    color: black,
-                                    fontWeight: FontWeight.w600)),
-                          ),
-                          const SizedBox(
-                            height: 18,
-                          ),
-                          InkWell(
-                            onTap: () {
-                              Navigator.pop(context);
-                              filterPaymentLinks('Suspended');
-                            },
-                            child: Text('Suspended',
-                                style: TextStyle(
-                                    fontSize: 18,
-                                    color: black,
-                                    fontWeight: FontWeight.w600)),
-                          ),
-                          const SizedBox(
-                            height: 18,
-                          ),
-                          InkWell(
-                            onTap: () {
-                              Navigator.pop(context);
-                              filterPaymentLinks('Reserved');
-                            },
-                            child: Text('Reserved',
-                                style: TextStyle(
-                                    fontSize: 18,
-                                    color: black,
-                                    fontWeight: FontWeight.w600)),
-                          ),
-                          const SizedBox(
-                            height: 18,
-                          ),
-                          InkWell(
-                            onTap: () {
-                              Navigator.pop(context);
-                              filterPaymentLinks('Failed');
-                            },
-                            child: Text('Failed',
-                                style: TextStyle(
-                                    fontSize: 18,
-                                    color: black,
-                                    fontWeight: FontWeight.w600)),
-                          ),
-                          const SizedBox(
-                            height: 4,
-                          ),
-                        ],
+      backgroundColor: iconBtnGrey,
+      enableMargin: false,
+      icon: const Icon(
+        Icons.more_vert,
+        color: Colors.black,
+      ),
+      onTap: () {
+        androidBottomSheet(
+          context: context,
+          child: StatefulBuilder(
+            builder: (context, changeState) {
+              return SizedBox(
+                height: 370,
+                child: Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      InkWell(
+                        onTap: () {
+                          Navigator.pop(context);
+                          filterPaymentLinks('');
+                        },
+                        child: Text(
+                          'All',
+                          style: TextStyle(
+                              fontSize: 18,
+                              color: black,
+                              fontWeight: FontWeight.w600),
+                        ),
                       ),
-                    ),
-                  );
-                },
-              ),
-            );
-          },
-          icon: Icon(
-            Icons.more_vert,
-            color: blackFont,
-          )),
+                      const SizedBox(
+                        height: 18,
+                      ),
+                      InkWell(
+                          onTap: () {
+                            Navigator.pop(context);
+                            filterPaymentLinks('Active');
+                          },
+                          child: Text(
+                            'Active',
+                            style: TextStyle(
+                                fontSize: 18,
+                                color: black,
+                                fontWeight: FontWeight.w600),
+                          )),
+                      const SizedBox(
+                        height: 18,
+                      ),
+                      InkWell(
+                          onTap: () {
+                            Navigator.pop(context);
+                            filterPaymentLinks('Inactive');
+                          },
+                          child: Text(
+                            'Inactive',
+                            style: TextStyle(
+                                fontSize: 18,
+                                color: black,
+                                fontWeight: FontWeight.w600),
+                          )),
+                      const SizedBox(
+                        height: 18,
+                      ),
+                      InkWell(
+                        onTap: () {
+                          Navigator.pop(context);
+                          filterPaymentLinks('Paid');
+                        },
+                        child: Text('Paid',
+                            style: TextStyle(
+                                fontSize: 18,
+                                color: black,
+                                fontWeight: FontWeight.w600)),
+                      ),
+                      const SizedBox(
+                        height: 18,
+                      ),
+                      InkWell(
+                        onTap: () {
+                          Navigator.pop(context);
+                          filterPaymentLinks('Cancelled');
+                        },
+                        child: Text('Cancelled',
+                            style: TextStyle(
+                                fontSize: 18,
+                                color: black,
+                                fontWeight: FontWeight.w600)),
+                      ),
+                      const SizedBox(
+                        height: 18,
+                      ),
+                      InkWell(
+                        onTap: () {
+                          Navigator.pop(context);
+                          filterPaymentLinks('Suspended');
+                        },
+                        child: Text('Suspended',
+                            style: TextStyle(
+                                fontSize: 18,
+                                color: black,
+                                fontWeight: FontWeight.w600)),
+                      ),
+                      const SizedBox(
+                        height: 18,
+                      ),
+                      InkWell(
+                        onTap: () {
+                          Navigator.pop(context);
+                          filterPaymentLinks('Reserved');
+                        },
+                        child: Text('Reserved',
+                            style: TextStyle(
+                                fontSize: 18,
+                                color: black,
+                                fontWeight: FontWeight.w600)),
+                      ),
+                      const SizedBox(
+                        height: 18,
+                      ),
+                      InkWell(
+                        onTap: () {
+                          Navigator.pop(context);
+                          filterPaymentLinks('Failed');
+                        },
+                        child: Text('Failed',
+                            style: TextStyle(
+                                fontSize: 18,
+                                color: black,
+                                fontWeight: FontWeight.w600)),
+                      ),
+                      const SizedBox(
+                        height: 4,
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        );
+      },
     );
   }
 
@@ -396,9 +392,9 @@ class _PaymentLinkState extends State<PaymentLink>
       ),
       actions: <Widget>[
         addBtn(),
-        const SizedBox(width: 12.0),
+        const SizedBox(width: 8.0),
         getSearchBtn(),
-        const SizedBox(width: 12.0),
+        const SizedBox(width: 8.0),
         _moreOptionsBtn(),
         const SizedBox(
           width: 16,
@@ -408,49 +404,36 @@ class _PaymentLinkState extends State<PaymentLink>
   }
 
   Widget getSearchBtn() {
-    return SizedBox(
-      child: Card(
-        color: iconBtnGrey,
-        elevation: 0,
-        margin: const EdgeInsets.symmetric(vertical: 10),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: IconButton(
-          icon: const Icon(
-            Icons.search,
-            color: Colors.black,
-            size: 20,
-          ),
-          onPressed: () =>
-              NavigationUtil.push(context, screen: const PaymentLinkSearch()),
-        ),
+    return RoundedBackgroundIcon(
+      height: 34,
+      width: 34,
+      backgroundColor: iconBtnGrey,
+      enableMargin: false,
+      icon: const Icon(
+        Icons.search,
+        color: Colors.black,
+        size: 20,
       ),
+      onTap: () {
+        NavigationUtil.push(context, screen: const PaymentLinkSearch());
+      },
     );
   }
 
   Widget addBtn() {
-    return SizedBox(
-      child: GestureDetector(
-        onTap: () =>
-            NavigationUtil.push(context, screen: const PaymentLinkScreen()),
-        child: Card(
-          color: iconBtnGrey,
-          elevation: 0,
-          margin: const EdgeInsets.symmetric(
-            vertical: 10,
-          ),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: SvgPicture.asset(
-              'add_payment'.toSVG(),
-            ),
-          ),
-        ),
+    return RoundedBackgroundIcon(
+      height: 34,
+      width: 34,
+      backgroundColor: iconBtnGrey,
+      enableMargin: false,
+      icon: const Icon(
+        Icons.add_circle,
+        color: Colors.black,
+        size: 18,
       ),
+      onTap: () {
+        NavigationUtil.push(context, screen: const PaymentLinkScreen());
+      },
     );
   }
 
@@ -607,29 +590,26 @@ class _PaymentLinkState extends State<PaymentLink>
   }
 
   List<Widget> listActionSlideActions(Map data, int index) {
-    return data['status'].toString().toLowerCase() != 'active'
-        ? []
-        : [
-            SlideActionButton(
-              backgroundColor: mateRed,
-              icon: SlydoAppIcon.cancel_connection_request,
-              onTap: () {
-                rejectRequestAlert(data, index);
-              },
-              title: AppLocalization.of(context)!.cancel,
-              slideController: _slideController,
-            ),
-          ];
+    return [
+      SlideActionButton(
+        borderRadius: BorderRadius.circular(5),
+        backgroundColor: mateRed,
+        icon: SlydoAppIcon.cancel_connection_request,
+        onPressed: (context) {
+          rejectRequestAlert(data, index);
+        },
+        label: AppLocalization.of(context)!.cancel,
+      ),
+    ];
   }
 
   Widget _getSlidableWithLists(BuildContext context, Map e, int index) {
     return Slidable(
       key: Key(e["id"].toString()),
-      controller: _slideController,
-      direction: Axis.horizontal,
       endActionPane: ActionPane(
         motion: const BehindMotion(),
-        extentRatio: 0.25,
+        extentRatio:
+            e['status'].toString().toLowerCase() != 'active' ? 0.0001 : 0.25,
         children: listActionSlideActions(e, index),
       ),
       child: paymentLinkCard(
@@ -653,19 +633,21 @@ class _PaymentLinkState extends State<PaymentLink>
           )
         : isLoading && paymentLinkList.isEmpty
             ? buildLoadingIndicator(isLoading: isLoading)
-            : ListView.builder(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 4, horizontal: 18),
-                itemCount: paymentLinkList.length + 1,
-                itemBuilder: (context, index) {
-                  if (index == paymentLinkList.length) {
-                    return buildJumpingLoadingIndicator(isLoading: isLoading);
-                  } else {
-                    return _getSlidableWithLists(
-                        context, paymentLinkList[index], index);
-                  }
-                },
-                controller: _scrollController,
+            : SlidableAutoCloseBehavior(
+                closeWhenOpened: true,
+                child: ListView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  itemCount: paymentLinkList.length + 1,
+                  itemBuilder: (context, index) {
+                    if (index == paymentLinkList.length) {
+                      return buildJumpingLoadingIndicator(isLoading: isLoading);
+                    } else {
+                      return _getSlidableWithLists(
+                          context, paymentLinkList[index], index);
+                    }
+                  },
+                  controller: _scrollController,
+                ),
               );
   }
 

@@ -626,12 +626,6 @@ class _UserLoginState extends State<UserLogin> {
       );
 
   Widget passwordPinFiled() {
-    // final BoxDecoration pinPutDecoration = BoxDecoration(
-    //     borderRadius: BorderRadius.circular(10),
-    //     border: Border.all(color: greyBorderColor));
-    // final BoxDecoration selectedDecoration = BoxDecoration(
-    //     borderRadius: BorderRadius.circular(10),
-    //     border: Border.all(color: navyBlue));
     final defaultPinTheme = PinTheme(
       width: 45,
       height: 45,
@@ -683,7 +677,6 @@ class _UserLoginState extends State<UserLogin> {
             ),
             submittedPinTheme: defaultPinTheme.copyWith(
               decoration: defaultPinTheme.decoration!.copyWith(
-                color: lightGrey,
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(color: navyBlue),
               ),

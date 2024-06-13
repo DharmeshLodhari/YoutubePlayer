@@ -27,7 +27,6 @@ class _BlockedListState extends State<BlockedList>
   final GlobalKey<ScaffoldMessengerState> _scaffoldBlockMessengerListKey =
       GlobalKey<ScaffoldMessengerState>();
 
-  late final SlidableController _slideController = SlidableController(this);
   int? count = 0;
   String? next = "";
   String? previous = "";
@@ -41,7 +40,6 @@ class _BlockedListState extends State<BlockedList>
   @override
   void initState() {
     getList();
-    super.initState();
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
               _scrollController.position.maxScrollExtent &&
@@ -103,19 +101,23 @@ class _BlockedListState extends State<BlockedList>
           )
         : isLoading && blockList.isEmpty
             ? buildLoadingIndicator(isLoading: isLoading)
-            : ListView.builder(
-                padding: const EdgeInsets.only(bottom: 80.0),
-                //+1 for progressbar
-                itemCount: blockList.length + 1,
-                itemBuilder: (BuildContext context, int index) {
-                  if (index == blockList.length) {
-                    return buildJumpingLoadingIndicator(isLoading: isLoading);
-                  } else {
-                    return _getSlidableWithLists(
-                        context, blockList[index], index);
-                  }
-                },
-                controller: _scrollController,
+            : SlidableAutoCloseBehavior(
+                closeWhenOpened: true,
+                child: ListView.builder(
+                  padding:
+                      const EdgeInsets.only(left: 4, right: 4, bottom: 80.0),
+                  //+1 for progressbar
+                  itemCount: blockList.length + 1,
+                  itemBuilder: (BuildContext context, int index) {
+                    if (index == blockList.length) {
+                      return buildJumpingLoadingIndicator(isLoading: isLoading);
+                    } else {
+                      return _getSlidableWithLists(
+                          context, blockList[index], index);
+                    }
+                  },
+                  controller: _scrollController,
+                ),
               );
   }
 
@@ -172,13 +174,13 @@ class _BlockedListState extends State<BlockedList>
   List<Widget> listSecondaryActions(CustomerProfile user, int index) {
     return [
       SlideActionButton(
+        borderRadius: BorderRadius.circular(5),
         backgroundColor: naturalGreen,
         icon: SlydoAppIcon.unblock,
-        onTap: () {
+        onPressed: (context) {
           unBlockUserAlert(user, index);
         },
-        title: AppLocalization.of(context)!.unblock,
-        slideController: _slideController,
+        label: AppLocalization.of(context)!.unblock,
       ),
     ];
   }
@@ -233,8 +235,6 @@ class _BlockedListState extends State<BlockedList>
       BuildContext context, CustomerProfile user, int index) {
     return Slidable(
       key: Key(user.userName!),
-      controller: _slideController,
-      direction: Axis.horizontal,
       startActionPane: ActionPane(
         motion: const BehindMotion(),
         extentRatio: 0.25,

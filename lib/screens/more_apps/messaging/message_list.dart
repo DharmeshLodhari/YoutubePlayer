@@ -32,7 +32,6 @@ class _MessageListState extends State<MessageList>
   final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerMessageKey =
       GlobalKey<ScaffoldMessengerState>();
   final _messageAuth = MessageAuth();
-  late final SlidableController _slideController = SlidableController(this);
   int? count = 0;
   String? next = "";
   String? previous = "";
@@ -227,32 +226,24 @@ class _MessageListState extends State<MessageList>
   }
 
   Widget popUpMenuButton() {
-    return SizedBox(
+    return RoundedBackgroundIcon(
       key: _key,
       height: 34,
       width: 34,
-      child: Card(
-        color: isPopMenuOpen ? navyBlue : iconBtnGrey,
-        elevation: 0,
-        margin: const EdgeInsets.symmetric(vertical: 10),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: IconButton(
-          icon: Icon(
-            Icons.filter_alt_rounded,
-            color: isPopMenuOpen ? Colors.white : Colors.black,
-            size: 20,
-          ),
-          onPressed: () {
-            if (menu.isMenuOpen) {
-              menu.closeMenu();
-            } else {
-              menu.openMenu();
-            }
-          },
-        ),
+      icon: Icon(
+        Icons.filter_alt_rounded,
+        color: isPopMenuOpen ? Colors.white : Colors.black,
+        size: 20,
       ),
+      onTap: () {
+        if (menu.isMenuOpen) {
+          menu.closeMenu();
+        } else {
+          menu.openMenu();
+        }
+      },
+      backgroundColor: iconBtnGrey,
+      enableMargin: false,
     );
   }
 
@@ -263,19 +254,22 @@ class _MessageListState extends State<MessageList>
           )
         : isLoading && messageList.isEmpty
             ? buildLoadingIndicator(isLoading: isLoading)
-            : ListView.builder(
-                padding: const EdgeInsets.symmetric(vertical: 4),
-                //+1 for progressbar
-                itemCount: messageList.length + 1,
-                itemBuilder: (BuildContext context, int index) {
-                  if (index == messageList.length) {
-                    return buildJumpingLoadingIndicator(isLoading: isLoading);
-                  } else {
-                    return _getSlidableWithLists(
-                        context, messageList[index], index);
-                  }
-                },
-                controller: _scrollController,
+            : SlidableAutoCloseBehavior(
+                closeWhenOpened: true,
+                child: ListView.builder(
+                  padding: const EdgeInsets.all(4),
+                  //+1 for progressbar
+                  itemCount: messageList.length + 1,
+                  itemBuilder: (BuildContext context, int index) {
+                    if (index == messageList.length) {
+                      return buildJumpingLoadingIndicator(isLoading: isLoading);
+                    } else {
+                      return _getSlidableWithLists(
+                          context, messageList[index], index);
+                    }
+                  },
+                  controller: _scrollController,
+                ),
               );
   }
 
@@ -357,29 +351,30 @@ class _MessageListState extends State<MessageList>
             : "Archive";
 
     return SlideActionButton(
-        backgroundColor: naturalGreen,
-        icon: actionIcon,
-        onTap: () async {
-          final action = isRecipient
-              ? partialMessage.isArchivedByRecipient!
-                  ? "unarchive"
-                  : "archive"
-              : partialMessage.isArchivedBySender!
-                  ? "unarchive"
-                  : "archive";
-          await _messageAuth.updateMessage(partialMessage.id!, action);
-          setState(() {
-            if (isRecipient) {
-              partialMessage.isArchivedByRecipient =
-                  partialMessage.isArchivedByRecipient! ? false : true;
-            } else {
-              partialMessage.isArchivedBySender =
-                  partialMessage.isArchivedBySender! ? false : true;
-            }
-          });
-        },
-        title: actionText,
-        slideController: _slideController);
+      borderRadius: BorderRadius.circular(5),
+      backgroundColor: naturalGreen,
+      icon: actionIcon,
+      onPressed: (context) async {
+        final action = isRecipient
+            ? partialMessage.isArchivedByRecipient!
+                ? "unarchive"
+                : "archive"
+            : partialMessage.isArchivedBySender!
+                ? "unarchive"
+                : "archive";
+        await _messageAuth.updateMessage(partialMessage.id!, action);
+        setState(() {
+          if (isRecipient) {
+            partialMessage.isArchivedByRecipient =
+                partialMessage.isArchivedByRecipient! ? false : true;
+          } else {
+            partialMessage.isArchivedBySender =
+                partialMessage.isArchivedBySender! ? false : true;
+          }
+        });
+      },
+      label: actionText,
+    );
   }
 
   void markArchivedUnArchivedMessage(PartialMessage partialMessage, int index) {
@@ -395,13 +390,14 @@ class _MessageListState extends State<MessageList>
 
   Widget displayDeleteButton(PartialMessage partialMessage, int index) {
     return SlideActionButton(
-        backgroundColor: mateRed,
-        icon: Icons.delete,
-        onTap: () {
-          deleteMessage(partialMessage, index);
-        },
-        title: AppLocalization.of(context)!.delete,
-        slideController: _slideController);
+      borderRadius: BorderRadius.circular(5),
+      backgroundColor: mateRed,
+      icon: Icons.delete,
+      onPressed: (context) {
+        deleteMessage(partialMessage, index);
+      },
+      label: AppLocalization.of(context)!.delete,
+    );
   }
 
   void deleteMessage(PartialMessage partialMessage, int index) async {
@@ -452,8 +448,6 @@ class _MessageListState extends State<MessageList>
       BuildContext context, PartialMessage partialMessage, int index) {
     return Slidable(
       key: Key(partialMessage.id!),
-      controller: _slideController,
-      direction: Axis.horizontal,
       startActionPane: ActionPane(
         motion: const BehindMotion(),
         extentRatio: 0.25,

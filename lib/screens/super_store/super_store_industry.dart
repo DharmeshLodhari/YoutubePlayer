@@ -1,8 +1,7 @@
 import 'package:Slydo/screens/super_store/shop_list_screen.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/extensions.dart';
-import 'package:Slydo/utils/slydo_app_icon_icons.dart';
-import 'package:badges/badges.dart' as badges;
+import 'package:Slydo/widget/cart_with_badge.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
@@ -18,8 +17,10 @@ class SuperStoreIndustry extends StatefulWidget {
   final String appTitle;
   final Map<String, dynamic>? searchQuery;
   SuperStoreIndustry(
-      {super.key, required this.next, required this.appTitle, this.searchQuery})
-     ;
+      {super.key,
+      required this.next,
+      required this.appTitle,
+      this.searchQuery});
 
   @override
   State<SuperStoreIndustry> createState() => _SuperStoreState();
@@ -117,7 +118,7 @@ class _SuperStoreState extends State<SuperStoreIndustry> {
             height: 12,
             width: 12,
           )),
-      const SizedBox(width: 20),
+      const SizedBox(width: 15),
       _cartBtn(),
       const SizedBox(width: 20),
     ];
@@ -243,86 +244,15 @@ class _SuperStoreState extends State<SuperStoreIndustry> {
   }
 
   Widget _cartBtn() {
-    return RoundedBackgroundIcon(
+    return CartWithBadge(
+      items: basketBloc.basketItems,
       height: 30,
       width: 30,
-      icon: badges.Badge(
-        badgeContent: getBadgeContent(),
-        badgeAnimation: const badges.BadgeAnimation.rotation(
-          animationDuration: Duration(seconds: 1),
-          colorChangeAnimationDuration: Duration(seconds: 1),
-          loopAnimation: false,
-          curve: Curves.fastOutSlowIn,
-          colorChangeAnimationCurve: Curves.easeInCubic,
-        ),
-        badgeStyle: badges.BadgeStyle(
-          shape: badges.BadgeShape.circle,
-          badgeColor: naturalGreen,
-          padding: basketBloc.basketItems.isEmpty
-              ? const EdgeInsets.all(0)
-              : EdgeInsets.only(
-                  left: getBadgeCount().length == 1 ? 6 : 8,
-                  right: 6,
-                  top: 4,
-                  bottom: 4),
-          elevation: 0,
-        ),
-        child: Center(
-          child: Icon(
-            SlydoAppIcon.cart,
-            size: 16,
-            color: blackFont,
-          ),
-        ),
-      ),
+      backgroundColor: transparent,
+      enableMargin: true,
       onTap: () {
         NavigationUtil.pushNamed(context, routeName: Routes.SHOPPING_CART);
       },
-      backgroundColor: blackFont.withOpacity(0.1),
-      enableMargin: true,
     );
-  }
-
-  Widget? getBadgeContent() {
-    if (basketBloc.basketItems.isEmpty) {
-      return null;
-    }
-    return Text(
-      getBadgeCount(),
-      style: const TextStyle(
-        fontSize: 10,
-        color: Colors.white,
-        fontWeight: FontWeight.bold,
-        fontFamily: "Inter",
-      ),
-    );
-  }
-
-  String getBadgeCount() {
-    int totalItem = 0;
-    for (var element in basketBloc.basketItems) {
-      totalItem = totalItem + int.parse(element.qty.toString());
-    }
-    // for (var item in basketBloc.items) {
-    //
-    //   if (item['item'] is Product) {
-    //     var product = item['item'] as Product;
-    //
-    //     if (product.variant!.isEmpty && product.variant != null) {
-    //       // If the variant list is empty, add the quantity to the total
-    //       totalItem += int.parse(item['qty'].toString());
-    //     } else {
-    //       // If there are variants, calculate the total quantity from variants
-    //       for(var variant in product.variant!){
-    //         var vProduct = Variant.fromJson(variant);
-    //         totalItem += int.parse(vProduct.quantity.toString());
-    //       }
-    //     }
-    //
-    //   } else if (item['item'] is Service) {
-    //     totalItem += int.parse(item['qty'].toString());
-    //   }
-    // }
-    return totalItem > 99 ? '99+' : totalItem.toString();
   }
 }

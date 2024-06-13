@@ -18,8 +18,7 @@ class EnterAddressOrPinPinPage extends StatefulWidget {
       {super.key,
       this.isWalletFunding = false,
       this.isAddress = false,
-      this.creditCardData})
-     ;
+      this.creditCardData});
 
   @override
   State<EnterAddressOrPinPinPage> createState() =>
@@ -179,6 +178,21 @@ class _EnterAddressOrPinPinPageState extends State<EnterAddressOrPinPinPage> {
   }
 
   Widget pinFillUpField() {
+    final defaultPinTheme = PinTheme(
+      width: 45,
+      height: 45,
+      margin: const EdgeInsets.symmetric(horizontal: 3),
+      textStyle: TextStyle(
+        fontSize: 32,
+        color: blackFont,
+        fontWeight: FontWeight.w600,
+        fontFamily: "Inter",
+      ),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey),
+        borderRadius: BorderRadius.circular(8),
+      ),
+    );
     final BoxDecoration navyBlueBorder = BoxDecoration(
       border: Border(
           bottom: BorderSide(
@@ -193,49 +207,50 @@ class _EnterAddressOrPinPinPageState extends State<EnterAddressOrPinPinPage> {
         width: 2,
       )),
     );
-    return Card(
-      margin: EdgeInsets.zero,
-      shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-          side: BorderSide(color: whiteBackground)),
-      shadowColor: whiteBackground,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 28),
-        child: Pinput(
-          length: 4,
-          obscuringCharacter: '●',
-          controller: pinController,
-          defaultPinTheme: PinTheme(
-            width: 40,
-            height: 45,
-            textStyle: TextStyle(
-              fontSize: 32,
-              color: blackFont,
-              fontWeight: FontWeight.w600,
-              fontFamily: "Inter",
+    return SizedBox(
+      width: double.infinity,
+      child: Card(
+        color: Colors.white,
+        margin: EdgeInsets.zero,
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+            side: BorderSide(color: whiteBackground)),
+        shadowColor: whiteBackground,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 28),
+          child: Pinput(
+            obscureText: true,
+            obscuringCharacter: '•',
+            showCursor: false,
+            length: 4,
+            controller: pinController,
+            defaultPinTheme: defaultPinTheme,
+            focusedPinTheme: defaultPinTheme.copyWith(
+              decoration: defaultPinTheme.decoration!.copyWith(
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: navyBlue),
+              ),
             ),
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey),
-              borderRadius: BorderRadius.circular(8),
+            submittedPinTheme: defaultPinTheme.copyWith(
+              decoration: defaultPinTheme.decoration!.copyWith(
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: navyBlue),
+              ),
             ),
+            errorPinTheme: defaultPinTheme.copyBorderWith(
+              border: Border.all(color: Colors.redAccent),
+            ),
+            pinAnimationType: PinAnimationType.scale,
+            textInputAction: TextInputAction.done,
+            keyboardType: TextInputType.number,
+            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            validator: (val) {
+              if (val!.length != 4) {
+                return "Please enter a valid pin";
+              }
+              return null;
+            },
           ),
-          focusedPinTheme: PinTheme(
-            decoration: grayBorder,
-          ),
-          submittedPinTheme: PinTheme(
-            decoration: navyBlueBorder,
-          ),
-          followingPinTheme: PinTheme(
-            decoration: grayBorder,
-          ),
-          pinAnimationType: PinAnimationType.scale,
-          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-          validator: (val) {
-            if (val!.length != 4) {
-              return "Please enter a valid pin";
-            }
-            return null;
-          },
         ),
       ),
     );

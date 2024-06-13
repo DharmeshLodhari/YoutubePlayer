@@ -41,7 +41,6 @@ class _SharedCartPaymentState extends State<SharedCartPayment>
   late SharedCartBloc sharedCartBloc;
   late UserBloc userBloc;
   late ShippingProcessBloc shippingProcessBloc;
-  late final SlidableController _slideController = SlidableController(this);
   TextEditingController amountController = TextEditingController();
   String? selectedCategory;
   List<String?> paymentCategories = [];
@@ -533,8 +532,6 @@ class _SharedCartPaymentState extends State<SharedCartPayment>
   Widget _getSlidableWithLists(BuildContext context, Widget cartMemberTile,
       SharedCartMemberModel? member) {
     return Slidable(
-      controller: _slideController,
-      direction: Axis.horizontal,
       endActionPane: ActionPane(
         motion: const BehindMotion(),
         extentRatio: 0.25,
@@ -548,13 +545,14 @@ class _SharedCartPaymentState extends State<SharedCartPayment>
       SharedCartMemberModel? member, BuildContext context) {
     return [
       SlideActionButton(
-          backgroundColor: naturalGreen,
-          icon: SlydoAppIcon.true_icon,
-          onTap: () {
-            _buildConfirmPaymentDialog(context);
-          },
-          title: AppLocalization.of(context)!.accept,
-          slideController: _slideController),
+        borderRadius: BorderRadius.circular(5),
+        backgroundColor: naturalGreen,
+        icon: SlydoAppIcon.true_icon,
+        onPressed: (context) {
+          _buildConfirmPaymentDialog(context);
+        },
+        label: AppLocalization.of(context)!.accept,
+      ),
     ];
   }
 
@@ -720,8 +718,9 @@ class _SharedCartPaymentState extends State<SharedCartPayment>
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) async {
       final connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
+      if (connectionResult.contains(ConnectivityResult.wifi) ||
+          connectionResult.contains(ConnectivityResult.ethernet) ||
+          connectionResult.contains(ConnectivityResult.mobile)) {
         await sharedCartBloc.refreshSharedCartProduct(
             context, sharedCartBloc.getSharedCartModel());
         final SharedCartModel sharedCartModel = await sharedCartBloc

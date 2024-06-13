@@ -338,8 +338,10 @@ class AuthService {
 
     await Connectivity().checkConnectivity().then((value) async {
       final connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
+
+      if (connectionResult.contains(ConnectivityResult.wifi) ||
+          connectionResult.contains(ConnectivityResult.ethernet) ||
+          connectionResult.contains(ConnectivityResult.mobile)) {
         try {
           final Map<String, String> userAuthDetailsMap =
               await getUserAuthDetails();

@@ -43,8 +43,6 @@ class _PaymentLinkSearchState extends State<PaymentLinkSearch>
 
   final ScrollController _scrollController = ScrollController();
 
-  late final SlidableController _slideController = SlidableController(this);
-
   getPaymenttLinks({searchLink}) async {
     if (!isLoading) {
       if (next != null && !isLoading) {
@@ -251,29 +249,26 @@ class _PaymentLinkSearchState extends State<PaymentLinkSearch>
   }
 
   List<Widget> listActionSlideActions(Map data, int index) {
-    return data['status'].toString().toLowerCase() != 'active'
-        ? []
-        : [
-            SlideActionButton(
-              backgroundColor: mateRed,
-              icon: SlydoAppIcon.cancel_connection_request,
-              onTap: () {
-                rejectRequestAlert(data, index);
-              },
-              title: AppLocalization.of(context)!.cancel,
-              slideController: _slideController,
-            ),
-          ];
+    return [
+      SlideActionButton(
+        borderRadius: BorderRadius.circular(5),
+        backgroundColor: mateRed,
+        icon: SlydoAppIcon.cancel_connection_request,
+        onPressed: (context) {
+          rejectRequestAlert(data, index);
+        },
+        label: AppLocalization.of(context)!.cancel,
+      ),
+    ];
   }
 
   Widget _getSlidableWithLists(BuildContext context, Map e, int index) {
     return Slidable(
       key: Key(e["id"].toString()),
-      controller: _slideController,
-      direction: Axis.horizontal,
       endActionPane: ActionPane(
         motion: const BehindMotion(),
-        extentRatio: 0.25,
+        extentRatio:
+            e['status'].toString().toLowerCase() != 'active' ? 0.0001 : 0.25,
         children: listActionSlideActions(e, index),
       ),
       child: paymentLinkCard(
@@ -295,14 +290,17 @@ class _PaymentLinkSearchState extends State<PaymentLinkSearch>
             padding: EdgeInsets.only(top: 48.0),
             child: Center(child: CircularProgressIndicator()),
           )
-        : ListView.builder(
-            padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 18),
-            itemCount: paymentLinkList.length,
-            itemBuilder: (BuildContext context, int index) {
-              return _getSlidableWithLists(
-                  context, paymentLinkList[index], index);
-            },
-            controller: _scrollController,
+        : SlidableAutoCloseBehavior(
+            closeWhenOpened: true,
+            child: ListView.builder(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              itemCount: paymentLinkList.length,
+              itemBuilder: (BuildContext context, int index) {
+                return _getSlidableWithLists(
+                    context, paymentLinkList[index], index);
+              },
+              controller: _scrollController,
+            ),
           );
   }
 

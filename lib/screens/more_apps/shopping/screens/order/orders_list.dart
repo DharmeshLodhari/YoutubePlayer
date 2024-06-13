@@ -9,6 +9,7 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/customized_popup_menu.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
+import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:Slydo/widget/slide_action_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -32,7 +33,6 @@ class _OrdersListState extends State<OrdersList>
   final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerOrderListKey =
       GlobalKey<ScaffoldMessengerState>();
   final _auth = ShoppingAuthService();
-  late final SlidableController _slideController = SlidableController(this);
   int? count = 0;
   String? next = "";
   List orderList = [];
@@ -227,94 +227,85 @@ class _OrdersListState extends State<OrdersList>
 
   Widget getSwitchBtn() {
     return userBloc.user.type != 'User'
-        ? Switch(
-            value: isMerchant,
-            activeThumbImage:
-                const AssetImage('assets/images/incoming_arrow.png'),
-            inactiveThumbImage:
-                const AssetImage('assets/images/outgoing_arrow.png'),
-            activeColor: Colors.grey.withOpacity(0.9),
-            onChanged: (value) {
-              if (!isLoading) {
-                // Only make a switch when the page is not loading(i.e, we should always wait for the page to complete loading before making another request)
-                if (value == true) {
-                  showSnackbar(context,
-                      message: 'These are your incoming orders',
-                      duration: 1000);
-                } else {
-                  showSnackbar(context,
-                      message: 'These are your outgoing orders',
-                      duration: 1000);
-                }
-                isMerchant = value;
-                _refresh();
-              }
-            })
+        ? SizedBox(
+            width: 40,
+            height: 30,
+            child: FittedBox(
+              fit: BoxFit.fill,
+              child: Switch(
+                  value: isMerchant,
+                  activeThumbImage:
+                      const AssetImage('assets/images/incoming_arrow.png'),
+                  inactiveThumbImage:
+                      const AssetImage('assets/images/outgoing_arrow.png'),
+                  activeColor: Colors.grey.withOpacity(0.9),
+                  onChanged: (value) {
+                    if (!isLoading) {
+                      // Only make a switch when the page is not loading(i.e, we should always wait for the page to complete loading before making another request)
+                      if (value == true) {
+                        showSnackbar(context,
+                            message: 'These are your incoming orders',
+                            duration: 1000);
+                      } else {
+                        showSnackbar(context,
+                            message: 'These are your outgoing orders',
+                            duration: 1000);
+                      }
+                      isMerchant = value;
+                      _refresh();
+                    }
+                  }),
+            ),
+          )
         : const SizedBox.shrink();
   }
 
   Widget dateFilterIcon() {
-    return SizedBox(
+    return RoundedBackgroundIcon(
       height: 34,
       width: 34,
-      child: Card(
-        color: iconBtnGrey,
-        elevation: 0,
-        margin: const EdgeInsets.symmetric(vertical: 10),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: IconButton(
-          icon: const Icon(
-            Icons.date_range_rounded,
-            color: Colors.black,
-            size: 20,
-          ),
-          onPressed: () async {
-            newDateTimeRange = await showDateRangePicker(
-              context: context,
-              firstDate: DateTime.parse("2020-01-01"),
-              lastDate: DateTime.now(),
-              builder: customThemeBuilder,
-            );
-
-            if (newDateTimeRange != null) {
-              setState(() {});
-              _onRefresh();
-            }
-          },
-        ),
+      icon: const Icon(
+        Icons.date_range_rounded,
+        color: Colors.black,
+        size: 20,
       ),
+      onTap: () async {
+        newDateTimeRange = await showDateRangePicker(
+          context: context,
+          firstDate: DateTime.parse("2020-01-01"),
+          lastDate: DateTime.now(),
+          builder: customThemeBuilder,
+        );
+
+        if (newDateTimeRange != null) {
+          setState(() {});
+          _onRefresh();
+        }
+      },
+      backgroundColor: iconBtnGrey,
+      enableMargin: false,
     );
   }
 
   Widget popUpMenuButton() {
-    return SizedBox(
+    return RoundedBackgroundIcon(
       key: _key,
       height: 34,
       width: 34,
-      child: Card(
-        color: isPopMenuOpen ? navyBlue : iconBtnGrey,
-        elevation: 0,
-        margin: const EdgeInsets.symmetric(vertical: 10),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: IconButton(
-          icon: Icon(
-            Icons.filter_alt_rounded,
-            color: isPopMenuOpen ? Colors.white : Colors.black,
-            size: 20,
-          ),
-          onPressed: () {
-            if (menu.isMenuOpen) {
-              menu.closeMenu();
-            } else {
-              menu.openMenu();
-            }
-          },
-        ),
+      icon: Icon(
+        Icons.filter_alt_rounded,
+        color: isPopMenuOpen ? Colors.white : Colors.black,
+        size: 20,
       ),
+      onTap: () {
+        if (menu.isMenuOpen) {
+          menu.closeMenu();
+        } else {
+          menu.openMenu();
+        }
+      },
+      backgroundColor: iconBtnGrey,
+      enableMargin: false,
     );
   }
 
@@ -333,19 +324,23 @@ class _OrdersListState extends State<OrdersList>
                 ),
                 controller: _refreshController,
                 onRefresh: _onRefresh,
-                child: ListView.builder(
-                  padding: const EdgeInsets.symmetric(vertical: 4),
-                  //+1 for progressbar
-                  itemCount: orderList.length + 1,
-                  itemBuilder: (BuildContext context, int index) {
-                    if (index == orderList.length) {
-                      return buildJumpingLoadingIndicator(isLoading: isLoading);
-                    } else {
-                      return _getSlidableWithLists(
-                          context, orderList[index], index);
-                    }
-                  },
-                  controller: _scrollController,
+                child: SlidableAutoCloseBehavior(
+                  closeWhenOpened: true,
+                  child: ListView.builder(
+                    padding: const EdgeInsets.all(4),
+                    //+1 for progressbar
+                    itemCount: orderList.length + 1,
+                    itemBuilder: (BuildContext context, int index) {
+                      if (index == orderList.length) {
+                        return buildJumpingLoadingIndicator(
+                            isLoading: isLoading);
+                      } else {
+                        return _getSlidableWithLists(
+                            context, orderList[index], index);
+                      }
+                    },
+                    controller: _scrollController,
+                  ),
                 ),
               );
   }
@@ -431,73 +426,67 @@ class _OrdersListState extends State<OrdersList>
   }
 
   List<Widget> listSecondaryActions(Order order, int index) {
-    final bool canPay = order.status == 'Awaiting Payment' &&
-        userBloc.user.userName != order.merchant;
+    return [
+      SlideActionButton(
+        borderRadius: BorderRadius.circular(5),
+        backgroundColor: navyBlue,
+        icon: Icons.done,
+        onPressed: (context) {
+          showDialog(
+              context: context,
+              builder: (dialogLoadingContext) => LoadingIndicator());
+          final data = {
+            "orders": [order.id]
+          };
+          PaymentAndBankingAuth().makePaymentForCartOrder(data).then(
+            (response) {
+              Navigator.pop(context);
 
-    return canPay
-        ? [
-            SlideActionButton(
-                backgroundColor: navyBlue,
-                icon: Icons.done,
-                onTap: () {
-                  showDialog(
-                      context: context,
-                      builder: (dialogLoadingContext) => LoadingIndicator());
-                  final data = {
-                    "orders": [order.id]
-                  };
-                  PaymentAndBankingAuth().makePaymentForCartOrder(data).then(
-                    (response) {
-                      Navigator.pop(context);
-
-                      if (response.statusCode == 200 ||
-                          response.statusCode == 201) {
-                        showToast(message: 'Payment successful');
-                        _refresh();
-                      } else if (response.statusCode == 500) {
-                        showToast(
-                            message: AppLocalization.of(context)!.serverError);
-                      } else {
-                        showToast(
-                            message: jsonDecode(response.body)[0]['errors']);
-                      }
-                    },
-                  );
-                },
-                title: AppLocalization.of(context)!.pay,
-                slideController: _slideController),
-          ]
-        : [];
+              if (response.statusCode == 200 || response.statusCode == 201) {
+                showToast(message: 'Payment successful');
+                _refresh();
+              } else if (response.statusCode == 500) {
+                showToast(message: AppLocalization.of(context)!.serverError);
+              } else {
+                showToast(message: jsonDecode(response.body)[0]['errors']);
+              }
+            },
+          );
+        },
+        label: AppLocalization.of(context)!.pay,
+      ),
+    ];
   }
 
   List<Widget> listActionSlideActions(Order order, int index) {
     return [
       SlideActionButton(
-          backgroundColor: naturalGreen,
-          icon: SlydoAppIcon.text_message,
-          onTap: () {
-            final recipient = userBloc.user.userName == order.merchant
-                ? order.customerName
-                : order.merchant;
+        borderRadius: BorderRadius.circular(5),
+        backgroundColor: naturalGreen,
+        icon: SlydoAppIcon.text_message,
+        onPressed: (context) {
+          final recipient = userBloc.user.userName == order.merchant
+              ? order.customerName
+              : order.merchant;
 
-            Navigator.of(context).pushNamed(Routes.COMPOSE_MESSAGE, arguments: {
-              'recipient': recipient,
-              'subject': AppLocalization.of(context)!.orderDetail +
-                  " : " +
-                  AppLocalization.of(context)!.ref +
-                  " #${order.id}",
-            });
-          },
-          title: AppLocalization.of(context)!.message,
-          slideController: _slideController),
+          Navigator.of(context).pushNamed(Routes.COMPOSE_MESSAGE, arguments: {
+            'recipient': recipient,
+            'subject': AppLocalization.of(context)!.orderDetail +
+                " : " +
+                AppLocalization.of(context)!.ref +
+                " #${order.id}",
+          });
+        },
+        label: AppLocalization.of(context)!.message,
+      ),
     ];
   }
 
   Widget _getSlidableWithLists(BuildContext context, Order order, int index) {
+    final bool canPay = order.status == 'Awaiting Payment' &&
+        userBloc.user.userName != order.merchant;
     return Slidable(
       key: Key(order.customerName!),
-      controller: _slideController,
-      direction: Axis.horizontal,
       startActionPane: ActionPane(
         motion: const BehindMotion(),
         extentRatio: 0.25,
@@ -505,7 +494,7 @@ class _OrdersListState extends State<OrdersList>
       ),
       endActionPane: ActionPane(
         motion: const BehindMotion(),
-        extentRatio: 0.25,
+        extentRatio: canPay ? 0.25 : 0.0001,
         children: listSecondaryActions(order, index),
       ),
       child: VerticalListItem(

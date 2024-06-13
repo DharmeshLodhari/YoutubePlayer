@@ -52,9 +52,6 @@ class _SearchModuleState extends State<SearchModule>
   static String hint = "Search...";
 
   final _auth = AuthService();
-  late final SlidableController slidableController = SlidableController(this);
-  late final SlidableController slidableController1 = SlidableController(this);
-  late final SlidableController slidableController2 = SlidableController(this);
 
   List<Widget> results = [];
 
@@ -465,19 +462,23 @@ class _SearchModuleState extends State<SearchModule>
             ? NoItemInList(msg: AppLocalization.of(context)!.noSuggestions)
             : isSuggestionLoading && suggestionsList.isEmpty
                 ? buildLoadingIndicator(isLoading: isSuggestionLoading)
-                : ListView.builder(
-                    physics: const ClampingScrollPhysics(),
-                    controller: _scrollCtrl,
-                    itemCount: suggestionsList.length + 1,
-                    itemBuilder: (BuildContext context, int index) {
-                      if (index == suggestionsList.length) {
-                        return buildJumpingLoadingIndicator(
-                            isLoading: isSuggestionLoading);
-                      } else {
-                        return CustomSlydoUserCard(
-                            user: suggestionsList[index]);
-                      }
-                    },
+                : SlidableAutoCloseBehavior(
+                    closeWhenOpened: true,
+                    child: ListView.builder(
+                      padding: EdgeInsets.symmetric(horizontal: 4),
+                      physics: const ClampingScrollPhysics(),
+                      controller: _scrollCtrl,
+                      itemCount: suggestionsList.length + 1,
+                      itemBuilder: (BuildContext context, int index) {
+                        if (index == suggestionsList.length) {
+                          return buildJumpingLoadingIndicator(
+                              isLoading: isSuggestionLoading);
+                        } else {
+                          return CustomSlydoUserCard(
+                              user: suggestionsList[index]);
+                        }
+                      },
+                    ),
                   ),
       );
     } else {
@@ -492,18 +493,22 @@ class _SearchModuleState extends State<SearchModule>
                 )
               : isLoading && results.isEmpty
                   ? buildLoadingIndicator(isLoading: isLoading)
-                  : ListView.builder(
-                      //+1 for progressbar
-                      itemCount: results.length + 1,
-                      itemBuilder: (BuildContext context, int index) {
-                        if (index == results.length) {
-                          return buildJumpingLoadingIndicator(
-                              isLoading: isLoading);
-                        } else {
-                          return results[index];
-                        }
-                      },
-                      controller: _scrollController,
+                  : SlidableAutoCloseBehavior(
+                      closeWhenOpened: true,
+                      child: ListView.builder(
+                        padding: EdgeInsets.symmetric(horizontal: 4),
+                        //+1 for progressbar
+                        itemCount: results.length + 1,
+                        itemBuilder: (BuildContext context, int index) {
+                          if (index == results.length) {
+                            return buildJumpingLoadingIndicator(
+                                isLoading: isLoading);
+                          } else {
+                            return results[index];
+                          }
+                        },
+                        controller: _scrollController,
+                      ),
                     );
     }
   }
@@ -1138,8 +1143,6 @@ class _SearchModuleState extends State<SearchModule>
   Widget _getSlidableWithLists(
       BuildContext context, Widget searchCard, CustomerProfile user) {
     return Slidable(
-      controller: slidableController,
-      direction: Axis.horizontal,
       startActionPane: user.userName.toString().toLowerCase() == "slydo"
           ? null
           : ActionPane(
@@ -1163,8 +1166,9 @@ class _SearchModuleState extends State<SearchModule>
     return [
       if (isNotCurrentUser)
         SlideActionButton(
+          borderRadius: BorderRadius.circular(5),
           icon: Icons.payments_rounded,
-          onTap: () async {
+          onPressed: (context) async {
             if (appConfigurationModel?.enablePayment == true) {
               // customerProfileBloc.customer =
               //     await UserAuth().fetchCustomerProfile(user.userName);
@@ -1180,14 +1184,14 @@ class _SearchModuleState extends State<SearchModule>
               showToast(message: 'Payment not available at the moment');
             }
           },
-          title: AppLocalization.of(context)!.request,
+          label: AppLocalization.of(context)!.request,
           backgroundColor: navyBlue,
-          slideController: slidableController,
         ),
       if (isNotCurrentUser)
         SlideActionButton(
+          borderRadius: BorderRadius.circular(5),
           icon: Icons.payments_rounded,
-          onTap: () async {
+          onPressed: (context) async {
             if (appConfigurationModel?.enablePayment == true) {
               // customerProfileBloc.customer =
               //     await UserAuth().fetchCustomerProfile(user.userName);
@@ -1200,9 +1204,8 @@ class _SearchModuleState extends State<SearchModule>
               showToast(message: 'Payment not available at the moment');
             }
           },
-          title: AppLocalization.of(context)!.send,
+          label: AppLocalization.of(context)!.send,
           backgroundColor: naturalGreen,
-          slideController: slidableController,
         ),
     ];
   }
@@ -1212,23 +1215,23 @@ class _SearchModuleState extends State<SearchModule>
       if (!userConnectionNames.contains(user.userName) &&
           user.userName != userBloc!.user.userName)
         SlideActionButton(
+          borderRadius: BorderRadius.circular(5),
           icon: SlydoAppIcon.add,
-          onTap: () async {
+          onPressed: (context) async {
             connectUserAlert(user);
           },
-          title: 'Connect',
+          label: 'Connect',
           backgroundColor: naturalGreen,
-          slideController: slidableController,
         ),
       if (userBloc!.user.userName != user.userName)
         SlideActionButton(
+          borderRadius: BorderRadius.circular(5),
           icon: SlydoAppIcon.block,
-          onTap: () async {
+          onPressed: (context) async {
             blockUserAlert(user);
           },
-          title: 'Block',
+          label: 'Block',
           backgroundColor: mateRed,
-          slideController: slidableController,
         ),
     ];
   }
@@ -1236,8 +1239,6 @@ class _SearchModuleState extends State<SearchModule>
   Widget _getSlidableWithLists1(
       BuildContext context, Widget searchCard, Product product) {
     return Slidable(
-      controller: slidableController1,
-      direction: Axis.horizontal,
       startActionPane: ActionPane(
         motion: const BehindMotion(),
         extentRatio: 0.25,
@@ -1255,16 +1256,16 @@ class _SearchModuleState extends State<SearchModule>
   List<Widget> listSecondaryActions1(Product product) {
     return [
       SlideActionButton(
+        borderRadius: BorderRadius.circular(5),
         icon: SlydoAppIcon.cart,
-        onTap: () async {
+        onPressed: (context) async {
           customerProfileBloc.customer =
               await UserAuth().fetchCustomerProfile(product.seller);
           Navigator.of(context).pushNamed(Routes.SEND_PAYMENT,
               arguments: {'isFromProfile': false, 'product': product});
         },
-        title: AppLocalization.of(context)!.buy,
+        label: AppLocalization.of(context)!.buy,
         backgroundColor: naturalGreen,
-        slideController: slidableController1,
       ),
     ];
   }
@@ -1272,16 +1273,16 @@ class _SearchModuleState extends State<SearchModule>
   List<Widget> listActionSlideActions1(Product product) {
     return [
       SlideActionButton(
+        borderRadius: BorderRadius.circular(5),
         icon: SlydoAppIcon.text_message,
-        onTap: () async {
+        onPressed: (context) async {
           Navigator.of(context).pushNamed(Routes.COMPOSE_MESSAGE, arguments: {
             'recipient': product.seller,
             'subject': product.name,
           });
         },
-        title: "Message",
+        label: "Message",
         backgroundColor: navyBlue,
-        slideController: slidableController1,
       ),
     ];
   }
@@ -1289,8 +1290,6 @@ class _SearchModuleState extends State<SearchModule>
   Widget _getSlidableWithLists2(
       BuildContext context, Widget searchCard, Service service) {
     return Slidable(
-      controller: slidableController2,
-      direction: Axis.horizontal,
       startActionPane: ActionPane(
         motion: const BehindMotion(),
         extentRatio: 0.25,
@@ -1308,11 +1307,11 @@ class _SearchModuleState extends State<SearchModule>
   List<Widget> listSecondaryActions2(Service service) {
     return [
       SlideActionButton(
-          title: AppLocalization.of(context)!.buy,
+          borderRadius: BorderRadius.circular(5),
+          label: AppLocalization.of(context)!.buy,
           backgroundColor: naturalGreen,
-          slideController: slidableController2,
           icon: SlydoAppIcon.cart,
-          onTap: () async {
+          onPressed: (context) async {
             customerProfileBloc.customer =
                 await UserAuth().fetchCustomerProfile(service.provider);
             Navigator.of(context).pushNamed(Routes.SEND_PAYMENT,
@@ -1324,11 +1323,11 @@ class _SearchModuleState extends State<SearchModule>
   List<Widget> listActionSlideActions2(Service service) {
     return [
       SlideActionButton(
-        title: AppLocalization.of(context)!.message,
+        borderRadius: BorderRadius.circular(5),
+        label: AppLocalization.of(context)!.message,
         backgroundColor: navyBlue,
-        slideController: slidableController2,
         icon: SlydoAppIcon.text_message,
-        onTap: () async {
+        onPressed: (context) async {
           Navigator.of(context).pushNamed(Routes.COMPOSE_MESSAGE, arguments: {
             'recipient': service.provider,
             'subject': service.name,

@@ -17,13 +17,13 @@ import 'package:Slydo/screens/more_apps/yarn/share_as_a_yarn_screen.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_dashboard_bloc.dart';
 import 'package:Slydo/services/app_config_bloc.dart';
-import 'package:Slydo/services/app_tutorial_controller.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/slydo_app_icon_new_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/bottom_sheet_item.dart';
+import 'package:Slydo/widget/cart_with_badge.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:badges/badges.dart' as badges;
@@ -116,9 +116,9 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
 
     if (searchedUser != null) {
       hasAddress = searchedUser?.userAbout?.userAddress?.addressLine1 != null &&
-          (searchedUser!.userAbout?.userAddress?.addressLine1?.isNotEmpty ??
+          (searchedUser?.userAbout?.userAddress?.addressLine1?.isNotEmpty ??
               false);
-      hasContact = searchedUser!.userAbout?.contact != null &&
+      hasContact = searchedUser?.userAbout?.contact != null &&
           (searchedUser?.userAbout?.contact.isNotEmpty ?? false);
 
       if (mounted) setState(() {});
@@ -1129,66 +1129,18 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
   }
 
   Widget _cartBtn() {
-    return RoundedBackgroundIcon(
+    return CartWithBadge(
+      items: basketBloc.basketItems,
       height: 34,
       width: 34,
-      key: tutorialProfileCartKey,
-      icon: badges.Badge(
-        badgeContent: getBadgeContent(),
-        position: badges.BadgePosition.topEnd(
-            end: getBadgeCount().length == 1 ? -3 : 0, top: 0),
-        badgeAnimation: const badges.BadgeAnimation.rotation(
-          animationDuration: Duration(seconds: 1),
-          colorChangeAnimationDuration: Duration(seconds: 1),
-          loopAnimation: false,
-          curve: Curves.fastOutSlowIn,
-          colorChangeAnimationCurve: Curves.easeInCubic,
-        ),
-        badgeStyle: badges.BadgeStyle(
-          shape: badges.BadgeShape.circle,
-          badgeColor: naturalGreen,
-          padding: basketBloc.basketItems.isEmpty
-              ? const EdgeInsets.all(0)
-              : const EdgeInsets.all(4),
-          elevation: 0,
-        ),
-        child: const Center(
-          child: Icon(
-            SlydoAppIconNew.cart,
-            color: Colors.white,
-            size: 16,
-          ),
-        ),
-      ),
       backgroundColor: lightGrey.withOpacity(0.1),
       enableMargin: false,
+      iconColor: Colors.white,
+      position: badges.BadgePosition.topEnd(end: 0, top: -3),
       onTap: () {
         NavigationUtil.pushNamed(context, routeName: Routes.SHOPPING_CART);
       },
     );
-  }
-
-  Widget? getBadgeContent() {
-    if (basketBloc.basketItems.isEmpty) {
-      return null;
-    }
-    return Text(
-      getBadgeCount(),
-      style: const TextStyle(
-        fontFamily: 'Inter',
-        fontSize: 10,
-        color: Colors.white,
-        fontWeight: FontWeight.bold,
-      ),
-    );
-  }
-
-  String getBadgeCount() {
-    int totalItem = 0;
-    basketBloc.basketItems.forEach((element) {
-      totalItem = totalItem + int.parse(element.qty.toString());
-    });
-    return totalItem > 99 ? '99+' : totalItem.toString();
   }
 
   Widget getQRCodeIcon() {
@@ -1325,7 +1277,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
         userProfileActionsSheet(context);
       },
       backgroundColor: lightGrey.withOpacity(0.1),
-      enableMargin: true,
+      enableMargin: false,
     );
   }
 

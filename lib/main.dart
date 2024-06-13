@@ -63,64 +63,83 @@ String appVersion = '';
 final logger = Logger();
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  runZonedGuarded(() async {
+    WidgetsFlutterBinding.ensureInitialized();
 
-  HttpOverrides.global = MyHttpOverrides();
-  await GetStorage.init();
-  BindingBase.debugZoneErrorsAreFatal = true;
+    HttpOverrides.global = MyHttpOverrides();
+    await GetStorage.init();
+    BindingBase.debugZoneErrorsAreFatal = true;
 
-  final PackageInfo packageInfo = await PackageInfo.fromPlatform();
-  appVersion = packageInfo.version;
+    final PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    appVersion = packageInfo.version;
 
-  cameras = await availableCameras();
-  locatorSetup();
-  AppConfig();
+    cameras = await availableCameras();
+    locatorSetup();
+    AppConfig();
 
-  /// ENABLE and DISABLE Logs
-  AppConfig.enableLogs.value = true;
+    /// ENABLE and DISABLE Logs
+    AppConfig.enableLogs.value = true;
 
-  getAppFeaturesFromServer();
-  await FlutterDownloader.initialize();
-  await Firebase
-      .initializeApp(); // initialize firebase before actual app get start.
+    getAppFeaturesFromServer();
+    await FlutterDownloader.initialize();
+    await Firebase
+        .initializeApp(); // initialize firebase before actual app get start.
 
-  AwesomeNotificationService().init();
+    AwesomeNotificationService().init();
 
-  FirebaseMessaging.onBackgroundMessage(fcmBackgroundMessageHandler);
+    FirebaseMessaging.onBackgroundMessage(fcmBackgroundMessageHandler);
 
-  await LocalNotificationService().init();
-
-  runApp(
-    MultiProvider(providers: providersList, child: const MyApp()),
-  );
-
-  if (kDebugMode) {
-    await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(false);
-  } else {
-    await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);
-  }
-
-  // Pass all uncaught errors to Crashlytics.
-  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
-
-  // to set orientation only vertical
-  SystemChrome.setPreferredOrientations(
-    [
+    await LocalNotificationService().init();
+    // Set orientation only to vertical
+    await SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
-    ],
-  ).then((value) {
-    runZonedGuarded(() {
-      runApp(
-        MultiProvider(providers: providersList, child: const MyApp()),
-      );
-    }, (exception, stack) {
-      FirebaseCrashlytics.instance.recordError(exception, stack);
-//    final _auth = AuthService();
-//    _auth.logOut();
-//    exit(0);
-    });
+    ]);
+
+    // Run the app
+    runApp(
+      MultiProvider(providers: providersList, child: const MyApp()),
+    );
+
+    // Configure Firebase Crashlytics
+    if (kDebugMode) {
+      await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(false);
+    } else {
+      await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);
+    }
+
+    // Pass all uncaught errors to Crashlytics
+    FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
+  }, (exception, stack) {
+    FirebaseCrashlytics.instance.recordError(exception, stack);
   });
+//   if (kDebugMode) {
+//     await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(false);
+//   } else {
+//     await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);
+//   }
+//
+//   // Pass all uncaught errors to Crashlytics.
+//   FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
+//
+//   // to set orientation only vertical
+//   SystemChrome.setPreferredOrientations(
+//     [
+//       DeviceOrientation.portraitUp,
+//       DeviceOrientation.portraitDown,
+//     ],
+//   ).then((value) {
+//     runZonedGuarded(() {
+//       runApp(
+//         MultiProvider(providers: providersList, child: const MyApp()),
+//       );
+//     }, (exception, stack) {
+//       FirebaseCrashlytics.instance.recordError(exception, stack);
+// //    final _auth = AuthService();
+// //    _auth.logOut();
+// //    exit(0);
+//     });
+//   });
 }
 
 void getAppFeaturesFromServer() async {

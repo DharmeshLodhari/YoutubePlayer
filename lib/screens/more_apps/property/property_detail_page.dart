@@ -115,7 +115,7 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
     _propertyDashboardBloc = Provider.of<PropertyDashboardBloc>(context);
     return PopScope(
       onPopInvoked: (didPop) {
-        if(didPop) {
+        if (didPop) {
           _propertyDashboardBloc.index = 0;
           return;
         }
@@ -164,7 +164,7 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
       ),
       onTap: () {},
       backgroundColor: iconBtnGrey,
-      enableMargin: true,
+      enableMargin: false,
     );
   }
 

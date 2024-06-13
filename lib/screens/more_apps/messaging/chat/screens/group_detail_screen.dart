@@ -39,8 +39,6 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
   final GlobalKey<ScaffoldState> _scaffoldGroupDetailScreen =
       GlobalKey<ScaffoldState>();
 
-  late final SlidableController _slideController = SlidableController(this);
-
   GroupDetailModel? groupDetail;
   bool isLoading = false;
 
@@ -447,13 +445,28 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
           const SizedBox(
             height: 8,
           ),
-          Column(
-              children: groupDetail!.participants
-                  .asMap()
-                  .map((index, value) =>
-                      MapEntry(index, getUserTile(index: index, user: value)))
-                  .values
-                  .toList()),
+          SlidableAutoCloseBehavior(
+            closeWhenOpened: true,
+            child: ListView.builder(
+              padding: const EdgeInsets.all(4),
+              itemCount: groupDetail!.participants.length,
+              itemBuilder: (BuildContext context, int index) {
+                return Column(
+                  children: [
+                    getUserTile(
+                        index: index, user: groupDetail!.participants[index]),
+                  ],
+                );
+              },
+            ),
+          ),
+          // Column(
+          //     children: groupDetail!.participants
+          //         .asMap()
+          //         .map((index, value) =>
+          //             MapEntry(index, getUserTile(index: index, user: value)))
+          //         .values
+          //         .toList()),
           const SizedBox(
             height: 16,
           ),
@@ -653,8 +666,6 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
       BuildContext context, CustomerProfile user, int? index) {
     return Slidable(
       key: UniqueKey(),
-      controller: _slideController,
-      direction: Axis.horizontal,
       startActionPane: ActionPane(
         motion: const BehindMotion(),
         extentRatio: 0.20,
@@ -703,55 +714,59 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
     if (isCurrentUserIsAdmin) {
       leftSwipeActions.add(
         SlideActionButton(
-            backgroundColor: mateRed,
-            icon: SlydoAppIcon.remove,
-            onTap: () {
-              removeParticipantFromGroup(index!);
-            },
-            title: "Remove",
-            slideController: _slideController),
+          borderRadius: BorderRadius.circular(5),
+          backgroundColor: mateRed,
+          icon: SlydoAppIcon.remove,
+          onPressed: (context) {
+            removeParticipantFromGroup(index!);
+          },
+          label: "Remove",
+        ),
       );
     }
 
     if (!isBlocked && isCurrentUserIsAdmin) {
       leftSwipeActions.add(
         SlideActionButton(
-            backgroundColor: lightGrey,
-            icon: SlydoAppIcon.block,
-            iconColor: blackFont,
-            onTap: () {
-              blockParticipantFromGroup(index!);
-            },
-            title: "Block",
-            slideController: _slideController),
+          borderRadius: BorderRadius.circular(5),
+          backgroundColor: lightGrey,
+          icon: SlydoAppIcon.block,
+          iconColor: blackFont,
+          onPressed: (context) {
+            blockParticipantFromGroup(index!);
+          },
+          label: "Block",
+        ),
       );
     }
 
     if (!isMuted && isCurrentUserIsAdmin) {
       leftSwipeActions.add(
         SlideActionButton(
-            backgroundColor: lightGrey,
-            icon: SlydoAppIcon.mute,
-            iconColor: blackFont,
-            onTap: () {
-              muteParticipantFromGroup(index!);
-            },
-            title: "Mute",
-            slideController: _slideController),
+          borderRadius: BorderRadius.circular(5),
+          backgroundColor: lightGrey,
+          icon: SlydoAppIcon.mute,
+          iconColor: blackFont,
+          onPressed: (context) {
+            muteParticipantFromGroup(index!);
+          },
+          label: "Mute",
+        ),
       );
     }
 
     if (isAdmin && isCurrentUserIsAdmin) {
       leftSwipeActions.add(
         SlideActionButton(
-            backgroundColor: lightGrey,
-            icon: SlydoAppIcon.remove_admin,
-            iconColor: blackFont,
-            onTap: () {
-              removeParticipantFromAdmin(index!);
-            },
-            title: "Remove from admin",
-            slideController: _slideController),
+          borderRadius: BorderRadius.circular(5),
+          backgroundColor: lightGrey,
+          icon: SlydoAppIcon.remove_admin,
+          iconColor: blackFont,
+          onPressed: (context) {
+            removeParticipantFromAdmin(index!);
+          },
+          label: "Remove from admin",
+        ),
       );
     }
 
@@ -791,28 +806,28 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
 
     if (isMuted && isCurrentUserIsAdmin) {
       rightSwipeAction.add(SlideActionButton(
+        borderRadius: BorderRadius.circular(5),
         backgroundColor: lightGrey,
         icon: SlydoAppIcon.unmute,
         iconColor: blackFont,
-        onTap: () {
+        onPressed: (context) {
           unMuteParticipantFromGroup(index!);
         },
-        title: "Unmute",
-        slideController: _slideController,
+        label: "Unmute",
       ));
     }
 
     if (isBlocked && isCurrentUserIsAdmin) {
       rightSwipeAction.add(
         SlideActionButton(
+          borderRadius: BorderRadius.circular(5),
           backgroundColor: lightGrey,
           icon: SlydoAppIcon.unblock,
           iconColor: blackFont,
-          onTap: () {
+          onPressed: (context) {
             unBlockParticipantFromGroup(index!);
           },
-          title: "Unblock",
-          slideController: _slideController,
+          label: "Unblock",
         ),
       );
     }
@@ -820,13 +835,13 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
     if (!isAdmin && isCurrentUserIsAdmin) {
       rightSwipeAction.add(
         SlideActionButton(
+          borderRadius: BorderRadius.circular(5),
           backgroundColor: naturalGreen,
           icon: SlydoAppIcon.make_admin,
-          onTap: () {
+          onPressed: (context) {
             makeParticipantAdmin(index!);
           },
-          title: "Make admin",
-          slideController: _slideController,
+          label: "Make admin",
         ),
       );
     }

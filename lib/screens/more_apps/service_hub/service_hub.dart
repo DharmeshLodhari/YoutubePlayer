@@ -475,8 +475,7 @@ class _SuperHubState extends State<SuperHub> {
 
 class SuperStoreSingleCard extends StatelessWidget {
   final Service service;
-  const SuperStoreSingleCard({super.key, required this.service})
-     ;
+  const SuperStoreSingleCard({super.key, required this.service});
 
   @override
   Widget build(BuildContext context) {

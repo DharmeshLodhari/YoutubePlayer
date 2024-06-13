@@ -236,57 +236,69 @@ class _VerifyRegistrationOTPScreenState
   }
 
   Widget otpFillUpField() {
-    final BoxDecoration navyBlueBorder = BoxDecoration(
-      border: Border(
+    final defaultPinTheme = PinTheme(
+      width: 50,
+      height: 45,
+      textStyle: TextStyle(
+        fontSize: 32,
+        color: blackFont,
+        fontWeight: FontWeight.w600,
+        fontFamily: "Inter",
+      ),
+      decoration: BoxDecoration(
+        border: Border(
           bottom: BorderSide(
-        color: navyBlue,
-        width: 2,
-      )),
+            color: darkGrey,
+            width: 2,
+          ),
+        ),
+      ),
     );
-    final BoxDecoration grayBorder = BoxDecoration(
-      border: Border(
-          bottom: BorderSide(
-        color: HexColor("#E6E5EB"),
-        width: 2,
-      )),
-    );
+
     return Card(
+      color: Colors.white,
       margin: EdgeInsets.zero,
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
           side: BorderSide(color: whiteBackground)),
       shadowColor: whiteBackground,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 28),
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
         child: Pinput(
           length: widget.arguments['isWalletFunding'] != null ? 5 : 6,
           focusNode: _pinPutFocusNode,
           controller: otpController,
           inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-          defaultPinTheme: PinTheme(
-            width: 40,
-            height: 45,
-            textStyle: TextStyle(
-              fontSize: 32,
-              color: blackFont,
-              fontWeight: FontWeight.w600,
-              fontFamily: "Inter",
-            ),
+          showCursor: false,
+          defaultPinTheme: defaultPinTheme,
+          focusedPinTheme: defaultPinTheme.copyWith(
             decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey),
-              borderRadius: BorderRadius.circular(8),
+              border: Border(
+                bottom: BorderSide(
+                    color: HexColor("#E6E5EB"),
+                    width: 2), // Underline with different color when focused
+              ),
             ),
           ),
-          focusedPinTheme: PinTheme(
-            decoration: grayBorder,
+          submittedPinTheme: defaultPinTheme.copyWith(
+            decoration: BoxDecoration(
+              border: Border(
+                bottom: BorderSide(
+                    color: navyBlue,
+                    width: 2), // Underline with different color when focused
+              ),
+            ),
           ),
-          submittedPinTheme: PinTheme(
-            decoration: navyBlueBorder,
+          followingPinTheme: defaultPinTheme.copyWith(
+            decoration: BoxDecoration(
+              border: Border(
+                bottom: BorderSide(
+                    color: HexColor("#E6E5EB"),
+                    width: 2), // Underline with different color when focused
+              ),
+            ),
           ),
-          followingPinTheme: PinTheme(
-            decoration: grayBorder,
-          ),
-          pinAnimationType: PinAnimationType.scale,
           validator: (val) {
             if (widget.arguments['isWalletFunding'] != null) {
               if (val!.length != 5) {

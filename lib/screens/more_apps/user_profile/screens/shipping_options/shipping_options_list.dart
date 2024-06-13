@@ -40,8 +40,6 @@ class _ShippingOptionsListState extends State<ShippingOptionsList>
   bool isLoading = false;
   bool noItemInList = false;
 
-  late final SlidableController _slideController = SlidableController(this);
-
   @override
   void initState() {
     getList();
@@ -162,23 +160,27 @@ class _ShippingOptionsListState extends State<ShippingOptionsList>
           )
         : isLoading && shippingOptionsList.isEmpty
             ? buildLoadingIndicator(isLoading: isLoading)
-            : ListView.builder(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                //+1 for progressbar
-                itemCount: shippingOptionsList.length + 1,
-                itemBuilder: (BuildContext context, int index) {
-                  if (index == shippingOptionsList.length) {
-                    return buildJumpingLoadingIndicator(isLoading: isLoading);
-                  } else {
-                    return _getSlidableWithLists(
-                        context,
-                        bankAccountTile(
-                          shippingModel: shippingOptionsList[index],
-                        ),
-                        shippingOptionsList[index]);
-                  }
-                },
-                controller: _scrollController,
+            : SlidableAutoCloseBehavior(
+                closeWhenOpened: true,
+                child: ListView.builder(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 16, horizontal: 4),
+                  //+1 for progressbar
+                  itemCount: shippingOptionsList.length + 1,
+                  itemBuilder: (BuildContext context, int index) {
+                    if (index == shippingOptionsList.length) {
+                      return buildJumpingLoadingIndicator(isLoading: isLoading);
+                    } else {
+                      return _getSlidableWithLists(
+                          context,
+                          bankAccountTile(
+                            shippingModel: shippingOptionsList[index],
+                          ),
+                          shippingOptionsList[index]);
+                    }
+                  },
+                  controller: _scrollController,
+                ),
               );
   }
 
@@ -276,8 +278,6 @@ class _ShippingOptionsListState extends State<ShippingOptionsList>
   Widget _getSlidableWithLists(BuildContext context, Widget bankAccountTile,
       ShippingOptionsListModel shippingModel) {
     return Slidable(
-      controller: _slideController,
-      direction: Axis.horizontal,
       startActionPane: ActionPane(
         motion: const BehindMotion(),
         extentRatio: 0.25,
@@ -296,22 +296,23 @@ class _ShippingOptionsListState extends State<ShippingOptionsList>
       {required ShippingOptionsListModel shippingModel}) {
     return [
       SlideActionButton(
-          backgroundColor: starYellow,
-          icon: Icons.edit,
-          onTap: () {
-            Navigator.of(context).pushNamed(
-              Routes.EDIT_SHIPPING_OPTIONS,
-              arguments: <String, dynamic>{
-                'price': shippingModel.price,
-                'name': shippingModel.name,
-                'id': shippingModel.id,
-                'currency': shippingModel.currency,
-                'callback': onCallback,
-              },
-            );
-          },
-          title: AppLocalization.of(context)!.edit,
-          slideController: _slideController),
+        borderRadius: BorderRadius.circular(5),
+        backgroundColor: starYellow,
+        icon: Icons.edit,
+        onPressed: (context) {
+          Navigator.of(context).pushNamed(
+            Routes.EDIT_SHIPPING_OPTIONS,
+            arguments: <String, dynamic>{
+              'price': shippingModel.price,
+              'name': shippingModel.name,
+              'id': shippingModel.id,
+              'currency': shippingModel.currency,
+              'callback': onCallback,
+            },
+          );
+        },
+        label: AppLocalization.of(context)!.edit,
+      ),
     ];
   }
 
@@ -319,13 +320,14 @@ class _ShippingOptionsListState extends State<ShippingOptionsList>
       {ShippingOptionsListModel? shippingModel}) {
     return [
       SlideActionButton(
-          backgroundColor: mateRed,
-          icon: SlydoAppIcon.remove,
-          onTap: () {
-            showDeleteShippingOptionDialog(shippingModel);
-          },
-          title: AppLocalization.of(context)!.delete,
-          slideController: _slideController),
+        borderRadius: BorderRadius.circular(5),
+        backgroundColor: mateRed,
+        icon: SlydoAppIcon.remove,
+        onPressed: (context) {
+          showDeleteShippingOptionDialog(shippingModel);
+        },
+        label: AppLocalization.of(context)!.delete,
+      ),
     ];
   }
 

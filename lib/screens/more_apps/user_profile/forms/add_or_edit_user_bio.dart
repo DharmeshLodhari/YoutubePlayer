@@ -360,35 +360,35 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
                 cursorColor: navyBlue,
                 decoration: InputDecoration(
                   enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(5),
                     borderSide: BorderSide(
                       color: greyBorderColor,
                       width: 1.0,
                     ),
                   ),
                   disabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(5),
                     borderSide: BorderSide(
                       color: greyBorderColor,
                       width: 1.0,
                     ),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(5),
                     borderSide: BorderSide(
                       color: navyBlue,
                       width: 1.0,
                     ),
                   ),
                   errorBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(5),
                     borderSide: BorderSide(
                       color: greyBorderColor,
                       width: 1.0,
                     ),
                   ),
                   focusedErrorBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(5),
                     borderSide: BorderSide(
                       color: greyBorderColor,
                       width: 1.0,
@@ -1200,7 +1200,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
       ),
       onTap: selectProfileCoverAction,
       backgroundColor: lightGrey,
-      enableMargin: true,
+      enableMargin: false,
     );
   }
 

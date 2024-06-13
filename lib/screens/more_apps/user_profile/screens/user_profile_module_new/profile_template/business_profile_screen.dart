@@ -432,6 +432,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
               TabBar(
                 controller: _tabController,
                 isScrollable: true,
+                labelPadding: EdgeInsets.zero,
                 indicator: const BoxDecoration(),
                 onTap: (int index) {
                   changeIndex(index);

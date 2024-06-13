@@ -82,12 +82,12 @@ class _SendPaymentState extends State<SendPayment> {
             },
             child: SvgPicture.asset(
               'assets/images/rider/scan_qr.svg',
-              width: 20,
-              height: 20,
+              width: 18,
+              height: 18,
             ),
           ),
         const SizedBox(
-          width: 20,
+          width: 15,
         ),
       ],
     );

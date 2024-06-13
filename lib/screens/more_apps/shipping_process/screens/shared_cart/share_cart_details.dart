@@ -78,7 +78,7 @@ class _SharedCartDetailsState extends State<SharedCartDetails> {
       color: white,
       child: PopScope(
         onPopInvoked: (didPop) async {
-          if(didPop) {
+          if (didPop) {
             Navigator.of(context).pop(isQtyChange);
             return;
           }
@@ -384,8 +384,9 @@ class _SharedCartDetailsState extends State<SharedCartDetails> {
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) async {
       final connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
+      if (connectionResult.contains(ConnectivityResult.wifi) ||
+          connectionResult.contains(ConnectivityResult.ethernet) ||
+          connectionResult.contains(ConnectivityResult.mobile)) {
         if (mounted) setState(() {});
         await sharedCartBloc.refreshSharedCartProduct(
             context, sharedCartBloc.getSharedCartModel());

@@ -24,10 +24,10 @@ import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/bottom_sheet_item.dart';
+import 'package:Slydo/widget/cart_with_badge.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
-import 'package:badges/badges.dart' as badges;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
@@ -266,15 +266,12 @@ class _ProductDetailPageState extends State<ProductDetailPage>
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
       actions: <Widget>[
-        menuBtn(),
-        if (isValidCustomer)
-          const SizedBox(
-            width: 8,
-          )
-        else
-          Container(),
         if (isValidCustomer) goToCartWidget() else Container(),
-        const SizedBox(width: 16),
+        const SizedBox(
+          width: 15,
+        ),
+        menuBtn(),
+        const SizedBox(width: 15),
       ],
     );
   }
@@ -305,8 +302,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
   Widget menuBtn() {
     return RoundedBackgroundIcon(
-      height: 34,
-      width: 34,
+      height: 30,
+      width: 30,
       icon: Icon(
         SlydoAppIcon.menu,
         size: 16,
@@ -315,7 +312,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       onTap: () {
         showUserProfileActionsSheet();
       },
-      backgroundColor: iconBtnGrey,
+      backgroundColor: transparent,
       enableMargin: true,
     );
   }
@@ -479,38 +476,15 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   Widget goToCartWidget() {
-    return RoundedBackgroundIcon(
-      height: 34,
-      width: 34,
-      icon: badges.Badge(
-        badgeContent: getBadgeContent(),
-        position: badges.BadgePosition.topEnd(end: 0, top: 0),
-        badgeAnimation: const badges.BadgeAnimation.rotation(
-          animationDuration: Duration(seconds: 1),
-          colorChangeAnimationDuration: Duration(seconds: 1),
-          loopAnimation: false,
-          curve: Curves.fastOutSlowIn,
-          colorChangeAnimationCurve: Curves.easeInCubic,
-        ),
-        badgeStyle: badges.BadgeStyle(
-            shape: badges.BadgeShape.circle,
-            badgeColor: naturalGreen,
-            padding: basketBloc.basketItems.isEmpty
-                ? const EdgeInsets.all(0)
-                : const EdgeInsets.all(4)),
-        child: Center(
-          child: Icon(
-            SlydoAppIcon.cart,
-            size: 16,
-            color: blackFont,
-          ),
-        ),
-      ),
+    return CartWithBadge(
+      items: basketBloc.basketItems,
+      height: 30,
+      width: 30,
+      backgroundColor: transparent,
+      enableMargin: true,
       onTap: () {
         NavigationUtil.pushNamed(context, routeName: Routes.SHOPPING_CART);
       },
-      backgroundColor: iconBtnGrey,
-      enableMargin: true,
     );
   }
 
@@ -946,39 +920,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     }
 
     return totalQuantity;
-  }
-
-  Widget? getBadgeContent() {
-    if (basketBloc.basketItems.isEmpty) {
-      return null;
-    }
-    return Text(
-      getBadgeCount().toString(),
-      style: const TextStyle(
-          fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold),
-    );
-  }
-
-  String getBadgeCount() {
-    int totalItem = 0;
-
-    for (var item in basketBloc.basketItems) {
-      if (item.item is Product) {
-        if (item.variants != null) {
-          // If there are variants, calculate the total quantity from variants
-
-          totalItem +=
-              int.parse(item.getVariant()?.quantity?.toString() ?? "0");
-        } else {
-          // If the variant list is empty, add the quantity to the total
-          totalItem += int.parse(item.qty.toString());
-        }
-      } else if (item.item is Service) {
-        totalItem += int.parse(item.qty.toString());
-      }
-    }
-
-    return totalItem > 99 ? '99+' : totalItem.toString();
   }
 
   Widget floatingActionBar() {

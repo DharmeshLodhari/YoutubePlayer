@@ -84,5 +84,7 @@
     <array>
        <string>applinks:slydo.co</string>
     </array>
+    <key>ITSAppUsesNonExemptEncryption</key>
+    <false/>
 </dict>
 </plist>

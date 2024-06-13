@@ -2,6 +2,7 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/widget/custom_slydo_usercard.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../../../utils/util.dart';
@@ -13,8 +14,7 @@ class FollowingAndFollowersList extends StatefulWidget {
   final String userName;
   final int index;
   const FollowingAndFollowersList(
-      {super.key, required this.userName, this.index = 0})
-     ;
+      {super.key, required this.userName, this.index = 0});
 
   @override
   _FollowingAndFollowersListState createState() =>
@@ -166,8 +166,7 @@ class FollowAndFollowersList extends StatefulWidget {
   final String userName;
   final bool isFollowing;
   const FollowAndFollowersList(
-      {super.key, required this.userName, required this.isFollowing})
-     ;
+      {super.key, required this.userName, required this.isFollowing});
 
   @override
   _FollowAndFollowersListState createState() => _FollowAndFollowersListState();
@@ -261,18 +260,21 @@ class _FollowAndFollowersListState extends State<FollowAndFollowersList> {
                 ),
                 controller: _refreshCtrl,
                 onRefresh: _onRefresh,
-                child: ListView.builder(
-                  physics: const ClampingScrollPhysics(),
-                  controller: _scrollCtrl,
-                  itemCount: usersList.length + 1,
-                  itemBuilder: (BuildContext context, int index) {
-                    if (index == usersList.length) {
-                      return buildJumpingLoadingIndicator(
-                          isLoading: _isLoading);
-                    } else {
-                      return CustomSlydoUserCard(user: usersList[index]);
-                    }
-                  },
+                child: SlidableAutoCloseBehavior(
+                  closeWhenOpened: true,
+                  child: ListView.builder(
+                    physics: const ClampingScrollPhysics(),
+                    controller: _scrollCtrl,
+                    itemCount: usersList.length + 1,
+                    itemBuilder: (BuildContext context, int index) {
+                      if (index == usersList.length) {
+                        return buildJumpingLoadingIndicator(
+                            isLoading: _isLoading);
+                      } else {
+                        return CustomSlydoUserCard(user: usersList[index]);
+                      }
+                    },
+                  ),
                 ),
               );
   }

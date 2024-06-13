@@ -32,7 +32,6 @@ class _ConnectionRequestListState extends State<ConnectionRequestList>
       _scaffoldMessengerContactRequestListKey =
       GlobalKey<ScaffoldMessengerState>();
   late UserBloc userBloc;
-  late final SlidableController _slideController = SlidableController(this);
   int? count = 0;
   String? next = "";
   String? previous = "";
@@ -115,19 +114,23 @@ class _ConnectionRequestListState extends State<ConnectionRequestList>
           )
         : isLoading && connectionRequestList.isEmpty
             ? buildLoadingIndicator(isLoading: isLoading)
-            : ListView.builder(
-                padding: const EdgeInsets.only(bottom: 80.0),
-                //+1 for progressbar
-                itemCount: connectionRequestList.length + 1,
-                itemBuilder: (BuildContext context, int index) {
-                  if (index == connectionRequestList.length) {
-                    return buildJumpingLoadingIndicator(isLoading: isLoading);
-                  } else {
-                    return _getSlidableWithLists(
-                        context, connectionRequestList[index], index);
-                  }
-                },
-                controller: _scrollController,
+            : SlidableAutoCloseBehavior(
+                closeWhenOpened: true,
+                child: ListView.builder(
+                  padding: const EdgeInsets.only(
+                      left: 4, right: 4, bottom: 80.0, top: 10),
+                  //+1 for progressbar
+                  itemCount: connectionRequestList.length + 1,
+                  itemBuilder: (BuildContext context, int index) {
+                    if (index == connectionRequestList.length) {
+                      return buildJumpingLoadingIndicator(isLoading: isLoading);
+                    } else {
+                      return _getSlidableWithLists(
+                          context, connectionRequestList[index], index);
+                    }
+                  },
+                  controller: _scrollController,
+                ),
               );
   }
 
@@ -184,22 +187,18 @@ class _ConnectionRequestListState extends State<ConnectionRequestList>
     final CustomerProfile fromUser =
         CustomerProfile.fromJson(data["from_user"]);
     final CustomerProfile toUser = CustomerProfile.fromJson(data["to_user"]);
-
     final bool isRequestSent = fromUser.userName == userBloc.user.userName;
-    return isRequestSent
-        ? []
-        : [
-            SlideActionButton(
-              backgroundColor: navyBlue,
-              icon: SlydoAppIcon.send_connection_request,
-              onTap: () {
-                acceptFriendRequestAlert(
-                    isRequestSent ? toUser : fromUser, index);
-              },
-              title: AppLocalization.of(context)!.accept,
-              slideController: _slideController,
-            ),
-          ];
+    return [
+      SlideActionButton(
+        borderRadius: BorderRadius.circular(5),
+        backgroundColor: navyBlue,
+        icon: SlydoAppIcon.send_connection_request,
+        onPressed: (context) {
+          acceptFriendRequestAlert(isRequestSent ? toUser : fromUser, index);
+        },
+        label: AppLocalization.of(context)!.accept,
+      ),
+    ];
   }
 
   List<Widget> listActionSlideActions(Map data, int index) {
@@ -211,16 +210,16 @@ class _ConnectionRequestListState extends State<ConnectionRequestList>
 
     return [
       SlideActionButton(
+        borderRadius: BorderRadius.circular(5),
         backgroundColor: mateRed,
         icon: SlydoAppIcon.cancel_connection_request,
-        onTap: () {
+        onPressed: (context) {
           rejectRequestAlert(isRequestSent ? toUser : fromUser, index,
               isRequestSent: isRequestSent);
         },
-        title: isRequestSent
+        label: isRequestSent
             ? AppLocalization.of(context)!.cancel
             : AppLocalization.of(context)!.reject,
-        slideController: _slideController,
       ),
     ];
   }
@@ -327,10 +326,11 @@ class _ConnectionRequestListState extends State<ConnectionRequestList>
 
   Widget _getSlidableWithLists(
       BuildContext context, Map<String, dynamic> data, int index) {
+    final CustomerProfile fromUser =
+        CustomerProfile.fromJson(data["from_user"]);
+    final bool isRequestSent = fromUser.userName == userBloc.user.userName;
     return Slidable(
       key: Key(data["id"].toString()),
-      controller: _slideController,
-      direction: Axis.horizontal,
       startActionPane: ActionPane(
         motion: const BehindMotion(),
         extentRatio: 0.25,
@@ -338,7 +338,7 @@ class _ConnectionRequestListState extends State<ConnectionRequestList>
       ),
       endActionPane: ActionPane(
         motion: const BehindMotion(),
-        extentRatio: 0.25,
+        extentRatio: isRequestSent ? 0.0001 : 0.25,
         children: listSecondaryActions(data, index),
       ),
       child: VerticalListItem(data),

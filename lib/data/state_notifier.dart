@@ -260,8 +260,9 @@ class ShareMessageToChatBloc extends ChangeNotifier {
 
     /// Check for user is already in the list
     for (var element in _recipientUsers) {
-      if (element!.userName == chatConversation!.userName)
+      if (element!.userName == chatConversation!.userName) {
         isAlreadyPresent = true;
+      }
     }
 
     /// if user not present in the list then we add that user in recipient list

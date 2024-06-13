@@ -190,8 +190,15 @@ class _SuperBlogState extends State<SuperBlog> {
           Navigator.of(context).pushNamed(Routes.CREATE_BLOG);
         },
         backgroundColor: navyBlue,
+        mini: false,
+        heroTag: null,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(
+              50.0), // Set the border radius to create a circle
+        ),
         child: const Icon(
           Icons.add,
+          color: Colors.white,
           size: 30,
         ),
       ),
@@ -419,8 +426,7 @@ class _SuperBlogState extends State<SuperBlog> {
 
 class SlydoBlogsList extends StatefulWidget {
   final SlydoBlogsMenu slydoBlogsMenu;
-  const SlydoBlogsList({super.key, required this.slydoBlogsMenu})
-     ;
+  const SlydoBlogsList({super.key, required this.slydoBlogsMenu});
 
   @override
   _SlydoBlogsListState createState() => _SlydoBlogsListState();

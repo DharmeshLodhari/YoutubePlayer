@@ -7,8 +7,7 @@ import 'package:Slydo/screens/more_apps/rider_delivery/screens/find_jobs_tab.dar
 import 'package:Slydo/screens/more_apps/service_hub/screens/jobs_dashboard.dart';
 import 'package:Slydo/screens/more_apps/service_hub/service_hub.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
-import 'package:Slydo/widget/rounded_background_icon.dart';
-import 'package:badges/badges.dart' as badges;
+import 'package:Slydo/widget/cart_with_badge.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -85,7 +84,7 @@ class _ServiceHubDashboardState extends State<ServiceHubDashboard> {
         _searchBtn(),
         if (currentIndex == 0) ...[
           const SizedBox(
-            width: 20,
+            width: 15,
           ),
           _cartBtn(),
           const SizedBox(
@@ -94,7 +93,7 @@ class _ServiceHubDashboardState extends State<ServiceHubDashboard> {
         ],
         if (currentIndex == 1) ...[
           const SizedBox(
-            width: 20,
+            width: 15,
           ),
           _earningInfoBtn(),
           const SizedBox(
@@ -257,65 +256,16 @@ class _ServiceHubDashboardState extends State<ServiceHubDashboard> {
     );
   }
 
-  Widget? getBadgeContent() {
-    if (basketBloc.basketItems.isEmpty) {
-      return null;
-    }
-    return Text(
-      getBadgeCount(),
-      style: const TextStyle(
-        fontSize: 10,
-        color: Colors.white,
-        fontWeight: FontWeight.bold,
-        fontFamily: "Inter",
-      ),
-    );
-  }
-
-  String getBadgeCount() {
-    int totalItem = 0;
-    for (var element in basketBloc.basketItems) {
-      totalItem = totalItem + int.parse(element.qty.toString());
-    }
-    return totalItem > 99 ? '99+' : totalItem.toString();
-  }
-
   Widget _cartBtn() {
-    return RoundedBackgroundIcon(
-      height: 34,
-      width: 34,
-      icon: badges.Badge(
-        badgeStyle: badges.BadgeStyle(
-          shape: badges.BadgeShape.circle,
-          badgeColor: naturalGreen,
-          padding: basketBloc.basketItems.isEmpty
-              ? const EdgeInsets.all(0)
-              : const EdgeInsets.all(4),
-          elevation: 0,
-        ),
-        badgeAnimation: const badges.BadgeAnimation.rotation(
-          animationDuration: Duration(seconds: 1),
-          colorChangeAnimationDuration: Duration(seconds: 1),
-          loopAnimation: false,
-          curve: Curves.fastOutSlowIn,
-          colorChangeAnimationCurve: Curves.easeInCubic,
-        ),
-        badgeContent: getBadgeContent(),
-        position: badges.BadgePosition.topEnd(
-            end: getBadgeCount().length == 1 ? -1 : 0, top: 0),
-        child: Center(
-          child: Icon(
-            SlydoAppIcon.cart,
-            size: 16,
-            color: blackFont,
-          ),
-        ),
-      ),
+    return CartWithBadge(
+      items: basketBloc.basketItems,
+      height: 30,
+      width: 30,
+      backgroundColor: transparent,
+      enableMargin: true,
       onTap: () {
         Navigator.pushNamed(context, Routes.SHOPPING_CART);
       },
-      backgroundColor: lightGrey.withOpacity(0.1),
-      enableMargin: true,
     );
   }
 

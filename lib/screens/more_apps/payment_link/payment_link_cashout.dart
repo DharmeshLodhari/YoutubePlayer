@@ -874,57 +874,68 @@ class _PaymentLinkCashOutState extends State<PaymentLinkCashOut> {
   }
 
   Widget passwordPinFiled() {
-    final BoxDecoration pinPutDecoration = BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: greyBorderColor));
-    final BoxDecoration selectedDecoration = BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: navyBlue));
+    final defaultPinTheme = PinTheme(
+      width: 45,
+      height: 45,
+      margin: const EdgeInsets.symmetric(horizontal: 3),
+      textStyle: TextStyle(
+        fontSize: 35,
+        color: blackFont,
+        fontWeight: FontWeight.w600,
+        fontFamily: "Inter",
+      ),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey),
+        borderRadius: BorderRadius.circular(8),
+      ),
+    );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Text(
           AppLocalization.of(context)!.pincode,
           style: TextStyle(
-              fontSize: 16, color: blackFont, fontWeight: FontWeight.w600),
+            fontSize: 16,
+            color: blackFont,
+            fontWeight: FontWeight.w600,
+            fontFamily: "Inter",
+          ),
         ),
         const SizedBox(
           height: 6.0,
         ),
-        Pinput(
-          obscuringCharacter: '•',
-          validator: (val) => val!.length < 4
-              ? AppLocalization.of(context)!.invalidPassword
-              : null,
-          length: 6,
-          focusNode: _pinPutFocusNode,
-          controller: pinController,
-          defaultPinTheme: PinTheme(
-            width: 45,
-            height: 45,
-            textStyle: TextStyle(
-              fontSize: 35,
-              color: blackFont,
-              fontWeight: FontWeight.w600,
-              fontFamily: "Inter",
+        SizedBox(
+          width: double.infinity,
+          child: Pinput(
+            obscureText: true,
+            obscuringCharacter: '•',
+            showCursor: false,
+            length: 6,
+            focusNode: _pinPutFocusNode,
+            controller: pinController,
+            validator: (val) => val!.length < 4
+                ? AppLocalization.of(context)!.invalidPassword
+                : null,
+            defaultPinTheme: defaultPinTheme,
+            focusedPinTheme: defaultPinTheme.copyWith(
+              decoration: defaultPinTheme.decoration!.copyWith(
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: navyBlue),
+              ),
             ),
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey),
-              borderRadius: BorderRadius.circular(8),
+            submittedPinTheme: defaultPinTheme.copyWith(
+              decoration: defaultPinTheme.decoration!.copyWith(
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: navyBlue),
+              ),
             ),
+            errorPinTheme: defaultPinTheme.copyBorderWith(
+              border: Border.all(color: Colors.redAccent),
+            ),
+            pinAnimationType: PinAnimationType.scale,
+            textInputAction: TextInputAction.done,
+            keyboardType: TextInputType.number,
           ),
-          focusedPinTheme: PinTheme(
-            decoration: selectedDecoration,
-          ),
-          submittedPinTheme: PinTheme(
-            decoration: pinPutDecoration,
-          ),
-          followingPinTheme: PinTheme(
-            decoration: pinPutDecoration,
-          ),
-          pinAnimationType: PinAnimationType.scale,
-          textInputAction: TextInputAction.done,
-          keyboardType: TextInputType.number,
         ),
       ],
     );

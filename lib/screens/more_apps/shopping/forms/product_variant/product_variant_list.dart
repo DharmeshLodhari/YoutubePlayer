@@ -22,8 +22,7 @@ class ProductVariantList extends StatefulWidget {
   final dynamic arguments;
   final Function(List<Variant>)? onListRefreshed;
 
-  ProductVariantList({this.arguments, this.onListRefreshed, super.key})
-     ;
+  ProductVariantList({this.arguments, this.onListRefreshed, super.key});
 
   @override
   _ProductVariantListState createState() => _ProductVariantListState();
@@ -48,8 +47,6 @@ class _ProductVariantListState extends State<ProductVariantList>
   bool isLoading = false;
   bool noItemInList = false;
   final _auth = ShoppingAuthService();
-
-  late final SlidableController _slideController = SlidableController(this);
 
   @override
   void initState() {
@@ -232,23 +229,27 @@ class _ProductVariantListState extends State<ProductVariantList>
           )
         : isLoading && productVariantList.isEmpty
             ? buildLoadingIndicator(isLoading: isLoading)
-            : ListView.builder(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                //+1 for progressbar
-                itemCount: productVariantList.length + 1,
-                itemBuilder: (BuildContext context, int index) {
-                  if (index == productVariantList.length) {
-                    return buildJumpingLoadingIndicator(isLoading: isLoading);
-                  } else {
-                    return _getSlidableWithLists(
-                        context,
-                        productVariantTile(
-                          variant: productVariantList[index],
-                        ),
-                        productVariantList[index]);
-                  }
-                },
-                controller: _scrollController,
+            : SlidableAutoCloseBehavior(
+                closeWhenOpened: true,
+                child: ListView.builder(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 16, horizontal: 4),
+                  //+1 for progressbar
+                  itemCount: productVariantList.length + 1,
+                  itemBuilder: (BuildContext context, int index) {
+                    if (index == productVariantList.length) {
+                      return buildJumpingLoadingIndicator(isLoading: isLoading);
+                    } else {
+                      return _getSlidableWithLists(
+                          context,
+                          productVariantTile(
+                            variant: productVariantList[index],
+                          ),
+                          productVariantList[index]);
+                    }
+                  },
+                  controller: _scrollController,
+                ),
               );
   }
 
@@ -356,8 +357,6 @@ class _ProductVariantListState extends State<ProductVariantList>
   Widget _getSlidableWithLists(
       BuildContext context, Widget bankAccountTile, Variant variant) {
     return Slidable(
-      controller: _slideController,
-      direction: Axis.horizontal,
       startActionPane: ActionPane(
         motion: const BehindMotion(),
         extentRatio: 0.25,
@@ -375,37 +374,39 @@ class _ProductVariantListState extends State<ProductVariantList>
   List<Widget> listSecondaryActions({required Variant variant}) {
     return [
       SlideActionButton(
-          backgroundColor: starYellow,
-          icon: Icons.edit,
-          onTap: () async {
-            final data = await Navigator.of(context)
-                .pushNamed(Routes.PRODUCT_VARIANT_UPDATE, arguments: {
-              'variant': variant,
-            });
+        borderRadius: BorderRadius.circular(5),
+        backgroundColor: starYellow,
+        icon: Icons.edit,
+        onPressed: (context) async {
+          final data = await Navigator.of(context)
+              .pushNamed(Routes.PRODUCT_VARIANT_UPDATE, arguments: {
+            'variant': variant,
+          });
 
-            // Handle the result (map) received from PRODUCT_VARIANT_UPDATE
-            if (data != null && data is Variant) {
-              //save the variant details for later use
-              // variantData = data;
-              _onRefresh();
-              if (mounted) setState(() {});
-            }
-          },
-          title: AppLocalization.of(context)!.edit,
-          slideController: _slideController),
+          // Handle the result (map) received from PRODUCT_VARIANT_UPDATE
+          if (data != null && data is Variant) {
+            //save the variant details for later use
+            // variantData = data;
+            _onRefresh();
+            if (mounted) setState(() {});
+          }
+        },
+        label: AppLocalization.of(context)!.edit,
+      ),
     ];
   }
 
   List<Widget> listActionSlideActions({Variant? variant}) {
     return [
       SlideActionButton(
-          backgroundColor: mateRed,
-          icon: SlydoAppIcon.remove,
-          onTap: () async {
-            deleteProductDialog(variant);
-          },
-          title: AppLocalization.of(context)!.delete,
-          slideController: _slideController),
+        borderRadius: BorderRadius.circular(5),
+        backgroundColor: mateRed,
+        icon: SlydoAppIcon.remove,
+        onPressed: (context) async {
+          deleteProductDialog(variant);
+        },
+        label: AppLocalization.of(context)!.delete,
+      ),
     ];
   }
 

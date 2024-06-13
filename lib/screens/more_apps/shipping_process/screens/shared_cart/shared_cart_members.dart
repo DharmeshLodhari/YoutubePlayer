@@ -27,7 +27,6 @@ class SharedCartMembers extends StatefulWidget {
 class _SharedCartMembersState extends State<SharedCartMembers>
     with SingleTickerProviderStateMixin {
   late SharedCartBloc sharedCartBloc;
-  late final SlidableController _slideController = SlidableController(this);
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey =
       GlobalKey<ScaffoldMessengerState>();
@@ -61,7 +60,7 @@ class _SharedCartMembersState extends State<SharedCartMembers>
     sharedCartBloc = Provider.of<SharedCartBloc>(context);
     return PopScope(
       onPopInvoked: (didPop) async {
-        if(didPop) {
+        if (didPop) {
           Navigator.of(context).pop(isMemberChange);
           return;
         }
@@ -158,17 +157,21 @@ class _SharedCartMembersState extends State<SharedCartMembers>
                 title: AppLocalization.of(context)!.noMembersYet,
                 msg: AppLocalization.of(context)!.noMembersYet,
               )
-            : ListView.builder(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                itemCount: cartDetails.members?.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return _getSlidableWithLists(
-                    context,
-                    cartMemberTile(
-                        member: cartDetails.members?[index], index: index),
-                    cartDetails.members?[index],
-                  );
-                },
+            : SlidableAutoCloseBehavior(
+                closeWhenOpened: true,
+                child: ListView.builder(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 16, horizontal: 4),
+                  itemCount: cartDetails.members?.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return _getSlidableWithLists(
+                      context,
+                      cartMemberTile(
+                          member: cartDetails.members?[index], index: index),
+                      cartDetails.members?[index],
+                    );
+                  },
+                ),
               );
   }
 
@@ -245,8 +248,6 @@ class _SharedCartMembersState extends State<SharedCartMembers>
   Widget _getSlidableWithLists(BuildContext context, Widget cartMemberTile,
       SharedCartMemberModel? member) {
     return Slidable(
-      controller: _slideController,
-      direction: Axis.horizontal,
       endActionPane: ActionPane(
         motion: const BehindMotion(),
         extentRatio: 0.25,
@@ -259,13 +260,14 @@ class _SharedCartMembersState extends State<SharedCartMembers>
   List<Widget> listActionSlideActions({SharedCartMemberModel? member}) {
     return [
       SlideActionButton(
-          backgroundColor: mateRed,
-          icon: SlydoAppIcon.remove,
-          onTap: () async {
-            await deleteMember(member);
-          },
-          title: AppLocalization.of(context)!.remove,
-          slideController: _slideController),
+        borderRadius: BorderRadius.circular(5),
+        backgroundColor: mateRed,
+        icon: SlydoAppIcon.remove,
+        onPressed: (context) async {
+          await deleteMember(member);
+        },
+        label: AppLocalization.of(context)!.remove,
+      ),
     ];
   }
 
@@ -295,8 +297,9 @@ class _SharedCartMembersState extends State<SharedCartMembers>
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) async {
       final connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
+      if (connectionResult.contains(ConnectivityResult.wifi) ||
+          connectionResult.contains(ConnectivityResult.ethernet) ||
+          connectionResult.contains(ConnectivityResult.mobile)) {
         if (mounted) setState(() {});
         await sharedCartBloc.refreshCartDetail(
             sharedCartBloc.getSharedCartModel().id,

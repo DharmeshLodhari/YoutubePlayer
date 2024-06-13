@@ -39,8 +39,6 @@ class _CreditCardListState extends State<CreditCardList>
   final PaymentAndBankingAuth _auth = PaymentAndBankingAuth();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  late final SlidableController _slideController = SlidableController(this);
-
   @override
   void initState() {
     getList();
@@ -220,23 +218,27 @@ class _CreditCardListState extends State<CreditCardList>
           )
         : isLoading && creditCardList.isEmpty
             ? buildLoadingIndicator(isLoading: isLoading)
-            : ListView.builder(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                //+1 for progressbar
-                itemCount: creditCardList.length + 1,
-                itemBuilder: (BuildContext context, int index) {
-                  if (index == creditCardList.length) {
-                    return buildJumpingLoadingIndicator(isLoading: isLoading);
-                  } else {
-                    return _getSlidableWithLists(
-                      context,
-                      creditCardTile(
-                        creditCard: creditCardList[index],
-                      ),
-                      creditCardList[index],
-                    );
-                  }
-                },
+            : SlidableAutoCloseBehavior(
+                closeWhenOpened: true,
+                child: ListView.builder(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 16, horizontal: 4),
+                  //+1 for progressbar
+                  itemCount: creditCardList.length + 1,
+                  itemBuilder: (BuildContext context, int index) {
+                    if (index == creditCardList.length) {
+                      return buildJumpingLoadingIndicator(isLoading: isLoading);
+                    } else {
+                      return _getSlidableWithLists(
+                        context,
+                        creditCardTile(
+                          creditCard: creditCardList[index],
+                        ),
+                        creditCardList[index],
+                      );
+                    }
+                  },
+                ),
               );
   }
 
@@ -304,8 +306,6 @@ class _CreditCardListState extends State<CreditCardList>
   Widget _getSlidableWithLists(
       BuildContext context, Widget creditCardTile, CreditCard creditCard) {
     return Slidable(
-      controller: _slideController,
-      direction: Axis.horizontal,
       startActionPane: ActionPane(
         motion: const BehindMotion(),
         extentRatio: 0.25,
@@ -323,34 +323,36 @@ class _CreditCardListState extends State<CreditCardList>
   List<Widget> listSecondaryActions({required CreditCard creditCard}) {
     return [
       SlideActionButton(
-          backgroundColor: naturalGreen,
-          icon: Icons.device_hub,
-          onTap: creditCard.isDefault!
-              ? () {
-                  showToast(
-                      message: AppLocalization.of(context)!
-                          .thisCardIsAlreadyDefaultCard);
-                }
-              : () {
-                  updateCreditCard(creditCard);
-                },
-          title: creditCard.isDefault!
-              ? AppLocalization.of(context)!.defaultMsg
-              : AppLocalization.of(context)!.makeDefault,
-          slideController: _slideController),
+        borderRadius: BorderRadius.circular(5),
+        backgroundColor: naturalGreen,
+        icon: Icons.device_hub,
+        onPressed: creditCard.isDefault!
+            ? (context) {
+                showToast(
+                    message: AppLocalization.of(context)!
+                        .thisCardIsAlreadyDefaultCard);
+              }
+            : (context) {
+                updateCreditCard(creditCard);
+              },
+        label: creditCard.isDefault!
+            ? AppLocalization.of(context)!.defaultMsg
+            : AppLocalization.of(context)!.makeDefault,
+      ),
     ];
   }
 
   List<Widget> listActionSlideActions({CreditCard? creditCard}) {
     return [
       SlideActionButton(
-          backgroundColor: mateRed,
-          icon: SlydoAppIcon.remove,
-          onTap: () {
-            deleteCreditCard(creditCard);
-          },
-          title: AppLocalization.of(context)!.delete,
-          slideController: _slideController),
+        borderRadius: BorderRadius.circular(5),
+        backgroundColor: mateRed,
+        icon: SlydoAppIcon.remove,
+        onPressed: (context) {
+          deleteCreditCard(creditCard);
+        },
+        label: AppLocalization.of(context)!.delete,
+      ),
     ];
   }
 

@@ -359,22 +359,26 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
             softWrap: false,
           ),
           trailing: SizedBox(
-            width: 60,
-            child: Switch(
-              value: userBloc.chatMessageSettings.playIncomingMessageSound!,
-              onChanged: (value) {
-                final ChatMessageSettings chatMessageSettings =
-                    ChatMessageSettings();
-                chatMessageSettings.playOutgoingMessageSound =
-                    userBloc.chatMessageSettings.playOutgoingMessageSound;
-                chatMessageSettings.playIncomingMessageSound = value;
-                userBloc.chatMessageSettings = chatMessageSettings;
-                DatabaseHelper()
-                    .updateGeneralSettings(chatMessageSettings.toDBJson());
-              },
-              activeTrackColor: navyBlueLight,
-              activeColor: navyBlue,
-              inactiveTrackColor: navyBlueLight,
+            width: 50,
+            height: 40,
+            child: FittedBox(
+              fit: BoxFit.fill,
+              child: Switch(
+                value: userBloc.chatMessageSettings.playIncomingMessageSound!,
+                onChanged: (value) {
+                  final ChatMessageSettings chatMessageSettings =
+                      ChatMessageSettings();
+                  chatMessageSettings.playOutgoingMessageSound =
+                      userBloc.chatMessageSettings.playOutgoingMessageSound;
+                  chatMessageSettings.playIncomingMessageSound = value;
+                  userBloc.chatMessageSettings = chatMessageSettings;
+                  DatabaseHelper()
+                      .updateGeneralSettings(chatMessageSettings.toDBJson());
+                },
+                activeTrackColor: navyBlueLight,
+                activeColor: navyBlue,
+                inactiveTrackColor: navyBlueLight,
+              ),
             ),
           ),
           onTap: () {},
@@ -571,22 +575,26 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
             softWrap: false,
           ),
           trailing: SizedBox(
-            width: 60,
-            child: Switch(
-              value: userBloc.chatMessageSettings.playOutgoingMessageSound!,
-              onChanged: (value) {
-                final ChatMessageSettings chatMessageSettings =
-                    ChatMessageSettings();
-                chatMessageSettings.playIncomingMessageSound =
-                    userBloc.chatMessageSettings.playIncomingMessageSound;
-                chatMessageSettings.playOutgoingMessageSound = value;
-                userBloc.chatMessageSettings = chatMessageSettings;
-                DatabaseHelper()
-                    .updateGeneralSettings(chatMessageSettings.toDBJson());
-              },
-              activeTrackColor: navyBlueLight,
-              activeColor: navyBlue,
-              inactiveTrackColor: navyBlueLight,
+            width: 50,
+            height: 40,
+            child: FittedBox(
+              fit: BoxFit.fill,
+              child: Switch(
+                value: userBloc.chatMessageSettings.playOutgoingMessageSound!,
+                onChanged: (value) {
+                  final ChatMessageSettings chatMessageSettings =
+                      ChatMessageSettings();
+                  chatMessageSettings.playIncomingMessageSound =
+                      userBloc.chatMessageSettings.playIncomingMessageSound;
+                  chatMessageSettings.playOutgoingMessageSound = value;
+                  userBloc.chatMessageSettings = chatMessageSettings;
+                  DatabaseHelper()
+                      .updateGeneralSettings(chatMessageSettings.toDBJson());
+                },
+                activeTrackColor: navyBlueLight,
+                activeColor: navyBlue,
+                inactiveTrackColor: navyBlueLight,
+              ),
             ),
           ),
           onTap: () {},
@@ -617,30 +625,34 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
             softWrap: false,
           ),
           trailing: SizedBox(
-            width: 60,
-            child: Switch(
-              value: userBloc.chatMessageSettings.accountBalanceVisibility!,
-              onChanged: (value) {
-                BottomSheetPassCode(
-                  context: context,
-                  isValidCallback: () {
-                    final ChatMessageSettings chatMessageSettings =
-                        ChatMessageSettings();
-                    chatMessageSettings.accountBalanceVisibility =
-                        userBloc.chatMessageSettings.accountBalanceVisibility;
-                    chatMessageSettings.accountBalanceVisibility = value;
-                    userBloc.chatMessageSettings = chatMessageSettings;
-                    DatabaseHelper()
-                        .updateGeneralSettings(chatMessageSettings.toDBJson());
-                  },
-                  cancelCallBack: () {
-                    Navigator.pop(context);
-                  },
-                );
-              },
-              activeTrackColor: navyBlueLight,
-              activeColor: navyBlue,
-              inactiveTrackColor: navyBlueLight,
+            width: 50,
+            height: 40,
+            child: FittedBox(
+              fit: BoxFit.fill,
+              child: Switch(
+                value: userBloc.chatMessageSettings.accountBalanceVisibility!,
+                onChanged: (value) {
+                  BottomSheetPassCode(
+                    context: context,
+                    isValidCallback: () {
+                      final ChatMessageSettings chatMessageSettings =
+                          ChatMessageSettings();
+                      chatMessageSettings.accountBalanceVisibility =
+                          userBloc.chatMessageSettings.accountBalanceVisibility;
+                      chatMessageSettings.accountBalanceVisibility = value;
+                      userBloc.chatMessageSettings = chatMessageSettings;
+                      DatabaseHelper().updateGeneralSettings(
+                          chatMessageSettings.toDBJson());
+                    },
+                    cancelCallBack: () {
+                      Navigator.pop(context);
+                    },
+                  );
+                },
+                activeTrackColor: navyBlueLight,
+                activeColor: navyBlue,
+                inactiveTrackColor: navyBlueLight,
+              ),
             ),
           ),
           onTap: () {},

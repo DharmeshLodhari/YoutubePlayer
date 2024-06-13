@@ -22,7 +22,7 @@ class _MyPropertiesScreenState extends State<MyPropertiesScreen> {
     _propertyDashboardBloc = Provider.of<PropertyDashboardBloc>(context);
     return PopScope(
       onPopInvoked: (didPop) async {
-        if(didPop) {
+        if (didPop) {
           _propertyDashboardBloc.index = 0;
           return;
         }

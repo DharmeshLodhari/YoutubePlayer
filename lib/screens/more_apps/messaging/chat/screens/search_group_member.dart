@@ -53,7 +53,6 @@ class _SearchGroupMemberState extends State<SearchGroupMember>
 
   GroupDetailModel? groupDetail;
 
-  late final SlidableController _slideController = SlidableController(this);
   late UserBloc userBloc;
 
   /// Socket
@@ -217,22 +216,23 @@ class _SearchGroupMemberState extends State<SearchGroupMember>
               )
             : isLoading && groupMember.isEmpty
                 ? buildLoadingIndicator(isLoading: isLoading)
-                : ListView.builder(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 4,
+                : SlidableAutoCloseBehavior(
+                    closeWhenOpened: true,
+                    child: ListView.builder(
+                      padding: const EdgeInsets.all(4),
+                      //+1 for progressbar
+                      itemCount: groupMember.length + 1,
+                      itemBuilder: (BuildContext context, int index) {
+                        if (index == groupMember.length) {
+                          return buildJumpingLoadingIndicator(
+                              isLoading: isLoading);
+                        } else {
+                          return getUserTile(
+                              index: index, user: groupMember[index]);
+                        }
+                      },
+                      controller: _scrollController,
                     ),
-                    //+1 for progressbar
-                    itemCount: groupMember.length + 1,
-                    itemBuilder: (BuildContext context, int index) {
-                      if (index == groupMember.length) {
-                        return buildJumpingLoadingIndicator(
-                            isLoading: isLoading);
-                      } else {
-                        return getUserTile(
-                            index: index, user: groupMember[index]);
-                      }
-                    },
-                    controller: _scrollController,
                   );
   }
 
@@ -310,8 +310,6 @@ class _SearchGroupMemberState extends State<SearchGroupMember>
       BuildContext context, CustomerProfile user, int? index) {
     return Slidable(
       key: UniqueKey(),
-      controller: _slideController,
-      direction: Axis.horizontal,
       startActionPane: ActionPane(
         motion: const BehindMotion(),
         extentRatio: 0.20,
@@ -360,55 +358,59 @@ class _SearchGroupMemberState extends State<SearchGroupMember>
     if (isCurrentUserIsAdmin) {
       leftSwipeActions.add(
         SlideActionButton(
-            backgroundColor: mateRed,
-            icon: SlydoAppIcon.remove,
-            onTap: () {
-              removeParticipantFromGroup(index!);
-            },
-            title: "Remove",
-            slideController: _slideController),
+          borderRadius: BorderRadius.circular(5),
+          backgroundColor: mateRed,
+          icon: SlydoAppIcon.remove,
+          onPressed: (context) {
+            removeParticipantFromGroup(index!);
+          },
+          label: "Remove",
+        ),
       );
     }
 
     if (!isBlocked && isCurrentUserIsAdmin) {
       leftSwipeActions.add(
         SlideActionButton(
-            backgroundColor: lightGrey,
-            icon: SlydoAppIcon.block,
-            iconColor: blackFont,
-            onTap: () {
-              blockParticipantFromGroup(index!);
-            },
-            title: "Block",
-            slideController: _slideController),
+          borderRadius: BorderRadius.circular(5),
+          backgroundColor: lightGrey,
+          icon: SlydoAppIcon.block,
+          iconColor: blackFont,
+          onPressed: (context) {
+            blockParticipantFromGroup(index!);
+          },
+          label: "Block",
+        ),
       );
     }
 
     if (!isMuted && isCurrentUserIsAdmin) {
       leftSwipeActions.add(
         SlideActionButton(
-            backgroundColor: lightGrey,
-            icon: SlydoAppIcon.mute,
-            iconColor: blackFont,
-            onTap: () {
-              muteParticipantFromGroup(index!);
-            },
-            title: "Mute",
-            slideController: _slideController),
+          borderRadius: BorderRadius.circular(5),
+          backgroundColor: lightGrey,
+          icon: SlydoAppIcon.mute,
+          iconColor: blackFont,
+          onPressed: (context) {
+            muteParticipantFromGroup(index!);
+          },
+          label: "Mute",
+        ),
       );
     }
 
     if (isAdmin && isCurrentUserIsAdmin) {
       leftSwipeActions.add(
         SlideActionButton(
-            backgroundColor: lightGrey,
-            icon: SlydoAppIcon.remove_admin,
-            iconColor: blackFont,
-            onTap: () {
-              removeParticipantFromAdmin(index!);
-            },
-            title: "Remove from admin",
-            slideController: _slideController),
+          borderRadius: BorderRadius.circular(5),
+          backgroundColor: lightGrey,
+          icon: SlydoAppIcon.remove_admin,
+          iconColor: blackFont,
+          onPressed: (context) {
+            removeParticipantFromAdmin(index!);
+          },
+          label: "Remove from admin",
+        ),
       );
     }
 
@@ -448,40 +450,43 @@ class _SearchGroupMemberState extends State<SearchGroupMember>
 
     if (isMuted && isCurrentUserIsAdmin) {
       rightSwipeAction.add(SlideActionButton(
-          backgroundColor: lightGrey,
-          icon: SlydoAppIcon.unmute,
-          iconColor: blackFont,
-          onTap: () {
-            unMuteParticipantFromGroup(index!);
-          },
-          title: "Unmute",
-          slideController: _slideController));
+        borderRadius: BorderRadius.circular(5),
+        backgroundColor: lightGrey,
+        icon: SlydoAppIcon.unmute,
+        iconColor: blackFont,
+        onPressed: (context) {
+          unMuteParticipantFromGroup(index!);
+        },
+        label: "Unmute",
+      ));
     }
 
     if (isBlocked && isCurrentUserIsAdmin) {
       rightSwipeAction.add(
         SlideActionButton(
-            backgroundColor: lightGrey,
-            icon: SlydoAppIcon.unblock,
-            iconColor: blackFont,
-            onTap: () {
-              unBlockParticipantFromGroup(index!);
-            },
-            title: "Unblock",
-            slideController: _slideController),
+          borderRadius: BorderRadius.circular(5),
+          backgroundColor: lightGrey,
+          icon: SlydoAppIcon.unblock,
+          iconColor: blackFont,
+          onPressed: (context) {
+            unBlockParticipantFromGroup(index!);
+          },
+          label: "Unblock",
+        ),
       );
     }
 
     if (!isAdmin) {
       rightSwipeAction.add(
         SlideActionButton(
-            backgroundColor: naturalGreen,
-            icon: SlydoAppIcon.make_admin,
-            onTap: () {
-              makeParticipantAdmin(index!);
-            },
-            title: "Make admin",
-            slideController: _slideController),
+          borderRadius: BorderRadius.circular(5),
+          backgroundColor: naturalGreen,
+          icon: SlydoAppIcon.make_admin,
+          onPressed: (context) {
+            makeParticipantAdmin(index!);
+          },
+          label: "Make admin",
+        ),
       );
     }
 

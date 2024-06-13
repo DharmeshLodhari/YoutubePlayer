@@ -40,8 +40,6 @@ class _ContractScreenState extends State<ContractScreen>
 
   final ScrollController _scrollController = ScrollController();
 
-  late final SlidableController _slideController = SlidableController(this);
-
   late ContractBloc contractBloc;
 
   @override
@@ -308,115 +306,119 @@ class _ContractScreenState extends State<ContractScreen>
                 complete: Container(), waterDropColor: navyBlue),
             controller: _refreshController,
             onRefresh: _onRefresh,
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(vertical: 4),
-              itemCount: contractBloc.contractList.length + 1,
-              itemBuilder: (BuildContext context, int index) {
-                if (index == contractBloc.contractList.length) {
-                  return buildJumpingLoadingIndicator(
-                      isLoading: contractBloc.isLoading);
-                } else {
-                  final ContractModel contract =
-                      contractBloc.contractList[index];
-                  final bool userIsContractor =
-                      userBloc.user.userName == contract.contractor;
+            child: SlidableAutoCloseBehavior(
+              closeWhenOpened: true,
+              child: ListView.builder(
+                padding: const EdgeInsets.all(4),
+                itemCount: contractBloc.contractList.length + 1,
+                itemBuilder: (BuildContext context, int index) {
+                  if (index == contractBloc.contractList.length) {
+                    return buildJumpingLoadingIndicator(
+                        isLoading: contractBloc.isLoading);
+                  } else {
+                    final ContractModel contract =
+                        contractBloc.contractList[index];
+                    final bool userIsContractor =
+                        userBloc.user.userName == contract.contractor;
 
-                  final bool isNotSlidable = contract.status == "Ended" ||
-                      contract.status == "Stopped" ||
-                      (!contract.isAccepted && !userIsContractor);
+                    final bool isNotSlidable = contract.status == "Ended" ||
+                        contract.status == "Stopped" ||
+                        (!contract.isAccepted && !userIsContractor);
 
-                  if (!contract.isAccepted) {
-                    final String actionText =
-                        userIsContractor ? ' Reject' : 'Cancel';
-                    return Slidable(
-                      controller: _slideController,
-                      direction: Axis.horizontal,
-                      startActionPane: ActionPane(
-                        motion: const BehindMotion(),
-                        extentRatio: 0.25,
-                        children: [
-                          SlideActionButton(
-                            backgroundColor: mateRed,
-                            icon: Icons.stop_circle_outlined,
-                            onTap: () {
-                              showDialogBox(
-                                context: context,
-                                actionOneTextColor: blackFont,
-                                actionOneBgColor: greyBorderColor,
-                                actionTwoTextColor: white,
-                                actionTwoBgColor: mateRed,
-                                title: '$actionText contract',
-                                actionTwoText: AppLocalization.of(context)!.yes,
-                                actionOneText: AppLocalization.of(context)!.no,
-                                description:
-                                    'Are you sure you want to ${actionText.toLowerCase()} this contract?',
-                                roundedBackgroundIcon: RoundedBackgroundIcon(
-                                  enableMargin: false,
-                                  width: 90,
-                                  height: 90,
-                                  image: const Icon(SlydoAppIcon.remove),
-                                ),
-                                rightButtonOnPressed: () {
-                                  cancelOrRejectContract(id: contract.id!);
-                                },
-                              );
-                            },
-                            title: userIsContractor ? 'Reject' : "Cancel",
-                            slideController: _slideController,
-                          ),
-                        ],
-                      ),
-                      endActionPane: userIsContractor
-                          ? ActionPane(
-                              motion: const BehindMotion(),
-                              extentRatio: 0.25,
-                              children: [
-                                SlideActionButton(
-                                  backgroundColor: naturalGreen,
-                                  icon: Icons.stop_circle_outlined,
-                                  onTap: () {
-                                    showDialogBox(
-                                      context: context,
-                                      actionOneTextColor: blackFont,
-                                      actionTwoBgColor: naturalGreen,
-                                      actionTwoTextColor: Colors.white,
-                                      actionOneBgColor: greyBorderColor,
-                                      title: 'Accept contract',
-                                      actionTwoText:
-                                          AppLocalization.of(context)!.accept,
-                                      actionOneText:
-                                          AppLocalization.of(context)!.no,
-                                      description:
-                                          'Are you sure you want to accept this contract?',
-                                      roundedBackgroundIcon:
-                                          RoundedBackgroundIcon(
-                                        enableMargin: false,
-                                        width: 90,
-                                        height: 90,
-                                        image: const Icon(SlydoAppIcon.remove),
-                                      ),
-                                      rightButtonOnPressed: () {
-                                        acceptContract(id: contract.id!);
-                                      },
-                                    );
+                    if (!contract.isAccepted) {
+                      final String actionText =
+                          userIsContractor ? ' Reject' : 'Cancel';
+                      return Slidable(
+                        startActionPane: ActionPane(
+                          motion: const BehindMotion(),
+                          extentRatio: 0.25,
+                          children: [
+                            SlideActionButton(
+                              borderRadius: BorderRadius.circular(5),
+                              backgroundColor: mateRed,
+                              icon: Icons.stop_circle_outlined,
+                              onPressed: (context) {
+                                showDialogBox(
+                                  context: context,
+                                  actionOneTextColor: blackFont,
+                                  actionOneBgColor: greyBorderColor,
+                                  actionTwoTextColor: white,
+                                  actionTwoBgColor: mateRed,
+                                  title: '$actionText contract',
+                                  actionTwoText:
+                                      AppLocalization.of(context)!.yes,
+                                  actionOneText:
+                                      AppLocalization.of(context)!.no,
+                                  description:
+                                      'Are you sure you want to ${actionText.toLowerCase()} this contract?',
+                                  roundedBackgroundIcon: RoundedBackgroundIcon(
+                                    enableMargin: false,
+                                    width: 90,
+                                    height: 90,
+                                    image: const Icon(SlydoAppIcon.remove),
+                                  ),
+                                  rightButtonOnPressed: () {
+                                    cancelOrRejectContract(id: contract.id!);
                                   },
-                                  title: "Accept",
-                                  slideController: _slideController,
-                                ),
-                              ],
-                            )
-                          : null,
-                      child: ContractTile(contract: contract),
-                    );
-                  } else if (isNotSlidable) {
-                    return ContractTile(contract: contract);
+                                );
+                              },
+                              label: userIsContractor ? 'Reject' : "Cancel",
+                            ),
+                          ],
+                        ),
+                        endActionPane: userIsContractor
+                            ? ActionPane(
+                                motion: const BehindMotion(),
+                                extentRatio: 0.25,
+                                children: [
+                                  SlideActionButton(
+                                    borderRadius: BorderRadius.circular(5),
+                                    backgroundColor: naturalGreen,
+                                    icon: Icons.stop_circle_outlined,
+                                    onPressed: (context) {
+                                      showDialogBox(
+                                        context: context,
+                                        actionOneTextColor: blackFont,
+                                        actionTwoBgColor: naturalGreen,
+                                        actionTwoTextColor: Colors.white,
+                                        actionOneBgColor: greyBorderColor,
+                                        title: 'Accept contract',
+                                        actionTwoText:
+                                            AppLocalization.of(context)!.accept,
+                                        actionOneText:
+                                            AppLocalization.of(context)!.no,
+                                        description:
+                                            'Are you sure you want to accept this contract?',
+                                        roundedBackgroundIcon:
+                                            RoundedBackgroundIcon(
+                                          enableMargin: false,
+                                          width: 90,
+                                          height: 90,
+                                          image:
+                                              const Icon(SlydoAppIcon.remove),
+                                        ),
+                                        rightButtonOnPressed: () {
+                                          acceptContract(id: contract.id!);
+                                        },
+                                      );
+                                    },
+                                    label: "Accept",
+                                  ),
+                                ],
+                              )
+                            : null,
+                        child: ContractTile(contract: contract),
+                      );
+                    } else if (isNotSlidable) {
+                      return ContractTile(contract: contract);
+                    }
+                    return _getSlidableWithLists(
+                        context, ContractTile(contract: contract), index,
+                        contract: contract);
                   }
-                  return _getSlidableWithLists(
-                      context, ContractTile(contract: contract), index,
-                      contract: contract);
-                }
-              },
-              controller: _scrollController,
+                },
+                controller: _scrollController,
+              ),
             ),
           );
   }
@@ -425,8 +427,6 @@ class _ContractScreenState extends State<ContractScreen>
       BuildContext context, Widget contractTile, int index,
       {required ContractModel contract}) {
     return Slidable(
-      controller: _slideController,
-      direction: Axis.horizontal,
       startActionPane: ActionPane(
         motion: const BehindMotion(),
         extentRatio: 0.25,
@@ -444,14 +444,13 @@ class _ContractScreenState extends State<ContractScreen>
   List<Widget> listSecondaryActions(int index, ContractModel contract) {
     return [
       SlideActionButton(
+        borderRadius: BorderRadius.circular(5),
         backgroundColor: getSecondaryActionIconColor(contract),
         icon: getSecondaryActionIcon(contract),
-        onTap: () {
-          _slideController.close();
+        onPressed: (context) {
           updateContractStatus(contract, getUpdateAction(contract));
         },
-        title: getSecondaryActionTitle(contract),
-        slideController: _slideController,
+        label: getSecondaryActionTitle(contract),
       ),
     ];
   }
@@ -525,9 +524,10 @@ class _ContractScreenState extends State<ContractScreen>
   List<Widget> listActionSlideActions(ContractModel contract) {
     return [
       SlideActionButton(
+        borderRadius: BorderRadius.circular(5),
         backgroundColor: mateRed,
         icon: Icons.stop_circle_outlined,
-        onTap: () {
+        onPressed: (context) {
           showDialogBox(
             context: context,
             actionOneBgColor: greyBorderColor,
@@ -549,8 +549,7 @@ class _ContractScreenState extends State<ContractScreen>
             },
           );
         },
-        title: "End",
-        slideController: _slideController,
+        label: "End",
       ),
     ];
   }

@@ -22,8 +22,8 @@ import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/slydo_app_icon_new_icons.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/cart_with_badge.dart';
 import 'package:Slydo/widget/permission_protection_widget.dart';
-import 'package:badges/badges.dart' as badges;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -148,7 +148,7 @@ class _HomeState extends State<Home> {
         isLoading = true;
         if (mounted) setState(() {});
 
-        final String latestTrending = 'latest';
+        const String latestTrending = 'latest';
 
         final Map<String, dynamic>? result = await YarnAuth().getAllYarn(
             next, previous ?? '',
@@ -205,17 +205,17 @@ class _HomeState extends State<Home> {
           if (yarnDashboardBloc.createYarnTopicList.isNotEmpty) {
             ///add createYarnTopicList to tempList if any
 
-            yarnDashboardBloc.createYarnTopicList.forEach((item) {
+            for (var item in yarnDashboardBloc.createYarnTopicList) {
               tempList.insert(0, item);
-            });
+            }
           }
 
           if (yarnDashboardBloc.reYarnTopicList.isNotEmpty) {
             ///add reYarnTopicList to tempList if any
 
-            yarnDashboardBloc.reYarnTopicList.forEach((item) {
+            for (var item in yarnDashboardBloc.reYarnTopicList) {
               tempList.insert(0, item);
-            });
+            }
           }
 
           if (deleteYarnTopicList.isNotEmpty) {
@@ -760,49 +760,47 @@ class _HomeState extends State<Home> {
     final dynamicHeight =
         calculateDynamicHeight(longestSubTitle!, screenHeight);
 
-    return Container(
-      child: Column(
-        // padding: EdgeInsets.zero,
-        children: List.generate(
-          ((shortcuts.length + 1) / 2).ceil(), // Adjusted the generation logic
-          (index) {
-            final startIndex = index * 2;
-            final endIndex = startIndex + 2;
-            final pairShortcuts = shortcuts.sublist(
-              startIndex,
-              endIndex.clamp(
-                  0, shortcuts.length), // Use clamp to avoid out-of-bounds
-            );
+    return Column(
+      // padding: EdgeInsets.zero,
+      children: List.generate(
+        ((shortcuts.length + 1) / 2).ceil(), // Adjusted the generation logic
+        (index) {
+          final startIndex = index * 2;
+          final endIndex = startIndex + 2;
+          final pairShortcuts = shortcuts.sublist(
+            startIndex,
+            endIndex.clamp(
+                0, shortcuts.length), // Use clamp to avoid out-of-bounds
+          );
 
-            // If the pairShortcuts list has fewer than 2 items, add empty placeholders
-            while (pairShortcuts.length < 2) {
-              pairShortcuts.add({});
-            }
+          // If the pairShortcuts list has fewer than 2 items, add empty placeholders
+          while (pairShortcuts.length < 2) {
+            pairShortcuts.add({});
+          }
 
-            return Row(
-              children: pairShortcuts.map((shortcut) {
-                return Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(0.0),
-                    child: shortcut.isEmpty
-                        ? Container() // Empty view placeholder
-                        : GestureDetector(
-                            onTap: () {
-                              onClickShortcutExtra(shortcut['title']!);
-                            },
-                            child: shortcutViewExtra(
-                                shortcut['imagePath']!,
-                                shortcut['title']!,
-                                shortcut['subTitle']!,
-                                shortcut['color']!,
-                                dynamicHeight),
-                          ),
-                  ),
-                );
-              }).toList(),
-            );
-          },
-        ),
+          return Row(
+            children: pairShortcuts.map((shortcut) {
+              return Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(0.0),
+                  child: shortcut.isEmpty
+                      ? Container() // Empty view placeholder
+                      : GestureDetector(
+                          onTap: () {
+                            onClickShortcutExtra(shortcut['title']!);
+                          },
+                          child: shortcutViewExtra(
+                              shortcut['imagePath']!,
+                              shortcut['title']!,
+                              shortcut['subTitle']!,
+                              shortcut['color']!,
+                              dynamicHeight),
+                        ),
+                ),
+              );
+            }).toList(),
+          );
+        },
       ),
     );
   }
@@ -878,10 +876,10 @@ class _HomeState extends State<Home> {
 
   Widget shortcutViewExtra(String imagePath, String title, String subTitle,
       String color, double dynamicHeight) {
-    final double opacity = 0.8;
+    const double opacity = 0.8;
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
-      padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
+      padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
       height: 90.0 + dynamicHeight,
       // height: 110.0,
       decoration: BoxDecoration(
@@ -1071,24 +1069,24 @@ class _HomeState extends State<Home> {
       ),
       actions: <Widget>[
         _searchBtn(),
-        const SizedBox(width: 15),
+        const SizedBox(width: 10),
         _cartBtn(),
-        const SizedBox(width: 5),
+        const SizedBox(width: 10),
       ],
     );
   }
 
   Widget _searchBtn() {
     return RoundedBackgroundIcon(
-      backgroundColor: Colors.transparent,
+      backgroundColor: transparent,
       onTap: () {
         Navigator.of(context).pushNamed(
           Routes.SEARCH_MODULE,
         );
         // arguments: {"industry": {"discount": widget.discount!.id}
       },
-      height: 18,
-      width: 18,
+      height: 15,
+      width: 15,
       icon: SvgPicture.asset(
         "yarn/search".toSVG(),
         height: 12,
@@ -1098,58 +1096,21 @@ class _HomeState extends State<Home> {
   }
 
   Widget _cartBtn() {
-    return RoundedBackgroundIcon(
-      height: 34,
-      width: 34,
-      key: tutorialShoppingCartKey,
-      icon: badges.Badge(
-        badgeContent: getBadgeContent(),
-        position: badges.BadgePosition.topEnd(
-            end: getBadgeCount().length == 1 ? -2 : 0, top: 0),
-        badgeAnimation: const badges.BadgeAnimation.rotation(
-          animationDuration: Duration(seconds: 1),
-          colorChangeAnimationDuration: Duration(seconds: 1),
-          loopAnimation: false,
-          curve: Curves.fastOutSlowIn,
-          colorChangeAnimationCurve: Curves.easeInCubic,
-        ),
-        badgeStyle: badges.BadgeStyle(
-          shape: badges.BadgeShape.circle,
-          badgeColor: naturalGreen,
-          padding: basketBloc.basketItems.isEmpty
-              ? const EdgeInsets.all(0)
-              : const EdgeInsets.all(4),
-          elevation: 0,
-        ),
-        child: SizedBox(
-          child: Card(
-            color: Colors.white,
-            elevation: 0,
-            margin: const EdgeInsets.symmetric(vertical: 10),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: IconButton(
-              icon: const Icon(
-                SlydoAppIconNew.cart,
-                color: Colors.black,
-                size: 17,
-              ),
-              onPressed: () async {
-                // Navigator.of(context).pushNamed(Routes.SIGN_UP, arguments: {
-                //   'phoneNumber': "+000000000000",
-                //   'otpCode': "123456",
-                //   'accountType': "Business"
-                // });
-
-                hideBalance();
-                NavigationUtil.pushNamed(context,
-                    routeName: Routes.SHOPPING_CART);
-              },
-            ),
-          ),
-        ),
-      ),
+    return CartWithBadge(
+      items: basketBloc.basketItems,
+      backgroundColor: iconBtnGrey,
+      height: 30,
+      width: 30,
+      enableMargin: true,
+      onTap: () {
+// Navigator.of(context).pushNamed(Routes.SIGN_UP, arguments: {
+        //   'phoneNumber': "+000000000000",
+        //   'otpCode': "123456",
+        //   'accountType': "Business"
+        // });
+        hideBalance();
+        NavigationUtil.pushNamed(context, routeName: Routes.SHOPPING_CART);
+      },
     );
   }
 
@@ -1287,29 +1248,6 @@ class _HomeState extends State<Home> {
       userBloc.user.defaultAddress = defaultAddress;
     }
     if (mounted) setState(() {});
-  }
-
-  Widget? getBadgeContent() {
-    if (basketBloc.basketItems.isEmpty) {
-      return null;
-    }
-    return Text(
-      getBadgeCount(),
-      style: const TextStyle(
-        fontFamily: 'Inter',
-        fontSize: 10,
-        color: Colors.white,
-        fontWeight: FontWeight.bold,
-      ),
-    );
-  }
-
-  String getBadgeCount() {
-    int totalItem = 0;
-    basketBloc.basketItems.forEach((element) {
-      totalItem = totalItem + int.parse(element.qty.toString());
-    });
-    return totalItem > 99 ? '99+' : totalItem.toString();
   }
 
   Widget accountBalanceCard() {
@@ -1664,7 +1602,7 @@ class _HomeState extends State<Home> {
     });
   }
 
-  checkUser() {
+  Widget checkUser() {
     if (userBloc.user.type.toString().toLowerCase() == 'user') {
       return Column(
         children: [
