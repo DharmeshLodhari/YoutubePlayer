@@ -34,8 +34,10 @@ import 'locale/app_localization.dart';
 import 'screens/more_apps/user_profile/models/device.dart';
 
 class SplashScreen extends StatefulWidget {
+  const SplashScreen({super.key});
+
   @override
-  _SplashScreenState createState() => _SplashScreenState();
+  State<SplashScreen> createState() => _SplashScreenState();
 }
 
 class _SplashScreenState extends State<SplashScreen>
@@ -87,7 +89,7 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   Timer startTime() {
-    final _duration = const Duration(seconds: 1);
+    const _duration = Duration(seconds: 1);
     return Timer.periodic(_duration, (timer) {
       navigationPage();
     });

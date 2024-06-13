@@ -14,7 +14,7 @@ import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 
 class ShippingOption extends StatefulWidget {
-  ShippingOption({Key? key});
+  const ShippingOption({super.key});
 
   @override
   State<ShippingOption> createState() => _ShippingOptionState();
@@ -108,7 +108,7 @@ class _ShippingOptionState extends State<ShippingOption> {
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: shippingList.length != 0 || shippingList.isNotEmpty
+        child: shippingList.isNotEmpty || shippingList.isNotEmpty
             ? Column(
                 children: [
                   Expanded(
@@ -319,9 +319,9 @@ class _ShippingOptionState extends State<ShippingOption> {
           .getShippingEstimation(packageDetailModel, cartId)
           .then(
         (value) {
-          value.forEach((element) {
+          for (var element in value) {
             shippingList.add(element);
-          });
+          }
           isLoading = false;
           if (mounted) setState(() {});
         },

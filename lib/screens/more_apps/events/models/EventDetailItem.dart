@@ -1,4 +1,4 @@
-import 'package:Slydo/screens/more_apps/events/models/PartialEventItem.dart';
+import 'package:Slydo/screens/more_apps/events/models/partial_event_item.dart';
 
 import 'Location.dart';
 

@@ -20,7 +20,7 @@ class AskCategoryPick extends StatelessWidget {
 
   final Function(String? category)? onCategoryPick;
 
-  AskCategoryPick({this.onCategoryPick});
+  AskCategoryPick({super.key, this.onCategoryPick});
 
   @override
   Widget build(BuildContext context) {

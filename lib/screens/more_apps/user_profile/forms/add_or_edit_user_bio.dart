@@ -29,8 +29,10 @@ import '../widgets/pick_state_widget.dart';
 
 // ignore: must_be_immutable
 class AddOrEditUserBioScreen extends StatefulWidget {
+  const AddOrEditUserBioScreen({super.key});
+
   @override
-  _AddOrEditUserBioScreenState createState() => _AddOrEditUserBioScreenState();
+  State<AddOrEditUserBioScreen> createState() => _AddOrEditUserBioScreenState();
 }
 
 class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
@@ -356,6 +358,11 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
         DropdownSearch<String>(
           popupProps: PopupProps.dialog(
               showSearchBox: true,
+              dialogProps: DialogProps(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(5),
+                ),
+              ),
               searchFieldProps: TextFieldProps(
                 cursorColor: navyBlue,
                 decoration: InputDecoration(

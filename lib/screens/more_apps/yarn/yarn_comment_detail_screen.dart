@@ -13,7 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-import 'models/Topics/CommentDetails.dart';
+import 'models/Topics/comment_details.dart';
 import 'models/share_as_yarn_model.dart';
 import 'widgets/yarn_comment_textfield.dart';
 import 'widgets/yarn_shimmer.dart';
@@ -23,7 +23,8 @@ class YarnCommentDetailScreen extends StatefulWidget {
   final Yarn yarn;
   final YarnComment yarnComment;
 
-  YarnCommentDetailScreen({required this.yarn, required this.yarnComment});
+  const YarnCommentDetailScreen(
+      {super.key, required this.yarn, required this.yarnComment});
 
   @override
   State<YarnCommentDetailScreen> createState() =>

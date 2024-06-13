@@ -24,6 +24,8 @@ import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class SharedCartDetails extends StatefulWidget {
+  const SharedCartDetails({super.key});
+
   // final dynamic arguments;
   //
   // SharedCartDetails({super.key, this.arguments});

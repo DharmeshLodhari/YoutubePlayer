@@ -64,7 +64,7 @@ class _SearchMyJobsState extends State<SearchMyJobs> {
           _refreshList();
         });
       }
-      if (searchMyJobListing.isNotEmpty || searchController.text.length != 0) {
+      if (searchMyJobListing.isNotEmpty || searchController.text.isNotEmpty) {
         if (mounted) {
           setState(() {
             isSearchIsEmpty = false;

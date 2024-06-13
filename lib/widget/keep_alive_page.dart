@@ -8,7 +8,7 @@ class KeepAlivePage extends StatefulWidget {
   final bool wantKeepAlive;
 
   @override
-  _KeepAlivePageState createState() => _KeepAlivePageState();
+  State<KeepAlivePage> createState() => _KeepAlivePageState();
 }
 
 class _KeepAlivePageState extends State<KeepAlivePage>

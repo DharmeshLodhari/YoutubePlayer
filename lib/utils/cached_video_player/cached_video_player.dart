@@ -354,9 +354,7 @@ class CachedVideoPlayerController
     }
 
     if (closedCaptionFile != null) {
-      if (_closedCaptionFile == null) {
-        _closedCaptionFile = await closedCaptionFile;
-      }
+      _closedCaptionFile ??= await closedCaptionFile;
       value = value.copyWith(caption: _getCaptionAt(value.position));
     }
 
@@ -613,14 +611,14 @@ class _CachedVideoAppLifeCycleObserver extends Object
 /// Widget that displays the video controlled by [controller].
 class CachedVideoPlayer extends StatefulWidget {
   /// Uses the given [controller] for all video rendered in this widget.
-  CachedVideoPlayer(this.controller, {Key? key});
+  CachedVideoPlayer(this.controller, {super.key});
 
   /// The [CachedVideoPlayerController] responsible for the video being rendered in
   /// this widget.
   final CachedVideoPlayerController controller;
 
   @override
-  _CachedVideoPlayerState createState() => _CachedVideoPlayerState();
+  State<CachedVideoPlayer> createState() => _CachedVideoPlayerState();
 }
 
 class _CachedVideoPlayerState extends State<CachedVideoPlayer> {
@@ -789,6 +787,7 @@ class VideoProgressIndicator extends StatefulWidget {
   /// to `top: 5.0`.
   VideoProgressIndicator(
     this.controller, {
+    super.key,
     this.colors = const VideoProgressColors(),
     required this.allowScrubbing,
     this.padding = const EdgeInsets.only(top: 5.0),
@@ -816,7 +815,7 @@ class VideoProgressIndicator extends StatefulWidget {
   final EdgeInsets padding;
 
   @override
-  _VideoProgressIndicatorState createState() => _VideoProgressIndicatorState();
+  State<VideoProgressIndicator> createState() => _VideoProgressIndicatorState();
 }
 
 class _VideoProgressIndicatorState extends State<VideoProgressIndicator> {

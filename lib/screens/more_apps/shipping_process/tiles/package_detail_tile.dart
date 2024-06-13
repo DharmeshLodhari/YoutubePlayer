@@ -82,7 +82,7 @@ class PackageDetailTile extends StatelessWidget {
           fontFamily: "Inter",
         ),
       ),
-      trailing: Container(
+      trailing: SizedBox(
         width: 100,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

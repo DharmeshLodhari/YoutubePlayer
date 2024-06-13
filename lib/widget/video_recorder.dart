@@ -10,12 +10,12 @@ import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
 class VideoRecorder extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
-  VideoRecorder({this.arguments});
+  const VideoRecorder({super.key, this.arguments});
 
   @override
-  _VideoRecorderState createState() {
+  State<VideoRecorder> createState() {
     return _VideoRecorderState();
   }
 }

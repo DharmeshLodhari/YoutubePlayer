@@ -6,8 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class MyEventsScreen extends StatefulWidget {
+  const MyEventsScreen({super.key});
+
   @override
-  _MyEventsScreenState createState() => _MyEventsScreenState();
+  State<MyEventsScreen> createState() => _MyEventsScreenState();
 }
 
 class _MyEventsScreenState extends State<MyEventsScreen> {
@@ -126,7 +128,7 @@ class _MyEventsScreenState extends State<MyEventsScreen> {
   Widget tabViews() {
     return IndexedStack(
       index: currentIndex,
-      children: [
+      children: const [
         MyEventList(),
         MyWishList(),
       ],

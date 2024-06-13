@@ -22,12 +22,13 @@ class CustomSlydoChannelCard extends StatefulWidget {
   final TileRenderPlace tileRenderPlace;
 
   CustomSlydoChannelCard({
+    super.key,
     required this.channelModel,
     this.tileRenderPlace = TileRenderPlace.YarnTimeLine,
   });
 
   @override
-  _CustomSlydoChannelCardState createState() => _CustomSlydoChannelCardState();
+  State<CustomSlydoChannelCard> createState() => _CustomSlydoChannelCardState();
 }
 
 class _CustomSlydoChannelCardState extends State<CustomSlydoChannelCard> {

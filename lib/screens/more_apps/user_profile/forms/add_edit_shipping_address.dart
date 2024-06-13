@@ -21,12 +21,12 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 
 class AddEditShippingAddress extends StatefulWidget {
-  AddEditShippingAddress({super.key, this.shippingAddress});
+  const AddEditShippingAddress({super.key, this.shippingAddress});
 
   final ShippingAddress? shippingAddress;
 
   @override
-  _AddEditShippingAddressState createState() => _AddEditShippingAddressState();
+  State<AddEditShippingAddress> createState() => _AddEditShippingAddressState();
 }
 
 class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
@@ -626,6 +626,11 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
     return DropdownSearch<String>(
       popupProps: PopupProps.dialog(
           showSearchBox: true,
+          dialogProps: DialogProps(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(5),
+            ),
+          ),
           searchFieldProps: TextFieldProps(
             cursorColor: navyBlue,
             decoration: InputDecoration(
@@ -834,6 +839,11 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
     return DropdownSearch<String>(
       popupProps: PopupProps.dialog(
           showSearchBox: true,
+          dialogProps: DialogProps(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(5),
+            ),
+          ),
           searchFieldProps: TextFieldProps(
             cursorColor: navyBlue,
             decoration: InputDecoration(

@@ -22,7 +22,7 @@ import '../payment_and_banking/payment_and_banking_auth.dart';
 class WithdrawVirtualCard extends StatefulWidget {
   final dynamic arguments;
 
-  WithdrawVirtualCard({this.arguments, super.key});
+  const WithdrawVirtualCard({this.arguments, super.key});
 
   @override
   WithdrawVirtualCardState createState() => WithdrawVirtualCardState();

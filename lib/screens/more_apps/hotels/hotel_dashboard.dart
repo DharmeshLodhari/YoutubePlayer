@@ -9,8 +9,10 @@ import 'hotel_explore_screen.dart';
 import 'my_hotels_screen.dart';
 
 class HotelDashboard extends StatefulWidget {
+  const HotelDashboard({super.key});
+
   @override
-  _HotelDashboardState createState() => _HotelDashboardState();
+  State<HotelDashboard> createState() => _HotelDashboardState();
 }
 
 class _HotelDashboardState extends State<HotelDashboard> {
@@ -32,7 +34,7 @@ class _HotelDashboardState extends State<HotelDashboard> {
           onPageChanged: (index) {
             _hotelDashboardBloc.index = index;
           },
-          children: <Widget>[
+          children: const <Widget>[
             HotelExploreScreen(),
             MyHotelsScreen(),
           ],

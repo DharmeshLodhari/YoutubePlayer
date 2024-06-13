@@ -13,8 +13,10 @@ import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 
 class SelectAddressScreen extends StatefulWidget {
+  const SelectAddressScreen({super.key});
+
   @override
-  _SelectAddressScreenState createState() => _SelectAddressScreenState();
+  State<SelectAddressScreen> createState() => _SelectAddressScreenState();
 }
 
 class _SelectAddressScreenState extends State<SelectAddressScreen> {
@@ -342,7 +344,7 @@ class _SelectAddressScreenState extends State<SelectAddressScreen> {
     return CurvedButton(
       onPressed: () {
         Navigator.of(context).pushNamed("/search-driver",
-            arguments: {"currentChild": SelectAddressScreen()});
+            arguments: {"currentChild": const SelectAddressScreen()});
       },
       backgroundColor: navyBlue,
       textColor: Colors.white,

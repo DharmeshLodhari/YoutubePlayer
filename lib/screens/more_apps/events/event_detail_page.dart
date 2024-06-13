@@ -14,8 +14,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class EventDetailPage extends StatefulWidget {
+  const EventDetailPage({super.key});
+
   @override
-  _EventDetailPageState createState() => _EventDetailPageState();
+  State<EventDetailPage> createState() => _EventDetailPageState();
 }
 
 class _EventDetailPageState extends State<EventDetailPage> {
@@ -493,7 +495,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
     );
   }
 
-  Widget dateAndTimeTile(String date, bool isSelected, index) {
+  Widget dateAndTimeTile(String date, bool isSelected, int index) {
     return InkWell(
       onTap: () {
         selectedDate = index;

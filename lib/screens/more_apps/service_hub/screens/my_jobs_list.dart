@@ -12,7 +12,7 @@ import 'package:flutter/material.dart';
 import '../../../../widget/tab_selection.dart';
 
 class JobsMyJobsList extends StatefulWidget {
-  const JobsMyJobsList({Key? key});
+  const JobsMyJobsList({super.key});
 
   @override
   State<JobsMyJobsList> createState() => _JobsMyJobsListState();

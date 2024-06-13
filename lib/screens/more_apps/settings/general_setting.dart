@@ -27,8 +27,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class GeneralSettingScreen extends StatefulWidget {
+  const GeneralSettingScreen({super.key});
+
   @override
-  _GeneralSettingScreenState createState() => _GeneralSettingScreenState();
+  State<GeneralSettingScreen> createState() => _GeneralSettingScreenState();
 }
 
 class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
@@ -117,7 +119,7 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
                     onTap: () {
                       NavigationUtil.push(
                         context,
-                        screen: YarnSettingsScreen(),
+                        screen: const YarnSettingsScreen(),
                       );
                     }),
                 getSettingsTile(
@@ -262,10 +264,7 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           Text(
-            AppLocalization.of(context)!.appVersion +
-                ': ' +
-                _packageInfo.version +
-                " (${_packageInfo.buildNumber})",
+            "${AppLocalization.of(context)!.appVersion}: ${_packageInfo.version} (${_packageInfo.buildNumber})",
             style: TextStyle(
               color: darkGrey,
               fontSize: 12,
@@ -706,8 +705,8 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
     setState(() {
       AppLocalization.load(Locale(language!.languageCode, ""));
       showToast(
-          message: AppLocalization.of(context)!.languageSwitchedTo +
-              " ${language.name}");
+          message:
+              "${AppLocalization.of(context)!.languageSwitchedTo} ${language.name}");
     });
   }
 

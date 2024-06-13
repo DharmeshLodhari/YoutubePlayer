@@ -12,7 +12,8 @@ class SearchTextField extends StatefulWidget {
   bool isDisabled;
 
   SearchTextField(
-      {required this.textEditingController,
+      {super.key,
+      required this.textEditingController,
       required this.onSubmit,
       required this.hintText,
       this.textStyle,

@@ -11,7 +11,7 @@ import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 
 class SuccessfulOrder extends StatefulWidget {
-  const SuccessfulOrder({Key? key});
+  const SuccessfulOrder({super.key});
 
   @override
   State<SuccessfulOrder> createState() => _SuccessfulOrderState();

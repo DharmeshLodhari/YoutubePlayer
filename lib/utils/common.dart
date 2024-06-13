@@ -56,7 +56,7 @@ String trimString(String input) {
   List<String> words = input.split(' ');
   if (words.length > 30) {
     words = words.sublist(0, 30);
-    input = words.join(' ') + '...';
+    input = '${words.join(' ')}...';
   }
   return input;
 }
@@ -64,6 +64,6 @@ String trimString(String input) {
 String appendStringDot(String input, int maxLength) {
   // int maxLength = 20;
   final String shortText =
-      input.length > maxLength ? input.substring(0, maxLength) + "..." : input;
+      input.length > maxLength ? "${input.substring(0, maxLength)}..." : input;
   return shortText;
 }

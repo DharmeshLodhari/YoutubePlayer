@@ -7,8 +7,10 @@ import 'my_hotel_list.dart';
 import 'my_wish_list.dart';
 
 class MyHotelsScreen extends StatefulWidget {
+  const MyHotelsScreen({super.key});
+
   @override
-  _MyHotelsScreenState createState() => _MyHotelsScreenState();
+  State<MyHotelsScreen> createState() => _MyHotelsScreenState();
 }
 
 class _MyHotelsScreenState extends State<MyHotelsScreen> {

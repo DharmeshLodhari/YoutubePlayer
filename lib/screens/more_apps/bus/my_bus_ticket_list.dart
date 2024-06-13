@@ -10,8 +10,10 @@ import 'bus_auth.dart';
 import 'models/Transport.dart';
 
 class MyBusTicketList extends StatefulWidget {
+  const MyBusTicketList({super.key});
+
   @override
-  _MyBusTicketListState createState() => _MyBusTicketListState();
+  State<MyBusTicketList> createState() => _MyBusTicketListState();
 }
 
 class _MyBusTicketListState extends State<MyBusTicketList> {

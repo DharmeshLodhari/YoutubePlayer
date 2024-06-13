@@ -26,7 +26,7 @@ class _AllActiveCartState extends State<AllActiveCart> {
   void fetchCartData() async {
     isLoading = true;
     if (mounted) setState(() {});
-    List<SharedCartModel> result = await getCartList();
+    final List<SharedCartModel> result = await getCartList();
     cartList.add(SharedCartModel(id: 'my-cart', name: 'My cart'));
     if (result.isNotEmpty) {
       for (SharedCartModel cart in result) {

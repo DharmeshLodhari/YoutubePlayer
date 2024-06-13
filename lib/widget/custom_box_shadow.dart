@@ -11,6 +11,7 @@ class CustomBoxShadow extends StatelessWidget {
   double borderRadius;
 
   CustomBoxShadow({
+    super.key,
     required this.child,
     this.blurRadius = 7.0,
     this.borderRadius = 12,

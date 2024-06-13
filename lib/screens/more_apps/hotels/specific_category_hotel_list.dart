@@ -4,7 +4,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import 'hotel_auth.dart';
 import 'hotel_tile.dart';
-import 'models/HotelRoomItem.dart';
+import 'models/hotel_room_item.dart';
 
 class SpecificCategoryHotelList extends StatefulWidget {
   @override

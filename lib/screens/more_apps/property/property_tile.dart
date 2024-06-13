@@ -15,10 +15,10 @@ import 'models/property_item.dart';
 // ignore: must_be_immutable
 class PropertyTileWithHeart extends StatefulWidget {
   String? imageUrl;
-  PropertyTileWithHeart({this.imageUrl});
+  PropertyTileWithHeart({super.key, this.imageUrl});
 
   @override
-  _PropertyTileWithHeartState createState() => _PropertyTileWithHeartState();
+  State<PropertyTileWithHeart> createState() => _PropertyTileWithHeartState();
 }
 
 class _PropertyTileWithHeartState extends State<PropertyTileWithHeart> {
@@ -229,10 +229,10 @@ class _PropertyTileWithHeartState extends State<PropertyTileWithHeart> {
 class PropertyImagesTile extends StatefulWidget {
   final PropertyItem? property;
 
-  PropertyImagesTile({this.property});
+  const PropertyImagesTile({super.key, this.property});
 
   @override
-  _PropertyImagesTileState createState() => _PropertyImagesTileState();
+  State<PropertyImagesTile> createState() => _PropertyImagesTileState();
 }
 
 class _PropertyImagesTileState extends State<PropertyImagesTile> {
@@ -410,10 +410,10 @@ class _PropertyImagesTileState extends State<PropertyImagesTile> {
 class RentPropertyTile extends StatefulWidget {
   final PropertyItem? property;
 
-  RentPropertyTile({this.property});
+  const RentPropertyTile({super.key, this.property});
 
   @override
-  _RentPropertyTileState createState() => _RentPropertyTileState();
+  State<RentPropertyTile> createState() => _RentPropertyTileState();
 }
 
 class _RentPropertyTileState extends State<RentPropertyTile> {
@@ -861,10 +861,10 @@ class _RentPropertyTileState extends State<RentPropertyTile> {
 class RentPropertyTileWithoutHeart extends StatefulWidget {
   final PropertyItem? property;
 
-  RentPropertyTileWithoutHeart({this.property});
+  const RentPropertyTileWithoutHeart({super.key, this.property});
 
   @override
-  _RentPropertyTileWithoutHeartState createState() =>
+  State<RentPropertyTileWithoutHeart> createState() =>
       _RentPropertyTileWithoutHeartState();
 }
 
@@ -1265,7 +1265,7 @@ class _RentPropertyTileWithoutHeartState
 class PartialPropertyItemTile extends StatelessWidget {
   final PartialPropertyItem? property;
 
-  PartialPropertyItemTile({this.property});
+  const PartialPropertyItemTile({super.key, this.property});
 
   @override
   Widget build(BuildContext context) {
@@ -1365,7 +1365,7 @@ class PartialPropertyItemTile extends StatelessWidget {
 class CityItemCard extends StatelessWidget {
   final CityData? city;
 
-  CityItemCard({this.city});
+  const CityItemCard({super.key, this.city});
 
   @override
   Widget build(BuildContext context) {
@@ -1418,6 +1418,8 @@ class CityItemCard extends StatelessWidget {
 }
 
 class ReviewTile extends StatelessWidget {
+  const ReviewTile({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -1529,6 +1531,8 @@ class ReviewTile extends StatelessWidget {
 }
 
 class PartnerTile extends StatelessWidget {
+  const PartnerTile({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Row(

@@ -20,7 +20,7 @@ import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class InvoiceScreen extends StatefulWidget {
-  const InvoiceScreen({Key? key});
+  const InvoiceScreen({super.key});
 
   @override
   State<InvoiceScreen> createState() => _InvoiceScreenState();

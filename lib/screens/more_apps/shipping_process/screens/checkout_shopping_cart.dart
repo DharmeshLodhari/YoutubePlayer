@@ -12,8 +12,10 @@ import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/material.dart';
 
 class ShoppingCart extends StatefulWidget {
+  const ShoppingCart({super.key});
+
   @override
-  _ShoppingCartState createState() => _ShoppingCartState();
+  State<ShoppingCart> createState() => _ShoppingCartState();
 }
 
 class _ShoppingCartState extends State<ShoppingCart> {
@@ -127,15 +129,13 @@ class _ShoppingCartState extends State<ShoppingCart> {
           //     }
           //   },
           // ),
-          Center(
-            child: Container(
-              child: const Text(
-                "Coming Soon",
-                style: TextStyle(
-                    fontSize: 18,
-                    fontFamily: "Inter",
-                    fontWeight: FontWeight.bold),
-              ),
+          const Center(
+            child: Text(
+              "Coming Soon",
+              style: TextStyle(
+                  fontSize: 18,
+                  fontFamily: "Inter",
+                  fontWeight: FontWeight.bold),
             ),
           )
         ],

@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:Slydo/screens/more_apps/hotels/hotel_auth.dart';
-import 'package:Slydo/screens/more_apps/hotels/models/HotelRoomDetailItem.dart';
+import 'package:Slydo/screens/more_apps/hotels/models/hotel_room_detail_item.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
@@ -15,8 +15,10 @@ import 'hotel_dashboard_bloc.dart';
 import 'hotel_tile.dart';
 
 class HotelDetailPage extends StatefulWidget {
+  const HotelDetailPage({super.key});
+
   @override
-  _HotelDetailPageState createState() => _HotelDetailPageState();
+  State<HotelDetailPage> createState() => _HotelDetailPageState();
 }
 
 class _HotelDetailPageState extends State<HotelDetailPage> {
@@ -878,7 +880,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
           children: hotelRoomDetailItem.reviews!
               .map((review) => Container(
                     margin: const EdgeInsets.only(bottom: 12),
-                    child: ReviewTile(),
+                    child: const ReviewTile(),
                   ))
               .toList(),
         ),
@@ -909,7 +911,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
                         onTap: () {
                           Navigator.of(context).pushNamed("/partner-detail");
                         },
-                        child: PartnerTile()),
+                        child: const PartnerTile()),
                   ))
               .toList(),
         ),

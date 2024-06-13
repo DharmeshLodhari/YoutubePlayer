@@ -284,7 +284,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
             jobModel: job,
             callback: (params) async {
               params
-                ..attachment = {
+                .attachment = {
                   "job": job?.toJson().cast<String, dynamic>() ?? {},
                 };
               final bool data =

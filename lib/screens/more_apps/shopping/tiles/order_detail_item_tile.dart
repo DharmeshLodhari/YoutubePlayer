@@ -13,7 +13,7 @@ class OrderTileForProduct extends StatefulWidget {
   String? type;
   int? qty;
 
-  OrderTileForProduct(Map<String, dynamic> item) {
+  OrderTileForProduct(Map<String, dynamic> item, {super.key}) {
     type = item["type"];
     this.item = item["item"];
     qty = item["qty"];
@@ -120,34 +120,32 @@ class _OrderTileForProductState extends State<OrderTileForProduct> {
   }
 
   Widget getTrailing() {
-    return Container(
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          Text(
-            worldCurrencies[product!.currency!]!,
-            style: TextStyle(
-                color: blackFont,
-                fontFamily: "Inter",
-                fontWeight: FontWeight.w600,
-                fontSize: 14),
-          ),
-          Text(
-            moneyDisplayNormalizer(int.parse(product!.price.toString())),
-            style: TextStyle(
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        Text(
+          worldCurrencies[product!.currency!]!,
+          style: TextStyle(
               color: blackFont,
+              fontFamily: "Inter",
               fontWeight: FontWeight.w600,
-              fontSize: 14,
-            ),
+              fontSize: 14),
+        ),
+        Text(
+          moneyDisplayNormalizer(int.parse(product!.price.toString())),
+          style: TextStyle(
+            color: blackFont,
+            fontWeight: FontWeight.w600,
+            fontSize: 14,
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
   String getProductPrice() {
     if (product!.price.toString().length > 5) {
-      return product!.price.toString().substring(0, 5) + "..";
+      return "${product!.price.toString().substring(0, 5)}..";
     }
     return product!.price.toString();
   }
@@ -205,14 +203,14 @@ class OrderTileForService extends StatefulWidget {
   String? type;
   int? qty;
 
-  OrderTileForService(Map<String, dynamic> item) {
+  OrderTileForService(Map<String, dynamic> item, {super.key}) {
     type = item["type"];
     this.item = item["item"];
     qty = item["qty"] ?? 0;
   }
 
   @override
-  _OrderTileForServiceState createState() =>
+  State<OrderTileForService> createState() =>
       _OrderTileForServiceState(service: item, qty: qty);
 }
 
@@ -337,7 +335,7 @@ class _OrderTileForServiceState extends State<OrderTileForService> {
 
   String getServicePrice() {
     if (service!.price.toString().length > 5) {
-      return service!.price.toString().substring(0, 5) + "..";
+      return "${service!.price.toString().substring(0, 5)}..";
     }
     return service!.price.toString();
   }

@@ -1,9 +1,9 @@
 import 'package:Slydo/services/auth.dart';
 
-import 'models/CityData.dart';
-import 'models/HotelRoomDetailItem.dart';
-import 'models/HotelRoomItem.dart';
-import 'models/PartialHotelRoomItem.dart';
+import 'models/city_data.dart';
+import 'models/hotel_room_detail_item.dart';
+import 'models/hotel_room_item.dart';
+import 'models/partial_hotel_room_item.dart';
 
 class HotelAuthService extends AuthService {
   Future<List<String>> getLocation() async {

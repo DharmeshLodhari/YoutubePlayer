@@ -734,7 +734,7 @@ Widget flexibleSpace({int flex = 1}) {
   );
 }
 
-showSnackbar(BuildContext context,
+void showSnackbar(BuildContext context,
     {required String message, int duration = 500}) {
   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
     content: Text(message),
@@ -1153,7 +1153,8 @@ class BlogSettingsTitles extends StatefulWidget {
   final Function(bool isSwitched)? onChanged;
 
   BlogSettingsTitles(
-      {this.isEnabled = true,
+      {super.key,
+      this.isEnabled = true,
       required this.icon,
       required this.title,
       this.onChanged,
@@ -1162,9 +1163,7 @@ class BlogSettingsTitles extends StatefulWidget {
       required this.description,
       this.hasSwitch = true,
       this.trailingWidget,
-      this.addElevation = true,
-      Key? key})
-     ;
+      this.addElevation = true});
 
   @override
   State<BlogSettingsTitles> createState() => _BlogSettingsTitlesState();

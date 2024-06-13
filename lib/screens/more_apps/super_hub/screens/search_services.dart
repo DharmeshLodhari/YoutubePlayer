@@ -16,10 +16,10 @@ import '../../../../../../widget/customized_dropdown_field.dart';
 import '../../../../../../widget/rounded_background_icon.dart';
 
 class SearchServices extends StatefulWidget {
-  const SearchServices({Key? key});
+  const SearchServices({super.key});
 
   @override
-  _SearchServicesState createState() => _SearchServicesState();
+  State<SearchServices> createState() => _SearchServicesState();
 }
 
 class _SearchServicesState extends State<SearchServices> {

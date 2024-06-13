@@ -12,7 +12,7 @@ import '../more_apps/yarn/yarn_dashboard_bloc.dart';
 
 class ShopCategoryScreen extends StatefulWidget {
   final ProductCategory? productCategories;
-  ShopCategoryScreen({this.productCategories});
+  const ShopCategoryScreen({super.key, this.productCategories});
 
   @override
   State<ShopCategoryScreen> createState() => _ShopCategoryScreenState();

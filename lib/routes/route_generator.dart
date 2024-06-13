@@ -343,7 +343,7 @@ class RouteGenerator {
         );
       case Routes.ACCOUNTS:
         return PageTransition(
-          child: PaymentRequestList(),
+          child: const PaymentRequestList(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -538,7 +538,7 @@ class RouteGenerator {
         );
       case Routes.MESSAGE_LIST:
         return PageTransition(
-          child: MessageList(),
+          child: const MessageList(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -581,7 +581,7 @@ class RouteGenerator {
         );
       case Routes.BANK_ACCOUNT_LIST:
         return PageTransition(
-          child: BankAccountList(),
+          child: const BankAccountList(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -597,14 +597,14 @@ class RouteGenerator {
         );
       case Routes.PAYOUT:
         return PageTransition(
-          child: PayoutScreen(),
+          child: const PayoutScreen(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
       case Routes.PAYOUT_LIST:
         return PageTransition(
-          child: PayoutTransactions(),
+          child: const PayoutTransactions(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -801,7 +801,7 @@ class RouteGenerator {
         );
       case Routes.CREDIT_CARD_OPTION_SELECTION:
         return PageTransition(
-          child: CreditCardOptionSelection(),
+          child: const CreditCardOptionSelection(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -850,7 +850,7 @@ class RouteGenerator {
         );
       case Routes.ALREADY_HAVE_REFERENCE:
         return PageTransition(
-          child: AlreadyHaveReferenceScreen(),
+          child: const AlreadyHaveReferenceScreen(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -1232,7 +1232,7 @@ class RouteGenerator {
 
       case Routes.MOVIES:
         return PageTransition(
-          child: MovieDashboard(),
+          child: const MovieDashboard(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -1248,7 +1248,7 @@ class RouteGenerator {
 
       case Routes.SEARCH_MOVIE:
         return PageTransition(
-          child: SearchMovie(),
+          child: const SearchMovie(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -1256,7 +1256,7 @@ class RouteGenerator {
 
       case Routes.MOVIE_DETAIL:
         return PageTransition(
-          child: MovieDetailPage(),
+          child: const MovieDetailPage(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -1266,7 +1266,7 @@ class RouteGenerator {
 
       case Routes.MUSICS:
         return PageTransition(
-          child: MusicDashboard(),
+          child: const MusicDashboard(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -1282,7 +1282,7 @@ class RouteGenerator {
 
       case Routes.SEARCH_MUSIC:
         return PageTransition(
-          child: SearchMusic(),
+          child: const SearchMusic(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -1453,7 +1453,7 @@ class RouteGenerator {
 
       case Routes.NEWS:
         return PageTransition(
-          child: NewsDashboard(),
+          child: const NewsDashboard(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -1461,7 +1461,7 @@ class RouteGenerator {
 
       case Routes.NEWS_DETAIL:
         return PageTransition(
-          child: NewsDetailPage(),
+          child: const NewsDetailPage(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -1583,7 +1583,7 @@ class RouteGenerator {
 
       case Routes.ADD_EDIT_USER_BIO:
         return PageTransition(
-          child: AddOrEditUserBioScreen(),
+          child: const AddOrEditUserBioScreen(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,

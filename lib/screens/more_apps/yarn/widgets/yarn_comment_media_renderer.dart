@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:Slydo/screens/more_apps/yarn/models/Topics/CommentDetails.dart';
+import 'package:Slydo/screens/more_apps/yarn/models/Topics/comment_details.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/overlay_yarn_photo.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/view_ask_media.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_single_media_preview.dart';
@@ -11,8 +11,7 @@ import '../../../../utils/navigation_util.dart';
 
 class YarnCommentMediaRender extends StatefulWidget {
   final YarnComment yarnTopic;
-  YarnCommentMediaRender({super.key, required this.yarnTopic})
-     ;
+  const YarnCommentMediaRender({super.key, required this.yarnTopic});
 
   @override
   State<YarnCommentMediaRender> createState() => _YarnCommentMediaRenderState();

@@ -9,8 +9,10 @@ import 'property_dashboard_bloc.dart';
 import 'property_explore_screen.dart';
 
 class PropertyDashboard extends StatefulWidget {
+  const PropertyDashboard({super.key});
+
   @override
-  _PropertyDashboardState createState() => _PropertyDashboardState();
+  State<PropertyDashboard> createState() => _PropertyDashboardState();
 }
 
 class _PropertyDashboardState extends State<PropertyDashboard> {
@@ -24,7 +26,7 @@ class _PropertyDashboardState extends State<PropertyDashboard> {
     _propertyFilterBloc = Provider.of<PropertyFilterBloc>(context);
     return PopScope(
       onPopInvoked: (didPop) {
-        if(didPop) {
+        if (didPop) {
           _propertyDashboardBloc.index = 0;
           _propertyFilterBloc.resetFilter();
 
@@ -37,7 +39,7 @@ class _PropertyDashboardState extends State<PropertyDashboard> {
           onPageChanged: (index) {
             _propertyDashboardBloc.index = index;
           },
-          children: <Widget>[
+          children: const <Widget>[
             PropertyExploreScreen(),
             MyPropertiesScreen(),
           ],

@@ -128,7 +128,7 @@ class _MomentsScreenState extends State<MomentsScreen> {
     getExploreMoments();
   }
 
-  getConnectionMoments() async {
+  Future<void> getConnectionMoments() async {
     if (!isContactMomentsLoading) {
       if (nextContactMoments != null && !isContactMomentsLoading) {
         if (mounted) {
@@ -165,7 +165,7 @@ class _MomentsScreenState extends State<MomentsScreen> {
     }
   }
 
-  getExploreMoments() async {
+  Future<void> getExploreMoments() async {
     if (!isExploreMomentsLoading) {
       if (nextExploreMoments != null && !isExploreMomentsLoading) {
         if (mounted) {
@@ -775,8 +775,7 @@ class ExploreMomentsCard extends StatefulWidget {
       this.showProfileAvatar =
           true, // We do not show profile avatar on profile page moment's tab.
       required this.index,
-      required this.exploreMomentsModelList})
-     ;
+      required this.exploreMomentsModelList});
 
   @override
   State<ExploreMomentsCard> createState() => _ExploreMomentsCardState();
@@ -808,7 +807,7 @@ class _ExploreMomentsCardState extends State<ExploreMomentsCard> {
             momentsModel: e));
       }
       log('message...first${widget.exploreMomentsModelList[widget.index].moments!.length}');
-      log('message...second${e}');
+      log('message...second$e');
     }).toList();
     super.initState();
   }

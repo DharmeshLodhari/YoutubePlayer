@@ -38,7 +38,7 @@ class _RiderDashboardState extends State<RiderDashboard> {
   bool noJobsInList = false;
   final ScrollController _historyScrollController = ScrollController();
   final GlobalKey<ScaffoldMessengerState> _historyScaffoldMessengerKey =
-      new GlobalKey<ScaffoldMessengerState>();
+      GlobalKey<ScaffoldMessengerState>();
 
   @override
   void initState() {
@@ -542,19 +542,19 @@ class _RiderDashboardState extends State<RiderDashboard> {
     return Row(
       children: [
         Expanded(
-          child: CustomCard(lightGreen, '1.2KM', 'Total Distance Covered'),
+          child: customCard(lightGreen, '1.2KM', 'Total Distance Covered'),
         ),
         const SizedBox(
           width: 10,
         ),
         Expanded(
-          child: CustomCard(richPink, '26', 'Total Order Delivered'),
+          child: customCard(richPink, '26', 'Total Order Delivered'),
         ),
       ],
     );
   }
 
-  Widget CustomCard(Color cardColor, String count, String title) {
+  Widget customCard(Color cardColor, String count, String title) {
     return CustomBoxShadow(
       child: Card(
         shadowColor: boxShadowTwo,

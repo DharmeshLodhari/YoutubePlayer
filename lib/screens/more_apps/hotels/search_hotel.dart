@@ -1,5 +1,5 @@
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/screens/more_apps/hotels/models/HotelRoomItem.dart';
+import 'package:Slydo/screens/more_apps/hotels/models/hotel_room_item.dart';
 import 'package:Slydo/screens/more_apps/movies/custom_slider_thumb_circle_for_range_slider.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';

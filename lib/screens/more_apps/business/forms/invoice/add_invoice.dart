@@ -24,13 +24,13 @@ import 'package:quiver/iterables.dart';
 
 // ignore: must_be_immutable
 class AddInvoice extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
-  AddInvoice({this.arguments});
+  const AddInvoice({super.key, this.arguments});
 
   // Declare a field that holds the userData.
   @override
-  _AddInvoiceState createState() => _AddInvoiceState();
+  State<AddInvoice> createState() => _AddInvoiceState();
 }
 
 class _AddInvoiceState extends State<AddInvoice> {

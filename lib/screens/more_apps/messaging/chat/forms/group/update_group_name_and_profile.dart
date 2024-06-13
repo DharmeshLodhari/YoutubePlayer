@@ -22,12 +22,12 @@ import 'package:image_picker/image_picker.dart';
 import '../../../../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 
 class UpdateGroupNameAndProfile extends StatefulWidget {
-  final arguments;
+  final dynamic arguments;
 
-  UpdateGroupNameAndProfile({this.arguments});
+  const UpdateGroupNameAndProfile({super.key, this.arguments});
 
   @override
-  _UpdateGroupNameAndProfileState createState() =>
+  State<UpdateGroupNameAndProfile> createState() =>
       _UpdateGroupNameAndProfileState();
 }
 

@@ -12,10 +12,10 @@ import 'package:intl/intl.dart';
 class UtilityHistoryDetailScreen extends StatefulWidget {
   final String transactionId;
 
-  UtilityHistoryDetailScreen({required this.transactionId});
+  const UtilityHistoryDetailScreen({super.key, required this.transactionId});
 
   @override
-  _UtilityHistoryDetailScreenState createState() =>
+  State<UtilityHistoryDetailScreen> createState() =>
       _UtilityHistoryDetailScreenState();
 }
 

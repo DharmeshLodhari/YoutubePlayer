@@ -10,6 +10,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class PreviewScreen extends StatefulWidget {
+  const PreviewScreen({super.key});
+
   @override
   State<PreviewScreen> createState() => _PreviewScreenState();
 }

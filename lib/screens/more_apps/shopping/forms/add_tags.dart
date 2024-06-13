@@ -11,7 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class AddTags extends StatefulWidget {
-  AddTags({
+  const AddTags({
     super.key,
     this.arguments,
   });

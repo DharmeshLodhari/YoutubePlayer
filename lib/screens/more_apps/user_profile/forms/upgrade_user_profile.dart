@@ -15,8 +15,10 @@ import 'package:provider/provider.dart';
 import '../user_auth.dart';
 
 class UpgradeUserProfile extends StatefulWidget {
+  const UpgradeUserProfile({super.key});
+
   @override
-  _UpgradeUserProfileState createState() => _UpgradeUserProfileState();
+  State<UpgradeUserProfile> createState() => _UpgradeUserProfileState();
 }
 
 class _UpgradeUserProfileState extends State<UpgradeUserProfile> {

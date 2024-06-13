@@ -1,4 +1,4 @@
-import 'package:Slydo/screens/more_apps/yarn/models/Topics/CommentDetails.dart';
+import 'package:Slydo/screens/more_apps/yarn/models/Topics/comment_details.dart';
 import 'package:Slydo/screens/more_apps/yarn/models/Topics/yarn_model.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_comment_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_shimmer.dart';
@@ -8,7 +8,7 @@ import 'package:Slydo/widget/customized_popup_menu.dart';
 import 'package:flutter/material.dart';
 
 class YarnCommentList extends StatefulWidget {
-  YarnCommentList({
+  const YarnCommentList({
     required this.yarn,
     required this.commentScrollController,
     super.key,

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 class CreateTextMomentScreen extends StatefulWidget {
-  const CreateTextMomentScreen({Key? key});
+  const CreateTextMomentScreen({super.key});
 
   @override
-  _CreateTextMomentScreenState createState() => _CreateTextMomentScreenState();
+  State<CreateTextMomentScreen> createState() => _CreateTextMomentScreenState();
 }
 
 class _CreateTextMomentScreenState extends State<CreateTextMomentScreen> {

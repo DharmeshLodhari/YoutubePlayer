@@ -409,7 +409,8 @@ class StoryViewShiddo extends StatefulWidget {
   // Indicator Foreground Color
   final Color? indicatorForegroundColor;
 
-  StoryViewShiddo({
+  const StoryViewShiddo({
+    super.key,
     required this.storyItems,
     required this.controller,
     this.onComplete,
@@ -686,9 +687,7 @@ class StoryViewShiddoState extends State<StoryViewShiddo>
                 onVerticalDragUpdate: widget.onVerticalSwipeComplete == null
                     ? null
                     : (details) {
-                        if (verticalDragInfo == null) {
-                          verticalDragInfo = VerticalDragInfo();
-                        }
+                        verticalDragInfo ??= VerticalDragInfo();
 
                         verticalDragInfo!.update(details.primaryDelta!);
 
@@ -741,7 +740,7 @@ class PageBar extends StatefulWidget {
   final Color? indicatorColor;
   final Color? indicatorForegroundColor;
 
-  PageBar(
+  const PageBar(
     this.pages,
     this.animation, {
     this.indicatorHeight = IndicatorHeight.large,
@@ -813,8 +812,9 @@ class StoryProgressIndicator extends StatelessWidget {
   final Color? indicatorColor;
   final Color? indicatorForegroundColor;
 
-  StoryProgressIndicator(
+  const StoryProgressIndicator(
     this.value, {
+    super.key,
     this.indicatorHeight = 5,
     this.indicatorColor,
     this.indicatorForegroundColor,

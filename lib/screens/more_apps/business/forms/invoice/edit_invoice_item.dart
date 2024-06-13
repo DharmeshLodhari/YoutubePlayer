@@ -15,11 +15,11 @@ import 'package:provider/provider.dart';
 // ignore: must_be_immutable
 class EditInvoiceItem extends StatefulWidget {
   final dynamic arguments;
-  EditInvoiceItem({this.arguments});
+  const EditInvoiceItem({super.key, this.arguments});
 
   // Declare a field that holds the userData.
   @override
-  _EditInvoiceItemState createState() => _EditInvoiceItemState();
+  State<EditInvoiceItem> createState() => _EditInvoiceItemState();
 }
 
 class _EditInvoiceItemState extends State<EditInvoiceItem> {

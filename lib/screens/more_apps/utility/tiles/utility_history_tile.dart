@@ -10,7 +10,7 @@ import 'package:intl/intl.dart';
 class UtilityHistoryTile extends StatelessWidget {
   final UtilityHistoryModel utilityHistoryModel;
 
-  UtilityHistoryTile({required this.utilityHistoryModel});
+  const UtilityHistoryTile({super.key, required this.utilityHistoryModel});
 
   @override
   Widget build(BuildContext context) {

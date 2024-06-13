@@ -20,12 +20,12 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 class AddEditDiscount extends StatefulWidget {
-  AddEditDiscount({super.key, this.discountModel});
+  const AddEditDiscount({super.key, this.discountModel});
 
   final DiscountModel? discountModel;
 
   @override
-  _AddEditDiscountState createState() => _AddEditDiscountState();
+  State<AddEditDiscount> createState() => _AddEditDiscountState();
 }
 
 class _AddEditDiscountState extends State<AddEditDiscount> {

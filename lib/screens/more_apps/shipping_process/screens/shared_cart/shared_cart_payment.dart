@@ -30,7 +30,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import '../../../../../widget/vertical_list_item.dart';
 
 class SharedCartPayment extends StatefulWidget {
-  const SharedCartPayment({Key? key});
+  const SharedCartPayment({super.key});
 
   @override
   State<SharedCartPayment> createState() => _SharedCartPaymentState();
@@ -76,9 +76,9 @@ class _SharedCartPaymentState extends State<SharedCartPayment>
       if (mounted) {
         setState(() {
           final List categoriesList = result["results"]["data"];
-          categoriesList.forEach((data) {
+          for (var data in categoriesList) {
             paymentCategories.add(data["name"]);
-          });
+          }
         });
       }
     });
@@ -99,7 +99,7 @@ class _SharedCartPaymentState extends State<SharedCartPayment>
         child: Scaffold(
           resizeToAvoidBottomInset: false,
           backgroundColor: lightGrey,
-          persistentFooterButtons: [],
+          persistentFooterButtons: const [],
           appBar: _buildAppBar() as PreferredSizeWidget?,
           body: SmartRefresher(
             enablePullDown: true,
@@ -295,7 +295,7 @@ class _SharedCartPaymentState extends State<SharedCartPayment>
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              content: Container(
+              content: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Card(
                   elevation: 2,
@@ -495,7 +495,7 @@ class _SharedCartPaymentState extends State<SharedCartPayment>
               fontSize: 14,
             ),
           ),
-          trailing: Container(
+          trailing: SizedBox(
             width: 110,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,

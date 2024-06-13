@@ -1,6 +1,7 @@
 /// access : ""
 /// refresh : ""
 /// expiration : ""
+library;
 
 class Jwt {
   Jwt({

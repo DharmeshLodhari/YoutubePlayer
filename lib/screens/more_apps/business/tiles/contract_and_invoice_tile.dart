@@ -14,10 +14,10 @@ import 'package:provider/provider.dart';
 class ContractTile extends StatefulWidget {
   final ContractModel contract;
 
-  ContractTile({required this.contract});
+  const ContractTile({super.key, required this.contract});
 
   @override
-  _ContractTileState createState() => _ContractTileState();
+  State<ContractTile> createState() => _ContractTileState();
 }
 
 class _ContractTileState extends State<ContractTile> {
@@ -265,10 +265,10 @@ class InvoiceTile extends StatefulWidget {
   final InvoiceModel invoice;
   final Function? onTap;
 
-  InvoiceTile({required this.invoice, this.onTap});
+  const InvoiceTile({super.key, required this.invoice, this.onTap});
 
   @override
-  _InvoiceTileState createState() => _InvoiceTileState();
+  State<InvoiceTile> createState() => _InvoiceTileState();
 }
 
 class _InvoiceTileState extends State<InvoiceTile> {

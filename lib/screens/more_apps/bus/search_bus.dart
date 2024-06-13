@@ -10,8 +10,10 @@ import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class SearchBus extends StatefulWidget {
+  const SearchBus({super.key});
+
   @override
-  _SearchBusState createState() => _SearchBusState();
+  State<SearchBus> createState() => _SearchBusState();
 }
 
 class _SearchBusState extends State<SearchBus> {

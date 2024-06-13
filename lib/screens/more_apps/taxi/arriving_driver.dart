@@ -12,8 +12,10 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 
 class ArrivingDriver extends StatefulWidget {
+  const ArrivingDriver({super.key});
+
   @override
-  _ArrivingDriverState createState() => _ArrivingDriverState();
+  State<ArrivingDriver> createState() => _ArrivingDriverState();
 }
 
 class _ArrivingDriverState extends State<ArrivingDriver> {

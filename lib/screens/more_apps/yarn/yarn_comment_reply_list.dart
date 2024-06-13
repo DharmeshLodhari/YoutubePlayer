@@ -1,4 +1,4 @@
-import 'package:Slydo/screens/more_apps/yarn/models/Topics/CommentDetails.dart';
+import 'package:Slydo/screens/more_apps/yarn/models/Topics/comment_details.dart';
 import 'package:Slydo/screens/more_apps/yarn/models/Topics/yarn_model.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_comment_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_shimmer.dart';
@@ -13,8 +13,7 @@ class YarnCommentReplyList extends StatefulWidget {
       required this.yarnComment,
       required this.commentScrollController,
       super.key,
-      this.onCountChanged})
-     ;
+      this.onCountChanged});
   final Yarn yarn;
   final ScrollController commentScrollController;
   final YarnComment yarnComment;

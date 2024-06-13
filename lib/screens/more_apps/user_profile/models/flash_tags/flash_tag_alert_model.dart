@@ -4,6 +4,7 @@
 /// start_date : ""
 /// end_date : ""
 /// message : "Your food is ready"
+library;
 
 class FlashTagAlertModel {
   FlashTagAlertModel({

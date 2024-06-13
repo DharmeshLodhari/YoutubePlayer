@@ -10,8 +10,13 @@ class BottomSheetItemWithCheck extends StatelessWidget {
   final bool? isLast;
   final bool? isChecked;
 
-  BottomSheetItemWithCheck(
-      {this.onTap, this.icon, this.title, this.isLast = false, this.isChecked});
+  const BottomSheetItemWithCheck(
+      {super.key,
+      this.onTap,
+      this.icon,
+      this.title,
+      this.isLast = false,
+      this.isChecked});
 
   @override
   Widget build(BuildContext context) {

@@ -31,8 +31,7 @@ class CreateOrEditPostScreen extends StatefulWidget {
   final UserPost? userPost;
   final String? channel;
 
-  CreateOrEditPostScreen({super.key, this.userPost, this.channel})
-     ;
+  CreateOrEditPostScreen({super.key, this.userPost, this.channel});
 
   @override
   State<CreateOrEditPostScreen> createState() => _CreateOrEditPostScreenState();
@@ -605,7 +604,7 @@ class _CreateOrEditPostScreenState extends State<CreateOrEditPostScreen> {
   //   return file;
   // }
 
-  _pickBlogImage({Function(String image)? imagePickedCallBack}) async {
+  void _pickBlogImage({Function(String image)? imagePickedCallBack}) async {
     final String? croppedImage = await getFile(context);
 
     if (imagePickedCallBack != null && croppedImage != null) {
@@ -622,7 +621,7 @@ class _CreateOrEditPostScreenState extends State<CreateOrEditPostScreen> {
     }
   }
 
-  _pickBlogVideo({Function(String video)? videoPickedCallBack}) async {
+  void _pickBlogVideo({Function(String video)? videoPickedCallBack}) async {
     final String? videoPath = await getFile(context, fileType: MediaType.video);
 
     if (videoPath != null) {
@@ -1089,7 +1088,7 @@ class _CreateOrEditPostScreenState extends State<CreateOrEditPostScreen> {
     });
   }
 
-  _showPickMediaDialogBox() {
+  void _showPickMediaDialogBox() {
     showDialogBox(
       context: context,
       actionOneText: 'VIDEO',
@@ -1125,11 +1124,9 @@ class _CreateOrEditPostScreenState extends State<CreateOrEditPostScreen> {
                 ));
       },
     );
-
-    return true;
   }
 
-  sendMediaToServerAndAddToBlogPost(
+  void sendMediaToServerAndAddToBlogPost(
       {required MediaType mediaType, required String mediaFile}) {
     final index = _quillBodyTextController.selection.baseOffset;
     final length = _quillBodyTextController.selection.extentOffset - index;
@@ -1177,8 +1174,7 @@ class ChooseOptionsCard extends StatelessWidget {
   final IconData iconData;
 
   const ChooseOptionsCard(
-      {super.key, required this.iconData, required this.onTap})
-     ;
+      {super.key, required this.iconData, required this.onTap});
 
   @override
   Widget build(BuildContext context) {

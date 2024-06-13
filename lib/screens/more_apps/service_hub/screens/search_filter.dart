@@ -19,7 +19,7 @@ import '../../../../routes/route_constants.dart';
 
 // ignore: list_remove_unrelated_type
 class JobsSearchFilter extends StatefulWidget {
-  const JobsSearchFilter({Key? key});
+  const JobsSearchFilter({super.key});
 
   @override
   State<JobsSearchFilter> createState() => _JobsSearchFilterState();
@@ -112,9 +112,9 @@ class _JobsSearchFilterState extends State<JobsSearchFilter> {
             isCategoryLoading = false;
             categoriesList.addAll(tempList!);
             categoriesListCopy = categoriesList;
-            tempList.forEach((element) {
+            for (var element in tempList) {
               categoriesNameList.add(element.name!);
-            });
+            }
           });
         }
       }
@@ -165,14 +165,14 @@ class _JobsSearchFilterState extends State<JobsSearchFilter> {
             isLocationLoading = false;
             locationsList.addAll(tempList!);
             locationsListCopy = locationsList;
-            tempList.forEach((element) {
+            for (var element in tempList) {
               listStates.add(element.name!);
-            });
+            }
           });
         }
-        locationsListCopy.forEach((element) {
+        for (var element in locationsListCopy) {
           stateCheckMark[element!.name!] = false;
-        });
+        }
       }
       if (locationsList.isEmpty) {
         if (mounted) {

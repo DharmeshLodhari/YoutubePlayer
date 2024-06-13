@@ -6,6 +6,7 @@ import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/main.dart';
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_conversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/share_in_chat/ShareInChat.dart';
 import 'package:Slydo/screens/more_apps/review/models/review.dart';
@@ -13,9 +14,17 @@ import 'package:Slydo/screens/more_apps/review/review_auth.dart';
 import 'package:Slydo/screens/more_apps/review/tiles/review_tile.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/product_and_service/checkout_product_service.dart';
+import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
+import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
+import 'package:Slydo/screens/more_apps/yarn/models/share_as_yarn_model.dart';
+import 'package:Slydo/screens/more_apps/yarn/share_as_a_yarn_screen.dart';
+import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
+import 'package:Slydo/screens/more_apps/yarn/yarn_dashboard_bloc.dart';
+import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/utils/slydo_app_icon_new_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/bottom_sheet_item.dart';
 import 'package:Slydo/widget/cart_with_badge.dart';
@@ -30,16 +39,6 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:uuid/uuid.dart';
-
-import '../../../../../routes/route_constants.dart';
-import '../../../../../utils/navigation_util.dart';
-import '../../../../../utils/slydo_app_icon_new_icons.dart';
-import '../../../user_profile/user_auth.dart';
-import '../../../yarn/models/share_as_yarn_model.dart';
-import '../../../yarn/share_as_a_yarn_screen.dart';
-import '../../../yarn/yarn_auth.dart';
-import '../../../yarn/yarn_dashboard_bloc.dart';
-import '../../shopping_auth.dart';
 
 // ignore: must_be_immutable
 class ServiceDetailPage extends StatefulWidget {

@@ -28,12 +28,12 @@ import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
 class InvoiceDetail extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
-  InvoiceDetail({required this.arguments});
+  const InvoiceDetail({super.key, required this.arguments});
 
   @override
-  _InvoiceDetailState createState() => _InvoiceDetailState();
+  State<InvoiceDetail> createState() => _InvoiceDetailState();
 }
 
 class _InvoiceDetailState extends State<InvoiceDetail> {
@@ -855,7 +855,7 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
     }
   }
 
-  showDeleteDialogForInvoiceItem(InvoiceItem item) {
+  void showDeleteDialogForInvoiceItem(InvoiceItem item) {
     showDialogBox(
       context: context,
       actionOneTextColor: blackFont,

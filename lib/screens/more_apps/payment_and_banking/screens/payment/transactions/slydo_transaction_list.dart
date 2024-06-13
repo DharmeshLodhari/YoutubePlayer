@@ -23,8 +23,10 @@ import '../../../../../../services/app_config_bloc.dart';
 import '../../../payment_and_banking_auth.dart';
 
 class SlydoTransactionList extends StatefulWidget {
+  const SlydoTransactionList({super.key});
+
   @override
-  _SlydoTransactionListState createState() => _SlydoTransactionListState();
+  State<SlydoTransactionList> createState() => _SlydoTransactionListState();
 }
 
 class _SlydoTransactionListState extends State<SlydoTransactionList>
@@ -437,11 +439,9 @@ class _SlydoTransactionListState extends State<SlydoTransactionList>
 }
 
 class VerticalListItem extends StatefulWidget {
-  const VerticalListItem(this.transaction, {this.key});
+  const VerticalListItem(this.transaction, {super.key});
 
   final Transaction transaction;
-  @override
-  final Key? key;
 
   @override
   State<VerticalListItem> createState() => _VerticalListItemState();

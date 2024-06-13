@@ -12,15 +12,15 @@ import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
 
 class AddEditFlashTagAlert extends StatefulWidget {
-  AddEditFlashTagAlert({super.key, required this.user, this.flashTagAlertModel})
-     ;
+  const AddEditFlashTagAlert(
+      {super.key, required this.user, this.flashTagAlertModel});
 
   final CustomerProfile user;
 
   final FlashTagAlertModel? flashTagAlertModel;
 
   @override
-  _AddEditFlashTagAlertState createState() => _AddEditFlashTagAlertState();
+  State<AddEditFlashTagAlert> createState() => _AddEditFlashTagAlertState();
 }
 
 class _AddEditFlashTagAlertState extends State<AddEditFlashTagAlert> {

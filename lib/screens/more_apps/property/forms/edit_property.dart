@@ -24,8 +24,10 @@ import 'package:video_player/video_player.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 
 class EditProperty extends StatefulWidget {
+  const EditProperty({super.key});
+
   @override
-  _EditPropertyState createState() => _EditPropertyState();
+  State<EditProperty> createState() => _EditPropertyState();
 }
 
 class _EditPropertyState extends State<EditProperty> {
@@ -2230,7 +2232,7 @@ class _EditPropertyState extends State<EditProperty> {
 }
 
 class AspectRatioVideo extends StatefulWidget {
-  AspectRatioVideo(this.controller);
+  const AspectRatioVideo(this.controller, {super.key});
 
   final VideoPlayerController controller;
 

@@ -15,6 +15,8 @@ import 'package:Slydo/screens/moments/widgets/attachment_widget.dart';
 import 'package:Slydo/screens/moments/widgets/custom_moment_detail_button.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_conversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/share_in_chat/ShareInChat.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_report_screen.dart';
 import 'package:Slydo/screens/post_detail_page.dart';
 import 'package:Slydo/utils/cached_video_player/cached_video_player.dart';
@@ -35,9 +37,6 @@ import 'package:photo_view/photo_view.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
-
-import '../../../more_apps/user_profile/models/user.dart';
-import '../../../more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 
 class SingleMomentDetailScreen extends StatefulWidget {
   final List<MomentsModel> momentsModelList;
@@ -731,7 +730,7 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
                       onTap: () async {
                         toggleMediaPlayingState();
                         await NavigationUtil.push(context,
-                            screen: CreateMediaMomentScreen());
+                            screen: const CreateMediaMomentScreen());
                         toggleMediaPlayingState();
                       },
                       child: Container(

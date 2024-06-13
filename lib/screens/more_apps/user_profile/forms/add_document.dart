@@ -11,8 +11,10 @@ import 'package:provider/provider.dart';
 import '../user_auth.dart';
 
 class AddDocument extends StatefulWidget {
+  const AddDocument({super.key});
+
   @override
-  _AddDocumentState createState() => _AddDocumentState();
+  State<AddDocument> createState() => _AddDocumentState();
 }
 
 class _AddDocumentState extends State<AddDocument> {

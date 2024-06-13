@@ -23,8 +23,10 @@ import '../shopping_auth.dart';
 import '../tiles/cart_tiles.dart';
 
 class MixCartItem extends StatefulWidget {
+  const MixCartItem({super.key});
+
   @override
-  _MixCartItemState createState() => _MixCartItemState();
+  State<MixCartItem> createState() => _MixCartItemState();
 }
 
 class _MixCartItemState extends State<MixCartItem> {
@@ -35,7 +37,7 @@ class _MixCartItemState extends State<MixCartItem> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final _auth = PaymentAndBankingAuth();
 
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
   Widget audioTile = Container();
@@ -663,7 +665,7 @@ class VerticalListItem extends StatelessWidget {
   var item;
   String? type;
 
-  VerticalListItem(Widget child, var item) {
+  VerticalListItem(Widget child, var item, {super.key}) {
     this.child = child;
     this.type = item["type"];
     this.item = item["item"];

@@ -743,7 +743,7 @@ class _YarnTileState extends State<YarnTile> {
                 onClick: () {
                   NavigationUtil.push(
                     context,
-                    screen: YarnSettingsScreen(),
+                    screen: const YarnSettingsScreen(),
                   );
                 },
               )
@@ -799,7 +799,7 @@ class _YarnTileState extends State<YarnTile> {
                 onClick: () {
                   NavigationUtil.push(
                     context,
-                    screen: YarnSettingsScreen(),
+                    screen: const YarnSettingsScreen(),
                   );
                 },
               )

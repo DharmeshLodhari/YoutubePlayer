@@ -21,10 +21,10 @@ import '../../shopping_auth.dart';
 class ProductAddOnOptionUpdate extends StatefulWidget {
   final dynamic arguments;
 
-  ProductAddOnOptionUpdate({this.arguments, super.key});
+  const ProductAddOnOptionUpdate({this.arguments, super.key});
 
   @override
-  _ProductAddOnOptionUpdateState createState() =>
+  State<ProductAddOnOptionUpdate> createState() =>
       _ProductAddOnOptionUpdateState();
 }
 

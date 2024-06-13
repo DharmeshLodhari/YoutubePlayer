@@ -33,7 +33,7 @@ class CornerRadiusVideo extends StatelessWidget {
   final double cornerRadius;
   final Widget? widget;
 
-  const CornerRadiusVideo({this.cornerRadius = 10.0, this.widget});
+  const CornerRadiusVideo({super.key, this.cornerRadius = 10.0, this.widget});
 
   @override
   Widget build(BuildContext context) {

@@ -7,8 +7,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class CancelBooking extends StatefulWidget {
+  const CancelBooking({super.key});
+
   @override
-  _CancelBookingState createState() => _CancelBookingState();
+  State<CancelBooking> createState() => _CancelBookingState();
 }
 
 class _CancelBookingState extends State<CancelBooking> {

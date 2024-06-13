@@ -8,8 +8,7 @@ import 'package:intl/intl.dart';
 import '../models/active_job_listing.dart';
 
 class JobsJobDetail extends StatefulWidget {
-  const JobsJobDetail({super.key, required this.activeListingData})
-     ;
+  const JobsJobDetail({super.key, required this.activeListingData});
   final ActiveListingData activeListingData;
 
   @override
@@ -66,7 +65,7 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
       // bottomSheet: ,
       body: Column(
         children: [
-          if (widget.activeListingData.job!.pictures!.length > 0)
+          if (widget.activeListingData.job!.pictures!.isNotEmpty)
             customImageSlider(widget.activeListingData),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -96,16 +95,16 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
               Column(
                 // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
+                  const Row(
                     children: [
-                      const Expanded(
+                      Expanded(
                         flex: 3,
                         child: CustomText(title: 'Category'),
                       ),
-                      const SizedBox(
+                      SizedBox(
                         height: 10,
                       ),
-                      const Expanded(flex: 2, child: CustomText(title: 'Date')),
+                      Expanded(flex: 2, child: CustomText(title: 'Date')),
                     ],
                   ),
                   Row(
@@ -165,14 +164,13 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
               Column(
                 // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
+                  const Row(
                     children: [
-                      const Expanded(flex: 3, child: CustomText(title: 'Fee')),
-                      const SizedBox(
+                      Expanded(flex: 3, child: CustomText(title: 'Fee')),
+                      SizedBox(
                         height: 10,
                       ),
-                      const Expanded(
-                          flex: 2, child: CustomText(title: 'Location')),
+                      Expanded(flex: 2, child: CustomText(title: 'Location')),
                     ],
                   ),
                   const SizedBox(
@@ -214,15 +212,13 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
               Column(
                 // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
+                  const Row(
                     children: [
-                      const Expanded(
-                          flex: 3, child: CustomText(title: 'posted by')),
-                      const SizedBox(
+                      Expanded(flex: 3, child: CustomText(title: 'posted by')),
+                      SizedBox(
                         height: 10,
                       ),
-                      const Expanded(
-                          flex: 2, child: CustomText(title: 'Status')),
+                      Expanded(flex: 2, child: CustomText(title: 'Status')),
                     ],
                   ),
                   const SizedBox(
@@ -270,14 +266,14 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
               const SizedBox(
                 height: 25,
               ),
-              Column(
+              const Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const CustomText(title: 'Applied by'),
-                  const SizedBox(
+                  CustomText(title: 'Applied by'),
+                  SizedBox(
                     height: 6,
                   ),
-                  const Text(
+                  Text(
                     "200+",
                     style: TextStyle(
                       color: Color(0xff75818f),

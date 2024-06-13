@@ -13,7 +13,7 @@ import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class SharedCartScreen extends StatefulWidget {
-  SharedCartScreen({
+  const SharedCartScreen({
     super.key,
     this.onPageRefresh,
   });
@@ -220,7 +220,7 @@ class SharedCartScreenState extends State<SharedCartScreen> {
   }
 
   Widget getTrailing(int index) {
-    return Container(
+    return SizedBox(
       width: 110,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,

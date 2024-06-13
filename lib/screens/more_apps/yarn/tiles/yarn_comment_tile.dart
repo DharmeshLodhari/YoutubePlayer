@@ -22,7 +22,7 @@ import '../../shopping/models/store.dart';
 import '../../user_post/models/user_post.dart';
 import '../../user_profile/models/user.dart';
 import '../../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
-import '../models/Topics/CommentDetails.dart';
+import '../models/Topics/comment_details.dart';
 import '../widgets/url_reader_of_yarn.dart';
 import '../widgets/yarn_comment_media_renderer.dart';
 import '../widgets/yarn_options.dart';
@@ -42,7 +42,8 @@ class YarnCommentTile extends StatefulWidget {
   final String? commentType;
   final String? commentAuthor;
 
-  YarnCommentTile({
+  const YarnCommentTile({
+    super.key,
     required this.yarn,
     required this.yarnComment,
     this.yarnCommentReply,

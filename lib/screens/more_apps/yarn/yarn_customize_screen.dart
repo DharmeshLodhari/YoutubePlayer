@@ -6,6 +6,8 @@ import 'widgets/customize_category.dart';
 import 'yarn_auth.dart';
 
 class AskSCustomizeScreen extends StatefulWidget {
+  const AskSCustomizeScreen({super.key});
+
   @override
   State<AskSCustomizeScreen> createState() => _AskSCustomizeScreenState();
 }

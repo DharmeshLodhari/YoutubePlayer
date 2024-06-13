@@ -8,8 +8,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class ContactDriver extends StatefulWidget {
+  const ContactDriver({super.key});
+
   @override
-  _ContactDriverState createState() => _ContactDriverState();
+  State<ContactDriver> createState() => _ContactDriverState();
 }
 
 class _ContactDriverState extends State<ContactDriver> {

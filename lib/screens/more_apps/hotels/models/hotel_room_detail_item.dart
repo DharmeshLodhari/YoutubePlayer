@@ -1,4 +1,4 @@
-import 'package:Slydo/screens/more_apps/hotels/models/PartialHotelRoomItem.dart';
+import 'package:Slydo/screens/more_apps/hotels/models/partial_hotel_room_item.dart';
 
 import 'Location.dart';
 import 'Partner.dart';

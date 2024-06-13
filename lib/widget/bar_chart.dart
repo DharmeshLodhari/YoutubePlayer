@@ -211,10 +211,10 @@ class Bar extends StatefulWidget {
   final double? amountSpent;
   final double? mostExpensive;
 
-  Bar({this.label, this.amountSpent, this.mostExpensive});
+  const Bar({super.key, this.label, this.amountSpent, this.mostExpensive});
 
   @override
-  _BarState createState() => _BarState();
+  State<Bar> createState() => _BarState();
 }
 
 class _BarState extends State<Bar> {

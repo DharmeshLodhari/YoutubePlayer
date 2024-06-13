@@ -8,8 +8,10 @@ import '../../shopping_auth.dart';
 import 'shopping_tile.dart';
 
 class SpecificCategoryProductList extends StatefulWidget {
+  const SpecificCategoryProductList({super.key});
+
   @override
-  _SpecificCategoryProductListState createState() =>
+  State<SpecificCategoryProductList> createState() =>
       _SpecificCategoryProductListState();
 }
 

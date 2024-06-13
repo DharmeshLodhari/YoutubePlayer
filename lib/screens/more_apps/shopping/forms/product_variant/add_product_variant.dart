@@ -25,10 +25,10 @@ import '../../shopping_auth.dart';
 class AddProductVariant extends StatefulWidget {
   final dynamic arguments;
 
-  AddProductVariant({this.arguments, super.key});
+  const AddProductVariant({this.arguments, super.key});
 
   @override
-  _AddProductVariantState createState() => _AddProductVariantState();
+  State<AddProductVariant> createState() => _AddProductVariantState();
 }
 
 class _AddProductVariantState extends State<AddProductVariant> {
@@ -76,7 +76,7 @@ class _AddProductVariantState extends State<AddProductVariant> {
   String? optionOnWhatToDo;
 
   final GlobalKey<ScaffoldMessengerState> _messengerScaffoldKey =
-      new GlobalKey<ScaffoldMessengerState>();
+      GlobalKey<ScaffoldMessengerState>();
 
   @override
   void deactivate() {
@@ -705,7 +705,8 @@ class _AddProductVariantState extends State<AddProductVariant> {
               DateTime.now().year, DateTime.now().month, DateTime.now().day),
           lastDate: DateTime(2101),
         ).then((value) {
-          DateTime selectedDate = DateTime(value!.year, value.month, value.day);
+          final DateTime selectedDate =
+              DateTime(value!.year, value.month, value.day);
 
           productAvailableFrom = DateFormat('yyyy-MM-dd').format(selectedDate);
           setState(() {});

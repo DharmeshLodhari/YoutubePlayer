@@ -12,7 +12,7 @@ import 'package:flutter/cupertino.dart';
 class ShippingProcessAuthService extends AuthService {
   // Get all package details in cart
   Future<List<PackageDetailsModel>> getAllPackageDetail(
-      isSharedCart, String cartId) async {
+      bool isSharedCart, String cartId) async {
     try {
       String url = AppConfig.baseUrl;
 
@@ -39,7 +39,7 @@ class ShippingProcessAuthService extends AuthService {
       }
     } on Exception catch (e) {
       showToast(message: e.toString());
-      debugPrint("response ${e}");
+      debugPrint("response $e");
       debugPrint("Error: $e");
       throw e;
     } catch (err) {

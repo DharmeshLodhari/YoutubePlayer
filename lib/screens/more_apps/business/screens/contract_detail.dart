@@ -174,7 +174,7 @@ class _ContractDetailState extends State<ContractDetail> {
     return Icon(Icons.download_rounded, color: navyBlue);
   }
 
-  _downloadContract() async {
+  void _downloadContract() async {
     final String fileName = 'Contract_${contract.id}.pdf';
     final PermissionStatus status = await Permission.storage.request();
 

@@ -11,6 +11,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class ShareExperience extends StatefulWidget {
+  const ShareExperience({super.key});
+
   @override
   State<ShareExperience> createState() => _ShareExperienceState();
 }

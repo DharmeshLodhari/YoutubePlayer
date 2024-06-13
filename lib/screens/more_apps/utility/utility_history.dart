@@ -10,8 +10,10 @@ import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class UtilityHistory extends StatefulWidget {
+  const UtilityHistory({super.key});
+
   @override
-  _UtilityHistoryState createState() => _UtilityHistoryState();
+  State<UtilityHistory> createState() => _UtilityHistoryState();
 }
 
 class _UtilityHistoryState extends State<UtilityHistory> {

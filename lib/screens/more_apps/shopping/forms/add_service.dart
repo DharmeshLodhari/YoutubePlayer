@@ -21,8 +21,10 @@ import 'package:provider/provider.dart';
 import '../shopping_auth.dart';
 
 class AddService extends StatefulWidget {
+  const AddService({super.key});
+
   @override
-  _AddServiceState createState() => _AddServiceState();
+  State<AddService> createState() => _AddServiceState();
 }
 
 class _AddServiceState extends State<AddService> {
@@ -65,7 +67,7 @@ class _AddServiceState extends State<AddService> {
   DiscountModel? selectedDiscount;
   String discountName = "";
   final GlobalKey<ScaffoldMessengerState> _messengerScaffoldKey =
-      new GlobalKey<ScaffoldMessengerState>();
+      GlobalKey<ScaffoldMessengerState>();
 
   @override
   void deactivate() {

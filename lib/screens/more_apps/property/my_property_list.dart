@@ -10,8 +10,10 @@ import 'property_dashboard_bloc.dart';
 import 'property_tile.dart';
 
 class MyPropertyList extends StatefulWidget {
+  const MyPropertyList({super.key});
+
   @override
-  _MyPropertyListState createState() => _MyPropertyListState();
+  State<MyPropertyList> createState() => _MyPropertyListState();
 }
 
 class _MyPropertyListState extends State<MyPropertyList> {

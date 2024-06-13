@@ -1,9 +1,9 @@
 import 'package:Slydo/screens/more_apps/events/models/EventDetailItem.dart';
 import 'package:Slydo/screens/more_apps/events/models/EventPoster.dart';
-import 'package:Slydo/screens/more_apps/events/models/PartialEventItem.dart';
+import 'package:Slydo/screens/more_apps/events/models/partial_event_item.dart';
 import 'package:Slydo/services/auth.dart';
 
-import 'models/CityData.dart';
+import 'models/city_data.dart';
 
 class EventAuthService extends AuthService {
   Future<List<String>> getLocation() async {

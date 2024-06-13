@@ -22,7 +22,7 @@ import 'package:provider/provider.dart';
 class FundVirtualCard extends StatefulWidget {
   final dynamic arguments;
 
-  FundVirtualCard({this.arguments, super.key});
+  const FundVirtualCard({this.arguments, super.key});
 
   @override
   FundVirtualCardState createState() => FundVirtualCardState();

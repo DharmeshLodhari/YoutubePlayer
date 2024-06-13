@@ -23,10 +23,10 @@ import '../../../payment_loading_screen.dart';
 class SendEnvelope extends StatefulWidget {
   final dynamic arguments;
 
-  SendEnvelope({this.arguments});
+  const SendEnvelope({super.key, this.arguments});
 
   @override
-  _SendEnvelopeState createState() => _SendEnvelopeState();
+  State<SendEnvelope> createState() => _SendEnvelopeState();
 }
 
 class _SendEnvelopeState extends State<SendEnvelope> {

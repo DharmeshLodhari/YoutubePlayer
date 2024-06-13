@@ -263,7 +263,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
         ? const SizedBox.shrink()
         : Column(
             children: [
-              if (job!.pictures!.length > 0) customImageSlider(),
+              if (job!.pictures!.isNotEmpty) customImageSlider(),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -903,97 +903,90 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
                           const SizedBox(
                             height: 20,
                           ),
-                          ...myList
-                              .map((e) => Column(
-                                    children: [
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 10, horizontal: 10),
-                                        decoration: BoxDecoration(
-                                          border: Border.all(
-                                              color: greyBorderColor),
-                                          borderRadius:
-                                              BorderRadius.circular(6),
-                                        ),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
+                          ...myList.map((e) => Column(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 10, horizontal: 10),
+                                    decoration: BoxDecoration(
+                                      border:
+                                          Border.all(color: greyBorderColor),
+                                      borderRadius: BorderRadius.circular(6),
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
                                           children: [
-                                            Row(
-                                              children: [
-                                                CachedNetworkImage(
-                                                  imageUrl: "${e.ownerAvatar}",
-                                                  imageBuilder: (context,
-                                                          imageProvider) =>
+                                            CachedNetworkImage(
+                                              imageUrl: "${e.ownerAvatar}",
+                                              imageBuilder:
+                                                  (context, imageProvider) =>
                                                       Container(
-                                                    width: 23.0,
-                                                    height: 23.0,
-                                                    decoration: BoxDecoration(
-                                                      shape: BoxShape.circle,
-                                                      image: DecorationImage(
-                                                          image: imageProvider,
-                                                          fit: BoxFit.cover),
-                                                    ),
-                                                  ),
-                                                  errorWidget:
-                                                      productAndServiceBigErrorWidget,
+                                                width: 23.0,
+                                                height: 23.0,
+                                                decoration: BoxDecoration(
+                                                  shape: BoxShape.circle,
+                                                  image: DecorationImage(
+                                                      image: imageProvider,
+                                                      fit: BoxFit.cover),
                                                 ),
-                                                const SizedBox(
-                                                  width: 10,
-                                                ),
-                                                userNameWithVerifiedIcon(
-                                                  name: e.jobOwnerName ?? '',
-                                                  isVerified: job!.isVerified,
-                                                  verifiedIconColor:
-                                                      verifyGreen,
-                                                  textStyle: TextStyle(
-                                                      fontSize: 14,
-                                                      fontFamily: "Inter",
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                      color:
-                                                          HexColor("#151515")),
-                                                ),
-                                              ],
-                                            ),
-                                            const SizedBox(
-                                              height: 6,
-                                            ),
-                                            RatingBar.builder(
-                                              initialRating:
-                                                  e.score!.toDouble(),
-                                              minRating: 1,
-                                              direction: Axis.horizontal,
-                                              allowHalfRating: false,
-                                              itemCount: 5,
-                                              itemSize: 20,
-                                              itemPadding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 3.0),
-                                              itemBuilder: (context, _) =>
-                                                  const Icon(
-                                                Icons.star,
-                                                size: 10,
-                                                color: Colors.amber,
                                               ),
-                                              onRatingUpdate: (rating) {},
+                                              errorWidget:
+                                                  productAndServiceBigErrorWidget,
                                             ),
                                             const SizedBox(
-                                              height: 12,
+                                              width: 10,
                                             ),
-                                            Text(
-                                              e.review ?? '',
-                                              style: const TextStyle(
-                                                  fontSize: 14.4,
+                                            userNameWithVerifiedIcon(
+                                              name: e.jobOwnerName ?? '',
+                                              isVerified: job!.isVerified,
+                                              verifiedIconColor: verifyGreen,
+                                              textStyle: TextStyle(
+                                                  fontSize: 14,
                                                   fontFamily: "Inter",
-                                                  fontWeight: FontWeight.w500),
-                                            )
+                                                  fontWeight: FontWeight.w500,
+                                                  color: HexColor("#151515")),
+                                            ),
                                           ],
                                         ),
-                                      ),
-                                    ],
-                                  ))
-                              .toList()
+                                        const SizedBox(
+                                          height: 6,
+                                        ),
+                                        RatingBar.builder(
+                                          initialRating: e.score!.toDouble(),
+                                          minRating: 1,
+                                          direction: Axis.horizontal,
+                                          allowHalfRating: false,
+                                          itemCount: 5,
+                                          itemSize: 20,
+                                          itemPadding:
+                                              const EdgeInsets.symmetric(
+                                                  horizontal: 3.0),
+                                          itemBuilder: (context, _) =>
+                                              const Icon(
+                                            Icons.star,
+                                            size: 10,
+                                            color: Colors.amber,
+                                          ),
+                                          onRatingUpdate: (rating) {},
+                                        ),
+                                        const SizedBox(
+                                          height: 12,
+                                        ),
+                                        Text(
+                                          e.review ?? '',
+                                          style: const TextStyle(
+                                              fontSize: 14.4,
+                                              fontFamily: "Inter",
+                                              fontWeight: FontWeight.w500),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ))
                         ],
                       ),
                     ),
@@ -1107,7 +1100,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
   }
 
   Column getJobActivityStatusRow() {
-    debugPrint(userBloc.user.userName! + ' oooo');
+    debugPrint('${userBloc.user.userName!} oooo');
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -2021,10 +2014,10 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
     final Map<String, dynamic>? itemData =
         await ServiceHubAuthService().getJobOrService(url);
 
-    listOfRecipient.forEach((recipient) {
+    for (var recipient in listOfRecipient) {
       addJobToChat(
           item: job, itemData: itemData, recipientUser: recipient!, url: url);
-    });
+    }
   }
 
   void addJobToChat(

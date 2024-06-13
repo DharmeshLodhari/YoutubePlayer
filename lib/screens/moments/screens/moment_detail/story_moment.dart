@@ -46,12 +46,11 @@ class StoryMomentScreen extends StatefulWidget {
   final List<custom.Shiddo>? storyItems;
   final MomentsModel? currentMoment;
 
-  StoryMomentScreen(
+  const StoryMomentScreen(
       {super.key,
       required this.controller,
       required this.storyItems,
-      required this.currentMoment})
-     ;
+      required this.currentMoment});
 
   @override
   State<StoryMomentScreen> createState() => _StoryMomentScreenState();

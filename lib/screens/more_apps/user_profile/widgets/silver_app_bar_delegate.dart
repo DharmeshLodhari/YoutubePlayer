@@ -20,9 +20,6 @@ class SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
           colorScheme:
               ColorScheme.fromSwatch().copyWith(secondary: Colors.white)),
       child: Container(
-        padding: const EdgeInsets.only(
-          left: 16,
-        ),
         color: Colors.white,
         child: _tabBar,
       ),

@@ -17,7 +17,7 @@ import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class NormalCartScreen extends StatefulWidget {
-  NormalCartScreen({
+  const NormalCartScreen({
     super.key,
     this.onPageRefresh,
   });
@@ -37,12 +37,12 @@ class NormalCartScreenState extends State<NormalCartScreen> {
   // final _auth = PaymentAndBankingAuth();
 
   final GlobalKey<ScaffoldMessengerState> _normalCartScaffoldMessengerKey =
-      new GlobalKey<ScaffoldMessengerState>();
+      GlobalKey<ScaffoldMessengerState>();
 
   final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
-  final ScrollController _normalScrollController = new ScrollController();
+  final ScrollController _normalScrollController = ScrollController();
   AppConfigurationModel? appConfigurationModel;
 
   bool isLoading = false;
@@ -156,7 +156,7 @@ class NormalCartScreenState extends State<NormalCartScreen> {
                 Row(
                   children: <Widget>[
                     Text(
-                      AppLocalization.of(context)!.total + " : ",
+                      "${AppLocalization.of(context)!.total} : ",
                       style: TextStyle(fontSize: 14, color: blackFont),
                     ),
                     Text(
@@ -259,7 +259,7 @@ class NormalCartScreenState extends State<NormalCartScreen> {
     final Map<String, dynamic> dataInfo =
         getUpdatedCartItem(type, basketBloc.items[index]["item"].id);
 
-    debugPrint('fola chat one fourrrr::: ${dataInfo}');
+    debugPrint('fola chat one fourrrr::: $dataInfo');
 
     //close pop up if quantity to reduce is 1 currently
     if (dataInfo["variants"] == null) {
@@ -340,7 +340,7 @@ class NormalCartScreenState extends State<NormalCartScreen> {
     return dataInfo;
   }
 
-  int getTotalVariantQuantity(List<dynamic>? variantsList, id) {
+  int getTotalVariantQuantity(List<dynamic>? variantsList) {
     int totalQuantity = 0;
 
     if (variantsList!.isNotEmpty) {

@@ -17,7 +17,8 @@ class AddReportScreen extends StatefulWidget {
   final String? type;
   final bool? isCommentMoment;
   final bool? isJobService;
-  AddReportScreen({
+  const AddReportScreen({
+    super.key,
     this.object,
     this.type,
     this.isCommentMoment,

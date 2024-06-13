@@ -29,6 +29,8 @@ import 'yarn_search_screen.dart';
 import 'yarn_setting_screen.dart';
 
 class YarnDashboard extends StatefulWidget {
+  const YarnDashboard({super.key});
+
   @override
   State<YarnDashboard> createState() => _YarnDashboardState();
 }
@@ -198,7 +200,7 @@ class _YarnDashboardState extends State<YarnDashboard> {
         onTap: () {
           NavigationUtil.push(
             context,
-            screen: YarnNotification(onDeleteNotification: (bool) {
+            screen: YarnNotification(onDeleteNotification: (bool0) {
               fetchMessageCount();
             }),
           );

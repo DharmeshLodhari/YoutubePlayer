@@ -5,7 +5,7 @@ import 'package:Slydo/screens/moments/tiles/moment_comment_tile.dart';
 import 'package:Slydo/screens/moments/widgets/moment_comment_textfield.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/gif_model/gif_model.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
-import 'package:Slydo/screens/more_apps/yarn/models/Topics/CommentDetails.dart';
+import 'package:Slydo/screens/more_apps/yarn/models/Topics/comment_details.dart';
 import 'package:Slydo/screens/more_apps/yarn/models/Topics/yarn_model.dart';
 import 'package:Slydo/screens/more_apps/yarn/models/share_as_yarn_model.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_shimmer.dart';
@@ -18,7 +18,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 //reply to comment for moment, full screen
 class MomentCommentScreen extends StatefulWidget {
-  MomentCommentScreen(
+  const MomentCommentScreen(
       {super.key,
       this.yarnComment,
       this.momentId,

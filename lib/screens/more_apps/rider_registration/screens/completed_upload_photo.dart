@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 
 class CompletedUploadPhoto extends StatefulWidget {
-  CompletedUploadPhoto({Key? key});
+  const CompletedUploadPhoto({super.key});
 
   @override
   State<CompletedUploadPhoto> createState() => _CompletedUploadPhotoState();
@@ -24,9 +24,10 @@ class _CompletedUploadPhotoState extends State<CompletedUploadPhoto>
     _controller.addListener(() {
       if (_controller.isCompleted) {
         Future.delayed(const Duration(seconds: 1)).then((value) {
-          if (mounted)
+          if (mounted) {
             Navigator.of(context)
                 .popUntil(ModalRoute.withName(Routes.REQUIRE_STEPS));
+          }
         });
       }
     });

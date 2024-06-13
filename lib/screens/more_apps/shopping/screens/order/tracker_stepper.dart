@@ -185,6 +185,7 @@ class OrderTrackerStepper extends StatefulWidget {
   final EdgeInsetsGeometry? margin;
 
   const OrderTrackerStepper({
+    super.key,
     required this.steps,
     this.physics,
     this.type = StepperType.vertical,

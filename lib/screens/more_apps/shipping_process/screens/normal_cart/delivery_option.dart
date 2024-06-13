@@ -13,7 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class DeliveryOption extends StatefulWidget {
-  DeliveryOption({
+  const DeliveryOption({
     super.key,
   });
 
@@ -150,7 +150,7 @@ class _DeliveryOptionState extends State<DeliveryOption> {
     );
   }
 
-  Widget ShippingOptionalWid(
+  Widget shippingOptionalWid(
       {required String title, required String subTitle}) {
     return Card(
       elevation: 20,
@@ -313,7 +313,7 @@ class _DeliveryOptionState extends State<DeliveryOption> {
               showToast(message: "Please select delivery address.");
             }
           },
-          child: ShippingOptionalWid(
+          child: shippingOptionalWid(
             title: "Ship with Slydo",
             subTitle: "Use slydo dispatch rider to get your orders.",
           ),
@@ -332,7 +332,7 @@ class _DeliveryOptionState extends State<DeliveryOption> {
               showToast(message: "Please select delivery address.");
             }
           },
-          child: ShippingOptionalWid(
+          child: shippingOptionalWid(
             title: "Merchant Option",
             subTitle: "Use merchant rider to get your orders delivered",
           ),
@@ -351,7 +351,7 @@ class _DeliveryOptionState extends State<DeliveryOption> {
               showToast(message: "Please select delivery address.");
             }
           },
-          child: ShippingOptionalWid(
+          child: shippingOptionalWid(
             title: "Ship with Courier",
             subTitle: "Use courier service to get your order delivered to you.",
           ),
@@ -468,9 +468,9 @@ class _DeliveryOptionState extends State<DeliveryOption> {
 
   Widget _buildShipping() {
     Widget logo;
-    final String? logoImage =
+    final String logoImage =
         shippingProcessBloc.getPackageDetailModel().getShippingLogo() ?? "";
-    if ((logoImage!.contains('http')) ||
+    if ((logoImage.contains('http')) ||
         shippingProcessBloc.getPackageDetailModel().shippingType ==
             ShippingTypes.courier) {
       logo = Image.network(

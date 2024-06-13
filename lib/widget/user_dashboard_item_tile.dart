@@ -15,7 +15,8 @@ class UserDashboardItemTile extends StatelessWidget {
   Widget? iconWidget;
 
   UserDashboardItemTile(
-      {this.iconWidget,
+      {super.key,
+      this.iconWidget,
       required this.title,
       this.icon,
       required this.iconColor,

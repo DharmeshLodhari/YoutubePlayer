@@ -9,8 +9,10 @@ import '../messaging/chat/utils.dart';
 import 'hotel_dashboard_bloc.dart';
 
 class EventTicketDetail extends StatefulWidget {
+  const EventTicketDetail({super.key});
+
   @override
-  _EventTicketDetailState createState() => _EventTicketDetailState();
+  State<EventTicketDetail> createState() => _EventTicketDetailState();
 }
 
 class _EventTicketDetailState extends State<EventTicketDetail> {
@@ -330,7 +332,7 @@ class MySeparator extends StatelessWidget {
   final double height;
   final Color color;
 
-  const MySeparator({this.height = 1.5, this.color = Colors.black});
+  const MySeparator({super.key, this.height = 1.5, this.color = Colors.black});
 
   @override
   Widget build(BuildContext context) {

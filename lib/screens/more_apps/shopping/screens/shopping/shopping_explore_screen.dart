@@ -17,8 +17,10 @@ import '../../models/ShoppingProduct.dart';
 import 'shopping_tile.dart';
 
 class ShoppingExploreScreen extends StatefulWidget {
+  const ShoppingExploreScreen({super.key});
+
   @override
-  _ShoppingExploreScreenState createState() => _ShoppingExploreScreenState();
+  State<ShoppingExploreScreen> createState() => _ShoppingExploreScreenState();
 }
 
 class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {

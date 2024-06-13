@@ -11,8 +11,10 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'models/Transport.dart';
 
 class SearchFlight extends StatefulWidget {
+  const SearchFlight({super.key});
+
   @override
-  _SearchFlightState createState() => _SearchFlightState();
+  State<SearchFlight> createState() => _SearchFlightState();
 }
 
 class _SearchFlightState extends State<SearchFlight> {

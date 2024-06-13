@@ -6,11 +6,13 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'hotel_auth.dart';
 import 'hotel_dashboard_bloc.dart';
 import 'hotel_tile.dart';
-import 'models/HotelRoomItem.dart';
+import 'models/hotel_room_item.dart';
 
 class MyHotelList extends StatefulWidget {
+  const MyHotelList({super.key});
+
   @override
-  _MyHotelListState createState() => _MyHotelListState();
+  State<MyHotelList> createState() => _MyHotelListState();
 }
 
 class _MyHotelListState extends State<MyHotelList> {

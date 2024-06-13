@@ -2,7 +2,7 @@ import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/events/event_auth.dart';
 import 'package:Slydo/screens/more_apps/events/event_tile.dart';
 import 'package:Slydo/screens/more_apps/events/models/EventPoster.dart';
-import 'package:Slydo/screens/more_apps/events/models/PartialEventItem.dart';
+import 'package:Slydo/screens/more_apps/events/models/partial_event_item.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -13,11 +13,13 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-import 'models/CityData.dart';
+import 'models/city_data.dart';
 
 class EventExploreScreen extends StatefulWidget {
+  const EventExploreScreen({super.key});
+
   @override
-  _EventExploreScreenState createState() => _EventExploreScreenState();
+  State<EventExploreScreen> createState() => _EventExploreScreenState();
 }
 
 class _EventExploreScreenState extends State<EventExploreScreen> {

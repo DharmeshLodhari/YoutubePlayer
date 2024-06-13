@@ -16,8 +16,10 @@ import '../user_auth.dart';
 
 // ignore: must_be_immutable
 class ChangePassword extends StatefulWidget {
+  const ChangePassword({super.key});
+
   @override
-  _ChangePasswordState createState() => _ChangePasswordState();
+  State<ChangePassword> createState() => _ChangePasswordState();
 }
 
 class _ChangePasswordState extends State<ChangePassword> {
@@ -39,6 +41,7 @@ class _ChangePasswordState extends State<ChangePassword> {
     super.initState();
   }
 
+  @override
   Widget build(BuildContext context) {
     return PopScope(
         onPopInvoked: (didPop) async {

@@ -20,8 +20,10 @@ import 'package:provider/provider.dart';
 // import '../shopping_auth.dart';
 
 class JobsCreateJobs extends StatefulWidget {
+  const JobsCreateJobs({super.key});
+
   @override
-  _JobsCreateJobsState createState() => _JobsCreateJobsState();
+  State<JobsCreateJobs> createState() => _JobsCreateJobsState();
 }
 
 class _JobsCreateJobsState extends State<JobsCreateJobs> {

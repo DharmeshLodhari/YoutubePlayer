@@ -1,13 +1,25 @@
 import 'dart:io';
 
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/locator.dart';
+import 'package:Slydo/screens/moments/models/attachment_item_model.dart';
+import 'package:Slydo/screens/moments/models/create_moment_model.dart';
 import 'package:Slydo/screens/moments/screens/pick_attachment_screen.dart';
 import 'package:Slydo/screens/moments/screens/select_video_cover_page.dart';
+import 'package:Slydo/screens/moments/widgets/corner_radius_image.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
+import 'package:Slydo/services/app_config_bloc.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/navigation_util.dart';
+import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/utils/video_player_controller/chewie_player.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
+import 'package:Slydo/widget/dialog.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
+import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_svg/svg.dart';
@@ -15,26 +27,13 @@ import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:video_player/video_player.dart';
 
-import '../../../locale/app_localization.dart';
-import '../../../locator.dart';
-import '../../../services/app_config_bloc.dart';
-import '../../../utils/slydo_app_icon_icons.dart';
-import '../../../utils/util.dart';
-import '../../../utils/video_player_controller/chewie_player.dart';
-import '../../../widget/dialog.dart';
-import '../../../widget/loading_indicator.dart';
-import '../../../widget/rounded_background_icon.dart';
-import '../models/attachment_item_model.dart';
-import '../models/create_moment_model.dart';
-import '../widgets/corner_radius_image.dart';
 import 'moments_service.dart';
 
 class PreviewMomentScreen extends StatefulWidget {
   final String filePath;
   final dynamic arguments;
 
-  PreviewMomentScreen({super.key, required this.filePath, this.arguments})
-     ;
+  PreviewMomentScreen({super.key, required this.filePath, this.arguments});
 
   @override
   State<PreviewMomentScreen> createState() => _PreviewMomentScreenState();
@@ -910,13 +909,13 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
     final List<String> newUserTags =
         []; // For replacing the # in a tag with an empty string.
 
-    userTags.forEach((tag) {
+    for (var tag in userTags) {
       if (tag.startsWith('#')) {
         newUserTags.add(tag.replaceAll("#", ''));
       } else {
         newUserTags.add(tag);
       }
-    });
+    }
 
     showDialog(
         context: context,

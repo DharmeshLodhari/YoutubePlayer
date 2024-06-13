@@ -20,7 +20,8 @@ class CurvedButton extends StatelessWidget {
   double fontSize;
 
   CurvedButton(
-      {this.text,
+      {super.key,
+      this.text,
       this.width,
       this.textColor,
       this.backgroundColor,
@@ -96,6 +97,7 @@ class OutlineCurvedButton extends StatelessWidget {
   Function? onPressed = () {};
 
   OutlineCurvedButton({
+    super.key,
     this.width,
     this.text,
     this.textColor,

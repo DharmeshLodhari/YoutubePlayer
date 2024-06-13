@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 class SearchTransactionCard extends StatefulWidget {
   final dynamic arguments;
 
-  SearchTransactionCard({this.arguments, super.key});
+  const SearchTransactionCard({this.arguments, super.key});
 
   @override
   SearchTransactionCardState createState() => SearchTransactionCardState();
@@ -56,7 +56,7 @@ class SearchTransactionCardState extends State<SearchTransactionCard> {
           _refreshList();
         });
       }
-      if (transactionList.isNotEmpty || searchController.text.length != 0) {
+      if (transactionList.isNotEmpty || searchController.text.isNotEmpty) {
         if (mounted) {
           setState(() {
             isSearchIsEmpty = false;

@@ -19,18 +19,14 @@ class UserProfileScreen extends StatefulWidget {
   UserProfileScreen({required this.arguments});
 
   @override
-  _UserProfileScreenState createState() =>
-      _UserProfileScreenState(arguments: arguments);
+  State<UserProfileScreen> createState() => _UserProfileScreenState();
 }
 
 class _UserProfileScreenState extends State<UserProfileScreen>
     with TickerProviderStateMixin {
-  Map<String, dynamic> arguments;
   late UserBloc userBloc;
 
   bool isLoading = true;
-
-  _UserProfileScreenState({required this.arguments});
 
   int currentIndex = 1;
   BehaviorSubject<int> selectedIndexStream = BehaviorSubject<int>();
@@ -61,21 +57,21 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
   void initializeVariables() async {
     await getSearchedUser();
-    currentIndex = arguments['index'] ?? 0;
+    currentIndex = widget.arguments['index'] ?? 0;
     debugPrint('CURRENT INDEX -> $currentIndex');
     selectedIndexStream.sink.add(currentIndex);
     if (mounted) setState(() {});
   }
 
   Future<void> getSearchedUser({bool load = true}) async {
-    searchedUserName = arguments['searchedUserName'].toString();
+    searchedUserName = widget.arguments['searchedUserName'].toString();
 
     if (load) {
       isLoading = true;
       if (mounted) setState(() {});
     }
 
-    if (arguments['channel'] != null) {
+    if (widget.arguments['channel'] != null) {
       Map<String, dynamic>? data;
 
       try {
@@ -196,7 +192,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   }
 
   Widget checkView() {
-    if (arguments['channel'] != null) {
+    if (widget.arguments['channel'] != null) {
       final String name = channelDetail['owner']['full_name'];
 
       final CustomerProfile profile = CustomerProfile(
@@ -219,7 +215,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         isLoading: isLoading,
       );
     } else if (searchedUser != null &&
-        searchedUser!.type!.toLowerCase() == 'user') {
+        searchedUser?.type?.toLowerCase() == 'user') {
       return DefaultUserProfileScreen(
         searchedUser: searchedUser,
         searchedUserName: searchedUserName,

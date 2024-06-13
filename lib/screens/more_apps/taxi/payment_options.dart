@@ -6,8 +6,10 @@ import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:flutter/material.dart';
 
 class PaymentOptions extends StatefulWidget {
+  const PaymentOptions({super.key});
+
   @override
-  _PaymentOptionsState createState() => _PaymentOptionsState();
+  State<PaymentOptions> createState() => _PaymentOptionsState();
 }
 
 class _PaymentOptionsState extends State<PaymentOptions> {

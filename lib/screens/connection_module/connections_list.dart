@@ -34,8 +34,10 @@ import '../../../../../locator.dart';
 import '../../../../../routes/route_constants.dart';
 
 class ConnectionList extends StatefulWidget {
+  const ConnectionList({super.key});
+
   @override
-  _ConnectionListState createState() => _ConnectionListState();
+  State<ConnectionList> createState() => _ConnectionListState();
 }
 
 class _ConnectionListState extends State<ConnectionList>
@@ -65,7 +67,7 @@ class _ConnectionListState extends State<ConnectionList>
       RefreshController(initialRefresh: false);
   AppConfigurationModel? appConfigurationModel;
 
-  @protected
+  @override
   void initState() {
     getList();
 
@@ -361,8 +363,9 @@ class _ConnectionListState extends State<ConnectionList>
 
         final List<ChatConversation> users = [];
 
-        tempList.forEach(
-            (element) => users.add(ChatConversation.fromJson(element)));
+        for (var element in tempList) {
+          users.add(ChatConversation.fromJson(element));
+        }
 
         // connectionsList.addAll(users);
         debugPrint("List Length users:- ${users.length}");
@@ -605,7 +608,7 @@ class _ConnectionListState extends State<ConnectionList>
             : 0.25,
         children: listSecondaryActions(user, index),
       ),
-      child: VerticalListItem(user),
+      child: VerticalListItem(user: user),
     );
   }
 
@@ -618,12 +621,12 @@ class _ConnectionListState extends State<ConnectionList>
 }
 
 class VerticalListItem extends StatefulWidget {
-  VerticalListItem(this.user);
-
   final ChatConversation user;
 
+  const VerticalListItem({super.key, required this.user});
+
   @override
-  _VerticalListItemState createState() => _VerticalListItemState();
+  State<VerticalListItem> createState() => _VerticalListItemState();
 }
 
 class _VerticalListItemState extends State<VerticalListItem> {

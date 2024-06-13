@@ -11,8 +11,8 @@ import 'package:flutter/cupertino.dart';
 import "package:http/http.dart" as http;
 import 'package:http/http.dart';
 
-import 'models/Topics/CommentDetails.dart';
 import 'models/Topics/Notifications.dart';
+import 'models/Topics/comment_details.dart';
 import 'models/Topics/yarn_model.dart';
 import 'models/ask_categories_model.dart';
 
@@ -716,12 +716,12 @@ class YarnAuth extends AuthService {
 
     debugPrint("MEDIA LENGTH::: ${reYarn.media.length}");
 
-    if (response.statusCode == 401) {
-      final headers = await getAuthHeaders();
-      // var response =
-      // await httpPost(url, headers: headers, body: jsonEncode(body));
-      final response = await _createYarn(reYarn, url);
-    }
+    // if (response.statusCode == 401) {
+    //   final headers = await getAuthHeaders();
+    //   // var response =
+    //   // await httpPost(url, headers: headers, body: jsonEncode(body));
+    //   final response = await _createYarn(reYarn, url);
+    // }
 
     // debugPrint(
     //     "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.stream.bytesToString()}");

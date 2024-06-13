@@ -574,7 +574,7 @@ class _HomeQuickViewState extends State<HomeQuickView> {
         }
         break;
       case ProtectionPermission.chat:
-        NavigationUtil.push(context, screen: ConnectionDashboard());
+        NavigationUtil.push(context, screen: const ConnectionDashboard());
         break;
       case ProtectionPermission.inbox:
         Navigator.of(context).pushNamed(Routes.MESSAGE_LIST);

@@ -53,12 +53,12 @@ import '../../../yarn/yarn_dashboard_bloc.dart';
 import '../../shopping_auth.dart';
 
 class ProductDetailPage extends StatefulWidget {
-  final arguments;
+  final dynamic arguments;
 
-  ProductDetailPage({required this.arguments});
+  const ProductDetailPage({super.key, required this.arguments});
 
   @override
-  _ProductDetailPageState createState() => _ProductDetailPageState();
+  State<ProductDetailPage> createState() => _ProductDetailPageState();
 }
 
 class _ProductDetailPageState extends State<ProductDetailPage>
@@ -179,7 +179,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     data['type'] = 'products';
     data['id'] = product?.id ?? "";
 
-    debugPrint('product URL :: ${data}');
+    debugPrint('product URL :: $data');
 
     ReviewAuth().checkIfCanReviewProductOrService(data).then((value) {
       canRate = value;
@@ -425,10 +425,9 @@ class _ProductDetailPageState extends State<ProductDetailPage>
             shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
             productModel: product,
             callback: (params) async {
-              params
-                ..attachment = {
-                  "product": product?.toJson().cast<String, dynamic>() ?? {}
-                };
+              params.attachment = {
+                "product": product?.toJson().cast<String, dynamic>() ?? {}
+              };
               final bool data =
                   await YarnAuth().addYarnAndQuestion(params, '', '');
               if (data) {
@@ -906,7 +905,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     return dataInfo;
   }
 
-  int getTotalVariantQuantity(List<dynamic> variantsList, id) {
+  int getTotalVariantQuantity(List<dynamic> variantsList) {
     int totalQuantity = 0;
 
     if (variantsList.isNotEmpty) {

@@ -1,6 +1,7 @@
 /// business_name : "Ultimate Cakes And Events"
 /// username : "ultimate"
 /// avatar : "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png"
+library;
 
 class CompanyName {
   String? businessName;

@@ -224,17 +224,17 @@ class ShoppingCartTileForProduct extends StatelessWidget {
 
   String getTotalPrice() {
     int totalPrice = 0;
-    int AddOnTotal = 0;
+    int addOnTotal = 0;
     if (product.isProduct) {
       if (basketItem.addOns != null) {
         for (AddOns itemAddOn in basketItem.addOns ?? []) {
           for (var option in itemAddOn.options!) {
-            AddOnTotal += int.parse(option.price.toString()) * option.quantity;
+            addOnTotal += int.parse(option.price.toString()) * option.quantity;
           }
         }
         final int priceQuantity =
             (basketItem.qty ?? 0) * product.getProductRealPrice();
-        totalPrice += AddOnTotal + priceQuantity;
+        totalPrice += addOnTotal + priceQuantity;
       } else {
         totalPrice = (basketItem.qty ?? 0) *
             (product.getDiscountedPrice(basketItem.variants?.first) ?? 0);

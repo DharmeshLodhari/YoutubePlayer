@@ -9,7 +9,7 @@ class AskMentionView extends StatefulWidget {
   final String? searchText;
   final Function(String?) onTap;
 
-  AskMentionView({
+  const AskMentionView({
     required this.onTap,
     required this.searchText,
     super.key,

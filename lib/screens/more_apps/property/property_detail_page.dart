@@ -21,8 +21,10 @@ import 'property_dashboard_bloc.dart';
 import 'property_tile.dart';
 
 class PropertyDetailPage extends StatefulWidget {
+  const PropertyDetailPage({super.key});
+
   @override
-  _PropertyDetailPageState createState() => _PropertyDetailPageState();
+  State<PropertyDetailPage> createState() => _PropertyDetailPageState();
 }
 
 class _PropertyDetailPageState extends State<PropertyDetailPage> {
@@ -1056,7 +1058,7 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
           children: property.reviews!
               .map((review) => Container(
                     margin: const EdgeInsets.only(bottom: 12),
-                    child: ReviewTile(),
+                    child: const ReviewTile(),
                   ))
               .toList(),
         ),
@@ -1090,7 +1092,7 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
                               Navigator.of(context)
                                   .pushNamed("/partner-detail");
                             },
-                            child: PartnerTile()),
+                            child: const PartnerTile()),
                         const SizedBox(
                           height: 16,
                         ),

@@ -20,10 +20,10 @@ import '../../shopping_auth.dart';
 class ProductAddOnList extends StatefulWidget {
   final dynamic arguments;
 
-  ProductAddOnList({this.arguments, super.key});
+  const ProductAddOnList({this.arguments, super.key});
 
   @override
-  _ProductAddOnListState createState() => _ProductAddOnListState();
+  State<ProductAddOnList> createState() => _ProductAddOnListState();
 }
 
 class _ProductAddOnListState extends State<ProductAddOnList>
@@ -72,7 +72,7 @@ class _ProductAddOnListState extends State<ProductAddOnList>
           isLoading = true;
         });
       }
-      final Map<String, dynamic>? result =
+      final Map<String, dynamic> result =
           await _auth.getAddOnsList(productId!, next, previous);
       if (result == null) {
         isLoading = false;

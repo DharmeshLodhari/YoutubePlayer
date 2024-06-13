@@ -20,7 +20,7 @@ import 'package:video_player/video_player.dart';
 class PreviewDeliveryProofScreen extends StatefulWidget {
   final dynamic arguments;
 
-  PreviewDeliveryProofScreen({
+  const PreviewDeliveryProofScreen({
     super.key,
     this.arguments,
   });

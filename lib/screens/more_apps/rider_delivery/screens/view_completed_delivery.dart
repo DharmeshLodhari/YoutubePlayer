@@ -61,7 +61,7 @@ class _ViewCompletedDeliveryState extends State<ViewCompletedDelivery> {
     super.dispose();
   }
 
-  fetchJobData() async {
+  Future<void> fetchJobData() async {
     isLoading = true;
     if (mounted) setState(() {});
     await RiderDeliveryAuthService().fetchJob(journeyId).then((value) {
@@ -370,11 +370,11 @@ class _ViewCompletedDeliveryState extends State<ViewCompletedDelivery> {
   }
 
   Widget _buildDuration() {
-    DateTime? pickupTime =
+    final DateTime? pickupTime =
         riderDeliveryBloc.deliveryDetails?.actualDeliveryTime;
-    DateTime? deliveryTime =
+    final DateTime? deliveryTime =
         riderDeliveryBloc.deliveryDetails?.actualPickupTime;
-    Duration? duration = pickupTime?.difference(deliveryTime!);
+    final Duration? duration = pickupTime?.difference(deliveryTime!);
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -448,7 +448,7 @@ class _ViewCompletedDeliveryState extends State<ViewCompletedDelivery> {
     } else if (fileType == "video") {
       return isVideoLoading
           ? Center(child: CircularLoadingIndicator())
-          : Container(
+          : SizedBox(
               width: double.infinity,
               height: 270,
               child: Center(

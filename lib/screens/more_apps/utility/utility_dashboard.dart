@@ -7,8 +7,10 @@ import 'package:Slydo/widget/utility_dashboard_item_tile.dart';
 import 'package:flutter/material.dart';
 
 class UtilityDashboard extends StatefulWidget {
+  const UtilityDashboard({super.key});
+
   @override
-  _UtilityDashboardState createState() => _UtilityDashboardState();
+  State<UtilityDashboard> createState() => _UtilityDashboardState();
 }
 
 class _UtilityDashboardState extends State<UtilityDashboard> {

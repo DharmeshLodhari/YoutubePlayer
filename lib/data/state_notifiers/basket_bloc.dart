@@ -834,7 +834,7 @@ class BasketBloc extends ChangeNotifier {
     final List itemsCart = await ShoppingAuthService().getShoppingCart();
     final UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
 
-    final SharedCartMemberModel? currentUser = userBloc.user.convertToUser();
+    final SharedCartMemberModel currentUser = userBloc.user.convertToUser();
 
     for (var element in itemsCart) {
       final String type = element is Product ? "product" : "service";

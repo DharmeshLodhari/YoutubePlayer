@@ -15,8 +15,7 @@ import 'yarn_detail_screen.dart';
 class SearchScreen extends StatefulWidget {
   YarnCategories? askCategory;
   String? searchText;
-  SearchScreen({super.key, this.askCategory, this.searchText})
-     ;
+  SearchScreen({super.key, this.askCategory, this.searchText});
 
   @override
   State<SearchScreen> createState() => _SearchScreenState();
@@ -135,7 +134,7 @@ class _SearchScreenState extends State<SearchScreen> {
     }
   }
 
-  _refreshList() {
+  void _refreshList() {
     count = 0;
     next = "";
     previous = "";

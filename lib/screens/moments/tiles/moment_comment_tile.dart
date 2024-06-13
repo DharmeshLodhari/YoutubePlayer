@@ -24,7 +24,7 @@ import '../../more_apps/shopping/models/store.dart';
 import '../../more_apps/user_post/models/user_post.dart';
 import '../../more_apps/user_profile/models/user.dart';
 import '../../more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
-import '../../more_apps/yarn/models/Topics/CommentDetails.dart';
+import '../../more_apps/yarn/models/Topics/comment_details.dart';
 import '../../more_apps/yarn/widgets/url_reader_of_yarn.dart';
 import '../../more_apps/yarn/widgets/yarn_comment_media_renderer.dart';
 import '../../more_apps/yarn/widgets/yarn_options.dart';

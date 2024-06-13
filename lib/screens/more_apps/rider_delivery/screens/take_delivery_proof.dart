@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class TakeDeliveryProof extends StatefulWidget {
-  TakeDeliveryProof({Key? key});
+  const TakeDeliveryProof({super.key});
 
   @override
   State<TakeDeliveryProof> createState() => _TakeDeliveryProofState();
@@ -47,7 +47,7 @@ class _TakeDeliveryProofState extends State<TakeDeliveryProof> {
   Future<void> checkCameraAvailable() async {
     await availableCameras().then((availableCameras) {
       cameras = availableCameras;
-      if (cameras.length > 0) {
+      if (cameras.isNotEmpty) {
         initCamera(cameras[0]);
       } else {
         debugPrint("No camera available");
@@ -117,7 +117,7 @@ class _TakeDeliveryProofState extends State<TakeDeliveryProof> {
             setState(() => _isRearCameraSelected = !_isRearCameraSelected);
             await availableCameras().then((availableCameras) {
               cameras = availableCameras;
-              if (cameras.length > 0) {
+              if (cameras.isNotEmpty) {
                 initCamera(cameras[_isRearCameraSelected ? 0 : 1]);
               } else {
                 debugPrint("No camera available");
@@ -162,11 +162,12 @@ class _TakeDeliveryProofState extends State<TakeDeliveryProof> {
     return SafeArea(
       child: Stack(
         children: [
-          (_cameraController?.value.isInitialized ?? false)
-              ? CameraPreview(_cameraController!)
-              : Container(
-                  color: Colors.black,
-                  child: const Center(child: CircularProgressIndicator())),
+          if (_cameraController?.value.isInitialized ?? false)
+            CameraPreview(_cameraController!)
+          else
+            Container(
+                color: Colors.black,
+                child: const Center(child: CircularProgressIndicator())),
           Align(
             alignment: Alignment.bottomCenter,
             child: Container(

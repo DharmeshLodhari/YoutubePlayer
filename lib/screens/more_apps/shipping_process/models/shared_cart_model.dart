@@ -723,11 +723,11 @@ class SharedCartModel {
   void getSplitBillEvenlyPercentage() {
     if (splitBillEvenly == true) {
       if (members != null) {
-        final int? listLength = members?.length ?? 0;
+        final int listLength = members?.length ?? 0;
 
         for (var item in members!) {
           item.percentageValue =
-              double.parse((100 / listLength!).toStringAsFixed(2));
+              double.parse((100 / listLength).toStringAsFixed(2));
         }
       }
     }

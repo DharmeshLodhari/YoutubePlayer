@@ -136,12 +136,10 @@ class FormVariantsTile extends StatelessWidget {
     return IconButton(
       padding: const EdgeInsets.only(right: 5),
       alignment: Alignment.topRight,
-      icon: Container(
-        child: Icon(
-          SlydoAppIcon.remove,
-          color: blackFont,
-          size: 15,
-        ),
+      icon: Icon(
+        SlydoAppIcon.remove,
+        color: blackFont,
+        size: 15,
       ),
       onPressed: () {
         removeSelectedVariant(productVariant.title.toString());

@@ -4,8 +4,10 @@ import 'package:Slydo/widget/curved_btn.dart';
 import 'package:flutter/material.dart';
 
 class NoVehicleFound extends StatefulWidget {
+  const NoVehicleFound({super.key});
+
   @override
-  _NoVehicleFoundState createState() => _NoVehicleFoundState();
+  State<NoVehicleFound> createState() => _NoVehicleFoundState();
 }
 
 class _NoVehicleFoundState extends State<NoVehicleFound> {

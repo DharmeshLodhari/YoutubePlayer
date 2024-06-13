@@ -2,7 +2,7 @@ import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 
 class JobsCategoriesList extends StatefulWidget {
-  const JobsCategoriesList({Key? key});
+  const JobsCategoriesList({super.key});
 
   @override
   State<JobsCategoriesList> createState() => _JobsCategoriesListState();

@@ -7,8 +7,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class FlightExploreScreen extends StatefulWidget {
+  const FlightExploreScreen({super.key});
+
   @override
-  _FlightExploreScreenState createState() => _FlightExploreScreenState();
+  State<FlightExploreScreen> createState() => _FlightExploreScreenState();
 }
 
 class _FlightExploreScreenState extends State<FlightExploreScreen> {

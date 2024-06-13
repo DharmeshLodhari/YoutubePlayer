@@ -35,11 +35,11 @@ List<Language> languages = <Language>[
 
 Language? getLanguageByLanguageCode(String? languageCode) {
   Language? language;
-  languages.forEach((lang) {
+  for (var lang in languages) {
     if (languageCode == lang.languageCode) {
       language = lang;
     }
-  });
+  }
   if (language != null) {
     return language;
   }

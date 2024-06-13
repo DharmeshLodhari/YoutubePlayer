@@ -29,7 +29,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class PaymentLinkScreen extends StatefulWidget {
-  const PaymentLinkScreen({Key? key});
+  const PaymentLinkScreen({super.key});
 
   @override
   State<PaymentLinkScreen> createState() => _PaymentLinkScreenState();
@@ -377,7 +377,7 @@ class _PaymentLinkScreenState extends State<PaymentLinkScreen> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => PaymentLoadingScreen(
+                    builder: (context) => const PaymentLoadingScreen(
                           text: 'Payment Link Processing......',
                           imagePath: 'assets/images/app_logo.png',
                         )),

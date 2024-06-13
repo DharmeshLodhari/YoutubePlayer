@@ -27,7 +27,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'auth/debit_card_auth.dart';
 
 class VirtualCardHome extends StatefulWidget {
-  const VirtualCardHome({Key? key});
+  const VirtualCardHome({super.key});
 
   @override
   VirtualCardHomeState createState() => VirtualCardHomeState();

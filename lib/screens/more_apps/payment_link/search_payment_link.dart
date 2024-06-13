@@ -19,7 +19,7 @@ import 'package:shimmer/shimmer.dart';
 import 'payment_transaction_info.dart';
 
 class PaymentLinkSearch extends StatefulWidget {
-  const PaymentLinkSearch({Key? key});
+  const PaymentLinkSearch({super.key});
 
   @override
   State<PaymentLinkSearch> createState() => _PaymentLinkSearchState();
@@ -43,7 +43,7 @@ class _PaymentLinkSearchState extends State<PaymentLinkSearch>
 
   final ScrollController _scrollController = ScrollController();
 
-  getPaymenttLinks({searchLink}) async {
+  Future<void> getPaymenttLinks({searchLink}) async {
     if (!isLoading) {
       if (next != null && !isLoading) {
         if (mounted) {

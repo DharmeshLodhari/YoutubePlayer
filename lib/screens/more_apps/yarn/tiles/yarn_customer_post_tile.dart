@@ -32,7 +32,7 @@ class YarnCustomerPostTile extends StatefulWidget {
   final bool showAuthorDetails;
   final TileRenderPlace tileRenderPlace;
 
-  YarnCustomerPostTile({
+  const YarnCustomerPostTile({
     super.key,
     this.customerProfile,
     this.showAuthorDetails = true,
@@ -42,7 +42,7 @@ class YarnCustomerPostTile extends StatefulWidget {
   });
 
   @override
-  _YarnCustomerPostTileState createState() => _YarnCustomerPostTileState();
+  State<YarnCustomerPostTile> createState() => _YarnCustomerPostTileState();
 }
 
 class _YarnCustomerPostTileState extends State<YarnCustomerPostTile>

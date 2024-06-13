@@ -12,19 +12,13 @@ import 'package:sizer/sizer.dart';
 class StartupScreen extends StatefulWidget {
   final dynamic arguments;
 
-  StartupScreen({this.arguments});
+  const StartupScreen({super.key, this.arguments});
 
   @override
-  _StartupScreenState createState() =>
-      _StartupScreenState(arguments: arguments);
+  State<StartupScreen> createState() => _StartupScreenState();
 }
 
 class _StartupScreenState extends State<StartupScreen> {
-  final dynamic arguments;
-
-  _StartupScreenState(
-      {this.arguments}); // for Checking if User  start App first time or come back from logout button
-
   bool? isIntroDone = false;
   int introScreenCount = 4;
 
@@ -38,7 +32,9 @@ class _StartupScreenState extends State<StartupScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         setState(() {
-          isIntroDone = arguments != null ? arguments['isIntroDone'] : false;
+          isIntroDone = widget.arguments != null
+              ? widget.arguments['isIntroDone']
+              : false;
         });
       }
     });

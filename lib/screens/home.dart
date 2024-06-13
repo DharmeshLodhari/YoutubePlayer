@@ -57,10 +57,10 @@ import 'more_apps/user_profile/user_auth.dart';
 import 'more_apps/yarn/yarn_dashboard.dart';
 
 class Home extends StatefulWidget {
-  Home({Key? key});
+  const Home({super.key});
 
   @override
-  _HomeState createState() => _HomeState();
+  State<Home> createState() => _HomeState();
 }
 
 class _HomeState extends State<Home> {
@@ -95,7 +95,7 @@ class _HomeState extends State<Home> {
   bool isExploreMomentsLoading = false;
   List<ExploreMomentsModel> exploreMomentsList = [];
   List<MomentsModel> momentsList = [];
-  ScrollController _myConnectionsScrollController = ScrollController();
+  final ScrollController _myConnectionsScrollController = ScrollController();
   SharedPreferences? _sharedPreferences;
 
   List<Yarn> yarnTopicList = [];
@@ -629,7 +629,7 @@ class _HomeState extends State<Home> {
   }
 
   Widget shortcutView(
-      String imagePath, String title, String ForReadPermission) {
+      String imagePath, String title, String forReadPermission) {
     // return !userBloc.user.hasWritePermission(title)
     //     ? Stack(
     //         children: [
@@ -645,11 +645,11 @@ class _HomeState extends State<Home> {
     //         ],
     //       )
     //     : _buildIconAndText(imagePath, title);
-    return _buildIconAndText(imagePath, title, ForReadPermission);
+    return _buildIconAndText(imagePath, title, forReadPermission);
   }
 
   Widget _buildIconAndText(
-      String imagePath, String title, String ForReadPermission) {
+      String imagePath, String title, String forReadPermission) {
     return title == ProtectionPermission.services
         ? Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -672,7 +672,7 @@ class _HomeState extends State<Home> {
             permissionName: title,
             isShowLock: true,
             position: 0,
-            isLockForRead: ForReadPermission,
+            isLockForRead: forReadPermission,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -839,7 +839,7 @@ class _HomeState extends State<Home> {
     );
   }
 
-  Widget sectionHeader(title, more) {
+  Widget sectionHeader(String title, String more) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -895,7 +895,7 @@ class _HomeState extends State<Home> {
               SvgPicture.asset(
                 imagePath.toSVG(),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: 7),
               Text(
                 title,
                 style: TextStyle(
@@ -913,12 +913,11 @@ class _HomeState extends State<Home> {
               ],
             ],
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 7),
           Text(
             subTitle,
-            style: TextStyle(fontSize: 14, color: white, fontFamily: "Inter"),
+            style: TextStyle(fontSize: 13, color: white, fontFamily: "Inter"),
           ),
-          const SizedBox(width: 10),
         ],
       ),
     );
@@ -1014,6 +1013,7 @@ class _HomeState extends State<Home> {
       automaticallyImplyLeading: false,
       elevation: 0,
       centerTitle: false,
+      titleSpacing: 7,
       leading: InkWell(
         onTap: () {
           profileAndroidSheet();
@@ -1047,7 +1047,7 @@ class _HomeState extends State<Home> {
                       fontWeight: FontWeight.w400),
                 ),
                 const SizedBox(
-                  width: 3,
+                  width: 2,
                 ),
                 userNameWithVerifiedIcon(
                   name: appendStringDot(userBloc.user.displayName() ?? "", 8),
@@ -2069,7 +2069,7 @@ class _HomeState extends State<Home> {
     return asteriskMask.trim();
   }
 
-  showTutorial(String? shortcut) {
+  void showTutorial(String? shortcut) {
     switch (shortcut) {
       case 'Send':
         tutorialSendPaymentKey;

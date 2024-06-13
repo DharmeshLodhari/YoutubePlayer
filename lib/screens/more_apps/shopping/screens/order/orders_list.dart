@@ -22,8 +22,10 @@ import '../../shopping_auth.dart';
 import '../../tiles/order_tile.dart';
 
 class OrdersList extends StatefulWidget {
+  const OrdersList({super.key});
+
   @override
-  _OrdersListState createState() => _OrdersListState();
+  State<OrdersList> createState() => _OrdersListState();
 }
 
 class _OrdersListState extends State<OrdersList>
@@ -471,10 +473,8 @@ class _OrdersListState extends State<OrdersList>
 
           Navigator.of(context).pushNamed(Routes.COMPOSE_MESSAGE, arguments: {
             'recipient': recipient,
-            'subject': AppLocalization.of(context)!.orderDetail +
-                " : " +
-                AppLocalization.of(context)!.ref +
-                " #${order.id}",
+            'subject':
+                "${AppLocalization.of(context)!.orderDetail} : ${AppLocalization.of(context)!.ref} #${order.id}",
           });
         },
         label: AppLocalization.of(context)!.message,

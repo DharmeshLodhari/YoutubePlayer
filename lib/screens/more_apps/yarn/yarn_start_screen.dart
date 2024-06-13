@@ -15,6 +15,8 @@ import 'yarn_dashboard.dart';
 import 'yarn_dashboard_bloc.dart';
 
 class AskStartScreen extends StatefulWidget {
+  const AskStartScreen({super.key});
+
   @override
   State<AskStartScreen> createState() => _AskStartScreenState();
 }

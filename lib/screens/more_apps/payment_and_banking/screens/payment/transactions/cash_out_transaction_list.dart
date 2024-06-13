@@ -9,8 +9,10 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import '../../../payment_and_banking_auth.dart';
 
 class CashoutTransactionsList extends StatefulWidget {
+  const CashoutTransactionsList({super.key});
+
   @override
-  _CashoutTransactionsListState createState() =>
+  State<CashoutTransactionsList> createState() =>
       _CashoutTransactionsListState();
 }
 
@@ -32,7 +34,7 @@ class _CashoutTransactionsListState extends State<CashoutTransactionsList> {
 
   @override
   void initState() {
-    this.getList();
+    getList();
 
     super.initState();
     _scrollController.addListener(() {

@@ -19,7 +19,7 @@ import '../../../widget/tab_selection.dart';
 class ServiceHubDashboard extends StatefulWidget {
   final dynamic arguments;
 
-  ServiceHubDashboard({super.key, this.arguments});
+  const ServiceHubDashboard({super.key, this.arguments});
 
   @override
   State<ServiceHubDashboard> createState() => _ServiceHubDashboardState();
@@ -315,7 +315,7 @@ class _ServiceHubDashboardState extends State<ServiceHubDashboard> {
   Widget getJobList() {
     if (userBloc.user.rider != null &&
         userBloc.user.rider?.isStatusApproved() == true) {
-      return FindJobsTab();
+      return const FindJobsTab();
     } else {
       return const JobsDashboard();
     }

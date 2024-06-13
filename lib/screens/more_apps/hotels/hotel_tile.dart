@@ -1,4 +1,4 @@
-import 'package:Slydo/screens/more_apps/hotels/models/PartialHotelRoomItem.dart';
+import 'package:Slydo/screens/more_apps/hotels/models/partial_hotel_room_item.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/custom_box_shadow.dart';
@@ -6,13 +6,13 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 
-import 'models/CityData.dart';
-import 'models/HotelRoomItem.dart';
+import 'models/city_data.dart';
+import 'models/hotel_room_item.dart';
 
 // ignore: must_be_immutable
 class HotelTile extends StatelessWidget {
   String? imageUrl;
-  HotelTile({this.imageUrl});
+  HotelTile({super.key, this.imageUrl});
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -92,7 +92,7 @@ class HotelTileWithHeart extends StatefulWidget {
 
   const HotelTileWithHeart({super.key, this.hotelRoom});
   @override
-  _HotelTileWithHeartState createState() => _HotelTileWithHeartState();
+  State<HotelTileWithHeart> createState() => _HotelTileWithHeartState();
 }
 
 class _HotelTileWithHeartState extends State<HotelTileWithHeart> {
@@ -301,7 +301,7 @@ class HotelRoomImagesTile extends StatefulWidget {
 
   const HotelRoomImagesTile({super.key, this.hotelRoom});
   @override
-  _HotelRoomImagesTileState createState() => _HotelRoomImagesTileState();
+  State<HotelRoomImagesTile> createState() => _HotelRoomImagesTileState();
 }
 
 class _HotelRoomImagesTileState extends State<HotelRoomImagesTile> {
@@ -489,7 +489,7 @@ class _HotelRoomImagesTileState extends State<HotelRoomImagesTile> {
 class PartialHotelRoomItemTile extends StatelessWidget {
   final PartialHotelRoomItem? hotelRoom;
 
-  PartialHotelRoomItemTile({this.hotelRoom});
+  const PartialHotelRoomItemTile({super.key, this.hotelRoom});
 
   @override
   Widget build(BuildContext context) {
@@ -599,7 +599,7 @@ class PartialHotelRoomItemTile extends StatelessWidget {
 class CityItemCard extends StatelessWidget {
   final CityData? city;
 
-  CityItemCard({this.city});
+  const CityItemCard({super.key, this.city});
 
   @override
   Widget build(BuildContext context) {
@@ -652,6 +652,8 @@ class CityItemCard extends StatelessWidget {
 }
 
 class ReviewTile extends StatelessWidget {
+  const ReviewTile({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -763,6 +765,8 @@ class ReviewTile extends StatelessWidget {
 }
 
 class PartnerTile extends StatelessWidget {
+  const PartnerTile({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Row(

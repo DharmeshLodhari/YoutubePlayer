@@ -26,7 +26,7 @@ import '../auth/service_hub_auth.dart';
 import '../models/jobs.dart';
 
 class ContractorPaymentScreen extends StatefulWidget {
-  ContractorPaymentScreen({super.key, this.arguments});
+  const ContractorPaymentScreen({super.key, this.arguments});
   final dynamic arguments;
 
   @override

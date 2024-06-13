@@ -16,10 +16,10 @@ import '../../models/store.dart';
 
 class SearchProduct extends StatefulWidget {
   final dynamic arguments;
-  SearchProduct({super.key, this.arguments});
+  const SearchProduct({super.key, this.arguments});
 
   @override
-  _SearchProductState createState() => _SearchProductState();
+  State<SearchProduct> createState() => _SearchProductState();
 }
 
 class _SearchProductState extends State<SearchProduct> {

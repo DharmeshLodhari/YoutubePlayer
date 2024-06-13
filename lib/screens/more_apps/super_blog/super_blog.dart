@@ -12,10 +12,10 @@ import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class SuperBlog extends StatefulWidget {
-  const SuperBlog({Key? key});
+  const SuperBlog({super.key});
 
   @override
-  _SuperBlogState createState() => _SuperBlogState();
+  State<SuperBlog> createState() => _SuperBlogState();
 }
 
 class _SuperBlogState extends State<SuperBlog> {

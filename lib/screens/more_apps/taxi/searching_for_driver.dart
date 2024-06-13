@@ -6,8 +6,10 @@ import 'package:Slydo/widget/curved_btn.dart';
 import 'package:flutter/material.dart';
 
 class SearchingForRide extends StatefulWidget {
+  const SearchingForRide({super.key});
+
   @override
-  _SearchingForRideState createState() => _SearchingForRideState();
+  State<SearchingForRide> createState() => _SearchingForRideState();
 }
 
 class _SearchingForRideState extends State<SearchingForRide> {

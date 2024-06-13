@@ -11,8 +11,10 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 
 class RideOption extends StatefulWidget {
+  const RideOption({super.key});
+
   @override
-  _RideOptionState createState() => _RideOptionState();
+  State<RideOption> createState() => _RideOptionState();
 }
 
 class _RideOptionState extends State<RideOption> {
@@ -457,7 +459,7 @@ class _RideOptionState extends State<RideOption> {
       onPressed: () {
         if (isRideSelected) {
           Navigator.of(context).pushNamed("/search-driver",
-              arguments: {"currentChild": RideOption()});
+              arguments: {"currentChild": const RideOption()});
         }
       },
       backgroundColor: navyBlue,

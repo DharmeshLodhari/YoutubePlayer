@@ -17,7 +17,7 @@ import 'package:flutter_svg/svg.dart';
 import '../service_hub/screens/my_job_details.dart';
 
 class TransactionPaymentLink extends StatefulWidget {
-  TransactionPaymentLink(
+  const TransactionPaymentLink(
       {super.key,
       this.date,
       this.id,
@@ -27,8 +27,7 @@ class TransactionPaymentLink extends StatefulWidget {
       this.currency,
       this.category,
       this.link,
-      this.passcode})
-     ;
+      this.passcode});
   final String? date;
   final String? id;
   final String? amount;

@@ -22,10 +22,10 @@ class ProductVariantList extends StatefulWidget {
   final dynamic arguments;
   final Function(List<Variant>)? onListRefreshed;
 
-  ProductVariantList({this.arguments, this.onListRefreshed, super.key});
+  const ProductVariantList({this.arguments, this.onListRefreshed, super.key});
 
   @override
-  _ProductVariantListState createState() => _ProductVariantListState();
+  State<ProductVariantList> createState() => _ProductVariantListState();
 }
 
 class _ProductVariantListState extends State<ProductVariantList>

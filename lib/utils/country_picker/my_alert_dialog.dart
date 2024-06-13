@@ -144,7 +144,7 @@ class MyAlertDialog<T> extends StatelessWidget {
     if (actions != null) {
       if (isDividerEnabled) children.add(divider);
       children.add(ButtonBarTheme(
-        data: ButtonBarThemeData(),
+        data: const ButtonBarThemeData(),
         child: ButtonBar(
           children: actions!,
         ),

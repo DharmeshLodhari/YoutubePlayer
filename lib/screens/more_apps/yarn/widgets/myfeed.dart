@@ -15,8 +15,8 @@ class MyFeedView extends StatefulWidget {
   final String? userName;
   final String? isChannel;
 
-  MyFeedView({super.key, this.selectedCategory, this.userName, this.isChannel})
-     ;
+  const MyFeedView(
+      {super.key, this.selectedCategory, this.userName, this.isChannel});
 
   @override
   State<MyFeedView> createState() => MyFeedViewState(key: key);

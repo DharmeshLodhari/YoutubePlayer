@@ -10,11 +10,13 @@ import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
 
 import 'event_auth.dart';
-import 'models/PartialEventItem.dart';
+import 'models/partial_event_item.dart';
 
 class SearchEvent extends StatefulWidget {
+  const SearchEvent({super.key});
+
   @override
-  _SearchEventState createState() => _SearchEventState();
+  State<SearchEvent> createState() => _SearchEventState();
 }
 
 class _SearchEventState extends State<SearchEvent> {

@@ -7,6 +7,7 @@ class RoundedElevatedButton extends StatelessWidget {
   String svgImg;
 
   RoundedElevatedButton({
+    super.key,
     this.svgImg = "",
   });
 

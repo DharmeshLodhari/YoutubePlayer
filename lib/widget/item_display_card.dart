@@ -39,8 +39,7 @@ class DisplayProduct extends StatefulWidget {
       {super.key,
       required this.product,
       this.giveRightPadding = false,
-      this.onProductRefresh})
-     ;
+      this.onProductRefresh});
 
   @override
   State<DisplayProduct> createState() => _DisplayProductState();
@@ -688,8 +687,7 @@ class DisplayService extends StatefulWidget {
       {super.key,
       required this.service,
       this.giveRightPadding = false,
-      this.onServiceRefresh})
-     ;
+      this.onServiceRefresh});
 
   @override
   State<DisplayService> createState() => _DisplayServiceState();
@@ -1165,8 +1163,7 @@ class FindBusiness extends StatefulWidget {
       required this.customerProfile,
       this.tileRenderPlace = TileRenderPlace.YarnTimeLine,
       this.onProductRefresh,
-      required this.callback})
-     ;
+      required this.callback});
 
   @override
   State<FindBusiness> createState() => _FindBusinessState();
@@ -1190,6 +1187,7 @@ class _FindBusinessState extends State<FindBusiness> {
 
   Widget getNearByBusiness() {
     return Card(
+      color: Colors.white,
       semanticContainer: true,
       clipBehavior: Clip.antiAliasWithSaveLayer,
       margin: EdgeInsets.zero,
@@ -1543,8 +1541,7 @@ class CircularUserColorImage extends StatelessWidget {
   final String name;
 
   const CircularUserColorImage(
-      {super.key, required this.imageUrl, required this.name})
-     ;
+      {super.key, required this.imageUrl, required this.name});
 
   @override
   Widget build(BuildContext context) {

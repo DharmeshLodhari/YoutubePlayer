@@ -180,10 +180,11 @@ class _CustomerViewMapState extends State<CustomerViewMap> {
       points: polylineCoordinates,
       width: 9,
     );
-    if (mounted)
+    if (mounted) {
       setState(() {
         polylines[id] = polyline;
       });
+    }
   }
 
   @override

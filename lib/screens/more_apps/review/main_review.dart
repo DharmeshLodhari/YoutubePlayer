@@ -4,6 +4,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class MainReview extends StatelessWidget {
+  const MainReview({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,7 +48,7 @@ class MainReview extends StatelessWidget {
               10,
               (index) => Container(
                     margin: const EdgeInsets.only(bottom: 12),
-                    child: ReviewTile(),
+                    child: const ReviewTile(),
                   )),
         ),
       ),
@@ -55,6 +57,8 @@ class MainReview extends StatelessWidget {
 }
 
 class ReviewTile extends StatelessWidget {
+  const ReviewTile({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Column(

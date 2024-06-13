@@ -45,7 +45,7 @@ class _TakeProofPhotoState extends State<TakeProofPhoto> {
   Future<void> checkCameraAvailable() async {
     await availableCameras().then((availableCameras) {
       cameras = availableCameras;
-      if (cameras.length > 0) {
+      if (cameras.isNotEmpty) {
         initCamera(cameras[0]);
       } else {
         debugPrint("No camera available");
@@ -94,7 +94,7 @@ class _TakeProofPhotoState extends State<TakeProofPhoto> {
             setState(() => _isRearCameraSelected = !_isRearCameraSelected);
             await availableCameras().then((availableCameras) {
               cameras = availableCameras;
-              if (cameras.length > 0) {
+              if (cameras.isNotEmpty) {
                 initCamera(cameras[_isRearCameraSelected ? 0 : 1]);
               } else {
                 debugPrint("No camera available");

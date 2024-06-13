@@ -16,8 +16,10 @@ import 'property_dashboard_bloc.dart';
 import 'property_tile.dart';
 
 class PropertyExploreScreen extends StatefulWidget {
+  const PropertyExploreScreen({super.key});
+
   @override
-  _PropertyExploreScreenState createState() => _PropertyExploreScreenState();
+  State<PropertyExploreScreen> createState() => _PropertyExploreScreenState();
 }
 
 class _PropertyExploreScreenState extends State<PropertyExploreScreen> {

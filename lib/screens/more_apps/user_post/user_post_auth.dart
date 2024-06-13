@@ -5,10 +5,9 @@ import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/screens/more_apps/super_blog/super_blog.dart';
 import 'package:Slydo/screens/more_apps/user_post/models/user_post.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-
-import '../../../utils/util.dart';
 
 class UserPostAuth extends AuthService {
   Future<Map<String, dynamic>?> listAllPosts(

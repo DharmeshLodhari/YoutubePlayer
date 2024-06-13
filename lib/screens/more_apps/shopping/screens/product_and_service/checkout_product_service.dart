@@ -15,7 +15,7 @@ import '../../shopping_auth.dart';
 import '../checkout_screen.dart';
 
 class CheckoutProductService extends StatefulWidget {
-  const CheckoutProductService({Key? key});
+  const CheckoutProductService({super.key});
 
   @override
   State<CheckoutProductService> createState() => _CheckoutProductServiceState();

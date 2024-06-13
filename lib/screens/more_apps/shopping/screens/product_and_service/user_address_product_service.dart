@@ -20,10 +20,10 @@ class UserAddressProductService extends StatefulWidget {
   final String? customerName;
   final bool fromCheckoutScreen;
 
-  UserAddressProductService(
-      {this.customerName, this.fromCheckoutScreen = false});
+  const UserAddressProductService(
+      {super.key, this.customerName, this.fromCheckoutScreen = false});
   @override
-  _UserAddressProductServiceState createState() =>
+  State<UserAddressProductService> createState() =>
       _UserAddressProductServiceState();
 }
 

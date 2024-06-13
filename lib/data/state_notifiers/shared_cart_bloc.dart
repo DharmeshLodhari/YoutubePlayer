@@ -114,7 +114,6 @@ class SharedCartBloc extends ChangeNotifier {
         sh.members?[index].paymentValue =
             (((getSharedCartModel().getSharedCartTotalPrice()) * val) / 100)
                 .floor();
-        ;
         notifyListeners();
         break;
       }

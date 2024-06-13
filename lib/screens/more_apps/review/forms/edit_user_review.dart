@@ -9,17 +9,17 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class EditUserReview extends StatefulWidget {
-  EditUserReview({super.key, required this.arguments});
+  const EditUserReview({super.key, required this.arguments});
 
   final Map<String, dynamic> arguments;
 
   @override
-  _EditUserReviewState createState() => _EditUserReviewState();
+  State<EditUserReview> createState() => _EditUserReviewState();
 }
 
 class _EditUserReviewState extends State<EditUserReview> {
   final maxLines = 4;
-  TextEditingController _reviewController = TextEditingController();
+  final TextEditingController _reviewController = TextEditingController();
   int rating = 1;
 
   CustomerProfile? reviewedUser;
@@ -127,11 +127,12 @@ class _EditUserReviewState extends State<EditUserReview> {
                 ),
               ),
             ),
-            isLoading
-                ? const Center(
-                    child: CircularProgressIndicator(),
-                  )
-                : Container()
+            if (isLoading)
+              const Center(
+                child: CircularProgressIndicator(),
+              )
+            else
+              Container()
           ],
         ),
       ),

@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../routes/route_constants.dart';
 import '../../../../utils/util.dart';
-import '../models/Topics/CommentDetails.dart';
+import '../models/Topics/comment_details.dart';
 import 'yarn_options.dart';
 
 class AskReplyView extends StatelessWidget {
@@ -14,7 +14,8 @@ class AskReplyView extends StatelessWidget {
   final YarnComment? commentDetail;
   final YarnComment? replyCommentDetail;
 
-  AskReplyView({this.yarnTopic, this.replyCommentDetail, this.commentDetail});
+  const AskReplyView(
+      {super.key, this.yarnTopic, this.replyCommentDetail, this.commentDetail});
 
   @override
   Widget build(BuildContext context) {

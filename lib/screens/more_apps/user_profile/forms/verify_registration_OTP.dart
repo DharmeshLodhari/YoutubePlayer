@@ -1,20 +1,20 @@
 import 'dart:async';
 
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
+import 'package:Slydo/utils/country_picker/country_picker_dialog.dart';
+import 'package:Slydo/utils/country_picker/utils.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
+import 'package:Slydo/widget/customized_textform_field.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pinput/pinput.dart';
 
-import '../../../../locale/app_localization.dart';
 import '../../../../utils/country_picker/country.dart';
-import '../../../../utils/country_picker/country_picker_dialog.dart';
-import '../../../../utils/country_picker/utils.dart';
-import '../../../../widget/customized_textform_field.dart';
-import '../../../../widget/loading_indicator.dart';
-import '../../payment_and_banking/payment_and_banking_auth.dart';
 
 // ignore: must_be_immutable
 class VerifyRegistrationOTPScreen extends StatefulWidget {

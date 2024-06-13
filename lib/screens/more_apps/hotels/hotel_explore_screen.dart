@@ -1,6 +1,6 @@
 import 'package:Slydo/screens/more_apps/hotels/hotel_auth.dart';
-import 'package:Slydo/screens/more_apps/hotels/models/HotelRoomItem.dart';
-import 'package:Slydo/screens/more_apps/hotels/models/PartialHotelRoomItem.dart';
+import 'package:Slydo/screens/more_apps/hotels/models/hotel_room_item.dart';
+import 'package:Slydo/screens/more_apps/hotels/models/partial_hotel_room_item.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
@@ -10,11 +10,13 @@ import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import 'hotel_tile.dart';
-import 'models/CityData.dart';
+import 'models/city_data.dart';
 
 class HotelExploreScreen extends StatefulWidget {
+  const HotelExploreScreen({super.key});
+
   @override
-  _HotelExploreScreenState createState() => _HotelExploreScreenState();
+  State<HotelExploreScreen> createState() => _HotelExploreScreenState();
 }
 
 class _HotelExploreScreenState extends State<HotelExploreScreen> {

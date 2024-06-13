@@ -231,8 +231,7 @@ class _ShoppingTileWithHeartState extends State<ShoppingTileWithHeart> {
 class ShoppingTileWithHeartWithProduct extends StatefulWidget {
   final Product? product;
 
-  const ShoppingTileWithHeartWithProduct({super.key, this.product})
-     ;
+  const ShoppingTileWithHeartWithProduct({super.key, this.product});
   @override
   State<ShoppingTileWithHeartWithProduct> createState() =>
       _ShoppingTileWithHeartWithProductState();
@@ -362,8 +361,10 @@ class _ShoppingTileWithHeartWithProductState
 }
 
 class MovieTileGeneral extends StatefulWidget {
+  const MovieTileGeneral({super.key});
+
   @override
-  _MovieTileGeneralState createState() => _MovieTileGeneralState();
+  State<MovieTileGeneral> createState() => _MovieTileGeneralState();
 }
 
 class _MovieTileGeneralState extends State<MovieTileGeneral> {
@@ -475,8 +476,7 @@ class _MovieTileGeneralState extends State<MovieTileGeneral> {
 class ShoppingTileWithHeartWithService extends StatefulWidget {
   final Service? service;
 
-  const ShoppingTileWithHeartWithService({super.key, this.service})
-     ;
+  const ShoppingTileWithHeartWithService({super.key, this.service});
   @override
   _ShoppingTileWithHeartWithServiceState createState() =>
       _ShoppingTileWithHeartWithServiceState();

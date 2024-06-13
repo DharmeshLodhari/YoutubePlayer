@@ -34,8 +34,10 @@ import '../models/job_location_model.dart';
 // import '../shopping_auth.dart';
 
 class JobsCreateJobs extends StatefulWidget {
+  const JobsCreateJobs({super.key});
+
   @override
-  _JobsCreateJobsState createState() => _JobsCreateJobsState();
+  State<JobsCreateJobs> createState() => _JobsCreateJobsState();
 }
 
 class _JobsCreateJobsState extends State<JobsCreateJobs> {
@@ -804,25 +806,30 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
     return DropdownSearch<String>(
       popupProps: PopupProps.dialog(
         showSearchBox: true,
+        dialogProps: DialogProps(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(5),
+          ),
+        ),
         searchFieldProps: TextFieldProps(
           cursorColor: navyBlue,
           decoration: InputDecoration(
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(10),
               borderSide: BorderSide(
                 color: greyBorderColor,
                 width: 1.0,
               ),
             ),
             disabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(10),
               borderSide: BorderSide(
                 color: greyBorderColor,
                 width: 1.0,
               ),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(10),
               borderSide: BorderSide(
                 color: navyBlue,
                 width: 1.0,
@@ -903,6 +910,11 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
     return DropdownSearch<String>(
       popupProps: PopupProps.dialog(
           showSearchBox: true,
+          dialogProps: DialogProps(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(5),
+            ),
+          ),
           searchFieldProps: TextFieldProps(
             cursorColor: navyBlue,
             decoration: InputDecoration(

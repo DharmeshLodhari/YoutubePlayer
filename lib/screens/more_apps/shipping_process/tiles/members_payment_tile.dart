@@ -13,7 +13,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 class MemberPaymentTile extends StatefulWidget {
-  MemberPaymentTile(
+  const MemberPaymentTile(
       {this.member, this.index, this.isUserPaymentDone, super.key});
 
   final int? index;

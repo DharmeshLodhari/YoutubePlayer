@@ -59,6 +59,7 @@ class CustomizedTextFormField extends StatefulWidget {
   double? borderWidth;
 
   CustomizedTextFormField({
+    super.key,
     this.initialValue,
     this.autoFocus = false,
     this.helperText,
@@ -415,7 +416,10 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
 
   List<TextInputFormatter>? getInputFormatters() {
     if (widget.isAmountField) {
-      return [CurrencyTextInputFormatter.currency(symbol: '')];
+      return [
+        CurrencyTextInputFormatter.currency(symbol: ''),
+        LengthLimitingTextInputFormatter(20),
+      ];
     }
     if (widget.isNumberOnlyInput) {
       return [FilteringTextInputFormatter.digitsOnly];

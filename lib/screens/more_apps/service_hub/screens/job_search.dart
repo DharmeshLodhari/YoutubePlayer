@@ -177,89 +177,86 @@ class _JobsSearchState extends State<JobsSearch> {
   }
 
   Widget scaffoldBody() {
-    return Container(
-      child: Column(
-        children: [
-          // showSortByBox ? sortByDropDown() : SizedBox.shrink(),
-          const SizedBox(height: 6),
-          searchBox(),
-          const SizedBox(height: 12),
-          if (isLoading)
-            Shimmer.fromColors(
-              baseColor: Colors.white,
-              highlightColor: greyBorderColor,
-              child: GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                  mainAxisSpacing: 14,
-                  mainAxisExtent: 180,
-                  crossAxisSpacing: 15,
-                  maxCrossAxisExtent: 200,
-                ),
-                itemCount: 2,
-                itemBuilder: (context, index) {
-                  return Card(
-                    color: Colors.grey,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  );
-                },
+    return Column(
+      children: [
+        // showSortByBox ? sortByDropDown() : SizedBox.shrink(),
+        const SizedBox(height: 6),
+        searchBox(),
+        const SizedBox(height: 12),
+        if (isLoading)
+          Shimmer.fromColors(
+            baseColor: Colors.white,
+            highlightColor: greyBorderColor,
+            child: GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                mainAxisSpacing: 14,
+                mainAxisExtent: 180,
+                crossAxisSpacing: 15,
+                maxCrossAxisExtent: 200,
               ),
-            )
-          else
-            const SizedBox.shrink(),
-          if (isSearchIsEmpty)
-            Expanded(
-              child: NoItemInList(
-                msg:
-                    AppLocalization.of(context)!.pleaseTypeSomethingToGetResult,
-                isResult: false,
-              ),
-            )
-          else
-            noItemInList
-                ? Expanded(
-                    child: NoItemInList(
-                      msg: AppLocalization.of(context)!.noResultFound,
-                    ),
-                  )
-                : Expanded(
-                    child: ListView(
-                        children: jobsList
-                            .map(
-                              (job) => Container(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 8, horizontal: 16),
-                                child: GestureDetector(
-                                  onTap: () {
-                                    userBloc.user.userName == job.job!.owner
-                                        ? Navigator.pushNamed(
-                                            context, Routes.MY_JOB_DETAILS,
-                                            arguments: {
-                                                'jobId': job.job!.id,
-                                                'listingId': job.id,
-                                                'job': job.job
-                                              })
-                                        : Navigator.pushNamed(
-                                            context, Routes.JOBS_PREVIEW_DETAIL,
-                                            arguments: {
-                                                'jobId': job.job!.id,
-                                                'listingId': job.id,
-                                                'job': job.job
-                                              });
-                                  },
-                                  child: JobDescriptionCard(
-                                    job: job.job,
-                                  ),
+              itemCount: 2,
+              itemBuilder: (context, index) {
+                return Card(
+                  color: Colors.grey,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                );
+              },
+            ),
+          )
+        else
+          const SizedBox.shrink(),
+        if (isSearchIsEmpty)
+          Expanded(
+            child: NoItemInList(
+              msg: AppLocalization.of(context)!.pleaseTypeSomethingToGetResult,
+              isResult: false,
+            ),
+          )
+        else
+          noItemInList
+              ? Expanded(
+                  child: NoItemInList(
+                    msg: AppLocalization.of(context)!.noResultFound,
+                  ),
+                )
+              : Expanded(
+                  child: ListView(
+                      children: jobsList
+                          .map(
+                            (job) => Container(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 8, horizontal: 16),
+                              child: GestureDetector(
+                                onTap: () {
+                                  userBloc.user.userName == job.job!.owner
+                                      ? Navigator.pushNamed(
+                                          context, Routes.MY_JOB_DETAILS,
+                                          arguments: {
+                                              'jobId': job.job!.id,
+                                              'listingId': job.id,
+                                              'job': job.job
+                                            })
+                                      : Navigator.pushNamed(
+                                          context, Routes.JOBS_PREVIEW_DETAIL,
+                                          arguments: {
+                                              'jobId': job.job!.id,
+                                              'listingId': job.id,
+                                              'job': job.job
+                                            });
+                                },
+                                child: JobDescriptionCard(
+                                  job: job.job,
                                 ),
                               ),
-                            )
-                            .toList()),
-                  ),
-        ],
-      ),
+                            ),
+                          )
+                          .toList()),
+                ),
+      ],
     );
   }
 

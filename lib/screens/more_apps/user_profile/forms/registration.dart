@@ -14,8 +14,10 @@ import '../../../../routes/route_constants.dart';
 import '../../../../widget/loading_indicator.dart';
 
 class Registration extends StatefulWidget {
+  const Registration({super.key});
+
   @override
-  _RegistrationState createState() => _RegistrationState();
+  State<Registration> createState() => _RegistrationState();
 }
 
 class _RegistrationState extends State<Registration> {
@@ -318,7 +320,7 @@ class _RegistrationState extends State<Registration> {
 
     //adding country code and '+' sign to phoneNumber
     phoneNumberWithCountryCode =
-        "+" + _selectedDialogCountry.phoneCode! + phoneNumberFromTextField;
+        "+${_selectedDialogCountry.phoneCode!}$phoneNumberFromTextField";
 
     //for closing the keypad if it is open
     if (FocusScope.of(context).hasFocus) {

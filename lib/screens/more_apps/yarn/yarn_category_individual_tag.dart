@@ -22,7 +22,7 @@ import 'yarn_search_screen.dart';
 
 class YarnCategoryIndividualTag extends StatefulWidget {
   final YarnCategories? askCategories;
-  YarnCategoryIndividualTag({this.askCategories});
+  const YarnCategoryIndividualTag({super.key, this.askCategories});
 
   @override
   State<YarnCategoryIndividualTag> createState() =>

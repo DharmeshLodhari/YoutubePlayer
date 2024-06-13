@@ -10,10 +10,10 @@ import 'package:video_player/video_player.dart';
 class ViewAskMedia extends StatefulWidget {
   final dynamic arguments;
 
-  ViewAskMedia({this.arguments});
+  const ViewAskMedia({super.key, this.arguments});
 
   @override
-  _ViewAskMediaState createState() => _ViewAskMediaState();
+  State<ViewAskMedia> createState() => _ViewAskMediaState();
 }
 
 class _ViewAskMediaState extends State<ViewAskMedia> {

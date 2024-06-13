@@ -82,7 +82,7 @@ class ShoppingProduct {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
     data['available_from'] = availableFrom;
     // data['category'] = this.category;
     data['condition'] = condition;

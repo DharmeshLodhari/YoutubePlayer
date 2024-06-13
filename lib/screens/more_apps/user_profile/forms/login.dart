@@ -36,8 +36,10 @@ import '../../../../routes/route_constants.dart';
 import '../../yarn/yarn_auth.dart';
 
 class UserLogin extends StatefulWidget {
+  const UserLogin({super.key});
+
   @override
-  _UserLoginState createState() => _UserLoginState();
+  State<UserLogin> createState() => _UserLoginState();
 }
 
 class _UserLoginState extends State<UserLogin> {
@@ -974,7 +976,7 @@ class _UserLoginState extends State<UserLogin> {
 
       // Extract usernames and add them to the dropdown items
 
-      if (mounted)
+      if (mounted) {
         setState(() {
           for (var company in companyList) {
             if (company.username != null) {
@@ -982,6 +984,7 @@ class _UserLoginState extends State<UserLogin> {
             }
           }
         });
+      }
     } catch (error) {
       debugPrint('Error fetching data: $error');
       if (mounted) setState(() {});

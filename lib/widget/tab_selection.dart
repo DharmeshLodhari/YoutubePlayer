@@ -8,12 +8,11 @@ class TabSelection extends StatefulWidget {
   final String secondTab;
 
   TabSelection(
-      {required this.onTap,
+      {super.key,
+      required this.onTap,
       this.currentIndex = 0,
       required this.firstTab,
-      required this.secondTab,
-      Key? key})
-     ;
+      required this.secondTab});
   @override
   State<TabSelection> createState() => _TabSelectionState();
 }

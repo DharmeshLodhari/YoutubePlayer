@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
 class JobsJobDetail extends StatefulWidget {
-  const JobsJobDetail({Key? key});
+  const JobsJobDetail({super.key});
 
   @override
   State<JobsJobDetail> createState() => _JobsJobDetailState();

@@ -9,11 +9,11 @@ class SelectAddressForTaxi extends StatefulWidget {
   final void Function(Map<String, dynamic> place)? updateSelectedDestination;
   final void Function(bool selectAddress)? toggleAddressSelection;
 
-  SelectAddressForTaxi(
-      {this.updateSelectedDestination, this.toggleAddressSelection});
+  const SelectAddressForTaxi(
+      {super.key, this.updateSelectedDestination, this.toggleAddressSelection});
 
   @override
-  _SelectAddressForTaxiState createState() => _SelectAddressForTaxiState();
+  State<SelectAddressForTaxi> createState() => _SelectAddressForTaxiState();
 }
 
 class _SelectAddressForTaxiState extends State<SelectAddressForTaxi> {

@@ -13,12 +13,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 class ReviewListScreen extends StatefulWidget {
-  ReviewListScreen({super.key, required this.arguments});
+  const ReviewListScreen({super.key, required this.arguments});
 
   final Map<String, dynamic> arguments;
 
   @override
-  _ReviewListScreenState createState() => _ReviewListScreenState();
+  State<ReviewListScreen> createState() => _ReviewListScreenState();
 }
 
 class _ReviewListScreenState extends State<ReviewListScreen> {
@@ -46,7 +46,7 @@ class _ReviewListScreenState extends State<ReviewListScreen> {
     product = widget.arguments["reviewedProduct"];
     service = widget.arguments["reviewedService"];
 
-    this.getProductList();
+    getProductList();
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
               _scrollController.position.maxScrollExtent &&

@@ -27,7 +27,7 @@ class _ListCategoryProductState extends State<ListCategoryProduct> {
   String? productPrevious = "";
   bool productEmpty = false;
   int? productCount = 0;
-  dynamic categoryId = null;
+  dynamic categoryId;
   List<Product> productList = [];
   bool isProductLoading = false;
   final ScrollController _productScrollController = ScrollController();

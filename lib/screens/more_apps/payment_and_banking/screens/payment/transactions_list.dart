@@ -18,10 +18,10 @@ import 'package:provider/provider.dart';
 class TransactionList extends StatefulWidget {
   final dynamic arguments;
 
-  TransactionList({super.key, this.arguments});
+  const TransactionList({super.key, this.arguments});
 
   @override
-  _TransactionListState createState() => _TransactionListState();
+  State<TransactionList> createState() => _TransactionListState();
 }
 
 class _TransactionListState extends State<TransactionList> {
@@ -331,7 +331,7 @@ class _TransactionListState extends State<TransactionList> {
           updateCurrentAskTapOnHome(index: currentPage);
         },
         controller: _pageViewController,
-        children: [
+        children: const [
           SlydoTransactionList(),
           CashoutTransactionsList(),
         ],

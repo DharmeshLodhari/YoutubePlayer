@@ -33,10 +33,10 @@ import '../../../../widget/no_item_in_list.dart';
 import '../models/job_location_model.dart';
 
 class EditJob extends StatefulWidget {
-  EditJob({required this.job});
+  const EditJob({super.key, required this.job});
   final JobModel? job;
   @override
-  _EditJobState createState() => _EditJobState();
+  State<EditJob> createState() => _EditJobState();
 }
 
 class _EditJobState extends State<EditJob> {
@@ -1450,6 +1450,11 @@ class _EditJobState extends State<EditJob> {
     return DropdownSearch<String>(
       popupProps: PopupProps.dialog(
         showSearchBox: true,
+        dialogProps: DialogProps(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(5),
+          ),
+        ),
         searchFieldProps: TextFieldProps(
           cursorColor: navyBlue,
           decoration: InputDecoration(
@@ -1549,6 +1554,11 @@ class _EditJobState extends State<EditJob> {
     return DropdownSearch<String>(
       popupProps: PopupProps.dialog(
           showSearchBox: true,
+          dialogProps: DialogProps(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(5),
+            ),
+          ),
           searchFieldProps: TextFieldProps(
             cursorColor: navyBlue,
             decoration: InputDecoration(
@@ -1915,10 +1925,7 @@ class _EditJobState extends State<EditJob> {
                                     Expanded(
                                       child: Text(
                                         selectedProductCondition != null
-                                            ? " (" +
-                                                // selectedProductCondition!.
-                                                //  +
-                                                ")"
+                                            ? " (" ")"
                                             : "",
                                         maxLines: 1,
                                         style: TextStyle(
@@ -1955,7 +1962,7 @@ class _EditJobState extends State<EditJob> {
                                 ),
                                 Expanded(
                                   child: Text(
-                                    " (" + condition.description + ")",
+                                    " (${condition.description})",
                                     maxLines: 1,
                                     style: TextStyle(
                                         fontFamily: "Inter",
@@ -2091,7 +2098,7 @@ class _EditJobState extends State<EditJob> {
             'localImages':
                 jobLocalImages.map((file) => File(file.path)).toList(),
           }, jobId: currentJob!.id!).then((value) {
-            debugPrint(value.toString() + 'My job');
+            debugPrint('${value}My job');
             Navigator.pop(context);
             // Navigator.pushNamed(context, Routes.MY_JOB_DETAILS,
             //     arguments: {'jobId': value!.id, 'listingId': '', 'job': value});

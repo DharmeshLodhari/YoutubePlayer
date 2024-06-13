@@ -20,6 +20,8 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import '../../../../../widget/vertical_list_item.dart';
 
 class SharedCartMembers extends StatefulWidget {
+  const SharedCartMembers({super.key});
+
   @override
   State<SharedCartMembers> createState() => _SharedCartMembersState();
 }
@@ -221,7 +223,7 @@ class _SharedCartMembersState extends State<SharedCartMembers>
         ),
       );
     } else {
-      return Container(
+      return SizedBox(
         height: 45,
         width: 45,
         child: ClipOval(

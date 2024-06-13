@@ -2,7 +2,7 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/main.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
-import 'package:Slydo/screens/more_apps/yarn/models/Topics/CommentDetails.dart';
+import 'package:Slydo/screens/more_apps/yarn/models/Topics/comment_details.dart';
 import 'package:Slydo/screens/more_apps/yarn/models/Topics/yarn_model.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_list_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
@@ -25,7 +25,8 @@ class YarnDetailScreen extends StatefulWidget {
   final String? yarnId;
   final Function(Yarn)? onDeleteYarn;
 
-  YarnDetailScreen({required this.yarn, this.yarnId, this.onDeleteYarn});
+  const YarnDetailScreen(
+      {super.key, required this.yarn, this.yarnId, this.onDeleteYarn});
 
   @override
   State<YarnDetailScreen> createState() => _YarnDetailScreenState();

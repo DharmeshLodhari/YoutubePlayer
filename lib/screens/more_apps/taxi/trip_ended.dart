@@ -4,8 +4,10 @@ import 'package:Slydo/widget/curved_btn.dart';
 import 'package:flutter/material.dart';
 
 class TripEnded extends StatefulWidget {
+  const TripEnded({super.key});
+
   @override
-  _TripEndedState createState() => _TripEndedState();
+  State<TripEnded> createState() => _TripEndedState();
 }
 
 class _TripEndedState extends State<TripEnded> {

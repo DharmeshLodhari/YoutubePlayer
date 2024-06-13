@@ -3,8 +3,10 @@ import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 
 class TermsAndCondition extends StatefulWidget {
+  const TermsAndCondition({super.key});
+
   @override
-  _TermsAndConditionState createState() => _TermsAndConditionState();
+  State<TermsAndCondition> createState() => _TermsAndConditionState();
 }
 
 class _TermsAndConditionState extends State<TermsAndCondition> {

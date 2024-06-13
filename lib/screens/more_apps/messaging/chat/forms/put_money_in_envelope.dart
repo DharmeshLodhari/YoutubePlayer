@@ -20,10 +20,10 @@ import 'package:provider/provider.dart';
 class PutMoneyInEnvelope extends StatefulWidget {
   final dynamic arguments;
 
-  PutMoneyInEnvelope({this.arguments});
+  const PutMoneyInEnvelope({super.key, this.arguments});
 
   @override
-  _PutMoneyInEnvelopeState createState() => _PutMoneyInEnvelopeState();
+  State<PutMoneyInEnvelope> createState() => _PutMoneyInEnvelopeState();
 }
 
 class _PutMoneyInEnvelopeState extends State<PutMoneyInEnvelope> {

@@ -11,8 +11,10 @@ import 'train_dashboard_bloc.dart';
 import 'train_ticket_tile.dart';
 
 class SearchTrain extends StatefulWidget {
+  const SearchTrain({super.key});
+
   @override
-  _SearchTrainState createState() => _SearchTrainState();
+  State<SearchTrain> createState() => _SearchTrainState();
 }
 
 class _SearchTrainState extends State<SearchTrain> {

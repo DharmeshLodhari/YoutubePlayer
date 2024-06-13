@@ -14,7 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class ServiceHubDashboard extends StatefulWidget {
-  const ServiceHubDashboard({Key? key});
+  const ServiceHubDashboard({super.key});
 
   @override
   State<ServiceHubDashboard> createState() => _ServiceHubDashboardState();
@@ -200,7 +200,7 @@ class _ServiceHubDashboardState extends State<ServiceHubDashboard> {
   Widget tabViews() {
     return IndexedStack(
       index: currentIndex,
-      children: [const SuperHub(), const JobsDashboard()],
+      children: const [SuperHub(), JobsDashboard()],
     );
   }
 

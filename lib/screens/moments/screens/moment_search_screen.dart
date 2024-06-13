@@ -16,10 +16,10 @@ import 'moment_detail/moment_detail_page.dart';
 import 'moments_service.dart';
 
 class MomentSearchScreen extends StatefulWidget {
-  const MomentSearchScreen({Key? key});
+  const MomentSearchScreen({super.key});
 
   @override
-  _MomentSearchScreenState createState() => _MomentSearchScreenState();
+  State<MomentSearchScreen> createState() => _MomentSearchScreenState();
 }
 
 class _MomentSearchScreenState extends State<MomentSearchScreen> {
@@ -251,8 +251,7 @@ class SearchMomentSingleWidget extends StatefulWidget {
       {super.key,
       required this.onTap,
       required this.userTextToSearch,
-      required this.searchMomentModel})
-     ;
+      required this.searchMomentModel});
 
   @override
   State<SearchMomentSingleWidget> createState() =>

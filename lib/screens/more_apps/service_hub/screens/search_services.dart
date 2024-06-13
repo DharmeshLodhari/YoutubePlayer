@@ -16,12 +16,12 @@ import '../../../../../../widget/customized_dropdown_field.dart';
 import '../../../../../../widget/rounded_background_icon.dart';
 
 class SearchServices extends StatefulWidget {
-  SearchServices({
+  const SearchServices({
     super.key,
   });
 
   @override
-  _SearchServicesState createState() => _SearchServicesState();
+  State<SearchServices> createState() => _SearchServicesState();
 }
 
 class _SearchServicesState extends State<SearchServices> {
@@ -284,48 +284,45 @@ class _SearchServicesState extends State<SearchServices> {
   }
 
   Widget scaffoldBody() {
-    return Container(
-      child: Column(
-        children: [
-          if (showSortByBox) sortByDropDown() else const SizedBox.shrink(),
-          const SizedBox(height: 6),
-          searchBox(),
-          const SizedBox(height: 12),
-          if (isLoading)
-            const CircularProgressIndicator()
-          else
-            const SizedBox.shrink(),
-          if (isSearchIsEmpty)
-            Expanded(
-              child: NoItemInList(
-                msg:
-                    AppLocalization.of(context)!.pleaseTypeSomethingToGetResult,
-                isResult: false,
-              ),
-            )
-          else
-            noItemInList
-                ? Expanded(
-                    child: NoItemInList(
-                      msg: AppLocalization.of(context)!.noResultFound,
-                    ),
-                  )
-                : Expanded(
-                    child: ListView(
-                        children: products
-                            .map(
-                              (product) => Container(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 8, horizontal: 16),
-                                child: ShoppingTileWithHeartWithService(
-                                  service: product,
-                                ),
-                              ),
-                            )
-                            .toList()),
+    return Column(
+      children: [
+        if (showSortByBox) sortByDropDown() else const SizedBox.shrink(),
+        const SizedBox(height: 6),
+        searchBox(),
+        const SizedBox(height: 12),
+        if (isLoading)
+          const CircularProgressIndicator()
+        else
+          const SizedBox.shrink(),
+        if (isSearchIsEmpty)
+          Expanded(
+            child: NoItemInList(
+              msg: AppLocalization.of(context)!.pleaseTypeSomethingToGetResult,
+              isResult: false,
+            ),
+          )
+        else
+          noItemInList
+              ? Expanded(
+                  child: NoItemInList(
+                    msg: AppLocalization.of(context)!.noResultFound,
                   ),
-        ],
-      ),
+                )
+              : Expanded(
+                  child: ListView(
+                      children: products
+                          .map(
+                            (product) => Container(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 8, horizontal: 16),
+                              child: ShoppingTileWithHeartWithService(
+                                service: product,
+                              ),
+                            ),
+                          )
+                          .toList()),
+                ),
+      ],
     );
   }
 
@@ -909,7 +906,7 @@ class _SearchServicesState extends State<SearchServices> {
     );
   }
 
-  Widget getPriceRange(bottomSheetSetState) {
+  Widget getPriceRange(StateSetter bottomSheetSetState) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

@@ -8,17 +8,17 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class AddReview extends StatefulWidget {
-  AddReview({super.key, required this.arguments});
+  const AddReview({super.key, required this.arguments});
 
   final Map<String, dynamic> arguments;
 
   @override
-  _AddReviewState createState() => _AddReviewState();
+  State<AddReview> createState() => _AddReviewState();
 }
 
 class _AddReviewState extends State<AddReview> {
   final maxLines = 4;
-  TextEditingController _reviewController = TextEditingController();
+  final TextEditingController _reviewController = TextEditingController();
   int rating = 1;
 
   CustomerProfile? searchedUser;

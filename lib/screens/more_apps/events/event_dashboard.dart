@@ -8,8 +8,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class EventDashboard extends StatefulWidget {
+  const EventDashboard({super.key});
+
   @override
-  _EventDashboardState createState() => _EventDashboardState();
+  State<EventDashboard> createState() => _EventDashboardState();
 }
 
 class _EventDashboardState extends State<EventDashboard> {

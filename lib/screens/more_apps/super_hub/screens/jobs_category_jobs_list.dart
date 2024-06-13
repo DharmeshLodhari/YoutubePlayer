@@ -6,7 +6,7 @@ import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
 
 class JobsCategoryJobsList extends StatefulWidget {
-  const JobsCategoryJobsList({Key? key});
+  const JobsCategoryJobsList({super.key});
 
   @override
   State<JobsCategoryJobsList> createState() => _JobsCategoryJobsListState();

@@ -10,8 +10,10 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'models/Transport.dart';
 
 class MyFlightTicketList extends StatefulWidget {
+  const MyFlightTicketList({super.key});
+
   @override
-  _MyFlightTicketListState createState() => _MyFlightTicketListState();
+  State<MyFlightTicketList> createState() => _MyFlightTicketListState();
 }
 
 class _MyFlightTicketListState extends State<MyFlightTicketList> {

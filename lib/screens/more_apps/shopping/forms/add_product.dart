@@ -31,10 +31,10 @@ import '../shopping_auth.dart';
 class AddProduct extends StatefulWidget {
   final dynamic arguments;
 
-  AddProduct({super.key, this.arguments});
+  const AddProduct({super.key, this.arguments});
 
   @override
-  _AddProductState createState() => _AddProductState();
+  State<AddProduct> createState() => _AddProductState();
 }
 
 class _AddProductState extends State<AddProduct> {
@@ -1220,7 +1220,7 @@ class _AddProductState extends State<AddProduct> {
     }
   }
 
-  showDeliveryTime() {
+  bool showDeliveryTime() {
     final List industry = ['Grocery Store', 'Liquor Store', 'Restaurant/Cafe'];
     if (industry.contains(userBloc!.userAbout!.industry!.name)) {
       return true;
@@ -1229,7 +1229,7 @@ class _AddProductState extends State<AddProduct> {
   }
 
   Widget getProductConditionField() {
-    debugPrint("my controller :- ${_myController}");
+    debugPrint("my controller :- $_myController");
     return CustomizedDropDownField(
       title: "Product condition",
       child: ListTile(

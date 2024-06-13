@@ -12,16 +12,15 @@ class MomentVideoPlayer extends StatefulWidget {
   final AnimationController controller;
   final double? value;
 
-  MomentVideoPlayer(
+  const MomentVideoPlayer(
       {super.key,
       required this.momentsModel,
       required this.videoPlayerControllers,
       required this.value,
-      required this.controller})
-     ;
+      required this.controller});
 
   @override
-  MomentVideoPlayerState createState() => MomentVideoPlayerState(key: key);
+  MomentVideoPlayerState createState() => MomentVideoPlayerState();
 }
 
 class MomentVideoPlayerState extends State<MomentVideoPlayer> {
@@ -180,7 +179,7 @@ class MomentVideoPlayerState extends State<MomentVideoPlayer> {
     }
   }
 
-  showMediaIconFor2Seconds() {
+  void showMediaIconFor2Seconds() {
     setState(() => showMediaIcon = true);
     Future.delayed(const Duration(seconds: 2), () {
       if (mounted) {

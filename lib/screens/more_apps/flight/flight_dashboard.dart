@@ -8,8 +8,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class FlightDashboard extends StatefulWidget {
+  const FlightDashboard({super.key});
+
   @override
-  _FlightDashboardState createState() => _FlightDashboardState();
+  State<FlightDashboard> createState() => _FlightDashboardState();
 }
 
 class _FlightDashboardState extends State<FlightDashboard> {
@@ -31,7 +33,7 @@ class _FlightDashboardState extends State<FlightDashboard> {
           onPageChanged: (index) {
             _flightDashboardBloc.index = index;
           },
-          children: <Widget>[
+          children: const <Widget>[
             FlightExploreScreen(),
             MyFlightTicketList(),
           ],

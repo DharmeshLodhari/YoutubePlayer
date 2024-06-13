@@ -49,10 +49,10 @@ class UserPostUtils {
         await ShareInChat().selectShareCustomer(context);
     debugPrint("Selected users = ${listOfRecipient.length}");
 
-    listOfRecipient.forEach((recipient) {
+    for (var recipient in listOfRecipient) {
       addUserPostToChat(
           context: context, recipientUser: recipient!, userPost: userPost);
-    });
+    }
   }
 
   static addUserPostToChat({

@@ -22,7 +22,7 @@ import 'yarn_search_screen.dart';
 
 class YarnCategoryScreen extends StatefulWidget {
   final YarnCategories? askCategories;
-  YarnCategoryScreen({this.askCategories});
+  const YarnCategoryScreen({super.key, this.askCategories});
 
   @override
   State<YarnCategoryScreen> createState() => _YarnCategoryScreenState();

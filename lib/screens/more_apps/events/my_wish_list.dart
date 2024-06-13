@@ -5,11 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import 'event_auth.dart';
-import 'models/PartialEventItem.dart';
+import 'models/partial_event_item.dart';
 
 class MyWishList extends StatefulWidget {
+  const MyWishList({super.key});
+
   @override
-  _MyWishListState createState() => _MyWishListState();
+  State<MyWishList> createState() => _MyWishListState();
 }
 
 class _MyWishListState extends State<MyWishList> {

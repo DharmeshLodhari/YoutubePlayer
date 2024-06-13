@@ -21,18 +21,18 @@ import 'connection_request_list.dart';
 import 'connections_list.dart';
 
 class ConnectionDashboard extends StatefulWidget {
-  final arguments;
+  final dynamic arguments;
 
-  ConnectionDashboard({this.arguments});
+  const ConnectionDashboard({super.key, this.arguments});
 
   @override
-  _ConnectionDashboardState createState() => _ConnectionDashboardState();
+  State<ConnectionDashboard> createState() => _ConnectionDashboardState();
 }
 
 class _ConnectionDashboardState extends State<ConnectionDashboard> {
   int currentIndex = 0;
 
-  var filterValue = "Friends";
+  String filterValue = "Friends";
   late AppLocalization appLocalization;
   AppConfigurationModel? appConfigurationModel;
 
@@ -49,7 +49,7 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
     super.initState();
   }
 
-  getConnectionRequest() async {
+  Future<void> getConnectionRequest() async {
     final Map<String, dynamic>? result =
         await UserAuth().listContactRequests('', '').catchError((error) {
       debugPrint("ERROR:- $error");
@@ -379,10 +379,10 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
   Widget tabViews() {
     return IndexedStack(
       index: currentIndex,
-      children: [
+      children: const [
         ConnectionList(),
-        const ConnectionRequestList(),
-        const BlockedList(),
+        ConnectionRequestList(),
+        BlockedList(),
       ],
     );
   }

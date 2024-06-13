@@ -19,7 +19,7 @@ import '../../../../routes/route_constants.dart';
 import '../../../../utils/util.dart';
 import '../../messaging/chat/models/chat_conversation.dart';
 import '../../messaging/chat/share_in_chat/ShareInChat.dart';
-import '../models/Topics/CommentDetails.dart';
+import '../models/Topics/comment_details.dart';
 import '../yarn_auth.dart';
 
 class YarnCommentActions extends StatefulWidget {
@@ -29,7 +29,8 @@ class YarnCommentActions extends StatefulWidget {
   final bool? minusComment;
   final String? commentType;
 
-  YarnCommentActions({
+  const YarnCommentActions({
+    super.key,
     required this.comment,
     required this.yarn,
     this.isCommentDetail = false,
@@ -310,12 +311,12 @@ class _YarnCommentActionsState extends State<YarnCommentActions> {
         await ShareInChat().selectShareCustomer(context);
     debugPrint("Selected users = ${listOfRecipient.length}");
 
-    listOfRecipient.forEach((recipient) {
+    for (var recipient in listOfRecipient) {
       addYarnCommentPostToChat(
           recipientUser: recipient!,
           yarnComment: yarnComment,
           commentType: widget.commentType);
-    });
+    }
   }
 
   Future<void> addYarnCommentPostToChat({

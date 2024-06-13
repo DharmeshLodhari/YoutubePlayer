@@ -6,7 +6,7 @@ class AnimatedLogo extends StatefulWidget {
   const AnimatedLogo({super.key, required this.imagePath});
 
   @override
-  _AnimatedLogoState createState() => _AnimatedLogoState();
+  State<AnimatedLogo> createState() => _AnimatedLogoState();
 }
 
 class _AnimatedLogoState extends State<AnimatedLogo>

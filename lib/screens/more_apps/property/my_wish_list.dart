@@ -10,8 +10,10 @@ import 'property_dashboard_bloc.dart';
 import 'property_tile.dart';
 
 class MyWishList extends StatefulWidget {
+  const MyWishList({super.key});
+
   @override
-  _MyWishListState createState() => _MyWishListState();
+  State<MyWishList> createState() => _MyWishListState();
 }
 
 class _MyWishListState extends State<MyWishList> {

@@ -705,7 +705,7 @@ class Product extends PurchasableItem {
 
   // ignore: missing_return
   String getImageId(String? imageUrl) {
-    debugPrint("${serverImages}");
+    debugPrint("$serverImages");
     for (var data in pictureMap!) {
       if (data.path == imageUrl) {
         return data.id.toString();
@@ -716,7 +716,7 @@ class Product extends PurchasableItem {
 
   List<String?> imageDataToList(List<dynamic> pictures) {
     final List<String?> imageLinks = [];
-    if (pictures.length > 0) {
+    if (pictures.isNotEmpty) {
       for (var data in pictures) {
         imageLinks.add(data["file"]);
       }
@@ -1195,7 +1195,7 @@ class Variant {
 
   // ignore: missing_return
   String getImageId(String? imageUrl) {
-    debugPrint("${serverImages}");
+    debugPrint("$serverImages");
     for (Picture data in pictures ?? []) {
       if (data.path == imageUrl) {
         return data.id.toString();
@@ -1206,7 +1206,7 @@ class Variant {
 
   List<String?> imageDataToList(List<dynamic> pictures) {
     final List<String?> imageLinks = [];
-    if (pictures.length > 0) {
+    if (pictures.isNotEmpty) {
       for (var data in pictures) {
         imageLinks.add(data["file"]);
       }
@@ -1397,7 +1397,7 @@ class AddOnOption {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
     data['id'] = id;
     data['picture'] = picture;
     data['name'] = name;
@@ -1513,7 +1513,7 @@ class AddOns {
     isRequired = json['is_required'];
     isChecked = json['is_checked'] ?? false;
     createdAt = getProductDateTime(json['created_at']);
-    groupValue = json['group_value'] ?? null;
+    groupValue = json['group_value'];
   }
 
   AddOns copyWith({
@@ -1562,7 +1562,7 @@ class AddOns {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
     data['id'] = id;
     if (options != null) {
       data['options'] = options!.map((v) => v.toJson()).toList();
@@ -1634,7 +1634,7 @@ class Tags {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
     data['id'] = id;
     data['name'] = name;
     return data;
@@ -1773,7 +1773,7 @@ class Service extends PurchasableItem {
 
   List<String?> imageDataToList(List<dynamic> pictures) {
     final List<String?> imageLinks = [];
-    if (pictures.length > 0) {
+    if (pictures.isNotEmpty) {
       for (var data in pictures) {
         imageLinks.add(data["file"]);
       }

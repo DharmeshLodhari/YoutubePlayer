@@ -18,10 +18,10 @@ import 'property_tile.dart';
 class SearchProperty extends StatefulWidget {
   final dynamic arguments;
 
-  SearchProperty({this.arguments});
+  const SearchProperty({super.key, this.arguments});
 
   @override
-  _SearchPropertyState createState() => _SearchPropertyState();
+  State<SearchProperty> createState() => _SearchPropertyState();
 }
 
 class _SearchPropertyState extends State<SearchProperty> {
@@ -1672,7 +1672,7 @@ class SelectedItemWidget extends StatelessWidget {
 }
 
 class MyTextField extends StatelessWidget {
-  const MyTextField(this.controller, this.focusNode);
+  const MyTextField(this.controller, this.focusNode, {super.key});
 
   final TextEditingController controller;
   final FocusNode focusNode;

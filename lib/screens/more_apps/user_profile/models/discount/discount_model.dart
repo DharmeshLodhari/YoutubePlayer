@@ -258,6 +258,7 @@ class DiscountTagCategory {
     }
   }
 
+  @override
   String toString() {
     switch (_category) {
       case "Percentage %":

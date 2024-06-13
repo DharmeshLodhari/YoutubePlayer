@@ -31,7 +31,7 @@ class CustomizedPassCodeScreen extends StatefulWidget {
   final KeyboardUIConfig keyboardUIConfig;
   final List<String>? digits;
 
-  CustomizedPassCodeScreen({
+  const CustomizedPassCodeScreen({
     super.key,
     required this.title,
     this.passwordDigits = 6,

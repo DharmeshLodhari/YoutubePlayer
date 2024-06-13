@@ -8,8 +8,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class RateAndTipDriver extends StatefulWidget {
+  const RateAndTipDriver({super.key});
+
   @override
-  _RateAndTipDriverState createState() => _RateAndTipDriverState();
+  State<RateAndTipDriver> createState() => _RateAndTipDriverState();
 }
 
 class _RateAndTipDriverState extends State<RateAndTipDriver> {

@@ -9,8 +9,10 @@ import 'my_wish_list.dart';
 import 'property_dashboard_bloc.dart';
 
 class MyPropertiesScreen extends StatefulWidget {
+  const MyPropertiesScreen({super.key});
+
   @override
-  _MyPropertiesScreenState createState() => _MyPropertiesScreenState();
+  State<MyPropertiesScreen> createState() => _MyPropertiesScreenState();
 }
 
 class _MyPropertiesScreenState extends State<MyPropertiesScreen> {
@@ -151,7 +153,7 @@ class _MyPropertiesScreenState extends State<MyPropertiesScreen> {
   Widget tabViews() {
     return IndexedStack(
       index: currentIndex,
-      children: [
+      children: const [
         MyPropertyList(),
         MyWishList(),
       ],

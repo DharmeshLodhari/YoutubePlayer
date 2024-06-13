@@ -19,10 +19,10 @@ import '../../shopping_auth.dart';
 class CreateAddOn extends StatefulWidget {
   final dynamic arguments;
 
-  CreateAddOn({this.arguments, super.key});
+  const CreateAddOn({this.arguments, super.key});
 
   @override
-  _CreateAddOnState createState() => _CreateAddOnState();
+  State<CreateAddOn> createState() => _CreateAddOnState();
 }
 
 class _CreateAddOnState extends State<CreateAddOn> {

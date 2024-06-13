@@ -28,7 +28,8 @@ class YarnActions extends StatefulWidget {
   List<Yarn>? checkIfReyarned;
 
   YarnActions(
-      {required this.yarn,
+      {super.key,
+      required this.yarn,
       this.onReYarnAdded,
       this.minusComment,
       this.checkIfReyarned});

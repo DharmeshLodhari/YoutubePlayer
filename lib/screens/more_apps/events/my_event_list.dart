@@ -1,6 +1,6 @@
 import 'package:Slydo/screens/more_apps/events/event_dashboard_bloc.dart';
 import 'package:Slydo/screens/more_apps/events/event_tile.dart';
-import 'package:Slydo/screens/more_apps/events/models/PartialEventItem.dart';
+import 'package:Slydo/screens/more_apps/events/models/partial_event_item.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:flutter/material.dart';
@@ -10,8 +10,10 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'event_auth.dart';
 
 class MyEventList extends StatefulWidget {
+  const MyEventList({super.key});
+
   @override
-  _MyEventListState createState() => _MyEventListState();
+  State<MyEventList> createState() => _MyEventListState();
 }
 
 class _MyEventListState extends State<MyEventList> {

@@ -12,10 +12,11 @@ class SpendOnCategoryTile extends StatefulWidget {
   IconData? icon;
   Color? color;
 
-  SpendOnCategoryTile({this.name, this.amount, this.icon, this.color});
+  SpendOnCategoryTile(
+      {super.key, this.name, this.amount, this.icon, this.color});
 
   @override
-  _SpendOnCategoryTileState createState() => _SpendOnCategoryTileState();
+  State<SpendOnCategoryTile> createState() => _SpendOnCategoryTileState();
 }
 
 class _SpendOnCategoryTileState extends State<SpendOnCategoryTile> {

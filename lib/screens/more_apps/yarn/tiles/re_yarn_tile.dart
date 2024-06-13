@@ -28,7 +28,8 @@ class ReYarnTile extends StatefulWidget {
   final Yarn yarn;
   final Color? backGroundColor;
 
-  ReYarnTile({
+  const ReYarnTile({
+    super.key,
     required this.yarn,
     this.onOptionsAction,
     this.backGroundColor,

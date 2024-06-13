@@ -9,6 +9,8 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class ProductAndServiceReviewTile extends StatefulWidget {
+  const ProductAndServiceReviewTile({super.key});
+
   @override
   State<ProductAndServiceReviewTile> createState() =>
       _ProductAndServiceReviewTileState();

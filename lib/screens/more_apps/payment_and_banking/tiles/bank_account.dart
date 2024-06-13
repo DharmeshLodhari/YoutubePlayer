@@ -8,10 +8,10 @@ class BankAccountTile extends StatefulWidget {
   // Pass account object into this constructor
   final BankAccount? account;
 
-  BankAccountTile({this.account});
+  const BankAccountTile({super.key, this.account});
 
   @override
-  _BankAccountTileState createState() => _BankAccountTileState();
+  State<BankAccountTile> createState() => _BankAccountTileState();
 }
 
 class _BankAccountTileState extends State<BankAccountTile> {

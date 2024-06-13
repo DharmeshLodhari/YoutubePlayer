@@ -6,8 +6,10 @@ import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:flutter/material.dart';
 
 class ContractTransactionHistory extends StatefulWidget {
+  const ContractTransactionHistory({super.key});
+
   @override
-  _ContractTransactionHistoryState createState() =>
+  State<ContractTransactionHistory> createState() =>
       _ContractTransactionHistoryState();
 }
 

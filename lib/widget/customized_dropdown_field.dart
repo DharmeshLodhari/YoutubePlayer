@@ -12,7 +12,8 @@ class CustomizedDropDownField extends StatefulWidget {
   FontWeight? fontWeight;
 
   CustomizedDropDownField(
-      {required this.child,
+      {super.key,
+      required this.child,
       required this.title,
       this.titleColor,
       this.borderWidth,
@@ -21,19 +22,15 @@ class CustomizedDropDownField extends StatefulWidget {
       this.fontWeight});
 
   @override
-  _CustomizedDropDownFieldState createState() =>
+  State<CustomizedDropDownField> createState() =>
       _CustomizedDropDownFieldState();
 }
 
 class _CustomizedDropDownFieldState extends State<CustomizedDropDownField> {
   @override
   Widget build(BuildContext context) {
-    if (widget.titleColor == null) {
-      widget.titleColor = darkGrey;
-    }
-    if (widget.fontWeight == null) {
-      widget.fontWeight = FontWeight.normal;
-    }
+    widget.titleColor ??= darkGrey;
+    widget.fontWeight ??= FontWeight.normal;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[

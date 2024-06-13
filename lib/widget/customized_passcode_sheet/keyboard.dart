@@ -37,7 +37,7 @@ class Keyboard extends StatelessWidget {
   //should have a proper order [1...9, 0]
   final List<String>? digits;
 
-  Keyboard({
+  const Keyboard({
     super.key,
     required this.keyboardUIConfig,
     required this.onKeyboardTap,

@@ -17,8 +17,10 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 
 class TaxiDashboard extends StatefulWidget {
+  const TaxiDashboard({super.key});
+
   @override
-  _TaxiDashboardState createState() => _TaxiDashboardState();
+  State<TaxiDashboard> createState() => _TaxiDashboardState();
 }
 
 class _TaxiDashboardState extends State<TaxiDashboard> {
@@ -123,7 +125,7 @@ class _TaxiDashboardState extends State<TaxiDashboard> {
 }
 
 class _ScaffoldBody extends StatefulWidget {
-  _ScaffoldBody({this.userCurrentLocation});
+  const _ScaffoldBody({this.userCurrentLocation});
   final LatLng? userCurrentLocation;
 
   @override
@@ -496,7 +498,7 @@ class __ScaffoldBodyState extends State<_ScaffoldBody> {
           }
         }
         Navigator.of(context).pushNamed("/select-ride-type",
-            arguments: {"currentChild": TaxiDashboard()});
+            arguments: {"currentChild": const TaxiDashboard()});
       },
       backgroundColor: navyBlue,
       textColor: Colors.white,

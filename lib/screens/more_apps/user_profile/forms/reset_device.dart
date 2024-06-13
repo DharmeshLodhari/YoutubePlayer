@@ -12,8 +12,10 @@ import 'package:flutter/material.dart';
 import 'package:pinput/pinput.dart';
 
 class ResetDevice extends StatefulWidget {
+  const ResetDevice({super.key});
+
   @override
-  _ResetDeviceState createState() => _ResetDeviceState();
+  State<ResetDevice> createState() => _ResetDeviceState();
 }
 
 class _ResetDeviceState extends State<ResetDevice> {

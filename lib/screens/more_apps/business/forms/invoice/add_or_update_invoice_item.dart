@@ -19,10 +19,10 @@ class AddOrUpdateInvoiceItem extends StatefulWidget {
   int? invoiceId;
   final InvoiceItem? invoiceItem;
 
-  AddOrUpdateInvoiceItem({this.invoiceItem, this.invoiceId});
+  AddOrUpdateInvoiceItem({super.key, this.invoiceItem, this.invoiceId});
 
   @override
-  _AddOrUpdateInvoiceItemState createState() => _AddOrUpdateInvoiceItemState();
+  State<AddOrUpdateInvoiceItem> createState() => _AddOrUpdateInvoiceItemState();
 }
 
 class _AddOrUpdateInvoiceItemState extends State<AddOrUpdateInvoiceItem> {

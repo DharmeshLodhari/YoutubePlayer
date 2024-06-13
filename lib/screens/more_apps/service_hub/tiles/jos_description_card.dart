@@ -19,7 +19,7 @@ class JobDescriptionCard extends StatelessWidget {
   String? user;
 
   String getTimeDifference() {
-    var difference =
+    final difference =
         DateTime.now().difference(DateTime.parse(job!.creationDate!));
     String time = '';
     debugPrint('$difference-----');

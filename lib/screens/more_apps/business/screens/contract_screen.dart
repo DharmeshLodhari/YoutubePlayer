@@ -21,7 +21,7 @@ import '../bloc/contract_bloc.dart';
 import '../business_auth.dart';
 
 class ContractScreen extends StatefulWidget {
-  const ContractScreen({Key? key});
+  const ContractScreen({super.key});
 
   @override
   State<ContractScreen> createState() => _ContractScreenState();
@@ -585,7 +585,7 @@ class _ContractScreenState extends State<ContractScreen>
 }
 
 class VerticalListItem extends StatelessWidget {
-  VerticalListItem(this.child, this.contract);
+  const VerticalListItem(this.child, this.contract, {super.key});
 
   final Widget child;
   final ContractModel contract;

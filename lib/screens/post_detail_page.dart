@@ -997,9 +997,9 @@ class _PostDetailPageScaffoldBodyState
             ],
           ),
           if (widget.readTime == 0)
-            CustomChip(
+            const CustomChip(
               text: '1 min read',
-              padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 8),
+              padding: EdgeInsets.symmetric(vertical: 5, horizontal: 8),
             )
           else
             CustomChip(

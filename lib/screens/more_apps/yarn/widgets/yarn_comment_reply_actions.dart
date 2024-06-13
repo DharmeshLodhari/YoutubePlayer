@@ -1,26 +1,25 @@
 import 'dart:convert';
 import 'dart:math';
 
-import 'package:Slydo/screens/more_apps/yarn/models/Topics/CommentDetails.dart';
+import 'package:Slydo/data/state_notifiers/user_bloc.dart';
+import 'package:Slydo/locator.dart';
+import 'package:Slydo/routes/route_constants.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_conversation.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/share_in_chat/ShareInChat.dart';
+import 'package:Slydo/screens/more_apps/yarn/models/Topics/comment_details.dart';
 import 'package:Slydo/screens/more_apps/yarn/models/Topics/yarn_model.dart';
+import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
+import 'package:Slydo/services/app_config_bloc.dart';
 import 'package:Slydo/utils/extensions.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import "package:uuid/uuid.dart";
 
-import '../../../../data/state_notifier.dart';
-import '../../../../locator.dart';
-import '../../../../routes/route_constants.dart';
-import '../../../../services/app_config_bloc.dart';
-import '../../../../utils/util.dart';
-import '../../messaging/chat/models/chat_conversation.dart';
-import '../../messaging/chat/share_in_chat/ShareInChat.dart';
-import '../yarn_auth.dart';
-
 class YarnCommentReplyActions extends StatefulWidget {
   final YarnComment? replyCommentDetail;
-  YarnCommentReplyActions({this.replyCommentDetail});
+  YarnCommentReplyActions({super.key, this.replyCommentDetail});
 
   @override
   State<YarnCommentReplyActions> createState() =>
@@ -231,7 +230,7 @@ class _YarnCommentReplyActionsState extends State<YarnCommentReplyActions> {
                     'defaultReferenceText': 'Payment from  "${truncateString(
                       str: widget.replyCommentDetail!.comment!,
                       lengthToTruncateAt: 8,
-                    )}\" comment'
+                    )}" comment'
                   },
                 );
               } else {

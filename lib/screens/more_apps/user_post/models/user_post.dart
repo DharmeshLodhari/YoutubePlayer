@@ -15,6 +15,7 @@
 /// published_date : "2022-01-03T16:21:22.744653+01:00"
 /// likes : 0
 /// dislikes : 0
+library;
 
 class UserPost {
   UserPost({

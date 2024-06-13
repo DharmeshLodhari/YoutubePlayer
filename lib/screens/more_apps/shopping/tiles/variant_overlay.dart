@@ -12,14 +12,13 @@ class VariantOverlay extends StatefulWidget {
   final Function(int variantId) onSubtract;
   final String? currency;
 
-  VariantOverlay(
+  const VariantOverlay(
       {super.key,
       required this.variant,
       required this.onClose,
       required this.currency,
       required this.onAdd,
-      required this.onSubtract})
-     ;
+      required this.onSubtract});
 
   @override
   State<VariantOverlay> createState() => _VariantOverlayState();
@@ -75,10 +74,10 @@ class _VariantOverlayState extends State<VariantOverlay> {
                                 imageUrl: item['image'],
                                 height: 150,
                                 // fit: BoxFit.contain,
-                                placeholder: (context, url) => SizedBox(
+                                placeholder: (context, url) => const SizedBox(
                                     height: 20.0,
                                     width: 20.0,
-                                    child: const Center(
+                                    child: Center(
                                         child: CircularProgressIndicator())),
                                 errorWidget: (context, url, error) =>
                                     const Icon(Icons.error),

@@ -34,7 +34,7 @@ import 'more_apps/user_profile/user_auth.dart';
 class SearchModule extends StatefulWidget {
   final arguments;
 
-  SearchModule({this.arguments});
+  SearchModule({super.key, this.arguments});
 
   @override
   _SearchModuleState createState() => _SearchModuleState();
@@ -465,7 +465,7 @@ class _SearchModuleState extends State<SearchModule>
                 : SlidableAutoCloseBehavior(
                     closeWhenOpened: true,
                     child: ListView.builder(
-                      padding: EdgeInsets.symmetric(horizontal: 4),
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
                       physics: const ClampingScrollPhysics(),
                       controller: _scrollCtrl,
                       itemCount: suggestionsList.length + 1,
@@ -496,7 +496,7 @@ class _SearchModuleState extends State<SearchModule>
                   : SlidableAutoCloseBehavior(
                       closeWhenOpened: true,
                       child: ListView.builder(
-                        padding: EdgeInsets.symmetric(horizontal: 4),
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
                         //+1 for progressbar
                         itemCount: results.length + 1,
                         itemBuilder: (BuildContext context, int index) {
@@ -1436,7 +1436,7 @@ class _SearchModuleState extends State<SearchModule>
 
 // ignore: must_be_immutable
 class VerticalListItem extends StatelessWidget {
-  VerticalListItem(this.child, this.user);
+  VerticalListItem(this.child, this.user, {super.key});
 
   final Widget child;
   CustomerProfile user;
@@ -1459,7 +1459,7 @@ class VerticalListItem extends StatelessWidget {
 
 // ignore: must_be_immutable
 class VerticalListItem1 extends StatelessWidget {
-  VerticalListItem1(this.child, this.product);
+  VerticalListItem1(this.child, this.product, {super.key});
 
   final Widget child;
   Product product;
@@ -1482,7 +1482,7 @@ class VerticalListItem1 extends StatelessWidget {
 
 // ignore: must_be_immutable
 class VerticalListItem2 extends StatelessWidget {
-  VerticalListItem2(this.child, this.service);
+  VerticalListItem2(this.child, this.service, {super.key});
 
   final Widget child;
   Service service;

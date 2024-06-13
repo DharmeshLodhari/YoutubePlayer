@@ -2,7 +2,7 @@ import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 
 class JobsSearchFilter extends StatefulWidget {
-  const JobsSearchFilter({Key? key});
+  const JobsSearchFilter({super.key});
 
   @override
   State<JobsSearchFilter> createState() => _JobsSearchFilterState();
@@ -29,8 +29,8 @@ class _JobsSearchFilterState extends State<JobsSearchFilter> {
                   color: const Color(0xfffafbff),
                   width: 1,
                 ),
-                boxShadow: [
-                  const BoxShadow(
+                boxShadow: const [
+                  BoxShadow(
                     color: Color(0x0c31378c),
                     blurRadius: 20,
                     offset: Offset(0, 8),
