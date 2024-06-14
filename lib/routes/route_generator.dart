@@ -121,6 +121,8 @@ import 'package:Slydo/screens/more_apps/shopping/forms/edit_product.dart';
 import 'package:Slydo/screens/more_apps/shopping/forms/edit_service.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/mix_cart_item.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/order/order_detail_page.dart';
+import 'package:Slydo/screens/more_apps/shopping/screens/order/order_list_new.dart';
+import 'package:Slydo/screens/more_apps/shopping/screens/order/order_updated.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/order/orders_list.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/print_qrcode.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/product_and_service/product_detail_page.dart';
@@ -642,6 +644,20 @@ class RouteGenerator {
       case Routes.ORDERS_LIST:
         return PageTransition(
           child: OrdersList(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+      case Routes.ORDER_LIST_NEW:
+        return PageTransition(
+          child: OrderListNew(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+      case Routes.ORDER_UPDATED:
+        return PageTransition(
+          child: OrderUpdated(arguments: settings.arguments),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,

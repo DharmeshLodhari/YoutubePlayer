@@ -499,50 +499,51 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
               shrinkWrap: true,
               scrollDirection: Axis.horizontal,
               children: [
-                ...customCategories.map((e) => InkWell(
-                      onTap: () {
-                        setState(() {
-                          selectedCategory = e.id;
-                        });
-                      },
-                      child: Container(
-                        decoration: selectedCategory == e.id
-                            ? BoxDecoration(
-                                border: Border(
-                                  bottom: BorderSide(
-                                    color: navyBlue,
-                                    width:
-                                        2.5, // This would be the width of the underline
-                                  ),
-                                ),
-                              )
-                            : BoxDecoration(
-                                border: Border(
-                                  bottom: BorderSide(
-                                    color: greySecondaryYarn.withOpacity(0.5),
-                                    width:
-                                        1, // This would be the width of the underline
-                                  ),
+                ...customCategories.map(
+                  (e) => InkWell(
+                    onTap: () {
+                      setState(() {
+                        selectedCategory = e.id;
+                      });
+                    },
+                    child: Container(
+                      decoration: selectedCategory == e.id
+                          ? BoxDecoration(
+                              border: Border(
+                                bottom: BorderSide(
+                                  color: navyBlue,
+                                  width:
+                                      2.5, // This would be the width of the underline
                                 ),
                               ),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                          child: Text(
-                            e.name.toTitleCase(),
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontFamily: "Inter",
-                              color: selectedCategory == e.id
-                                  ? navyBlue
-                                  : darkGrey,
-                              fontWeight: selectedCategory == e.id
-                                  ? FontWeight.w600
-                                  : FontWeight.w500,
+                            )
+                          : BoxDecoration(
+                              border: Border(
+                                bottom: BorderSide(
+                                  color: greySecondaryYarn.withOpacity(0.5),
+                                  width:
+                                      1, // This would be the width of the underline
+                                ),
+                              ),
                             ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                        child: Text(
+                          e.name.toTitleCase(),
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontFamily: "Inter",
+                            color:
+                                selectedCategory == e.id ? navyBlue : darkGrey,
+                            fontWeight: selectedCategory == e.id
+                                ? FontWeight.w600
+                                : FontWeight.w500,
                           ),
                         ),
                       ),
-                    ))
+                    ),
+                  ),
+                ),
               ],
             ),
           ),

@@ -1665,11 +1665,11 @@ class ShoppingAuthService extends AuthService {
     if (response.statusCode == 200 || response.statusCode == 201) {
       final jsonData = json.decode(response.body);
 
-      final List items = [];
+      final List<Order> items = [];
       final data = jsonData["results"];
 
       for (int i = 0; i < data.length; i++) {
-        final order = Order.fromJson(data[i]);
+        final Order order = Order.fromJson(data[i]);
         items.add(order);
       }
 

@@ -160,6 +160,7 @@ class _RideTypeState extends State<RideType> {
 
   Widget _buildListTile(int index) {
     return RadioListTile(
+      activeColor: navyBlue,
       contentPadding: EdgeInsets.zero,
       visualDensity: const VisualDensity(horizontal: 0, vertical: -3),
       value: rideType[index],

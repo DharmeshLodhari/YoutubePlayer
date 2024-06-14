@@ -16,8 +16,7 @@ import '../../utils.dart';
 
 class OrderSummaryProductService extends StatefulWidget {
   final ShippingAddress address;
-  const OrderSummaryProductService({super.key, required this.address})
-     ;
+  const OrderSummaryProductService({super.key, required this.address});
 
   @override
   State<OrderSummaryProductService> createState() =>

@@ -95,6 +95,7 @@ class OutlineCurvedButton extends StatelessWidget {
   Color? backgroundColor = Colors.transparent;
   Color? textColor = navyBlue;
   Function? onPressed = () {};
+  double borderRadius;
 
   OutlineCurvedButton({
     super.key,
@@ -103,6 +104,7 @@ class OutlineCurvedButton extends StatelessWidget {
     this.textColor,
     this.backgroundColor,
     this.onPressed,
+    this.borderRadius = 10,
   });
 
   @override
@@ -112,8 +114,8 @@ class OutlineCurvedButton extends StatelessWidget {
       height: 42,
       child: MaterialButton(
         shape: OutlineInputBorder(
-            borderRadius: const BorderRadius.all(
-              Radius.circular(10),
+            borderRadius: BorderRadius.all(
+              Radius.circular(borderRadius),
             ),
             borderSide: BorderSide(color: textColor!)),
         color: backgroundColor,
