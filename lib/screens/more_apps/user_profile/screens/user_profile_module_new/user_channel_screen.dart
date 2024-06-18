@@ -13,7 +13,7 @@ import '../../../messaging/chat/models/channel_model.dart';
 class UserChannelsList extends StatefulWidget {
   final String? ownerName;
   final bool? isSearch;
-  UserChannelsList({this.ownerName, this.isSearch});
+  const UserChannelsList({super.key, this.ownerName, this.isSearch});
   @override
   State<UserChannelsList> createState() => _UserChannelsListState();
 }

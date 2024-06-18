@@ -12,7 +12,7 @@ import 'chewie_progress_colors.dart';
 import 'cupertino_progress_bar.dart';
 
 class CupertinoControls extends StatefulWidget {
-  const CupertinoControls({
+  const CupertinoControls({super.key,
     required this.backgroundColor,
     required this.iconColor,
   });
@@ -103,11 +103,11 @@ class _CupertinoControlsState extends State<CupertinoControls> {
 
   @override
   void didChangeDependencies() {
-    final _oldController = chewieController;
+    final oldController = chewieController;
     chewieController = ChewieController.of(context);
     controller = chewieController!.videoPlayerController;
 
-    if (_oldController != chewieController) {
+    if (oldController != chewieController) {
       _dispose();
       _initialize();
     }

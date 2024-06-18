@@ -5,8 +5,10 @@ import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
 
 class PartnerDetailPage extends StatefulWidget {
+  const PartnerDetailPage({super.key});
+
   @override
-  _PartnerDetailPageState createState() => _PartnerDetailPageState();
+  State<PartnerDetailPage> createState() => _PartnerDetailPageState();
 }
 
 class _PartnerDetailPageState extends State<PartnerDetailPage> {

@@ -78,7 +78,7 @@ class _SendPaymentState extends State<SendPayment> {
           GestureDetector(
             onTap: () {
               NavigationUtil.push(context,
-                  screen: QRCodeView(arguments: const {'isRequest': false}));
+                  screen: const QRCodeView(arguments: {'isRequest': false}));
             },
             child: SvgPicture.asset(
               'assets/images/rider/scan_qr.svg',

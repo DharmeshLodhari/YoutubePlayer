@@ -44,21 +44,17 @@ import 'package:uuid/uuid.dart';
 class ServiceDetailPage extends StatefulWidget {
   final dynamic arguments;
 
-  ServiceDetailPage({required this.arguments});
+  const ServiceDetailPage({super.key, required this.arguments});
 
   @override
-  _ServiceDetailPageState createState() =>
-      _ServiceDetailPageState(arguments: arguments);
+  State<ServiceDetailPage> createState() => _ServiceDetailPageState();
 }
 
 class _ServiceDetailPageState extends State<ServiceDetailPage>
     with TickerProviderStateMixin {
-  var arguments;
   bool canRate = false;
   // late DashboardBloc _dashboardBloc;
   bool noReviewInList = false;
-
-  _ServiceDetailPageState({this.arguments});
 
   Service? service;
   late CustomerProfileBloc customerProfileBloc;
@@ -71,7 +67,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   late bool isValidCustomer;
   bool isOtherItemFetched = false;
   bool isOtherItemIsEmpty = true;
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
 
   List<dynamic> sellersOtherItems = [];
 
@@ -88,11 +84,11 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
 
   @override
   void initState() {
-    service = arguments['service'];
+    service = widget.arguments['service'];
     if (service != null) {
       serviceId = service?.id;
     } else {
-      serviceId = arguments['serviceId'];
+      serviceId = widget.arguments['serviceId'];
     }
 
     userBloc = Provider.of<UserBloc>(context, listen: false);

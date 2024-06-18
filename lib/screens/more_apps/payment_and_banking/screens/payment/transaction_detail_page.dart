@@ -12,18 +12,14 @@ import 'package:maps_launcher/maps_launcher.dart';
 class TransactionDetail extends StatefulWidget {
   final dynamic arguments;
 
-  TransactionDetail({required this.arguments});
+  const TransactionDetail({super.key, required this.arguments});
 
   @override
-  _TransactionDetailState createState() =>
-      _TransactionDetailState(arguments: arguments);
+  State<TransactionDetail> createState() => _TransactionDetailState();
 }
 
 class _TransactionDetailState extends State<TransactionDetail> {
-  final dynamic arguments;
   Transaction? transaction;
-
-  _TransactionDetailState({this.arguments});
 
   @override
   void initState() {
@@ -32,7 +28,7 @@ class _TransactionDetailState extends State<TransactionDetail> {
   }
 
   void fetchTransaction() async {
-    transaction = arguments['transaction'];
+    transaction = widget.arguments['transaction'];
   }
 
   @override

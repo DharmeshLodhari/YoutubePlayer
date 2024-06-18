@@ -2,8 +2,10 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:flutter/material.dart';
 
 class ExploreTile extends StatefulWidget {
+  const ExploreTile({super.key});
+
   @override
-  _ExploreTileState createState() => _ExploreTileState();
+  State<ExploreTile> createState() => _ExploreTileState();
 }
 
 class _ExploreTileState extends State<ExploreTile> {

@@ -362,9 +362,9 @@ class MessageAuth extends AuthService {
 
     final List<String?> listOfUser = [];
 
-    group.users!.forEach((element) {
+    for (var element in group.users!) {
       listOfUser.add(element.userName);
-    });
+    }
 
     request.fields["group_name"] = group.name!;
     request.fields["participants"] = jsonEncode(listOfUser);

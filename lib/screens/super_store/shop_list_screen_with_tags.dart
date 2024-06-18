@@ -27,8 +27,7 @@ class ShopListScreenWithTags extends StatefulWidget {
   Function(bool)? onPageRefresh;
   String? category;
 
-  ShopListScreenWithTags({super.key, this.onPageRefresh, this.category})
-     ;
+  ShopListScreenWithTags({super.key, this.onPageRefresh, this.category});
 
   @override
   State<ShopListScreenWithTags> createState() => ShopListScreenState();
@@ -418,7 +417,7 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
     }
   }
 
-  _refreshPage() {
+  void _refreshPage() {
     productNext = "";
     productCount = 0;
     productPrevious = "";
@@ -575,8 +574,8 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
                         .map(
                           (e) => InkWell(
                             onTap: () {
-                              final String url = AppConfig.baseUrl +
-                                  "/api/v1/products/products-by-discount/${e.id}";
+                              final String url =
+                                  "${AppConfig.baseUrl}/api/v1/products/products-by-discount/${e.id}";
                               NavigationUtil.push(context,
                                   screen: SuperStoreIndustry(
                                       next: url,
@@ -1058,8 +1057,7 @@ class SuperStoreSingleCard extends StatelessWidget {
   final Product product;
 
   // final String? next;
-  const SuperStoreSingleCard({super.key, required this.product})
-     ;
+  const SuperStoreSingleCard({super.key, required this.product});
 
   @override
   Widget build(BuildContext context) {

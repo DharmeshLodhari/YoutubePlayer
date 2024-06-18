@@ -10,7 +10,7 @@ import 'package:location/location.dart';
 import 'package:provider/provider.dart';
 
 class MapUI extends StatefulWidget {
-  MapUI({
+  const MapUI({
     super.key,
     this.showRideToStartingPointPolyline = false,
     this.showStartingPointToDestinationPolyline = false,
@@ -22,7 +22,7 @@ class MapUI extends StatefulWidget {
   final bool startRide;
 
   @override
-  _MapUIState createState() => _MapUIState();
+  State<MapUI> createState() => _MapUIState();
 }
 
 class _MapUIState extends State<MapUI> {

@@ -289,7 +289,7 @@ class _SplashScreenState extends State<SplashScreen>
     final MainSocketProvider socketProvider =
         Provider.of<MainSocketProvider>(context, listen: false);
     final BankAccountBloc bankAccountBloc = Provider.of(context, listen: false);
-    final _auth = AuthService();
+    final auth = AuthService();
 
     // for not showing intro second time we are maintaining this variable in shared pref
     isLoggedOut = _sharedPreferences.getBool('isLoggedOut') ?? false;
@@ -340,7 +340,7 @@ class _SplashScreenState extends State<SplashScreen>
 
         User? user;
         try {
-          user = await _auth.authenticate(phoneNumber, userPassword,
+          user = await auth.authenticate(phoneNumber, userPassword,
               isStaffLogin: isStaffLogin, company: company);
         } catch (e) {
           errorText += "ERROR while fetching USER:- $e\n";

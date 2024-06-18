@@ -11,7 +11,7 @@ import '../../../../../services/app_config_bloc.dart';
 import '../../../../../widget/curved_btn.dart';
 
 class PreAccountUpgrade extends StatefulWidget {
-  const PreAccountUpgrade({Key? key});
+  const PreAccountUpgrade({super.key});
 
   @override
   State<PreAccountUpgrade> createState() => _PreAccountUpgradeState();

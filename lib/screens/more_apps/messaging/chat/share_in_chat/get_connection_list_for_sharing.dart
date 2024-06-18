@@ -7,8 +7,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class GetUserConnectionList extends StatefulWidget {
+  const GetUserConnectionList({super.key});
+
   @override
-  _GetUserConnectionListState createState() => _GetUserConnectionListState();
+  State<GetUserConnectionList> createState() => _GetUserConnectionListState();
 }
 
 class _GetUserConnectionListState extends State<GetUserConnectionList> {
@@ -118,10 +120,10 @@ class _GetUserConnectionListState extends State<GetUserConnectionList> {
 class ShareToUserTile extends StatefulWidget {
   final ChatConversation? user;
 
-  ShareToUserTile({this.user});
+  const ShareToUserTile({super.key, this.user});
 
   @override
-  _ShareToUserTileState createState() => _ShareToUserTileState();
+  State<ShareToUserTile> createState() => _ShareToUserTileState();
 }
 
 class _ShareToUserTileState extends State<ShareToUserTile> {

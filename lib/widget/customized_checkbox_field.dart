@@ -19,7 +19,7 @@ class CustomizedCheckBoxField extends StatefulWidget {
      ;
 
   @override
-  _CustomizedCheckBoxFieldState createState() =>
+  State<CustomizedCheckBoxField> createState() =>
       _CustomizedCheckBoxFieldState();
 }
 

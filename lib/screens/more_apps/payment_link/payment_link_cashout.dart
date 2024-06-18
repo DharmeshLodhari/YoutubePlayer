@@ -750,7 +750,7 @@ class _PaymentLinkCashOutState extends State<PaymentLinkCashOut> {
                     },
                     child: Column(
                       children: [
-                        if (bankList.length >= 1) ...[
+                        if (bankList.isNotEmpty) ...[
                           bankCardDisplay(bankList[index]),
                         ] else ...[
                           // debugPrint('The array does not have a second element.');
@@ -967,7 +967,7 @@ class _PaymentLinkCashOutState extends State<PaymentLinkCashOut> {
         Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) => PaymentLoadingScreen(
+              builder: (context) => const PaymentLoadingScreen(
                     text: 'Cashout Payment link Processing...',
                     imagePath: 'assets/images/app_logo.png',
                   )),

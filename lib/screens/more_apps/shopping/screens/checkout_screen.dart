@@ -344,7 +344,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     }
   }
 
-  pickDeliveryOptions() async {
+  void pickDeliveryOptions() async {
     final String? pickedDeliveryOption = await showPickItemDialog<String>(
       context: context,
       items: deliveryOptions,
@@ -388,7 +388,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
   void selectCategory() async {}
 
-  pickShippingOptions() async {
+  void pickShippingOptions() async {
     final ShippingOptionsModel? pickedShippingOption =
         await showDialog<ShippingOptionsModel>(
             context: context,

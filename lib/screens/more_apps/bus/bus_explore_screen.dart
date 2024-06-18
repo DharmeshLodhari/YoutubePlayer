@@ -8,8 +8,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class BusExploreScreen extends StatefulWidget {
+  const BusExploreScreen({super.key});
+
   @override
-  _BusExploreScreenState createState() => _BusExploreScreenState();
+  State<BusExploreScreen> createState() => _BusExploreScreenState();
 }
 
 class _BusExploreScreenState extends State<BusExploreScreen> {

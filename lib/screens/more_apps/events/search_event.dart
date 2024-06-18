@@ -633,7 +633,7 @@ class _SearchEventState extends State<SearchEvent> {
     );
   }
 
-  Widget getPriceSelection(bottomSheetSetState) {
+  Widget getPriceSelection(StateSetter bottomSheetSetState) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Text(
         "Price",

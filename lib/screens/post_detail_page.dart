@@ -754,7 +754,7 @@ class _PostDetailPageScaffoldBodyState
     return regex.hasMatch(item);
   }
 
-  _commentWidget() {
+  RenderObjectWidget _commentWidget() {
     if (!widget.userPost.enableCommenting!) {
       return const SizedBox.shrink();
     }
@@ -1107,7 +1107,7 @@ class SimilarPostsForBlog extends StatefulWidget {
   const SimilarPostsForBlog({super.key, required this.postID, this.postOfUser});
 
   @override
-  _SimilarPostsForBlogState createState() => _SimilarPostsForBlogState();
+  State<SimilarPostsForBlog> createState() => _SimilarPostsForBlogState();
 }
 
 class _SimilarPostsForBlogState extends State<SimilarPostsForBlog> {

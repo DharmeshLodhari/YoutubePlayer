@@ -908,7 +908,7 @@ class _EditProductVariantState extends State<EditProductVariant> {
   }
 
   bool validateDropdown() {
-    if (selectedType != null && selectedType != '') {
+    if (selectedType != null) {
       return true;
     } else {
       showToast(message: AppLocalization.of(context)!.pleaseSelectCategory);

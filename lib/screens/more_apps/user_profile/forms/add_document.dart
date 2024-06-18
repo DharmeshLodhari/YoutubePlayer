@@ -424,10 +424,10 @@ class _AddDocumentState extends State<AddDocument> {
           MaterialButton(
             color: blackFont,
             onPressed: () {
-              final _auth = AuthService();
+              final auth = AuthService();
               final userBloc = Provider.of<UserBloc>(context, listen: false);
               // Get new token for user before attempting to post data to server
-              _auth
+              auth
                   .authenticate(
                       userBloc.user.phoneNumber, userBloc.user.password)
                   .then((user) {
@@ -436,7 +436,7 @@ class _AddDocumentState extends State<AddDocument> {
                       .verifyUserDetail(
                           File(documentImage!.path), File(userImage!.path))
                       .then((user) {
-                    _auth
+                    auth
                         .authenticate(
                             userBloc.user.phoneNumber, userBloc.user.password)
                         .then((user) {

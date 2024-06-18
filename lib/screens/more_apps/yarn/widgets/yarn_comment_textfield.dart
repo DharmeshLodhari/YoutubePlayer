@@ -64,7 +64,7 @@ class YarnCommentTextField extends StatefulWidget {
   ScrollController? scrollController;
   bool? enableAdult;
   bool? viewerAdvice;
-  var ageRating;
+  String? ageRating;
   List<ShareAsYarnModel>? shareAsYarnModel;
   final Function(bool?) onTapEnableComment;
   final Function(int?) onTapAgeRestriction;
@@ -115,13 +115,10 @@ class YarnCommentTextField extends StatefulWidget {
   });
 
   @override
-  State<YarnCommentTextField> createState() =>
-      YarnCommentTextFieldState(key: key);
+  State<YarnCommentTextField> createState() => YarnCommentTextFieldState();
 }
 
 class YarnCommentTextFieldState extends State<YarnCommentTextField> {
-  Key? key;
-  YarnCommentTextFieldState({this.key});
   List<Map<String, dynamic>> selectedImagesList = [];
   List<YarnMedia> selectedMedia = [];
   List<PickedFile> selectedImages = [];
@@ -130,7 +127,7 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
   List<ShareAsYarnModel>? shareAsYarnModelCopy;
   ShareAsYarnModel? _shareAsYarnModel;
 
-  var ageRating;
+  String? ageRating;
   bool isShowExtension = false;
   bool onFocus = true;
 
@@ -1144,7 +1141,7 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
                           _shareAsYarnModel = category;
                           ageRating = _shareAsYarnModel?.name?.substring(9);
                           logger.d('message $ageRating');
-                          widget.onTapAgeRestriction(int.parse(ageRating));
+                          widget.onTapAgeRestriction(int.parse(ageRating!));
                           setState(() {});
                           Navigator.pop(context);
                         },

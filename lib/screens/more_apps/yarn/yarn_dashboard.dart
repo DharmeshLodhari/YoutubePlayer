@@ -214,7 +214,7 @@ class _YarnDashboardState extends State<YarnDashboard> {
           onTap: () {
             NavigationUtil.push(
               context,
-              screen: YarnSettingsScreen(),
+              screen: const YarnSettingsScreen(),
             );
           },
           height: 18,

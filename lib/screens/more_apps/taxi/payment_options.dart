@@ -43,7 +43,7 @@ class _PaymentOptionsState extends State<PaymentOptions> {
             //   fit: BoxFit.fill,
             // ),
 
-            MapUI(),
+            const MapUI(),
 
             // FlutterMap(
             //   mapController: mapController,

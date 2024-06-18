@@ -32,19 +32,15 @@ import 'package:textfield_tags/textfield_tags.dart';
 
 // ignore: must_be_immutable
 class EditProduct extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
-  EditProduct({super.key, this.arguments});
+  const EditProduct({super.key, this.arguments});
 
   @override
-  _EditProductState createState() => _EditProductState(arguments: arguments);
+  State<EditProduct> createState() => _EditProductState();
 }
 
 class _EditProductState extends State<EditProduct> {
-  var arguments;
-
-  _EditProductState({this.arguments});
-
   final _auth = ShoppingAuthService();
   UserBloc? userBloc;
   final _formKey = GlobalKey<FormState>();
@@ -112,9 +108,9 @@ class _EditProductState extends State<EditProduct> {
   List<Variant> productVariantList = [];
   List<AddOns> productAddOnsList = [];
   bool inventoryIsAvailable = false;
-  var weightSi = ['Grams', 'Kilograms'];
-  var widthSi = ['Centimetres', 'Metres'];
-  var heightSi = ['Centimetres', 'Metres'];
+  List<String> weightSi = ['Grams', 'Kilograms'];
+  List<String> widthSi = ['Centimetres', 'Metres'];
+  List<String> heightSi = ['Centimetres', 'Metres'];
   List<String> measurementList = ['Weight', 'Height', 'Width'];
   Map<String, bool> measurementCheckMark = {};
   List<String> pickedMeasurementList = [];
@@ -155,7 +151,7 @@ class _EditProductState extends State<EditProduct> {
 
   @override
   void initState() {
-    productId = arguments['productId'];
+    productId = widget.arguments['productId'];
     getCategories();
     Future.delayed(const Duration(seconds: 2), () {
       obtainCategories();
@@ -782,7 +778,7 @@ class _EditProductState extends State<EditProduct> {
             } else {
               NavigationUtil.push(
                 context,
-                screen: AddEditShippingAddress(),
+                screen: const AddEditShippingAddress(),
               ).whenComplete(() => getAddressList());
             }
           },

@@ -14,11 +14,10 @@ import 'package:shimmer/shimmer.dart';
 class MomentsTab extends StatefulWidget {
   CustomerProfile? searchedUser;
   String? channelUsername;
-  MomentsTab({super.key, required this.searchedUser, this.channelUsername})
-     ;
+  MomentsTab({super.key, required this.searchedUser, this.channelUsername});
 
   @override
-  _MomentsTabState createState() => _MomentsTabState();
+  State<MomentsTab> createState() => _MomentsTabState();
 }
 
 class _MomentsTabState extends State<MomentsTab> {

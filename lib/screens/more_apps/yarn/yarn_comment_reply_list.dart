@@ -25,7 +25,7 @@ class YarnCommentReplyList extends StatefulWidget {
 
 class _YarnCommentReplyListState extends State<YarnCommentReplyList> {
   /// Variables for Sorting POPUP MENU
-  GlobalKey _key = LabeledGlobalKey("yarnCommentListSort");
+  final GlobalKey _key = LabeledGlobalKey("yarnCommentListSort");
   late CustomizedPopUpMenu menu;
   int selectedMenuItemIndex = 0;
   bool isPopMenuOpen = false;

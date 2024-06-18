@@ -615,7 +615,7 @@ class ContactMomentsCard extends StatefulWidget {
   final MomentsModel userMomentModel;
   final List<String> listOfConnectionsNames;
 
-  ContactMomentsCard({
+  const ContactMomentsCard({
     super.key,
     required this.index,
     required this.nextPageUrl,

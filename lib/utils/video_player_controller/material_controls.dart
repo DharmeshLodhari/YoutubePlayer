@@ -194,7 +194,7 @@ class _MaterialControlsState extends State<MaterialControls> {
                   Text(
                     widget.titleName != null
                         ? widget.titleName!.length > 45
-                            ? widget.titleName!.substring(0, 45) + "..."
+                            ? "${widget.titleName!.substring(0, 45)}..."
                             : widget.titleName!
                         : '',
                     style: const TextStyle(

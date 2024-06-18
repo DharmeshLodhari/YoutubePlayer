@@ -250,7 +250,7 @@ class _AskStartScreenState extends State<AskStartScreen> {
                       jsonEncode({"categories": model.selectedAskCategories}));
                   NavigationUtil.push(
                     context,
-                    screen: YarnDashboard(),
+                    screen: const YarnDashboard(),
                   ).then((value) => Navigator.of(context).pop());
                 }
               }

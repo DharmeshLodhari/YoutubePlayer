@@ -16,7 +16,7 @@ import 'profile_template/business_profile_screen.dart';
 class UserProfileScreen extends StatefulWidget {
   final dynamic arguments;
 
-  UserProfileScreen({required this.arguments});
+  const UserProfileScreen({super.key, required this.arguments});
 
   @override
   State<UserProfileScreen> createState() => _UserProfileScreenState();

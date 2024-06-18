@@ -16,11 +16,11 @@ import '../../../payment_and_banking/payment_and_banking_auth.dart';
 class AddShippingOptions extends StatefulWidget {
   final Function(bool)? callback;
 
-  AddShippingOptions({this.callback});
+  const AddShippingOptions({super.key, this.callback});
 
   // Declare a field that holds the userData.
   @override
-  _AddShippingOptionsState createState() => _AddShippingOptionsState();
+  State<AddShippingOptions> createState() => _AddShippingOptionsState();
 }
 
 class _AddShippingOptionsState extends State<AddShippingOptions> {

@@ -729,7 +729,7 @@ class _AddServiceState extends State<AddService> {
 
   Future<void> addService() async {
     if (_formKey.currentState!.validate()) {
-      if (serviceImages.length >= 1) {
+      if (serviceImages.isNotEmpty) {
         if (validateDropdown()) {
           final Service service = Service();
           service.localImages =

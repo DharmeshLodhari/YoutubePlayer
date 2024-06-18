@@ -4,14 +4,13 @@ import 'package:Slydo/widget/curved_btn.dart';
 import 'package:flutter/material.dart';
 import 'package:pinput/pinput.dart';
 
-// ignore: must_be_immutable
 class VerifyResetPasswordOTPScreen extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
-  VerifyResetPasswordOTPScreen({this.arguments});
+  const VerifyResetPasswordOTPScreen({super.key, this.arguments});
 
   @override
-  _VerifyResetPasswordOTPScreenState createState() =>
+  State<VerifyResetPasswordOTPScreen> createState() =>
       _VerifyResetPasswordOTPScreenState();
 }
 

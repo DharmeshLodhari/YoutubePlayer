@@ -19,10 +19,10 @@ import '../screens/user_profile_module_new/profile_template/utils.dart';
 class UserTileForConnection extends StatefulWidget {
   ChatConversation? user;
 
-  UserTileForConnection({this.user});
+  UserTileForConnection({super.key, this.user});
 
   @override
-  _UserTileForConnectionState createState() => _UserTileForConnectionState();
+  State<UserTileForConnection> createState() => _UserTileForConnectionState();
 }
 
 class _UserTileForConnectionState extends State<UserTileForConnection> {

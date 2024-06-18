@@ -95,7 +95,7 @@ class _CustomizedPassCodeScreenState extends State<CustomizedPassCodeScreen>
     );
   }
 
-  Container _buildPortraitPasscodeScreen() => Container(
+  Widget _buildPortraitPasscodeScreen() => SizedBox(
         width: MediaQuery.of(context).size.width,
         child: Stack(
           children: [

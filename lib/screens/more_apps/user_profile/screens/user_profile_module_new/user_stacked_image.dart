@@ -46,15 +46,15 @@ class StackedWidgets extends StatelessWidget {
 }
 
 Widget buildImage(String urlImage, String fullName, String userType) {
-  final double borderSize = 2;
-  Color borderColor = getUserTypeColorByType(type: userType);
+  const double borderSize = 2;
+  final Color borderColor = getUserTypeColorByType(type: userType);
 
   if (urlImage == "" ||
       urlImage ==
           "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png") {
     return ClipOval(
       child: Container(
-        padding: EdgeInsets.all(borderSize),
+        padding: const EdgeInsets.all(borderSize),
         color: Colors.white,
         child: CircleAvatar(
           backgroundColor: navyBlue,

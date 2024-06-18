@@ -6,7 +6,6 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/tab_selection.dart';
 import 'package:flutter/material.dart';
 
-// ignore: must_be_immutable
 class UserProductServiceDiscount extends StatefulWidget {
   DiscountModel item;
 
@@ -16,7 +15,7 @@ class UserProductServiceDiscount extends StatefulWidget {
   });
 
   @override
-  _UserProductServiceDiscountState createState() =>
+  State<UserProductServiceDiscount> createState() =>
       _UserProductServiceDiscountState();
 }
 
@@ -122,7 +121,7 @@ class _UserProductServiceDiscountState
     );
   }
 
-  Widget FilterIcon() {
+  Widget filterIcon() {
     return SizedBox(
       key: _key,
       height: 34,

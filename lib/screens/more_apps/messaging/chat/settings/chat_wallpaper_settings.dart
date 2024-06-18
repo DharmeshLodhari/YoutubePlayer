@@ -2,6 +2,8 @@ import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 
 class ChatWallpaperSettings extends StatefulWidget {
+  const ChatWallpaperSettings({super.key});
+
   @override
   State<ChatWallpaperSettings> createState() => _ChatWallpaperSettingsState();
 }

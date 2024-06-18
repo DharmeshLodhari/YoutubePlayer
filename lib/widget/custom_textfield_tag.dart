@@ -9,7 +9,7 @@ class CustomTextFieldTag extends StatefulWidget {
   final TextfieldTagsController textFieldTagsController;
   final Function(String) onTap;
 
-  CustomTextFieldTag({
+  const CustomTextFieldTag({
     super.key,
     this.initialTags,
     this.readOnly = true,
@@ -18,7 +18,7 @@ class CustomTextFieldTag extends StatefulWidget {
   });
 
   @override
-  _CustomTextFieldTagState createState() => _CustomTextFieldTagState();
+  State<CustomTextFieldTag> createState() => _CustomTextFieldTagState();
 }
 
 class _CustomTextFieldTagState extends State<CustomTextFieldTag> {

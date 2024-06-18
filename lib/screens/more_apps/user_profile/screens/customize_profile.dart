@@ -13,7 +13,7 @@ import '../user_auth.dart';
 class CustomizeProfileScreen extends StatefulWidget {
   final dynamic arguments;
 
-  CustomizeProfileScreen({required this.arguments, super.key});
+  const CustomizeProfileScreen({required this.arguments, super.key});
 
   @override
   CustomizeProfileScreenState createState() => CustomizeProfileScreenState();

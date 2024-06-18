@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'chat_wallpaper_settings.dart';
 
 class ChatConnectionSettings extends StatefulWidget {
+  const ChatConnectionSettings({super.key});
+
   @override
   State<ChatConnectionSettings> createState() => _ChatConnectionSettingsState();
 }

@@ -1620,7 +1620,7 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
     );
   }
 
-  checkHintText(int selectedMenuItemIndex) {
+  String checkHintText(int selectedMenuItemIndex) {
     if (selectedMenuItemIndex == 0) {
       return 'Search blog';
     } else if (selectedMenuItemIndex == 1) {
@@ -1629,6 +1629,8 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
       return 'Search service';
     } else if (selectedMenuItemIndex == 3) {
       return 'Search user';
+    } else {
+      return "";
     }
   }
 

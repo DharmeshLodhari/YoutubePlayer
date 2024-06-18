@@ -19,7 +19,7 @@ class DialogButtonStateFul extends StatefulWidget {
   final String? text;
 
   /// DialogButton constructor
-  DialogButtonStateFul({
+  const DialogButtonStateFul({
     super.key,
     this.backgroundColor,
     this.text,

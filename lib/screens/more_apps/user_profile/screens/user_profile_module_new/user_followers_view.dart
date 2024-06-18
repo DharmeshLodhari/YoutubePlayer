@@ -6,7 +6,7 @@ import '../../user_auth.dart';
 
 class UserFollowersView extends StatefulWidget {
   final String? userName;
-  UserFollowersView({super.key, this.userName});
+  const UserFollowersView({super.key, this.userName});
 
   @override
   State<UserFollowersView> createState() => _UserFollowersViewState();

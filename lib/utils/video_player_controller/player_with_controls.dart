@@ -28,23 +28,21 @@ class PlayerWithControls extends StatelessWidget {
     );
   }
 
-  Container _buildPlayerWithControls(
+  Widget _buildPlayerWithControls(
       ChewieController chewieController, BuildContext context) {
-    return Container(
-      child: Stack(
-        children: <Widget>[
-          chewieController.placeholder ?? Container(),
-          Center(
-            child: AspectRatio(
-              aspectRatio: chewieController.aspectRatio ??
-                  _calculateAspectRatio(context),
-              child: VideoPlayer(chewieController.videoPlayerController),
-            ),
+    return Stack(
+      children: <Widget>[
+        chewieController.placeholder ?? Container(),
+        Center(
+          child: AspectRatio(
+            aspectRatio: chewieController.aspectRatio ??
+                _calculateAspectRatio(context),
+            child: VideoPlayer(chewieController.videoPlayerController),
           ),
-          chewieController.overlay ?? Container(),
-          _buildControls(context, chewieController)!,
-        ],
-      ),
+        ),
+        chewieController.overlay ?? Container(),
+        _buildControls(context, chewieController)!,
+      ],
     );
   }
 

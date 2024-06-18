@@ -24,7 +24,7 @@ class ShopListScreen extends StatefulWidget {
   final String? nextUrl;
   final String? type;
 
-  ShopListScreen({
+  const ShopListScreen({
     super.key,
     this.onPageRefresh,
     this.category,
@@ -737,8 +737,7 @@ class ShopListScreenState extends State<ShopListScreen> {
 class SuperStoreSingleCard extends StatelessWidget {
   final Product product;
 
-  const SuperStoreSingleCard({super.key, required this.product})
-     ;
+  const SuperStoreSingleCard({super.key, required this.product});
 
   @override
   Widget build(BuildContext context) {

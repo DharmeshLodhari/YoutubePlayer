@@ -320,7 +320,7 @@ class _CheckoutProductServiceState extends State<CheckoutProductService> {
     );
   }
 
-  onNextClicked() {
+  void onNextClicked() {
     if (shippingOption == null) {
       userSelectedShippingOption[merchantUsername!] = null;
     }
@@ -331,7 +331,7 @@ class _CheckoutProductServiceState extends State<CheckoutProductService> {
 
     basketBloc.userSelectedShippingOption = userSelectedShippingOption;
     NavigationUtil.pushReplacement(context,
-        screen: UserAddressProductService(fromCheckoutScreen: true));
+        screen: const UserAddressProductService(fromCheckoutScreen: true));
   }
 
   void resetData() {
@@ -364,12 +364,12 @@ class _CheckoutProductServiceState extends State<CheckoutProductService> {
             if (mounted) setState(() {});
 
             debugPrint('VALUE :: $value');
-            value.forEach((element) {
+            for (var element in value) {
               // String shippingOption = element.name;
               // int shippingOptionAmount = element.price;
               // String currencySymbol = worldCurrencies[element.currency] ?? '';
               shippingOptions.add(element);
-            });
+            }
           },
         ).catchError((error) {
           shippingOptionsLoading = false;
@@ -386,7 +386,7 @@ class _CheckoutProductServiceState extends State<CheckoutProductService> {
 
   void selectCategory() async {}
 
-  pickShippingOptions() async {
+  void pickShippingOptions() async {
     final ShippingOptionsModel? pickedShippingOption =
         await showDialog<ShippingOptionsModel>(
             context: context,

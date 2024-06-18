@@ -310,7 +310,7 @@ class _ProductVariantListState extends State<ProductVariantList>
           ),
           leading: GestureDetector(
             onTap: () {
-              final String? url = variant.serverImages![0]!;
+              final String url = variant.serverImages![0]!;
               Navigator.of(context).pushNamed("/photo-viewer", arguments: url);
             },
             child: checkProductImage(variant),

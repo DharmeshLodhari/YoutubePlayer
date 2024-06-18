@@ -777,7 +777,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
 
   Future<void> addProduct() async {
     if (_formKey.currentState!.validate()) {
-      if (productImages.length >= 1) {
+      if (productImages.isNotEmpty) {
         if (validateDropdown()) {
           final Product product = Product();
           product.localImages =

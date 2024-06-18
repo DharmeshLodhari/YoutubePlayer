@@ -34,10 +34,10 @@ import '../../../payment_and_banking_auth.dart';
 
 // ignore: must_be_immutable
 class NewBeneficiaryTransfer extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
   final Function(bool)? callback;
 
-  NewBeneficiaryTransfer({super.key, this.arguments, this.callback});
+  const NewBeneficiaryTransfer({super.key, this.arguments, this.callback});
 
   // Declare a field that holds the userData.
   @override
@@ -648,7 +648,7 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => PaymentLoadingScreen(
+                      builder: (context) => const PaymentLoadingScreen(
                             text: 'Bank Transfer Processing...',
                             imagePath: 'assets/images/app_logo.png',
                           )),

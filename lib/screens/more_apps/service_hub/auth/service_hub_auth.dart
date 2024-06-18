@@ -81,7 +81,12 @@ class ServiceHubAuthService extends AuthService {
 
   // get active job listing
   Future<ActiveJobListing?> getActiveJobListing(String? next, String? previous,
-      {String? category, search, sortby, priceFrom, priceTo, location}) async {
+      {String? category,
+      String? search,
+      String? sortBy,
+      String? priceFrom,
+      String? priceTo,
+      String? location}) async {
     String url = "/api/v1/job-service/listing/?";
     if (next == null) {
       return null;
@@ -93,8 +98,8 @@ class ServiceHubAuthService extends AuthService {
       if (category != null && category != '') {
         url += "category=$category&";
       }
-      if (sortby != null && sortby != '') {
-        url = "${url}sort_by=$sortby&";
+      if (sortBy != null && sortBy != '') {
+        url = "${url}sort_by=$sortBy&";
       }
       if (priceFrom != null && priceFrom != '') {
         url += "price_from=$priceFrom&";
@@ -500,7 +505,7 @@ class ServiceHubAuthService extends AuthService {
     final data = {"is_active": false};
     final _data = jsonEncode(data);
     final String url =
-        AppConfig.baseUrl + "/api/v1/job-service/listing/" + listingId! + '/';
+        "${AppConfig.baseUrl}/api/v1/job-service/listing/$listingId/";
     final headers = await getAuthHeaders();
     final response = await httpPatch(url, headers: headers, body: _data);
     debugPrint('lister...$response');
@@ -514,7 +519,7 @@ class ServiceHubAuthService extends AuthService {
   // end job
   Future<bool> endJob(String? jobId) async {
     final String url =
-        AppConfig.baseUrl + "/api/v1/job-service/job/$jobId/end-job/";
+        "${AppConfig.baseUrl}/api/v1/job-service/job/$jobId/end-job/";
     final headers = await getAuthHeaders();
     final response = await httpPatch(url, headers: headers);
     debugPrint('end jobber...${response.body} and ${response.statusCode}');

@@ -365,7 +365,7 @@ class _ApplicantListState extends State<ApplicantList>
 }
 
 class VerticalListItem extends StatelessWidget {
-  VerticalListItem({required this.applicant});
+  const VerticalListItem({super.key, required this.applicant});
 
   final JobApplicantModel? applicant;
 

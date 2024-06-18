@@ -79,7 +79,9 @@ class PolylineRequest {
     });
     if (wayPoints.isNotEmpty) {
       final List wayPointsArray = [];
-      wayPoints.forEach((point) => wayPointsArray.add(point.location));
+      for (var point in wayPoints) {
+        wayPointsArray.add(point.location);
+      }
       String wayPointsString = wayPointsArray.join('|');
       if (optimizeWaypoints) {
         wayPointsString = 'optimize:true|$wayPointsString';

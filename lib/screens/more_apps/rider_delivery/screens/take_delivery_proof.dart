@@ -228,7 +228,7 @@ class _TakeDeliveryProofState extends State<TakeDeliveryProof> {
     }
     try {
       await _cameraController?.setFlashMode(FlashMode.off);
-      XFile? picture = await _cameraController?.takePicture();
+      final XFile? picture = await _cameraController?.takePicture();
       Navigator.of(context).popAndPushNamed(
           Routes.PREVIEW_DELIVERY_PROOF_SCREEN,
           arguments: {"filePath": picture?.path});

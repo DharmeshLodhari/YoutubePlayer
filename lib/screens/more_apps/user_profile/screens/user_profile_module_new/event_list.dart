@@ -9,10 +9,10 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class EventList extends StatefulWidget {
   final CustomerProfile? user;
-  EventList({@required this.user, super.key});
+  const EventList({@required this.user, super.key});
 
   @override
-  _EventListState createState() => _EventListState();
+  State<EventList> createState() => _EventListState();
 }
 
 class _EventListState extends State<EventList> {

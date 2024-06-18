@@ -1,4 +1,4 @@
-import 'package:Slydo/screens/more_apps/utility/cable/model/CablePlan.dart';
+import 'package:Slydo/screens/more_apps/utility/cable/model/cable_plan.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_passcode_sheet/bottomsheet_passcode.dart';
@@ -10,9 +10,9 @@ import 'package:flutter/material.dart';
 class SelectPlanAndDecoderNumber extends StatefulWidget {
   Map<String, dynamic>? arguments;
 
-  SelectPlanAndDecoderNumber({this.arguments});
+  SelectPlanAndDecoderNumber({super.key, this.arguments});
   @override
-  _SelectPlanAndDecoderNumberState createState() =>
+  State<SelectPlanAndDecoderNumber> createState() =>
       _SelectPlanAndDecoderNumberState();
 }
 
@@ -91,36 +91,34 @@ class _SelectPlanAndDecoderNumberState
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(color: iconBtnGrey, width: 1)),
-              child: Container(
-                child: Column(
-                  children: [
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: getProvider()),
-                    Divider(
-                      color: dividerColor,
-                      thickness: 1.5,
-                    ),
-                    const SizedBox(
-                      height: 30,
-                    ),
-                    Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: selectPlanDropDown()),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: getDecoderNumber()),
-                    const SizedBox(
-                      height: 50,
-                    ),
-                  ],
-                ),
+              child: Column(
+                children: [
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: getProvider()),
+                  Divider(
+                    color: dividerColor,
+                    thickness: 1.5,
+                  ),
+                  const SizedBox(
+                    height: 30,
+                  ),
+                  Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: selectPlanDropDown()),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: getDecoderNumber()),
+                  const SizedBox(
+                    height: 50,
+                  ),
+                ],
               ),
             ),
           ),

@@ -23,7 +23,7 @@ class UserAddress extends StatefulWidget {
   const UserAddress(
       {super.key, this.customerName, this.fromCheckoutScreen = false});
   @override
-  _UserAddressState createState() => _UserAddressState();
+  State<UserAddress> createState() => _UserAddressState();
 }
 
 class _UserAddressState extends State<UserAddress> {
@@ -364,7 +364,7 @@ class _UserAddressState extends State<UserAddress> {
       UserAuth().addUserAddress(data).then((value) {
         showToast(
             message:
-                AppLocalization.of(context)!.addressAddedSuccessFully + " !!!");
+                "${AppLocalization.of(context)!.addressAddedSuccessFully} !!!");
         Navigator.pop(context);
         Navigator.pop(context);
       }).catchError((e) {

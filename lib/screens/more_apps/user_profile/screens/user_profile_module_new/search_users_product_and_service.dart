@@ -30,10 +30,10 @@ import '../../../../../routes/route_constants.dart';
 
 class SearchUsersProductAndService extends StatefulWidget {
   final dynamic arguments;
-  SearchUsersProductAndService({required this.arguments});
+  const SearchUsersProductAndService({super.key, required this.arguments});
 
   @override
-  _SearchUsersProductAndServiceState createState() =>
+  State<SearchUsersProductAndService> createState() =>
       _SearchUsersProductAndServiceState();
 }
 
@@ -2055,7 +2055,7 @@ class _SearchUsersProductAndServiceState
 
 // ignore: must_be_immutable
 class VerticalListItem extends StatelessWidget {
-  VerticalListItem(this.child, this.user);
+  VerticalListItem(this.child, this.user, {super.key});
 
   final Widget child;
   CustomerProfile user;
@@ -2078,7 +2078,7 @@ class VerticalListItem extends StatelessWidget {
 
 // ignore: must_be_immutable
 class VerticalListItem1 extends StatelessWidget {
-  VerticalListItem1(this.child, this.product);
+  VerticalListItem1(this.child, this.product, {super.key});
 
   final Widget child;
   Product product;
@@ -2101,7 +2101,7 @@ class VerticalListItem1 extends StatelessWidget {
 
 // ignore: must_be_immutable
 class VerticalListItem2 extends StatelessWidget {
-  VerticalListItem2(this.child, this.service);
+  VerticalListItem2(this.child, this.service, {super.key});
 
   final Widget child;
   Service service;

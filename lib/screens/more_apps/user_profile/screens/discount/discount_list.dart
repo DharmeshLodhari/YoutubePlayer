@@ -15,10 +15,10 @@ import 'package:shimmer/shimmer.dart';
 
 // ignore: must_be_immutable
 class DiscountList extends StatefulWidget {
-  DiscountList({Key? key});
+  const DiscountList({super.key});
 
   @override
-  _DiscountListState createState() => _DiscountListState();
+  State<DiscountList> createState() => _DiscountListState();
 }
 
 class _DiscountListState extends State<DiscountList> {
@@ -252,7 +252,7 @@ class _DiscountListState extends State<DiscountList> {
           onTap: () async {
             final result = await NavigationUtil.push(
               context,
-              screen: AddEditDiscount(),
+              screen: const AddEditDiscount(),
             );
             if (result != null && result == true) {
               getList(fetchFresh: true);

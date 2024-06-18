@@ -24,7 +24,8 @@ class DocumentFileTileForChat extends StatefulWidget {
   final Map<String, dynamic> message;
   final ChatConversation? chatConversation;
 
-  DocumentFileTileForChat({required this.message, this.chatConversation});
+  const DocumentFileTileForChat(
+      {super.key, required this.message, this.chatConversation});
 
   @override
   State<DocumentFileTileForChat> createState() =>
@@ -119,8 +120,7 @@ class FileTileForChat extends StatefulWidget {
   final ChatConversation chatConversation;
 
   const FileTileForChat(
-      {super.key, required this.message, required this.chatConversation})
-     ;
+      {super.key, required this.message, required this.chatConversation});
 
   @override
   State<FileTileForChat> createState() => _FileTileForChatState();
@@ -186,7 +186,7 @@ class _FileTileForChatState extends State<FileTileForChat> {
     send.send([id, status, progress]);
   }
 
-  getIfFileIsDownloadable() async {
+  void getIfFileIsDownloadable() async {
     final DocumentFileInChatDownloadModel model =
         DocumentFileInChatDownloadModel(
       checkID: checkID,
@@ -366,7 +366,7 @@ class _FileTileForChatState extends State<FileTileForChat> {
     }
   }
 
-  getTrailingIcon(bool isSend) {
+  Widget getTrailingIcon(bool isSend) {
     if (isDownloading) {
       return SizedBox(
         width: 25,
@@ -387,7 +387,7 @@ class _FileTileForChatState extends State<FileTileForChat> {
         color: isSend ? Colors.white : blackFont);
   }
 
-  truncateFileName(String fileName) {
+  String truncateFileName(String fileName) {
     final String actualFileName = fileName.split('.').first;
     if (actualFileName.length >= 13) {
       return '...${fileName.substring(fileName.length - 13)}';

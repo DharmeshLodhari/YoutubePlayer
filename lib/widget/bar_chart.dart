@@ -9,18 +9,15 @@ import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
 class BarChart extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
-  BarChart({this.arguments});
+  const BarChart({super.key, this.arguments});
 
   @override
-  _BarChartState createState() => _BarChartState(arguments: arguments);
+  State<BarChart> createState() => _BarChartState();
 }
 
 class _BarChartState extends State<BarChart> {
-  var arguments;
-
-  _BarChartState({this.arguments});
 
   late UserBloc userBloc;
   List<dynamic>? expenses;
@@ -48,7 +45,7 @@ class _BarChartState extends State<BarChart> {
     });
 
     setState(() {
-      expenses = arguments["week"];
+      expenses = widget.arguments["week"];
       isLoading = false;
       mostExpensive = 0;
       barData = [0, 0, 0, 0, 0, 0, 0];

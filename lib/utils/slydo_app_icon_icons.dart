@@ -21,6 +21,8 @@
 ///         License:   SIL (http://scripts.sil.org/OFL)
 ///         Homepage:  http://www.entypo.com
 ///
+library;
+
 import 'package:flutter/widgets.dart';
 
 class SlydoAppIcon {

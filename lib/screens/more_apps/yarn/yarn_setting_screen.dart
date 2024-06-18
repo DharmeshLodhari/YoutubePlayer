@@ -87,7 +87,7 @@ class _YarnSettingsScreenState extends State<YarnSettingsScreen> {
         decoration: decorateBox(),
         child: ListTile(
           onTap: () {
-            NavigationUtil.push(context, screen: AskSCustomizeScreen());
+            NavigationUtil.push(context, screen: const AskSCustomizeScreen());
           },
           visualDensity: const VisualDensity(vertical: 0, horizontal: 0),
           title: const Text(

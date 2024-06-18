@@ -800,7 +800,7 @@ class _RequestPaymentState extends State<RequestPayment> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => PaymentLoadingScreen(
+                          builder: (context) => const PaymentLoadingScreen(
                                 text: 'Requesting Payment...',
                                 imagePath: 'assets/images/app_logo.png',
                               )),

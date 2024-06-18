@@ -11,19 +11,16 @@ import '../../../../routes/route_constants.dart';
 
 // ignore: must_be_immutable
 class AccountType extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
-  AccountType({required this.arguments});
+  const AccountType({super.key, required this.arguments});
 
   @override
-  _AccountTypeState createState() => _AccountTypeState(arguments: arguments);
+  State<AccountType> createState() => _AccountTypeState();
 }
 
 class _AccountTypeState extends State<AccountType> {
-  var arguments;
   String? accountType;
-
-  _AccountTypeState({required this.arguments});
 
   final _personalDetailFormKey = GlobalKey<FormState>();
 
@@ -39,8 +36,8 @@ class _AccountTypeState extends State<AccountType> {
 
   @override
   void initState() {
-    phoneNumber = arguments['phoneNumber'];
-    otpCode = arguments['otpCode'];
+    phoneNumber = widget.arguments['phoneNumber'];
+    otpCode = widget.arguments['otpCode'];
 
     debugPrint('Phone number -> $phoneNumber');
     showButton = true;

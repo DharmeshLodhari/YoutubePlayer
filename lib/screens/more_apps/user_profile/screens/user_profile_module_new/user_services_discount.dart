@@ -23,7 +23,7 @@ class UserServicesDiscount extends StatefulWidget {
   });
 
   @override
-  _UserServicesDiscountState createState() => _UserServicesDiscountState();
+  State<UserServicesDiscount> createState() => _UserServicesDiscountState();
 }
 
 class _UserServicesDiscountState extends State<UserServicesDiscount> {

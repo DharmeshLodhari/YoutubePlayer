@@ -79,7 +79,7 @@ class CreateJobModel {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
     data['id'] = id;
     data['tags'] = tags;
     if (pictures != null) {
@@ -123,7 +123,7 @@ class Pictures {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
     data['id'] = id;
     data['image'] = image;
     data['caption'] = caption;
@@ -145,7 +145,7 @@ class Category {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
     data['slug'] = slug;
     data['image'] = image;
     data['name'] = name;

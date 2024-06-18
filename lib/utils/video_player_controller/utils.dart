@@ -26,7 +26,7 @@ String formatDuration(Duration position) {
           : '0$seconds';
 
   final formattedTime =
-      '${hoursString == '00' ? '' : hoursString + ':'}$minutesString:$secondsString';
+      '${hoursString == '00' ? '' : '$hoursString:'}$minutesString:$secondsString';
 
   return formattedTime;
 }

@@ -10,9 +10,8 @@ class ProductCategorySelection extends StatefulWidget {
   final String? nextUrl;
   final String? categoryName;
 
-  ProductCategorySelection(
-      {super.key, this.callback, this.nextUrl, this.categoryName})
-     ;
+  const ProductCategorySelection(
+      {super.key, this.callback, this.nextUrl, this.categoryName});
 
   @override
   State<ProductCategorySelection> createState() =>

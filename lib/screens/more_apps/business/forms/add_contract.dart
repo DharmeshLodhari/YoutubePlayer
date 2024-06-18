@@ -26,10 +26,10 @@ import 'package:provider/provider.dart';
 class AddContract extends StatefulWidget {
   final dynamic arguments;
 
-  AddContract({this.arguments});
+  const AddContract({super.key, this.arguments});
 
   @override
-  _AddContractState createState() => _AddContractState();
+  State<AddContract> createState() => _AddContractState();
 }
 
 class _AddContractState extends State<AddContract> {

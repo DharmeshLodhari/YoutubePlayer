@@ -16,7 +16,7 @@ class SuperStoreIndustry extends StatefulWidget {
   final String next;
   final String appTitle;
   final Map<String, dynamic>? searchQuery;
-  SuperStoreIndustry(
+  const SuperStoreIndustry(
       {super.key,
       required this.next,
       required this.appTitle,

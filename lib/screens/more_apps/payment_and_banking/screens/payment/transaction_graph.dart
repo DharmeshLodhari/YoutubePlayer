@@ -14,8 +14,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class TransactionGraph extends StatefulWidget {
+  const TransactionGraph({super.key});
+
   @override
-  _TransactionGraphState createState() => _TransactionGraphState();
+  State<TransactionGraph> createState() => _TransactionGraphState();
 }
 
 class _TransactionGraphState extends State<TransactionGraph> {

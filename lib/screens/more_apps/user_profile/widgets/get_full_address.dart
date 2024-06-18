@@ -7,11 +7,10 @@ import 'package:provider/provider.dart';
 
 class GetFullAddressWidget extends StatefulWidget {
   final UserAbout userAbout;
-  const GetFullAddressWidget({super.key, required this.userAbout})
-     ;
+  const GetFullAddressWidget({super.key, required this.userAbout});
 
   @override
-  _GetFullAddressWidgetState createState() => _GetFullAddressWidgetState();
+  State<GetFullAddressWidget> createState() => _GetFullAddressWidgetState();
 }
 
 class _GetFullAddressWidgetState extends State<GetFullAddressWidget> {

@@ -24,7 +24,7 @@ class UserProductListForDiscount extends StatefulWidget {
   });
 
   @override
-  _UserProductListForDiscountState createState() =>
+  State<UserProductListForDiscount> createState() =>
       _UserProductListForDiscountState();
 }
 

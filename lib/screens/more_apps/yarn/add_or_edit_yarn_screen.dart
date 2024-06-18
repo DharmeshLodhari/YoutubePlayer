@@ -66,7 +66,8 @@ class AddOrEditYarn extends StatefulWidget {
   List<ShareAsYarnModel>? shareAsYarnModel;
 
   AddOrEditYarn(
-      {this.askCategories,
+      {super.key,
+      this.askCategories,
       this.isYarn,
       this.askCategory,
       this.yarn,
@@ -112,7 +113,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
 
   bool isSensitiveContent = false;
   bool isAdultContent = false;
-  var ageRating;
+  String? ageRating;
 
   ///variable for message actions
   bool showMoreAction = false;
@@ -1700,7 +1701,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     yarn.author = userBloc.user.userName;
     yarn.enablePayMe = enablePayMe;
     yarn.enableCommenting = enableCommenting;
-    yarn.ageRestriction = int.parse(ageRating);
+    yarn.ageRestriction = int.parse(ageRating!);
     yarn.isAdultContent = isAdultContent;
     yarn.isSensitiveContent = isSensitiveContent;
 

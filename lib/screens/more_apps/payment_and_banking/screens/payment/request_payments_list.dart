@@ -856,7 +856,7 @@ class VerticalListItem extends StatefulWidget {
   final Key? key;
 
   @override
-  _VerticalListItemState createState() => _VerticalListItemState();
+  State<VerticalListItem> createState() => _VerticalListItemState();
 }
 
 class _VerticalListItemState extends State<VerticalListItem> {
@@ -1005,8 +1005,8 @@ class _VerticalListItemState extends State<VerticalListItem> {
               }
               if (result) {
                 showToast(
-                    message: "${widget.paymentRequest.payee} " +
-                        AppLocalization.of(context)!.isBlocked);
+                    message:
+                        "${widget.paymentRequest.payee} ${AppLocalization.of(context)!.isBlocked}");
               } else {
                 showToast(message: AppLocalization.of(context)!.error);
               }

@@ -27,24 +27,21 @@ import '../screens/subscriptions/subscription_model.dart';
 
 // ignore: must_be_immutable
 class SignUp extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
-  SignUp({required this.arguments});
+  const SignUp({super.key, required this.arguments});
 
   @override
-  _SignUpState createState() => _SignUpState(arguments: arguments);
+  State<SignUp> createState() => _SignUpState();
 }
 
 class _SignUpState extends State<SignUp> {
-  var arguments;
   String? accountType;
   int? subscriptionsId;
   String? industryType;
   bool showDOB = false;
   bool isPersonalAccount = false;
   bool accountTypeChosen = false;
-
-  _SignUpState({required this.arguments});
 
   final _bankDetailsFormKey = GlobalKey<FormState>();
   final _personalDetailFormKey = GlobalKey<FormState>();
@@ -95,9 +92,9 @@ class _SignUpState extends State<SignUp> {
   @override
   void initState() {
     getProductIndustries();
-    phoneNumber = arguments['phoneNumber'];
-    otpCode = arguments['otpCode'];
-    accountType = arguments['accountType'];
+    phoneNumber = widget.arguments['phoneNumber'];
+    otpCode = widget.arguments['otpCode'];
+    accountType = widget.arguments['accountType'];
 
     debugPrint('Phone number -> $phoneNumber');
     debugPrint('accountType -> $accountType');

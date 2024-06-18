@@ -25,18 +25,15 @@ import '../shopping_auth.dart';
 
 // ignore: must_be_immutable
 class EditService extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
-  EditService({this.arguments});
+  const EditService({super.key, this.arguments});
 
   @override
-  _EditServiceState createState() => _EditServiceState(arguments: arguments);
+  State<EditService> createState() => _EditServiceState();
 }
 
 class _EditServiceState extends State<EditService> {
-  var arguments;
-
-  _EditServiceState({this.arguments});
 
   final _auth = ShoppingAuthService();
   UserBloc? userBloc;
@@ -93,7 +90,7 @@ class _EditServiceState extends State<EditService> {
 
   @override
   void initState() {
-    serviceId = arguments['serviceId'];
+    serviceId = widget.arguments['serviceId'];
     getCategories();
 
     super.initState();
@@ -559,7 +556,7 @@ class _EditServiceState extends State<EditService> {
                   }
                 }
               }).catchError((error) {
-                debugPrint("ERROR" + error.toString());
+                debugPrint("ERROR$error");
               });
             },
           ),

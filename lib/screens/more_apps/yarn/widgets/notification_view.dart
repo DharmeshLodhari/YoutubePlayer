@@ -91,7 +91,8 @@ class AskNotificationView extends StatelessWidget {
                         ),
                         Expanded(
                           child: Text(
-                            '${getGetYarnQuestionDateTime(notification!.createdAt!)}',
+                            getGetYarnQuestionDateTime(
+                                notification!.createdAt!),
                             overflow: TextOverflow.fade,
                             style: TextStyle(fontSize: 12, color: yarnBlack),
                           ),

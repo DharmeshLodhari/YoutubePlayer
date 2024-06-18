@@ -136,12 +136,12 @@ class _PaymentLinkState extends State<PaymentLink>
       {String? name,
       String? date,
       String? id,
-      amount,
-      currency,
-      status,
-      passcode,
-      link,
-      category}) {
+      int? amount,
+      String? currency,
+      String? status,
+      String? passcode,
+      String? link,
+      String? category}) {
     return Padding(
       padding: const EdgeInsets.only(top: 10.0),
       child: GestureDetector(

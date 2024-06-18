@@ -19,7 +19,7 @@ import "package:uuid/uuid.dart";
 
 class YarnCommentReplyActions extends StatefulWidget {
   final YarnComment? replyCommentDetail;
-  YarnCommentReplyActions({super.key, this.replyCommentDetail});
+  const YarnCommentReplyActions({super.key, this.replyCommentDetail});
 
   @override
   State<YarnCommentReplyActions> createState() =>
@@ -277,9 +277,9 @@ class _YarnCommentReplyActionsState extends State<YarnCommentReplyActions> {
         await ShareInChat().selectShareCustomer(context);
     debugPrint("Selected users = ${listOfRecipient.length}");
 
-    listOfRecipient.forEach((recipient) {
+    for (var recipient in listOfRecipient) {
       addMomentPostToChat(recipientUser: recipient!, yarnTopic: yarnTopic);
-    });
+    }
   }
 
   Future<void> addMomentPostToChat({

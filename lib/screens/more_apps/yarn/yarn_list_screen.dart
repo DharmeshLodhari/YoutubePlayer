@@ -23,14 +23,10 @@ class YarnListScreen extends StatefulWidget {
   });
 
   @override
-  State<YarnListScreen> createState() => YarnListScreenState(key: key);
+  State<YarnListScreen> createState() => YarnListScreenState();
 }
 
 class YarnListScreenState extends State<YarnListScreen> {
-  Key? key;
-
-  YarnListScreenState({this.key});
-
   bool isLoading = false;
   String? next = "", previous = "";
   List<Yarn> yarnTopicList = [];

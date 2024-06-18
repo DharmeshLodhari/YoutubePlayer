@@ -32,7 +32,7 @@ class _EventDashboardState extends State<EventDashboard> {
           onPageChanged: (index) {
             _eventDashboardBloc.index = index;
           },
-          children: <Widget>[
+          children: const <Widget>[
             EventExploreScreen(),
             MyEventsScreen(),
           ],

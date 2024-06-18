@@ -2096,7 +2096,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
     );
   }
 
-  onPageFunction(index, reason) {
+  void onPageFunction(index, reason) {
     currentIndex = index;
     setState(() {});
   }
@@ -2129,6 +2129,7 @@ class CustomText extends StatelessWidget {
 
 class CustomText1 extends StatelessWidget {
   const CustomText1({
+    super.key,
     required this.title,
     required this.fontSize,
     required this.fontweight,

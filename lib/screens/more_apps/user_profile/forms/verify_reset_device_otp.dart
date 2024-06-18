@@ -5,14 +5,13 @@ import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:pinput/pinput.dart';
 
-// ignore: must_be_immutable
 class VerifyResetDeviceOTPScreen extends StatefulWidget {
   final dynamic arguments;
 
   const VerifyResetDeviceOTPScreen({super.key, this.arguments});
 
   @override
-  _VerifyResetDeviceOTPScreenState createState() =>
+  State<VerifyResetDeviceOTPScreen> createState() =>
       _VerifyResetDeviceOTPScreenState();
 }
 

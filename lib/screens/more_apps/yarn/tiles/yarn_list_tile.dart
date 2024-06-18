@@ -46,8 +46,9 @@ class YarnTile extends StatefulWidget {
   final List<Yarn>? checkIfReyarned;
   final Function(bool)? reloadView;
 
-  YarnTile(
-      {required this.yarn,
+  const YarnTile(
+      {super.key,
+      required this.yarn,
       this.backGroundColor,
       this.onDeleteYarn,
       this.onUpdateYarn,

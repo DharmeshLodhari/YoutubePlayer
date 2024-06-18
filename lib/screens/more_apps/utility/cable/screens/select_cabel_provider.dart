@@ -2,8 +2,10 @@ import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 
 class SelectCableProvider extends StatefulWidget {
+  const SelectCableProvider({super.key});
+
   @override
-  _SelectCableProviderState createState() => _SelectCableProviderState();
+  State<SelectCableProvider> createState() => _SelectCableProviderState();
 }
 
 class _SelectCableProviderState extends State<SelectCableProvider> {

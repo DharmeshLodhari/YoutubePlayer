@@ -23,10 +23,10 @@ import 'package:provider/provider.dart';
 class SelectUserForGroup extends StatefulWidget {
   final dynamic arguments;
 
-  SelectUserForGroup({this.arguments});
+  SelectUserForGroup({super.key, this.arguments});
 
   @override
-  _SelectUserForGroupState createState() => _SelectUserForGroupState();
+  State<SelectUserForGroup> createState() => _SelectUserForGroupState();
 }
 
 class _SelectUserForGroupState extends State<SelectUserForGroup> {

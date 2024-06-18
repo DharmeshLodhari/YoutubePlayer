@@ -34,7 +34,7 @@ class _DeliveryHistoryState extends State<DeliveryHistory> {
   List<DeliveryModel> jobListing = [];
   bool noJobsInList = false;
 
-  GlobalKey _key = LabeledGlobalKey("deliveryHistoryPopUpMenu");
+  final GlobalKey _key = LabeledGlobalKey("deliveryHistoryPopUpMenu");
   late CustomizedPopUpMenu menu;
   int selectedMenuItemIndex = 0;
   bool isPopMenuOpen = false;

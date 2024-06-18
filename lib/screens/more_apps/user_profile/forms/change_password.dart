@@ -265,9 +265,9 @@ class _ChangePasswordState extends State<ChangePassword> {
   }
 
   Future<void> storePasswordInSecureStorage({String? password}) async {
-    final SharedPreferences _sharedPreferences =
+    final SharedPreferences sharedPreferences =
         await SharedPreferences.getInstance();
-    final bool? isRemember = _sharedPreferences.getBool('isChecked');
+    final bool? isRemember = sharedPreferences.getBool('isChecked');
     if (isRemember != null && isRemember) {
       await SecureStorage().updateUserPassword(password: password);
     }

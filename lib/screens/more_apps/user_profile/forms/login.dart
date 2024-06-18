@@ -813,8 +813,8 @@ class _UserLoginState extends State<UserLogin> {
     if (_loginFormKey.currentState!.validate()) {
       showDialog(context: context, builder: (context) => LoadingIndicator());
 
-      var _user;
-      BankAccount? _bankAccount;
+      var user;
+      BankAccount? bankAccount;
 
       var phoneNumberFromTextField = phoneNumberController!.text.trim();
 
@@ -837,34 +837,34 @@ class _UserLoginState extends State<UserLogin> {
           .authenticate(phoneNumber, password,
               isStaffLogin: isStaffLogin, company: companyName)
           .then((value) async {
-        _user = value;
-        if (_user.fullName != null) {
+        user = value;
+        if (user.fullName != null) {
           //method call for storing user info into shared preference
           isRememberChecked();
 
           /// storeUser data in to the secure storage
           storeUserData(isStaffLogin);
 
-          userBloc.user = _user;
+          userBloc.user = user;
 
           DatabaseHelper()
               .saveGeneralSettings(userBloc.chatMessageSettings.toDBJson());
 
           try {
-            socketProvider.setCurrentUser(_user);
+            socketProvider.setCurrentUser(user);
           } catch (error) {
             debugPrint("ERROR:- $error");
           }
 
           // Get user's bank account if user is logged in
-          if (_user != null) {
+          if (user != null) {
             await PaymentAndBankingAuth().getBankAccounts().then((accounts) {
               if (accounts.isNotEmpty) {
-                _bankAccount = accounts[0];
+                bankAccount = accounts[0];
               }
 
-              if (_bankAccount != null) {
-                bankAccountBloc.bankAccount = _bankAccount;
+              if (bankAccount != null) {
+                bankAccountBloc.bankAccount = bankAccount;
               }
             });
           }

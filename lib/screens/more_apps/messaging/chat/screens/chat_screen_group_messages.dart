@@ -104,10 +104,10 @@ import '../tiles/yarn_question_tile.dart';
 class ChatScreenGroupMessage extends StatefulWidget {
   final dynamic arguments;
 
-  ChatScreenGroupMessage({this.arguments});
+  const ChatScreenGroupMessage({super.key, this.arguments});
 
   @override
-  _ChatScreenGroupMessageState createState() => _ChatScreenGroupMessageState();
+  State<ChatScreenGroupMessage> createState() => _ChatScreenGroupMessageState();
 }
 
 class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
@@ -1407,55 +1407,52 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
             setupShakeDetector();
           },
-          child: Container(
-            child: Row(
-              children: [
-                StreamBuilder<Object>(
-                    initialData: false,
-                    stream: ChatMessageSynchronizer().getChatMessageStream,
-                    builder: (context, snapshot) {
-                      if (snapshot.data == true) {
-                        ChatMessageSynchronizer().setStreamFalse();
-                        getMissedMessageFromDB();
-                      }
-                      return getUserIcon();
-                    }),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      userNameWithVerifiedIcon(
-                        name: chatConversation?.fullName != null
-                            ? chatConversation!.fullName!
-                            : '',
-                        isVerified: chatConversation?.isVerified,
-                        verifiedIconColor: verifyGreen,
-                      ),
-                      Text(
-                        chatConversation != null
-                            ? isRecipientTyping
-                                ? typingMessage!
-                                : isOtherUserRecordingAudio
-                                    ? "recording audio"
-                                    : userStatus
-                            : "", //"Online",
-                        style: TextStyle(
-                            color:
-                                isRecipientTyping || isOtherUserRecordingAudio
-                                    ? naturalGreen
-                                    : darkGrey,
-                            fontSize: 10,
-                            fontWeight: FontWeight.w400),
-                        overflow: TextOverflow.fade,
-                        softWrap: false,
-                        maxLines: 1,
-                      ),
-                    ],
-                  ),
+          child: Row(
+            children: [
+              StreamBuilder<Object>(
+                  initialData: false,
+                  stream: ChatMessageSynchronizer().getChatMessageStream,
+                  builder: (context, snapshot) {
+                    if (snapshot.data == true) {
+                      ChatMessageSynchronizer().setStreamFalse();
+                      getMissedMessageFromDB();
+                    }
+                    return getUserIcon();
+                  }),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    userNameWithVerifiedIcon(
+                      name: chatConversation?.fullName != null
+                          ? chatConversation!.fullName!
+                          : '',
+                      isVerified: chatConversation?.isVerified,
+                      verifiedIconColor: verifyGreen,
+                    ),
+                    Text(
+                      chatConversation != null
+                          ? isRecipientTyping
+                              ? typingMessage!
+                              : isOtherUserRecordingAudio
+                                  ? "recording audio"
+                                  : userStatus
+                          : "", //"Online",
+                      style: TextStyle(
+                          color: isRecipientTyping || isOtherUserRecordingAudio
+                              ? naturalGreen
+                              : darkGrey,
+                          fontSize: 10,
+                          fontWeight: FontWeight.w400),
+                      overflow: TextOverflow.fade,
+                      softWrap: false,
+                      maxLines: 1,
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
         actions: [

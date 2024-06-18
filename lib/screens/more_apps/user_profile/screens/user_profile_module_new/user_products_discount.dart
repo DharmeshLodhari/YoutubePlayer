@@ -13,7 +13,6 @@ import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shimmer/shimmer.dart';
 
-// ignore: must_be_immutable
 class UserProductDiscount extends StatefulWidget {
   DiscountModel item;
 
@@ -23,7 +22,7 @@ class UserProductDiscount extends StatefulWidget {
   });
 
   @override
-  _UserProductsDiscountState createState() => _UserProductsDiscountState();
+  State<UserProductDiscount> createState() => _UserProductsDiscountState();
 }
 
 class _UserProductsDiscountState extends State<UserProductDiscount> {

@@ -921,7 +921,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
             SvgPicture.asset("yarn/calendar".toSVG()),
             const SizedBox(width: 12),
             Text(
-              '${getDate(searchedUser?.dateJoined ?? "")}',
+              getDate(searchedUser?.dateJoined ?? ""),
               style: TextStyle(
                   color: HexColor("78797A"),
                   fontSize: 10,
@@ -1074,10 +1074,10 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
   }
 
   void checkCurrentUserIsInRequestList() async {
-    final UserBloc _userBloc = Provider.of<UserBloc>(context, listen: false);
+    final UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
     debugPrint("is In Request List -");
 
-    if (_userBloc.user.userName != searchedUser?.userName) {
+    if (userBloc.user.userName != searchedUser?.userName) {
       UserAuth().checkInRequest(searchedUser?.userName).then((value) {
         if (mounted) {
           setState(() {
@@ -1518,7 +1518,8 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
           },
         ),
       );
-      if ((searchedUser != null && searchedUser?.type!.toLowerCase() != 'user'))
+      if ((searchedUser != null &&
+          searchedUser?.type!.toLowerCase() != 'user')) {
         list.add(
           bottomSheetItem(
             title: "Manage Business",
@@ -1537,6 +1538,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
             },
           ),
         );
+      }
     }
 
     list.add(
@@ -1682,8 +1684,9 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
               final String termsAndConditionUrl =
                   "https://slydo.co/store/terms-and-conditions/${searchedUser?.userName}/";
               try {
-                if (!await launchUrl(Uri.parse(termsAndConditionUrl)))
+                if (!await launchUrl(Uri.parse(termsAndConditionUrl))) {
                   throw 'Could not launch $termsAndConditionUrl';
+                }
               } catch (error) {
                 debugPrint("Error:- $error");
               }

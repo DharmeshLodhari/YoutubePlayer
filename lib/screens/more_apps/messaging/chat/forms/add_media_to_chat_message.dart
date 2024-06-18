@@ -5,6 +5,7 @@ import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:Slydo/screens/more_apps/music/music_detail_page.dart';
 import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/enums.dart';
 import 'package:Slydo/utils/video_player_controller/chewie_player.dart';
 import 'package:Slydo/utils/video_player_controller/chewie_progress_colors.dart';
 import 'package:Slydo/widget/image_crop.dart';
@@ -17,16 +18,13 @@ import 'package:photo_view/photo_view.dart';
 import 'package:uuid/uuid.dart';
 import 'package:video_player/video_player.dart';
 
-import '../../../../../utils/enums.dart';
-
-// ignore: must_be_immutable
 class AddMediaToChatMessage extends StatefulWidget {
-  Map<String, dynamic>? arguments;
+  final Map<String, dynamic>? arguments;
 
-  AddMediaToChatMessage({required this.arguments});
+  const AddMediaToChatMessage({super.key, required this.arguments});
 
   @override
-  _AddMediaToChatMessageState createState() => _AddMediaToChatMessageState();
+  State<AddMediaToChatMessage> createState() => _AddMediaToChatMessageState();
 }
 
 class _AddMediaToChatMessageState extends State<AddMediaToChatMessage> {
@@ -42,7 +40,7 @@ class _AddMediaToChatMessageState extends State<AddMediaToChatMessage> {
   ChewieController? _chewieController;
 
   /// Music Player
-  AssetsAudioPlayer _audioPlayer = AssetsAudioPlayer();
+  final AssetsAudioPlayer _audioPlayer = AssetsAudioPlayer();
   bool isAudioPlaying = false;
 
   @override
@@ -305,14 +303,14 @@ class _AddMediaToChatMessageState extends State<AddMediaToChatMessage> {
   }
 
   void sendMessage() async {
-    final Map<String, dynamic> _data = {};
-    _data['text'] = messageController!.text.trim();
-    _data['check_id'] = const Uuid().v4();
-    _data['kind'] = mediaType;
-    _data['read_by_author'] = true;
-    _data['created_at'] = DateTime.now().toUtc().toString();
-    _data['type'] = "chatroom_message";
-    _data.addAll(data!);
+    final Map<String, dynamic> data = {};
+    data['text'] = messageController!.text.trim();
+    data['check_id'] = const Uuid().v4();
+    data['kind'] = mediaType;
+    data['read_by_author'] = true;
+    data['created_at'] = DateTime.now().toUtc().toString();
+    data['type'] = "chatroom_message";
+    data.addAll(data!);
 
     showDialog(
         context: context,
@@ -328,7 +326,7 @@ class _AddMediaToChatMessageState extends State<AddMediaToChatMessage> {
     }
 
     await MessageAuth()
-        .sendSocketMessage(_data, mediaFile!, poster: poster)
+        .sendSocketMessage(data, mediaFile!, poster: poster)
         .then((value) {
       Navigator.pop(context);
       Navigator.pop(context, true);

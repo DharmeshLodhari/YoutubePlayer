@@ -93,7 +93,7 @@ class ShareInChat {
                     const SizedBox(
                       height: 8,
                     ),
-                    Expanded(child: GetUserConnectionList())
+                    const Expanded(child: GetUserConnectionList())
                   ],
                 ),
               ));

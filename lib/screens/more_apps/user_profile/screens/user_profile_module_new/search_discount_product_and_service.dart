@@ -27,10 +27,10 @@ import 'package:provider/provider.dart';
 
 class SearchDiscountProductAndService extends StatefulWidget {
   final dynamic arguments;
-  SearchDiscountProductAndService({required this.arguments});
+  const SearchDiscountProductAndService({super.key, required this.arguments});
 
   @override
-  _SearchDiscountProductAndServiceState createState() =>
+  State<SearchDiscountProductAndService> createState() =>
       _SearchDiscountProductAndServiceState();
 }
 
@@ -171,7 +171,7 @@ class _SearchDiscountProductAndServiceState
         isCategoryLoading = true;
         if (mounted) setState(() {});
 
-        final Map<String, dynamic>? result = await ShoppingAuthService()
+        final Map<String, dynamic> result = await ShoppingAuthService()
             .getMerchantProductCategories(userBloc.user.userAbout?.industry?.id,
                 categoryNext, categoryPrevious);
 
@@ -222,7 +222,7 @@ class _SearchDiscountProductAndServiceState
         isManufacturerLoading = true;
         if (mounted) setState(() {});
 
-        final Map<String, dynamic>? result = await ShoppingAuthService()
+        final Map<String, dynamic> result = await ShoppingAuthService()
             .getManufacturerList(
                 userBloc.user.userName, manufacturerNext, manufacturerPrevious);
 
@@ -277,7 +277,7 @@ class _SearchDiscountProductAndServiceState
         isSubCategoryLoading = true;
         if (mounted) setState(() {});
 
-        final Map<String, dynamic>? result = await ShoppingAuthService()
+        final Map<String, dynamic> result = await ShoppingAuthService()
             .getMerchantSubProductCategories(
                 categoryId, subCategoryNext, subCategoryPrevious);
 

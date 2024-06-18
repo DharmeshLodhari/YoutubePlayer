@@ -7,6 +7,8 @@ import 'hotel_tile.dart';
 import 'models/hotel_room_item.dart';
 
 class SpecificCategoryHotelList extends StatefulWidget {
+  const SpecificCategoryHotelList({super.key});
+
   @override
   State<SpecificCategoryHotelList> createState() =>
       _SpecificCategoryHotelListState();

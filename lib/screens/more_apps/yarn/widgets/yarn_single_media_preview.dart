@@ -5,14 +5,14 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class YarnSingleMediaPreview extends StatelessWidget {
-  const YarnSingleMediaPreview(
-      {required this.imageUrl,
-      required this.mediaType,
-      required this.isSingleImage,
-      this.imagePoster,
-      required this.type,
-      Key? key})
-     ;
+  const YarnSingleMediaPreview({
+    super.key,
+    required this.imageUrl,
+    required this.mediaType,
+    required this.isSingleImage,
+    this.imagePoster,
+    required this.type,
+  });
 
   final String imageUrl;
   final String mediaType;

@@ -35,6 +35,8 @@
 /// | Pub     | https://pub.dartlang.org/packages/flutter_money_formatter |
 ///
 /// ---
+library;
+
 import 'package:intl/intl.dart';
 
 import 'utils/compact_format_type.dart';
@@ -73,22 +75,22 @@ class FlutterMoneyFormatter {
   MoneyFormatterOutput _getOutput() {
     _utilities = _Utilities(amount: amount, settings: settings);
 
-    final String _urs = _utilities.refineSeparator;
-    final int _decSepCharPos = _urs.indexOf(settings!.decimalSeparator!);
+    final String urs = _utilities.refineSeparator;
+    final int decSepCharPos = urs.indexOf(settings!.decimalSeparator!);
 
     return MoneyFormatterOutput(
-        nonSymbol: _urs,
-        symbolOnLeft: '${settings!.symbol}${_utilities.spacer}$_urs',
-        symbolOnRight: '$_urs${_utilities.spacer}${settings!.symbol}',
+        nonSymbol: urs,
+        symbolOnLeft: '${settings!.symbol}${_utilities.spacer}$urs',
+        symbolOnRight: '$urs${_utilities.spacer}${settings!.symbol}',
         compactNonSymbol: _compactNonSymbol,
         compactSymbolOnLeft:
             '${settings!.symbol}${_utilities.spacer}$_compactNonSymbol',
         compactSymbolOnRight:
             '$_compactNonSymbol${_utilities.spacer}${settings!.symbol}',
         fractionDigitsOnly:
-            _urs.substring((-1 == _decSepCharPos ? 0 : _decSepCharPos + 1)),
-        withoutFractionDigits: _urs.substring(
-            0, -1 == _decSepCharPos ? _urs.length - 1 : _decSepCharPos));
+            urs.substring((-1 == decSepCharPos ? 0 : decSepCharPos + 1)),
+        withoutFractionDigits: urs.substring(
+            0, -1 == decSepCharPos ? urs.length - 1 : decSepCharPos));
   }
 
   /// returns FlutterMoneyFormatter after calculating amount.
@@ -164,7 +166,7 @@ class FlutterMoneyFormatter {
     final String reformat = NumberFormat.currency(
             symbol: '',
             decimalDigits:
-                numerics.indexOf('.') == -1 ? 0 : settings!.fractionDigits)
+                !numerics.contains('.') ? 0 : settings!.fractionDigits)
         .format(num.parse(numerics));
 
     return '$reformat$alphas';

@@ -1246,7 +1246,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => PaymentLoadingScreen(
+                            builder: (context) => const PaymentLoadingScreen(
                                   text: 'Sending Payment...',
                                   imagePath: 'assets/images/app_logo.png',
                                 )),

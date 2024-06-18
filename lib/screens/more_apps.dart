@@ -7,8 +7,10 @@ import 'package:flutter/material.dart';
 import '../routes/route_constants.dart';
 
 class MoreApps extends StatefulWidget {
+  const MoreApps({super.key});
+
   @override
-  _MoreAppsState createState() => _MoreAppsState();
+  State<MoreApps> createState() => _MoreAppsState();
 }
 
 class _MoreAppsState extends State<MoreApps> {

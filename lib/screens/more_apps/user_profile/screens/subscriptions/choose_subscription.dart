@@ -23,7 +23,7 @@ import '../../../../../widget/rounded_background_icon.dart';
 import '../../user_auth.dart';
 
 class ChooseSubscription extends StatefulWidget {
-  const ChooseSubscription({Key? key});
+  const ChooseSubscription({super.key});
 
   @override
   State<ChooseSubscription> createState() => _ChooseSubscriptionState();

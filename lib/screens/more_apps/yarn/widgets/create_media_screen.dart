@@ -19,11 +19,10 @@ class CreateMediaScreen extends StatefulWidget {
   final Function(List<YarnMedia>)? addedSelectedMedia;
   int? imageCount;
 
-  CreateMediaScreen({super.key, this.addedSelectedMedia, this.imageCount})
-     ;
+  CreateMediaScreen({super.key, this.addedSelectedMedia, this.imageCount});
 
   @override
-  _CreateMediaScreenState createState() => _CreateMediaScreenState();
+  State<CreateMediaScreen> createState() => _CreateMediaScreenState();
 }
 
 class _CreateMediaScreenState extends State<CreateMediaScreen> {
@@ -357,7 +356,7 @@ class _CreateMediaScreenState extends State<CreateMediaScreen> {
     }
   }
 
-  setUpVideoPlayer() async {
+  void setUpVideoPlayer() async {
     videoPlayerController = VideoPlayerController.file(File(videoPath!),
         videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true))
       ..initialize().then((_) => videoPlayerController?.play())
@@ -427,11 +426,11 @@ class _CreateMediaScreenState extends State<CreateMediaScreen> {
     return Container(color: greyBorderColor);
   }
 
-  pickFileFromMedia() async {
-    int countMedia = 0;
-    if (widget.imageCount! > 0) {
-      countMedia = 4 - widget.imageCount!;
-    }
+  Future<void> pickFileFromMedia() async {
+    // int countMedia = 0;
+    // if (widget.imageCount! > 0) {
+    //   countMedia = 4 - widget.imageCount!;
+    // }
 
     // List<Media>? res = await ImagesPicker.pick(
     //   count: countMedia,

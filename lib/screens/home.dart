@@ -535,8 +535,8 @@ class _HomeState extends State<Home> {
             child: Column(
               children: [
                 GestureDetector(
-                    onTap: () =>
-                        NavigationUtil.push(context, screen: YarnDashboard()),
+                    onTap: () => NavigationUtil.push(context,
+                        screen: const YarnDashboard()),
                     child: sectionHeader("Join the conversation", "View Yarn")),
                 const SizedBox(height: 24),
                 _buildListView()
@@ -722,7 +722,7 @@ class _HomeState extends State<Home> {
       //   break;
       case ProtectionPermission.yarn:
         hideBalance();
-        NavigationUtil.push(context, screen: YarnDashboard());
+        NavigationUtil.push(context, screen: const YarnDashboard());
         break;
       case ProtectionPermission.moment:
         hideBalance();
@@ -1131,7 +1131,7 @@ class _HomeState extends State<Home> {
         setState(() {});
       },
       ButtonTwoOnPressed: () {
-        NavigationUtil.push(context, screen: AddEditShippingAddress())
+        NavigationUtil.push(context, screen: const AddEditShippingAddress())
             .whenComplete(() => getAddressList());
       },
     );
@@ -1543,7 +1543,7 @@ class _HomeState extends State<Home> {
     return GestureDetector(
       onTap: () {
         NavigationUtil.push(context,
-            screen: QRCodeView(arguments: const {'isRequest': false}));
+            screen: const QRCodeView(arguments: {'isRequest': false}));
         // NavigationUtil.push(context, screen: QrCodePage(arguments: {'isProfile': 'false', 'virtualAccount': virtualAccount}));
       },
       child: Container(

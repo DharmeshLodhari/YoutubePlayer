@@ -128,7 +128,7 @@ class _MyHotelsScreenState extends State<MyHotelsScreen> {
   Widget tabViews() {
     return IndexedStack(
       index: currentIndex,
-      children: [
+      children: const [
         MyHotelList(),
         MyWishList(),
       ],

@@ -34,21 +34,16 @@ import 'package:url_launcher/url_launcher.dart';
 
 // ignore: must_be_immutable
 class OrderDetailPage extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
-  OrderDetailPage({required this.arguments});
+  const OrderDetailPage({super.key, required this.arguments});
 
   @override
-  _OrderDetailPageState createState() =>
-      _OrderDetailPageState(arguments: arguments);
+  State<OrderDetailPage> createState() => _OrderDetailPageState();
 }
 
 class _OrderDetailPageState extends State<OrderDetailPage>
     with SingleTickerProviderStateMixin {
-  var arguments;
-
-  _OrderDetailPageState({this.arguments});
-
   late BasketBloc basketBloc;
   late UserBloc userBloc;
 
@@ -119,7 +114,7 @@ class _OrderDetailPageState extends State<OrderDetailPage>
 
   @override
   void initState() {
-    order = arguments['order'];
+    order = widget.arguments['order'];
     statusOfOrder = order?.status?.toLowerCase();
     statusOfOrderCopy = order?.status?.toLowerCase();
     // _slideController = SlidableController(

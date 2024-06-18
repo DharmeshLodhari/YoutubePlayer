@@ -26,7 +26,7 @@ class SharedCartBloc extends ChangeNotifier {
   }
 
   SharedCartModel getSharedCartModel() {
-    if (cartList.isNotEmpty && cartList.length >= 0) {
+    if (cartList.isNotEmpty) {
       return _cartList[_currentSelectedIndex ?? 0];
     } else {
       return SharedCartModel();

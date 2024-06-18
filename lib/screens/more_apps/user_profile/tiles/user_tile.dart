@@ -9,10 +9,10 @@ import '../screens/user_profile_module_new/profile_template/utils.dart';
 class UserTile extends StatefulWidget {
   CustomerProfile? user;
 
-  UserTile({this.user});
+  UserTile({super.key, this.user});
 
   @override
-  _UserTileState createState() => _UserTileState();
+  State<UserTile> createState() => _UserTileState();
 }
 
 class _UserTileState extends State<UserTile> {

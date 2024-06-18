@@ -22,7 +22,7 @@ import '../../widget/tab_selection.dart';
 class SuperStore extends StatefulWidget {
   final dynamic arguments;
 
-  SuperStore({super.key, this.arguments});
+  const SuperStore({super.key, this.arguments});
 
   @override
   State<SuperStore> createState() => _SuperStoreState();
@@ -41,7 +41,7 @@ class _SuperStoreState extends State<SuperStore> {
   List<String> categoryList = [];
   String url = "";
   String nextUrl = "";
-  dynamic categoryId = null;
+  dynamic categoryId;
   late YarnDashboardBloc yarnDashboardBloc;
 
   @override

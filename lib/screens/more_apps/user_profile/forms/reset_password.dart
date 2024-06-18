@@ -9,22 +9,16 @@ import '../../../../utils/util.dart';
 import '../../../../widget/loading_indicator.dart';
 import '../user_auth.dart';
 
-// ignore: must_be_immutable
 class ResetPassword extends StatefulWidget {
   final dynamic arguments;
 
   const ResetPassword({super.key, required this.arguments});
 
   @override
-  _ResetPasswordState createState() =>
-      _ResetPasswordState(arguments: arguments);
+  State<ResetPassword> createState() => _ResetPasswordState();
 }
 
 class _ResetPasswordState extends State<ResetPassword> {
-  Map<String, dynamic> arguments;
-
-  _ResetPasswordState({required this.arguments});
-
   final _formKey = GlobalKey<FormState>();
   String newPassword = "";
   String confirmPassword = "";
@@ -39,7 +33,7 @@ class _ResetPasswordState extends State<ResetPassword> {
 
   @override
   void initState() {
-    phoneNumber = arguments['phoneNumber'];
+    phoneNumber = widget.arguments['phoneNumber'];
     _newPasswordController = TextEditingController();
     _confirmPasswordController = TextEditingController();
     _resetTokenController = TextEditingController();

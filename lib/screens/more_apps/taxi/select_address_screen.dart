@@ -70,7 +70,7 @@ class _SelectAddressScreenState extends State<SelectAddressScreen> {
         backgroundColor: Colors.white,
         appBar: appBar() as PreferredSizeWidget?,
         body: Stack(
-          children: [MapUI(), getBottomUI(getSearchDestination())],
+          children: [const MapUI(), getBottomUI(getSearchDestination())],
         ),
       ),
     );

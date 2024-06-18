@@ -81,7 +81,7 @@ class _DashboardState extends State<Dashboard> {
     'home/settings',
   ];
 
-  var list = ['Home', 'Store', 'Chat', 'Settings'];
+  List<String> list = ['Home', 'Store', 'Chat', 'Settings'];
   List<Widget> _pages = [Container(), Container(), Container(), Container()];
 
   @override

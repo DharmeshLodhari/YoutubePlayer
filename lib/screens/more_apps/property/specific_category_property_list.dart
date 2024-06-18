@@ -13,7 +13,7 @@ class SpecificCategoryPropertyList extends StatefulWidget {
   const SpecificCategoryPropertyList({super.key});
 
   @override
-  _SpecificCategoryPropertyListState createState() =>
+  State<SpecificCategoryPropertyList> createState() =>
       _SpecificCategoryPropertyListState();
 }
 

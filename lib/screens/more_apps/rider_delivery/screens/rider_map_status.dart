@@ -14,7 +14,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 class RiderMapStatus extends StatefulWidget {
   final dynamic arguments;
-  RiderMapStatus({super.key, this.arguments});
+  const RiderMapStatus({super.key, this.arguments});
 
   @override
   State<RiderMapStatus> createState() => _RiderMapStatusState();

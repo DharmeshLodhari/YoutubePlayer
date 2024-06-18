@@ -13,7 +13,7 @@ import '../../messaging/chat/models/chat_conversation.dart';
 import '../../messaging/chat/share_in_chat/ShareInChat.dart';
 
 class TopicActionsForNotification extends StatefulWidget {
-  TopicActionsForNotification();
+  const TopicActionsForNotification({super.key});
 
   @override
   State<TopicActionsForNotification> createState() =>

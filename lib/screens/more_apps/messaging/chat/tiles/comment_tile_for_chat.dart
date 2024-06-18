@@ -35,7 +35,7 @@ class CommentTileForChat extends StatefulWidget {
   final Map<String, dynamic>? message;
   final ChatConversation? chatConversation;
 
-  CommentTileForChat(
+  const CommentTileForChat(
       {super.key, required this.message, required this.chatConversation});
 
   @override
@@ -846,7 +846,7 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
           !data.toString().trim().startsWith('http') &&
           !data.toString().trim().contains('.\n') &&
           !data.toString().trim().endsWith('.')) {
-        final replaceWith = 'http://' + data;
+        final replaceWith = 'http://$data';
 
         newString = '$newString $replaceWith';
       } else {

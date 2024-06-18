@@ -17,12 +17,12 @@ import 'package:shimmer/shimmer.dart';
 
 // ignore: must_be_immutable
 class DispatchAddress extends StatefulWidget {
-  DispatchAddress({super.key, this.arguments});
+  const DispatchAddress({super.key, this.arguments});
 
   final dynamic arguments;
 
   @override
-  _DispatchAddressState createState() => _DispatchAddressState();
+  State<DispatchAddress> createState() => _DispatchAddressState();
 }
 
 class _DispatchAddressState extends State<DispatchAddress> {
@@ -369,7 +369,7 @@ class _DispatchAddressState extends State<DispatchAddress> {
           onTap: () async {
             final result = await NavigationUtil.push(
               context,
-              screen: AddEditShippingAddress(),
+              screen: const AddEditShippingAddress(),
             );
             if (result != null && result == true) {
               getList(fetchFresh: true);

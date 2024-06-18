@@ -611,7 +611,7 @@ class _CachedVideoAppLifeCycleObserver extends Object
 /// Widget that displays the video controlled by [controller].
 class CachedVideoPlayer extends StatefulWidget {
   /// Uses the given [controller] for all video rendered in this widget.
-  CachedVideoPlayer(this.controller, {super.key});
+  const CachedVideoPlayer(this.controller, {super.key});
 
   /// The [CachedVideoPlayerController] responsible for the video being rendered in
   /// this widget.
@@ -711,7 +711,7 @@ class VideoProgressColors {
 }
 
 class _VideoScrubber extends StatefulWidget {
-  _VideoScrubber({
+  const _VideoScrubber({
     required this.child,
     required this.controller,
   });
@@ -785,7 +785,7 @@ class VideoProgressIndicator extends StatefulWidget {
   /// Defaults will be used for everything except [controller] if they're not
   /// provided. [allowScrubbing] defaults to false, and [padding] will default
   /// to `top: 5.0`.
-  VideoProgressIndicator(
+  const VideoProgressIndicator(
     this.controller, {
     super.key,
     this.colors = const VideoProgressColors(),

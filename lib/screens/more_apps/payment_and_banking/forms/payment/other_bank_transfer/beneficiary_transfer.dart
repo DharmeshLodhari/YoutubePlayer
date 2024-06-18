@@ -570,7 +570,7 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer>
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => PaymentLoadingScreen(
+                        builder: (context) => const PaymentLoadingScreen(
                               text: 'Bank Transfer Processing...',
                               imagePath: 'assets/images/app_logo.png',
                             )),

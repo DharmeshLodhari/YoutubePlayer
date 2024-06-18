@@ -1,13 +1,13 @@
-import 'package:Slydo/screens/more_apps/utility/cable/model/CablePlan.dart';
+import 'package:Slydo/screens/more_apps/utility/cable/model/cable_plan.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class SelectCablePlan extends StatefulWidget {
   final Map<String, dynamic>? arguments;
-  SelectCablePlan({this.arguments});
+  const SelectCablePlan({super.key, this.arguments});
   @override
-  _SelectCablePlanState createState() => _SelectCablePlanState();
+  State<SelectCablePlan> createState() => _SelectCablePlanState();
 }
 
 class _SelectCablePlanState extends State<SelectCablePlan> {

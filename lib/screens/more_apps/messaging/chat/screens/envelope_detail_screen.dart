@@ -1,41 +1,34 @@
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatMessage.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/envelope_model.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
+import 'package:Slydo/utils/my_audio_player.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
+import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
+import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../../locale/app_localization.dart';
-import '../../../../../routes/route_constants.dart';
-import '../../../../../utils/my_audio_player.dart';
-import '../../../../../widget/dialog.dart';
-import '../../../../../widget/rounded_background_icon.dart';
-
-// ignore: must_be_immutable
 class EnvelopeDetailScreen extends StatefulWidget {
-  final arguments;
-  EnvelopeDetailScreen({required this.arguments});
+  final dynamic arguments;
+  const EnvelopeDetailScreen({super.key, required this.arguments});
 
   @override
-  _EnvelopeDetailScreenState createState() =>
-      _EnvelopeDetailScreenState(arguments: arguments);
+  State<EnvelopeDetailScreen> createState() => _EnvelopeDetailScreenState();
 }
 
 class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
     with SingleTickerProviderStateMixin {
-  var arguments;
-
   bool isLoading = true;
-
-  _EnvelopeDetailScreenState({this.arguments});
 
   CustomerProfile? senderCustomer;
 
@@ -87,8 +80,8 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
   }
 
   void getEnvelopeAndUserData() async {
-    envelope = arguments['envelope'];
-    data = arguments['data'];
+    envelope = widget.arguments['envelope'];
+    data = widget.arguments['data'];
     isLoading = true;
     if (mounted) setState(() {});
 
@@ -345,7 +338,7 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
         : Container();
   }
 
-  showDialogToDeleteEnvelope() {
+  void showDialogToDeleteEnvelope() {
     showDialogBox(
       context: context,
       actionOneTextColor: blackFont,
@@ -392,7 +385,7 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
     }
   }
 
-  Widget getAppbar(var context) {
+  Widget getAppbar(BuildContext context) {
     return SliverOverlapAbsorber(
       handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
       sliver: SliverSafeArea(
@@ -556,7 +549,7 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
         ),
       );
     }
-    return SizedBox(
+    return const SizedBox(
       height: 1,
       width: 1,
     );

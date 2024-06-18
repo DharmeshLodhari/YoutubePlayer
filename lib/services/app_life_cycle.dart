@@ -9,10 +9,10 @@ import 'package:provider/provider.dart';
 class AppLifeCycle extends StatefulWidget {
   final Widget? child;
 
-  AppLifeCycle({super.key, this.child});
+  const AppLifeCycle({super.key, this.child});
 
   @override
-  _AppLifeCycleState createState() => _AppLifeCycleState();
+  State<AppLifeCycle> createState() => _AppLifeCycleState();
 }
 
 class _AppLifeCycleState extends State<AppLifeCycle>

@@ -870,7 +870,7 @@ List<String> errorImageList = [
   "https://slydo-assets.s3.amazonaws.com/media/customer/avatar/me.jpeg"
 ];
 
-Widget getAmount(amount, currency, {double fontSize = 14}) {
+Widget getAmount(int? amount, String? currency, {double fontSize = 14}) {
   return Row(
     mainAxisSize: MainAxisSize.min,
     children: <Widget>[

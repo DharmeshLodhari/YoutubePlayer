@@ -53,13 +53,13 @@ class LocalNotificationService {
         onDidReceiveNotificationResponse: selectNotification);
     tz.initializeTimeZones();
 
-    channelList.forEach((element) {
+    for (var element in channelList) {
       _createNotificationChannel(
           element['channel_id']!,
           element['channel_name']!,
           element['channel_description']!,
           element['sound']);
-    });
+    }
   }
 
   Future<void> selectNotification(NotificationResponse? payload) async {

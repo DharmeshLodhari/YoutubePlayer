@@ -16,14 +16,13 @@ import 'package:pinput/pinput.dart';
 
 import '../../../../utils/country_picker/country.dart';
 
-// ignore: must_be_immutable
 class VerifyRegistrationOTPScreen extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
-  VerifyRegistrationOTPScreen({this.arguments});
+  const VerifyRegistrationOTPScreen({super.key, this.arguments});
 
   @override
-  _VerifyRegistrationOTPScreenState createState() =>
+  State<VerifyRegistrationOTPScreen> createState() =>
       _VerifyRegistrationOTPScreenState();
 }
 
@@ -344,7 +343,7 @@ class _VerifyRegistrationOTPScreenState
 
       //adding country code and '+' sign to phoneNumber
       phoneNumberWithCountryCode =
-          "+" + _selectedDialogCountry.phoneCode! + phoneNumberFromTextField;
+          "+${_selectedDialogCountry.phoneCode!}$phoneNumberFromTextField";
 
       phoneNumber = phoneNumberWithCountryCode;
     }

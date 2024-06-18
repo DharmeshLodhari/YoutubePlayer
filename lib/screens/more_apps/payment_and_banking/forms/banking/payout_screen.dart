@@ -339,7 +339,7 @@ class _PayoutScreenState extends State<PayoutScreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => PaymentLoadingScreen(
+                        builder: (context) => const PaymentLoadingScreen(
                               text: 'Payout Processing...',
                               imagePath: 'assets/images/app_logo.png',
                             )),

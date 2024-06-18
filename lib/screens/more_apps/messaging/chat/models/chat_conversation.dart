@@ -186,27 +186,27 @@ class ChatConversation {
 
   static ChatConversation fromChatConversation(
       ChatConversation chatConversation) {
-    ChatConversation _chatConversation = ChatConversation();
-    _chatConversation.adminUsers = chatConversation.adminUsers;
-    _chatConversation.avatar = chatConversation.avatar;
-    _chatConversation.banner = chatConversation.banner;
-    _chatConversation.blockedParticipants =
+    final ChatConversation chatConversation0 = ChatConversation();
+    chatConversation0.adminUsers = chatConversation.adminUsers;
+    chatConversation0.avatar = chatConversation.avatar;
+    chatConversation0.banner = chatConversation.banner;
+    chatConversation0.blockedParticipants =
         chatConversation.blockedParticipants;
-    _chatConversation.conversationId = chatConversation.conversationId;
-    _chatConversation.description = chatConversation.description;
-    _chatConversation.fullName = chatConversation.fullName;
-    _chatConversation.isGroupConversation =
+    chatConversation0.conversationId = chatConversation.conversationId;
+    chatConversation0.description = chatConversation.description;
+    chatConversation0.fullName = chatConversation.fullName;
+    chatConversation0.isGroupConversation =
         chatConversation.isGroupConversation;
-    _chatConversation.createdAt = chatConversation.createdAt;
-    _chatConversation.mutedParticipants = chatConversation.mutedParticipants;
-    _chatConversation.owner = chatConversation.owner;
-    _chatConversation.participants = chatConversation.participants;
-    _chatConversation.qrCode = chatConversation.qrCode;
-    _chatConversation.type = chatConversation.type;
-    _chatConversation.conversationType = chatConversation.conversationType;
-    _chatConversation.userName = chatConversation.userName;
-    _chatConversation.isVerified = chatConversation.isVerified;
+    chatConversation0.createdAt = chatConversation.createdAt;
+    chatConversation0.mutedParticipants = chatConversation.mutedParticipants;
+    chatConversation0.owner = chatConversation.owner;
+    chatConversation0.participants = chatConversation.participants;
+    chatConversation0.qrCode = chatConversation.qrCode;
+    chatConversation0.type = chatConversation.type;
+    chatConversation0.conversationType = chatConversation.conversationType;
+    chatConversation0.userName = chatConversation.userName;
+    chatConversation0.isVerified = chatConversation.isVerified;
 
-    return _chatConversation;
+    return chatConversation0;
   }
 }

@@ -10,7 +10,7 @@ import '../../models/virtual_account.dart';
 import '../../payment_and_banking_auth.dart';
 
 class UpgradeAccount extends StatefulWidget {
-  const UpgradeAccount({Key? key});
+  const UpgradeAccount({super.key});
 
   @override
   State<UpgradeAccount> createState() => _UpgradeAccountState();

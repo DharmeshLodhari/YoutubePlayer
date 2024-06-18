@@ -477,7 +477,7 @@ class _ProductAddOnOptionUpdateState extends State<ProductAddOnOptionUpdate> {
 
   Future<void> updateAddOnOption() async {
     if (_formKey.currentState!.validate()) {
-      if (productImages.length >= 1 || picture.isNotEmpty) {
+      if (productImages.isNotEmpty || picture.isNotEmpty) {
         addOnOption.name = name;
         addOnOption.description = description;
         addOnOption.price = moneyInputNormalizer(price).toString();

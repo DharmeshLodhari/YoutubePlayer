@@ -83,6 +83,7 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
     }
   }
 
+  @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
 

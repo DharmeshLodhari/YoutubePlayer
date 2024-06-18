@@ -16,8 +16,10 @@ import '../more_apps/user_profile/models/user.dart';
 import '../more_apps/yarn/utils/yarn_enum.dart';
 
 class SearchNearByBusiness extends StatefulWidget {
+  const SearchNearByBusiness({super.key});
+
   @override
-  _SearchNearByBusinessState createState() => _SearchNearByBusinessState();
+  State<SearchNearByBusiness> createState() => _SearchNearByBusinessState();
 }
 
 class _SearchNearByBusinessState extends State<SearchNearByBusiness> {

@@ -667,7 +667,7 @@ class VerticalListItem extends StatelessWidget {
 
   VerticalListItem(Widget child, var item, {super.key}) {
     this.child = child;
-    this.type = item["type"];
+    type = item["type"];
     this.item = item["item"];
   }
 

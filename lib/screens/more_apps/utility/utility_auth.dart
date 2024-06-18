@@ -38,10 +38,10 @@ class UtilityAuth extends AuthService {
 
       final List providerListResults = jsonData['results'];
 
-      providerListResults.forEach((json) {
+      for (var json in providerListResults) {
         final ProviderModel providerModel = ProviderModel.fromJson(json);
         providerModelList.add(providerModel);
-      });
+      }
 
       final Map<String, dynamic> result = {
         "next": jsonData["next"],
@@ -178,9 +178,9 @@ class UtilityAuth extends AuthService {
       "product_id": "e5743eed-769b-484f-8545-6e9fdb61a016",
       "provider_id": "b8783924-dbb9-413e-99d3-c504cb4dead5"
     };
-    final _body = jsonEncode(data);
+    final body = jsonEncode(data);
     final headers = await getAuthHeaders();
-    final response = await httpPost(url, headers: headers, body: _body);
+    final response = await httpPost(url, headers: headers, body: body);
 
     debugPrint('VERIFY REFERENCE RESPONSE ::: ${response.body}');
     return 'a';
@@ -204,9 +204,9 @@ class UtilityAuth extends AuthService {
     //   "customer_id": "ed448481-9d61-41ce-a480-a5fa4bf1b613",
     //   "provider_id": "b8783924-dbb9-413e-99d3-c504cb4dead5",
     // };
-    final _body = jsonEncode(data);
+    final body = jsonEncode(data);
     final headers = await getAuthHeaders();
-    final response = await httpPost(url, headers: headers, body: _body);
+    final response = await httpPost(url, headers: headers, body: body);
 
     debugPrint('PAYMENT RESPONSE ::: ${response.body}');
 

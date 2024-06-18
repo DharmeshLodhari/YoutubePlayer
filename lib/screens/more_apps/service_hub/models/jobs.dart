@@ -84,7 +84,7 @@ class JobModel {
     isListed = json['is_listed'];
     isOnline = json['is_online'];
     isVerified = json['is_verified'];
-    applicants = json['applicants'] == null ? [] : json['applicants'];
+    applicants = json['applicants'] ?? [];
     assignee = json['assignee'];
     assigneeAvatar = json['assignee_avatar'];
     description = json['description'];
@@ -101,7 +101,7 @@ class JobModel {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
     data['id'] = id;
     data['tags'] = tags;
     if (pictures != null) {
@@ -164,7 +164,7 @@ class Pictures {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
     data['id'] = id;
     data['image'] = image;
     data['caption'] = caption;
@@ -186,7 +186,7 @@ class Category {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
     data['slug'] = slug;
     data['image'] = image;
     data['name'] = name;
@@ -197,8 +197,8 @@ class Category {
 class Video {
   String? id;
   String? file;
-  Null imagePoster;
-  Null caption;
+  String? imagePoster;
+  String? caption;
 
   Video({this.id, this.file, this.imagePoster, this.caption});
 
@@ -210,7 +210,7 @@ class Video {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
     data['id'] = id;
     data['file'] = file;
     data['image_poster'] = imagePoster;

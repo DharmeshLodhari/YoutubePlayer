@@ -7,14 +7,13 @@ import 'package:Slydo/widget/custom_box_shadow.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:flutter/material.dart';
 
-// ignore: must_be_immutable
 class UserAboutScreen extends StatefulWidget {
   CustomerProfile? user;
 
-  UserAboutScreen({required this.user});
+  UserAboutScreen({super.key, required this.user});
 
   @override
-  _UserAboutScreenState createState() => _UserAboutScreenState();
+  State<UserAboutScreen> createState() => _UserAboutScreenState();
 }
 
 class _UserAboutScreenState extends State<UserAboutScreen> {

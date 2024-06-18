@@ -56,7 +56,7 @@ class _JobsSearchState extends State<JobsSearch> {
             next, previous,
             search: searchController.text,
             category: widget.filterMap?['category'] ?? category,
-            sortby: widget.filterMap?['sortby'] ?? sortby,
+            sortBy: widget.filterMap?['sortby'] ?? sortby,
             priceFrom: widget.filterMap?['priceFrom'] ?? priceFrom,
             priceTo: widget.filterMap?['priceTo'] ?? priceTo,
             location: widget.filterMap?['location'] ?? location);

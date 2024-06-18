@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 
 class UserProfileShimmer extends StatelessWidget {
-  const UserProfileShimmer({Key? key});
+  const UserProfileShimmer({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -14,14 +14,14 @@ class UserProfileShimmer extends StatelessWidget {
           period: const Duration(seconds: 1),
           child: Container(
             padding: const EdgeInsets.all(10),
-            child: Column(
+            child: const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 50),
+                SizedBox(height: 50),
                 ShimmerProfile(),
-                const SizedBox(height: 30),
+                SizedBox(height: 30),
                 ShimmerTab(),
-                const SizedBox(height: 20),
+                SizedBox(height: 20),
                 ShimmerProductList(),
               ],
             ),
@@ -33,6 +33,8 @@ class UserProfileShimmer extends StatelessWidget {
 }
 
 class ShimmerProfile extends StatelessWidget {
+  const ShimmerProfile({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -80,6 +82,8 @@ class ShimmerProfile extends StatelessWidget {
 }
 
 class ShimmerTab extends StatelessWidget {
+  const ShimmerTab({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -98,6 +102,8 @@ class ShimmerTab extends StatelessWidget {
 }
 
 class ShimmerProductList extends StatelessWidget {
+  const ShimmerProductList({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Column(

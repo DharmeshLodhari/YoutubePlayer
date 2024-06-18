@@ -283,7 +283,7 @@ Widget showDiscountValue(
     decoration: BoxDecoration(
         color: verifyGreen, borderRadius: BorderRadius.circular(5)),
     child: Text(
-      "-${discountType == "percentage" ? discountValue.toString() + "% off" : worldCurrencies[currency!]! + moneyDisplayNormalizer(discountValue.toInt()).toString()}",
+      "-${discountType == "percentage" ? "$discountValue% off" : worldCurrencies[currency!]! + moneyDisplayNormalizer(discountValue.toInt()).toString()}",
       style: TextStyle(
         color: white,
         fontSize: 10,

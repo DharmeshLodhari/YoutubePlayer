@@ -14,7 +14,7 @@ import '../../../user_profile/models/job_service_model.dart';
 
 class JobCardChatDescription extends StatefulWidget {
   const JobCardChatDescription({super.key, required this.jobMessage});
-  final jobMessage;
+  final Map<String, dynamic> jobMessage;
 
   @override
   State<JobCardChatDescription> createState() => _JobCardChatDescriptionState();
@@ -29,7 +29,7 @@ class _JobCardChatDescriptionState extends State<JobCardChatDescription> {
   Map<String, dynamic>? authorData;
 
   String getTimeDifference(String date) {
-    var difference = DateTime.now().difference(DateTime.parse(date));
+    final difference = DateTime.now().difference(DateTime.parse(date));
     String time = '';
     debugPrint('$difference-----');
 
@@ -61,7 +61,7 @@ class _JobCardChatDescriptionState extends State<JobCardChatDescription> {
 
     jobServiceToChatModel = JobServiceToChatModel.fromJson(data!);
 
-    bool isSend = widget.jobMessage['author'] == userBloc.user.userName;
+    final bool isSend = widget.jobMessage['author'] == userBloc.user.userName;
 
     return GestureDetector(
       onTap: () =>

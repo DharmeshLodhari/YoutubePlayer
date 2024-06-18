@@ -15,8 +15,10 @@ import '../../../messaging/chat/utils.dart';
 import '../../payment_and_banking_auth.dart';
 
 class VirtualAccountDetail extends StatefulWidget {
+  const VirtualAccountDetail({super.key});
+
   @override
-  _VirtualAccountDetailState createState() => _VirtualAccountDetailState();
+  State<VirtualAccountDetail> createState() => _VirtualAccountDetailState();
 }
 
 class _VirtualAccountDetailState extends State<VirtualAccountDetail> {
@@ -459,7 +461,7 @@ class _VirtualAccountDetailState extends State<VirtualAccountDetail> {
       children: [
         getUserCurrencySymbol(context),
         Text(
-          " " + getFinalAmount(),
+          " ${getFinalAmount()}",
           style: TextStyle(
               fontSize: 36, color: navyBlue, fontWeight: FontWeight.w700),
         ),

@@ -263,7 +263,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
     }
   }
 
-  Future<void> getShippingCities(code) async {
+  Future<void> getShippingCities(String code) async {
     if (mounted) setState(() {});
     if (!isLoader) {
       isLoader = true;
@@ -890,7 +890,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
           final StatesModel picked =
               stateList.firstWhere((element) => element.name == value);
           selectedCity = null;
-          await getShippingCities(picked.isoCode);
+          await getShippingCities(picked.isoCode ?? "");
           shippingAddress?.stateName = picked.name;
           selectedState = value;
         });
@@ -1513,7 +1513,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
 
   Future<void> addJob() async {
     if (_formKey.currentState!.validate()) {
-      if (jobImages.length >= 1) {
+      if (jobImages.isNotEmpty) {
         if (validateDropdown()) {
           if (jobEndDate != null) {
             final CreateJobModel job = CreateJobModel();

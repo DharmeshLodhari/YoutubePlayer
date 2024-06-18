@@ -91,7 +91,7 @@ class EventTileWithHeart extends StatefulWidget {
 
   const EventTileWithHeart({super.key, this.partialEvent});
   @override
-  _EventTileWithHeartState createState() => _EventTileWithHeartState();
+  State<EventTileWithHeart> createState() => _EventTileWithHeartState();
 }
 
 class _EventTileWithHeartState extends State<EventTileWithHeart> {

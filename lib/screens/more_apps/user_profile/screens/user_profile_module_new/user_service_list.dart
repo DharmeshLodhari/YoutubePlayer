@@ -15,10 +15,10 @@ class UserServiceList extends StatefulWidget {
   CustomerProfile? user;
   bool isOwner;
 
-  UserServiceList({required this.user, this.isOwner = false});
+  UserServiceList({super.key, required this.user, this.isOwner = false});
 
   @override
-  _UserServiceListState createState() => _UserServiceListState();
+  State<UserServiceList> createState() => _UserServiceListState();
 }
 
 class _UserServiceListState extends State<UserServiceList> {

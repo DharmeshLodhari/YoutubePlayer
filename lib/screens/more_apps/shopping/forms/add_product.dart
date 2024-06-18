@@ -2055,7 +2055,7 @@ class _AddProductState extends State<AddProduct> {
 
   Future<void> addProduct() async {
     if (_formKey.currentState!.validate()) {
-      if (productImages.length >= 1) {
+      if (productImages.isNotEmpty) {
         if (containsWeight() && selectedWeight.isEmpty && weight != 0.0) {
           showToast(message: AppLocalization.of(context)?.pleaseFillWeight);
           return;
@@ -2772,7 +2772,7 @@ class _AddProductState extends State<AddProduct> {
             } else {
               NavigationUtil.push(
                 context,
-                screen: AddEditShippingAddress(),
+                screen: const AddEditShippingAddress(),
               ).whenComplete(() => getAddressList());
             }
           },

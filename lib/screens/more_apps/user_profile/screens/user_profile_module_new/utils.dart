@@ -101,7 +101,7 @@ Widget buildStackedFollowersWidget(
     {List<UserFollowers>? images,
     double radiusSize = 32,
     double radiusShift = 10}) {
-  if (images!.length != 0) {
+  if (images!.isNotEmpty) {
     final items = images
         .map((image) => buildImage(
             image.avatar ?? '', image.fullName ?? '', image.accountType ?? ""))
@@ -124,7 +124,7 @@ Widget buildMultipleFollowersWidget(
     double radiusSize = 32,
     double radiusShift = 10,
     double radiusHeight = 32,
-    radiusWidth = 32}) {
+    double radiusWidth = 32}) {
   return Padding(
     padding: const EdgeInsets.only(right: 12),
     child: StackedWidgets(

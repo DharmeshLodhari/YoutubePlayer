@@ -14,8 +14,10 @@ import 'hotel_auth.dart';
 import 'hotel_tile.dart';
 
 class SearchHotel extends StatefulWidget {
+  const SearchHotel({super.key});
+
   @override
-  _SearchHotelState createState() => _SearchHotelState();
+  State<SearchHotel> createState() => _SearchHotelState();
 }
 
 class _SearchHotelState extends State<SearchHotel> {
@@ -38,7 +40,7 @@ class _SearchHotelState extends State<SearchHotel> {
   List<HotelRoomItem> hotelRooms = [];
   bool isLoading = false;
 
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
   @override
@@ -634,7 +636,7 @@ class _SearchHotelState extends State<SearchHotel> {
     );
   }
 
-  Widget getPriceSelection(bottomSheetSetState) {
+  Widget getPriceSelection(StateSetter bottomSheetSetState) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Text(
         "Price",

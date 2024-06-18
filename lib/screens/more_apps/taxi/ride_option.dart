@@ -118,7 +118,7 @@ class _RideOptionState extends State<RideOption> {
             if (isLoading)
               Center(child: CircularLoadingIndicator())
             else
-              MapUI(
+              const MapUI(
                 showStartingPointToDestinationPolyline: true,
               ),
             if (isRideSelected)

@@ -44,7 +44,7 @@ class PostTile extends StatefulWidget {
       this.disableClick = true});
 
   @override
-  _PostTileState createState() => _PostTileState();
+  State<PostTile> createState() => _PostTileState();
 }
 
 class _PostTileState extends State<PostTile> {

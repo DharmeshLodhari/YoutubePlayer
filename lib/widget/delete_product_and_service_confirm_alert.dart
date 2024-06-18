@@ -4,6 +4,8 @@ import 'package:Slydo/widget/curved_btn.dart';
 import 'package:flutter/material.dart';
 
 class ConfirmDelete extends StatelessWidget {
+  const ConfirmDelete({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Center(

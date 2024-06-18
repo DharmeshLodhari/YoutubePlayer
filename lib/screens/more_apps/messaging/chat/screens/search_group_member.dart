@@ -23,12 +23,12 @@ import '../../message_auth.dart';
 
 // ignore: must_be_immutable
 class SearchGroupMember extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
-  SearchGroupMember({this.arguments});
+  const SearchGroupMember({super.key, this.arguments});
 
   @override
-  _SearchGroupMemberState createState() => _SearchGroupMemberState();
+  State<SearchGroupMember> createState() => _SearchGroupMemberState();
 }
 
 class _SearchGroupMemberState extends State<SearchGroupMember>

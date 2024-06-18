@@ -9,11 +9,11 @@ import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class UserReviewList extends StatefulWidget {
-  CustomerProfile? user;
-  UserReviewList({@required this.user, super.key});
+  final CustomerProfile? user;
+  const UserReviewList({@required this.user, super.key});
 
   @override
-  _UserReviewListState createState() => _UserReviewListState();
+  State<UserReviewList> createState() => _UserReviewListState();
 }
 
 class _UserReviewListState extends State<UserReviewList> {
@@ -89,7 +89,7 @@ class _UserReviewListState extends State<UserReviewList> {
         isReviewLoading = true;
         if (mounted) setState(() {});
 
-        final Map<String, dynamic>? result = await ReviewAuth()
+        final Map<String, dynamic> result = await ReviewAuth()
             .fetchUserReviews(userName: widget.user!.userName);
 
         if (result == null) {
@@ -116,9 +116,9 @@ class _UserReviewListState extends State<UserReviewList> {
         final List tempList = result['results'] as List;
 
         final List<Review> reviews = [];
-        tempList.forEach((element) {
+        for (var element in tempList) {
           reviews.add(Review.fromJson(element));
-        });
+        }
 
         if (mounted) {
           setState(() {

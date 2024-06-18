@@ -16,7 +16,7 @@ class ChannelProfileScreen extends StatefulWidget {
   final bool isLoading;
   // Map<String, dynamic>? result = {};
 
-  ChannelProfileScreen({
+  const ChannelProfileScreen({
     super.key,
     this.searchedUser,
     this.channelDetail,
@@ -211,7 +211,7 @@ class _ChannelProfileScreenState extends State<ChannelProfileScreen>
 
   @override
   Widget build(BuildContext context) {
-    final String? userType = 'channel';
+    const String userType = 'channel';
     return NestedScrollView(
       controller: scrollController,
       headerSliverBuilder: (BuildContext context, bool boxIsScrolled) {

@@ -1,4 +1,3 @@
-/**/
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/data/state_notifier.dart';
@@ -32,12 +31,12 @@ import 'more_apps/messaging/chat/helpers/connection_list_manager.dart';
 import 'more_apps/user_profile/user_auth.dart';
 
 class SearchModule extends StatefulWidget {
-  final arguments;
+  final dynamic arguments;
 
-  SearchModule({super.key, this.arguments});
+  const SearchModule({super.key, this.arguments});
 
   @override
-  _SearchModuleState createState() => _SearchModuleState();
+  State<SearchModule> createState() => _SearchModuleState();
 }
 
 class _SearchModuleState extends State<SearchModule>

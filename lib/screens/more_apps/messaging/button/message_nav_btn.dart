@@ -7,7 +7,7 @@ import 'package:badges/badges.dart' as badges;
 import 'package:flutter/material.dart';
 
 class MessageNavBtn extends StatefulWidget {
-  const MessageNavBtn({Key? key});
+  const MessageNavBtn({super.key});
 
   @override
   State<MessageNavBtn> createState() => _MessageNavBtnState();

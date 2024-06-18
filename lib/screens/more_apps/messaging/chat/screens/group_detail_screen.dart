@@ -26,12 +26,12 @@ import '../../../../../widget/dialog.dart';
 import '../../../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 
 class GroupDetailScreen extends StatefulWidget {
-  final arguments;
+  final dynamic arguments;
 
-  GroupDetailScreen({this.arguments});
+  const GroupDetailScreen({super.key, this.arguments});
 
   @override
-  _GroupDetailScreenState createState() => _GroupDetailScreenState();
+  State<GroupDetailScreen> createState() => _GroupDetailScreenState();
 }
 
 class _GroupDetailScreenState extends State<GroupDetailScreen>
@@ -52,7 +52,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
 
   bool isExitingGroup = false;
 
-  @protected
+  @override
   void initState() {
     getGroupDetail();
     super.initState();
@@ -982,21 +982,19 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
               users: selectedUsers as List<CustomerProfile>)
           .then((value) {
         if (value) {
-          if (selectedUsers is List<CustomerProfile>) {
-            final List<Participant> usersAdded = [];
+          final List<Participant> usersAdded = [];
 
-            selectedUsers.forEach((element) {
-              usersAdded.add(Participant(
-                  avatar: element.avatar,
-                  fullName: element.displayName(),
-                  type: element.type,
-                  userName: element.userName));
-            });
-
-            groupDetail!.participants.addAll(usersAdded);
-            showToast(message: "Users are added in group !!");
-            if (mounted) setState(() {});
+          for (var element in selectedUsers) {
+            usersAdded.add(Participant(
+                avatar: element.avatar,
+                fullName: element.displayName(),
+                type: element.type,
+                userName: element.userName));
           }
+
+          groupDetail!.participants.addAll(usersAdded);
+          showToast(message: "Users are added in group !!");
+          if (mounted) setState(() {});
         }
       }).catchError((error) {
         debugPrint("ERROR:- $error");
@@ -1087,14 +1085,14 @@ void muteGroupNotification() {
 }
 
 class VerticalListItem extends StatefulWidget {
-  VerticalListItem(this.user, this.groupDetail);
+  const VerticalListItem(this.user, this.groupDetail, {super.key});
 
   final CustomerProfile user;
 
   final GroupDetailModel? groupDetail;
 
   @override
-  _VerticalListItemState createState() => _VerticalListItemState();
+  State<VerticalListItem> createState() => _VerticalListItemState();
 }
 
 class _VerticalListItemState extends State<VerticalListItem> {

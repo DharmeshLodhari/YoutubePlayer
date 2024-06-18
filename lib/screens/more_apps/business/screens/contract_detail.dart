@@ -21,12 +21,12 @@ import '../business_auth.dart';
 
 // ignore: must_be_immutable
 class ContractDetail extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
-  ContractDetail({required this.arguments});
+  const ContractDetail({super.key, required this.arguments});
 
   @override
-  _ContractDetailState createState() => _ContractDetailState();
+  State<ContractDetail> createState() => _ContractDetailState();
 }
 
 class _ContractDetailState extends State<ContractDetail> {

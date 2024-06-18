@@ -15,7 +15,7 @@ class DefaultUserProfileScreen extends StatefulWidget {
   final bool isOwner;
   final bool isLoading;
 
-  DefaultUserProfileScreen({
+  const DefaultUserProfileScreen({
     super.key,
     required this.searchedUser,
     required this.searchedUserName,

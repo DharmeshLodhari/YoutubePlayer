@@ -620,8 +620,8 @@ class YarnAuth extends AuthService {
     //create multipart request for POST or PATCH method
     final request = http.MultipartRequest("POST", Uri.parse(url));
 
-    final Map<dynamic, dynamic> _data = addYarnAndQuestion.toAddMap();
-    debugPrint('DATA ---> $_data');
+    final Map<dynamic, dynamic> data = addYarnAndQuestion.toAddMap();
+    debugPrint('DATA ---> $data');
 
     if (addYarnAndQuestion.isQuestion) {
       request.fields["title"] = addYarnAndQuestion.title!;
@@ -754,8 +754,8 @@ class YarnAuth extends AuthService {
     //create multipart request for POST or PATCH method
     final request = http.MultipartRequest("POST", Uri.parse(url));
 
-    final Map<dynamic, dynamic> _data = addYarnAndQuestion.toAddMap();
-    debugPrint('DATA ---> $_data');
+    final Map<dynamic, dynamic> data0 = addYarnAndQuestion.toAddMap();
+    debugPrint('DATA ---> $data0');
 
     if (addYarnAndQuestion.isQuestion) {
       request.fields["title"] =

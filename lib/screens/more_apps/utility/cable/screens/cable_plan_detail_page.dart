@@ -1,13 +1,13 @@
-import 'package:Slydo/screens/more_apps/utility/cable/model/CablePlan.dart';
+import 'package:Slydo/screens/more_apps/utility/cable/model/cable_plan.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:flutter/material.dart';
 
 class CablePlanDetail extends StatefulWidget {
   final Map<String, dynamic>? arguments;
-  CablePlanDetail({this.arguments});
+  const CablePlanDetail({super.key, this.arguments});
   @override
-  _CablePlanDetailState createState() => _CablePlanDetailState();
+  State<CablePlanDetail> createState() => _CablePlanDetailState();
 }
 
 class _CablePlanDetailState extends State<CablePlanDetail> {

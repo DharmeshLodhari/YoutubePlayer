@@ -33,7 +33,7 @@ class ShareManager {
   List<SharedMediaFile>? _sharedFiles;
   String? _sharedText;
   Timer? _timerForSharingDataListen;
-  Duration _refreshDurationInterval = const Duration(seconds: 1);
+  final Duration _refreshDurationInterval = const Duration(seconds: 1);
 
   void initializeShareManager() {
     _initializeMediaStream();

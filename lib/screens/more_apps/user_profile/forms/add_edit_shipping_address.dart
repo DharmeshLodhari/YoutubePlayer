@@ -200,14 +200,14 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
     }
   }
 
-  Future<void> getShippingCities(code) async {
+  Future<void> getShippingCities(String? code) async {
     if (mounted) setState(() {});
     if (!isLoading) {
       isLoading = true;
       if (mounted) setState(() {});
 
       final Map<String, dynamic>? result =
-          await ShoppingAuthService().getShippingCities(code);
+          await ShoppingAuthService().getShippingCities(code ?? "");
 
       if (result == null) {
         isLoading = false;

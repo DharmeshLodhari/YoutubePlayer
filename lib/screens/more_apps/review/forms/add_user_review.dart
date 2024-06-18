@@ -257,7 +257,7 @@ class _AddReviewState extends State<AddReview> {
   }
 
   void onButtonTap() async {
-    Map<String, dynamic> data = {
+    final Map<String, dynamic> data = {
       "text": _reviewController.text,
       "rating": rating,
     };

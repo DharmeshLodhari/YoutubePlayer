@@ -18,8 +18,10 @@ import '../../../payment_and_banking/payment_and_banking_auth.dart';
 import '../../models/shipping_option_list_model.dart';
 
 class ShippingOptionsList extends StatefulWidget {
+  const ShippingOptionsList({super.key});
+
   @override
-  _ShippingOptionsListState createState() => _ShippingOptionsListState();
+  State<ShippingOptionsList> createState() => _ShippingOptionsListState();
 }
 
 class _ShippingOptionsListState extends State<ShippingOptionsList>

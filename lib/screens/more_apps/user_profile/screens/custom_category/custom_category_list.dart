@@ -17,10 +17,10 @@ import 'package:shimmer/shimmer.dart';
 
 // ignore: must_be_immutable
 class CustomCategoryList extends StatefulWidget {
-  CustomCategoryList({Key? key});
+  const CustomCategoryList({super.key});
 
   @override
-  _CustomCategoryListState createState() => _CustomCategoryListState();
+  State<CustomCategoryList> createState() => _CustomCategoryListState();
 }
 
 class _CustomCategoryListState extends State<CustomCategoryList> {
@@ -255,7 +255,7 @@ class _CustomCategoryListState extends State<CustomCategoryList> {
         });
   }
 
-  void deleteCategoryDialog(id) {
+  void deleteCategoryDialog(dynamic id) {
     showDialogBox(
       context: context,
       actionOneTextColor: blackFont,

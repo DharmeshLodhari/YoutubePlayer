@@ -140,8 +140,9 @@ class SingleChoiceDialogState extends State<CountryPickerDialog> {
     }
 
     if (widget.priorityList != null) {
-      widget.priorityList!.forEach((Country country) => _allCountries!
-          .removeWhere((Country c) => country.isoCode == c.isoCode));
+      for (var country in widget.priorityList!) {
+        _allCountries!.removeWhere((Country c) => country.isoCode == c.isoCode);
+      }
       _allCountries!.insertAll(0, widget.priorityList!);
     }
 

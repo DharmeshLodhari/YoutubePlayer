@@ -9,8 +9,10 @@ import 'bus_auth.dart';
 import 'models/Ticket.dart';
 
 class TicketDetail extends StatefulWidget {
+  const TicketDetail({super.key});
+
   @override
-  _TicketDetailState createState() => _TicketDetailState();
+  State<TicketDetail> createState() => _TicketDetailState();
 }
 
 class _TicketDetailState extends State<TicketDetail> {
@@ -395,7 +397,7 @@ class MySeparator extends StatelessWidget {
   final double height;
   final Color color;
 
-  const MySeparator({this.height = 1.5, this.color = Colors.black});
+  const MySeparator({super.key, this.height = 1.5, this.color = Colors.black});
 
   @override
   Widget build(BuildContext context) {

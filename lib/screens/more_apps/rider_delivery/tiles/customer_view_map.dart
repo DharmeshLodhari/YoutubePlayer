@@ -15,7 +15,7 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class CustomerViewMap extends StatefulWidget {
-  CustomerViewMap({
+  const CustomerViewMap({
     super.key,
     this.journeyDetail,
   });
@@ -23,7 +23,7 @@ class CustomerViewMap extends StatefulWidget {
   final DeliveryModel? journeyDetail;
 
   @override
-  _CustomerViewMapState createState() => _CustomerViewMapState();
+  State<CustomerViewMap> createState() => _CustomerViewMapState();
 }
 
 class _CustomerViewMapState extends State<CustomerViewMap> {

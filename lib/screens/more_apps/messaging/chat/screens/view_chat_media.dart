@@ -12,10 +12,10 @@ import '../../../../../utils/common.dart';
 class ViewChatMedia extends StatefulWidget {
   final dynamic arguments;
 
-  ViewChatMedia({this.arguments});
+  const ViewChatMedia({super.key, this.arguments});
 
   @override
-  _ViewChatMediaState createState() => _ViewChatMediaState();
+  State<ViewChatMedia> createState() => _ViewChatMediaState();
 }
 
 class _ViewChatMediaState extends State<ViewChatMedia> {
@@ -99,7 +99,7 @@ class _ViewChatMediaState extends State<ViewChatMedia> {
     return SafeArea(
       child: PopScope(
         onPopInvoked: (didPop) async {
-          if(didPop) {
+          if (didPop) {
             return;
           }
         },

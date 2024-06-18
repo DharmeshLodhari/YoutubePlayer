@@ -390,10 +390,10 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile>
   }
 
   void checkCurrentUserIsInRequestList() async {
-    final UserBloc _userBloc = Provider.of<UserBloc>(context, listen: false);
+    final UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
     debugPrint("is In Request List -");
 
-    if (_userBloc.user.userName != widget.customerProfile?.userName) {
+    if (userBloc.user.userName != widget.customerProfile?.userName) {
       UserAuth().checkInRequest(widget.customerProfile?.userName).then((value) {
         if (mounted) {
           setState(() {

@@ -27,7 +27,7 @@ class UserAuth extends AuthService {
       return CustomerProfile();
     }
     final String url = "${AppConfig.baseUrl}/api/v1/user/customer/$userName";
-    final uuid = const Uuid();
+    const uuid = Uuid();
     final transactionId = uuid.v4();
 
     // var headers = await getAuthHeaders();
@@ -278,7 +278,7 @@ class UserAuth extends AuthService {
     debugPrint('REGISTER PHONE NUMBER RESPONSE ::: ${response.body}');
 
     if (response.statusCode == 200 || response.statusCode == 205) {
-      final jsonData = json.decode(response.body);
+      // final jsonData = json.decode(response.body);
       return true;
     } else {
       if (AppConfig.enableLogs.value) debugPrint("DATA SENT:- $data");
@@ -370,7 +370,6 @@ class UserAuth extends AuthService {
       String? phoneNumber,
       String otp,
       String passwordToken) async {
-    late String result;
     final String url = "${AppConfig.baseUrl}/api/v1/sms/verify/";
     final headers = getNonAuthHeader();
     final data = {

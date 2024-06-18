@@ -14,13 +14,13 @@ import 'package:provider/provider.dart';
 import '../../../payment_and_banking/payment_and_banking_auth.dart';
 
 class EditShippingOptions extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
   final Function(bool)? callback;
 
-  EditShippingOptions({this.callback, this.arguments});
+  const EditShippingOptions({super.key, this.callback, this.arguments});
 
   @override
-  _EditShippingOptionsState createState() => _EditShippingOptionsState();
+  State<EditShippingOptions> createState() => _EditShippingOptionsState();
 }
 
 class _EditShippingOptionsState extends State<EditShippingOptions> {

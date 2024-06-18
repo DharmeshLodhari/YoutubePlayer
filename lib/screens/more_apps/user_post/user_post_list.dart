@@ -17,11 +17,10 @@ class UserPostList extends StatefulWidget {
       {@required this.user,
       this.titleToSearch,
       this.channelUserName,
-      super.key})
-     ;
+      super.key});
 
   @override
-  _UserPostListState createState() => _UserPostListState();
+  State<UserPostList> createState() => _UserPostListState();
 }
 
 class _UserPostListState extends State<UserPostList> {

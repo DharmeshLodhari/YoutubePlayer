@@ -11,10 +11,10 @@ class AudioTileForChat extends StatefulWidget {
   final Map<String, dynamic>? message;
   final ChatConversation? chatConversation;
 
-  AudioTileForChat({this.message, this.chatConversation});
+  const AudioTileForChat({super.key, this.message, this.chatConversation});
 
   @override
-  _AudioTileForChatState createState() => _AudioTileForChatState();
+  State<AudioTileForChat> createState() => _AudioTileForChatState();
 }
 
 class _AudioTileForChatState extends State<AudioTileForChat> {
@@ -35,7 +35,7 @@ class _AudioTileForChatState extends State<AudioTileForChat> {
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
-    bool isSend = widget.message!["author"] == userBloc.user.userName;
+    final bool isSend = widget.message!["author"] == userBloc.user.userName;
 
     if (_audioPlayer == null || _audioPlayer?.id != widget.message!["id"]) {
       _audioPlayer = AssetsAudioPlayer.withId(widget.message!["id"]);

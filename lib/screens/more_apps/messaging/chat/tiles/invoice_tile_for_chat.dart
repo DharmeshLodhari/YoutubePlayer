@@ -46,7 +46,7 @@ class _PostTileForInvoiceState extends State<PostTileForInvoice> {
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
 
-    bool isSender = widget.message!["author"] == userBloc.user.userName;
+    final bool isSender = widget.message!["author"] == userBloc.user.userName;
 
     return Column(
       mainAxisSize: MainAxisSize.min,

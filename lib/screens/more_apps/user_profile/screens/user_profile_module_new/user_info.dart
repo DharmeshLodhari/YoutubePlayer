@@ -9,14 +9,13 @@ import 'package:Slydo/widget/item_display_card.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-// ignore: must_be_immutable
 class UserInfo extends StatefulWidget {
   CustomerProfile? user;
   void Function(int index)? changeIndex;
-  UserInfo({required this.user, this.changeIndex});
+  UserInfo({super.key, required this.user, this.changeIndex});
 
   @override
-  _UserInfoState createState() => _UserInfoState();
+  State<UserInfo> createState() => _UserInfoState();
 }
 
 class _UserInfoState extends State<UserInfo> {

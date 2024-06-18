@@ -26,19 +26,17 @@ import 'more_apps/user_profile/user_auth.dart';
 
 // ignore: must_be_immutable
 class QRCodeView extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
-  QRCodeView({this.arguments, super.key});
+  const QRCodeView({this.arguments, super.key});
 
   @override
-  State<StatefulWidget> createState() => _QRCodeViewState(arguments: arguments);
+  State<StatefulWidget> createState() => _QRCodeViewState();
 }
 
 class _QRCodeViewState extends State<QRCodeView> {
-  var arguments;
   late bool canShowDialogBox;
   // We need this variable to show the dialogbox just once cause qrscanner controller uses a stream(using a stream will make the dialogbox show up multiple times).
-  _QRCodeViewState({this.arguments});
 
   bool? isRequest = false;
   late CustomerProfileBloc customerProfileBloc;
@@ -54,7 +52,7 @@ class _QRCodeViewState extends State<QRCodeView> {
     appConfigurationModel = getIt<AppConfigurationBloc>().appConfigurationModel;
 
     canShowDialogBox = true;
-    isRequest = arguments != null ? arguments['isRequest'] ?? false : false;
+    isRequest = widget.arguments != null ? widget.arguments['isRequest'] ?? false : false;
 
     super.initState();
   }

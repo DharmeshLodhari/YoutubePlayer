@@ -19,7 +19,7 @@ import '../../../../widget/no_item_in_list.dart';
 import '../tiles/jos_description_card.dart';
 
 class JobsDashboard extends StatefulWidget {
-  const JobsDashboard({Key? key});
+  const JobsDashboard({super.key});
 
   @override
   State<JobsDashboard> createState() => _JobsDashboardState();
@@ -86,7 +86,7 @@ class _JobsDashboardState extends State<JobsDashboard> {
     }
   }
 
-  void getActiveJobListing({category}) async {
+  void getActiveJobListing({String? category}) async {
     if (!isActiveListLoading) {
       if (productNext != null && !isActiveListLoading) {
         isActiveListLoading = true;
@@ -135,7 +135,7 @@ class _JobsDashboardState extends State<JobsDashboard> {
   }
 
   @override
-  initState() {
+  void initState() {
     getActiveJobListing();
     _jobsScrollController.addListener(() {
       if (_jobsScrollController.position.pixels ==
@@ -150,7 +150,7 @@ class _JobsDashboardState extends State<JobsDashboard> {
     super.initState();
   }
 
-  _refreshPage() {
+  void _refreshPage() {
     productNext = "";
     productCount = 0;
     productPrevious = "";
@@ -490,67 +490,65 @@ class _JobsDashboardState extends State<JobsDashboard> {
   }
 
   Widget searchBox() {
-    return Container(
-      child: Theme(
-        data: Theme.of(context).copyWith(
-          textSelectionTheme: const TextSelectionThemeData()
-              .copyWith(selectionHandleColor: navyBlue),
+    return Theme(
+      data: Theme.of(context).copyWith(
+        textSelectionTheme: const TextSelectionThemeData()
+            .copyWith(selectionHandleColor: navyBlue),
+      ),
+      child: TextFormField(
+        key: searchItemTextFormField,
+        controller: searchItemTextController,
+        style: TextStyle(
+          fontSize: 16,
+          fontFamily: "Inter",
+          color: blackFont,
+          fontWeight: FontWeight.w600,
         ),
-        child: TextFormField(
-          key: searchItemTextFormField,
-          controller: searchItemTextController,
-          style: TextStyle(
-            fontSize: 16,
-            fontFamily: "Inter",
-            color: blackFont,
-            fontWeight: FontWeight.w600,
+        cursorWidth: 1.5,
+        cursorColor: navyBlue,
+        decoration: InputDecoration(
+          hintText: 'Search Category',
+          fillColor: Colors.white,
+          filled: true,
+          contentPadding: const EdgeInsets.symmetric(vertical: 10),
+          prefix: const Padding(
+            padding: EdgeInsets.only(left: 12),
           ),
-          cursorWidth: 1.5,
-          cursorColor: navyBlue,
-          decoration: InputDecoration(
-            hintText: 'Search Category',
-            fillColor: Colors.white,
-            filled: true,
-            contentPadding: const EdgeInsets.symmetric(vertical: 10),
-            prefix: const Padding(
-              padding: EdgeInsets.only(left: 12),
-            ),
-            suffixIcon: searchIcon(),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(
-                color: dividerColor,
-                width: 1.0,
-              ),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(
-                color: navyBlue,
-                width: 1.0,
-              ),
-            ),
-            errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(
-                color: dividerColor,
-                width: 1.0,
-              ),
-            ),
-            focusedErrorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(
-                color: dividerColor,
-                width: 1.0,
-              ),
+          suffixIcon: searchIcon(),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(
+              color: dividerColor,
+              width: 1.0,
             ),
           ),
-          onFieldSubmitted: (val) {
-            if (mounted) setState(() {});
-            FocusScope.of(context).unfocus();
-            onRefresh();
-          },
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(
+              color: navyBlue,
+              width: 1.0,
+            ),
+          ),
+          errorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(
+              color: dividerColor,
+              width: 1.0,
+            ),
+          ),
+          focusedErrorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(
+              color: dividerColor,
+              width: 1.0,
+            ),
+          ),
         ),
+        onFieldSubmitted: (val) {
+          if (mounted) setState(() {});
+          FocusScope.of(context).unfocus();
+          onRefresh();
+        },
       ),
     );
   }
@@ -616,9 +614,9 @@ class _JobsDashboardState extends State<JobsDashboard> {
         }
         if (mounted) setState(() {});
 
-        tempList.forEach((item) {
+        for (var item in tempList) {
           searchedCategoryList.add(CategoryListData.fromJson(item));
-        });
+        }
       }
       if (searchedCategoryList.isEmpty) {
         noSearchedItem = true;

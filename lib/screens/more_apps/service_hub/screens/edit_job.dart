@@ -593,7 +593,7 @@ class _EditJobState extends State<EditJob> {
     }
   }
 
-  Future<void> getShippingCities(String? code) async {
+  Future<void> getShippingCities(String code) async {
     if (mounted) setState(() {});
     if (!isLoader) {
       isLoader = true;
@@ -1534,7 +1534,7 @@ class _EditJobState extends State<EditJob> {
           final StatesModel picked =
               stateList.firstWhere((element) => element.name == value);
           selectedCity = null;
-          await getShippingCities(picked.isoCode);
+          await getShippingCities(picked.isoCode ?? "");
           shippingAddress?.stateName = picked.name;
           selectedState = value!;
         });

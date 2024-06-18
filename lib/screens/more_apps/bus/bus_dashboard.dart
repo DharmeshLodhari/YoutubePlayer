@@ -8,8 +8,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class BusDashboard extends StatefulWidget {
+  const BusDashboard({super.key});
+
   @override
-  _BusDashboardState createState() => _BusDashboardState();
+  State<BusDashboard> createState() => _BusDashboardState();
 }
 
 class _BusDashboardState extends State<BusDashboard> {
@@ -31,7 +33,7 @@ class _BusDashboardState extends State<BusDashboard> {
           onPageChanged: (index) {
             _busDashboardBloc.index = index;
           },
-          children: <Widget>[
+          children: const <Widget>[
             BusExploreScreen(),
             MyBusTicketList(),
           ],

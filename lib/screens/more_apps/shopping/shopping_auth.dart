@@ -910,26 +910,26 @@ class ShoppingAuthService extends AuthService {
     //create multipart request for POST or PATCH method
     final request = http.MultipartRequest("POST", Uri.parse(url));
 
-    final Map<dynamic, dynamic> _data = product.toMap();
-    _data["available_from"] = dateToString(product.availableFrom!);
-    _data["image_count"] = product.localImages!.length;
-    _data.remove('variants');
+    final Map<dynamic, dynamic> data = product.toMap();
+    data["available_from"] = dateToString(product.availableFrom!);
+    data["image_count"] = product.localImages!.length;
+    data.remove('variants');
 
-    if (_data["height"] == null || _data["height"] == 0.0) {
-      _data['height'] = 0.0;
-      _data['height_si_unit'] = '';
+    if (data["height"] == null || data["height"] == 0.0) {
+      data['height'] = 0.0;
+      data['height_si_unit'] = '';
     }
-    if (_data["weight"] == null || _data["weight"] == 0.0) {
-      _data['weight'] = 0.0;
-      _data['weight_si_unit'] = '';
+    if (data["weight"] == null || data["weight"] == 0.0) {
+      data['weight'] = 0.0;
+      data['weight_si_unit'] = '';
     }
-    if (_data["width"] == null || _data["width"] == 0.0) {
-      _data['width'] = 0.0;
-      _data['width_si_unit'] = '';
+    if (data["width"] == null || data["width"] == 0.0) {
+      data['width'] = 0.0;
+      data['width_si_unit'] = '';
     }
-    debugPrint('DATA from ---> $_data');
+    debugPrint('DATA from ---> $data');
 
-    _data.forEach((k, v) {
+    data.forEach((k, v) {
       if (k == "search_keywords") {
         request.fields[k] = jsonEncode(v);
       } else {
@@ -937,7 +937,7 @@ class ShoppingAuthService extends AuthService {
       }
     });
 
-    debugPrint('DATA from two ---> $_data');
+    debugPrint('DATA from two ---> $data');
 
     final List<MultipartFile> newList = [];
 
@@ -999,12 +999,12 @@ class ShoppingAuthService extends AuthService {
     //create multipart request for POST or PATCH method
     final request = http.MultipartRequest("POST", Uri.parse(url));
 
-    final Map<dynamic, dynamic> _data = item.toMap();
-    debugPrint('DATA ---> $_data');
+    final Map<dynamic, dynamic> data = item.toMap();
+    debugPrint('DATA ---> $data');
     // _data["available_from"] = dateToString(variant.availableFrom!);
-    _data["image_count"] = item.localImages!.length;
+    data["image_count"] = item.localImages!.length;
 
-    _data.forEach((k, v) {
+    data.forEach((k, v) {
       request.fields[k] = v.toString();
     });
 
@@ -1105,12 +1105,12 @@ class ShoppingAuthService extends AuthService {
     //create multipart request for POST or PATCH method
     final request = http.MultipartRequest("PATCH", Uri.parse(url));
 
-    final Map<dynamic, dynamic> _data = item.toMap();
-    debugPrint('DATA from ---> $_data');
+    final Map<dynamic, dynamic> data = item.toMap();
+    debugPrint('DATA from ---> $data');
     // _data["available_from"] = dateToString(variant.availableFrom!);
-    _data["image_count"] = item.localImages!.length;
+    data["image_count"] = item.localImages!.length;
 
-    _data.forEach((k, v) {
+    data.forEach((k, v) {
       request.fields[k] = v.toString();
     });
 
@@ -1161,21 +1161,21 @@ class ShoppingAuthService extends AuthService {
     //create multipart request for POST or PATCH method
     final request = http.MultipartRequest("PATCH", Uri.parse(url));
 
-    final Map<dynamic, dynamic> _data = product.toMap();
-    _data["available_from"] = dateToString(product.availableFrom!);
-    _data["image_count"] = product.localImages!.length;
+    final Map<dynamic, dynamic> data = product.toMap();
+    data["available_from"] = dateToString(product.availableFrom!);
+    data["image_count"] = product.localImages!.length;
 
-    if (_data["height"] == null || _data["height"] == 0.0) {
-      _data['height'] = 0.0;
-      _data['height_si_unit'] = '';
+    if (data["height"] == null || data["height"] == 0.0) {
+      data['height'] = 0.0;
+      data['height_si_unit'] = '';
     }
-    if (_data["weight"] == null || _data["weight"] == 0.0) {
-      _data['weight'] = 0.0;
-      _data['weight_si_unit'] = '';
+    if (data["weight"] == null || data["weight"] == 0.0) {
+      data['weight'] = 0.0;
+      data['weight_si_unit'] = '';
     }
-    if (_data["width"] == null || _data["width"] == 0.0) {
-      _data['width'] = 0.0;
-      _data['width_si_unit'] = '';
+    if (data["width"] == null || data["width"] == 0.0) {
+      data['width'] = 0.0;
+      data['width_si_unit'] = '';
     }
 
     if (productAddOnsList!.isNotEmpty) {
@@ -1183,10 +1183,10 @@ class ShoppingAuthService extends AuthService {
           .where((addOn) => addOn.id != null)
           .map((addOn) => addOn.id!)
           .toList();
-      _data["add_ons"] = ids;
+      data["add_ons"] = ids;
     }
 
-    _data.forEach((k, v) {
+    data.forEach((k, v) {
       if (k == "search_keywords") {
         request.fields[k] = jsonEncode(v);
       } else {
@@ -1209,7 +1209,7 @@ class ShoppingAuthService extends AuthService {
 
     // Add multipart to request
     request.files.addAll(newList);
-    debugPrint('UPDATE PRODUCT FIELDS -> $_data');
+    debugPrint('UPDATE PRODUCT FIELDS -> $data');
     headers.forEach((k, v) => request.headers[k] = v);
 
     final response = await request.send();
@@ -1232,10 +1232,7 @@ class ShoppingAuthService extends AuthService {
   Future<Product> getProduct(String id) async {
     final String url = "${AppConfig.baseUrl}/api/v1/products/$id/";
     final headers = await getAuthHeaders();
-    final startTime = DateTime.now();
     final response = await httpGet(url, headers: headers);
-    final endTime = DateTime.now();
-    final Duration _responseTime = endTime.difference(startTime);
 
     final jsonData = json.decode(response.body);
     log("jsonData :- $jsonData");
@@ -1470,11 +1467,11 @@ class ShoppingAuthService extends AuthService {
     //create multipart request for POST or PATCH method
     final request = http.MultipartRequest("POST", Uri.parse(url));
 
-    final Map<dynamic, dynamic> _data = service.toMap();
-    _data["available_from"] = dateToString(service.availableFrom!);
-    _data["image_count"] = service.localImages!.length;
+    final Map<dynamic, dynamic> data = service.toMap();
+    data["available_from"] = dateToString(service.availableFrom!);
+    data["image_count"] = service.localImages!.length;
 
-    _data.forEach((k, v) {
+    data.forEach((k, v) {
       if (k == "search_keywords") {
         request.fields[k] = jsonEncode(v);
       } else {
@@ -1492,7 +1489,7 @@ class ShoppingAuthService extends AuthService {
         service.localImages![i].path,
       );
 
-      debugPrint('DATA FOR SERVICE -> $_data');
+      debugPrint('DATA FOR SERVICE -> $data');
       debugPrint('DATA FOR SERVICE FIELDS -> ${request.fields}');
 
       // Add multipart to newList
@@ -1523,11 +1520,11 @@ class ShoppingAuthService extends AuthService {
     //create multipart request for POST or PATCH method
     final request = http.MultipartRequest("PATCH", Uri.parse(url));
 
-    final Map<dynamic, dynamic> _data = service.toMap();
-    _data["available_from"] = dateToString(service.availableFrom!);
-    _data["image_count"] = service.localImages!.length;
+    final Map<dynamic, dynamic> data = service.toMap();
+    data["available_from"] = dateToString(service.availableFrom!);
+    data["image_count"] = service.localImages!.length;
 
-    _data.forEach((k, v) {
+    data.forEach((k, v) {
       if (k == "search_keywords") {
         request.fields[k] = jsonEncode(v);
       } else {
@@ -1601,11 +1598,11 @@ class ShoppingAuthService extends AuthService {
   // Update Order Status
   Future<bool> updateOrderStatus(String? value, String orderId) async {
     final data = {"status": value};
-    final _data = jsonEncode(data);
+    final data0 = jsonEncode(data);
     final String url =
         "${AppConfig.baseUrl}/api/v1/order/$orderId/update-status/";
     final headers = await getAuthHeaders();
-    final response = await httpPatch(url, headers: headers, body: _data);
+    final response = await httpPatch(url, headers: headers, body: data0);
     if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     }
@@ -1615,10 +1612,10 @@ class ShoppingAuthService extends AuthService {
   // Update Order Note
   Future<bool> updateOrderNote(String note, String orderId) async {
     final data = {"note": note};
-    final _data = jsonEncode(data);
+    final data0 = jsonEncode(data);
     final String url = "${AppConfig.baseUrl}/api/v1/order/$orderId/add-note/";
     final headers = await getAuthHeaders();
-    final response = await httpPatch(url, headers: headers, body: _data);
+    final response = await httpPatch(url, headers: headers, body: data0);
     if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     }
@@ -1745,8 +1742,8 @@ class ShoppingAuthService extends AuthService {
   Future<bool> addOrUpdateItemToShoppingCart(Map<String, dynamic> data) async {
     final String url = "${AppConfig.baseUrl}/api/v1/shopping-cart/add-item/";
     final headers = await getAuthHeaders();
-    final _data = jsonEncode(data);
-    final response = await httpPatch(url, headers: headers, body: _data);
+    final data0 = jsonEncode(data);
+    final response = await httpPatch(url, headers: headers, body: data0);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
@@ -1756,9 +1753,9 @@ class ShoppingAuthService extends AuthService {
 
   Future<bool> removeItemFromShoppingCart(Map data) async {
     final String url = "${AppConfig.baseUrl}/api/v1/shopping-cart/remove-item/";
-    final _data = jsonEncode(data);
+    final data0 = jsonEncode(data);
     final headers = await getAuthHeaders();
-    final response = await httpPatch(url, headers: headers, body: _data);
+    final response = await httpPatch(url, headers: headers, body: data0);
     if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     } else {
@@ -1769,10 +1766,10 @@ class ShoppingAuthService extends AuthService {
   //place shopping cart order
   Future<dynamic> placeOrderOfShoppingCart(Map data) async {
     final String url = "${AppConfig.baseUrl}/api/v1/shopping-cart/";
-    final _data = jsonEncode(data);
+    final data0 = jsonEncode(data);
 
     final headers = await getAuthHeaders();
-    final response = await httpPost(url, headers: headers, body: _data);
+    final response = await httpPost(url, headers: headers, body: data0);
     final jsonData = jsonDecode(response.body);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
@@ -1785,10 +1782,10 @@ class ShoppingAuthService extends AuthService {
   //place single order
   Future<dynamic> placeSingleOrder(Map data) async {
     final String url = "${AppConfig.baseUrl}/api/v1/shopping-cart/buy-now/";
-    final _data = jsonEncode(data);
+    final data0 = jsonEncode(data);
 
     final headers = await getAuthHeaders();
-    final response = await httpPost(url, headers: headers, body: _data);
+    final response = await httpPost(url, headers: headers, body: data0);
     final jsonData = jsonDecode(response.body);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
@@ -1803,8 +1800,8 @@ class ShoppingAuthService extends AuthService {
     final String url =
         "${AppConfig.baseUrl}/api/v1/social/reviews/create-reviewable-record/";
     final headers = await getAuthHeaders();
-    final _data = jsonEncode(data);
-    final response = await httpPost(url, headers: headers, body: _data);
+    final data0 = jsonEncode(data);
+    final response = await httpPost(url, headers: headers, body: data0);
     return response;
   }
 
@@ -2356,14 +2353,14 @@ class ShoppingAuthService extends AuthService {
     }
   }
 
-  Future<bool> createCustomCategory(name) async {
+  Future<bool> createCustomCategory(String name) async {
     final String url =
         "${AppConfig.baseUrl}/api/v1/products/merchant-custom-categories/";
     final Map data = {"name": name};
-    final _data = jsonEncode(data);
+    final data0 = jsonEncode(data);
 
     final headers = await getAuthHeaders();
-    final response = await httpPost(url, headers: headers, body: _data);
+    final response = await httpPost(url, headers: headers, body: data0);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
@@ -2371,14 +2368,14 @@ class ShoppingAuthService extends AuthService {
     return false;
   }
 
-  Future<bool> editCustomCategory(name, id) async {
+  Future<bool> editCustomCategory(String name, dynamic id) async {
     final String url =
         "${AppConfig.baseUrl}/api/v1/products/merchant-custom-categories/$id/";
     final Map data = {"name": name};
-    final _data = jsonEncode(data);
+    final data0 = jsonEncode(data);
 
     final headers = await getAuthHeaders();
-    final response = await httpPatch(url, headers: headers, body: _data);
+    final response = await httpPatch(url, headers: headers, body: data0);
     debugPrint("__________________________________ ${response.statusCode}");
     debugPrint("__________________________________ $data");
     debugPrint("__________________________________ $response");
@@ -2390,7 +2387,7 @@ class ShoppingAuthService extends AuthService {
     return false;
   }
 
-  Future<bool> deleteCustomCategory(id) async {
+  Future<bool> deleteCustomCategory(dynamic id) async {
     final String url =
         "${AppConfig.baseUrl}/api/v1/products/merchant-custom-categories/$id/";
 
@@ -2406,7 +2403,7 @@ class ShoppingAuthService extends AuthService {
     }
   }
 
-  Future<List<ProductCategory>> getProductSubCategories(id) async {
+  Future<List<ProductCategory>> getProductSubCategories(dynamic id) async {
     final String url =
         "${AppConfig.baseUrl}/api/v1/products/sub-categories/$id";
     final headers = await getAuthHeaders();
@@ -2435,7 +2432,7 @@ class ShoppingAuthService extends AuthService {
   }
 
   Future<Map<String, dynamic>?> getProductTags(
-      id, String? next, String? previous, searchText) async {
+      String? id, String? next, String? previous, String searchText) async {
     String url = "";
     if (next == null) {
       return null;
@@ -2721,15 +2718,15 @@ class ShoppingAuthService extends AuthService {
           "${AppConfig.baseUrl}/api/v1/notification/alerts/${flashTagAlertModelForAdd.id}/";
     }
 
-    final _data = jsonEncode(flashTagAlertModelForAdd.toAddUpdate());
+    final data = jsonEncode(flashTagAlertModelForAdd.toAddUpdate());
 
     final headers = await getAuthHeaders();
     Response? response;
 
     if (isEdit == false) {
-      response = await httpPost(url, headers: headers, body: _data);
+      response = await httpPost(url, headers: headers, body: data);
     } else {
-      response = await httpPatch(url, headers: headers, body: _data);
+      response = await httpPatch(url, headers: headers, body: data);
     }
     final FlashTagAlertModel flashTagAlertModel =
         FlashTagAlertModel.fromJson(jsonDecode(response.body));
@@ -2787,7 +2784,7 @@ class ShoppingAuthService extends AuthService {
   }
 
   // set default address
-  Future<Map<String, dynamic>?> setDefaultAddress(id) async {
+  Future<Map<String, dynamic>?> setDefaultAddress(String? id) async {
     final String url =
         "${AppConfig.baseUrl}/api/v1/shipping/addresses/$id/set-as-default/";
 
@@ -2834,7 +2831,7 @@ class ShoppingAuthService extends AuthService {
   }
 
   // List shipping city
-  Future<Map<String, dynamic>?> getShippingCities(code) async {
+  Future<Map<String, dynamic>?> getShippingCities(String code) async {
     final String url =
         "${AppConfig.baseUrl}/api/v1/shipping/cities/?state_code=$code";
 
@@ -3057,15 +3054,15 @@ class ShoppingAuthService extends AuthService {
       url = "${AppConfig.baseUrl}/api/v1/shipping/addresses/${itemModel.id}/";
     }
 
-    final _data = jsonEncode(itemModel.toAddUpdate());
+    final data = jsonEncode(itemModel.toAddUpdate());
 
     final headers = await getAuthHeaders();
     Response? response;
 
     if (isEdit == false) {
-      response = await httpPost(url, headers: headers, body: _data);
+      response = await httpPost(url, headers: headers, body: data);
     } else {
-      response = await httpPatch(url, headers: headers, body: _data);
+      response = await httpPatch(url, headers: headers, body: data);
     }
 
     try {
@@ -3101,9 +3098,9 @@ class ShoppingAuthService extends AuthService {
       request = http.MultipartRequest("PATCH", Uri.parse(url));
     }
 
-    final Map<dynamic, dynamic> _data = itemModel.toAddUpdate();
+    final Map<dynamic, dynamic> data = itemModel.toAddUpdate();
 
-    _data.forEach((k, v) {
+    data.forEach((k, v) {
       if (k == 'consumables') {
         request.fields[k] = jsonEncode(v);
       } else {

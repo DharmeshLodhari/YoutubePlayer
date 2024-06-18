@@ -12,12 +12,11 @@ class PickStateWidget extends StatefulWidget {
   final String?
       initialStateValue; // If we pass this value, it won't the state from the userbloc.
   final Function(int? stateId, String? pickedStateValue) afterOnChanged;
-  PickStateWidget(
+  const PickStateWidget(
       {super.key,
       this.disable = false,
       this.initialStateValue,
-      required this.afterOnChanged})
-     ;
+      required this.afterOnChanged});
 
   @override
   State<PickStateWidget> createState() => _PickStateWidgetState();

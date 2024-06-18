@@ -24,7 +24,7 @@ class FlashTagList extends StatefulWidget {
   }
 
   @override
-  _FlashTagListState createState() => _FlashTagListState();
+  State<FlashTagList> createState() => _FlashTagListState();
 }
 
 class _FlashTagListState extends State<FlashTagList> {

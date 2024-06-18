@@ -691,7 +691,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
     _pageController?.removeListener(_scrollListener);
   }
 
-  refreshTabs(Map<String, bool> val) {
+  void refreshTabs(Map<String, bool> val) {
     if (compareMaps(reorderedBoolMap, val)) {
       debugPrint('The maps are equal.');
     } else {

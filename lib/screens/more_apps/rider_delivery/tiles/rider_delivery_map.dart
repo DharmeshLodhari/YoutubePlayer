@@ -19,7 +19,7 @@ import 'package:location/location.dart';
 import 'package:provider/provider.dart';
 
 class RiderDeliveryMap extends StatefulWidget {
-  RiderDeliveryMap({
+  const RiderDeliveryMap({
     super.key,
     // this.deliveryDetails,
     // this.showRideToStartingPointPolyline = false,
@@ -31,7 +31,7 @@ class RiderDeliveryMap extends StatefulWidget {
   // final bool showRideToStartingPointPolyline;
 
   @override
-  _RiderDeliveryMapState createState() => _RiderDeliveryMapState();
+  State<RiderDeliveryMap> createState() => _RiderDeliveryMapState();
 }
 
 class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
@@ -43,7 +43,7 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
   LocationData? _currentP;
   String rideMarkerImage = "assets/images/bike_top.png";
   GoogleMapController? controller;
-  Set<Circle> circles = Set();
+  Set<Circle> circles = {};
 
   Map<PolylineId, Polyline> polylines = {};
   Uint8List? _markerImageData;

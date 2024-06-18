@@ -6,6 +6,7 @@
 /// current_location : null
 /// updated_at : "2023-12-22T19:36:31.813372Z"
 /// created_at : "2023-12-22T19:16:38.940767Z"
+library;
 
 class RiderModel {
   String? id;

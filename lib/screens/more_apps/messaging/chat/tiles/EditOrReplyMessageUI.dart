@@ -20,10 +20,11 @@ class EditOrReplyMessageUI extends StatefulWidget {
   final Map<String, dynamic>? messageData;
   final ChatConversation? chatConversation;
 
-  EditOrReplyMessageUI({this.messageData, this.chatConversation});
+  const EditOrReplyMessageUI(
+      {super.key, this.messageData, this.chatConversation});
 
   @override
-  _EditOrReplyMessageUIState createState() => _EditOrReplyMessageUIState();
+  State<EditOrReplyMessageUI> createState() => _EditOrReplyMessageUIState();
 }
 
 class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>

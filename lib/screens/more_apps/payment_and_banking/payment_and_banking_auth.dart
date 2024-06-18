@@ -710,11 +710,11 @@ class PaymentAndBankingAuth extends AuthService {
         "results": paymentRequests
       };
       final List lsts = jsonData['results'];
-      lsts.forEach((element) {
+      for (var element in lsts) {
         debugPrint(element['created_at']);
 
         debugPrint("Fola Key : $element");
-      });
+      }
 
       return result;
     } else if (response.statusCode == 500) {
@@ -1027,8 +1027,8 @@ class PaymentAndBankingAuth extends AuthService {
     final String url =
         "${AppConfig.baseUrl}/api/v1/transactions/make-payment-for-orders/";
     final headers = await getAuthHeaders();
-    final _data = jsonEncode(data);
-    final response = await httpPost(url, headers: headers, body: _data);
+    final data0 = jsonEncode(data);
+    final response = await httpPost(url, headers: headers, body: data0);
     debugPrint('MAKE PAYMENT ::: ${response.body}');
     return response;
   }
@@ -1037,8 +1037,8 @@ class PaymentAndBankingAuth extends AuthService {
   Future<http.Response> accountPayout(Map data) async {
     final String url = "${AppConfig.baseUrl}/api/v1/transactions/payout/";
     final headers = await getAuthHeaders();
-    final _data = jsonEncode(data);
-    final response = await httpPost(url, headers: headers, body: _data);
+    final data0 = jsonEncode(data);
+    final response = await httpPost(url, headers: headers, body: data0);
 
     debugPrint('MAKE PAYMENT ::: ${response.body}');
     return response;
