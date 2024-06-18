@@ -52,7 +52,9 @@ class _QRCodeViewState extends State<QRCodeView> {
     appConfigurationModel = getIt<AppConfigurationBloc>().appConfigurationModel;
 
     canShowDialogBox = true;
-    isRequest = widget.arguments != null ? widget.arguments['isRequest'] ?? false : false;
+    isRequest = widget.arguments != null
+        ? widget.arguments['isRequest'] ?? false
+        : false;
 
     super.initState();
   }

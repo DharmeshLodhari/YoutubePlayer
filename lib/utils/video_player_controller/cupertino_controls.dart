@@ -12,7 +12,8 @@ import 'chewie_progress_colors.dart';
 import 'cupertino_progress_bar.dart';
 
 class CupertinoControls extends StatefulWidget {
-  const CupertinoControls({super.key,
+  const CupertinoControls({
+    super.key,
     required this.backgroundColor,
     required this.iconColor,
   });

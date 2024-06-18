@@ -34,7 +34,6 @@ class EditService extends StatefulWidget {
 }
 
 class _EditServiceState extends State<EditService> {
-
   final _auth = ShoppingAuthService();
   UserBloc? userBloc;
   final _formKey = GlobalKey<FormState>();

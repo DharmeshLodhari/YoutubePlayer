@@ -15,8 +15,7 @@ class CustomizedCheckBoxField extends StatefulWidget {
       required this.onTap,
       required this.isChecked,
       this.fontSize,
-      this.maxLines})
-     ;
+      this.maxLines});
 
   @override
   State<CustomizedCheckBoxField> createState() =>

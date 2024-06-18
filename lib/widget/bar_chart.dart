@@ -18,7 +18,6 @@ class BarChart extends StatefulWidget {
 }
 
 class _BarChartState extends State<BarChart> {
-
   late UserBloc userBloc;
   List<dynamic>? expenses;
   late DateTime start;

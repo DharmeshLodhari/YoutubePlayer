@@ -9,8 +9,7 @@ class PlayerWithControls extends StatelessWidget {
   String? posterUrl;
   String? titleName;
 
-  PlayerWithControls({super.key, this.posterUrl, this.titleName})
-     ;
+  PlayerWithControls({super.key, this.posterUrl, this.titleName});
 
   @override
   Widget build(BuildContext context) {
@@ -35,8 +34,8 @@ class PlayerWithControls extends StatelessWidget {
         chewieController.placeholder ?? Container(),
         Center(
           child: AspectRatio(
-            aspectRatio: chewieController.aspectRatio ??
-                _calculateAspectRatio(context),
+            aspectRatio:
+                chewieController.aspectRatio ?? _calculateAspectRatio(context),
             child: VideoPlayer(chewieController.videoPlayerController),
           ),
         ),

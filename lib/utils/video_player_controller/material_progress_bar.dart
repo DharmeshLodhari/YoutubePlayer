@@ -5,7 +5,8 @@ import 'chewie_progress_colors.dart';
 
 class MaterialVideoProgressBar extends StatefulWidget {
   MaterialVideoProgressBar(
-    this.controller, {super.key,
+    this.controller, {
+    super.key,
     ChewieProgressColors? colors,
     this.onDragEnd,
     this.onDragStart,

@@ -5,7 +5,8 @@ import 'chewie_progress_colors.dart';
 
 class CupertinoVideoProgressBar extends StatefulWidget {
   CupertinoVideoProgressBar(
-    this.controller, {super.key,
+    this.controller, {
+    super.key,
     ChewieProgressColors? colors,
     this.onDragEnd,
     this.onDragStart,
