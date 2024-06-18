@@ -345,6 +345,9 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
                                 debugPrint(value.toString());
                               });
                             },
+                            activeTrackColor: navyBlueLight,
+                            activeColor: navyBlue,
+                            inactiveTrackColor: navyBlueLight,
                           ),
                         ),
                         const SizedBox(height: 30),
@@ -360,6 +363,9 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
                                 enableLikes = !enableLikes;
                               });
                             },
+                            activeTrackColor: navyBlueLight,
+                            activeColor: navyBlue,
+                            inactiveTrackColor: navyBlueLight,
                           ),
                         ),
                         const SizedBox(height: 30),
@@ -375,6 +381,9 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
                                 enableCommenting = !enableCommenting;
                               });
                             },
+                            activeTrackColor: navyBlueLight,
+                            activeColor: navyBlue,
+                            inactiveTrackColor: navyBlueLight,
                           ),
                         ),
                         const SizedBox(height: 30),
@@ -390,6 +399,9 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
                                 isPermanent = !isPermanent;
                               });
                             },
+                            activeTrackColor: navyBlueLight,
+                            activeColor: navyBlue,
+                            inactiveTrackColor: navyBlueLight,
                           ),
                         ),
                         const SizedBox(height: 30),
@@ -406,6 +418,9 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
                                   enablePayMe = value;
                                 });
                               },
+                              activeTrackColor: navyBlueLight,
+                              activeColor: navyBlue,
+                              inactiveTrackColor: navyBlueLight,
                             ),
                           )
                         else
@@ -669,7 +684,11 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
               ),
             ),
           ),
-          SizedBox(height: 30, child: switchBtn),
+          SizedBox(
+            width: 50,
+            height: 40,
+            child: FittedBox(fit: BoxFit.fill, child: switchBtn),
+          ),
         ],
       ),
     );
@@ -706,7 +725,6 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
             padding: const EdgeInsets.all(12.0),
             child: CurvedButton(
               width: 100,
-              height: 10,
               borderRadius: 20,
               text: 'Submit',
               fontSize: 14,

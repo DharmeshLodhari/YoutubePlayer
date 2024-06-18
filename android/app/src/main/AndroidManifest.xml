@@ -95,6 +95,8 @@
             android:name="flutterEmbedding"
             android:value="2" />
 
+        <meta-data android:name="asset_statements" android:resource="@string/asset_statements" />
+
         <provider
             android:name="vn.hunghd.flutterdownloader.DownloadedFileProvider"
             android:authorities="${applicationId}.flutter_downloader.provider"

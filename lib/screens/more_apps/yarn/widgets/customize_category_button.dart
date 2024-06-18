@@ -6,7 +6,7 @@ import '../yarn_auth.dart';
 
 class CustomizeCategoryButton extends StatefulWidget {
   final YarnCategories? askCategory;
-  late final UsersCategories? usersCategory;
+  UsersCategories? usersCategory;
   CustomizeCategoryButton({super.key, this.askCategory, this.usersCategory});
 
   @override
@@ -65,11 +65,10 @@ class _CustomizeCategoryButtonState extends State<CustomizeCategoryButton> {
       final Map<String, dynamic>? result =
           await YarnAuth().deleteUsersSingleCategories(categoryId);
       if (result != null) {
-        setState(() {
-          widget.usersCategory = result['results'];
-          userSelectedCategory();
-          isLoading = false;
-        });
+        widget.usersCategory = result['results'];
+        userSelectedCategory();
+        isLoading = false;
+        if (mounted) setState(() {});
         showToast(message: "Removed Successfully");
       }
     } catch (error) {
