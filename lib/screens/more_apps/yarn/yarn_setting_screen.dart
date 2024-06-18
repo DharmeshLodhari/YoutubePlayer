@@ -125,19 +125,27 @@ class _YarnSettingsScreenState extends State<YarnSettingsScreen> {
               color: Colors.black,
             ),
           ),
-          trailing: Switch(
-            value: yarnSettingsBloc.pushNotification,
-            onChanged: (bool value) async {
-              yarnSettingsBloc.pushNotification = value;
+          trailing: SizedBox(
+            width: 50,
+            height: 40,
+            child: FittedBox(
+              fit: BoxFit.fill,
+              child: Switch(
+                value: yarnSettingsBloc.pushNotification,
+                onChanged: (bool value) async {
+                  yarnSettingsBloc.pushNotification = value;
 
-              await _yarnAuth.updateUserYarnSettings({
-                'allow_notification': yarnSettingsBloc.pushNotification
-              }).catchError((error) {
-                logger.e(error);
-              });
-            },
-            activeColor: HexColor("#3F61DB"),
-            inactiveThumbColor: HexColor("#75818F"),
+                  await _yarnAuth.updateUserYarnSettings({
+                    'allow_notification': yarnSettingsBloc.pushNotification
+                  }).catchError((error) {
+                    logger.e(error);
+                  });
+                },
+                activeTrackColor: navyBlueLight,
+                activeColor: navyBlue,
+                inactiveTrackColor: navyBlueLight,
+              ),
+            ),
           ),
         ),
       ),
@@ -162,18 +170,26 @@ class _YarnSettingsScreenState extends State<YarnSettingsScreen> {
               color: Colors.black,
             ),
           ),
-          trailing: Switch(
-            value: yarnSettingsBloc.sensitiveContent,
-            onChanged: (bool value) async {
-              yarnSettingsBloc.sensitiveContent = value;
-              await _yarnAuth.updateUserYarnSettings({
-                'allow_sensitive_content': yarnSettingsBloc.sensitiveContent
-              }).catchError((error) {
-                logger.e(error);
-              });
-            },
-            activeColor: HexColor("#3F61DB"),
-            inactiveThumbColor: HexColor("#75818F"),
+          trailing: SizedBox(
+            width: 50,
+            height: 40,
+            child: FittedBox(
+              fit: BoxFit.fill,
+              child: Switch(
+                value: yarnSettingsBloc.sensitiveContent,
+                onChanged: (bool value) async {
+                  yarnSettingsBloc.sensitiveContent = value;
+                  await _yarnAuth.updateUserYarnSettings({
+                    'allow_sensitive_content': yarnSettingsBloc.sensitiveContent
+                  }).catchError((error) {
+                    logger.e(error);
+                  });
+                },
+                activeTrackColor: navyBlueLight,
+                activeColor: navyBlue,
+                inactiveTrackColor: navyBlueLight,
+              ),
+            ),
           ),
         ),
       ),
@@ -198,18 +214,26 @@ class _YarnSettingsScreenState extends State<YarnSettingsScreen> {
               color: Colors.black,
             ),
           ),
-          trailing: Switch(
-            value: yarnSettingsBloc.adultContent,
-            onChanged: (bool value) async {
-              yarnSettingsBloc.adultContent = value;
-              await _yarnAuth.updateUserYarnSettings({
-                'allow_adult_content': yarnSettingsBloc.adultContent
-              }).catchError((error) {
-                logger.e(error);
-              });
-            },
-            activeColor: HexColor("#3F61DB"),
-            inactiveThumbColor: HexColor("#75818F"),
+          trailing: SizedBox(
+            width: 50,
+            height: 40,
+            child: FittedBox(
+              fit: BoxFit.fill,
+              child: Switch(
+                value: yarnSettingsBloc.adultContent,
+                onChanged: (bool value) async {
+                  yarnSettingsBloc.adultContent = value;
+                  await _yarnAuth.updateUserYarnSettings({
+                    'allow_adult_content': yarnSettingsBloc.adultContent
+                  }).catchError((error) {
+                    logger.e(error);
+                  });
+                },
+                activeTrackColor: navyBlueLight,
+                activeColor: navyBlue,
+                inactiveTrackColor: navyBlueLight,
+              ),
+            ),
           ),
         ),
       ),
