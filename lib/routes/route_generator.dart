@@ -121,9 +121,12 @@ import 'package:Slydo/screens/more_apps/shopping/forms/edit_product.dart';
 import 'package:Slydo/screens/more_apps/shopping/forms/edit_service.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/mix_cart_item.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/order/order_detail_page.dart';
+import 'package:Slydo/screens/more_apps/shopping/screens/order/order_detail_page_new.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/order/order_list_new.dart';
-import 'package:Slydo/screens/more_apps/shopping/screens/order/order_updated.dart';
+import 'package:Slydo/screens/more_apps/shopping/screens/order/order_status_updated.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/order/orders_list.dart';
+import 'package:Slydo/screens/more_apps/shopping/screens/order/track_order.dart';
+import 'package:Slydo/screens/more_apps/shopping/screens/order/write_review_page.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/print_qrcode.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/product_and_service/product_detail_page.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/product_and_service/service_detail_page.dart';
@@ -361,7 +364,7 @@ class RouteGenerator {
         );
       case Routes.TRANSACTION_GRAPH:
         return PageTransition(
-          child: TransactionGraph(),
+          child: const TransactionGraph(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -657,7 +660,7 @@ class RouteGenerator {
         );
       case Routes.ORDER_UPDATED:
         return PageTransition(
-          child: OrderUpdated(arguments: settings.arguments),
+          child: OrderStatusUpdated(arguments: settings.arguments),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -665,6 +668,27 @@ class RouteGenerator {
       case Routes.ORDER_DETAIL_PAGE:
         return PageTransition(
           child: OrderDetailPage(arguments: settings.arguments),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+      case Routes.ORDER_DETAIL_PAGE_NEW:
+        return PageTransition(
+          child: OrderDetailPageNew(arguments: settings.arguments),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+      case Routes.TRACK_ORDER:
+        return PageTransition(
+          child: TrackOrder(arguments: settings.arguments),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+      case Routes.WRITE_REVIEW_PAGE:
+        return PageTransition(
+          child: WriteReviewPage(arguments: settings.arguments),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -849,7 +873,7 @@ class RouteGenerator {
 
       case Routes.ADD_MONEY_TO_SLYDO_ONE:
         return PageTransition(
-          child: VirtualAccountDetail(),
+          child: const VirtualAccountDetail(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -899,7 +923,7 @@ class RouteGenerator {
 
       case Routes.ADD_CONTRACT:
         return PageTransition(
-          child: AddContract(),
+          child: const AddContract(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -979,7 +1003,7 @@ class RouteGenerator {
 
       case Routes.CABLE_PROVIDER:
         return PageTransition(
-          child: SelectCableProvider(),
+          child: const SelectCableProvider(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -1023,7 +1047,7 @@ class RouteGenerator {
       ///    More Apps Route     ///
       case Routes.MORE_APPS:
         return PageTransition(
-          child: MoreApps(),
+          child: const MoreApps(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -1378,7 +1402,7 @@ class RouteGenerator {
 
       case Routes.HOTEL_CATEGORY:
         return PageTransition(
-          child: SpecificCategoryHotelList(),
+          child: const SpecificCategoryHotelList(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -1386,7 +1410,7 @@ class RouteGenerator {
 
       case Routes.SEARCH_HOTEL:
         return PageTransition(
-          child: SearchHotel(),
+          child: const SearchHotel(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -1410,7 +1434,7 @@ class RouteGenerator {
 
       case Routes.PARTNER_DETAIL:
         return PageTransition(
-          child: PartnerDetailPage(),
+          child: const PartnerDetailPage(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -1487,7 +1511,7 @@ class RouteGenerator {
 
       case Routes.BUS:
         return PageTransition(
-          child: BusDashboard(),
+          child: const BusDashboard(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -1503,7 +1527,7 @@ class RouteGenerator {
 
       case Routes.TICKET_DETAIL:
         return PageTransition(
-          child: TicketDetail(),
+          child: const TicketDetail(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -1573,7 +1597,7 @@ class RouteGenerator {
 
       case Routes.SEARCH_NEAR_BY_BUSINESS:
         return PageTransition(
-          child: SearchNearByBusiness(),
+          child: const SearchNearByBusiness(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -1640,7 +1664,7 @@ class RouteGenerator {
 
       case Routes.SHIPPING_OPTIONS:
         return PageTransition(
-          child: ShippingOptionsList(),
+          child: const ShippingOptionsList(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -1906,7 +1930,7 @@ class RouteGenerator {
       /// Discount
       case Routes.DISCOUNT_LIST:
         return PageTransition(
-          child: DiscountList(),
+          child: const DiscountList(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -1924,7 +1948,7 @@ class RouteGenerator {
       /// Custom Category
       case Routes.CUSTOM_CATEGORY:
         return PageTransition(
-          child: CustomCategoryList(),
+          child: const CustomCategoryList(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -2031,7 +2055,7 @@ class RouteGenerator {
         );
       case Routes.TAKE_PROOF_PHOTO:
         return PageTransition(
-          child: TakeProofPhoto(),
+          child: const TakeProofPhoto(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,

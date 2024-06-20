@@ -633,7 +633,7 @@ class _EditJobState extends State<EditJob> {
       child: ScaffoldMessenger(
         key: _jobScaffoldMessengerKey,
         child: Scaffold(
-          backgroundColor: Colors.white,
+          backgroundColor: lightGrey,
           resizeToAvoidBottomInset: true,
           appBar: appBar() as PreferredSizeWidget?,
           body: scaffoldBody(),
@@ -1346,6 +1346,7 @@ class _EditJobState extends State<EditJob> {
     final imageSource = await showDialog<ImageSource>(
         context: context,
         builder: (context) => AlertDialog(
+              backgroundColor: Colors.white,
               title: Text(AppLocalization.of(context)!.selectTheImageSource),
               actions: <Widget>[
                 MaterialButton(
@@ -1811,6 +1812,7 @@ class _EditJobState extends State<EditJob> {
     final pressedCategory = await showDialog<ProductCategory>(
         context: context,
         builder: (context) => AlertDialog(
+              backgroundColor: Colors.white,
               insetPadding:
                   const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,
@@ -1890,6 +1892,7 @@ class _EditJobState extends State<EditJob> {
     final pressedCondition = await showDialog<ProductCondition>(
         context: context,
         builder: (context) => AlertDialog(
+              backgroundColor: Colors.white,
               insetPadding:
                   const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,

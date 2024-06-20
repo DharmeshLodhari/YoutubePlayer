@@ -205,7 +205,7 @@ class _SignUpState extends State<SignUp> {
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         appBar: _buildAppbar(),
         body: _buildBody(),
       ),
@@ -1043,6 +1043,7 @@ class _SignUpState extends State<SignUp> {
     final pressedGender = await showDialog<String>(
         context: context,
         builder: (context) => AlertDialog(
+              backgroundColor: Colors.white,
               insetPadding:
                   const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,

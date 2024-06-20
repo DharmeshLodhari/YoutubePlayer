@@ -235,7 +235,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         appBar: appBar() as PreferredSizeWidget?,
         floatingActionButton: isValidCustomer ? floatingActionBar() : null,
         body: _buildProductDetailsPage(context),
@@ -330,13 +330,9 @@ class _ProductDetailPageState extends State<ProductDetailPage>
               ),
               color: Colors.white,
               margin: EdgeInsets.zero,
-              child: Container(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: generateBottomSheetItem(),
-                ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: generateBottomSheetItem(),
               ));
         });
   }
@@ -379,18 +375,20 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       );
     }
 
-    list.add(bottomSheetItem(
-      title: "Share",
-      iconData: SlydoAppIcon.share,
-      onTap: () async {
-        Navigator.pop(context);
+    list.add(
+      bottomSheetItem(
+        title: "Share",
+        iconData: SlydoAppIcon.share,
+        onTap: () async {
+          Navigator.pop(context);
 
-        final shareBody =
-            "http://slydo.co/store/${product?.seller}/products/${product?.id.toString() ?? ""}";
-        Share.share(shareBody,
-            subject: messageDecoderWithEmoji(product?.name) ?? "");
-      },
-    ));
+          final shareBody =
+              "http://slydo.co/store/${product?.seller}/products/${product?.id.toString() ?? ""}";
+          Share.share(shareBody,
+              subject: messageDecoderWithEmoji(product?.name) ?? "");
+        },
+      ),
+    );
 
     list.add(
       bottomSheetItem(

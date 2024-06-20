@@ -127,7 +127,7 @@ class _EditPropertyState extends State<EditProperty> {
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         resizeToAvoidBottomInset: true,
         appBar: appBar() as PreferredSizeWidget?,
         body: scaffoldBody(),
@@ -419,6 +419,7 @@ class _EditPropertyState extends State<EditProperty> {
     final imageSource = await showDialog<ImageSource>(
         context: context,
         builder: (context) => AlertDialog(
+              backgroundColor: Colors.white,
               title: Text(AppLocalization.of(context)!.selectTheImageSource),
               actions: <Widget>[
                 MaterialButton(
@@ -558,6 +559,7 @@ class _EditPropertyState extends State<EditProperty> {
     final videoSource = await showDialog<ImageSource>(
         context: context,
         builder: (context) => AlertDialog(
+              backgroundColor: Colors.white,
               title: const Text("Select video source"),
               actions: <Widget>[
                 MaterialButton(
@@ -615,6 +617,7 @@ class _EditPropertyState extends State<EditProperty> {
         builder: (context) =>
             StatefulBuilder(builder: (context, videoLengthAlert) {
               return AlertDialog(
+                backgroundColor: Colors.white,
                 insetPadding:
                     const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
                 contentPadding: EdgeInsets.zero,
@@ -995,6 +998,7 @@ class _EditPropertyState extends State<EditProperty> {
         builder: (context) =>
             StatefulBuilder(builder: (context, rentDurationStateSetter) {
               return AlertDialog(
+                backgroundColor: Colors.white,
                 insetPadding:
                     const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
                 contentPadding: EdgeInsets.zero,
@@ -1125,6 +1129,7 @@ class _EditPropertyState extends State<EditProperty> {
         barrierDismissible: false,
         context: context,
         builder: (context) => AlertDialog(
+              backgroundColor: Colors.white,
               insetPadding:
                   const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,
@@ -1322,6 +1327,7 @@ class _EditPropertyState extends State<EditProperty> {
         barrierDismissible: false,
         context: context,
         builder: (context) => AlertDialog(
+              backgroundColor: Colors.white,
               insetPadding:
                   const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,
@@ -1400,6 +1406,7 @@ class _EditPropertyState extends State<EditProperty> {
         barrierDismissible: false,
         context: context,
         builder: (context) => AlertDialog(
+              backgroundColor: Colors.white,
               insetPadding:
                   const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,
@@ -1479,6 +1486,7 @@ class _EditPropertyState extends State<EditProperty> {
         barrierDismissible: false,
         context: context,
         builder: (context) => AlertDialog(
+              backgroundColor: Colors.white,
               insetPadding:
                   const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,
@@ -1558,6 +1566,7 @@ class _EditPropertyState extends State<EditProperty> {
         barrierDismissible: false,
         context: context,
         builder: (context) => AlertDialog(
+              backgroundColor: Colors.white,
               insetPadding:
                   const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,
@@ -1688,6 +1697,7 @@ class _EditPropertyState extends State<EditProperty> {
         builder: (context) =>
             StatefulBuilder(builder: (context, amenitiesStateSetter) {
               return AlertDialog(
+                backgroundColor: Colors.white,
                 insetPadding:
                     const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
                 contentPadding: EdgeInsets.zero,
@@ -1842,6 +1852,7 @@ class _EditPropertyState extends State<EditProperty> {
         builder: (context) =>
             StatefulBuilder(builder: (context, petPolicyStateSetter) {
               return AlertDialog(
+                backgroundColor: Colors.white,
                 insetPadding:
                     const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
                 contentPadding: EdgeInsets.zero,
@@ -1987,6 +1998,7 @@ class _EditPropertyState extends State<EditProperty> {
         builder: (context) =>
             StatefulBuilder(builder: (context, furnitureDetailStateSetter) {
               return AlertDialog(
+                  backgroundColor: Colors.white,
                   insetPadding:
                       const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
                   contentPadding: EdgeInsets.zero,

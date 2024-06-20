@@ -123,7 +123,7 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         appBar: appBar() as PreferredSizeWidget?,
         body: scaffoldBody(),
       ),

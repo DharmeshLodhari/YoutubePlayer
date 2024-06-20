@@ -28,9 +28,9 @@ class ReviewAuth extends AuthService {
     final String url =
         "${AppConfig.baseUrl}/api/v1/social/review/users/$userName/";
     final Map<String, String> headers = await getAuthHeaders();
-    final _data = jsonEncode(data);
-    debugPrint("Data:- $_data");
-    final response = await httpPost(url, body: _data, headers: headers);
+    final data0 = jsonEncode(data);
+    debugPrint("Data:- $data0");
+    final response = await httpPost(url, body: data0, headers: headers);
     debugPrint(
         "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
 
@@ -57,8 +57,8 @@ class ReviewAuth extends AuthService {
     final String url =
         "${AppConfig.baseUrl}/api/v1/social/reviews/${review.id}/";
     final Map<String, String> headers = await getAuthHeaders();
-    final _data = jsonEncode(data);
-    final response = await httpPatch(url, body: _data, headers: headers);
+    final data0 = jsonEncode(data);
+    final response = await httpPatch(url, body: data0, headers: headers);
     debugPrint(
         "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
 
@@ -86,8 +86,8 @@ class ReviewAuth extends AuthService {
     final String url =
         "${AppConfig.baseUrl}/api/v1/social/reviews/${review.id}/";
     final Map<String, String> headers = await getAuthHeaders();
-    final _data = jsonEncode(data);
-    final response = await httpPatch(url, body: _data, headers: headers);
+    final data0 = jsonEncode(data);
+    final response = await httpPatch(url, body: data0, headers: headers);
     debugPrint(
         "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
 
@@ -115,8 +115,8 @@ class ReviewAuth extends AuthService {
     final String url =
         "${AppConfig.baseUrl}/api/v1/social/reviews/${review.id}/";
     final Map<String, String> headers = await getAuthHeaders();
-    final _data = jsonEncode(data);
-    final response = await httpPatch(url, body: _data, headers: headers);
+    final data0 = jsonEncode(data);
+    final response = await httpPatch(url, body: data0, headers: headers);
     debugPrint(
         "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
 
@@ -198,9 +198,9 @@ class ReviewAuth extends AuthService {
     final String url =
         "${AppConfig.baseUrl}/api/v1/social/review/products/$id/";
     final Map<String, String> headers = await getAuthHeaders();
-    final _data = jsonEncode(data);
-    debugPrint("Data:- $_data");
-    final response = await httpPost(url, body: _data, headers: headers);
+    final data0 = jsonEncode(data);
+    debugPrint("Data:- $data0");
+    final response = await httpPost(url, body: data0, headers: headers);
     debugPrint(
         "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
 
@@ -226,9 +226,9 @@ class ReviewAuth extends AuthService {
     final String url =
         "${AppConfig.baseUrl}/api/v1/social/review/services/$id/";
     final Map<String, String> headers = await getAuthHeaders();
-    final _data = jsonEncode(data);
-    debugPrint("Data:- $_data");
-    final response = await httpPost(url, body: _data, headers: headers);
+    final data0 = jsonEncode(data);
+    debugPrint("Data:- $data0");
+    final response = await httpPost(url, body: data0, headers: headers);
     debugPrint(
         "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
 
@@ -273,10 +273,10 @@ class ReviewAuth extends AuthService {
         "${AppConfig.baseUrl}/api/v1/social/reviews/check-if-user-can-review-product-or-service/";
 
     final headers = await getAuthHeaders();
-    final _data = jsonEncode(data);
-    debugPrint('CAN REVIEW URL :: $_data');
+    final data0 = jsonEncode(data);
+    debugPrint('CAN REVIEW URL :: $data0');
 
-    final response = await httpPost(url, headers: headers, body: _data);
+    final response = await httpPost(url, headers: headers, body: data0);
     final jsonData = jsonDecode(response.body);
     debugPrint('CAN REVIEW :: ${response.statusCode}');
     debugPrint('CAN REVIEW :: ${response.body}');

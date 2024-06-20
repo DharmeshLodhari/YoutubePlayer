@@ -45,7 +45,7 @@ class _EditUserReviewState extends State<EditUserReview> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: lightGrey,
       appBar: AppBar(
         title: Text(
           "Write review",
@@ -211,6 +211,7 @@ class _EditUserReviewState extends State<EditUserReview> {
   Widget _buildRatingBar() {
     return Center(
         child: getClickableRatingBar(
+      starSize: 40.0,
       initialRating: rating.toDouble(),
       onRatingUpdate: (rate) {
         {

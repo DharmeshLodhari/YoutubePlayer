@@ -13,11 +13,11 @@ class SharedCartAuthService extends AuthService {
   Future<bool> createCartGroup({Map? data}) async {
     final String url =
         "${AppConfig.baseUrl}/api/v1/shopping-cart/create-shared-shopping-cart/";
-    final _data = jsonEncode(data);
-    debugPrint('Order details ::: $_data');
+    final data0 = jsonEncode(data);
+    debugPrint('Order details ::: $data0');
 
     final headers = await getAuthHeaders();
-    final response = await httpPost(url, headers: headers, body: _data);
+    final response = await httpPost(url, headers: headers, body: data0);
     // final jsonData = jsonDecode(response.body);
 
     debugPrint(

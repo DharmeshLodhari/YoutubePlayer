@@ -234,23 +234,23 @@ class UserAuth extends AuthService {
   }
 
   // Register the user with the backend servers
-  Future<bool> userRegistration(Map<String, dynamic> _body) async {
+  Future<bool> userRegistration(Map<String, dynamic> body) async {
     final Map<String, dynamic> data = {};
     final String url = "${AppConfig.baseUrl}/api/v1/user/account/";
     final headers = getNonAuthHeader();
-    final _getData = await getDeviceInfo();
-    data.addAll(_body);
+    final getData = await getDeviceInfo();
+    data.addAll(body);
 
-    for (var element in _getData.entries) {
+    for (var element in getData.entries) {
       data[element.key] = element.value.toString();
     }
 
-    final _data = jsonEncode(data);
+    final data0 = jsonEncode(data);
 
-    debugPrint('USER REGISTRATION DATA ::: $_data');
+    debugPrint('USER REGISTRATION DATA ::: $data0');
 
     final response = await httpPost(url,
-        headers: headers as Map<String, dynamic>?, body: _data);
+        headers: headers as Map<String, dynamic>?, body: data0);
     debugPrint('USER REGISTRATION RESPONSE ::: ${response.body}');
     if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
@@ -271,9 +271,9 @@ class UserAuth extends AuthService {
 
     debugPrint('PHONE NUMBER DATA ::: $data');
 
-    final _data = jsonEncode(data);
+    final data0 = jsonEncode(data);
     final response = await httpPost(url,
-        body: _data, headers: headers as Map<String, dynamic>?);
+        body: data0, headers: headers as Map<String, dynamic>?);
 
     debugPrint('REGISTER PHONE NUMBER RESPONSE ::: ${response.body}');
 
@@ -299,9 +299,9 @@ class UserAuth extends AuthService {
 
     debugPrint('PHONE NUMBER DATA ::: $data');
 
-    final _data = jsonEncode(data);
+    final data0 = jsonEncode(data);
     final response = await httpPost(url,
-        body: _data, headers: headers as Map<String, dynamic>?);
+        body: data0, headers: headers as Map<String, dynamic>?);
 
     debugPrint(
         'RESEND OTP REGISTER PHONE NUMBER RESPONSE ::: ${response.body}');
@@ -328,9 +328,9 @@ class UserAuth extends AuthService {
 
     debugPrint('password reset DATA ::: $data');
 
-    final _data = jsonEncode(data);
+    final data0 = jsonEncode(data);
     final response = await httpPost(url,
-        body: _data, headers: headers as Map<String, dynamic>?);
+        body: data0, headers: headers as Map<String, dynamic>?);
 
     debugPrint('RESET PASSWORD OTP RESPONSE ::: ${response.body}');
 
@@ -380,9 +380,9 @@ class UserAuth extends AuthService {
 
     debugPrint('VERIFY PHONE NUMBER DATA ::: $data');
 
-    final _data = jsonEncode(data);
+    final data0 = jsonEncode(data);
     final response = await httpPost(url,
-        body: _data, headers: headers as Map<String, dynamic>?);
+        body: data0, headers: headers as Map<String, dynamic>?);
 
     debugPrint('VERIFY PHONE NUMBER RESPONSE DATA ::: ${response.body}');
     final jsonData = json.decode(response.body);
@@ -419,10 +419,10 @@ class UserAuth extends AuthService {
     //   "reset-token": '359927',
     //   "phone-number": phoneNumber,
     // };
-    final _data = jsonEncode(data);
+    final data0 = jsonEncode(data);
     debugPrint('_data :: $data');
     final response = await httpPatch(url,
-        headers: headers as Map<String, dynamic>?, body: _data);
+        headers: headers as Map<String, dynamic>?, body: data0);
     final jsonData = jsonDecode(response.body);
     debugPrint(
         "URL:- $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
@@ -436,8 +436,8 @@ class UserAuth extends AuthService {
   Future<Map<String, dynamic>> changePassword(Map<String, dynamic> data) async {
     final String url = "${AppConfig.baseUrl}/api/v1/user/change-password/";
     final headers = await getAuthHeaders();
-    final _data = jsonEncode(data);
-    final response = await httpPatch(url, headers: headers, body: _data);
+    final data0 = jsonEncode(data);
+    final response = await httpPatch(url, headers: headers, body: data0);
     debugPrint(
         "URL:- $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
 
@@ -566,9 +566,9 @@ class UserAuth extends AuthService {
       debugPrint("USER DATA -->  $data");
 
       data['nickname'] = nickName;
-      final _data = jsonEncode(data);
-      debugPrint("Data Send:- $_data");
-      response = await httpPatch(url, headers: headers, body: _data);
+      final data0 = jsonEncode(data);
+      debugPrint("Data Send:- $data0");
+      response = await httpPatch(url, headers: headers, body: data0);
 
       responseBody = response.body;
       debugPrint(
@@ -634,8 +634,8 @@ class UserAuth extends AuthService {
     } else {
       final data = {"nickname": nickName, "bio": bio};
       final headers = await getAuthHeaders();
-      final _data = jsonEncode(data);
-      response = await httpPatch(url, headers: headers, body: _data);
+      final data0 = jsonEncode(data);
+      response = await httpPatch(url, headers: headers, body: data0);
 
       responseBody = response.body;
       debugPrint(
@@ -678,8 +678,8 @@ class UserAuth extends AuthService {
   Future<bool> addUserAddress(Map data) async {
     final String url = "${AppConfig.baseUrl}/api/v1/user/address/";
     final headers = await getAuthHeaders();
-    final _data = jsonEncode(data);
-    final response = await httpPost(url, headers: headers, body: _data);
+    final data0 = jsonEncode(data);
+    final response = await httpPost(url, headers: headers, body: data0);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       debugPrint("ADDRESS ADDED: ${response.body}");
@@ -778,8 +778,8 @@ class UserAuth extends AuthService {
     debugPrint("URL:- $url");
     final data = {"user": user.userName};
     final headers = await getAuthHeaders();
-    final _data = jsonEncode(data);
-    final response = await httpPatch(url, headers: headers, body: _data);
+    final data0 = jsonEncode(data);
+    final response = await httpPatch(url, headers: headers, body: data0);
     debugPrint(
         "RESPONSE :- STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
     if (response.statusCode == 200 || response.statusCode == 201) {
@@ -795,9 +795,9 @@ class UserAuth extends AuthService {
         "${AppConfig.baseUrl}/api/v1/user/contacts/check-in-contact/";
     final data = {"checker": checker, "user": user};
     final headers = await getAuthHeaders();
-    final _data = jsonEncode(data);
+    final data0 = jsonEncode(data);
 
-    final response = await httpPatch(url, headers: headers, body: _data);
+    final response = await httpPatch(url, headers: headers, body: data0);
     // debugPrint("data $_data");
     // debugPrint("response ${response.statusCode} ${response.body}");
     if (response.statusCode == 200 || response.statusCode == 201) {
@@ -812,8 +812,8 @@ class UserAuth extends AuthService {
         "${AppConfig.baseUrl}/api/v1/user/contact-request/check-in-request/";
     final data = {"to_user": user};
     final headers = await getAuthHeaders();
-    final _data = jsonEncode(data);
-    final response = await httpPatch(url, headers: headers, body: _data);
+    final data0 = jsonEncode(data);
+    final response = await httpPatch(url, headers: headers, body: data0);
     debugPrint("is In Request List-->${response.body}");
     debugPrint("is In Request List-->${response.statusCode}");
 
@@ -828,8 +828,8 @@ class UserAuth extends AuthService {
     final data = {"to_user": user.userName};
 
     final headers = await getAuthHeaders();
-    final _data = jsonEncode(data);
-    final response = await httpPost(url, headers: headers, body: _data);
+    final data0 = jsonEncode(data);
+    final response = await httpPost(url, headers: headers, body: data0);
     debugPrint("Data :- $data");
     debugPrint("response :- ${response.body}");
     if (response.statusCode == 200 || response.statusCode == 201) {
@@ -873,8 +873,8 @@ class UserAuth extends AuthService {
         "${AppConfig.baseUrl}/api/v1/user/contacts/block-contact/";
     final data = {"user": user.userName};
     final headers = await getAuthHeaders();
-    final _data = jsonEncode(data);
-    final response = await httpPatch(url, headers: headers, body: _data);
+    final data0 = jsonEncode(data);
+    final response = await httpPatch(url, headers: headers, body: data0);
     log('message......mesaaager  ooooo. ${response.statusCode}');
     if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
@@ -887,8 +887,8 @@ class UserAuth extends AuthService {
         "${AppConfig.baseUrl}/api/v1/user/contacts/unblock-contact/";
     final data = {"user": user.userName};
     final headers = await getAuthHeaders();
-    final _data = jsonEncode(data);
-    final response = await httpPatch(url, headers: headers, body: _data);
+    final data0 = jsonEncode(data);
+    final response = await httpPatch(url, headers: headers, body: data0);
     if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     }
@@ -929,8 +929,8 @@ class UserAuth extends AuthService {
         "${AppConfig.baseUrl}/api/v1/user/contact-request/accept/";
     final data = {"user": user.userName};
     final headers = await getAuthHeaders();
-    final _data = jsonEncode(data);
-    final response = await httpPatch(url, headers: headers, body: _data);
+    final data0 = jsonEncode(data);
+    final response = await httpPatch(url, headers: headers, body: data0);
     debugPrint('RES __ ${response.body}');
     if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
@@ -943,8 +943,8 @@ class UserAuth extends AuthService {
         "${AppConfig.baseUrl}/api/v1/user/contact-request/cancel-or-reject/";
     final data = {"user": user.userName};
     final headers = await getAuthHeaders();
-    final _data = jsonEncode(data);
-    final response = await httpPatch(url, headers: headers, body: _data);
+    final data0 = jsonEncode(data);
+    final response = await httpPatch(url, headers: headers, body: data0);
     if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     }
@@ -954,9 +954,9 @@ class UserAuth extends AuthService {
   Future<bool> upgradeUserProfile(Map<String, dynamic> data) async {
     final String url = "${AppConfig.baseUrl}/api/v1/user/upgrade-user-account/";
     final headers = await getAuthHeaders();
-    final _data = jsonEncode(data);
-    final response = await httpPost(url, headers: headers, body: _data);
-    log("Headers:- $headers body :- $_data URL:- $url statuscode ${response.statusCode}  body:- ${response.body}");
+    final data0 = jsonEncode(data);
+    final response = await httpPost(url, headers: headers, body: data0);
+    log("Headers:- $headers body :- $data0 URL:- $url statuscode ${response.statusCode}  body:- ${response.body}");
 
     if (response.statusCode == 201 || response.statusCode == 200) {
       return true;
@@ -1111,14 +1111,14 @@ class UserAuth extends AuthService {
     final data = {"followee": userName};
 
     final headers = await getAuthHeaders();
-    final _data = jsonEncode(data);
+    final data0 = jsonEncode(data);
 
     if (shouldFollow == true) {
       url = "${AppConfig.baseUrl}/api/v1/user/follow/";
-      response = await httpPost(url, headers: headers, body: _data);
+      response = await httpPost(url, headers: headers, body: data0);
     } else {
       url = "${AppConfig.baseUrl}/api/v1/user/follow/unfollow/";
-      response = await httpPatch(url, headers: headers, body: _data);
+      response = await httpPatch(url, headers: headers, body: data0);
     }
 
     debugPrint("FOLLOWEE data :- $url");
@@ -1234,8 +1234,8 @@ class UserAuth extends AuthService {
         "${AppConfig.baseUrl}/api/v1/user/customer-profile-menu/";
     // var data = {"user": ''};
     final headers = await getAuthHeaders();
-    final _data = jsonEncode(data);
-    final response = await httpPatch(url, headers: headers, body: _data);
+    final data0 = jsonEncode(data);
+    final response = await httpPatch(url, headers: headers, body: data0);
     debugPrint(
         "RESPONSE STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
 

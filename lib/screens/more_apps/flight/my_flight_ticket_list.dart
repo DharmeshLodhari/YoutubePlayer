@@ -54,7 +54,7 @@ class _MyFlightTicketListState extends State<MyFlightTicketList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: lightGrey,
       appBar: appBar() as PreferredSizeWidget?,
       body: scaffoldBody(),
     );

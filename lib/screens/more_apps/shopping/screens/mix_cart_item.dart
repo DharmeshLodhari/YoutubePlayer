@@ -532,6 +532,7 @@ class _MixCartItemState extends State<MixCartItem> {
           }
         },
         child: AlertDialog(
+          backgroundColor: Colors.white,
           titlePadding:
               const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           contentPadding:

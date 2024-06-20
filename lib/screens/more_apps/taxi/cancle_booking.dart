@@ -43,7 +43,7 @@ class _CancelBookingState extends State<CancelBooking> {
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         appBar: appBar() as PreferredSizeWidget?,
         body: scaffoldBody(),
       ),

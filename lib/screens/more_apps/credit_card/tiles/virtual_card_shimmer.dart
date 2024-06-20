@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 
 class VirtualCardShimmer extends StatelessWidget {
-  const VirtualCardShimmer({super.key});
+  final int? itemCount;
+  const VirtualCardShimmer({super.key, this.itemCount});
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +15,7 @@ class VirtualCardShimmer extends StatelessWidget {
       child: ListView.separated(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
-        itemCount: 2,
+        itemCount: itemCount ?? 2,
         itemBuilder: (context, index) {
           return Container(
             height: 100,

@@ -194,7 +194,7 @@ class _PaymentRequestListState extends State<PaymentRequestList>
       child: Scaffold(
         key: _scaffoldPaymentListKey,
         resizeToAvoidBottomInset: true,
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         appBar: appBar() as PreferredSizeWidget?,
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -589,7 +589,7 @@ class _PaymentRequestListState extends State<PaymentRequestList>
         borderRadius: BorderRadius.circular(5),
         backgroundColor: navyBlue,
         icon: SlydoAppIcon.send,
-        onPressed: (context) {
+        onPressed: (con) {
           acceptPaymentRequestAlert(paymentRequest, index);
         },
         label: "Pay",
@@ -607,7 +607,7 @@ class _PaymentRequestListState extends State<PaymentRequestList>
         borderRadius: BorderRadius.circular(5),
         backgroundColor: mateRed,
         icon: SlydoAppIcon.remove,
-        onPressed: (context) {
+        onPressed: (con) {
           if (paymentRequest.isCredit!) {
             rejectPaymentRequestAlert(paymentRequest, index);
           } else {

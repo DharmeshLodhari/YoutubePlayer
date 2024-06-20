@@ -212,7 +212,7 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
       title: 'Deactivate Account',
       actionTwoText: "Cancel",
       actionOneText: "Yes",
-      description: 'are sure they want to deactivate your account?',
+      description: 'are you sure they want to deactivate your account?',
       roundedBackgroundIcon: RoundedBackgroundIcon(
         enableMargin: false,
         width: 90,
@@ -359,8 +359,8 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
             softWrap: false,
           ),
           trailing: SizedBox(
-            width: 50,
-            height: 40,
+            width: 45,
+            height: 30,
             child: FittedBox(
               fit: BoxFit.fill,
               child: Switch(
@@ -375,9 +375,11 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
                   DatabaseHelper()
                       .updateGeneralSettings(chatMessageSettings.toDBJson());
                 },
-                activeTrackColor: navyBlueLight,
-                activeColor: navyBlue,
-                inactiveTrackColor: navyBlueLight,
+                thumbIcon: MaterialStateProperty.all(const Icon(null)),
+                activeTrackColor: navyBlue,
+                activeColor: Colors.white,
+                inactiveTrackColor: darkGreyYarn,
+                inactiveThumbColor: Colors.white,
               ),
             ),
           ),
@@ -575,8 +577,8 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
             softWrap: false,
           ),
           trailing: SizedBox(
-            width: 50,
-            height: 40,
+            width: 45,
+            height: 30,
             child: FittedBox(
               fit: BoxFit.fill,
               child: Switch(
@@ -591,9 +593,11 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
                   DatabaseHelper()
                       .updateGeneralSettings(chatMessageSettings.toDBJson());
                 },
-                activeTrackColor: navyBlueLight,
-                activeColor: navyBlue,
-                inactiveTrackColor: navyBlueLight,
+                thumbIcon: MaterialStateProperty.all(const Icon(null)),
+                activeTrackColor: navyBlue,
+                activeColor: Colors.white,
+                inactiveTrackColor: darkGreyYarn,
+                inactiveThumbColor: Colors.white,
               ),
             ),
           ),
@@ -625,8 +629,8 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
             softWrap: false,
           ),
           trailing: SizedBox(
-            width: 50,
-            height: 40,
+            width: 45,
+            height: 30,
             child: FittedBox(
               fit: BoxFit.fill,
               child: Switch(
@@ -649,9 +653,11 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
                     },
                   );
                 },
-                activeTrackColor: navyBlueLight,
-                activeColor: navyBlue,
-                inactiveTrackColor: navyBlueLight,
+                thumbIcon: MaterialStateProperty.all(const Icon(null)),
+                activeTrackColor: navyBlue,
+                activeColor: Colors.white,
+                inactiveTrackColor: darkGreyYarn,
+                inactiveThumbColor: Colors.white,
               ),
             ),
           ),

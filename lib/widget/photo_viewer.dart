@@ -34,6 +34,16 @@ class _PhotoViewerState extends State<PhotoViewer> {
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.black,
+        leading: IconButton(
+          icon: Icon(
+            Icons.keyboard_arrow_left,
+            color: white,
+            size: 24,
+          ),
+          onPressed: () async {
+            Navigator.pop(context, "back pressed");
+          },
+        ),
       ),
       body: checkImageLink(),
     );

@@ -212,7 +212,11 @@ class _OrdersListState extends State<OrdersList>
           Text(
             AppLocalization.of(context)!.orders,
             style: TextStyle(
-                color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
+              color: blackFont,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              fontFamily: "Inter",
+            ),
           ),
         ],
       ),
@@ -433,7 +437,7 @@ class _OrdersListState extends State<OrdersList>
         borderRadius: BorderRadius.circular(5),
         backgroundColor: navyBlue,
         icon: Icons.done,
-        onPressed: (context) {
+        onPressed: (con) {
           showDialog(
               context: context,
               builder: (dialogLoadingContext) => LoadingIndicator());
@@ -466,7 +470,7 @@ class _OrdersListState extends State<OrdersList>
         borderRadius: BorderRadius.circular(5),
         backgroundColor: naturalGreen,
         icon: SlydoAppIcon.text_message,
-        onPressed: (context) {
+        onPressed: (con) {
           final recipient = userBloc.user.userName == order.merchant
               ? order.customerName
               : order.merchant;

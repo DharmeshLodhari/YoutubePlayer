@@ -129,8 +129,15 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
         : FloatingActionButton(
             backgroundColor: navyBlue,
             onPressed: btnPressed,
+            mini: false,
+            heroTag: null,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(
+                  50.0), // Set the border radius to create a circle
+            ),
             child: const Icon(
               Icons.arrow_forward_rounded,
+              color: Colors.white,
               size: 28,
             ),
           );

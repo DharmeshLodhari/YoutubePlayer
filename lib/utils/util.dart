@@ -64,6 +64,7 @@ Future<String?> getFile(BuildContext context,
   final fileSource = await showDialog<ImageSource>(
     context: context,
     builder: (context) => AlertDialog(
+      backgroundColor: Colors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       title: Text(
         fileType == MediaType.picture
@@ -117,6 +118,7 @@ Future<String?> getCroppedImage(BuildContext context) async {
   final imageSource = await showDialog<ImageSource>(
     context: context,
     builder: (context) => AlertDialog(
+      backgroundColor: Colors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       title: Text(
         AppLocalization.of(context)!.selectTheImageSource,
@@ -1221,12 +1223,15 @@ class _BlogSettingsTitlesState extends State<BlogSettingsTitles> {
 }
 
 Widget getClickableRatingBar(
-    {required double initialRating, required Function(double) onRatingUpdate}) {
+    {required double initialRating,
+    required Function(double) onRatingUpdate,
+    required double starSize}) {
   return RatingBar.builder(
     initialRating: initialRating,
     minRating: 1,
     direction: Axis.horizontal,
     allowHalfRating: false,
+    itemSize: starSize,
     itemCount: 5,
     itemPadding: const EdgeInsets.symmetric(horizontal: 8),
     itemBuilder: (context, _) => Icon(
@@ -2660,7 +2665,7 @@ Future<List<XFile>> selectMultipleImageVideo() async {
 Response handleServerErrors(dynamic response) {
   var message = "Server Error";
 
-  if (response.statusCode >= 200 || response.statusCode < 300) {
+  if (response.statusCode >= 200 && response.statusCode < 300) {
     return response;
   } else {
     final jsonResponse = jsonDecode(response.body);

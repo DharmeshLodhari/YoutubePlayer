@@ -29,7 +29,7 @@ class _CablePlanDetailState extends State<CablePlanDetail> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: lightGrey,
       appBar: appBar() as PreferredSizeWidget?,
       body: scaffoldBody(),
     );

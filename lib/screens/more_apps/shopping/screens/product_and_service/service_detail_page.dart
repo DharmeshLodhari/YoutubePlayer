@@ -212,7 +212,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         appBar: appBar() as PreferredSizeWidget?,
         floatingActionButton: isValidCustomer ? floatingActionBar() : null,
         body: _buildServiceDetailsPage(context),

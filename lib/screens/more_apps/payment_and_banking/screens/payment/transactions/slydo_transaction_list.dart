@@ -176,7 +176,7 @@ class _SlydoTransactionListState extends State<SlydoTransactionList>
       },
       child: Scaffold(
         key: _scaffoldTransactionKey,
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -354,7 +354,7 @@ class _SlydoTransactionListState extends State<SlydoTransactionList>
         borderRadius: BorderRadius.circular(5),
         backgroundColor: naturalGreen,
         icon: SlydoAppIcon.send,
-        onPressed: (context) async {
+        onPressed: (con) async {
           if (appConfigurationModel?.enablePayment == true) {
             customerProfileBloc.customer =
                 await UserAuth().fetchCustomerProfile(transaction.payee);
@@ -385,7 +385,7 @@ class _SlydoTransactionListState extends State<SlydoTransactionList>
         borderRadius: BorderRadius.circular(5),
         backgroundColor: navyBlue,
         icon: SlydoAppIcon.receive,
-        onPressed: (context) async {
+        onPressed: (con) async {
           if (appConfigurationModel?.enablePayment == true) {
             customerProfileBloc.customer =
                 await UserAuth().fetchCustomerProfile(transaction.payee);

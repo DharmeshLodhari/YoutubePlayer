@@ -64,7 +64,7 @@ class _EditShippingOptionsState extends State<EditShippingOptions> {
     return ScaffoldMessenger(
       key: _editShippingOptionScaffoldMessenger,
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         key: _editShippingOptionScaffold,
         resizeToAvoidBottomInset: true,
         appBar: appBar() as PreferredSizeWidget?,

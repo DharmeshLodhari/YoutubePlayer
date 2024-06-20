@@ -61,7 +61,7 @@ class _MyHotelListState extends State<MyHotelList> {
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         body: SmartRefresher(
           enablePullDown: true,
           header: WaterDropHeader(

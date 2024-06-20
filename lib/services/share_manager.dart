@@ -168,17 +168,17 @@ class ShareManager {
 
     if (mediaType == null) return;
 
-    final Map<String, dynamic> _data = {};
-    _data['text'] = "";
-    _data['check_id'] = const Uuid().v4();
-    _data['kind'] = mediaType;
-    _data['read_by_author'] = true;
-    _data['created_at'] = DateTime.now().toUtc().toString();
-    _data['type'] = "chatroom_message";
-    _data['conversation'] = chatConversation!.conversationId;
-    _data['author'] = userBloc.user.userName;
+    final Map<String, dynamic> data = {};
+    data['text'] = "";
+    data['check_id'] = const Uuid().v4();
+    data['kind'] = mediaType;
+    data['read_by_author'] = true;
+    data['created_at'] = DateTime.now().toUtc().toString();
+    data['type'] = "chatroom_message";
+    data['conversation'] = chatConversation!.conversationId;
+    data['author'] = userBloc.user.userName;
 
-    debugPrint("ShareContentMediaData====> $_data");
+    debugPrint("ShareContentMediaData====> $data");
 
     File? poster;
     if (mediaType == "video") {
@@ -189,7 +189,7 @@ class ShareManager {
     }
 
     await MessageAuth()
-        .sendSocketMessage(_data, file, poster: poster)
+        .sendSocketMessage(data, file, poster: poster)
         .then((value) {
       debugPrint("ShareContext====> MessageAuth");
     }).catchError((error) {

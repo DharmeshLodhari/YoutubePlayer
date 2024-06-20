@@ -90,7 +90,7 @@ class _YarnNotificationState extends State<YarnNotification> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: lightGrey,
       appBar: _buildAppBar(),
       body: SmartRefresher(
         enablePullDown: true,

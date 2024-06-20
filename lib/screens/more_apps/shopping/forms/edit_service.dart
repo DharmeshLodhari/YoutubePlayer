@@ -228,7 +228,7 @@ class _EditServiceState extends State<EditService> {
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         resizeToAvoidBottomInset: true,
         appBar: appBar() as PreferredSizeWidget?,
         body: scaffoldBody(),
@@ -419,6 +419,7 @@ class _EditServiceState extends State<EditService> {
     final imageSource = await showDialog<ImageSource>(
         context: context,
         builder: (context) => AlertDialog(
+              backgroundColor: Colors.white,
               title: Text(AppLocalization.of(context)!.selectTheImageSource),
               actions: <Widget>[
                 MaterialButton(
@@ -679,6 +680,7 @@ class _EditServiceState extends State<EditService> {
     final pressedCategory = await showDialog<ServiceCategory>(
         context: context,
         builder: (context) => AlertDialog(
+              backgroundColor: Colors.white,
               insetPadding:
                   const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,
@@ -1104,7 +1106,7 @@ class _EditServiceState extends State<EditService> {
   void deleteService() async {
     final bool? result = await showDialog(
       context: context,
-      builder: (context) => ConfirmDelete(),
+      builder: (context) => const ConfirmDelete(),
     );
 
     if (result != null && result) {

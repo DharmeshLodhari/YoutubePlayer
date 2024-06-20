@@ -65,6 +65,7 @@ class _OrderDetailPageState extends State<OrderDetailPage>
   bool onTap = false;
   bool onTapStatus = false;
   DeliveryModel? deliveryModel;
+  int _currentStep = 0;
 
   String? getCustomerOrMerchant() {
     final customerOrMerchant = order?.customerName == userBloc.user.userName
@@ -290,7 +291,11 @@ class _OrderDetailPageState extends State<OrderDetailPage>
       title: Text(
         "Ref # :${order?.id ?? ""}",
         style: TextStyle(
-            color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
+          color: blackFont,
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          fontFamily: "Inter",
+        ),
       ),
       actions: <Widget>[
         locationBtn(),
@@ -1264,8 +1269,6 @@ class _OrderDetailPageState extends State<OrderDetailPage>
       }
     });
   }
-
-  int _currentStep = 0;
 
   void tapped(int step) {
     setState(() => _currentStep = step);

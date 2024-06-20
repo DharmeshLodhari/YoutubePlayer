@@ -94,7 +94,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         appBar: appBar() as PreferredSizeWidget?,
         body: isLoading
             ? Center(

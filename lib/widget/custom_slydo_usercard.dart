@@ -180,7 +180,7 @@ class _CustomSlydoUserCardState extends State<CustomSlydoUserCard>
         SlideActionButton(
           borderRadius: BorderRadius.circular(5),
           icon: Icons.payments_rounded,
-          onPressed: (context) async {
+          onPressed: (con) async {
             if (appConfigurationModel?.enablePayment == true) {
               Navigator.of(context).pushNamed(
                 Routes.REQUEST_PAYMENT,
@@ -202,7 +202,7 @@ class _CustomSlydoUserCardState extends State<CustomSlydoUserCard>
         SlideActionButton(
           borderRadius: BorderRadius.circular(5),
           icon: Icons.payments_rounded,
-          onPressed: (context) async {
+          onPressed: (con) async {
             if (appConfigurationModel?.enablePayment == true) {
               Navigator.of(context).pushNamed(Routes.SEND_PAYMENT, arguments: {
                 'isFromProfile': false,
@@ -226,7 +226,7 @@ class _CustomSlydoUserCardState extends State<CustomSlydoUserCard>
         SlideActionButton(
           borderRadius: BorderRadius.circular(5),
           icon: SlydoAppIcon.add,
-          onPressed: (context) async {
+          onPressed: (con) async {
             connectUserAlert(widget.user);
           },
           label: 'Connect',
@@ -237,7 +237,7 @@ class _CustomSlydoUserCardState extends State<CustomSlydoUserCard>
         SlideActionButton(
           borderRadius: BorderRadius.circular(5),
           icon: SlydoAppIcon.block,
-          onPressed: (context) async {
+          onPressed: (con) async {
             blockUserAlert(widget.user);
           },
           label: 'Block',

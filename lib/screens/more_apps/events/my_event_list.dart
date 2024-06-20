@@ -62,7 +62,7 @@ class _MyEventListState extends State<MyEventList> {
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         body: isLoading
             ? Center(
                 child: CircularLoadingIndicator(),

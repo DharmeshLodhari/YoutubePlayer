@@ -156,7 +156,7 @@ class _AddServiceState extends State<AddService> {
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         resizeToAvoidBottomInset: true,
         appBar: appBar() as PreferredSizeWidget?,
         body: scaffoldBody(),
@@ -321,6 +321,7 @@ class _AddServiceState extends State<AddService> {
     final imageSource = await showDialog<ImageSource>(
         context: context,
         builder: (context) => AlertDialog(
+              backgroundColor: Colors.white,
               title: Text(AppLocalization.of(context)!.selectTheImageSource),
               actions: <Widget>[
                 MaterialButton(
@@ -601,6 +602,7 @@ class _AddServiceState extends State<AddService> {
     final pressedCategory = await showDialog<ServiceCategory>(
         context: context,
         builder: (context) => AlertDialog(
+              backgroundColor: Colors.white,
               insetPadding:
                   const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,

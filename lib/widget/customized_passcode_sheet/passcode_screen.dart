@@ -90,7 +90,7 @@ class _CustomizedPassCodeScreenState extends State<CustomizedPassCodeScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: lightGrey,
       body: _buildPortraitPasscodeScreen(),
     );
   }

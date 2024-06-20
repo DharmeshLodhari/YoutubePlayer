@@ -229,11 +229,11 @@ class ServiceHubAuthService extends AuthService {
   Future<dynamic> acceptJobApplicant({String? jobId, Map? data}) async {
     final String url =
         "${AppConfig.baseUrl}/api/v1/job-service/job/$jobId/accept-job-applicant/";
-    final _data = jsonEncode(data);
-    debugPrint('ACCEPT JOB APPLICANT ::: $_data');
+    final data0 = jsonEncode(data);
+    debugPrint('ACCEPT JOB APPLICANT ::: $data0');
 
     final headers = await getAuthHeaders();
-    final response = await httpPost(url, headers: headers, body: _data);
+    final response = await httpPost(url, headers: headers, body: data0);
 
     debugPrint(
         "ACCEPT JOB APPLICANT URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
@@ -250,11 +250,11 @@ class ServiceHubAuthService extends AuthService {
   Future<dynamic> rateAndReviewContrator({String? jobId, Map? data}) async {
     final String url =
         "${AppConfig.baseUrl}/api/v1/job-service/job/$jobId/rate-contractor/";
-    final _data = jsonEncode(data);
-    debugPrint('ACCEPT JOB APPLICANT ::: $_data');
+    final data0 = jsonEncode(data);
+    debugPrint('ACCEPT JOB APPLICANT ::: $data0');
 
     final headers = await getAuthHeaders();
-    final response = await httpPost(url, headers: headers, body: _data);
+    final response = await httpPost(url, headers: headers, body: data0);
 
     debugPrint(
         "REVIEW AND RATE URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
@@ -293,11 +293,11 @@ class ServiceHubAuthService extends AuthService {
   Future<dynamic> rejectJobApplicant({String? jobId, Map? data}) async {
     final String url =
         "${AppConfig.baseUrl}/api/v1/job-service/job/$jobId/reject-job-applicant/";
-    final _data = jsonEncode(data);
-    debugPrint('ACCEPT JOB APPLICANT ::: $_data');
+    final data0 = jsonEncode(data);
+    debugPrint('ACCEPT JOB APPLICANT ::: $data0');
 
     final headers = await getAuthHeaders();
-    final response = await httpPost(url, headers: headers, body: _data);
+    final response = await httpPost(url, headers: headers, body: data0);
 
     debugPrint(
         "ACCEPT JOB APPLICANT URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
@@ -310,31 +310,31 @@ class ServiceHubAuthService extends AuthService {
     }
   }
 
-  Future<JobModel?> createJobRequest(Map _data) async {
+  Future<JobModel?> createJobRequest(Map data) async {
     // debugPrint('actived $_data');
     final headers = await getAuthHeaders();
     final String url = "${AppConfig.baseUrl}/api/v1/job-service/job/";
     // var _data = jsonEncode(data.toString());
     // debugPrint('PLACE DATA ::: $_data');
-    _data["picture_count"] = _data['localImages'].length;
-    debugPrint('actived $_data');
+    data["picture_count"] = data['localImages'].length;
+    debugPrint('actived $data');
 
     //create multipart request for POST or PATCH method
     final request = http.MultipartRequest("POST", Uri.parse(url));
 
-    _data.forEach((k, v) {
+    data.forEach((k, v) {
       request.fields[k] = v.toString();
     });
 
     final List<MultipartFile> newList = [];
 
-    for (int i = 0; i < _data['localImages'].length; i++) {
+    for (int i = 0; i < data['localImages'].length; i++) {
       // Add fields
-      request.fields["picturefile_$i"] = _data['localImages'][i].path;
+      request.fields["picturefile_$i"] = data['localImages'][i].path;
 
       // Create multipart using filepath, string or bytes
       final multipartFile = await http.MultipartFile.fromPath(
-          "picturefile_$i", _data['localImages'][i].path);
+          "picturefile_$i", data['localImages'][i].path);
 
       // Add multipart to newList
       newList.add(multipartFile);
@@ -365,31 +365,31 @@ class ServiceHubAuthService extends AuthService {
   }
 
   // edit job
-  Future<JobModel?> editMyJob(Map _data, {required String jobId}) async {
+  Future<JobModel?> editMyJob(Map data, {required String jobId}) async {
     // debugPrint('actived $_data');
     final headers = await getAuthHeaders();
     final String url = "${AppConfig.baseUrl}/api/v1/job-service/job/$jobId/";
     // var _data = jsonEncode(data.toString());
     // debugPrint('PLACE DATA ::: $_data');
-    _data["picture_count"] = _data['localImages'].length;
-    debugPrint('actived $_data');
+    data["picture_count"] = data['localImages'].length;
+    debugPrint('actived $data');
 
     //create multipart request for POST or PATCH method
     final request = http.MultipartRequest("PATCH", Uri.parse(url));
 
-    _data.forEach((k, v) {
+    data.forEach((k, v) {
       request.fields[k] = v.toString();
     });
 
     final List<MultipartFile> newList = [];
 
-    for (int i = 0; i < _data['localImages'].length; i++) {
+    for (int i = 0; i < data['localImages'].length; i++) {
       // Add fields
-      request.fields["picturefile_$i"] = _data['localImages'][i].path;
+      request.fields["picturefile_$i"] = data['localImages'][i].path;
 
       // Create multipart using filepath, string or bytes
       final multipartFile = await http.MultipartFile.fromPath(
-          "picturefile_$i", _data['localImages'][i].path);
+          "picturefile_$i", data['localImages'][i].path);
 
       // Add multipart to newList
       newList.add(multipartFile);
@@ -482,11 +482,11 @@ class ServiceHubAuthService extends AuthService {
   // create listing job
   Future<dynamic> createListing(Map data) async {
     final String url = "${AppConfig.baseUrl}/api/v1/job-service/listing/";
-    final _data = jsonEncode(data);
-    debugPrint('CREATE LISTING ::: $_data');
+    final data0 = jsonEncode(data);
+    debugPrint('CREATE LISTING ::: $data0');
 
     final headers = await getAuthHeaders();
-    final response = await httpPost(url, headers: headers, body: _data);
+    final response = await httpPost(url, headers: headers, body: data0);
     final jsonData = jsonDecode(response.body);
 
     debugPrint(
@@ -503,11 +503,11 @@ class ServiceHubAuthService extends AuthService {
   // remove from listing
   Future<bool> removeJobListing(String? listingId) async {
     final data = {"is_active": false};
-    final _data = jsonEncode(data);
+    final data0 = jsonEncode(data);
     final String url =
         "${AppConfig.baseUrl}/api/v1/job-service/listing/$listingId/";
     final headers = await getAuthHeaders();
-    final response = await httpPatch(url, headers: headers, body: _data);
+    final response = await httpPatch(url, headers: headers, body: data0);
     debugPrint('lister...$response');
     debugPrint('lister. url..$url');
     if (response.statusCode == 200 || response.statusCode == 201) {
@@ -532,11 +532,11 @@ class ServiceHubAuthService extends AuthService {
   Future<dynamic> applyForJob(Map data, {String? jobId}) async {
     final String url =
         "${AppConfig.baseUrl}/api/v1/job-service/job/$jobId/apply-for-job/";
-    final _data = jsonEncode(data);
-    debugPrint('APPLY FOR JOB  ::: $_data');
+    final data0 = jsonEncode(data);
+    debugPrint('APPLY FOR JOB  ::: $data0');
 
     final headers = await getAuthHeaders();
-    final response = await httpPost(url, headers: headers, body: _data);
+    final response = await httpPost(url, headers: headers, body: data0);
     final jsonData = jsonDecode(response.body);
 
     debugPrint(
@@ -554,11 +554,11 @@ class ServiceHubAuthService extends AuthService {
   Future<dynamic> cancelApplicationForJob(Map data, {String? jobId}) async {
     final String url =
         "${AppConfig.baseUrl}/api/v1/job-service/job/$jobId/cancel-application/";
-    final _data = jsonEncode(data);
-    debugPrint('CANCEL FOR JOB  ::: $_data and $jobId');
+    final data0 = jsonEncode(data);
+    debugPrint('CANCEL FOR JOB  ::: $data0 and $jobId');
 
     final headers = await getAuthHeaders();
-    final response = await httpPost(url, headers: headers, body: _data);
+    final response = await httpPost(url, headers: headers, body: data0);
     final jsonData = jsonDecode(response.body);
 
     debugPrint(

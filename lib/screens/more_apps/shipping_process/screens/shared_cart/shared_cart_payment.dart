@@ -290,6 +290,7 @@ class _SharedCartPaymentState extends State<SharedCartPayment>
         barrierDismissible: false,
         context: context,
         builder: (context) => AlertDialog(
+              backgroundColor: Colors.white,
               insetPadding:
                   const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,
@@ -548,7 +549,7 @@ class _SharedCartPaymentState extends State<SharedCartPayment>
         borderRadius: BorderRadius.circular(5),
         backgroundColor: naturalGreen,
         icon: SlydoAppIcon.true_icon,
-        onPressed: (context) {
+        onPressed: (con) {
           _buildConfirmPaymentDialog(context);
         },
         label: AppLocalization.of(context)!.accept,

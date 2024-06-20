@@ -33,7 +33,7 @@ class _RateAndTipDriverState extends State<RateAndTipDriver> {
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         appBar: appBar() as PreferredSizeWidget?,
         body: scaffoldBody(),
       ),

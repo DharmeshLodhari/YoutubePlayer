@@ -107,11 +107,11 @@ class ShippingProcessAuthService extends AuthService {
     } else {
       url += "/api/v1/shopping-cart/buy-now/";
     }
-    final _data = jsonEncode(data);
-    debugPrint('Order details ::: $_data');
+    final data0 = jsonEncode(data);
+    debugPrint('Order details ::: $data0');
 
     final headers = await getAuthHeaders();
-    final response = await httpPost(url, headers: headers, body: _data);
+    final response = await httpPost(url, headers: headers, body: data0);
     final jsonData = jsonDecode(response.body);
 
     debugPrint(
@@ -138,11 +138,11 @@ class ShippingProcessAuthService extends AuthService {
       url = getSecureUrl(url: next);
     }
 
-    final _data = jsonEncode(data);
+    final data0 = jsonEncode(data);
     debugPrint('My Job URL ---> $url');
 
     final headers = await getAuthHeaders();
-    final response = await httpPost(url, headers: headers, body: _data);
+    final response = await httpPost(url, headers: headers, body: data0);
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 

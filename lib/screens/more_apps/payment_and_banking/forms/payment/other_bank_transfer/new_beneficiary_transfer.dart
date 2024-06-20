@@ -111,7 +111,7 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: lightGrey,
       resizeToAvoidBottomInset: true,
       body: scaffoldBody(),
     );
@@ -309,11 +309,9 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
-      shadowColor: iconBtnGrey,
+      shadowColor: boxShadowTwo,
       child: Container(
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: iconBtnGrey, width: 1)),
+        decoration: decorateBox(),
         child: Form(
           key: _formKey,
           child: Container(

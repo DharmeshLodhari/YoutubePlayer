@@ -391,6 +391,7 @@ class _CheckoutProductServiceState extends State<CheckoutProductService> {
         await showDialog<ShippingOptionsModel>(
             context: context,
             builder: (context) => AlertDialog(
+                  backgroundColor: Colors.white,
                   insetPadding:
                       const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
                   contentPadding: EdgeInsets.zero,

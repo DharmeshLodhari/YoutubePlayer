@@ -147,15 +147,21 @@ class _MessageListState extends State<MessageList>
           heroTag: "compose_message",
           backgroundColor: navyBlue,
           isExtended: false,
-          child: const Icon(
-            SlydoAppIcon.text_message,
-            size: 20,
-          ),
           onPressed: () {
             Navigator.of(context).pushNamed(
               Routes.COMPOSE_MESSAGE,
             );
           },
+          mini: false,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(
+                50.0), // Set the border radius to create a circle
+          ),
+          child: const Icon(
+            SlydoAppIcon.text_message,
+            color: Colors.white,
+            size: 20,
+          ),
         ),
       ),
     );
@@ -354,7 +360,7 @@ class _MessageListState extends State<MessageList>
       borderRadius: BorderRadius.circular(5),
       backgroundColor: naturalGreen,
       icon: actionIcon,
-      onPressed: (context) async {
+      onPressed: (con) async {
         final action = isRecipient
             ? partialMessage.isArchivedByRecipient!
                 ? "unarchive"
@@ -393,7 +399,7 @@ class _MessageListState extends State<MessageList>
       borderRadius: BorderRadius.circular(5),
       backgroundColor: mateRed,
       icon: Icons.delete,
-      onPressed: (context) {
+      onPressed: (con) {
         deleteMessage(partialMessage, index);
       },
       label: AppLocalization.of(context)!.delete,

@@ -3280,19 +3280,19 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
   void sendAudioToServer() async {
     final File mediaFile = File(audioPath!);
-    final Map<String, dynamic> _data = {};
-    _data['text'] = "";
-    _data['check_id'] = audioUuid;
-    _data['kind'] = "audio";
-    _data['read_by_author'] = true;
-    _data['read_by_recipient'] = false;
-    _data["delivered"] = false;
-    _data['created_at'] = DateTime.now().toUtc().toIso8601String();
-    _data['type'] = "chatroom_message";
-    _data["conversation"] = chatConversation!.conversationId;
-    _data["author"] = userBloc!.user.userName;
-    _data["author_name"] = userBloc!.user.fullName;
-    _data["author_avatar"] = userBloc!.user.avatar;
+    final Map<String, dynamic> data = {};
+    data['text'] = "";
+    data['check_id'] = audioUuid;
+    data['kind'] = "audio";
+    data['read_by_author'] = true;
+    data['read_by_recipient'] = false;
+    data["delivered"] = false;
+    data['created_at'] = DateTime.now().toUtc().toIso8601String();
+    data['type'] = "chatroom_message";
+    data["conversation"] = chatConversation!.conversationId;
+    data["author"] = userBloc!.user.userName;
+    data["author_name"] = userBloc!.user.fullName;
+    data["author_avatar"] = userBloc!.user.avatar;
 
     showDialog(
         context: context,
@@ -3300,7 +3300,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
               child: CircularLoadingIndicator(),
             ));
 
-    MessageAuth().sendSocketMessage(_data, mediaFile).then((value) {
+    MessageAuth().sendSocketMessage(data, mediaFile).then((value) {
       Navigator.pop(context);
       audioUuid = null;
       audioPath = null;

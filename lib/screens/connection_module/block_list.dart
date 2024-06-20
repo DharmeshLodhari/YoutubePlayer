@@ -177,7 +177,7 @@ class _BlockedListState extends State<BlockedList>
         borderRadius: BorderRadius.circular(5),
         backgroundColor: naturalGreen,
         icon: SlydoAppIcon.unblock,
-        onPressed: (context) {
+        onPressed: (con) {
           unBlockUserAlert(user, index);
         },
         label: AppLocalization.of(context)!.unblock,

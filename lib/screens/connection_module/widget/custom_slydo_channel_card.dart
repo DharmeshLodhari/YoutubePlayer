@@ -59,192 +59,198 @@ class _CustomSlydoChannelCardState extends State<CustomSlydoChannelCard> {
     return Card(
       semanticContainer: true,
       clipBehavior: Clip.antiAliasWithSaveLayer,
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
-      shadowColor: boxShadow,
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      shadowColor: boxShadowTwo,
       elevation: 3,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Stack(
-            clipBehavior: Clip.none,
-            alignment: Alignment.topCenter,
-            children: [
-              SizedBox(
-                  height: getContainerHeight(widget.tileRenderPlace, context),
-                  child: getWallpaper()),
-              Positioned(
-                left: 10,
-                top: getContainerHeight(widget.tileRenderPlace, context) - 20,
-                child: InkWell(
-                  onTap: () {
-                    String? image = '';
-                    if (widget.channelModel!.avatar == "" ||
-                        widget.channelModel!.avatar ==
-                            "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png") {
-                      image = getInitials(widget.channelModel!.owner!)
-                          .toUpperCase();
-                    } else {
-                      image = widget.channelModel!.avatar;
-                    }
-
-                    Navigator.of(context)
-                        .pushNamed(Routes.PHOTO_VIEWER, arguments: image);
-                  },
-                  child: SizedBox(
-                      width: widget.tileRenderPlace == TileRenderPlace.Thiny
-                          ? 40
-                          : 50,
-                      height: widget.tileRenderPlace == TileRenderPlace.Thiny
-                          ? 40
-                          : 50,
-                      child: CircularUserColorImage(
-                          imageUrl: widget.channelModel!.avatar!,
-                          name: widget.channelModel!.owner!)),
-                ),
-              ),
-            ],
-          ),
-          Container(
-            padding: widget.tileRenderPlace == TileRenderPlace.Thiny
-                ? const EdgeInsets.only(left: 15, top: 20, bottom: 5, right: 15)
-                : const EdgeInsets.only(
-                    left: 15, top: 30, bottom: 10, right: 15),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisSize: MainAxisSize.min,
+      child: Container(
+        decoration: decorateBox(),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Stack(
+              clipBehavior: Clip.none,
+              alignment: Alignment.topCenter,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    InkWell(
-                      onTap: () {
-                        Navigator.pushNamed(context, Routes.USER_PROFILE,
-                            arguments: {
-                              "searchedUserName": widget.channelModel!.owner!
-                            });
-                      },
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Align(
-                              alignment: Alignment.centerLeft,
-                              child: Text(
-                                appendStringDot(
-                                    messageDecoderWithEmoji(
-                                            widget.channelModel!.groupName ??
-                                                "") ??
-                                        "",
-                                    widget.tileRenderPlace ==
-                                            TileRenderPlace.Thiny
-                                        ? 13
-                                        : 20),
-                                style: TextStyle(
-                                    fontSize: widget.tileRenderPlace ==
-                                            TileRenderPlace.Thiny
-                                        ? 12
-                                        : 16,
-                                    fontWeight: FontWeight.w700,
-                                    color: yarnBlack),
-                              )),
-                          Row(
-                            children: [
-                              Align(
-                                alignment: Alignment.centerLeft,
-                                child: userNameWithVerifiedIcon(
-                                    name: appendStringDot(
-                                        messageDecoderWithEmoji(
-                                                '@${widget.channelModel!.owner}') ??
-                                            "",
-                                        widget.tileRenderPlace ==
-                                                TileRenderPlace.Thiny
-                                            ? 13
-                                            : 20),
-                                    isVerified: false,
-                                    textStyle: TextStyle(
-                                      fontSize: widget.tileRenderPlace ==
-                                              TileRenderPlace.Thiny
-                                          ? 11
-                                          : 14,
-                                      color: HexColor("#151515"),
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                    verifiedIconColor: verifyGreen,
-                                    verifiedIconSize: widget.tileRenderPlace ==
-                                            TileRenderPlace.Thiny
-                                        ? 12
-                                        : 15),
-                              ),
-                              if (widget.channelModel?.isMember == false) ...[
-                                const SizedBox(width: 20),
-                                Text(
-                                  '${getFormattedViewCount(
-                                    noOfViews:
-                                        widget.channelModel!.noOfMembers!,
-                                    addViewText: false,
-                                  )} Member(s)',
-                                  maxLines: 1,
-                                  style: TextStyle(
-                                    color: black,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                  overflow: TextOverflow.fade,
-                                  softWrap: false,
-                                )
-                              ],
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      // padding: const EdgeInsets.symmetric(horizontal: 10),
-                      child: getJoinUnJoinedBtn(),
-                    ),
-                  ],
-                ),
                 SizedBox(
-                  height: widget.tileRenderPlace == TileRenderPlace.Thiny
-                      ? 2.0
-                      : 5.0,
+                  height: getContainerHeight(widget.tileRenderPlace, context),
+                  child: getWallpaper(),
                 ),
-                if (widget.channelModel!.description!.isNotEmpty ||
-                    widget.channelModel!.description! != "") ...[
-                  const SizedBox(
-                    height: 10.0,
+                Positioned(
+                  left: 10,
+                  top: getContainerHeight(widget.tileRenderPlace, context) - 20,
+                  child: InkWell(
+                    onTap: () {
+                      String? image = '';
+                      if (widget.channelModel!.avatar == "" ||
+                          widget.channelModel!.avatar ==
+                              "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png") {
+                        image = getInitials(widget.channelModel!.owner!)
+                            .toUpperCase();
+                      } else {
+                        image = widget.channelModel!.avatar;
+                      }
+
+                      Navigator.of(context)
+                          .pushNamed(Routes.PHOTO_VIEWER, arguments: image);
+                    },
+                    child: SizedBox(
+                        width: widget.tileRenderPlace == TileRenderPlace.Thiny
+                            ? 40
+                            : 50,
+                        height: widget.tileRenderPlace == TileRenderPlace.Thiny
+                            ? 40
+                            : 50,
+                        child: CircularUserColorImage(
+                            imageUrl: widget.channelModel!.avatar!,
+                            name: widget.channelModel!.owner!)),
                   ),
+                ),
+              ],
+            ),
+            Container(
+              padding: widget.tileRenderPlace == TileRenderPlace.Thiny
+                  ? const EdgeInsets.only(
+                      left: 15, top: 20, bottom: 5, right: 15)
+                  : const EdgeInsets.only(
+                      left: 15, top: 30, bottom: 10, right: 15),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisSize: MainAxisSize.min,
+                children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(
-                        child: Text(
-                          messageDecoderWithEmoji(
-                                  widget.channelModel!.description!) ??
-                              "",
-                          style: TextStyle(
-                            fontSize:
-                                getFontSize(widget.tileRenderPlace, context),
-                            fontWeight: FontWeight.w600,
-                            color: blackFont,
-                          ),
-                          maxLines: 2,
-                          softWrap: true,
-                          overflow: TextOverflow.ellipsis,
+                      InkWell(
+                        onTap: () {
+                          Navigator.pushNamed(context, Routes.USER_PROFILE,
+                              arguments: {
+                                "searchedUserName": widget.channelModel!.owner!
+                              });
+                        },
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  appendStringDot(
+                                      messageDecoderWithEmoji(
+                                              widget.channelModel!.groupName ??
+                                                  "") ??
+                                          "",
+                                      widget.tileRenderPlace ==
+                                              TileRenderPlace.Thiny
+                                          ? 13
+                                          : 20),
+                                  style: TextStyle(
+                                      fontSize: widget.tileRenderPlace ==
+                                              TileRenderPlace.Thiny
+                                          ? 12
+                                          : 16,
+                                      fontWeight: FontWeight.w700,
+                                      color: yarnBlack),
+                                )),
+                            Row(
+                              children: [
+                                Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: userNameWithVerifiedIcon(
+                                      name: appendStringDot(
+                                          messageDecoderWithEmoji(
+                                                  '@${widget.channelModel!.owner}') ??
+                                              "",
+                                          widget.tileRenderPlace ==
+                                                  TileRenderPlace.Thiny
+                                              ? 13
+                                              : 20),
+                                      isVerified: false,
+                                      textStyle: TextStyle(
+                                        fontSize: widget.tileRenderPlace ==
+                                                TileRenderPlace.Thiny
+                                            ? 11
+                                            : 14,
+                                        color: HexColor("#151515"),
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                      verifiedIconColor: verifyGreen,
+                                      verifiedIconSize:
+                                          widget.tileRenderPlace ==
+                                                  TileRenderPlace.Thiny
+                                              ? 12
+                                              : 15),
+                                ),
+                                if (widget.channelModel?.isMember == false) ...[
+                                  const SizedBox(width: 20),
+                                  Text(
+                                    '${getFormattedViewCount(
+                                      noOfViews:
+                                          widget.channelModel!.noOfMembers!,
+                                      addViewText: false,
+                                    )} Member(s)',
+                                    maxLines: 1,
+                                    style: TextStyle(
+                                      color: black,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                    overflow: TextOverflow.fade,
+                                    softWrap: false,
+                                  )
+                                ],
+                              ],
+                            ),
+                          ],
                         ),
+                      ),
+                      Container(
+                        // padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: getJoinUnJoinedBtn(),
                       ),
                     ],
                   ),
+                  SizedBox(
+                    height: widget.tileRenderPlace == TileRenderPlace.Thiny
+                        ? 2.0
+                        : 5.0,
+                  ),
+                  if (widget.channelModel!.description!.isNotEmpty ||
+                      widget.channelModel!.description! != "") ...[
+                    const SizedBox(
+                      height: 10.0,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            messageDecoderWithEmoji(
+                                    widget.channelModel!.description!) ??
+                                "",
+                            style: TextStyle(
+                              fontSize:
+                                  getFontSize(widget.tileRenderPlace, context),
+                              fontWeight: FontWeight.w600,
+                              color: blackFont,
+                            ),
+                            maxLines: 2,
+                            softWrap: true,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ],
-              ],
+              ),
             ),
-          ),
-          SizedBox(
-            height:
-                widget.tileRenderPlace == TileRenderPlace.Thiny ? 5.0 : 10.0,
-          ),
-        ],
+            SizedBox(
+              height:
+                  widget.tileRenderPlace == TileRenderPlace.Thiny ? 5.0 : 10.0,
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -645,7 +645,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
       if (widget.channelDetail!['avatar'] == null) {
         return CircleAvatar(
           backgroundColor: navyBlue,
-          radius: 25,
+          radius: 60,
           child: Text(
             getInitials(widget.channelDetail!['group_name']).toUpperCase(),
             style: TextStyle(color: white, fontWeight: FontWeight.w700),
@@ -653,7 +653,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
         );
       } else {
         return CircleAvatar(
-          radius: 25,
+          radius: 30,
           backgroundImage: CachedNetworkImageProvider(
             widget.channelDetail!['avatar'],
           ),
@@ -665,7 +665,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
               "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png") {
         return CircleAvatar(
           backgroundColor: navyBlue,
-          radius: 25,
+          radius: 30,
           child: Text(
             getInitials(searchedUser?.fullName ?? "").toUpperCase(),
             style: TextStyle(color: white, fontWeight: FontWeight.w700),
@@ -673,11 +673,11 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
         );
       } else {
         return Container(
-          height: 48,
-          width: 48,
+          height: 60,
+          width: 60,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(
-              25,
+              30,
             ),
             border: Border.all(color: borderColor, width: 2),
           ),

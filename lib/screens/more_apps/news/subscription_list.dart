@@ -52,7 +52,10 @@ class _SubscriptionListState extends State<SubscriptionList> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(backgroundColor: Colors.white, body: scaffoldBody());
+    return Scaffold(
+      backgroundColor: lightGrey,
+      body: scaffoldBody(),
+    );
   }
 
   Widget scaffoldBody() {

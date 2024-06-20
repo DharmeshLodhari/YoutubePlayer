@@ -212,7 +212,7 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
       key: _scaffoldMessengerSearchKey,
       child: Scaffold(
         key: _scaffoldSearchKey,
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         appBar: appBar() as PreferredSizeWidget?,
         body: scaffoldBody(),
       ),

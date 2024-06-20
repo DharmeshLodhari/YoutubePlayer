@@ -70,7 +70,7 @@ class _ProductAddOnOptionCreateState extends State<ProductAddOnOptionCreate> {
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         resizeToAvoidBottomInset: true,
         appBar: appBar() as PreferredSizeWidget?,
         body: scaffoldBody(),
@@ -210,6 +210,7 @@ class _ProductAddOnOptionCreateState extends State<ProductAddOnOptionCreate> {
     final imageSource = await showDialog<ImageSource>(
         context: context,
         builder: (context) => AlertDialog(
+      backgroundColor: Colors.white,
               title: Text(AppLocalization.of(context)!.selectTheImageSource),
               actions: <Widget>[
                 MaterialButton(

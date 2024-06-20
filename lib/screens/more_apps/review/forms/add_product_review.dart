@@ -18,7 +18,7 @@ class _AddReviewState extends State<AddReview> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: lightGrey,
       appBar: AppBar(
         title: Text(
           "Product's review",

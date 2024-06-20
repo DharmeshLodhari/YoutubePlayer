@@ -337,7 +337,7 @@ class _ContractScreenState extends State<ContractScreen>
                               borderRadius: BorderRadius.circular(5),
                               backgroundColor: mateRed,
                               icon: Icons.stop_circle_outlined,
-                              onPressed: (context) {
+                              onPressed: (con) {
                                 showDialogBox(
                                   context: context,
                                   actionOneTextColor: blackFont,
@@ -375,7 +375,7 @@ class _ContractScreenState extends State<ContractScreen>
                                     borderRadius: BorderRadius.circular(5),
                                     backgroundColor: naturalGreen,
                                     icon: Icons.stop_circle_outlined,
-                                    onPressed: (context) {
+                                    onPressed: (con) {
                                       showDialogBox(
                                         context: context,
                                         actionOneTextColor: blackFont,
@@ -447,7 +447,7 @@ class _ContractScreenState extends State<ContractScreen>
         borderRadius: BorderRadius.circular(5),
         backgroundColor: getSecondaryActionIconColor(contract),
         icon: getSecondaryActionIcon(contract),
-        onPressed: (context) {
+        onPressed: (con) {
           updateContractStatus(contract, getUpdateAction(contract));
         },
         label: getSecondaryActionTitle(contract),
@@ -527,7 +527,7 @@ class _ContractScreenState extends State<ContractScreen>
         borderRadius: BorderRadius.circular(5),
         backgroundColor: mateRed,
         icon: Icons.stop_circle_outlined,
-        onPressed: (context) {
+        onPressed: (con) {
           showDialogBox(
             context: context,
             actionOneBgColor: greyBorderColor,

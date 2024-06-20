@@ -85,7 +85,7 @@ class _AddOrUpdateInvoiceItemState extends State<AddOrUpdateInvoiceItem> {
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         key: _addItemScaffoldKey,
         resizeToAvoidBottomInset: true,
         appBar: appBar() as PreferredSizeWidget?,

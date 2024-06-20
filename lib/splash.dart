@@ -237,19 +237,20 @@ class _SplashScreenState extends State<SplashScreen>
       },
       child: hasConnection
           ? Scaffold(
+              backgroundColor: lightGrey,
               body: Stack(fit: StackFit.expand, children: <Widget>[
-              AspectRatio(
-                  aspectRatio: 9 / 16,
-                  child: Container(
-                    child: (playerController != null
-                        ? VideoPlayer(
-                            playerController!,
-                          )
-                        : Container()),
-                  )),
-            ]))
+                AspectRatio(
+                    aspectRatio: 9 / 16,
+                    child: Container(
+                      child: (playerController != null
+                          ? VideoPlayer(
+                              playerController!,
+                            )
+                          : Container()),
+                    )),
+              ]))
           : Scaffold(
-              backgroundColor: Colors.white,
+              backgroundColor: lightGrey,
               appBar: AppBar(
                 title: Text(
                   'Slydo',

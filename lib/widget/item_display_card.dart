@@ -1350,7 +1350,7 @@ class _FindBusinessState extends State<FindBusiness> {
                             fontWeight: FontWeight.w600,
                             color: blackFont,
                           ),
-                          maxLines: 2,
+                          maxLines: 1,
                           softWrap: true,
                           overflow: TextOverflow.ellipsis,
                         ),

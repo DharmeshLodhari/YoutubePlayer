@@ -60,7 +60,7 @@ class _ResetDeviceState extends State<ResetDevice> {
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         appBar: AppBar(
           backgroundColor: Colors.white,
           elevation: 0,
@@ -157,6 +157,7 @@ class _ResetDeviceState extends State<ResetDevice> {
         barrierDismissible: false,
         context: context,
         builder: (context) => AlertDialog(
+              backgroundColor: Colors.white,
               insetPadding:
                   const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,
@@ -553,6 +554,7 @@ class _ResetDeviceState extends State<ResetDevice> {
       builder: (context) =>
           StatefulBuilder(builder: (context, rentDurationStateSetter) {
         return AlertDialog(
+          backgroundColor: Colors.white,
           insetPadding:
               const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
           contentPadding: EdgeInsets.zero,

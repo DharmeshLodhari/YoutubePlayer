@@ -64,7 +64,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         appBar: appBar() as PreferredSizeWidget?,
         body: scaffoldBody(),
         floatingActionButton: floatingActionBar(),

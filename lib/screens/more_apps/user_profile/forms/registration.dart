@@ -45,7 +45,7 @@ class _RegistrationState extends State<Registration> {
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         appBar: AppBar(
           backgroundColor: Colors.white,
           elevation: 0,

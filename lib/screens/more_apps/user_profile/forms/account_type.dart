@@ -59,7 +59,7 @@ class _AccountTypeState extends State<AccountType> {
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         appBar: AppBar(
           backgroundColor: Colors.white,
           elevation: 0,

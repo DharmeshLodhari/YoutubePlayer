@@ -312,6 +312,7 @@ class _PaymentLinkCashOutState extends State<PaymentLinkCashOut> {
           context: context,
           builder: (context) {
             return AlertDialog(
+              backgroundColor: Colors.white,
               shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(
                   Radius.circular(
@@ -985,6 +986,7 @@ class _PaymentLinkCashOutState extends State<PaymentLinkCashOut> {
           context: context,
           builder: (context) {
             return AlertDialog(
+              backgroundColor: Colors.white,
               shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(
                   Radius.circular(

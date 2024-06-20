@@ -107,7 +107,7 @@ class _YarnDashboardState extends State<YarnDashboard> {
     userBloc = Provider.of<UserBloc>(context, listen: false);
     yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context, listen: false);
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: lightGrey,
       floatingActionButton: _buildFloatingActionButton(),
       appBar: _buildAppBar() as PreferredSizeWidget,
       body: _buildBody(),

@@ -65,7 +65,8 @@ class _ChatConnectionSettingsState extends State<ChatConnectionSettings> {
                   color: navyBlue,
                 ),
                 onTap: () {
-                  NavigationUtil.push(context, screen: ChatWallpaperSettings());
+                  NavigationUtil.push(context,
+                      screen: const ChatWallpaperSettings());
                 },
               ),
             ),

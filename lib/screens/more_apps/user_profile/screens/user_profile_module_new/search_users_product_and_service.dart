@@ -611,6 +611,7 @@ class _SearchUsersProductAndServiceState
       barrierDismissible: false,
       context: context,
       builder: (context) => AlertDialog(
+        backgroundColor: Colors.white,
         insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
         contentPadding: EdgeInsets.zero,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -797,6 +798,7 @@ class _SearchUsersProductAndServiceState
     final pressedCondition = await showDialog<ProductCondition>(
         context: context,
         builder: (context) => AlertDialog(
+              backgroundColor: Colors.white,
               insetPadding:
                   const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,
@@ -1960,7 +1962,7 @@ class _SearchUsersProductAndServiceState
       SlideActionButton(
         borderRadius: BorderRadius.circular(5),
         icon: SlydoAppIcon.cart,
-        onPressed: (context) async {
+        onPressed: (con) async {
           final CustomerProfileBloc customerProfileBloc =
               Provider.of<CustomerProfileBloc>(context, listen: false);
 
@@ -1980,7 +1982,7 @@ class _SearchUsersProductAndServiceState
       SlideActionButton(
         borderRadius: BorderRadius.circular(5),
         icon: SlydoAppIcon.text_message,
-        onPressed: (context) async {
+        onPressed: (con) async {
           Navigator.of(context).pushNamed('/compose_message', arguments: {
             'recipient': product.seller,
             'subject': product.name,
@@ -2016,7 +2018,7 @@ class _SearchUsersProductAndServiceState
           label: AppLocalization.of(context)!.pay,
           backgroundColor: naturalGreen,
           icon: SlydoAppIcon.cart,
-          onPressed: (context) async {
+          onPressed: (con) async {
             final CustomerProfileBloc customerProfileBloc =
                 Provider.of<CustomerProfileBloc>(context, listen: false);
             customerProfileBloc.customer =
@@ -2034,7 +2036,7 @@ class _SearchUsersProductAndServiceState
         label: AppLocalization.of(context)!.message,
         backgroundColor: navyBlue,
         icon: SlydoAppIcon.text_message,
-        onPressed: (context) async {
+        onPressed: (con) async {
           Navigator.of(context).pushNamed('/compose_message', arguments: {
             'recipient': service.provider,
             'subject': service.name,

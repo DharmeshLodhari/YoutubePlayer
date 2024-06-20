@@ -144,6 +144,7 @@ class _PaymentLinkScreenState extends State<PaymentLinkScreen> {
         barrierDismissible: false,
         context: context,
         builder: (context) => AlertDialog(
+              backgroundColor: Colors.white,
               insetPadding:
                   const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,
@@ -222,6 +223,7 @@ class _PaymentLinkScreenState extends State<PaymentLinkScreen> {
         context: context,
         builder: (context) {
           return AlertDialog(
+            backgroundColor: Colors.white,
             shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.all(
                 Radius.circular(

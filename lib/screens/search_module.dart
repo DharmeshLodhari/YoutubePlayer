@@ -232,7 +232,7 @@ class _SearchModuleState extends State<SearchModule>
         child: Scaffold(
           key: _scaffoldSearchKey,
           resizeToAvoidBottomInset: true,
-          backgroundColor: Colors.white,
+          backgroundColor: lightGrey,
           appBar: appBar() as PreferredSizeWidget?,
           body: tabViews(),
         ),
@@ -1167,7 +1167,7 @@ class _SearchModuleState extends State<SearchModule>
         SlideActionButton(
           borderRadius: BorderRadius.circular(5),
           icon: Icons.payments_rounded,
-          onPressed: (context) async {
+          onPressed: (con) async {
             if (appConfigurationModel?.enablePayment == true) {
               // customerProfileBloc.customer =
               //     await UserAuth().fetchCustomerProfile(user.userName);
@@ -1190,7 +1190,7 @@ class _SearchModuleState extends State<SearchModule>
         SlideActionButton(
           borderRadius: BorderRadius.circular(5),
           icon: Icons.payments_rounded,
-          onPressed: (context) async {
+          onPressed: (con) async {
             if (appConfigurationModel?.enablePayment == true) {
               // customerProfileBloc.customer =
               //     await UserAuth().fetchCustomerProfile(user.userName);
@@ -1216,7 +1216,7 @@ class _SearchModuleState extends State<SearchModule>
         SlideActionButton(
           borderRadius: BorderRadius.circular(5),
           icon: SlydoAppIcon.add,
-          onPressed: (context) async {
+          onPressed: (con) async {
             connectUserAlert(user);
           },
           label: 'Connect',
@@ -1226,7 +1226,7 @@ class _SearchModuleState extends State<SearchModule>
         SlideActionButton(
           borderRadius: BorderRadius.circular(5),
           icon: SlydoAppIcon.block,
-          onPressed: (context) async {
+          onPressed: (con) async {
             blockUserAlert(user);
           },
           label: 'Block',
@@ -1257,7 +1257,7 @@ class _SearchModuleState extends State<SearchModule>
       SlideActionButton(
         borderRadius: BorderRadius.circular(5),
         icon: SlydoAppIcon.cart,
-        onPressed: (context) async {
+        onPressed: (con) async {
           customerProfileBloc.customer =
               await UserAuth().fetchCustomerProfile(product.seller);
           Navigator.of(context).pushNamed(Routes.SEND_PAYMENT,
@@ -1274,7 +1274,7 @@ class _SearchModuleState extends State<SearchModule>
       SlideActionButton(
         borderRadius: BorderRadius.circular(5),
         icon: SlydoAppIcon.text_message,
-        onPressed: (context) async {
+        onPressed: (con) async {
           Navigator.of(context).pushNamed(Routes.COMPOSE_MESSAGE, arguments: {
             'recipient': product.seller,
             'subject': product.name,
@@ -1310,7 +1310,7 @@ class _SearchModuleState extends State<SearchModule>
           label: AppLocalization.of(context)!.buy,
           backgroundColor: naturalGreen,
           icon: SlydoAppIcon.cart,
-          onPressed: (context) async {
+          onPressed: (con) async {
             customerProfileBloc.customer =
                 await UserAuth().fetchCustomerProfile(service.provider);
             Navigator.of(context).pushNamed(Routes.SEND_PAYMENT,
@@ -1326,7 +1326,7 @@ class _SearchModuleState extends State<SearchModule>
         label: AppLocalization.of(context)!.message,
         backgroundColor: navyBlue,
         icon: SlydoAppIcon.text_message,
-        onPressed: (context) async {
+        onPressed: (con) async {
           Navigator.of(context).pushNamed(Routes.COMPOSE_MESSAGE, arguments: {
             'recipient': service.provider,
             'subject': service.name,

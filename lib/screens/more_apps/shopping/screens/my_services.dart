@@ -43,7 +43,7 @@ class _MyServicesState extends State<MyServices> {
     );
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: lightGrey,
       appBar: _buildAppBar() as PreferredSizeWidget,
       body: _buildBody(),
     );

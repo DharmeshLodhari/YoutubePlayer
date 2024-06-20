@@ -13,8 +13,7 @@ import 'models/provider_model.dart';
 
 class UtilityPaymentScreen extends StatefulWidget {
   final ProviderModel providerModel;
-  const UtilityPaymentScreen({super.key, required this.providerModel})
-     ;
+  const UtilityPaymentScreen({super.key, required this.providerModel});
 
   @override
   State<UtilityPaymentScreen> createState() => _UtilityPaymentScreenState();
@@ -72,7 +71,7 @@ class _UtilityPaymentScreenState extends State<UtilityPaymentScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: lightGrey,
       resizeToAvoidBottomInset: true,
       appBar: appBar() as PreferredSizeWidget?,
       body: scaffoldBody(),
@@ -273,6 +272,7 @@ class _UtilityPaymentScreenState extends State<UtilityPaymentScreen> {
     final pressedPlan = await showDialog<ProviderProductModel>(
         context: context,
         builder: (context) => AlertDialog(
+              backgroundColor: Colors.white,
               insetPadding:
                   const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,

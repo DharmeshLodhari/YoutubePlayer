@@ -365,11 +365,11 @@ class RiderDeliveryAuthService extends AuthService {
   Future<bool> shareExperience(String? journeyId, {Map? data}) async {
     final String url =
         "${AppConfig.baseUrl}/api/v1/shipping/journeys/$journeyId/send-journey-experience/";
-    final _data = jsonEncode(data);
-    debugPrint('Order details ::: $_data');
+    final data0 = jsonEncode(data);
+    debugPrint('Order details ::: $data0');
 
     final headers = await getAuthHeaders();
-    final response = await httpPost(url, headers: headers, body: _data);
+    final response = await httpPost(url, headers: headers, body: data0);
 
     debugPrint(
         "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");

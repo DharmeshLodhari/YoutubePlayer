@@ -32,7 +32,7 @@ class _PaymentOptionsState extends State<PaymentOptions> {
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         appBar: appBar() as PreferredSizeWidget?,
         body: Stack(
           children: [

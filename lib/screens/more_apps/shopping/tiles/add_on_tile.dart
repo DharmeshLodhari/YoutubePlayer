@@ -330,6 +330,7 @@ class _AddOnTileState extends State<AddOnTile> {
         barrierDismissible: true,
         context: context,
         builder: (context) => AlertDialog(
+              backgroundColor: Colors.white,
               insetPadding:
                   const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,

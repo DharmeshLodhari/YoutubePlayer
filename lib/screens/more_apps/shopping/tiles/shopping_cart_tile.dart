@@ -260,17 +260,17 @@ class ShoppingCartTileForProduct extends StatelessWidget {
         size = variantSize;
       }
     }
-    final List<String>? names = [];
+    final List<String> names = [];
 
     if (basketItem.hasAddOns) {
       for (AddOns addOn in basketItem.addOns ?? []) {
         final List<String>? optionName =
             addOn.options?.map((e) => e.name ?? "").toList();
-        names?.addAll(optionName ?? []);
+        names.addAll(optionName ?? []);
       }
     }
 
-    final concatenatedText = names?.join(', ');
+    final concatenatedText = names.join(', ');
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -423,14 +423,14 @@ class ShoppingCartTileForService extends StatefulWidget {
   Function? onDecreaseQty;
 
   ShoppingCartTileForService(BasketItem item,
-      {this.onDecreaseQty, this.onIncreaseQty, this.index}) {
+      {super.key, this.onDecreaseQty, this.onIncreaseQty, this.index}) {
     type = item.type;
     this.item = item.item as Service;
     qty = item.qty ?? 0;
   }
 
   @override
-  _ShoppingCartTileForServiceState createState() =>
+  State<ShoppingCartTileForService> createState() =>
       _ShoppingCartTileForServiceState();
 }
 

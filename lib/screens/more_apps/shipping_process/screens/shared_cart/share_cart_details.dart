@@ -252,7 +252,7 @@ class _SharedCartDetailsState extends State<SharedCartDetails> {
             Row(
               children: <Widget>[
                 Text(
-                  AppLocalization.of(context)!.total + " : ",
+                  "${AppLocalization.of(context)!.total} : ",
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w400,

@@ -32,7 +32,7 @@ class _ReviewDetailScreenState extends State<ReviewDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: lightGrey,
       appBar: AppBar(
         title: Text(
           "Review detail",

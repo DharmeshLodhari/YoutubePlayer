@@ -62,8 +62,7 @@ class CustomizedAlert {
           child: SingleChildScrollView(
             child: AlertDialog(
                 insetPadding: EdgeInsets.zero,
-                backgroundColor: style.backgroundColor ??
-                    Theme.of(context).dialogBackgroundColor,
+                backgroundColor: style.backgroundColor ?? white,
                 shape: style.alertBorder ?? _defaultShape(),
                 titlePadding: const EdgeInsets.all(0.0),
                 title: SizedBox(
@@ -79,6 +78,9 @@ class CustomizedAlert {
                                   height: 20,
                                 ),
                                 _getImage() ?? Container(),
+                                const SizedBox(
+                                  height: 10,
+                                ),
                                 Text(
                                   title ?? "",
                                   style: TextStyle(

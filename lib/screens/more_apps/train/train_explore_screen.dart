@@ -33,7 +33,7 @@ class _TrainExploreScreenState extends State<TrainExploreScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: lightGrey,
       resizeToAvoidBottomInset: true,
       appBar: appBar() as PreferredSizeWidget?,
       body: scaffoldBody(),
@@ -399,6 +399,7 @@ class _TrainExploreScreenState extends State<TrainExploreScreen> {
         barrierDismissible: false,
         context: context,
         builder: (context) => AlertDialog(
+              backgroundColor: Colors.white,
               insetPadding:
                   const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,
@@ -566,6 +567,7 @@ class _TrainExploreScreenState extends State<TrainExploreScreen> {
         barrierDismissible: false,
         context: context,
         builder: (context) => AlertDialog(
+              backgroundColor: Colors.white,
               insetPadding:
                   const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,
@@ -744,6 +746,7 @@ class _TrainExploreScreenState extends State<TrainExploreScreen> {
         barrierDismissible: false,
         context: context,
         builder: (context) => AlertDialog(
+              backgroundColor: Colors.white,
               insetPadding:
                   const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,

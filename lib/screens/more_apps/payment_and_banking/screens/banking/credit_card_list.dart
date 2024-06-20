@@ -348,7 +348,7 @@ class _CreditCardListState extends State<CreditCardList>
         borderRadius: BorderRadius.circular(5),
         backgroundColor: mateRed,
         icon: SlydoAppIcon.remove,
-        onPressed: (context) {
+        onPressed: (con) {
           deleteCreditCard(creditCard);
         },
         label: AppLocalization.of(context)!.delete,

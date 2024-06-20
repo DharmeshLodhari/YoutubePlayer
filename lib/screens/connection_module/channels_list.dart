@@ -99,7 +99,7 @@ class _ChannelsListState extends State<ChannelsList> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 0.0),
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         appBar: _buildAppBar(),
         body: SmartRefresher(
           enablePullDown: true,

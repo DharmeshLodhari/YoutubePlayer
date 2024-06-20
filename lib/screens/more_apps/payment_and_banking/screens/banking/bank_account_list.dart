@@ -395,7 +395,7 @@ class _BankAccountListState extends State<BankAccountList>
         borderRadius: BorderRadius.circular(5),
         backgroundColor: mateRed,
         icon: SlydoAppIcon.remove,
-        onPressed: (context) {
+        onPressed: (con) {
           deleteBankAccount(account);
         },
         label: AppLocalization.of(context)!.delete,

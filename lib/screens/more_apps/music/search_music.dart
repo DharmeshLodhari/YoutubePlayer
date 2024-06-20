@@ -69,7 +69,7 @@ class _SearchMusicState extends State<SearchMusic> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: lightGrey,
       appBar: appBar() as PreferredSizeWidget?,
       body: scaffoldBody(),
     );
@@ -361,6 +361,7 @@ class _SearchMusicState extends State<SearchMusic> {
         barrierDismissible: false,
         context: context,
         builder: (context) => AlertDialog(
+              backgroundColor: Colors.white,
               insetPadding:
                   const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,
@@ -482,6 +483,7 @@ class _SearchMusicState extends State<SearchMusic> {
         barrierDismissible: false,
         context: context,
         builder: (context) => AlertDialog(
+              backgroundColor: Colors.white,
               insetPadding:
                   const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,

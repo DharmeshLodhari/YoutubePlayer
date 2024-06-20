@@ -210,7 +210,7 @@ class _UtilityHistoryState extends State<UtilityHistory> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: lightGrey,
       appBar: appBar() as PreferredSizeWidget?,
       body: foregroundScreen(),
     );

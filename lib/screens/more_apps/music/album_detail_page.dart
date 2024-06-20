@@ -95,7 +95,7 @@ class _AlbumDetailPageState extends State<AlbumDetailPage> {
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         appBar: appBar() as PreferredSizeWidget?,
         body: scaffoldBody(),
       ),

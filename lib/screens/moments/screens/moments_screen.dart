@@ -242,7 +242,7 @@ class _MomentsScreenState extends State<MomentsScreen> {
     userBloc = Provider.of<UserBloc>(context);
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: lightGrey,
       appBar: appBar(),
       body: scaffoldBody(),
     );

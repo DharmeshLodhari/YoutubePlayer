@@ -580,7 +580,7 @@ class _HomeQuickViewState extends State<HomeQuickView> {
         Navigator.of(context).pushNamed(Routes.MESSAGE_LIST);
         break;
       case ProtectionPermission.yarn:
-        NavigationUtil.push(context, screen: YarnDashboard());
+        NavigationUtil.push(context, screen: const YarnDashboard());
         break;
       case ProtectionPermission.moment:
         NavigationUtil.push(context, screen: const MomentsScreen());
@@ -602,7 +602,7 @@ class _HomeQuickViewState extends State<HomeQuickView> {
         );
         break;
       case ProtectionPermission.order:
-        Navigator.pushNamed(context, Routes.ORDERS_LIST);
+        Navigator.pushNamed(context, Routes.ORDER_LIST_NEW);
         break;
       case ProtectionPermission.superStore:
         NavigationUtil.push(context, screen: const SuperStoreHome());

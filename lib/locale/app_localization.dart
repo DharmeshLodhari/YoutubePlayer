@@ -3075,6 +3075,13 @@ class AppLocalization {
     );
   }
 
+  String get review {
+    return Intl.message(
+      "Review",
+      name: "review",
+    );
+  }
+
   String get noReviews {
     return Intl.message(
       "No Reviews",
@@ -3513,7 +3520,7 @@ class AppLocalization {
 
   String get subTotal {
     return Intl.message(
-      "Subtotal",
+      "Sub Total",
       name: "subTotal",
     );
   }

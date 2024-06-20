@@ -80,7 +80,7 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
         child: DefaultTabController(
           length: 3,
           child: Scaffold(
-            backgroundColor: Colors.white,
+            backgroundColor: lightGrey,
             appBar: appBar() as PreferredSizeWidget?,
             body: tabViews(),
           ),

@@ -110,7 +110,7 @@ class _JobsSearchState extends State<JobsSearch> {
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: lightGrey,
       appBar: appBar() as PreferredSizeWidget?,
       body: scaffoldBody(),
     );

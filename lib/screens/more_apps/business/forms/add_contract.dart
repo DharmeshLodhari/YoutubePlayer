@@ -85,7 +85,7 @@ class _AddContractState extends State<AddContract> {
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         key: _sendPaymentScaffold,
         resizeToAvoidBottomInset: true,
         appBar: appBar() as PreferredSizeWidget?,
@@ -562,6 +562,7 @@ class _AddContractState extends State<AddContract> {
         barrierDismissible: true,
         context: context,
         builder: (context) => AlertDialog(
+              backgroundColor: Colors.white,
               insetPadding:
                   const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,

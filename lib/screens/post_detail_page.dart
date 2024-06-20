@@ -213,7 +213,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
     yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context, listen: false);
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: lightGrey,
       resizeToAvoidBottomInset: true,
       appBar: appBar(),
       body: scaffoldBody(),

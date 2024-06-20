@@ -48,7 +48,7 @@ class _UserProductsDiscountState extends State<UserProductDiscount> {
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       userBloc = Provider.of<UserBloc>(context, listen: false);
-      this.getProductList();
+      getProductList();
     });
 
     _productScrollController.addListener(() {
@@ -65,9 +65,9 @@ class _UserProductsDiscountState extends State<UserProductDiscount> {
   void toggleSelectAll() {
     isSelectAll = !isSelectAll;
 
-    productList.forEach((element) {
+    for (var element in productList) {
       element.isChecked = isSelectAll;
-    });
+    }
     if (mounted) setState(() {});
   }
 

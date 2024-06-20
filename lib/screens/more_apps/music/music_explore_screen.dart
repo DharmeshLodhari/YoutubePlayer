@@ -111,7 +111,7 @@ class _MusicExploreScreenState extends State<MusicExploreScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: lightGrey,
       resizeToAvoidBottomInset: true,
       appBar: appBar() as PreferredSizeWidget?,
       body: scaffoldBody(),

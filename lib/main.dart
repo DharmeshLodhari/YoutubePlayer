@@ -234,6 +234,9 @@ class _MyAppState extends State<MyApp> {
               textSelectionTheme: TextSelectionThemeData(
                 selectionHandleColor: navyBlue,
               ),
+              colorScheme: ColorScheme.fromSwatch(
+                primarySwatch: navyBluePrimary,
+              ),
             ),
           );
         });

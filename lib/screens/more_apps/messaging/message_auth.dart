@@ -23,8 +23,8 @@ class MessageAuth extends AuthService {
   Future<bool> sendMessage(Map data) async {
     final String url = "${AppConfig.baseUrl}/api/v1/messaging/send/";
     final headers = await getAuthHeaders();
-    final _data = jsonEncode(data);
-    final response = await httpPost(url, body: _data, headers: headers);
+    final data0 = jsonEncode(data);
+    final response = await httpPost(url, body: data0, headers: headers);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
@@ -602,9 +602,9 @@ class MessageAuth extends AuthService {
     final headers = await getAuthHeaders();
     final Map<String, dynamic> data = {"user": userName};
 
-    final _data = jsonEncode(data);
+    final data0 = jsonEncode(data);
 
-    final response = await httpPatch(url, headers: headers, body: _data);
+    final response = await httpPatch(url, headers: headers, body: data0);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
@@ -622,9 +622,9 @@ class MessageAuth extends AuthService {
     final headers = await getAuthHeaders();
     final Map<String, dynamic> data = {"user": userName};
 
-    final _data = jsonEncode(data);
+    final data0 = jsonEncode(data);
 
-    final response = await httpPatch(url, headers: headers, body: _data);
+    final response = await httpPatch(url, headers: headers, body: data0);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
@@ -642,9 +642,9 @@ class MessageAuth extends AuthService {
     final headers = await getAuthHeaders();
     final Map<String, dynamic> data = {"user": userName};
 
-    final _data = jsonEncode(data);
+    final data0 = jsonEncode(data);
 
-    final response = await httpPatch(url, headers: headers, body: _data);
+    final response = await httpPatch(url, headers: headers, body: data0);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
@@ -662,9 +662,9 @@ class MessageAuth extends AuthService {
     final headers = await getAuthHeaders();
     final Map<String, dynamic> data = {"user": userName};
 
-    final _data = jsonEncode(data);
+    final data0 = jsonEncode(data);
 
-    final response = await httpPatch(url, headers: headers, body: _data);
+    final response = await httpPatch(url, headers: headers, body: data0);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
@@ -682,9 +682,9 @@ class MessageAuth extends AuthService {
     final headers = await getAuthHeaders();
     final Map<String, dynamic> data = {"user": userName};
 
-    final _data = jsonEncode(data);
+    final data0 = jsonEncode(data);
 
-    final response = await httpPatch(url, headers: headers, body: _data);
+    final response = await httpPatch(url, headers: headers, body: data0);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
@@ -702,9 +702,9 @@ class MessageAuth extends AuthService {
     final headers = await getAuthHeaders();
     final Map<String, dynamic> data = {"user": userName};
 
-    final _data = jsonEncode(data);
+    final data0 = jsonEncode(data);
 
-    final response = await httpPatch(url, headers: headers, body: _data);
+    final response = await httpPatch(url, headers: headers, body: data0);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
@@ -722,9 +722,9 @@ class MessageAuth extends AuthService {
     final headers = await getAuthHeaders();
     final Map<String, dynamic> data = {"user": userName};
 
-    final _data = jsonEncode(data);
+    final data0 = jsonEncode(data);
 
-    final response = await httpPatch(url, headers: headers, body: _data);
+    final response = await httpPatch(url, headers: headers, body: data0);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
@@ -891,9 +891,9 @@ class MessageAuth extends AuthService {
     /// "username": "black",
     /// "delivered": true, "type": "acknowledge_message"}
 
-    final _data = jsonEncode(data);
+    final data0 = jsonEncode(data);
 
-    final response = await httpPatch(url, headers: headers, body: _data);
+    final response = await httpPatch(url, headers: headers, body: data0);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       debugPrint(
@@ -917,9 +917,9 @@ class MessageAuth extends AuthService {
 
     if (AppConfig.enableLogs.value) debugPrint("DATA SENT:- $data");
 
-    final _data = jsonEncode(data);
+    final data0 = jsonEncode(data);
 
-    final response = await httpPatch(url, headers: headers, body: _data);
+    final response = await httpPatch(url, headers: headers, body: data0);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       debugPrint(
@@ -941,9 +941,9 @@ class MessageAuth extends AuthService {
     }
 
     final headers = await getAuthHeaders();
-    final _data = jsonEncode(data);
+    final data0 = jsonEncode(data);
 
-    final response = await httpPost(url, headers: headers, body: _data);
+    final response = await httpPost(url, headers: headers, body: data0);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       debugPrint(
@@ -962,11 +962,11 @@ class MessageAuth extends AuthService {
         "${AppConfig.baseUrl}/api/v1/transactions/empty-envelop/${envelope.id}/";
 
     final headers = await getAuthHeaders();
-    final _data = jsonEncode(data);
+    final data0 = jsonEncode(data);
 
     debugPrint("Data sent => $data");
 
-    final response = await httpPatch(url, headers: headers, body: _data);
+    final response = await httpPatch(url, headers: headers, body: data0);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       debugPrint(
@@ -1016,9 +1016,9 @@ class MessageAuth extends AuthService {
       "conversation_id": data["conversation_id"] ?? data["conversation"],
     };
 
-    final _data = jsonEncode(param);
+    final data0 = jsonEncode(param);
 
-    final response = await httpPatch(url, body: _data, headers: headers);
+    final response = await httpPatch(url, body: data0, headers: headers);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       debugPrint(

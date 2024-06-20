@@ -586,6 +586,7 @@ class _SearchDiscountProductAndServiceState
       barrierDismissible: false,
       context: context,
       builder: (context) => AlertDialog(
+        backgroundColor: Colors.white,
         insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
         contentPadding: EdgeInsets.zero,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -773,6 +774,7 @@ class _SearchDiscountProductAndServiceState
     final pressedCondition = await showDialog<ProductCondition>(
         context: context,
         builder: (context) => AlertDialog(
+              backgroundColor: Colors.white,
               insetPadding:
                   const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,

@@ -205,17 +205,19 @@ class CustomizeProfileScreenState extends State<CustomizeProfileScreen> {
             softWrap: false,
           ),
           trailing: SizedBox(
-            width: 50,
-            height: 40,
+            width: 45,
+            height: 30,
             child: FittedBox(
               fit: BoxFit.fill,
               child: Switch(
                 value:
                     switchValue, // Set the Switch value based on the boolean parameter
                 onChanged: onTapCallback, // Use the passed onTap function
-                activeTrackColor: navyBlueLight,
-                activeColor: navyBlue,
-                inactiveTrackColor: navyBlueLight,
+                thumbIcon: MaterialStateProperty.all(const Icon(null)),
+                activeTrackColor: navyBlue,
+                activeColor: Colors.white,
+                inactiveTrackColor: darkGreyYarn,
+                inactiveThumbColor: Colors.white,
               ),
             ),
           ),

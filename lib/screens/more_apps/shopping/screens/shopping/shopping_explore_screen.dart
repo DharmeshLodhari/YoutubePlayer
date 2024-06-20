@@ -116,7 +116,7 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
     shoppingDashboardBloc = Provider.of<ShoppingDashboardBloc>(context);
     basketBloc = Provider.of<BasketBloc>(context);
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: lightGrey,
       resizeToAvoidBottomInset: true,
       appBar: appBar() as PreferredSizeWidget?,
       body: scaffoldBody(),

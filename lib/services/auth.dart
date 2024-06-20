@@ -47,11 +47,11 @@ class AuthService {
     await _db.deleteUsers();
 
     // Create user instance
-    final User _user =
+    final User user =
         User.fromJson(userData, staff: staff, permissions: permissions);
 
-    await _db.saveUser(_user);
-    return Future.value(_user);
+    await _db.saveUser(user);
+    return Future.value(user);
   }
 
   int getEpochTime(DateTime time) {
@@ -189,27 +189,27 @@ class AuthService {
     final int expirationTime =
         getEpochTime(now.add(const Duration(seconds: 220))); // 3.66667 Minute
 
-    Map _body;
+    Map body;
     if (isStaffLogin) {
-      _body = {
+      body = {
         "password": password,
         "phone_number": phoneNumber,
         "company": company
       };
     } else {
-      _body = {"password": password, "phone_number": phoneNumber};
+      body = {"password": password, "phone_number": phoneNumber};
     }
 
     final data = await getDeviceInfo();
     // data['device_id'] = "CB52C6A6-4C0E-4FE0-A753-C9A936AEA8BB";
-    _body.addAll(data);
+    body.addAll(data);
 
-    debugPrint("=> $_body");
+    debugPrint("=> $body");
     final Uri url = Uri.parse(uri);
 
-    debugPrint("URL => $url BODY => $_body");
+    debugPrint("URL => $url BODY => $body");
 
-    final response = await http.post(url, body: _body, headers: headers);
+    final response = await http.post(url, body: body, headers: headers);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       debugPrint(
@@ -304,7 +304,7 @@ class AuthService {
   }
 
   Future<Map<String, String>> getUserAuthDetails() async {
-    final User? _user = await _db.getUser();
+    final User? user = await _db.getUser();
 
     final SharedPreferences sharedPreferences =
         await SharedPreferences.getInstance();
@@ -323,8 +323,8 @@ class AuthService {
     }
 
     if (phoneNumber == "" || password == "") {
-      phoneNumber = _user?.phoneNumber ?? "";
-      password = _user?.password ?? "";
+      phoneNumber = user?.phoneNumber ?? "";
+      password = user?.password ?? "";
     }
     return {'phoneNumber': phoneNumber, 'password': password};
   }
@@ -437,13 +437,13 @@ class AuthService {
 
     final startTime = DateTime.now();
 
-    final SharedPreferences _sharedPreferences =
+    final SharedPreferences sharedPreferences =
         await SharedPreferences.getInstance();
     final UserBloc userBloc = Provider.of<UserBloc>(
         myGlobals.navigationKey.currentContext!,
         listen: false);
     final bool getLocationStatus =
-        _sharedPreferences.getBool('isCurrentLocation') ?? false;
+        sharedPreferences.getBool('isCurrentLocation') ?? false;
     try {
       // var status = await Permission.location.status;
       // if (status.isGranted) {
@@ -510,7 +510,7 @@ class AuthService {
   }
 
   User createUserInstance(Map<String, dynamic> item) {
-    final User _user = User(
+    final User user = User(
       uuid: item["uuid"],
       url: item["url"],
       phoneNumber: item["phone_number"],
@@ -522,7 +522,7 @@ class AuthService {
       currency: item["default_currency"],
       isVerified: item["is_verified"],
     );
-    return _user;
+    return user;
   }
 
   //register device
@@ -530,9 +530,9 @@ class AuthService {
     final String url =
         "${AppConfig.baseUrl}/api/v1/notification/register-device/";
     final headers = await getAuthHeaders();
-    final _data = jsonEncode(data);
+    final data0 = jsonEncode(data);
 
-    final response = await httpPost(url, headers: headers, body: _data);
+    final response = await httpPost(url, headers: headers, body: data0);
     if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     }
@@ -545,12 +545,12 @@ class AuthService {
   Future<bool> unRegisterDevice() async {
     final uri = "${AppConfig.baseUrl}/api/v1/notification/unregister-device/";
     final headers = await getAuthHeaders();
-    final _data = jsonEncode({});
+    final data = jsonEncode({});
     debugPrint("URL:- $uri Called !!");
     final Uri url = Uri.parse(uri);
     late var response;
     try {
-      response = await http.patch(url, headers: headers, body: _data);
+      response = await http.patch(url, headers: headers, body: data);
     } catch (e) {
       debugPrint(
           "URL:- $url STATUS CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
@@ -566,10 +566,10 @@ class AuthService {
     final String url =
         "${AppConfig.baseUrl}/api/v1/notification/update-app-state/";
     final headers = await getAuthHeaders();
-    final _data = jsonEncode(data);
+    final data0 = jsonEncode(data);
     var response;
     try {
-      response = await httpPatch(url, headers: headers, body: _data);
+      response = await httpPatch(url, headers: headers, body: data0);
     } catch (e) {
       debugPrint(
           "URL:- $url STATUSCODE:- ${response?.statusCode} RESPONSEBODY:- ${response?.body}");

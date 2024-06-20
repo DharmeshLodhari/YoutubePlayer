@@ -100,7 +100,7 @@ class _PutMoneyInEnvelopeState extends State<PutMoneyInEnvelope> {
       child: ScaffoldMessenger(
         key: _putMoneyInEnvelopeScaffoldMessenger,
         child: Scaffold(
-          backgroundColor: Colors.white,
+          backgroundColor: lightGrey,
           key: _putMoneyInEnvelopeScaffold,
           resizeToAvoidBottomInset: true,
           appBar: appBar() as PreferredSizeWidget?,

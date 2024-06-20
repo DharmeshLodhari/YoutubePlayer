@@ -106,7 +106,7 @@ class _HotelExploreScreenState extends State<HotelExploreScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: lightGrey,
       resizeToAvoidBottomInset: true,
       appBar: appBar() as PreferredSizeWidget?,
       body: scaffoldBody(),

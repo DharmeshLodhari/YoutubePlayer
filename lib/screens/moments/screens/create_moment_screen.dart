@@ -235,7 +235,7 @@ class _CreateMediaMomentScreenState extends State<CreateMediaMomentScreen> {
                   ],
                 ),
                 SizedBox(
-                  width: 100,
+                  width: 110,
                   height: 35,
                   child: ElevatedButton.icon(
                     icon: Text(

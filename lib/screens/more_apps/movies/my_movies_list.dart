@@ -49,7 +49,7 @@ class _MyMovieListState extends State<MyMovieList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: lightGrey,
       body: isLoading
           ? Center(
               child: CircularLoadingIndicator(),

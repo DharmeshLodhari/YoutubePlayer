@@ -224,11 +224,12 @@ Widget momentTab(CustomerProfile? searchedUser, String channelUsername) {
 Widget productTab(CustomerProfile? searchedUser, bool isOwner, bool isChannel,
     {String? next, String? type}) {
   return UserProductList(
-      user: searchedUser,
-      isOwner: isOwner,
-      channel: isChannel,
-      next: next,
-      type: type);
+    user: searchedUser,
+    isOwner: isOwner,
+    channel: isChannel,
+    next: next,
+    type: type,
+  );
 }
 
 Widget serviceTab(CustomerProfile? searchedUser, bool isOwner) {

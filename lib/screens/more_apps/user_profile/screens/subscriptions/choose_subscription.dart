@@ -234,6 +234,7 @@ class _ChooseSubscriptionState extends State<ChooseSubscription> {
     final pressedAccountType = await showDialog<String>(
         context: context,
         builder: (context) => AlertDialog(
+              backgroundColor: Colors.white,
               insetPadding:
                   const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,

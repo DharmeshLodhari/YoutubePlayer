@@ -286,7 +286,7 @@ class _MomentCommentScreenState extends State<MomentCommentScreen> {
     return ColorfulSafeArea(
       color: Colors.white,
       child: Scaffold(
-          backgroundColor: Colors.white,
+          backgroundColor: lightGrey,
           appBar: _buildAppBar(),
           body: _buildBody()),
     );

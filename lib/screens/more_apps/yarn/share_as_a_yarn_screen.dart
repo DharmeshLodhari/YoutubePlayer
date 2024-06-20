@@ -143,7 +143,7 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
     userBloc = Provider.of<UserBloc>(context);
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      backgroundColor: Colors.white,
+      backgroundColor: lightGrey,
       appBar: _buildAppBar(widget.appTitle ?? "Share As A Yarn"),
       body: Consumer<YarnDashboardBloc>(builder: (context, model, child) {
         return CustomScrollView(

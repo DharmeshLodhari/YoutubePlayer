@@ -88,7 +88,7 @@ class _AskSCustomizeScreenState extends State<AskSCustomizeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: white,
+      backgroundColor: lightGrey,
       appBar: _buildAppBar(),
       body: _buildBody(),
     );

@@ -8,6 +8,7 @@ Future<bool> showDisclaimerDialogueForGoods(BuildContext context) async {
     builder: (context) => StatefulBuilder(
       builder: (context, rentDurationStateSetter) {
         return AlertDialog(
+          backgroundColor: Colors.white,
           insetPadding:
               const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
           contentPadding: EdgeInsets.zero,

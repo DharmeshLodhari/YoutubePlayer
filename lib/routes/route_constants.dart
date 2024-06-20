@@ -54,6 +54,9 @@ class Routes {
   static const String ORDER_LIST_NEW = "/order-list-new";
   static const String ORDER_UPDATED = "/order-updated";
   static const String ORDER_DETAIL_PAGE = "/order-detail-page";
+  static const String ORDER_DETAIL_PAGE_NEW = "/order-detail-page-new";
+  static const String TRACK_ORDER = "/track-order";
+  static const String WRITE_REVIEW_PAGE = "/write-review-page";
   static const String CARD_PAYMENT_PAGE = "/card-payment-page";
   static const String USER_ADDRESS = "/user-address";
   static const String FRIENDS_DASHBOARD = "/friends-dashboard";

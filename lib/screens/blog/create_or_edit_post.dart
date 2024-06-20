@@ -203,7 +203,7 @@ class _CreateOrEditPostScreenState extends State<CreateOrEditPostScreen> {
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         appBar: appBar() as PreferredSizeWidget?,
         body: _scaffoldBody(),
       ),
@@ -216,7 +216,7 @@ class _CreateOrEditPostScreenState extends State<CreateOrEditPostScreen> {
       child: Form(
         key: formKey,
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 5),
             Visibility(
@@ -534,17 +534,17 @@ class _CreateOrEditPostScreenState extends State<CreateOrEditPostScreen> {
     }
   }
 
-  createOrUpdateBlogPost() {
-    final List<String>? newUserTags =
+  void createOrUpdateBlogPost() {
+    final List<String> newUserTags =
         []; // For replacing the # in a tag with an empty string.
 
-    userTags.forEach((tag) {
+    for (var tag in userTags) {
       if (tag.startsWith('#')) {
-        newUserTags?.add(tag.replaceAll("#", ''));
+        newUserTags.add(tag.replaceAll("#", ''));
       } else {
-        newUserTags?.add(tag);
+        newUserTags.add(tag);
       }
-    });
+    }
 
     final userBloc = Provider.of<UserBloc>(context, listen: false);
     UserPostAuth()

@@ -121,8 +121,15 @@ class _UpdateGroupNameAndProfileState extends State<UpdateGroupNameAndProfile> {
     return FloatingActionButton(
       backgroundColor: navyBlue,
       onPressed: updateGroup,
+      mini: false,
+      heroTag: null,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(
+            50.0), // Set the border radius to create a circle
+      ),
       child: const Icon(
         Icons.arrow_forward_rounded,
+        color: Colors.white,
         size: 28,
       ),
     );
@@ -212,6 +219,7 @@ class _UpdateGroupNameAndProfileState extends State<UpdateGroupNameAndProfile> {
     final imageSource = await showDialog<ImageSource>(
         context: context,
         builder: (context) => AlertDialog(
+              backgroundColor: Colors.white,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
               title: Text(
@@ -622,6 +630,7 @@ class _UpdateGroupNameAndProfileState extends State<UpdateGroupNameAndProfile> {
     final imageSource = await showDialog<ImageSource>(
         context: context,
         builder: (context) => AlertDialog(
+              backgroundColor: Colors.white,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
               title: Text(

@@ -95,7 +95,7 @@ class _PropertyExploreScreenState extends State<PropertyExploreScreen> {
   Widget build(BuildContext context) {
     _propertyFilterBloc = Provider.of<PropertyFilterBloc>(context);
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: lightGrey,
       resizeToAvoidBottomInset: true,
       appBar: appBar() as PreferredSizeWidget?,
       body: scaffoldBody(),

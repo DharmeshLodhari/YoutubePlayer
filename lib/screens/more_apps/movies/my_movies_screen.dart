@@ -29,7 +29,7 @@ class _MyMoviesScreenState extends State<MyMoviesScreen> {
       child: DefaultTabController(
         length: 2,
         child: Scaffold(
-          backgroundColor: Colors.white,
+          backgroundColor: lightGrey,
           appBar: appBar() as PreferredSizeWidget?,
           body: tabViews(),
         ),

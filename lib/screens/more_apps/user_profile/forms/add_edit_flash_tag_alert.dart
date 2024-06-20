@@ -64,7 +64,7 @@ class _AddEditFlashTagAlertState extends State<AddEditFlashTagAlert> {
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         resizeToAvoidBottomInset: true,
         appBar: appBar() as PreferredSizeWidget?,
         body: scaffoldBody(),
@@ -188,6 +188,7 @@ class _AddEditFlashTagAlertState extends State<AddEditFlashTagAlert> {
     final pressedCategory = await showDialog<FlashTagCategory>(
         context: context,
         builder: (context) => AlertDialog(
+      backgroundColor: Colors.white,
               insetPadding:
                   const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,

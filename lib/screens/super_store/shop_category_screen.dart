@@ -123,7 +123,7 @@ class _ShopCategoryScreenState extends State<ShopCategoryScreen> {
     yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context);
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: lightGrey,
       appBar: _buildAppBar(),
       body: _buildBody(),
     );

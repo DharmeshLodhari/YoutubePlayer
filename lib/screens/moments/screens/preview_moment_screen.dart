@@ -345,9 +345,12 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
                                 debugPrint(value.toString());
                               });
                             },
-                            activeTrackColor: navyBlueLight,
-                            activeColor: navyBlue,
-                            inactiveTrackColor: navyBlueLight,
+                            thumbIcon:
+                                MaterialStateProperty.all(const Icon(null)),
+                            activeTrackColor: navyBlue,
+                            activeColor: Colors.white,
+                            inactiveTrackColor: darkGreyYarn,
+                            inactiveThumbColor: Colors.white,
                           ),
                         ),
                         const SizedBox(height: 30),
@@ -363,9 +366,12 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
                                 enableLikes = !enableLikes;
                               });
                             },
-                            activeTrackColor: navyBlueLight,
-                            activeColor: navyBlue,
-                            inactiveTrackColor: navyBlueLight,
+                            thumbIcon:
+                                MaterialStateProperty.all(const Icon(null)),
+                            activeTrackColor: navyBlue,
+                            activeColor: Colors.white,
+                            inactiveTrackColor: darkGreyYarn,
+                            inactiveThumbColor: Colors.white,
                           ),
                         ),
                         const SizedBox(height: 30),
@@ -381,9 +387,12 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
                                 enableCommenting = !enableCommenting;
                               });
                             },
-                            activeTrackColor: navyBlueLight,
-                            activeColor: navyBlue,
-                            inactiveTrackColor: navyBlueLight,
+                            thumbIcon:
+                                MaterialStateProperty.all(const Icon(null)),
+                            activeTrackColor: navyBlue,
+                            activeColor: Colors.white,
+                            inactiveTrackColor: darkGreyYarn,
+                            inactiveThumbColor: Colors.white,
                           ),
                         ),
                         const SizedBox(height: 30),
@@ -399,9 +408,12 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
                                 isPermanent = !isPermanent;
                               });
                             },
-                            activeTrackColor: navyBlueLight,
-                            activeColor: navyBlue,
-                            inactiveTrackColor: navyBlueLight,
+                            thumbIcon:
+                                MaterialStateProperty.all(const Icon(null)),
+                            activeTrackColor: navyBlue,
+                            activeColor: Colors.white,
+                            inactiveTrackColor: darkGreyYarn,
+                            inactiveThumbColor: Colors.white,
                           ),
                         ),
                         const SizedBox(height: 30),
@@ -418,9 +430,12 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
                                   enablePayMe = value;
                                 });
                               },
-                              activeTrackColor: navyBlueLight,
-                              activeColor: navyBlue,
-                              inactiveTrackColor: navyBlueLight,
+                              thumbIcon:
+                                  MaterialStateProperty.all(const Icon(null)),
+                              activeTrackColor: navyBlue,
+                              activeColor: Colors.white,
+                              inactiveTrackColor: darkGreyYarn,
+                              inactiveThumbColor: Colors.white,
                             ),
                           )
                         else
@@ -501,6 +516,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
                                         await showDialog<bool>(
                                       context: context,
                                       builder: (context) => AlertDialog(
+                                        backgroundColor: Colors.white,
                                         title: const Text('Pick your color'),
                                         content: Column(
                                           mainAxisSize: MainAxisSize.min,
@@ -685,8 +701,8 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
             ),
           ),
           SizedBox(
-            width: 50,
-            height: 40,
+            width: 45,
+            height: 30,
             child: FittedBox(fit: BoxFit.fill, child: switchBtn),
           ),
         ],
@@ -1080,6 +1096,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
         await showDialog<AttachmentItemModel>(
       context: context,
       builder: (context) => AlertDialog(
+        backgroundColor: Colors.white,
         insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
         contentPadding: EdgeInsets.zero,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
 class VerticalListItem extends StatelessWidget {
-  VerticalListItem(this.child);
+  const VerticalListItem(this.child, {super.key});
 
   final Widget child;
 

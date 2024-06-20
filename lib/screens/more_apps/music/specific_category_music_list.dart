@@ -55,7 +55,7 @@ class _SpecificCategoryMusicListState extends State<SpecificCategoryMusicList> {
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         appBar: appBar() as PreferredSizeWidget?,
         body: isLoading
             ? Center(

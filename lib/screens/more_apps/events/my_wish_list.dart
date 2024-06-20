@@ -50,7 +50,7 @@ class _MyWishListState extends State<MyWishList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: lightGrey,
       body: isLoading
           ? Center(
               child: CircularLoadingIndicator(),

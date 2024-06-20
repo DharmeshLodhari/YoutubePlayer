@@ -45,7 +45,7 @@ class _SearchingForRideState extends State<SearchingForRide> {
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         body: Stack(
           children: [
             Image.asset(

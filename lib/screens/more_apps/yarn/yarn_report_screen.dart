@@ -54,7 +54,7 @@ class _AddReportScreenState extends State<AddReportScreen> {
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: lightGrey,
       appBar: _buildAppBar(),
       body: Consumer<YarnDashboardBloc>(builder: (context, model, child) {
         return ListView(

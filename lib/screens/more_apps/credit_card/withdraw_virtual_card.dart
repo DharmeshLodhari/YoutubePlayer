@@ -74,7 +74,7 @@ class WithdrawVirtualCardState extends State<WithdrawVirtualCard> {
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         resizeToAvoidBottomInset: true,
         appBar: appBar() as PreferredSizeWidget?,
         body: scaffoldBody(),

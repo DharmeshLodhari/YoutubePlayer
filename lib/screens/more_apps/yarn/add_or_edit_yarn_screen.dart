@@ -304,7 +304,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         appBar: _buildAppBar(),
         body: Consumer<YarnDashboardBloc>(builder: (context, model, child) {
           return Column(

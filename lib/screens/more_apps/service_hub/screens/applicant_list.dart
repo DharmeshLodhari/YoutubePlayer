@@ -322,7 +322,7 @@ class _ApplicantListState extends State<ApplicantList>
         borderRadius: BorderRadius.circular(5),
         backgroundColor: mateRed,
         icon: SlydoAppIcon.close_2,
-        onPressed: (context) {
+        onPressed: (con) {
           rejectApplicantAlert(index);
         },
         label: "Reject",
@@ -336,7 +336,7 @@ class _ApplicantListState extends State<ApplicantList>
         borderRadius: BorderRadius.circular(5),
         backgroundColor: const Color(0xff46ce7c),
         icon: Icons.person_add,
-        onPressed: (context) {
+        onPressed: (con) {
           acceptApplicantAlert(index);
         },
         label: AppLocalization.of(context)!.accept,

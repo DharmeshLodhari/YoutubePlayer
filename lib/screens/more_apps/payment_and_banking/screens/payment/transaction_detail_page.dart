@@ -40,7 +40,7 @@ class _TransactionDetailState extends State<TransactionDetail> {
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         resizeToAvoidBottomInset: true,
         appBar: appBar() as PreferredSizeWidget?,
         body: scaffoldBody(),
@@ -206,11 +206,9 @@ class _TransactionDetailState extends State<TransactionDetail> {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       margin: EdgeInsets.zero,
-      shadowColor: dividerColor,
+      shadowColor: boxShadowTwo,
       child: Container(
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: dividerColor, width: 0.5)),
+        decoration: decorateBox(),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,

@@ -278,7 +278,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
       child: SafeArea(
         bottom: false,
         child: Scaffold(
-          backgroundColor: Colors.white,
+          backgroundColor: lightGrey,
           body: NestedScrollView(
             headerSliverBuilder: (BuildContext context, bool boxIsScrolled) {
               return [getAppbar(context)];
@@ -819,6 +819,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
     final imageSource = await showDialog<ImageSource>(
       context: context,
       builder: (context) => AlertDialog(
+        backgroundColor: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         title: Text(
           AppLocalization.of(context)!.selectTheImageSource,
@@ -1230,6 +1231,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
     final imageSource = await showDialog<ImageSource>(
         context: context,
         builder: (context) => AlertDialog(
+              backgroundColor: Colors.white,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
               title: Text(

@@ -28,6 +28,7 @@ class _BusDashboardState extends State<BusDashboard> {
         }
       },
       child: Scaffold(
+        backgroundColor: lightGrey,
         body: PageView(
           controller: _busDashboardBloc.pageController,
           onPageChanged: (index) {

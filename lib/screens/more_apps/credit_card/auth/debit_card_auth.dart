@@ -38,7 +38,6 @@ class DebitCardAuth extends AuthService {
         final AllCards allCards = AllCards.fromJson(item);
         cards.add(allCards);
         // debugPrint("JSON CARDS::- $item");
-
       }
 
       final Map<String, dynamic> result = {
@@ -212,8 +211,8 @@ class DebitCardAuth extends AuthService {
         "${AppConfig.baseUrl}/api/v1/virtual-cards/cards/$cardId/activate-deactivate/";
 
     final headers = await getAuthHeaders();
-    final _data = jsonEncode(data);
-    final response = await httpPatch(url, headers: headers, body: _data);
+    final data0 = jsonEncode(data);
+    final response = await httpPatch(url, headers: headers, body: data0);
 
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
@@ -258,8 +257,8 @@ class DebitCardAuth extends AuthService {
         "${AppConfig.baseUrl}/api/v1/virtual-cards/cards/$cardId/top-up/";
 
     final headers = await getAuthHeaders();
-    final _data = jsonEncode(data);
-    final response = await httpPatch(url, headers: headers, body: _data);
+    final data0 = jsonEncode(data);
+    final response = await httpPatch(url, headers: headers, body: data0);
 
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
@@ -281,10 +280,10 @@ class DebitCardAuth extends AuthService {
         "${AppConfig.baseUrl}/api/v1/virtual-cards/cards/$cardId/withdraw/";
 
     final headers = await getAuthHeaders();
-    final _data = jsonEncode(data);
+    final data0 = jsonEncode(data);
     final response = await httpPatch(url,
         headers: headers,
-        body: _data,
+        body: data0,
         newTimeOutDuration: const Duration(seconds: 45));
 
     debugPrint(
@@ -308,8 +307,8 @@ class DebitCardAuth extends AuthService {
         "${AppConfig.baseUrl}/api/v1/virtual-cards/cards/$cardId/";
 
     final headers = await getAuthHeaders();
-    final _data = jsonEncode(data);
-    final response = await httpPatch(url, headers: headers, body: _data);
+    final data0 = jsonEncode(data);
+    final response = await httpPatch(url, headers: headers, body: data0);
 
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");

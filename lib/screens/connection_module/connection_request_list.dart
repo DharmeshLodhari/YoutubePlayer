@@ -193,7 +193,7 @@ class _ConnectionRequestListState extends State<ConnectionRequestList>
         borderRadius: BorderRadius.circular(5),
         backgroundColor: navyBlue,
         icon: SlydoAppIcon.send_connection_request,
-        onPressed: (context) {
+        onPressed: (con) {
           acceptFriendRequestAlert(isRequestSent ? toUser : fromUser, index);
         },
         label: AppLocalization.of(context)!.accept,
@@ -213,7 +213,7 @@ class _ConnectionRequestListState extends State<ConnectionRequestList>
         borderRadius: BorderRadius.circular(5),
         backgroundColor: mateRed,
         icon: SlydoAppIcon.cancel_connection_request,
-        onPressed: (context) {
+        onPressed: (con) {
           rejectRequestAlert(isRequestSent ? toUser : fromUser, index,
               isRequestSent: isRequestSent);
         },

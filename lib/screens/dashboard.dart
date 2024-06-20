@@ -494,7 +494,7 @@ class _DashboardState extends State<Dashboard> {
       },
       child: Scaffold(
         key: myGlobals.scaffoldKey,
-        backgroundColor: whiteBackground,
+        backgroundColor: lightGrey,
         extendBody: true,
         body: SafeArea(
             maintainBottomViewPadding: true, child: _pages[_bottomNavIndex]),

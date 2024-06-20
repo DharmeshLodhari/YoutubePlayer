@@ -2,10 +2,11 @@ import 'package:Slydo/screens/more_apps/payment_and_banking/forms/payment/other_
 import 'package:Slydo/screens/more_apps/payment_and_banking/forms/payment/slydo_slydo_transfer.dart';
 import 'package:Slydo/screens/scan_qr_code.dart';
 import 'package:Slydo/utils/navigation_util.dart';
+import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:Slydo/widget/tab_selection.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 
 class SendPayment extends StatefulWidget {
   final dynamic arguments;
@@ -40,7 +41,7 @@ class _SendPaymentState extends State<SendPayment> {
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         appBar: _buildAppBar() as PreferredSizeWidget,
         body: _buildBody(),
       ),
@@ -74,22 +75,29 @@ class _SendPaymentState extends State<SendPayment> {
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
       actions: [
-        if (currentAskTapOnHome == 0)
-          GestureDetector(
-            onTap: () {
-              NavigationUtil.push(context,
-                  screen: const QRCodeView(arguments: {'isRequest': false}));
-            },
-            child: SvgPicture.asset(
-              'assets/images/rider/scan_qr.svg',
-              width: 18,
-              height: 18,
-            ),
-          ),
+        if (currentAskTapOnHome == 0) scanQRCodeBtn(),
         const SizedBox(
-          width: 15,
+          width: 16,
         ),
       ],
+    );
+  }
+
+  Widget scanQRCodeBtn() {
+    return RoundedBackgroundIcon(
+      height: 34,
+      width: 34,
+      icon: Icon(
+        SlydoAppIcon.qr_code,
+        size: 16,
+        color: blackFont,
+      ),
+      onTap: () {
+        NavigationUtil.push(context,
+            screen: const QRCodeView(arguments: {'isRequest': false}));
+      },
+      backgroundColor: iconBtnGrey,
+      enableMargin: false,
     );
   }
 

@@ -62,8 +62,7 @@ class ModifiedCustomizedAlert {
           child: SingleChildScrollView(
             child: AlertDialog(
               insetPadding: const EdgeInsets.all(20),
-              backgroundColor: style.backgroundColor ??
-                  Theme.of(context).dialogBackgroundColor,
+              backgroundColor: style.backgroundColor ?? white,
               shape: style.alertBorder ?? _defaultShape(),
               title: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,

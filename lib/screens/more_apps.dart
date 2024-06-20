@@ -151,7 +151,7 @@ class _MoreAppsState extends State<MoreApps> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: lightGrey,
       appBar: appBar() as PreferredSizeWidget?,
       body: foregroundScreen(),
     );

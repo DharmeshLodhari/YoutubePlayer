@@ -53,7 +53,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     basketBloc.totalShippingCost = 0;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: lightGrey,
       appBar: appBar(),
       body: _scaffoldBody(),
     );
@@ -393,6 +393,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         await showDialog<ShippingOptionsModel>(
             context: context,
             builder: (context) => AlertDialog(
+                  backgroundColor: Colors.white,
                   insetPadding:
                       const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
                   contentPadding: EdgeInsets.zero,

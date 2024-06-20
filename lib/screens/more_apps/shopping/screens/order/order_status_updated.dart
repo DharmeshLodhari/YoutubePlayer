@@ -8,16 +8,16 @@ import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 
-class OrderUpdated extends StatefulWidget {
+class OrderStatusUpdated extends StatefulWidget {
   final dynamic arguments;
 
-  const OrderUpdated({super.key, this.arguments});
+  const OrderStatusUpdated({super.key, this.arguments});
 
   @override
-  State<OrderUpdated> createState() => _OrderUpdatedState();
+  State<OrderStatusUpdated> createState() => _OrderStatusUpdatedState();
 }
 
-class _OrderUpdatedState extends State<OrderUpdated> {
+class _OrderStatusUpdatedState extends State<OrderStatusUpdated> {
   @override
   Widget build(BuildContext context) {
     return ColorfulSafeArea(

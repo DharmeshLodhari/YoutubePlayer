@@ -53,7 +53,7 @@ class _TrendingNewsListState extends State<TrendingNewsList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: lightGrey,
       body: scaffoldBody(),
     );
   }

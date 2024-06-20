@@ -38,7 +38,7 @@ class _EnterAddressOrPinPinPageState extends State<EnterAddressOrPinPinPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: whiteBackground,
+      backgroundColor: lightGrey,
       appBar: AppBar(
         backgroundColor: whiteBackground,
         elevation: 0,

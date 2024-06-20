@@ -200,9 +200,9 @@ class BusinessAuth extends AuthService {
         "${AppConfig.baseUrl}/api/v1/transactions/payment-contract/";
     final headers = await getAuthHeaders();
 
-    final _data = jsonEncode(data);
-    debugPrint(_data);
-    final response = await httpPost(url, body: _data, headers: headers);
+    final data0 = jsonEncode(data);
+    debugPrint(data0);
+    final response = await httpPost(url, body: data0, headers: headers);
     debugPrint('ADD CONTRACT RESPONSE ::: ${response.body}');
     if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
@@ -216,8 +216,8 @@ class BusinessAuth extends AuthService {
     final String url =
         "${AppConfig.baseUrl}/api/v1/transactions/payment-contract/$id/";
     final headers = await getAuthHeaders();
-    final _data = jsonEncode(data);
-    final response = await httpPatch(url, headers: headers, body: _data);
+    final data0 = jsonEncode(data);
+    final response = await httpPatch(url, headers: headers, body: data0);
     debugPrint('UPDATE CONTRACT ::: ${response.body}');
     debugPrint('STATUS :: ${json.decode(response.body)['status']}');
 
@@ -296,8 +296,8 @@ class BusinessAuth extends AuthService {
     final headers = await getAuthHeaders();
 
     debugPrint('DATE ::: $data');
-    final _data = jsonEncode(data);
-    final response = await httpPost(url, body: _data, headers: headers);
+    final data0 = jsonEncode(data);
+    final response = await httpPost(url, body: data0, headers: headers);
 
     debugPrint('ADD INVOICE RESPONSE ::: ${response.body}');
     if (response.statusCode == 200 || response.statusCode == 201) {
@@ -311,10 +311,10 @@ class BusinessAuth extends AuthService {
     final url = "${AppConfig.baseUrl}/api/v1/transactions/invoice/$invoiceId/";
     final headers = await getAuthHeaders();
 
-    final _data = jsonEncode(data);
-    final response = await httpPatch(url, headers: headers, body: _data);
+    final data0 = jsonEncode(data);
+    final response = await httpPatch(url, headers: headers, body: data0);
 
-    debugPrint('DATA ::: $_data');
+    debugPrint('DATA ::: $data0');
     debugPrint('UPDATE INVOICE RESPONSE ::: ${response.body}');
 
     if (response.statusCode == 200 || response.statusCode == 201) {

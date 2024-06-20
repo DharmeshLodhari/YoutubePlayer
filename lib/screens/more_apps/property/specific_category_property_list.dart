@@ -54,7 +54,7 @@ class _SpecificCategoryPropertyListState
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         appBar: appBar() as PreferredSizeWidget?,
         body: isLoading
             ? Center(

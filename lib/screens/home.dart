@@ -346,7 +346,7 @@ class _HomeState extends State<Home> {
     return Scaffold(
       key: _scaffoldHomeKey,
       resizeToAvoidBottomInset: true,
-      backgroundColor: Colors.white,
+      backgroundColor: lightGrey,
       body: Container(
         height: MediaQuery.of(context).size.height -
             (AppBar().preferredSize.height),

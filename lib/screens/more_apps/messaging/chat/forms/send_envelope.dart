@@ -93,7 +93,7 @@ class _SendEnvelopeState extends State<SendEnvelope> {
       child: ScaffoldMessenger(
         key: _sendEnvelopeScaffoldMessenger,
         child: Scaffold(
-          backgroundColor: Colors.white,
+          backgroundColor: lightGrey,
           key: _sendEnvelopeScaffold,
           resizeToAvoidBottomInset: true,
           appBar: appBar() as PreferredSizeWidget?,

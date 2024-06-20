@@ -82,7 +82,7 @@ class _YarnCategoryIndividualTagState extends State<YarnCategoryIndividualTag> {
     yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context);
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: lightGrey,
       floatingActionButton: _buildFloatingActionButton(),
       appBar: _buildAppBar(),
       body: _buildBody(),

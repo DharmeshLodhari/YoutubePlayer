@@ -226,7 +226,7 @@ class _RequestPaymentState extends State<RequestPayment> {
             .pushNamed(Routes.SCAN_QR, arguments: {"isRequest": true});
       },
       backgroundColor: iconBtnGrey,
-      enableMargin: true,
+      enableMargin: false,
     );
   }
 
@@ -619,6 +619,7 @@ class _RequestPaymentState extends State<RequestPayment> {
         barrierDismissible: false,
         context: context,
         builder: (context) => AlertDialog(
+              backgroundColor: Colors.white,
               insetPadding:
                   const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,

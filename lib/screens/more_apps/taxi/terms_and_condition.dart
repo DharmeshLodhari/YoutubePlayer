@@ -24,7 +24,7 @@ class _TermsAndConditionState extends State<TermsAndCondition> {
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         appBar: appBar() as PreferredSizeWidget?,
         body: getScaffoldBody(),
       ),

@@ -414,7 +414,7 @@ class _ProductAddOnListState extends State<ProductAddOnList>
         borderRadius: BorderRadius.circular(5),
         backgroundColor: starYellow,
         icon: Icons.edit,
-        onPressed: (context) async {
+        onPressed: (con) async {
           final data = await Navigator.of(context)
               .pushNamed(Routes.UPDATE_ADD_ON, arguments: {
             'addOns': addOns,
@@ -439,7 +439,7 @@ class _ProductAddOnListState extends State<ProductAddOnList>
         borderRadius: BorderRadius.circular(5),
         backgroundColor: mateRed,
         icon: SlydoAppIcon.remove,
-        onPressed: (context) async {
+        onPressed: (con) async {
           deleteAddOnDialog(addOns);
         },
         label: AppLocalization.of(context)!.delete,

@@ -53,7 +53,7 @@ class _AddShippingOptionsState extends State<AddShippingOptions> {
     return ScaffoldMessenger(
       key: _addShippingOptionScaffoldMessenger,
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         key: _addShippingOptionScaffold,
         resizeToAvoidBottomInset: true,
         appBar: appBar() as PreferredSizeWidget?,

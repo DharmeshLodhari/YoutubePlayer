@@ -139,7 +139,7 @@ class _PaymentLinkState extends State<PaymentLink>
       int? amount,
       String? currency,
       String? status,
-      String? passcode,
+      int? passcode,
       String? link,
       String? category}) {
     return Padding(
@@ -595,7 +595,7 @@ class _PaymentLinkState extends State<PaymentLink>
         borderRadius: BorderRadius.circular(5),
         backgroundColor: mateRed,
         icon: SlydoAppIcon.cancel_connection_request,
-        onPressed: (context) {
+        onPressed: (con) {
           rejectRequestAlert(data, index);
         },
         label: AppLocalization.of(context)!.cancel,
@@ -654,7 +654,7 @@ class _PaymentLinkState extends State<PaymentLink>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: lightGrey,
       appBar: appBar() as PreferredSizeWidget?,
       body: SmartRefresher(
           enablePullDown: true,

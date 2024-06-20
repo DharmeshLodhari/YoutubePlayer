@@ -64,7 +64,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         appBar: appBar() as PreferredSizeWidget?,
         body: scaffoldBody(),
         floatingActionButton: floatingActionBar(),

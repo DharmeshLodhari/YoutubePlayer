@@ -1,20 +1,20 @@
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifiers/user_bloc.dart';
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/shopping/tiles/order_detail_item_tile_new.dart';
 import 'package:Slydo/screens/more_apps/shopping/tiles/order_status_list.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:shimmer/shimmer.dart';
 
 class OrderTileNew extends StatefulWidget {
-  OrderTileNew({this.order, this.key});
+  const OrderTileNew({super.key, this.order});
 
   final Order? order;
-  Key? key;
 
   @override
   State<OrderTileNew> createState() => _OrderTileNewState();
@@ -73,12 +73,7 @@ class _OrderTileNewState extends State<OrderTileNew> {
                 ),
               ),
               if (isLoading)
-                Center(
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 20),
-                    child: CircularLoadingIndicator(),
-                  ),
-                )
+                _buildShimmerView()
               else
                 ListView.builder(
                   physics: const NeverScrollableScrollPhysics(),
@@ -135,7 +130,7 @@ class _OrderTileNewState extends State<OrderTileNew> {
     );
   }
 
-  StatefulWidget getItemTileUi(int index) {
+  Widget getItemTileUi(int index) {
     if (items[index]["type"] == "product") {
       return OrderTileForProductNew(
         item: items[index],
@@ -214,7 +209,7 @@ class _OrderTileNewState extends State<OrderTileNew> {
               width: 5,
             ),
             Text(
-              "(${widget.order?.items?[0]["qty"] ?? "0"} item)",
+              "(${widget.order?.qty ?? "0"} item)",
               style: TextStyle(
                 color: blackFont,
                 fontWeight: FontWeight.w500,
@@ -260,7 +255,10 @@ class _OrderTileNewState extends State<OrderTileNew> {
           ),
           borderSide: BorderSide(color: navyBlue)),
       color: white,
-      onPressed: () {},
+      onPressed: () async {
+        await Navigator.pushNamed(context, Routes.TRACK_ORDER,
+            arguments: {"order": order});
+      },
       child: Text(
         "Track Order",
         style: TextStyle(
@@ -295,6 +293,52 @@ class _OrderTileNewState extends State<OrderTileNew> {
         fontSize: 14,
         fontWeight: FontWeight.w500,
         fontFamily: "Inter",
+      ),
+    );
+  }
+
+  Widget _buildShimmerView() {
+    return Shimmer.fromColors(
+      baseColor: Colors.white,
+      highlightColor: greyBorderColor,
+      child: Row(
+        children: [
+          Container(
+            height: 70,
+            width: 70,
+            decoration: const BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(10)),
+                color: Colors.grey,
+                shape: BoxShape.rectangle),
+          ),
+          const SizedBox(
+            width: 10,
+          ),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: 150,
+                  height: 15,
+                  decoration: BoxDecoration(
+                      color: greyBackground,
+                      borderRadius: BorderRadius.circular(4)),
+                ),
+                const SizedBox(
+                  height: 5,
+                ),
+                Container(
+                  width: 100,
+                  height: 15,
+                  decoration: BoxDecoration(
+                      color: greyBackground,
+                      borderRadius: BorderRadius.circular(4)),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

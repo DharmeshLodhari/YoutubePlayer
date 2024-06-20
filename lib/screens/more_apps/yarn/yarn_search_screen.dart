@@ -191,7 +191,7 @@ class _SearchScreenState extends State<SearchScreen> {
     menu.menuState = menuStateChange;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: lightGrey,
       appBar: _buildAppBar(),
       body: _buildBody(),
     );

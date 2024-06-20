@@ -62,7 +62,7 @@ class _MyPropertyListState extends State<MyPropertyList> {
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         body: SmartRefresher(
           enablePullDown: true,
           header: WaterDropHeader(

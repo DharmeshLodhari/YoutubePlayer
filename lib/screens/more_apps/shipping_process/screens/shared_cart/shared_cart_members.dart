@@ -265,7 +265,7 @@ class _SharedCartMembersState extends State<SharedCartMembers>
         borderRadius: BorderRadius.circular(5),
         backgroundColor: mateRed,
         icon: SlydoAppIcon.remove,
-        onPressed: (context) async {
+        onPressed: (con) async {
           await deleteMember(member);
         },
         label: AppLocalization.of(context)!.remove,

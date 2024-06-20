@@ -361,7 +361,7 @@ class _SearchGroupMemberState extends State<SearchGroupMember>
           borderRadius: BorderRadius.circular(5),
           backgroundColor: mateRed,
           icon: SlydoAppIcon.remove,
-          onPressed: (context) {
+          onPressed: (con) {
             removeParticipantFromGroup(index!);
           },
           label: "Remove",
@@ -376,7 +376,7 @@ class _SearchGroupMemberState extends State<SearchGroupMember>
           backgroundColor: lightGrey,
           icon: SlydoAppIcon.block,
           iconColor: blackFont,
-          onPressed: (context) {
+          onPressed: (con) {
             blockParticipantFromGroup(index!);
           },
           label: "Block",
@@ -391,7 +391,7 @@ class _SearchGroupMemberState extends State<SearchGroupMember>
           backgroundColor: lightGrey,
           icon: SlydoAppIcon.mute,
           iconColor: blackFont,
-          onPressed: (context) {
+          onPressed: (con) {
             muteParticipantFromGroup(index!);
           },
           label: "Mute",
@@ -406,7 +406,7 @@ class _SearchGroupMemberState extends State<SearchGroupMember>
           backgroundColor: lightGrey,
           icon: SlydoAppIcon.remove_admin,
           iconColor: blackFont,
-          onPressed: (context) {
+          onPressed: (con) {
             removeParticipantFromAdmin(index!);
           },
           label: "Remove from admin",
@@ -454,7 +454,7 @@ class _SearchGroupMemberState extends State<SearchGroupMember>
         backgroundColor: lightGrey,
         icon: SlydoAppIcon.unmute,
         iconColor: blackFont,
-        onPressed: (context) {
+        onPressed: (con) {
           unMuteParticipantFromGroup(index!);
         },
         label: "Unmute",
@@ -468,7 +468,7 @@ class _SearchGroupMemberState extends State<SearchGroupMember>
           backgroundColor: lightGrey,
           icon: SlydoAppIcon.unblock,
           iconColor: blackFont,
-          onPressed: (context) {
+          onPressed: (con) {
             unBlockParticipantFromGroup(index!);
           },
           label: "Unblock",
@@ -482,7 +482,7 @@ class _SearchGroupMemberState extends State<SearchGroupMember>
           borderRadius: BorderRadius.circular(5),
           backgroundColor: naturalGreen,
           icon: SlydoAppIcon.make_admin,
-          onPressed: (context) {
+          onPressed: (con) {
             makeParticipantAdmin(index!);
           },
           label: "Make admin",

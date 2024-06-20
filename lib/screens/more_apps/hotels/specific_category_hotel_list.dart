@@ -56,7 +56,7 @@ class _SpecificCategoryHotelListState extends State<SpecificCategoryHotelList> {
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         appBar: appBar() as PreferredSizeWidget?,
         body: SmartRefresher(
           enablePullDown: true,

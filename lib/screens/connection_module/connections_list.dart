@@ -141,7 +141,7 @@ class _ConnectionListState extends State<ConnectionList>
       key: _scaffoldMessengerContactsListKey,
       child: Scaffold(
         key: _scaffoldContactsListKey,
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         body: GestureDetector(
           onTap: () {
             FocusScope.of(context).requestFocus(FocusNode());
@@ -410,7 +410,7 @@ class _ConnectionListState extends State<ConnectionList>
         borderRadius: BorderRadius.circular(5),
         backgroundColor: mateRed,
         icon: SlydoAppIcon.block,
-        onPressed: (context) {
+        onPressed: (con) {
           blockUserAlert(customerProfile);
         },
         label: AppLocalization.of(context)!.block,
@@ -436,7 +436,7 @@ class _ConnectionListState extends State<ConnectionList>
           borderRadius: BorderRadius.circular(5),
           backgroundColor: mateRed,
           icon: SlydoAppIcon.leave,
-          onPressed: (context) {
+          onPressed: (con) {
             exitTheGroupAlert(chatConversation, index);
           },
           label: "Exit",
@@ -451,7 +451,7 @@ class _ConnectionListState extends State<ConnectionList>
       SlideActionButton(
         backgroundColor: mateRed,
         icon: SlydoAppIcon.remove_connection,
-        onPressed: (context) {
+        onPressed: (con) {
           removeFromConnectionUserAlert(customerProfile, index);
         },
         label: AppLocalization.of(context)!.remove,

@@ -30,7 +30,7 @@ class _MyEventsScreenState extends State<MyEventsScreen> {
       child: DefaultTabController(
         length: 2,
         child: Scaffold(
-          backgroundColor: Colors.white,
+          backgroundColor: lightGrey,
           appBar: appBar() as PreferredSizeWidget?,
           body: tabViews(),
         ),

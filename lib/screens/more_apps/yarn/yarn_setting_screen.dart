@@ -34,7 +34,7 @@ class _YarnSettingsScreenState extends State<YarnSettingsScreen> {
   Widget build(BuildContext context) {
     yarnSettingsBloc = Provider.of<YarnDashboardBloc>(context);
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: lightGrey,
       appBar: _buildAppBar(context: context) as PreferredSizeWidget,
       body: _buildBody(context),
     );
@@ -126,8 +126,8 @@ class _YarnSettingsScreenState extends State<YarnSettingsScreen> {
             ),
           ),
           trailing: SizedBox(
-            width: 50,
-            height: 40,
+            width: 45,
+            height: 30,
             child: FittedBox(
               fit: BoxFit.fill,
               child: Switch(
@@ -141,9 +141,11 @@ class _YarnSettingsScreenState extends State<YarnSettingsScreen> {
                     logger.e(error);
                   });
                 },
-                activeTrackColor: navyBlueLight,
-                activeColor: navyBlue,
-                inactiveTrackColor: navyBlueLight,
+                thumbIcon: MaterialStateProperty.all(const Icon(null)),
+                activeTrackColor: navyBlue,
+                activeColor: Colors.white,
+                inactiveTrackColor: darkGreyYarn,
+                inactiveThumbColor: Colors.white,
               ),
             ),
           ),
@@ -171,8 +173,8 @@ class _YarnSettingsScreenState extends State<YarnSettingsScreen> {
             ),
           ),
           trailing: SizedBox(
-            width: 50,
-            height: 40,
+            width: 45,
+            height: 30,
             child: FittedBox(
               fit: BoxFit.fill,
               child: Switch(
@@ -185,9 +187,11 @@ class _YarnSettingsScreenState extends State<YarnSettingsScreen> {
                     logger.e(error);
                   });
                 },
-                activeTrackColor: navyBlueLight,
-                activeColor: navyBlue,
-                inactiveTrackColor: navyBlueLight,
+                thumbIcon: MaterialStateProperty.all(const Icon(null)),
+                activeTrackColor: navyBlue,
+                activeColor: Colors.white,
+                inactiveTrackColor: darkGreyYarn,
+                inactiveThumbColor: Colors.white,
               ),
             ),
           ),
@@ -215,8 +219,8 @@ class _YarnSettingsScreenState extends State<YarnSettingsScreen> {
             ),
           ),
           trailing: SizedBox(
-            width: 50,
-            height: 40,
+            width: 45,
+            height: 30,
             child: FittedBox(
               fit: BoxFit.fill,
               child: Switch(
@@ -229,9 +233,11 @@ class _YarnSettingsScreenState extends State<YarnSettingsScreen> {
                     logger.e(error);
                   });
                 },
-                activeTrackColor: navyBlueLight,
-                activeColor: navyBlue,
-                inactiveTrackColor: navyBlueLight,
+                thumbIcon: MaterialStateProperty.all(const Icon(null)),
+                activeTrackColor: navyBlue,
+                activeColor: Colors.white,
+                inactiveTrackColor: darkGreyYarn,
+                inactiveThumbColor: Colors.white,
               ),
             ),
           ),

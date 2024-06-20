@@ -74,9 +74,9 @@ class _AddVirtualCardState extends State<AddVirtualCard> {
       stateList = getAllStates();
       stateListCopy = stateList;
 
-      stateListCopy.forEach((element) {
+      for (var element in stateListCopy) {
         stateCheckMark[element] = false;
-      });
+      }
     } catch (e) {
       stateList = [];
       stateListCopy = [];
@@ -96,7 +96,7 @@ class _AddVirtualCardState extends State<AddVirtualCard> {
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         resizeToAvoidBottomInset: true,
         appBar: appBar() as PreferredSizeWidget?,
         body: scaffoldBody(),

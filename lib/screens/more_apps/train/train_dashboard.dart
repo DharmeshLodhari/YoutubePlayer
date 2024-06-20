@@ -28,6 +28,7 @@ class _TrainDashboardState extends State<TrainDashboard> {
         }
       },
       child: Scaffold(
+        backgroundColor: lightGrey,
         body: PageView(
           controller: _trainDashboardBloc.pageController,
           onPageChanged: (index) {

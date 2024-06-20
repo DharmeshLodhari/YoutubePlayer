@@ -66,7 +66,7 @@ class _MyMusicListState extends State<MyMusicList> {
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         body: isLoading
             ? Center(
                 child: CircularLoadingIndicator(),

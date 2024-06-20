@@ -89,7 +89,7 @@ class _AddInvoiceState extends State<AddInvoice> {
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         key: _addInvoiceScaffoldKey,
         resizeToAvoidBottomInset: true,
         appBar: appBar() as PreferredSizeWidget?,
@@ -736,6 +736,7 @@ class _AddInvoiceState extends State<AddInvoice> {
         barrierDismissible: false,
         context: context,
         builder: (context) => AlertDialog(
+              backgroundColor: Colors.white,
               insetPadding:
                   const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,

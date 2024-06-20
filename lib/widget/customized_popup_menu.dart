@@ -51,7 +51,7 @@ class CustomizedPopUpMenu {
   void openMenu() {
     findButton();
     _overlayEntry = _overlayEntryBuilder();
-    Overlay.of(context)?.insert(_overlayEntry!);
+    Overlay.of(context).insert(_overlayEntry!);
     isMenuOpen = !isMenuOpen;
     menuState(isMenuOpen);
   }

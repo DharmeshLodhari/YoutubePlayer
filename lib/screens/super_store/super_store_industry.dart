@@ -58,7 +58,7 @@ class _SuperStoreState extends State<SuperStoreIndustry> {
     basketBloc = Provider.of<BasketBloc>(context);
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: lightGrey,
       appBar: _buildAppBar() as PreferredSizeWidget,
       body: _buildBody(),
     );

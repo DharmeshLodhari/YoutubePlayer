@@ -1,6 +1,7 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/forms/payment/other_bank_transfer/beneficiary_transfer.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/forms/payment/other_bank_transfer/new_beneficiary_transfer.dart';
+import 'package:Slydo/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -35,7 +36,7 @@ class _OtherBankTransferState extends State<OtherBankTransfer> {
     userBloc = Provider.of<UserBloc>(context);
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: lightGrey,
       resizeToAvoidBottomInset: true,
       body: scaffoldBody(),
     );

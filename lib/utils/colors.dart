@@ -59,3 +59,21 @@ Color darkRed = HexColor("#33FF0000");
 
 Color boxShadow = const Color.fromARGB(51, 50, 55, 140);
 Color boxShadowTwo = HexColor("#32378C").withOpacity(0.07);
+
+// Define your custom colors
+const Map<int, Color> navyBlueColorShades = {
+  50: Color.fromRGBO(0, 34, 85, .1),
+  100: Color.fromRGBO(0, 34, 85, .2),
+  200: Color.fromRGBO(0, 34, 85, .3),
+  300: Color.fromRGBO(0, 34, 85, .4),
+  400: Color.fromRGBO(0, 34, 85, .5),
+  500: Color.fromRGBO(0, 34, 85, .6),
+  600: Color.fromRGBO(0, 34, 85, .7),
+  700: Color.fromRGBO(0, 34, 85, .8),
+  800: Color.fromRGBO(0, 34, 85, .9),
+  900: Color.fromRGBO(0, 34, 85, 1),
+};
+
+// Create a custom MaterialColor
+const MaterialColor navyBluePrimary =
+    MaterialColor(0xFF3F61DB, navyBlueColorShades);

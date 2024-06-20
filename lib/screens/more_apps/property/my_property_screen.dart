@@ -32,7 +32,7 @@ class _MyPropertiesScreenState extends State<MyPropertiesScreen> {
       child: DefaultTabController(
         length: 2,
         child: Scaffold(
-          backgroundColor: Colors.white,
+          backgroundColor: lightGrey,
           appBar: appBar() as PreferredSizeWidget?,
           body: tabViews(),
         ),

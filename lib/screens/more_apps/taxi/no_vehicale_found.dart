@@ -25,7 +25,7 @@ class _NoVehicleFoundState extends State<NoVehicleFound> {
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         appBar: appBar() as PreferredSizeWidget?,
         body: Stack(
           children: [

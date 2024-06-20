@@ -192,16 +192,13 @@ class NormalCartScreenState extends State<NormalCartScreen> {
       height: 40,
       color: navyBlue,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      child: const SizedBox(
-        width: 66,
-        child: Text(
-          "Checkout",
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w600,
-            fontSize: 14,
-            fontFamily: "Inter",
-          ),
+      child: const Text(
+        "Checkout",
+        style: TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.w600,
+          fontSize: 14,
+          fontFamily: "Inter",
         ),
       ),
       onPressed: () {

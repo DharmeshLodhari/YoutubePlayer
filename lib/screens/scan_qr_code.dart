@@ -64,13 +64,23 @@ class _QRCodeViewState extends State<QRCodeView> {
     // _dashboardBloc = Provider.of<DashboardBloc>(context);
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: lightGrey,
       body: Stack(
         children: <Widget>[
           qrCodeExpandedView(),
           AppBar(
             backgroundColor: Colors.transparent,
             elevation: 0.0,
+            leading: IconButton(
+              icon: Icon(
+                Icons.keyboard_arrow_left,
+                color: navyBlue,
+                size: 24,
+              ),
+              onPressed: () async {
+                Navigator.pop(context, "back pressed");
+              },
+            ),
             actions: const <Widget>[],
           ),
           Align(

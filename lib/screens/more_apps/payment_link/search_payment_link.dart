@@ -206,7 +206,7 @@ class _PaymentLinkSearchState extends State<PaymentLinkSearch>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: lightGrey,
       appBar: appBar() as PreferredSizeWidget?,
       body: scaffoldBody(),
     );
@@ -254,7 +254,7 @@ class _PaymentLinkSearchState extends State<PaymentLinkSearch>
         borderRadius: BorderRadius.circular(5),
         backgroundColor: mateRed,
         icon: SlydoAppIcon.cancel_connection_request,
-        onPressed: (context) {
+        onPressed: (con) {
           rejectRequestAlert(data, index);
         },
         label: AppLocalization.of(context)!.cancel,

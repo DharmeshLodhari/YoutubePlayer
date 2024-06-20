@@ -172,7 +172,7 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
       child: ColorfulSafeArea(
         bottom: false,
         child: Scaffold(
-          backgroundColor: Colors.white,
+          backgroundColor: lightGrey,
           body: NestedScrollView(
               physics: const NeverScrollableScrollPhysics(),
               headerSliverBuilder: (BuildContext context, bool boxIsScrolled) {

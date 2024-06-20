@@ -36,7 +36,7 @@ class _AddReviewState extends State<AddReview> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: lightGrey,
       appBar: AppBar(
         title: Text(
           "Write review",
@@ -203,12 +203,14 @@ class _AddReviewState extends State<AddReview> {
 
   Widget _buildRatingBar() {
     return Center(
-        child: getClickableRatingBar(
-      initialRating: 0,
-      onRatingUpdate: (rate) {
-        rating = rate.floor();
-      },
-    ));
+      child: getClickableRatingBar(
+        initialRating: 0,
+        starSize: 40.0,
+        onRatingUpdate: (rate) {
+          rating = rate.floor();
+        },
+      ),
+    );
   }
 
   Widget _buildWriteReviewTextField() {

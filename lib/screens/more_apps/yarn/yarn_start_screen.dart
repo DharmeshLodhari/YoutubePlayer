@@ -125,7 +125,7 @@ class _AskStartScreenState extends State<AskStartScreen> {
       return ScaffoldMessenger(
         key: _askCategoriesScaffoldMessengerKey,
         child: Scaffold(
-          backgroundColor: Colors.white,
+          backgroundColor: lightGrey,
           appBar: AppBar(
             backgroundColor: Colors.white,
             shape: Border(bottom: BorderSide(color: HexColor("#D9D9D9"))),

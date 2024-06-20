@@ -151,7 +151,7 @@ class _ReviewListScreenState extends State<ReviewListScreen> {
     return ScaffoldMessenger(
       key: _scaffoldMessengerKey,
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         appBar: AppBar(
           title: Text(
             "Reviews($reviewCount)",

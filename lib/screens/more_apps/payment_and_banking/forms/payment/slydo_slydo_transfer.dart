@@ -247,7 +247,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
     return ScaffoldMessenger(
       key: _sendPaymentScaffoldMessenger,
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         key: _sendPaymentScaffold,
         resizeToAvoidBottomInset: true,
         body: scaffoldBody(),
@@ -468,11 +468,9 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
-      shadowColor: iconBtnGrey,
+      shadowColor: boxShadowTwo,
       child: Container(
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: iconBtnGrey, width: 1)),
+        decoration: decorateBox(),
         child: Form(
           key: _formKey,
           child: Column(
@@ -881,6 +879,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
         barrierDismissible: false,
         context: context,
         builder: (context) => AlertDialog(
+      backgroundColor: Colors.white,
               insetPadding:
                   const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,
@@ -1060,6 +1059,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
       builder: (context) =>
           StatefulBuilder(builder: (context, rentDurationStateSetter) {
         return AlertDialog(
+      backgroundColor: Colors.white,
           insetPadding:
               const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
           contentPadding: EdgeInsets.zero,

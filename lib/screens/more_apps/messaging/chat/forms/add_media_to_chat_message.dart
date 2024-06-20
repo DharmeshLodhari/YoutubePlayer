@@ -146,6 +146,12 @@ class _AddMediaToChatMessageState extends State<AddMediaToChatMessage> {
               ? FloatingActionButton(
                   backgroundColor: navyBlue,
                   onPressed: sendMessage,
+                  mini: false,
+                  heroTag: null,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(
+                        50.0), // Set the border radius to create a circle
+                  ),
                   child: const Icon(
                     Icons.send,
                     color: Colors.white,

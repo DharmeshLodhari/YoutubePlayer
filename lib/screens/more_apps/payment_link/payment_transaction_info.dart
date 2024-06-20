@@ -110,7 +110,7 @@ class _TransactionPaymentLinkState extends State<TransactionPaymentLink> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         appBar: appBar() as PreferredSizeWidget?,
         body: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
@@ -282,6 +282,7 @@ class _TransactionPaymentLinkState extends State<TransactionPaymentLink> {
         context: context,
         builder: (context) {
           return AlertDialog(
+            backgroundColor: Colors.white,
             shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.all(
                 Radius.circular(

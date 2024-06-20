@@ -100,17 +100,14 @@ class _QrCodePageState extends State<QrCodePage> {
     return Scaffold(
       key: _scaffoldQrCodeKey,
       resizeToAvoidBottomInset: true,
-      backgroundColor: Colors.white,
+      backgroundColor: lightGrey,
       appBar: appBar(),
-      body: Container(
-        color: Colors.white,
-        child: Container(color: white, child: _foregroundScreen()),
-      ),
+      body: _foregroundScreen(),
     );
   }
 
   Widget _foregroundScreen() {
-    return Center(
+    return SingleChildScrollView(
       child: Column(
         children: [
           const SizedBox(height: 40),
@@ -490,7 +487,7 @@ class _QrCodePageState extends State<QrCodePage> {
       onTap: () {
         userProfileActionsSheet();
       },
-      enableMargin: true,
+      enableMargin: false,
     );
   }
 

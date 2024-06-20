@@ -68,7 +68,7 @@ class _MyWishListState extends State<MyWishList> {
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         body: isLoading
             ? Center(
                 child: CircularLoadingIndicator(),

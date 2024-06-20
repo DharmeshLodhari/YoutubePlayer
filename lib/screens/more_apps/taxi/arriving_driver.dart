@@ -97,7 +97,7 @@ class _ArrivingDriverState extends State<ArrivingDriver> {
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         appBar: appBar() as PreferredSizeWidget?,
         body: Stack(
           children: [

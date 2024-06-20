@@ -55,7 +55,7 @@ class _LatestNewsListState extends State<LatestNewsList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: lightGrey,
       body: scaffoldBody(),
     );
   }

@@ -137,7 +137,7 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer>
     bankAccountBloc = Provider.of<BankAccountBloc>(context);
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: lightGrey,
       resizeToAvoidBottomInset: true,
       body: scaffoldBody(),
     );
@@ -345,11 +345,9 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer>
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
-      shadowColor: iconBtnGrey,
+      shadowColor: boxShadowTwo,
       child: Container(
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: iconBtnGrey, width: 1)),
+        decoration: decorateBox(),
         child: Form(
           key: _formKey,
           child: Container(
@@ -1212,7 +1210,7 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer>
         borderRadius: BorderRadius.circular(5),
         backgroundColor: mateRed,
         icon: SlydoAppIcon.remove,
-        onPressed: (context) {
+        onPressed: (con) {
           deleteBankAccount(account);
         },
         label: AppLocalization.of(context)!.delete,

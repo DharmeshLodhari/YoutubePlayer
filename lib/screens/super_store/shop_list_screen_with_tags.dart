@@ -730,7 +730,8 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
                   Container(
                     width: 200,
                     // height: 200,
-                    margin: const EdgeInsets.symmetric(horizontal: 8),
+                    margin:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
                     child: GestureDetector(
                       onTap: () {
                         Navigator.pushNamed(context, Routes.USER_PROFILE,

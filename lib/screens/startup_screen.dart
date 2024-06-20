@@ -254,7 +254,7 @@ class _StartupScreenState extends State<StartupScreen> {
 
   Widget firstScreen() {
     return Scaffold(
-      backgroundColor: whiteBackground,
+      backgroundColor: lightGrey,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
@@ -314,7 +314,7 @@ class _StartupScreenState extends State<StartupScreen> {
 
   Widget secondScreen() {
     return Scaffold(
-      backgroundColor: whiteBackground,
+      backgroundColor: lightGrey,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
@@ -374,7 +374,7 @@ class _StartupScreenState extends State<StartupScreen> {
 
   Widget thirdScreen() {
     return Scaffold(
-      backgroundColor: whiteBackground,
+      backgroundColor: lightGrey,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
@@ -434,7 +434,7 @@ class _StartupScreenState extends State<StartupScreen> {
 
   Widget fourthScreen() {
     return Scaffold(
-      backgroundColor: whiteBackground,
+      backgroundColor: lightGrey,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[

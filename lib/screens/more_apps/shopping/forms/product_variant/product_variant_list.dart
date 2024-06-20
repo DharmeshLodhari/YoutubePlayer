@@ -377,7 +377,7 @@ class _ProductVariantListState extends State<ProductVariantList>
         borderRadius: BorderRadius.circular(5),
         backgroundColor: starYellow,
         icon: Icons.edit,
-        onPressed: (context) async {
+        onPressed: (con) async {
           final data = await Navigator.of(context)
               .pushNamed(Routes.PRODUCT_VARIANT_UPDATE, arguments: {
             'variant': variant,
@@ -402,7 +402,7 @@ class _ProductVariantListState extends State<ProductVariantList>
         borderRadius: BorderRadius.circular(5),
         backgroundColor: mateRed,
         icon: SlydoAppIcon.remove,
-        onPressed: (context) async {
+        onPressed: (con) async {
           deleteProductDialog(variant);
         },
         label: AppLocalization.of(context)!.delete,

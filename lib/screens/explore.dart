@@ -59,7 +59,7 @@ class _ExploreListState extends State<ExploreList> {
       child: Scaffold(
         key: key,
         resizeToAvoidBottomInset: true,
-        backgroundColor: whiteBackground,
+        backgroundColor: lightGrey,
         appBar: AppBar(
           backgroundColor: navyBlue,
           title: AnimatedSwitcher(

@@ -340,8 +340,7 @@ class _InvoiceScreenState extends State<InvoiceScreen>
                                   borderRadius: BorderRadius.circular(5),
                                   backgroundColor: mateRed,
                                   icon: Icons.delete,
-                                  onPressed: (context) =>
-                                      deleteInvoice(invoice),
+                                  onPressed: (con) => deleteInvoice(invoice),
                                   label: 'Delete',
                                 ),
                               ])
@@ -356,7 +355,7 @@ class _InvoiceScreenState extends State<InvoiceScreen>
                                   borderRadius: BorderRadius.circular(5),
                                   backgroundColor: getBgColor(invoice),
                                   icon: getIcon(invoice),
-                                  onPressed: (context) => canPay
+                                  onPressed: (con) => canPay
                                       ? _payInvoice(invoice)
                                       : updateInvoiceStatus(
                                           invoice, getUpdateAction(invoice)),

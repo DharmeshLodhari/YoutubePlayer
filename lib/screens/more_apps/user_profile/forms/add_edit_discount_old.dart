@@ -84,7 +84,7 @@ class _AddEditDiscountOldState extends State<AddEditDiscountOld> {
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         resizeToAvoidBottomInset: true,
         appBar: appBar() as PreferredSizeWidget?,
         body: scaffoldBody(),
@@ -290,6 +290,7 @@ class _AddEditDiscountOldState extends State<AddEditDiscountOld> {
     final imageSource = await showDialog<ImageSource>(
         context: context,
         builder: (context) => AlertDialog(
+              backgroundColor: Colors.white,
               title: Text(AppLocalization.of(context)!.selectTheImageSource),
               actions: <Widget>[
                 MaterialButton(
@@ -424,6 +425,7 @@ class _AddEditDiscountOldState extends State<AddEditDiscountOld> {
     final pressedCategory = await showDialog<DiscountTagCategory>(
         context: context,
         builder: (context) => AlertDialog(
+              backgroundColor: Colors.white,
               insetPadding:
                   const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,

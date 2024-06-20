@@ -9,6 +9,7 @@ import 'package:Slydo/screens/more_apps/user_profile/widgets/silver_app_bar_dele
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:text_scroll/text_scroll.dart';
 
 import '../utils.dart';
@@ -218,6 +219,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
       context: context,
       builder: (context) {
         return AlertDialog(
+          backgroundColor: Colors.white,
           insetPadding: const EdgeInsets.symmetric(horizontal: 16),
           contentPadding: const EdgeInsets.symmetric(horizontal: 10),
           shape:
@@ -227,6 +229,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
             child: Card(
               elevation: 0.0,
               margin: EdgeInsets.zero,
+              color: Colors.white,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12)),
               child: Column(
@@ -594,11 +597,15 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
               ? PageStorage(
                   key: PageStorageKey(selectedCategory),
                   bucket: _bucket,
-                  child: productTab(widget.searchedUser, isOwner!, false,
-                      next: selectedCategory == "main"
-                          ? "https://api.slydo.co/api/v1/products/seller-products-by-custom-category/${widget.searchedUser!.userName}/"
-                          : "https://api.slydo.co/api/v1/products/by-seller/${widget.searchedUser!.userName}/?custom_category=$selectedCategory",
-                      type: selectedCategory == "main" ? "section" : null),
+                  child: productTab(
+                    widget.searchedUser,
+                    isOwner!,
+                    false,
+                    next: selectedCategory == "main"
+                        ? "https://api.slydo.co/api/v1/products/seller-products-by-custom-category/${widget.searchedUser!.userName}/"
+                        : "https://api.slydo.co/api/v1/products/by-seller/${widget.searchedUser!.userName}/?custom_category=$selectedCategory",
+                    type: selectedCategory == "main" ? "section" : null,
+                  ),
                   // child: FutureBuilder(
                   //   future: getData(),
                   //   builder: (context, snapshot) {
@@ -629,8 +636,30 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
                           if (snapshot.hasData) {
                             return tab.child!;
                           } else {
-                            return const Center(
-                                child: CircularProgressIndicator());
+                            return Shimmer.fromColors(
+                              baseColor: Colors.white,
+                              highlightColor: greyBorderColor,
+                              child: GridView.builder(
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                gridDelegate:
+                                    const SliverGridDelegateWithMaxCrossAxisExtent(
+                                  mainAxisExtent: 180,
+                                  mainAxisSpacing: 16,
+                                  crossAxisSpacing: 15,
+                                  maxCrossAxisExtent: 200,
+                                ),
+                                itemCount: 2,
+                                itemBuilder: (context, index) {
+                                  return Card(
+                                    color: Colors.grey,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                  );
+                                },
+                              ),
+                            );
                           }
                         },
                       ),

@@ -462,6 +462,7 @@ Future<T?> showPickItemDialog<T>({
   return await showDialog<T>(
     context: context,
     builder: (context) => AlertDialog(
+      backgroundColor: Colors.white,
       insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
       contentPadding: EdgeInsets.zero,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),

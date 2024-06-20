@@ -301,7 +301,7 @@ class _ShippingOptionsListState extends State<ShippingOptionsList>
         borderRadius: BorderRadius.circular(5),
         backgroundColor: starYellow,
         icon: Icons.edit,
-        onPressed: (context) {
+        onPressed: (con) {
           Navigator.of(context).pushNamed(
             Routes.EDIT_SHIPPING_OPTIONS,
             arguments: <String, dynamic>{
@@ -325,7 +325,7 @@ class _ShippingOptionsListState extends State<ShippingOptionsList>
         borderRadius: BorderRadius.circular(5),
         backgroundColor: mateRed,
         icon: SlydoAppIcon.remove,
-        onPressed: (context) {
+        onPressed: (con) {
           showDeleteShippingOptionDialog(shippingModel);
         },
         label: AppLocalization.of(context)!.delete,

@@ -77,7 +77,7 @@ class _AddTagsState extends State<AddTags> {
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         resizeToAvoidBottomInset: true,
         appBar: _buildAppBar() as PreferredSizeWidget?,
         body: _buildBody(),

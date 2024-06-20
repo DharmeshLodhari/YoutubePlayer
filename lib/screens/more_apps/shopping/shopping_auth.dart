@@ -1659,6 +1659,12 @@ class ShoppingAuthService extends AuthService {
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
 
+    try {
+      handleServerErrors(response);
+    } catch (e) {
+      return Future.error(response.body);
+    }
+
     if (response.statusCode == 200 || response.statusCode == 201) {
       final jsonData = json.decode(response.body);
 

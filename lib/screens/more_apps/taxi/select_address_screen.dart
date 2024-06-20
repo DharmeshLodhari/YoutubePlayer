@@ -67,7 +67,7 @@ class _SelectAddressScreenState extends State<SelectAddressScreen> {
       },
       child: Scaffold(
         resizeToAvoidBottomInset: false,
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         appBar: appBar() as PreferredSizeWidget?,
         body: Stack(
           children: [const MapUI(), getBottomUI(getSearchDestination())],

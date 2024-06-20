@@ -122,6 +122,7 @@ class _UpgradeAccountState extends State<UpgradeAccount> {
         barrierDismissible: false,
         context: context,
         builder: (context) => AlertDialog(
+      backgroundColor: Colors.white,
               insetPadding:
                   const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,

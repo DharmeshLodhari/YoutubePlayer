@@ -27,6 +27,7 @@ class _EventDashboardState extends State<EventDashboard> {
         }
       },
       child: Scaffold(
+        backgroundColor: lightGrey,
         body: PageView(
           controller: _eventDashboardBloc.pageController,
           onPageChanged: (index) {
