@@ -79,6 +79,7 @@ class _TakeProofPhotoState extends State<TakeProofPhoto> {
 
   Widget _buildAppbar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       leading: _buildIcon(),
       automaticallyImplyLeading: true,
       backgroundColor: Colors.black,

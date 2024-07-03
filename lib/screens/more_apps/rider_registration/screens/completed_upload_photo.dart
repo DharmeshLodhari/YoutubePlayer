@@ -63,6 +63,7 @@ class _CompletedUploadPhotoState extends State<CompletedUploadPhoto>
 
   Widget _buildAppBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       backgroundColor: white,
       leading: IconButton(
         icon: Icon(

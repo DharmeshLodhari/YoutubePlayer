@@ -33,7 +33,8 @@ class PreviewMomentScreen extends StatefulWidget {
   final String filePath;
   final dynamic arguments;
 
-  PreviewMomentScreen({super.key, required this.filePath, this.arguments});
+  const PreviewMomentScreen(
+      {super.key, required this.filePath, this.arguments});
 
   @override
   State<PreviewMomentScreen> createState() => _PreviewMomentScreenState();
@@ -123,18 +124,18 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
     userBloc = Provider.of<UserBloc>(context);
     return Scaffold(
       backgroundColor: lightGrey,
-      appBar: appBar(),
-      body: ListView(
-        // fit: StackFit.expand,
-        children: [
-          mediaRenderer(),
-          Container(
-            decoration: BoxDecoration(
-              color: lightGrey,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(15.0),
+      appBar: appBar() as PreferredSizeWidget?,
+      body: Padding(
+        padding: const EdgeInsets.all(15.0),
+        child: ListView(
+          // fit: StackFit.expand,
+          children: [
+            mediaRenderer(),
+            Container(
+              decoration: BoxDecoration(
+                color: lightGrey,
+                borderRadius: BorderRadius.circular(20),
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -149,7 +150,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
                   //     ),
                   //   ),
                   // ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 15),
                   TextFormField(
                     maxLength: 255,
                     maxLines: 5,
@@ -607,8 +608,8 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
                 ],
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -701,7 +702,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
             ),
           ),
           SizedBox(
-            width: 45,
+            width: 40,
             height: 30,
             child: FittedBox(fit: BoxFit.fill, child: switchBtn),
           ),
@@ -712,6 +713,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
 
   AppBar appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       titleSpacing: 0,
       backgroundColor: Colors.white,

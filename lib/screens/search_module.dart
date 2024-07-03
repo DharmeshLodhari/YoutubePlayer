@@ -156,12 +156,23 @@ class _SearchModuleState extends State<SearchModule>
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 20,
       centerTitle: false,
       automaticallyImplyLeading: true,
       iconTheme: IconThemeData(color: blackFont),
+      leading: IconButton(
+        icon: Icon(
+          Icons.keyboard_arrow_left,
+          color: navyBlue,
+          size: 24,
+        ),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+      ),
       title: Text(
         getTabTitle(),
         style: TextStyle(
@@ -1166,6 +1177,7 @@ class _SearchModuleState extends State<SearchModule>
       if (isNotCurrentUser)
         SlideActionButton(
           borderRadius: BorderRadius.circular(5),
+          padding: EdgeInsets.zero,
           icon: Icons.payments_rounded,
           onPressed: (con) async {
             if (appConfigurationModel?.enablePayment == true) {
@@ -1189,6 +1201,7 @@ class _SearchModuleState extends State<SearchModule>
       if (isNotCurrentUser)
         SlideActionButton(
           borderRadius: BorderRadius.circular(5),
+          padding: EdgeInsets.zero,
           icon: Icons.payments_rounded,
           onPressed: (con) async {
             if (appConfigurationModel?.enablePayment == true) {
@@ -1215,6 +1228,7 @@ class _SearchModuleState extends State<SearchModule>
           user.userName != userBloc!.user.userName)
         SlideActionButton(
           borderRadius: BorderRadius.circular(5),
+          padding: EdgeInsets.zero,
           icon: SlydoAppIcon.add,
           onPressed: (con) async {
             connectUserAlert(user);
@@ -1225,6 +1239,7 @@ class _SearchModuleState extends State<SearchModule>
       if (userBloc!.user.userName != user.userName)
         SlideActionButton(
           borderRadius: BorderRadius.circular(5),
+          padding: EdgeInsets.zero,
           icon: SlydoAppIcon.block,
           onPressed: (con) async {
             blockUserAlert(user);
@@ -1256,6 +1271,7 @@ class _SearchModuleState extends State<SearchModule>
     return [
       SlideActionButton(
         borderRadius: BorderRadius.circular(5),
+        padding: EdgeInsets.zero,
         icon: SlydoAppIcon.cart,
         onPressed: (con) async {
           customerProfileBloc.customer =
@@ -1273,6 +1289,7 @@ class _SearchModuleState extends State<SearchModule>
     return [
       SlideActionButton(
         borderRadius: BorderRadius.circular(5),
+        padding: EdgeInsets.zero,
         icon: SlydoAppIcon.text_message,
         onPressed: (con) async {
           Navigator.of(context).pushNamed(Routes.COMPOSE_MESSAGE, arguments: {
@@ -1307,6 +1324,7 @@ class _SearchModuleState extends State<SearchModule>
     return [
       SlideActionButton(
           borderRadius: BorderRadius.circular(5),
+          padding: EdgeInsets.zero,
           label: AppLocalization.of(context)!.buy,
           backgroundColor: naturalGreen,
           icon: SlydoAppIcon.cart,
@@ -1323,6 +1341,7 @@ class _SearchModuleState extends State<SearchModule>
     return [
       SlideActionButton(
         borderRadius: BorderRadius.circular(5),
+        padding: EdgeInsets.zero,
         label: AppLocalization.of(context)!.message,
         backgroundColor: navyBlue,
         icon: SlydoAppIcon.text_message,

@@ -53,6 +53,7 @@ class _MyProductsState extends State<MyProducts> {
 
   Widget _buildAppBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       backgroundColor: Colors.white,
       title: Text(
         AppLocalization.of(context)!.myProducts,

@@ -42,6 +42,7 @@ class _PackageDetailsState extends State<PackageDetails> {
 
   Widget _buildAppBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       backgroundColor: white,
       automaticallyImplyLeading: false,
       centerTitle: false,

@@ -294,6 +294,7 @@ class _MomentCommentScreenState extends State<MomentCommentScreen> {
 
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       backgroundColor: Colors.white,
       title: Text(
         "Replies ${widget.yarnComment?.replyCount}",

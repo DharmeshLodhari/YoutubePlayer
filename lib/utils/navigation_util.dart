@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 
 class NavigationUtil {
-  static Future push(BuildContext context, {required Widget screen}) {
-    return Navigator.of(context).push(
+  static Future push(BuildContext context, {required Widget screen}) async {
+    var result = await Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => screen,
       ),
     );
+    return result;
   }
 
   static Future pushReplacement(BuildContext context,

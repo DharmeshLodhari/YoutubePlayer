@@ -123,6 +123,7 @@ class _ViewCompletedDeliveryState extends State<ViewCompletedDelivery> {
 
   Widget _buildAppBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       backgroundColor: white,
       title: Text(
         'Delivery History',

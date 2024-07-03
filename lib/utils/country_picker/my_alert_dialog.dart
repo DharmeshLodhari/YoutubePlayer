@@ -1,3 +1,4 @@
+import 'package:Slydo/utils/colors.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -131,12 +132,9 @@ class MyAlertDialog<T> extends StatelessWidget {
 
     if (content != null) {
       children.add(Flexible(
-        child: Padding(
-          padding: contentPadding,
-          child: DefaultTextStyle(
-            style: Theme.of(context).textTheme.titleMedium!,
-            child: content!,
-          ),
+        child: DefaultTextStyle(
+          style: Theme.of(context).textTheme.titleMedium!,
+          child: content!,
         ),
       ));
     }
@@ -162,6 +160,6 @@ class MyAlertDialog<T> extends StatelessWidget {
           Semantics(namesRoute: true, label: label, child: dialogChild);
     }
 
-    return Dialog(child: dialogChild);
+    return Dialog(child: Container(color: lightGrey, child: dialogChild));
   }
 }

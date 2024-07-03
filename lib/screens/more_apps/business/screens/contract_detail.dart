@@ -125,6 +125,7 @@ class _ContractDetailState extends State<ContractDetail> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       titleSpacing: 0,
       backgroundColor: Colors.white,

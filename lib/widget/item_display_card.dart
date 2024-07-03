@@ -789,10 +789,10 @@ class _DisplayServiceState extends State<DisplayService> {
                   ],
                 ),
                 const SizedBox(
-                  height: 10,
+                  height: 7,
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(left: 8.0, top: 4),
+                  padding: const EdgeInsets.only(left: 5.0),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,

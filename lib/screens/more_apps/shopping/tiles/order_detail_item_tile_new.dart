@@ -1,4 +1,5 @@
 import 'package:Slydo/data/currency.dart';
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
@@ -7,8 +8,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class OrderTileForProductNew extends StatefulWidget {
-  final Map<String, dynamic> item;
-  const OrderTileForProductNew({super.key, required this.item});
+  final OrderItem? order;
+  const OrderTileForProductNew({super.key, required this.order});
 
   @override
   State<OrderTileForProductNew> createState() => _OrderTileForProductNewState();
@@ -16,14 +17,12 @@ class OrderTileForProductNew extends StatefulWidget {
 
 class _OrderTileForProductNewState extends State<OrderTileForProductNew> {
   Product? product;
-  String? type;
   int? qty;
 
   @override
   void initState() {
-    type = widget.item["type"];
-    product = widget.item["item"];
-    qty = widget.item["qty"];
+    product = widget.order?.item;
+    qty = widget.order?.qty;
     super.initState();
   }
 
@@ -32,14 +31,21 @@ class _OrderTileForProductNewState extends State<OrderTileForProductNew> {
     try {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 10.0),
-        child: Row(
-          children: [
-            getProductImage(),
-            const SizedBox(
-              width: 15,
-            ),
-            Expanded(child: getProductDetails()),
-          ],
+        child: GestureDetector(
+          onTap: () {
+            Navigator.pushNamed(context, Routes.PRODUCT, arguments: {
+              "product": widget.order?.item as Product,
+            });
+          },
+          child: Row(
+            children: [
+              getProductImage(),
+              const SizedBox(
+                width: 15,
+              ),
+              Expanded(child: getProductDetails()),
+            ],
+          ),
         ),
       );
     } catch (e) {
@@ -51,8 +57,8 @@ class _OrderTileForProductNewState extends State<OrderTileForProductNew> {
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
       child: CachedNetworkImage(
-        height: 80,
-        width: 80,
+        height: 70,
+        width: 70,
         imageUrl: product!.serverImages!.isNotEmpty
             ? product!.serverImages!.first!
             : defaultImage,
@@ -72,7 +78,13 @@ class _OrderTileForProductNewState extends State<OrderTileForProductNew> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         getTitle(),
+        const SizedBox(
+          height: 3,
+        ),
         getProductColorSize(),
+        const SizedBox(
+          height: 3,
+        ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -104,7 +116,7 @@ class _OrderTileForProductNewState extends State<OrderTileForProductNew> {
         Text(
           "X$qty",
           style: TextStyle(
-            color: darkGrey,
+            color: lightBlackFont,
             fontFamily: "Inter",
             fontWeight: FontWeight.w600,
             fontSize: 14,
@@ -152,37 +164,41 @@ class _OrderTileForProductNewState extends State<OrderTileForProductNew> {
       final String variantColor = product?.variantModels?.first.colour ?? '';
       final String variantSize = product?.variantModels?.first.value ?? '';
       if (variantColor.isNotEmpty || variantSize.isNotEmpty) {
-        return MaterialButton(
-          elevation: 0,
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(20)),
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            color: greyDarkBackground,
           ),
-          visualDensity: VisualDensity.compact,
-          color: lightGrey,
-          onPressed: () {},
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
                 variantColor,
                 style: TextStyle(
-                  fontSize: 12,
-                  color: darkGrey,
+                  fontSize: 10,
+                  color: blackFont,
+                  fontFamily: "Inter",
+                  fontWeight: FontWeight.w400,
                 ),
               ),
               if (variantColor.isNotEmpty && variantSize.isNotEmpty)
                 Text(
                   "/",
                   style: TextStyle(
-                    fontSize: 12,
-                    color: darkGrey,
+                    fontSize: 10,
+                    color: blackFont,
+                    fontFamily: "Inter",
+                    fontWeight: FontWeight.w400,
                   ),
                 ),
               Text(
                 variantSize,
                 style: TextStyle(
-                  fontSize: 12,
-                  color: darkGrey,
+                  fontSize: 10,
+                  color: blackFont,
+                  fontFamily: "Inter",
+                  fontWeight: FontWeight.w400,
                 ),
               ),
             ],
@@ -197,16 +213,86 @@ class _OrderTileForProductNewState extends State<OrderTileForProductNew> {
   }
 }
 
+class OrderTileForMultipleProductNew extends StatefulWidget {
+  final List<OrderItem>? order;
+  const OrderTileForMultipleProductNew({super.key, required this.order});
+
+  @override
+  State<OrderTileForMultipleProductNew> createState() =>
+      _OrderTileForMultipleProductNewState();
+}
+
+class _OrderTileForMultipleProductNewState
+    extends State<OrderTileForMultipleProductNew> {
+  List<OrderItem>? orderItem;
+  List<String> listOfUrls = [];
+
+  @override
+  void initState() {
+    orderItem = widget.order;
+    for (OrderItem order in orderItem ?? []) {
+      if (order.item is Product) {
+        final Product product = order.item;
+        if (product.serverImages != null && product.serverImages!.isNotEmpty) {
+          listOfUrls.add(product.serverImages!.first!);
+        } else {
+          print('Product has no server images');
+        }
+      } else if (order.item is Service) {
+        final Service service = order.item;
+        if (service.serverImages != null && service.serverImages!.isNotEmpty) {
+          listOfUrls.add(service.serverImages!.first!);
+        } else {
+          print('Service has no server images');
+        }
+      }
+    }
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    try {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10.0),
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            children: listOfUrls.map((String url) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: CachedNetworkImage(
+                    height: 70,
+                    width: 70,
+                    imageUrl: url,
+                    colorBlendMode: BlendMode.darken,
+                    fit: BoxFit.fill,
+                    errorWidget: (context, url, error) => Icon(Icons.error),
+                    filterQuality: FilterQuality.high,
+                    placeholder: (context, url) => CircularProgressIndicator(),
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+        ),
+      );
+    } catch (e) {
+      return Container();
+    }
+  }
+}
+
 // ignore: must_be_immutable
 class OrderTileForService extends StatefulWidget {
   Service? item;
-  String? type;
   int? qty;
 
-  OrderTileForService(Map<String, dynamic> item, {super.key}) {
-    type = item["type"];
-    this.item = item["item"];
-    qty = item["qty"] ?? 0;
+  OrderTileForService(OrderItem? order, {super.key}) {
+    item = order?.item;
+    qty = order?.qty;
   }
 
   @override

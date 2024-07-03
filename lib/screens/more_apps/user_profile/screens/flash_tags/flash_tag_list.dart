@@ -223,6 +223,7 @@ class _FlashTagListState extends State<FlashTagList> {
 
   Widget _buildAppBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       backgroundColor: Colors.white,
       title: Text(
         'Flash Tag',

@@ -147,6 +147,7 @@ class _RiderDashboardState extends State<RiderDashboard> {
 
   Widget _buildAppBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       backgroundColor: white,
       title: Text(
         'Earnings',

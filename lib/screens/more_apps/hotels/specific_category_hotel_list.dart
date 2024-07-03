@@ -89,6 +89,7 @@ class _SpecificCategoryHotelListState extends State<SpecificCategoryHotelList> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,

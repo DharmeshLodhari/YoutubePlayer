@@ -151,6 +151,7 @@ class _CablePlanDetailState extends State<CablePlanDetail> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       backgroundColor: Colors.transparent,
       automaticallyImplyLeading: false,
       elevation: 0,

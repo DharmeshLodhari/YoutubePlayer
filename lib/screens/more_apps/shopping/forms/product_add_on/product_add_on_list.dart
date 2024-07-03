@@ -166,6 +166,7 @@ class _ProductAddOnListState extends State<ProductAddOnList>
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       titleSpacing: 0,
       backgroundColor: Colors.white,
@@ -412,6 +413,7 @@ class _ProductAddOnListState extends State<ProductAddOnList>
     return [
       SlideActionButton(
         borderRadius: BorderRadius.circular(5),
+        padding: EdgeInsets.zero,
         backgroundColor: starYellow,
         icon: Icons.edit,
         onPressed: (con) async {
@@ -437,6 +439,7 @@ class _ProductAddOnListState extends State<ProductAddOnList>
     return [
       SlideActionButton(
         borderRadius: BorderRadius.circular(5),
+        padding: EdgeInsets.zero,
         backgroundColor: mateRed,
         icon: SlydoAppIcon.remove,
         onPressed: (con) async {

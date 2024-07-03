@@ -110,7 +110,7 @@ class _MomentsScreenState extends State<MomentsScreen> {
     }
   }
 
-  _refreshPage() {
+  void _refreshPage() {
     nextContactMoments = "";
     nextExploreMoments = "";
     countContactMoments = 0;
@@ -256,6 +256,7 @@ class _MomentsScreenState extends State<MomentsScreen> {
 
   AppBar appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       titleSpacing: 16,
       backgroundColor: Colors.white,
@@ -769,7 +770,7 @@ class ExploreMomentsCard extends StatefulWidget {
   final bool showProfileAvatar;
   final List<ExploreMomentsModel> exploreMomentsModelList;
 
-  ExploreMomentsCard(
+  const ExploreMomentsCard(
       {super.key,
       this.onTap,
       this.showProfileAvatar =

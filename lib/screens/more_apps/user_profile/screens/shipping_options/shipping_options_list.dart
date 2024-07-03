@@ -104,6 +104,7 @@ class _ShippingOptionsListState extends State<ShippingOptionsList>
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       titleSpacing: 0,
       backgroundColor: Colors.white,
@@ -235,12 +236,26 @@ class _ShippingOptionsListState extends State<ShippingOptionsList>
       elevation: 0,
       child: Container(
         decoration: decorateBox(),
-        child: ListTile(
-          dense: true,
-          contentPadding: const EdgeInsets.only(
-              top: 15.0, bottom: 15.0, left: 10.0, right: 10.0),
-          trailing: getAmount(shippingModel: shippingModel),
-          leading: getShippingOptionName(shippingModel: shippingModel),
+        child: GestureDetector(
+          child: ListTile(
+            dense: true,
+            contentPadding: const EdgeInsets.only(
+                top: 15.0, bottom: 15.0, left: 10.0, right: 10.0),
+            trailing: getAmount(shippingModel: shippingModel),
+            leading: getShippingOptionName(shippingModel: shippingModel),
+          ),
+          onTap: () {
+            Navigator.of(context).pushNamed(
+              Routes.EDIT_SHIPPING_OPTIONS,
+              arguments: <String, dynamic>{
+                'price': shippingModel.price,
+                'name': shippingModel.name,
+                'id': shippingModel.id,
+                'currency': shippingModel.currency,
+                'callback': onCallback,
+              },
+            );
+          },
         ),
       ),
     );
@@ -280,49 +295,46 @@ class _ShippingOptionsListState extends State<ShippingOptionsList>
   Widget _getSlidableWithLists(BuildContext context, Widget bankAccountTile,
       ShippingOptionsListModel shippingModel) {
     return Slidable(
-      startActionPane: ActionPane(
-        motion: const BehindMotion(),
-        extentRatio: 0.25,
-        children: listActionSlideActions(shippingModel: shippingModel),
-      ),
       endActionPane: ActionPane(
         motion: const BehindMotion(),
         extentRatio: 0.25,
-        children: listSecondaryActions(shippingModel: shippingModel),
+        children: listActionSlideActions(shippingModel: shippingModel),
       ),
       child: VerticalListItem(bankAccountTile),
     );
   }
 
-  List<Widget> listSecondaryActions(
-      {required ShippingOptionsListModel shippingModel}) {
-    return [
-      SlideActionButton(
-        borderRadius: BorderRadius.circular(5),
-        backgroundColor: starYellow,
-        icon: Icons.edit,
-        onPressed: (con) {
-          Navigator.of(context).pushNamed(
-            Routes.EDIT_SHIPPING_OPTIONS,
-            arguments: <String, dynamic>{
-              'price': shippingModel.price,
-              'name': shippingModel.name,
-              'id': shippingModel.id,
-              'currency': shippingModel.currency,
-              'callback': onCallback,
-            },
-          );
-        },
-        label: AppLocalization.of(context)!.edit,
-      ),
-    ];
-  }
+  // List<Widget> listSecondaryActions(
+  //     {required ShippingOptionsListModel shippingModel}) {
+  //   return [
+  //     SlideActionButton(
+  //       borderRadius: BorderRadius.circular(5),
+  //       padding: EdgeInsets.zero,
+  //       backgroundColor: starYellow,
+  //       icon: Icons.edit,
+  //       onPressed: (con) {
+  //         Navigator.of(context).pushNamed(
+  //           Routes.EDIT_SHIPPING_OPTIONS,
+  //           arguments: <String, dynamic>{
+  //             'price': shippingModel.price,
+  //             'name': shippingModel.name,
+  //             'id': shippingModel.id,
+  //             'currency': shippingModel.currency,
+  //             'callback': onCallback,
+  //           },
+  //         );
+  //       },
+  //       label: AppLocalization.of(context)!.edit,
+  //     ),
+  //   ];
+  // }
 
   List<Widget> listActionSlideActions(
       {ShippingOptionsListModel? shippingModel}) {
     return [
       SlideActionButton(
         borderRadius: BorderRadius.circular(5),
+        padding: EdgeInsets.zero,
         backgroundColor: mateRed,
         icon: SlydoAppIcon.remove,
         onPressed: (con) {

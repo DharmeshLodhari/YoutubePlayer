@@ -52,6 +52,7 @@ class _ShareExperienceState extends State<ShareExperience> {
 
   PreferredSizeWidget _buildAppbar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       backgroundColor: whiteBackground,
       elevation: 0,
       leading: IconButton(

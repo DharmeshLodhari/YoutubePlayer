@@ -514,6 +514,7 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
 
   Widget _buildAppBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,

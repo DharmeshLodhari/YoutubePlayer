@@ -175,6 +175,7 @@ class _BlockedListState extends State<BlockedList>
     return [
       SlideActionButton(
         borderRadius: BorderRadius.circular(5),
+        padding: EdgeInsets.zero,
         backgroundColor: naturalGreen,
         icon: SlydoAppIcon.unblock,
         onPressed: (con) {

@@ -165,6 +165,7 @@ class _SearchGroupMemberState extends State<SearchGroupMember>
 
   Widget getAppBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,
@@ -359,6 +360,7 @@ class _SearchGroupMemberState extends State<SearchGroupMember>
       leftSwipeActions.add(
         SlideActionButton(
           borderRadius: BorderRadius.circular(5),
+          padding: EdgeInsets.zero,
           backgroundColor: mateRed,
           icon: SlydoAppIcon.remove,
           onPressed: (con) {
@@ -373,6 +375,7 @@ class _SearchGroupMemberState extends State<SearchGroupMember>
       leftSwipeActions.add(
         SlideActionButton(
           borderRadius: BorderRadius.circular(5),
+          padding: EdgeInsets.zero,
           backgroundColor: lightGrey,
           icon: SlydoAppIcon.block,
           iconColor: blackFont,
@@ -388,6 +391,7 @@ class _SearchGroupMemberState extends State<SearchGroupMember>
       leftSwipeActions.add(
         SlideActionButton(
           borderRadius: BorderRadius.circular(5),
+          padding: EdgeInsets.zero,
           backgroundColor: lightGrey,
           icon: SlydoAppIcon.mute,
           iconColor: blackFont,
@@ -403,6 +407,7 @@ class _SearchGroupMemberState extends State<SearchGroupMember>
       leftSwipeActions.add(
         SlideActionButton(
           borderRadius: BorderRadius.circular(5),
+          padding: EdgeInsets.zero,
           backgroundColor: lightGrey,
           icon: SlydoAppIcon.remove_admin,
           iconColor: blackFont,
@@ -451,6 +456,7 @@ class _SearchGroupMemberState extends State<SearchGroupMember>
     if (isMuted && isCurrentUserIsAdmin) {
       rightSwipeAction.add(SlideActionButton(
         borderRadius: BorderRadius.circular(5),
+        padding: EdgeInsets.zero,
         backgroundColor: lightGrey,
         icon: SlydoAppIcon.unmute,
         iconColor: blackFont,
@@ -465,6 +471,7 @@ class _SearchGroupMemberState extends State<SearchGroupMember>
       rightSwipeAction.add(
         SlideActionButton(
           borderRadius: BorderRadius.circular(5),
+          padding: EdgeInsets.zero,
           backgroundColor: lightGrey,
           icon: SlydoAppIcon.unblock,
           iconColor: blackFont,
@@ -480,6 +487,7 @@ class _SearchGroupMemberState extends State<SearchGroupMember>
       rightSwipeAction.add(
         SlideActionButton(
           borderRadius: BorderRadius.circular(5),
+          padding: EdgeInsets.zero,
           backgroundColor: naturalGreen,
           icon: SlydoAppIcon.make_admin,
           onPressed: (con) {

@@ -67,6 +67,7 @@ class _SelectCableProviderState extends State<SelectCableProvider> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       backgroundColor: Colors.transparent,
       automaticallyImplyLeading: false,
       elevation: 0,

@@ -92,6 +92,7 @@ class _PayoutTransactionsState extends State<PayoutTransactions> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       titleSpacing: 0,
       backgroundColor: Colors.white,

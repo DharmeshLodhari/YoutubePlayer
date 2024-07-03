@@ -74,6 +74,7 @@ class _RiderMapStatusState extends State<RiderMapStatus> {
 
   Widget _buildAppBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       backgroundColor: white,
       automaticallyImplyLeading: false,
       centerTitle: false,
@@ -154,7 +155,7 @@ class _RiderMapStatusState extends State<RiderMapStatus> {
       builder: (context, scrollController) => Container(
         clipBehavior: Clip.hardEdge,
         decoration: BoxDecoration(
-          color: Theme.of(context).canvasColor,
+          color: Colors.white,
           borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(25),
             topRight: Radius.circular(25),

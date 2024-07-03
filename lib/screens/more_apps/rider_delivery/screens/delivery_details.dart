@@ -114,6 +114,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
 
   Widget _buildAppBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       backgroundColor: white,
       title: Text(
         'Ride #${riderDeliveryBloc.deliveryDetails?.orderId ?? ""}',
@@ -190,9 +191,9 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
       builder: (BuildContext context, scrollController) {
         return Container(
           clipBehavior: Clip.hardEdge,
-          decoration: BoxDecoration(
-            color: Theme.of(context).canvasColor,
-            borderRadius: const BorderRadius.only(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
               topLeft: Radius.circular(25),
               topRight: Radius.circular(25),
             ),
@@ -214,9 +215,9 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
       builder: (context, scrollController) {
         return Container(
           clipBehavior: Clip.hardEdge,
-          decoration: BoxDecoration(
-            color: Theme.of(context).canvasColor,
-            borderRadius: const BorderRadius.only(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
               topLeft: Radius.circular(25),
               topRight: Radius.circular(25),
             ),
@@ -232,15 +233,15 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
 
   Widget _buildStarted() {
     return DraggableScrollableSheet(
-      initialChildSize: 0.35,
-      maxChildSize: 0.35,
+      initialChildSize: 0.45,
+      maxChildSize: 0.45,
       minChildSize: 0.15,
       builder: (context, scrollController) {
         return Container(
           clipBehavior: Clip.hardEdge,
-          decoration: BoxDecoration(
-            color: Theme.of(context).canvasColor,
-            borderRadius: const BorderRadius.only(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
               topLeft: Radius.circular(25),
               topRight: Radius.circular(25),
             ),
@@ -262,9 +263,9 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
       builder: (context, scrollController) {
         return Container(
           clipBehavior: Clip.hardEdge,
-          decoration: BoxDecoration(
-            color: Theme.of(context).canvasColor,
-            borderRadius: const BorderRadius.only(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
               topLeft: Radius.circular(25),
               topRight: Radius.circular(25),
             ),
@@ -286,9 +287,9 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
       builder: (context, scrollController) {
         return Container(
           clipBehavior: Clip.hardEdge,
-          decoration: BoxDecoration(
-            color: Theme.of(context).canvasColor,
-            borderRadius: const BorderRadius.only(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
               topLeft: Radius.circular(25),
               topRight: Radius.circular(25),
             ),

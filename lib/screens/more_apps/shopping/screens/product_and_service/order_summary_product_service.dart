@@ -168,7 +168,7 @@ class _OrderSummaryProductServiceState
                 basketBloc.productOrService.clear();
                 Navigator.of(context)
                     .popUntil(ModalRoute.withName(Routes.DASHBOARD));
-                Navigator.pushNamed(context, Routes.ORDERS_LIST);
+                Navigator.pushNamed(context, Routes.ORDER_LIST);
                 showToast(message: 'Order placed successfully');
               } else if (response.statusCode == 500) {
                 showToast(message: AppLocalization.of(context)?.serverError);
@@ -199,6 +199,7 @@ class _OrderSummaryProductServiceState
 
   AppBar appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       titleSpacing: 16,
       backgroundColor: Colors.white,

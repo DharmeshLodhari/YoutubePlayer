@@ -4,9 +4,12 @@ import 'dart:io';
 
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
+import 'package:Slydo/widget/dialog.dart';
+import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
@@ -146,11 +149,11 @@ class _EditShippingOptionsState extends State<EditShippingOptions> {
                   height: 20,
                 ),
                 if (isEdit == true) ...[
-                  getSubmitButton()
+                  getUpdateAndDeleteButton()
                 ] else if (amount == 0.0) ...[
                   const SizedBox()
                 ] else ...[
-                  getSubmitButton()
+                  getUpdateAndDeleteButton()
                 ],
                 const SizedBox(
                   height: 20,
@@ -165,6 +168,7 @@ class _EditShippingOptionsState extends State<EditShippingOptions> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       titleSpacing: 0,
       backgroundColor: Colors.white,
@@ -180,7 +184,7 @@ class _EditShippingOptionsState extends State<EditShippingOptions> {
       ),
       centerTitle: false,
       title: Text(
-        AppLocalization.of(context)!.modifyShippingOption,
+        AppLocalization.of(context)!.shipping,
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
@@ -254,13 +258,67 @@ class _EditShippingOptionsState extends State<EditShippingOptions> {
     );
   }
 
-  Widget getSubmitButton() {
-    return CurvedButton(
-      onPressed: onSubmit,
-      backgroundColor: navyBlue,
-      textColor: Colors.white,
-      text: AppLocalization.of(context)!.update,
+  Widget getUpdateAndDeleteButton() {
+    return Row(
+      children: [
+        Expanded(
+          child: CurvedButton(
+            onPressed: () {
+              showDeleteShippingOptionDialog();
+            },
+            backgroundColor: red,
+            textColor: Colors.white,
+            text: AppLocalization.of(context)!.delete,
+          ),
+        ),
+        const SizedBox(
+          width: 15,
+        ),
+        Expanded(
+          child: CurvedButton(
+            onPressed: onSubmit,
+            backgroundColor: navyBlue,
+            textColor: Colors.white,
+            text: AppLocalization.of(context)!.update,
+          ),
+        ),
+      ],
     );
+  }
+
+  void showDeleteShippingOptionDialog() {
+    showDialogBox(
+      context: context,
+      actionOneTextColor: blackFont,
+      actionOneBgColor: greyBorderColor,
+      actionTwoTextColor: white,
+      actionTwoBgColor: mateRed,
+      title: 'Delete Shipping Option',
+      actionOneText: AppLocalization.of(context)!.discard,
+      actionTwoText: AppLocalization.of(context)!.continueMsg,
+      description: 'Are you sure you want to delete this shipping option?',
+      roundedBackgroundIcon: RoundedBackgroundIcon(
+        enableMargin: false,
+        width: 90,
+        height: 90,
+        image: Image.asset('assets/images/delete_dialog_icon.png'),
+      ),
+      rightButtonOnPressed: () async {
+        deleteShippingOption();
+      },
+    );
+  }
+
+  void deleteShippingOption() async {
+    final int? shippingId = widget.arguments['id'];
+    final bool? data = await _auth.deleteShippingOption(shippingId!);
+    if (data != null && data) {
+      showToast(message: "Shipping Option Deleted Successfully");
+      Navigator.pop(context);
+      Navigator.of(context).pushNamed(Routes.SHIPPING_OPTIONS);
+    } else {
+      showToast(message: "Unable to Deleted Shipping Option");
+    }
   }
 
   void onSubmit() async {

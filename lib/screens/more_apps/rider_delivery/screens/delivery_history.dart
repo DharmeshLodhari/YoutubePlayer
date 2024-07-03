@@ -148,6 +148,7 @@ class _DeliveryHistoryState extends State<DeliveryHistory> {
 
   Widget _buildAppBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       backgroundColor: white,
       title: Text(
         'Delivery History',

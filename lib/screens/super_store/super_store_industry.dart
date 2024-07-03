@@ -66,6 +66,7 @@ class _SuperStoreState extends State<SuperStoreIndustry> {
 
   Widget _buildAppBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       backgroundColor: Colors.white,
       title: Text(
         widget.appTitle,

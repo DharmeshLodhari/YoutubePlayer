@@ -36,14 +36,22 @@ class ShippingProcessBloc extends ChangeNotifier {
   }
 
   bool? isAllShippingProcessCompleted() {
-    bool result = false;
+    bool result = true;
     for (int i = 0; i < _packagesList.length; i++) {
-      if (_packagesList[i].isShippingProcessCompleted == true) {
-        result = true;
+      if (_packagesList[i].isShippingProcessCompleted == false) {
+        result = false;
         break;
       }
     }
     return result;
+  }
+
+  int? getServiceCharge() {
+    int serviceCharge = 0;
+    for (int i = 0; i < _packagesList.length; i++) {
+      serviceCharge = _packagesList[i].customerServiceFee ?? 0;
+    }
+    return serviceCharge;
   }
 
   int? getTotalItemCost() {
@@ -65,14 +73,14 @@ class ShippingProcessBloc extends ChangeNotifier {
   int? getTotalOrder() {
     final int? totalItemCost = getTotalItemCost();
     final int? totalShipping = getTotalShipping();
-    final int? serviceCharge = getPackageDetailModel().customerServiceFee;
+    final int? serviceCharge = getServiceCharge();
     return (totalItemCost ?? 0) + (totalShipping ?? 0) + (serviceCharge ?? 0);
   }
 
   void updateDeliveryOption(String pickedDeliveryOption) {
     if (pickedDeliveryOption == "Shipping") {
       getPackageDetailModel().deliveryOption = DeliveryOptions.shipping;
-    } else if (pickedDeliveryOption == "Eatin") {
+    } else if (pickedDeliveryOption == "In Store/Eat In") {
       getPackageDetailModel().deliveryOption = DeliveryOptions.eatIn;
       updateShippingOption(null);
       getPackageDetailModel().updateDeliveryAddress(null);
@@ -129,10 +137,11 @@ class ShippingProcessBloc extends ChangeNotifier {
       "payment_type": "Slydo",
       "shipping_details": packagesList.map((e) => e.toCartPlaceOrder()).toList()
     };
-    if (isUseCart == false)
+    if (isUseCart == false) {
       data.addAll({
         "shopped_item": [getPackageDetailModel().toBuyNowPlaceOrder(userName)]
       });
+    }
     return data;
   }
 

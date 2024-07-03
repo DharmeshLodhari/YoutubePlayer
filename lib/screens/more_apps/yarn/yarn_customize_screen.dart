@@ -96,6 +96,7 @@ class _AskSCustomizeScreenState extends State<AskSCustomizeScreen> {
 
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
+        surfaceTintColor: Colors.transparent,
         backgroundColor: Colors.white,
         title: Text(
           'Customize your interest',

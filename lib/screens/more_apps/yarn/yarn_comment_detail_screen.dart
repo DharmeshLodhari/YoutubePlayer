@@ -79,6 +79,7 @@ class _YarnCommentDetailScreenState extends State<YarnCommentDetailScreen> {
 
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       backgroundColor: Colors.white,
       title: Text(
         "Comments",

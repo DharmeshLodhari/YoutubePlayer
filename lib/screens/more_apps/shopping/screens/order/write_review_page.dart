@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:Slydo/data/state_notifiers/user_bloc.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/review/review_auth.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
-import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/shopping/tiles/order_detail_item_tile_new.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
@@ -14,6 +14,7 @@ import 'package:Slydo/widget/image_crop.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 
 class WriteReviewPage extends StatefulWidget {
   const WriteReviewPage({super.key, required this.arguments});
@@ -27,41 +28,25 @@ class WriteReviewPage extends StatefulWidget {
 class _WriteReviewPageState extends State<WriteReviewPage> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
   late UserBloc userBloc;
-  bool isLoading = true;
-  final _auth = ShoppingAuthService();
   Order? order;
-  List<Map<String, dynamic>> items = [];
   TextEditingController reviewController = TextEditingController();
   String? croppedImage;
   int rating = 1;
+  int index = 0;
+  String? itemType;
+  bool isLoading = false;
 
   @override
   void initState() {
     order = widget.arguments['order'];
-    fetchOrder(order?.id.toString() ?? "");
+    index = widget.arguments['index'];
+    itemType = widget.arguments['type'];
     super.initState();
-  }
-
-  void fetchOrder(String orderId) async {
-    setState(() {
-      isLoading = true;
-    });
-    _auth.getOrder(orderId).then((value) {
-      if (value != null) {
-        debugPrint('VALUE :: $value');
-        if (mounted) {
-          setState(() {
-            order = value;
-            items = order?.items ?? [];
-            isLoading = false;
-          });
-        }
-      }
-    });
   }
 
   @override
   Widget build(BuildContext context) {
+    userBloc = Provider.of<UserBloc>(context);
     return PopScope(
       onPopInvoked: (didPop) async {
         if (didPop) {
@@ -70,13 +55,11 @@ class _WriteReviewPageState extends State<WriteReviewPage> {
       },
       child: Scaffold(
         key: scaffoldKey,
-        backgroundColor: lightGrey,
+        backgroundColor: Colors.white,
+        resizeToAvoidBottomInset: false,
         appBar: appBar() as PreferredSizeWidget?,
         body: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: _buildBody(),
-          ),
+          child: _buildBody(),
         ),
         floatingActionButton: floatingActionBar(),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
@@ -86,6 +69,7 @@ class _WriteReviewPageState extends State<WriteReviewPage> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       automaticallyImplyLeading: false,
@@ -114,59 +98,62 @@ class _WriteReviewPageState extends State<WriteReviewPage> {
   }
 
   Widget _buildBody() {
-    return isLoading
-        ? const Padding(
-            padding: EdgeInsets.symmetric(vertical: 24.0),
-            child: Center(
-              child: CircularProgressIndicator(),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 7),
+          child: Text(
+            "${order?.normalizeName(userBloc.user.userName) ?? ""} (${order?.orderItems?[0].qty} Items)",
+            style: TextStyle(
+              color: blackFont,
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              fontFamily: "Inter",
             ),
-          )
-        : ListView.builder(
-            physics: const NeverScrollableScrollPhysics(),
-            shrinkWrap: true,
-            // padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
-            itemCount: items.length,
-            itemBuilder: (BuildContext context, int index) => Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "${order?.customerName} (${items[index]["qty"]} Items)",
-                  style: TextStyle(
-                    color: darkGrey,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    fontFamily: "Inter",
+          ),
+        ),
+        Container(
+          margin: const EdgeInsets.symmetric(vertical: 3),
+          child: Divider(
+            color: lightBlue,
+            thickness: 0.5,
+          ),
+        ),
+        Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  getItemTileUi(index),
+                  const SizedBox(
+                    height: 10,
                   ),
-                ),
-                Container(
-                  margin: const EdgeInsets.symmetric(vertical: 3),
-                  child: Divider(
-                    color: greySecondaryYarn,
+                  _buildRating(),
+                  const SizedBox(
+                    height: 15,
                   ),
-                ),
-                getItemTileUi(index),
-                const SizedBox(
-                  height: 10,
-                ),
-                _buildRating(),
-                const SizedBox(
-                  height: 15,
-                ),
-                _buildReview(),
-                const SizedBox(
-                  height: 15,
-                ),
-                _buildPicture(),
-                Container(
-                  margin: const EdgeInsets.symmetric(vertical: 10),
-                  child: Divider(
-                    thickness: 5,
-                    color: greySecondaryYarn,
+                  _buildReview(),
+                  const SizedBox(
+                    height: 15,
                   ),
-                ),
-              ],
+                  _buildPicture(),
+                ],
+              ),
             ),
-          );
+            Container(
+              margin: const EdgeInsets.symmetric(vertical: 10),
+              child: Divider(
+                color: lightGrey,
+                thickness: 5,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
   }
 
   Widget _buildReview() {
@@ -177,7 +164,7 @@ class _WriteReviewPageState extends State<WriteReviewPage> {
           AppLocalization.of(context)!.review,
           style: TextStyle(
             fontSize: 14,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w600,
             color: blackFont,
             fontFamily: "Inter",
           ),
@@ -196,7 +183,7 @@ class _WriteReviewPageState extends State<WriteReviewPage> {
           'Picture (Optional)',
           style: TextStyle(
             fontSize: 14,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w600,
             color: blackFont,
             fontFamily: "Inter",
           ),
@@ -210,7 +197,7 @@ class _WriteReviewPageState extends State<WriteReviewPage> {
   Widget addImage() {
     return CustomBoxShadow(
       child: Card(
-        elevation: 2,
+        elevation: 0,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         shadowColor: boxShadowTwo,
         margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
@@ -329,6 +316,7 @@ class _WriteReviewPageState extends State<WriteReviewPage> {
     return TextField(
       controller: reviewController,
       maxLines: 5,
+      textInputAction: TextInputAction.done,
       decoration: InputDecoration(
         hintText:
             'Write a review to let other shoppers know what you think about this product.',
@@ -337,14 +325,14 @@ class _WriteReviewPageState extends State<WriteReviewPage> {
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10.0),
           borderSide: BorderSide(
-            color: greyBorderColor, // Border color
+            color: lightBlue, // Border color
             width: 1.0,
           ),
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10.0),
           borderSide: BorderSide(
-            color: greyBorderColor, // Border color
+            color: lightBlue, // Border color
             width: 1.0,
           ),
         ),
@@ -362,21 +350,24 @@ class _WriteReviewPageState extends State<WriteReviewPage> {
       style: TextStyle(
         fontSize: 12,
         fontWeight: FontWeight.w400,
-        color: darkGrey,
+        color: lightBlackFont,
         fontFamily: "Inter",
       ),
     );
   }
 
   Widget getItemTileUi(int index) {
-    if (items[index]["type"] == "product") {
+    if (itemType == 'isProduct') {
       return OrderTileForProductNew(
-        item: items[index],
+        order: order?.orderItems?[index],
       );
+    } else if (itemType == 'isService') {
+      return OrderTileForService(
+        order?.orderItems?[index],
+      );
+    } else {
+      return Container();
     }
-    return OrderTileForService(
-      items[index],
-    );
   }
 
   Widget _buildRating() {
@@ -387,8 +378,8 @@ class _WriteReviewPageState extends State<WriteReviewPage> {
           'How well does this item match its description ?',
           style: TextStyle(
             color: blackFont,
-            fontSize: 12,
-            fontWeight: FontWeight.w500,
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
             fontFamily: "Inter",
           ),
         ),
@@ -407,20 +398,52 @@ class _WriteReviewPageState extends State<WriteReviewPage> {
   }
 
   Widget floatingActionBar() {
+    final Map<String, dynamic> data = {
+      "text": reviewController.text,
+      "rating": rating,
+      "image": croppedImage,
+    };
+
     return Padding(
       padding: const EdgeInsets.all(20.0),
       child: CurvedButton(
         backgroundColor: navyBlue,
         textColor: Colors.white,
         text: "Submit Review",
-        onPressed: () {
-          // Navigator.of(context).pushNamed(
-          //   '/send-payment',
-          //   arguments: {
-          //     'isFromProfile': false,
-          //   },
-          // );
+        onPressed: () async {
+          isLoading = true;
+          if (mounted) setState(() {});
+          if (itemType == 'isProduct') {
+            final Product product = order?.orderItems?[index].item;
+            await ReviewAuth()
+                .addProductReview(product.id!, data)
+                .then((value) {
+              isLoading = false;
+              if (value == true) {
+                Navigator.pop(context, true);
+              }
+            }).catchError((error) {
+              isLoading = false;
+              if (mounted) setState(() {});
+              showToast(message: "$error");
+            });
+          } else if (itemType == 'isService') {
+            final Service service = order?.orderItems?[index].item;
+            await ReviewAuth()
+                .addServiceReview(service.id!, data)
+                .then((value) {
+              isLoading = false;
+              if (value == true) {
+                Navigator.pop(context, true);
+              }
+            }).catchError((error) {
+              isLoading = false;
+              if (mounted) setState(() {});
+              showToast(message: "$error");
+            });
+          }
         },
+        isLoading: isLoading,
       ),
     );
   }

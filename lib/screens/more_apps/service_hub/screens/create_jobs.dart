@@ -314,6 +314,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,
@@ -787,10 +788,12 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
         title: Text(
           locationState,
           style: TextStyle(
-              color: darkGrey.withOpacity(0.9),
-              fontSize: 16,
-              fontFamily: "Inter",
-              fontWeight: FontWeight.w600),
+            color: darkGrey.withOpacity(0.9),
+            fontSize: 16,
+            fontFamily: "Inter",
+            fontWeight: FontWeight.w600,
+          ),
+          maxLines: 1,
         ),
         trailing: Icon(
           Icons.keyboard_arrow_down,
@@ -1042,10 +1045,12 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
         title: Text(
           displayCategory != null ? displayCategory! : "select category",
           style: TextStyle(
-              color: darkGrey.withOpacity(0.9),
-              fontSize: 16,
-              fontFamily: "Inter",
-              fontWeight: FontWeight.w600),
+            color: darkGrey.withOpacity(0.9),
+            fontSize: 16,
+            fontFamily: "Inter",
+            fontWeight: FontWeight.w600,
+          ),
+          maxLines: 1,
         ),
         trailing: Icon(
           Icons.keyboard_arrow_down,
@@ -1642,6 +1647,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
               fontSize: 16,
               fontFamily: "Inter",
             ),
+            maxLines: 1,
           ),
           trailing: Icon(
             SlydoAppIcon.date,
@@ -1681,6 +1687,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
               fontSize: 16,
               fontFamily: "Inter",
             ),
+            maxLines: 1,
           ),
           trailing: Icon(
             SlydoAppIcon.date,

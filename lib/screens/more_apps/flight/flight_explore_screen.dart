@@ -46,6 +46,7 @@ class _FlightExploreScreenState extends State<FlightExploreScreen> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,
@@ -248,6 +249,7 @@ class _FlightExploreScreenState extends State<FlightExploreScreen> {
                     color: blackFont,
                     fontWeight: FontWeight.w600,
                     fontSize: 16,
+                    fontFamily: "Inter",
                   ),
                   overflow: TextOverflow.fade,
                   softWrap: false,
@@ -295,6 +297,7 @@ class _FlightExploreScreenState extends State<FlightExploreScreen> {
                       color: blackFont,
                       fontWeight: FontWeight.w600,
                       fontSize: 16,
+                      fontFamily: "Inter",
                     ),
                     overflow: TextOverflow.fade,
                     softWrap: false,

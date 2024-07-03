@@ -126,6 +126,7 @@ class _SharedCartPaymentState extends State<SharedCartPayment>
 
   Widget _buildAppBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       backgroundColor: white,
       automaticallyImplyLeading: false,
       centerTitle: false,
@@ -547,6 +548,7 @@ class _SharedCartPaymentState extends State<SharedCartPayment>
     return [
       SlideActionButton(
         borderRadius: BorderRadius.circular(5),
+        padding: EdgeInsets.zero,
         backgroundColor: naturalGreen,
         icon: SlydoAppIcon.true_icon,
         onPressed: (con) {
@@ -567,7 +569,7 @@ class _SharedCartPaymentState extends State<SharedCartPayment>
             BottomSheetPassCode(
                 context: context,
                 isValidCallback: () async {
-                  // await checkAccountBalance();
+                  await checkAccountBalance();
 
                   // Create the orders
                   await placeOrder();
@@ -602,6 +604,19 @@ class _SharedCartPaymentState extends State<SharedCartPayment>
       btnText = 'Request Payment';
     }
     return btnText;
+  }
+
+  Future<bool> checkAccountBalance() async {
+    final double accountBalance = await getAccountBalance();
+    debugPrint("accountBalance:- $accountBalance");
+    final double spendingAmount =
+        sharedCartBloc.getSharedCartModel().getTotalOfPercentage() / 100;
+    debugPrint("spendingAmount:- $spendingAmount");
+    if (spendingAmount > accountBalance) {
+      showToast(message: "You don't have enough money in Slydo account!!");
+      return false;
+    }
+    return true;
   }
 
   Future<void> placeOrder() async {

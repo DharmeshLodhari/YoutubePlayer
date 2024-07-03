@@ -77,6 +77,7 @@ class _CheckoutProductServiceState extends State<CheckoutProductService> {
 
   AppBar appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       titleSpacing: 16,
       backgroundColor: Colors.white,

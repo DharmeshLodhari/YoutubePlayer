@@ -3567,6 +3567,13 @@ class AppLocalization {
     );
   }
 
+  String get confirmDelivery {
+    return Intl.message(
+      "Confirm Delivery",
+      name: "confirmDelivery",
+    );
+  }
+
   String get areYouSureWantToPlaceThisOrderFor {
     return Intl.message(
       "Are You Sure Want To Place this Order For",
@@ -3617,6 +3624,13 @@ class AppLocalization {
     );
   }
 
+  String get shipped {
+    return Intl.message(
+      "Shipped",
+      name: "shipped",
+    );
+  }
+
   String get canceled {
     return Intl.message(
       "Canceled",
@@ -3628,6 +3642,13 @@ class AppLocalization {
     return Intl.message(
       "Completed",
       name: "completed",
+    );
+  }
+
+  String get orderPlaced {
+    return Intl.message(
+      "Order Placed",
+      name: "orderPlaced",
     );
   }
 
@@ -3692,6 +3713,13 @@ class AppLocalization {
     return Intl.message(
       "No Orders Present !!",
       name: "noOrdersPresent",
+    );
+  }
+
+  String get noOrdersToShow {
+    return Intl.message(
+      "No orders to show",
+      name: "noOrdersToShow",
     );
   }
 

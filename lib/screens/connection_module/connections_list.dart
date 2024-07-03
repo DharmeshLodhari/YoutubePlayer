@@ -13,7 +13,6 @@ import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/tiles/user_tile_for_connection.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/services/app_config_bloc.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -108,7 +107,7 @@ class _ConnectionListState extends State<ConnectionList>
   void getSearchedChatConnections() async {
     searchedChatConnection = await ConnectionListManager()
         .getSearchedConnectionsFromDB(
-            searchedText: searchChatConversation!.text.trim());
+            searchedText: searchChatConversation?.text.trim());
     if (mounted) setState(() {});
   }
 
@@ -231,25 +230,27 @@ class _ConnectionListState extends State<ConnectionList>
   }
 
   Widget getSearchedUserListUI() {
-    return searchedChatConnection.isEmpty
+    return noItemInList
         ? NoItemInList(
             msg: "No Result found",
             isResult: true,
           )
-        : SlidableAutoCloseBehavior(
-            closeWhenOpened: true,
-            child: ListView.builder(
-              shrinkWrap: true,
-              padding: const EdgeInsets.all(4),
-              //+1 for progressbar
-              itemCount: searchedChatConnection.length,
-              itemBuilder: (BuildContext context, int index) {
-                return _getSlidableWithLists(
-                    context, searchedChatConnection[index], index);
-              },
-              controller: _scrollController,
-            ),
-          );
+        : isLoading && searchedChatConnection.isEmpty
+            ? buildLoadingIndicator(isLoading: isLoading)
+            : SlidableAutoCloseBehavior(
+                closeWhenOpened: true,
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  padding: const EdgeInsets.all(4),
+                  //+1 for progressbar
+                  itemCount: searchedChatConnection.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return _getSlidableWithLists(
+                        context, searchedChatConnection[index], index);
+                  },
+                  controller: _scrollController,
+                ),
+              );
   }
 
   Widget getSearchTextField() {
@@ -287,56 +288,61 @@ class _ConnectionListState extends State<ConnectionList>
 
   Widget _buildConnectionsList() {
     try {
-      return _connectionListBloc.connectionUsers.isEmpty
+      return noItemInList
           ? NoItemInList(msg: noContactMsg, isResult: true)
-          : SlidableAutoCloseBehavior(
-              closeWhenOpened: true,
-              child: ListView.builder(
-                shrinkWrap: true,
-                // padding: EdgeInsets.symmetric(vertical: 4),
-                padding: const EdgeInsets.only(bottom: 80.0, left: 4, right: 4),
-                //+1 for progressbar
-                itemCount: getConnectionListItemCount(),
-                physics: const BouncingScrollPhysics(
-                    parent: AlwaysScrollableScrollPhysics()),
-                itemBuilder: (BuildContext context, int index) {
-                  final ChatConversation chatConversation =
-                      _connectionListBloc.connectionUsers[index];
+          : isLoading && _connectionListBloc.connectionUsers.isEmpty
+              ? buildLoadingIndicator(isLoading: isLoading)
+              : SlidableAutoCloseBehavior(
+                  closeWhenOpened: true,
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    // padding: EdgeInsets.symmetric(vertical: 4),
+                    padding:
+                        const EdgeInsets.only(bottom: 80.0, left: 4, right: 4),
+                    //+1 for progressbar
+                    itemCount: getConnectionListItemCount(),
+                    // physics: const BouncingScrollPhysics(
+                    //     parent: AlwaysScrollableScrollPhysics()),
+                    itemBuilder: (BuildContext context, int index) {
+                      final ChatConversation chatConversation =
+                          _connectionListBloc.connectionUsers[index];
 
-                  if (appConfigurationModel?.enableGroupChat == false) {
-                    if (chatConversation.isGroupConversation!) {
-                      return const SizedBox.shrink();
-                    }
-                  }
-                  return _getSlidableWithLists(context,
-                      _connectionListBloc.connectionUsers[index], index);
-                },
-                controller: _scrollController,
-              ),
-            );
+                      if (appConfigurationModel?.enableGroupChat == false) {
+                        if (chatConversation.isGroupConversation!) {
+                          return const SizedBox.shrink();
+                        }
+                      }
+                      return _getSlidableWithLists(context,
+                          _connectionListBloc.connectionUsers[index], index);
+                    },
+                    controller: _scrollController,
+                  ),
+                );
     } catch (error) {
       debugPrint("ERROR building list =>:- $error");
-      return _connectionListBloc.connectionUsers.isEmpty
+      return noItemInList
           ? NoItemInList(
               msg: noContactMsg,
               isResult: true,
             )
-          : SlidableAutoCloseBehavior(
-              closeWhenOpened: true,
-              child: ListView.builder(
-                shrinkWrap: true,
-                padding: const EdgeInsets.all(4),
-                //+1 for progressbar
-                itemCount: _connectionListBloc.connectionUsers.length,
-                // physics: const BouncingScrollPhysics(
-                //     parent: AlwaysScrollableScrollPhysics()),
-                itemBuilder: (BuildContext context, int index) {
-                  return _getSlidableWithLists(context,
-                      _connectionListBloc.connectionUsers[index], index);
-                },
-                controller: _scrollController,
-              ),
-            );
+          : isLoading && _connectionListBloc.connectionUsers.isEmpty
+              ? buildLoadingIndicator(isLoading: isLoading)
+              : SlidableAutoCloseBehavior(
+                  closeWhenOpened: true,
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    padding: const EdgeInsets.all(4),
+                    //+1 for progressbar
+                    itemCount: _connectionListBloc.connectionUsers.length,
+                    // physics: const BouncingScrollPhysics(
+                    //     parent: AlwaysScrollableScrollPhysics()),
+                    itemBuilder: (BuildContext context, int index) {
+                      return _getSlidableWithLists(context,
+                          _connectionListBloc.connectionUsers[index], index);
+                    },
+                    controller: _scrollController,
+                  ),
+                );
     }
   }
 
@@ -350,6 +356,7 @@ class _ConnectionListState extends State<ConnectionList>
         final Map<String, dynamic>? result =
             await UserAuth().contacts(next, previous);
         if (result == null) {
+          noItemInList = true;
           isLoading = false;
           return;
         }
@@ -372,6 +379,7 @@ class _ConnectionListState extends State<ConnectionList>
 
         connectionListBloc.setConnectionUsers(users: users);
 
+        noItemInList = false;
         isLoading = false;
         if (mounted) setState(() {});
 
@@ -422,10 +430,6 @@ class _ConnectionListState extends State<ConnectionList>
       ChatConversation chatConversation, int index) {
     final UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
 
-    if (chatConversation.userName.toString().toLowerCase() == 'slydo') {
-      return [];
-    }
-
     if (chatConversation.isGroupConversation!) {
       if (userBloc.user.userName == chatConversation.owner) {
         return [];
@@ -442,21 +446,22 @@ class _ConnectionListState extends State<ConnectionList>
           label: "Exit",
         ),
       ];
+    } else {
+      final CustomerProfile customerProfile =
+          CustomerProfile.fromChatConversation(chatConversation);
+
+      return [
+        SlideActionButton(
+          borderRadius: BorderRadius.circular(5),
+          backgroundColor: mateRed,
+          icon: SlydoAppIcon.remove_connection,
+          onPressed: (con) {
+            removeFromConnectionUserAlert(customerProfile, index);
+          },
+          label: AppLocalization.of(context)!.remove,
+        ),
+      ];
     }
-
-    final CustomerProfile customerProfile =
-        CustomerProfile.fromChatConversation(chatConversation);
-
-    return [
-      SlideActionButton(
-        backgroundColor: mateRed,
-        icon: SlydoAppIcon.remove_connection,
-        onPressed: (con) {
-          removeFromConnectionUserAlert(customerProfile, index);
-        },
-        label: AppLocalization.of(context)!.remove,
-      ),
-    ];
   }
 
   void blockUserAlert(CustomerProfile user) async {
@@ -597,7 +602,8 @@ class _ConnectionListState extends State<ConnectionList>
       key: Key(user.userName ?? ''),
       startActionPane: ActionPane(
         motion: const BehindMotion(),
-        extentRatio: 0.25,
+        extentRatio:
+            user.userName.toString().toLowerCase() == 'slydo' ? 0.0001 : 0.25,
         children: listActionSlideActions(user, index),
       ),
       endActionPane: ActionPane(

@@ -59,6 +59,7 @@ class _JobsMyJobsListState extends State<JobsMyJobsList> {
 
   AppBar appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       titleSpacing: 16,
       backgroundColor: Colors.white,

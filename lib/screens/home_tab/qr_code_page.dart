@@ -64,6 +64,7 @@ class _QrCodePageState extends State<QrCodePage> {
 
   AppBar appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,
@@ -110,7 +111,7 @@ class _QrCodePageState extends State<QrCodePage> {
     return SingleChildScrollView(
       child: Column(
         children: [
-          const SizedBox(height: 40),
+          const SizedBox(height: 15),
           Screenshot(
             controller: screenshotController,
             child: SizedBox(
@@ -134,7 +135,7 @@ class _QrCodePageState extends State<QrCodePage> {
               ),
             ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 15),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: List.generate(
@@ -260,27 +261,31 @@ class _QrCodePageState extends State<QrCodePage> {
               appendStringDot(virtualAccount!.financialInstitution!.name!, 25),
               maxLines: 1,
               style: TextStyle(
-                  fontSize: 16,
-                  color: HexColor("#151515"),
-                  fontWeight: FontWeight.w600),
-            )
-          else
-            const SizedBox.shrink(),
+                fontSize: 14,
+                color: HexColor("#151515"),
+                fontWeight: FontWeight.w500,
+                fontFamily: "Inter",
+              ),
+            ),
           Text(
             appendStringDot(virtualAccount!.accountNumber!, 15),
             maxLines: 1,
             style: TextStyle(
-                fontSize: 30,
-                color: HexColor("#151515"),
-                fontWeight: FontWeight.w700),
+              fontSize: 32,
+              color: HexColor("#151515"),
+              fontWeight: FontWeight.w600,
+              fontFamily: "Inter",
+            ),
           ),
           Text(
             appendStringDot(virtualAccount!.accountName!, 25),
             maxLines: 1,
             style: TextStyle(
-                fontSize: 16,
-                color: HexColor("#151515"),
-                fontWeight: FontWeight.w600),
+              fontSize: 16,
+              color: HexColor("#151515"),
+              fontWeight: FontWeight.w600,
+              fontFamily: "Inter",
+            ),
           ),
         ],
       ),
@@ -298,7 +303,7 @@ class _QrCodePageState extends State<QrCodePage> {
         decoration:
             decorateBox(borderRadius: 20, borderColor: HexColor("#F3F3F3")),
         child: Container(
-          margin: const EdgeInsets.all(13),
+          margin: const EdgeInsets.all(10),
           child: CustomPaint(
             painter: QrPainter(
                 data: getUserProfileLink(userBloc.user, searchedUser),
@@ -351,21 +356,31 @@ class _QrCodePageState extends State<QrCodePage> {
               appendStringDot(virtualAccount!.financialInstitution!.name!, 25),
               maxLines: 1,
               style: TextStyle(
-                  fontSize: 16, color: white, fontWeight: FontWeight.w600),
-            )
-          else
-            const SizedBox.shrink(),
+                fontSize: 14,
+                color: white,
+                fontWeight: FontWeight.w500,
+                fontFamily: "Inter",
+              ),
+            ),
           Text(
             appendStringDot(virtualAccount!.accountNumber!, 15),
             maxLines: 1,
             style: TextStyle(
-                fontSize: 30, color: white, fontWeight: FontWeight.w700),
+              fontSize: 32,
+              color: white,
+              fontWeight: FontWeight.w600,
+              fontFamily: "Inter",
+            ),
           ),
           Text(
             appendStringDot(virtualAccount!.accountName!, 25),
             maxLines: 1,
             style: TextStyle(
-                fontSize: 16, color: white, fontWeight: FontWeight.w600),
+              fontSize: 16,
+              color: white,
+              fontWeight: FontWeight.w600,
+              fontFamily: "Inter",
+            ),
           ),
         ],
       ),
@@ -380,9 +395,6 @@ class _QrCodePageState extends State<QrCodePage> {
       },
       child: Column(
         children: [
-          const SizedBox(
-            height: 10.0,
-          ),
           Text(
             appendStringDot(
                 virtualAccount == null
@@ -391,7 +403,11 @@ class _QrCodePageState extends State<QrCodePage> {
                 25),
             maxLines: 1,
             style: TextStyle(
-                fontSize: 14, color: white, fontWeight: FontWeight.w600),
+              fontSize: 16,
+              color: white,
+              fontWeight: FontWeight.w600,
+              fontFamily: "Inter",
+            ),
           ),
           // userNameWithVerifiedIcon(
           //   name: searchedUser == null ? '@${userBloc.user.userName}' : '@${searchedUser!.userName!}',
@@ -403,13 +419,17 @@ class _QrCodePageState extends State<QrCodePage> {
           //       fontWeight: FontWeight.w600),
           // ),
           const SizedBox(
-            height: 10.0,
+            height: 7.0,
           ),
           Text(
             "SCAN TO PAY",
             maxLines: 1,
             style: TextStyle(
-                fontSize: 22, color: white, fontWeight: FontWeight.w700),
+              fontSize: 20,
+              color: white,
+              fontWeight: FontWeight.w700,
+              fontFamily: "Inter",
+            ),
           ),
         ],
       ),
@@ -424,9 +444,6 @@ class _QrCodePageState extends State<QrCodePage> {
       },
       child: Column(
         children: [
-          const SizedBox(
-            height: 10.0,
-          ),
           Text(
             appendStringDot(
                 virtualAccount == null
@@ -435,20 +452,24 @@ class _QrCodePageState extends State<QrCodePage> {
                 25),
             maxLines: 1,
             style: TextStyle(
-                fontSize: 14,
-                color: HexColor("#151515"),
-                fontWeight: FontWeight.w600),
+              fontSize: 16,
+              color: HexColor("#151515"),
+              fontWeight: FontWeight.w600,
+              fontFamily: "Inter",
+            ),
           ),
           const SizedBox(
-            height: 10.0,
+            height: 7.0,
           ),
           Text(
             "SCAN TO PAY",
             maxLines: 1,
             style: TextStyle(
-                fontSize: 22,
-                color: HexColor("#151515"),
-                fontWeight: FontWeight.w700),
+              fontSize: 20,
+              color: HexColor("#151515"),
+              fontWeight: FontWeight.w700,
+              fontFamily: "Inter",
+            ),
           ),
         ],
       ),
@@ -457,19 +478,16 @@ class _QrCodePageState extends State<QrCodePage> {
 
   Widget _scanQrButtonWidget() {
     return Padding(
-      padding: const EdgeInsets.only(left: 25.0, right: 25.0),
-      child: SizedBox(
-        height: 50,
-        child: CurvedButton(
-          isPaymentBtn: true,
-          backgroundColor: navyBlue,
-          textColor: Colors.white,
-          text: "SCAN QR",
-          onPressed: () async {
-            Navigator.of(context)
-                .pushNamed(Routes.SCAN_QR, arguments: {'isRequest': false});
-          },
-        ),
+      padding: const EdgeInsets.symmetric(horizontal: 25.0),
+      child: CurvedButton(
+        isPaymentBtn: true,
+        backgroundColor: navyBlue,
+        textColor: Colors.white,
+        text: "SCAN QR",
+        onPressed: () async {
+          Navigator.of(context)
+              .pushNamed(Routes.SCAN_QR, arguments: {'isRequest': false});
+        },
       ),
     );
   }

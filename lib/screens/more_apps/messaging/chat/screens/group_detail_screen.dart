@@ -172,6 +172,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
 
   Widget getAppBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,
@@ -715,6 +716,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
       leftSwipeActions.add(
         SlideActionButton(
           borderRadius: BorderRadius.circular(5),
+          padding: EdgeInsets.zero,
           backgroundColor: mateRed,
           icon: SlydoAppIcon.remove,
           onPressed: (con) {
@@ -729,6 +731,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
       leftSwipeActions.add(
         SlideActionButton(
           borderRadius: BorderRadius.circular(5),
+          padding: EdgeInsets.zero,
           backgroundColor: lightGrey,
           icon: SlydoAppIcon.block,
           iconColor: blackFont,
@@ -744,6 +747,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
       leftSwipeActions.add(
         SlideActionButton(
           borderRadius: BorderRadius.circular(5),
+          padding: EdgeInsets.zero,
           backgroundColor: lightGrey,
           icon: SlydoAppIcon.mute,
           iconColor: blackFont,
@@ -759,6 +763,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
       leftSwipeActions.add(
         SlideActionButton(
           borderRadius: BorderRadius.circular(5),
+          padding: EdgeInsets.zero,
           backgroundColor: lightGrey,
           icon: SlydoAppIcon.remove_admin,
           iconColor: blackFont,
@@ -807,6 +812,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
     if (isMuted && isCurrentUserIsAdmin) {
       rightSwipeAction.add(SlideActionButton(
         borderRadius: BorderRadius.circular(5),
+        padding: EdgeInsets.zero,
         backgroundColor: lightGrey,
         icon: SlydoAppIcon.unmute,
         iconColor: blackFont,
@@ -821,6 +827,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
       rightSwipeAction.add(
         SlideActionButton(
           borderRadius: BorderRadius.circular(5),
+          padding: EdgeInsets.zero,
           backgroundColor: lightGrey,
           icon: SlydoAppIcon.unblock,
           iconColor: blackFont,
@@ -836,6 +843,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
       rightSwipeAction.add(
         SlideActionButton(
           borderRadius: BorderRadius.circular(5),
+          padding: EdgeInsets.zero,
           backgroundColor: naturalGreen,
           icon: SlydoAppIcon.make_admin,
           onPressed: (con) {

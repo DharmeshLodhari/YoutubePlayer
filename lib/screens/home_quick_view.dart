@@ -384,6 +384,7 @@ class _HomeQuickViewState extends State<HomeQuickView> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       titleSpacing: 16,
       backgroundColor: Colors.white,
@@ -602,7 +603,7 @@ class _HomeQuickViewState extends State<HomeQuickView> {
         );
         break;
       case ProtectionPermission.order:
-        Navigator.pushNamed(context, Routes.ORDER_LIST_NEW);
+        Navigator.pushNamed(context, Routes.ORDER_LIST);
         break;
       case ProtectionPermission.superStore:
         NavigationUtil.push(context, screen: const SuperStoreHome());

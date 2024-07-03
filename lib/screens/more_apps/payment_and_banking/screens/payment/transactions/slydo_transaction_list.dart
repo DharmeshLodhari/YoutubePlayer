@@ -352,6 +352,7 @@ class _SlydoTransactionListState extends State<SlydoTransactionList>
     return [
       SlideActionButton(
         borderRadius: BorderRadius.circular(5),
+        padding: EdgeInsets.zero,
         backgroundColor: naturalGreen,
         icon: SlydoAppIcon.send,
         onPressed: (con) async {
@@ -383,6 +384,7 @@ class _SlydoTransactionListState extends State<SlydoTransactionList>
     return [
       SlideActionButton(
         borderRadius: BorderRadius.circular(5),
+        padding: EdgeInsets.zero,
         backgroundColor: navyBlue,
         icon: SlydoAppIcon.receive,
         onPressed: (con) async {

@@ -336,7 +336,7 @@ class _DashboardState extends State<Dashboard> {
       });
     } else if (notification['type'].toString().contains("orders-list")) {
       Navigator.of(context).popUntil(ModalRoute.withName(Routes.DASHBOARD));
-      Navigator.of(context).pushNamed(Routes.ORDERS_LIST);
+      Navigator.of(context).pushNamed(Routes.ORDER_LIST);
     } else if (notification['type'].toString().contains("order-detail-page")) {
       final Order order = Order.fromJson(notification["data"] is String
           ? jsonDecode(notification["data"])

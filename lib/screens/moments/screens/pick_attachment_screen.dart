@@ -15,8 +15,7 @@ import '../../more_apps/user_post/user_post_auth.dart';
 
 class PickAttachmentScreen extends StatefulWidget {
   final AttachmentType attachmentType;
-  const PickAttachmentScreen({super.key, required this.attachmentType})
-     ;
+  const PickAttachmentScreen({super.key, required this.attachmentType});
 
   @override
   State<PickAttachmentScreen> createState() => _PickAttachmentScreenState();
@@ -158,6 +157,7 @@ class _PickAttachmentScreenState extends State<PickAttachmentScreen> {
 
   AppBar appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       titleSpacing: 0,
       backgroundColor: Colors.white,

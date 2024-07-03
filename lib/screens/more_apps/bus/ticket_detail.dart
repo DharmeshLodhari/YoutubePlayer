@@ -50,6 +50,7 @@ class _TicketDetailState extends State<TicketDetail> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,

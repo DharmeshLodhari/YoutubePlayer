@@ -214,6 +214,7 @@ class _SignUpState extends State<SignUp> {
 
   PreferredSizeWidget _buildAppbar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       backgroundColor: Colors.white,
       elevation: 0,
       leading: IconButton(
@@ -815,7 +816,9 @@ class _SignUpState extends State<SignUp> {
                   color: blackFont,
                   fontWeight: FontWeight.w600,
                   fontSize: 16,
+                  fontFamily: "Inter",
                 ),
+                maxLines: 1,
               ),
               trailing: Icon(
                 SlydoAppIcon.date,
@@ -1026,7 +1029,12 @@ class _SignUpState extends State<SignUp> {
         title: Text(
           gender != null ? gender! : "",
           style: TextStyle(
-              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+            color: blackFont,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            fontFamily: "Inter",
+          ),
+          maxLines: 1,
         ),
         trailing: Icon(
           Icons.keyboard_arrow_down,

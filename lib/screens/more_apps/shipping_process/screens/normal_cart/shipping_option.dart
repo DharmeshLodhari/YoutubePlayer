@@ -70,6 +70,7 @@ class _ShippingOptionState extends State<ShippingOption> {
 
   Widget _buildAppBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       backgroundColor: white,
       automaticallyImplyLeading: false,
       centerTitle: false,
@@ -134,7 +135,7 @@ class _ShippingOptionState extends State<ShippingOption> {
                       },
                       backgroundColor: navyBlue,
                       textColor: white,
-                      text: 'Save',
+                      text: 'Continue',
                     ),
                 ],
               )
@@ -142,8 +143,15 @@ class _ShippingOptionState extends State<ShippingOption> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Lottie.asset('assets/lottie/no_moment_lottie.json'),
-                    const SizedBox(height: 20),
+                    SizedBox(
+                      height: 150,
+                      width: 130,
+                      child: Lottie.asset('assets/lottie/no_moment_lottie.json',
+                          fit: BoxFit.fill),
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
                     const Text('No shippable items at the moment'),
                   ],
                 ),

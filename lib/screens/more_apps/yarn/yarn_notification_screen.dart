@@ -107,6 +107,7 @@ class _YarnNotificationState extends State<YarnNotification> {
 
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       backgroundColor: Colors.white,
       title: Text(
         "Notification",

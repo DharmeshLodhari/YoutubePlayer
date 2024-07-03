@@ -41,7 +41,7 @@ double getBgHeightOfAppBar(String bio, bool hasAddress, bool hasContact) {
     //   height = 340;
     // }
     // if (Platform.isAndroid) {
-    height = 350;
+    height = 300;
     // } else {
     //   height = 330;
     // }
@@ -54,7 +54,7 @@ double getBgHeightOfAppBar(String bio, bool hasAddress, bool hasContact) {
     //   height = 380;
     // }
     if (Platform.isAndroid) {
-      height = 360;
+      height = 370;
     } else {
       height = 340;
     }
@@ -67,7 +67,7 @@ double getBgHeightOfAppBar(String bio, bool hasAddress, bool hasContact) {
     //   height = 400;
     // }
     if (Platform.isAndroid) {
-      height = 380;
+      height = 390;
     } else {
       height = 360;
     }
@@ -80,7 +80,7 @@ double getBgHeightOfAppBar(String bio, bool hasAddress, bool hasContact) {
     //   height = 460;
     // }
     if (Platform.isAndroid) {
-      height = 400;
+      height = 420;
     } else {
       height = 390;
     }

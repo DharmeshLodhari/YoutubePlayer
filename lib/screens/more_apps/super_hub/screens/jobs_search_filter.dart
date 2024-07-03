@@ -95,6 +95,7 @@ class _JobsSearchFilterState extends State<JobsSearchFilter> {
 
   AppBar appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       titleSpacing: 16,
       backgroundColor: Colors.white,

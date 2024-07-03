@@ -279,6 +279,7 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       titleSpacing: 20,
       backgroundColor: Colors.white,
@@ -359,7 +360,7 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
             softWrap: false,
           ),
           trailing: SizedBox(
-            width: 45,
+            width: 40,
             height: 30,
             child: FittedBox(
               fit: BoxFit.fill,
@@ -577,7 +578,7 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
             softWrap: false,
           ),
           trailing: SizedBox(
-            width: 45,
+            width: 40,
             height: 30,
             child: FittedBox(
               fit: BoxFit.fill,
@@ -629,7 +630,7 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
             softWrap: false,
           ),
           trailing: SizedBox(
-            width: 45,
+            width: 40,
             height: 30,
             child: FittedBox(
               fit: BoxFit.fill,

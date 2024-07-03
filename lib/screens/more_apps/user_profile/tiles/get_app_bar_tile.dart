@@ -376,6 +376,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
       right: 0,
       child: Column(
         mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
@@ -435,7 +436,6 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
               ),
             ],
           ),
-          const SizedBox(height: 12),
           getUserBioStringWidget(),
           Row(
             children: [
@@ -502,6 +502,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
       right: 0,
       child: Column(
         mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
@@ -595,7 +596,8 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
                   Align(
                     alignment: Alignment.centerLeft,
                     child: userNameWithVerifiedIcon(
-                        name: "@${searchedUser?.userName ?? ''}",
+                        name: messageDecoderWithEmoji(
+                            "@${searchedUser?.userName}"),
                         isVerified: searchedUser?.isVerified,
                         textStyle: TextStyle(
                           fontSize: 12,
@@ -619,10 +621,9 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
               ),
             ],
           ),
-          const SizedBox(height: 12),
           getUserBioStringWidget(),
           getJoinedDate(),
-          const SizedBox(height: 12),
+          const SizedBox(height: 10),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -971,8 +972,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
                   style:
                       TextStyle(color: blackFont, fontWeight: FontWeight.bold),
                 ),
-                const SizedBox(width: 2),
-                const Text('Following'),
+                const Text(' Following'),
               ],
             ),
           ),
@@ -997,9 +997,10 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
                   style:
                       TextStyle(color: blackFont, fontWeight: FontWeight.bold),
                 ),
-                const SizedBox(width: 2),
                 Text(
-                  (searchedUser?.followers ?? 0) > 1 ? 'Followers' : 'Follower',
+                  (searchedUser?.followers ?? 0) > 1
+                      ? ' Followers'
+                      : ' Follower',
                 ),
               ],
             ),
@@ -1011,39 +1012,36 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
   }
 
   Widget getUserBioStringWidget() {
-    if (searchedUser?.bio == null) {
+    if (searchedUser?.bio == null || searchedUser?.bio == "") {
       return const SizedBox.shrink();
     } else {
-      return Container(
-        margin: const EdgeInsets.only(right: 6),
-        width: MediaQuery.of(context).size.width,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            YarnSmartText(
-              text: messageDecoderWithEmoji(searchedUser?.bio)!,
-              style: TextStyle(
-                  color: blackFont, fontSize: 14, fontFamily: "OpenSans"),
-              maxLines: 6,
-              disableAt: false,
-              onTagClick: (tag) {
-                NavigationUtil.push(context,
-                    screen: SearchScreen(searchText: tag.trim()));
-              },
-              onUrlClicked: (open) {
-                // launch  url
-                launchUrl(Uri.parse(open.toString()));
-              },
-              onAtClick: (at) {
-                Navigator.pushNamed(context, Routes.USER_PROFILE, arguments: {
-                  "searchedUserName": at.replaceAll(RegExp('@'), '').trim()
-                });
-              },
-            ),
-            const SizedBox(height: 8),
-          ],
-        ),
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 10),
+          YarnSmartText(
+            text: messageDecoderWithEmoji(searchedUser?.bio)!,
+            style: TextStyle(
+                color: blackFont, fontSize: 14, fontFamily: "OpenSans"),
+            maxLines: 6,
+            disableAt: false,
+            onTagClick: (tag) {
+              NavigationUtil.push(context,
+                  screen: SearchScreen(searchText: tag.trim()));
+            },
+            onUrlClicked: (open) {
+              // launch  url
+              launchUrl(Uri.parse(open.toString()));
+            },
+            onAtClick: (at) {
+              Navigator.pushNamed(context, Routes.USER_PROFILE, arguments: {
+                "searchedUserName": at.replaceAll(RegExp('@'), '').trim()
+              });
+            },
+          ),
+          const SizedBox(height: 8),
+        ],
       );
     }
   }
@@ -1282,12 +1280,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
   }
 
   Widget getAddConnectionBtn() {
-    return Row(
-      children: [
-        getAddConnectionIcon(),
-        const SizedBox(width: 8),
-      ],
-    );
+    return getAddConnectionIcon();
   }
 
   Widget getAddConnectionIcon() {

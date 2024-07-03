@@ -80,6 +80,7 @@ class _CreateAddOnState extends State<CreateAddOn> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,
@@ -467,6 +468,7 @@ class _CreateAddOnState extends State<CreateAddOn> {
         : SizedBox(
             height: 80 * productAddOnOptionList.length.toDouble(),
             child: ListView.builder(
+              physics: const NeverScrollableScrollPhysics(),
               padding: const EdgeInsets.symmetric(vertical: 16),
               //+1 for progressbar
               itemCount: productAddOnOptionList.length + 1,

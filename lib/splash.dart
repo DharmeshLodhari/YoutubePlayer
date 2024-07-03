@@ -3,8 +3,6 @@ import 'dart:async';
 import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/state_notifiers/shared_cart_bloc.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_message_settings.dart';
-import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
-import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/SecureUser.dart';
@@ -89,7 +87,7 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   Timer startTime() {
-    const _duration = Duration(seconds: 1);
+    const _duration = Duration(milliseconds: 1500);
     return Timer.periodic(_duration, (timer) {
       navigationPage();
     });
@@ -98,7 +96,7 @@ class _SplashScreenState extends State<SplashScreen>
   void navigationPage() {
     debugPrint(
         "isUserFound => $isUserFound playerController.value.isPlaying => ${playerController!.value.isPlaying}");
-    if (isUserFound != null && playerController!.value.isPlaying == false) {
+    if (isUserFound != null && playerController?.value.isPlaying == false) {
       playerController!.setVolume(0.0);
       playerController!.removeListener(listener);
       if (isUserFound == true) {
@@ -109,6 +107,7 @@ class _SplashScreenState extends State<SplashScreen>
           (Route<dynamic> route) => false,
         );
       } else {
+        if (timer != null) timer?.cancel();
         Navigator.of(MyGlobals().navigationKey.currentContext!)
             .pushReplacementNamed("/index");
       }
@@ -256,7 +255,7 @@ class _SplashScreenState extends State<SplashScreen>
                   'Slydo',
                   style: TextStyle(color: navyBlue),
                 ),
-                backgroundColor: Colors.white,
+                backgroundColor: lightGrey,
                 elevation: 0.0,
                 automaticallyImplyLeading: false,
               ),
@@ -350,57 +349,58 @@ class _SplashScreenState extends State<SplashScreen>
         if (user != null) {
           errorText += "User:- ${user.toJson()}\n";
 
-          List<BankAccount>? accounts;
+          // List<BankAccount>? accounts;
+          //
+          // try {
+          //   accounts = await PaymentAndBankingAuth().getBankAccounts();
+          // } catch (e) {
+          //   errorText += "ERROR while fetching ACCOUNTS:- $e\n";
+          //   accounts = [];
+          //   // isUserFound = false;
+          //   // CacheManager().deleteCache(clearAll: true);
+          //   // return;
+          // }
+          //
+          // // if (accounts.isNotEmpty) {
+          // errorText += "accounts:- ${accounts.length}\n";
+          // for (var element in accounts) {
+          //   errorText +=
+          //       "element:- ${element.accountName} ${element.isDefault} \n";
+          // }
+          //
+          // if (accounts.isNotEmpty) {
+          //   bankAccountBloc.bankAccount = accounts.first;
+          // }
+
+          userBloc.user = user;
+
+          /// get User's YARN Setting
+          getUserYarnSetting();
+
+          /// get user settings from DB
+          final Map<String, dynamic> settings =
+              await DatabaseHelper().getGeneralSettings();
+          final ChatMessageSettings chatMessageSettings =
+              ChatMessageSettings.fromDBJson(settings);
+          userBloc.chatMessageSettings = chatMessageSettings;
 
           try {
-            accounts = await PaymentAndBankingAuth().getBankAccounts();
-          } catch (e) {
-            errorText += "ERROR while fetching ACCOUNTS:- $e\n";
-            isUserFound = false;
-            CacheManager().deleteCache(clearAll: true);
-            return;
+            socketProvider.setCurrentUser(user);
+          } catch (error) {
+            debugPrint("ERROR:- $error");
           }
 
-          if (accounts.isNotEmpty) {
-            errorText += "accounts:- ${accounts.length}\n";
-            for (var element in accounts) {
-              errorText +=
-                  "element:- ${element.accountName} ${element.isDefault} \n";
-            }
+          setState(() {});
 
-            if (accounts.isNotEmpty) {
-              bankAccountBloc.bankAccount = accounts.first;
-            }
+          await initializeShoppingCart();
 
-            userBloc.user = user;
+          setState(() {});
 
-            /// get User's YARN Setting
-            getUserYarnSetting();
-
-            /// get user settings from DB
-            final Map<String, dynamic> settings =
-                await DatabaseHelper().getGeneralSettings();
-            final ChatMessageSettings chatMessageSettings =
-                ChatMessageSettings.fromDBJson(settings);
-            userBloc.chatMessageSettings = chatMessageSettings;
-
-            try {
-              socketProvider.setCurrentUser(user);
-            } catch (error) {
-              debugPrint("ERROR:- $error");
-            }
-
-            setState(() {});
-
-            await initializeShoppingCart();
-
-            setState(() {});
-
-            isUserFound = true;
-            return;
-          } else {
-            errorText += "accounts not found\n";
-          }
+          isUserFound = true;
+          return;
+          // } else {
+          //   errorText += "accounts not found\n";
+          // }
         } else {
           errorText += "User not found\n";
         }

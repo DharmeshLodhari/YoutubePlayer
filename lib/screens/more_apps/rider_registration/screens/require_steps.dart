@@ -115,6 +115,7 @@ class _RequireStepsState extends State<RequireSteps> {
 
   Widget _buildAppBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       backgroundColor: white,
       title: Text(
         'Rider Registration',

@@ -109,13 +109,14 @@ class _YarnDashboardState extends State<YarnDashboard> {
     return Scaffold(
       backgroundColor: lightGrey,
       floatingActionButton: _buildFloatingActionButton(),
-      appBar: _buildAppBar() as PreferredSizeWidget,
+      appBar: _buildAppBar() as PreferredSizeWidget?,
       body: _buildBody(),
     );
   }
 
   Widget _buildAppBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       backgroundColor: Colors.white,
       title: Text(
         'Yarn',

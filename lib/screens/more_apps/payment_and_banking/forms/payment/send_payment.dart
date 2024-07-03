@@ -50,6 +50,7 @@ class _SendPaymentState extends State<SendPayment> {
 
   Widget _buildAppBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 10,

@@ -29,66 +29,70 @@ class PayoutTile extends StatelessWidget {
         elevation: 0,
         child: Container(
           decoration: decorateBox(),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 1),
-            child: ListTile(
-              dense: true,
-              leading: getLeading(),
-              title: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  getBankName(),
-                  const SizedBox(
-                    height: 2.0,
-                  ),
-                  getAccountName(),
-                ],
+          padding: const EdgeInsets.all(12),
+          child: Row(
+            children: [
+              checkBankImage(),
+              const SizedBox(
+                width: 12,
               ),
-              subtitle: getMaskedAccountNumber(),
-              trailing: SingleChildScrollView(
+              Expanded(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        Text(
-                          worldCurrencies[payout!.currency!]!,
-                          style: TextStyle(
-                              fontFamily: "Inter",
-                              color: getStatusColor(payout!.status),
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14),
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        getBankName(),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            Text(
+                              worldCurrencies[payout!.currency!]!,
+                              style: TextStyle(
+                                  fontFamily: "Inter",
+                                  color: getStatusColor(payout!.status),
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14),
+                            ),
+                            Text(
+                              moneyDisplayNormalizer(payout!.amount),
+                              style: TextStyle(
+                                  color: getStatusColor(payout!.status),
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14),
+                            )
+                          ],
                         ),
-                        Text(
-                          moneyDisplayNormalizer(payout!.amount),
-                          style: TextStyle(
-                              color: getStatusColor(payout!.status),
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14),
-                        )
                       ],
                     ),
                     const SizedBox(
-                      height: 2.0,
+                      height: 5,
                     ),
-                    getPayoutStatus(),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        getAccountName(),
+                        getPayoutStatus(),
+                      ],
+                    ),
                     const SizedBox(
-                      height: 2.0,
+                      height: 5,
                     ),
-                    getDateTime(context),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        getMaskedAccountNumber(),
+                        getDateTime(context),
+                      ],
+                    ),
                   ],
                 ),
               ),
-            ),
+            ],
           ),
         ),
       ),
     );
-  }
-
-  Widget getLeading() {
-    return checkBankImage();
   }
 
   Color getStatusColor(String? status) {

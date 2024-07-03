@@ -106,6 +106,7 @@ class _BankAccountListState extends State<BankAccountList>
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       titleSpacing: 0,
       backgroundColor: Colors.white,
@@ -371,6 +372,7 @@ class _BankAccountListState extends State<BankAccountList>
     return [
       SlideActionButton(
         borderRadius: BorderRadius.circular(5),
+        padding: EdgeInsets.zero,
         backgroundColor: naturalGreen,
         icon: Icons.device_hub,
         onPressed: account.isDefault!
@@ -393,6 +395,7 @@ class _BankAccountListState extends State<BankAccountList>
     return [
       SlideActionButton(
         borderRadius: BorderRadius.circular(5),
+        padding: EdgeInsets.zero,
         backgroundColor: mateRed,
         icon: SlydoAppIcon.remove,
         onPressed: (con) {

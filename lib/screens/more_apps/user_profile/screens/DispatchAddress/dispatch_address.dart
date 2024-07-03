@@ -334,6 +334,7 @@ class _DispatchAddressState extends State<DispatchAddress> {
 
   Widget _buildAppBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       backgroundColor: Colors.white,
       title: Text(
         'Dispatch Address',

@@ -339,10 +339,12 @@ class _JobsSearchFilterState extends State<JobsSearchFilter> {
         title: Text(
           displayCategory != null ? displayCategory! : "",
           style: TextStyle(
-              color: blackFont,
-              fontSize: 16,
-              fontFamily: "Inter",
-              fontWeight: FontWeight.w600),
+            color: blackFont,
+            fontSize: 16,
+            fontFamily: "Inter",
+            fontWeight: FontWeight.w600,
+          ),
+          maxLines: 1,
         ),
         trailing: Icon(
           Icons.keyboard_arrow_down,
@@ -481,10 +483,12 @@ class _JobsSearchFilterState extends State<JobsSearchFilter> {
         title: Text(
           "",
           style: TextStyle(
-              color: blackFont,
-              fontSize: 16,
-              fontFamily: "Inter",
-              fontWeight: FontWeight.w600),
+            color: blackFont,
+            fontSize: 16,
+            fontFamily: "Inter",
+            fontWeight: FontWeight.w600,
+          ),
+          maxLines: 1,
         ),
         trailing: Icon(
           Icons.keyboard_arrow_down,
@@ -673,6 +677,7 @@ class _JobsSearchFilterState extends State<JobsSearchFilter> {
 
   AppBar appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       titleSpacing: 16,
       backgroundColor: Colors.white,

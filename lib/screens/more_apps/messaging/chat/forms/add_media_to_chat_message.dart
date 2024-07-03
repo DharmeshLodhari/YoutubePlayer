@@ -316,7 +316,7 @@ class _AddMediaToChatMessageState extends State<AddMediaToChatMessage> {
     data['read_by_author'] = true;
     data['created_at'] = DateTime.now().toUtc().toString();
     data['type'] = "chatroom_message";
-    data.addAll(data!);
+    data.addAll(data);
 
     showDialog(
         context: context,

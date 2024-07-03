@@ -137,6 +137,7 @@ class _UpdateGroupNameAndProfileState extends State<UpdateGroupNameAndProfile> {
 
   Widget getAppBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,

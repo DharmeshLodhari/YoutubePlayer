@@ -644,6 +644,7 @@ class _EditJobState extends State<EditJob> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,
@@ -1660,10 +1661,12 @@ class _EditJobState extends State<EditJob> {
         title: Text(
           locationState!,
           style: TextStyle(
-              color: darkGrey.withOpacity(0.9),
-              fontSize: 16,
-              fontFamily: "Inter",
-              fontWeight: FontWeight.w600),
+            color: darkGrey.withOpacity(0.9),
+            fontSize: 16,
+            fontFamily: "Inter",
+            fontWeight: FontWeight.w600,
+          ),
+          maxLines: 1,
         ),
         trailing: Icon(
           Icons.keyboard_arrow_down,
@@ -1712,10 +1715,12 @@ class _EditJobState extends State<EditJob> {
         title: Text(
           selectedCategoryName != null ? selectedCategoryName! : "",
           style: TextStyle(
-              color: blackFont,
-              fontSize: 16,
-              fontFamily: "Inter",
-              fontWeight: FontWeight.w600),
+            color: blackFont,
+            fontSize: 16,
+            fontFamily: "Inter",
+            fontWeight: FontWeight.w600,
+          ),
+          maxLines: 1,
         ),
         trailing: Icon(
           Icons.keyboard_arrow_down,

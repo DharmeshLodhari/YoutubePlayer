@@ -44,6 +44,7 @@ class _RiderEarningWeeklyListState extends State<RiderEarningWeeklyList> {
 
   Widget _buildAppBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       backgroundColor: white,
       title: Text(
         'Earnings',

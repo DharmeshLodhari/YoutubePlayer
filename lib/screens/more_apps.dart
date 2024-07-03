@@ -170,6 +170,7 @@ class _MoreAppsState extends State<MoreApps> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       backgroundColor: Colors.transparent,
       automaticallyImplyLeading: false,
       elevation: 0,

@@ -104,7 +104,7 @@ class _OrderStatusUpdatedState extends State<OrderStatusUpdated> {
       padding: const EdgeInsets.all(10.0),
       child: CurvedButton(
         onPressed: () {
-          Navigator.popAndPushNamed(context, Routes.ORDER_LIST_NEW);
+          Navigator.popAndPushNamed(context, Routes.ORDER_LIST);
         },
         backgroundColor: navyBlue,
         textColor: white,

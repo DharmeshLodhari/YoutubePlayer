@@ -217,7 +217,12 @@ class _ChooseSubscriptionState extends State<ChooseSubscription> {
         title: Text(
           selectedAccountType != null ? selectedAccountType! : "",
           style: TextStyle(
-              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+            color: blackFont,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            fontFamily: "Inter",
+          ),
+          maxLines: 1,
         ),
         trailing: Icon(
           Icons.keyboard_arrow_down,

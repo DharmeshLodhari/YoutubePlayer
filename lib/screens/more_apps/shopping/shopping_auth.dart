@@ -25,6 +25,8 @@ class ShoppingAuthService extends AuthService {
   Future<Map<String, dynamic>?> getProductListForSuperStore(
       String? next, String? previous,
       {String userName = "black",
+      String? categoryId,
+      String? industryId,
       bool todaysDeal = false,
       bool otherDeals = false}) async {
     String url = "";
@@ -33,9 +35,11 @@ class ShoppingAuthService extends AuthService {
     }
     if (next == "") {
       if (todaysDeal == true) {
-        url = "${AppConfig.baseUrl}/api/v1/products/?today_deals=true";
+        url =
+            "${AppConfig.baseUrl}/api/v1/products/?today_deals=true&industry=$industryId";
       } else if (otherDeals == true) {
-        url = "${AppConfig.baseUrl}/api/v1/products/?other_deals=true";
+        url =
+            "${AppConfig.baseUrl}/api/v1/products/?other_deals=true&industry=$industryId";
       } else {
         url = "${AppConfig.baseUrl}/api/v1/products/by-seller/$userName/";
       }
@@ -1603,6 +1607,13 @@ class ShoppingAuthService extends AuthService {
         "${AppConfig.baseUrl}/api/v1/order/$orderId/update-status/";
     final headers = await getAuthHeaders();
     final response = await httpPatch(url, headers: headers, body: data0);
+
+    try {
+      handleServerErrors(response);
+    } catch (e) {
+      return Future.error(response.body);
+    }
+
     if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     }
@@ -1626,7 +1637,15 @@ class ShoppingAuthService extends AuthService {
   Future<dynamic> listOrders(String? next, String? previous, String filterValue,
       DateTimeRange? dateTimeRange,
       {required bool isMerchant}) async {
+    final List<String> shippedStatus = [
+      "Out For Delivery",
+      "Order Picked Up",
+      "Rider In Delivery Location",
+      "Order Arrived",
+      "Rider Picked Up Order"
+    ];
     String url = "";
+
     if (next == null) {
       return null;
     }
@@ -1637,6 +1656,16 @@ class ShoppingAuthService extends AuthService {
       url = "$url?merchant=$isMerchant";
 
       if (filterValue != "") {
+        if (filterValue == "New Order") {
+          filterValue = 'New Order&status=Payment Successful';
+        }
+        if (filterValue == "Completed") {
+          filterValue = 'Complete';
+        }
+        if (shippedStatus.contains(filterValue) == true) {
+          filterValue =
+              "Out For Delivery&status=Order Picked Up&status=Rider In Delivery Location&status=Order Arrived&status=Rider Picked Up Order";
+        }
         url = "$url&status=$filterValue";
       }
       if (dateTimeRange != null) {
@@ -1659,11 +1688,11 @@ class ShoppingAuthService extends AuthService {
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
 
-    try {
-      handleServerErrors(response);
-    } catch (e) {
-      return Future.error(response.body);
-    }
+    // try {
+    //   handleServerErrors(response);
+    // } catch (e) {
+    //   return Future.error(response.body);
+    // }
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       final jsonData = json.decode(response.body);
@@ -1681,8 +1710,9 @@ class ShoppingAuthService extends AuthService {
     } else if (response.statusCode == 500) {
       throw "Server Error";
     } else {
-      debugPrint("STATUS CODE:- ${response.statusCode} ");
-      throw json.decode(response.body);
+      return null;
+      // debugPrint("STATUS CODE:- ${response.statusCode} ");
+      // throw json.decode(response.body);
     }
   }
 

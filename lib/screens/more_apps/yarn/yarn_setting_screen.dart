@@ -42,6 +42,7 @@ class _YarnSettingsScreenState extends State<YarnSettingsScreen> {
 
   Widget _buildAppBar({required BuildContext context}) {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       backgroundColor: Colors.white,
       elevation: 0,
       leading: InkWell(
@@ -126,7 +127,7 @@ class _YarnSettingsScreenState extends State<YarnSettingsScreen> {
             ),
           ),
           trailing: SizedBox(
-            width: 45,
+            width: 40,
             height: 30,
             child: FittedBox(
               fit: BoxFit.fill,
@@ -173,7 +174,7 @@ class _YarnSettingsScreenState extends State<YarnSettingsScreen> {
             ),
           ),
           trailing: SizedBox(
-            width: 45,
+            width: 40,
             height: 30,
             child: FittedBox(
               fit: BoxFit.fill,
@@ -219,7 +220,7 @@ class _YarnSettingsScreenState extends State<YarnSettingsScreen> {
             ),
           ),
           trailing: SizedBox(
-            width: 45,
+            width: 40,
             height: 30,
             child: FittedBox(
               fit: BoxFit.fill,

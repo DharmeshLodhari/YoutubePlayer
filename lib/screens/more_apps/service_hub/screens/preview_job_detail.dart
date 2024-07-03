@@ -283,10 +283,9 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
             shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
             jobModel: job,
             callback: (params) async {
-              params
-                .attachment = {
-                  "job": job?.toJson().cast<String, dynamic>() ?? {},
-                };
+              params.attachment = {
+                "job": job?.toJson().cast<String, dynamic>() ?? {},
+              };
               final bool data =
                   await YarnAuth().addYarnAndQuestion(params, '', '');
               if (data) {
@@ -1288,6 +1287,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
 
   AppBar appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       titleSpacing: 16,
       backgroundColor: Colors.white,

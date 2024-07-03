@@ -74,6 +74,7 @@ class _AddEditFlashTagAlertState extends State<AddEditFlashTagAlert> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0.5,
       backgroundColor: Colors.white,
       titleSpacing: 0,
@@ -171,7 +172,12 @@ class _AddEditFlashTagAlertState extends State<AddEditFlashTagAlert> {
         title: Text(
           flashTagAlertModel.type?.toString() ?? "",
           style: TextStyle(
-              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+            color: blackFont,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            fontFamily: "Inter",
+          ),
+          maxLines: 1,
         ),
         trailing: Icon(
           Icons.keyboard_arrow_down,
@@ -188,7 +194,7 @@ class _AddEditFlashTagAlertState extends State<AddEditFlashTagAlert> {
     final pressedCategory = await showDialog<FlashTagCategory>(
         context: context,
         builder: (context) => AlertDialog(
-      backgroundColor: Colors.white,
+              backgroundColor: Colors.white,
               insetPadding:
                   const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,
@@ -413,18 +419,39 @@ class _AddEditFlashTagAlertState extends State<AddEditFlashTagAlert> {
   Widget toggleActiveTag() {
     return Row(
       children: [
-        Switch(
-          onChanged: (value) {
-            flashTagAlertModel.isActive = !flashTagAlertModel.isActive;
-            setState(() {});
-          },
-          value: flashTagAlertModel.isActive,
-          activeColor: Theme.of(context).primaryColor,
+        SizedBox(
+          width: 40,
+          height: 30,
+          child: FittedBox(
+            fit: BoxFit.fill,
+            child: Switch(
+              onChanged: (value) {
+                setState(() {
+                  flashTagAlertModel.isActive = !flashTagAlertModel.isActive;
+                });
+              },
+              value: flashTagAlertModel.isActive,
+              thumbIcon: MaterialStateProperty.all(const Icon(null)),
+              activeTrackColor: navyBlue,
+              activeColor: Colors.white,
+              inactiveTrackColor: darkGreyYarn,
+              inactiveThumbColor: Colors.white,
+            ),
+          ),
+        ),
+        const SizedBox(
+          width: 5,
         ),
         Text(
-          "Toggle to activate this tag",
+          flashTagAlertModel.isActive
+              ? "Toggle to deactivate this tag"
+              : "Toggle to activate this tag",
           style: TextStyle(
-              fontSize: 14, color: blackFont, fontWeight: FontWeight.w600),
+            fontSize: 14,
+            color: blackFont,
+            fontWeight: FontWeight.w600,
+            fontFamily: "Inter",
+          ),
         ),
       ],
     );
@@ -457,7 +484,9 @@ class _AddEditFlashTagAlertState extends State<AddEditFlashTagAlert> {
               color: blackFont,
               fontWeight: FontWeight.w600,
               fontSize: 16,
+              fontFamily: "Inter",
             ),
+            maxLines: 1,
           ),
           trailing: Icon(
             SlydoAppIcon.date,
@@ -497,6 +526,7 @@ class _AddEditFlashTagAlertState extends State<AddEditFlashTagAlert> {
               fontWeight: FontWeight.w600,
               fontSize: 16,
             ),
+            maxLines: 1,
           ),
           trailing: Icon(
             SlydoAppIcon.date,

@@ -154,6 +154,7 @@ class _UserLoginState extends State<UserLogin> {
 
   PreferredSizeWidget _buildAppbar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       backgroundColor: whiteBackground,
       elevation: 0,
       leading: IconButton(

@@ -42,6 +42,7 @@ class _UtilityDashboardState extends State<UtilityDashboard> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       backgroundColor: Colors.transparent,
       automaticallyImplyLeading: false,
       elevation: 0,

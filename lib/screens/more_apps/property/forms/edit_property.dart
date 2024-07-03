@@ -137,6 +137,7 @@ class _EditPropertyState extends State<EditProperty> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,
@@ -971,7 +972,11 @@ class _EditPropertyState extends State<EditProperty> {
         title: Text(
           getRentDurationSelection(),
           style: TextStyle(
-              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+            color: blackFont,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            fontFamily: "Inter",
+          ),
           maxLines: 1,
           softWrap: false,
           overflow: TextOverflow.ellipsis,
@@ -1108,7 +1113,11 @@ class _EditPropertyState extends State<EditProperty> {
         title: Text(
           propertyCity,
           style: TextStyle(
-              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+            color: blackFont,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            fontFamily: "Inter",
+          ),
           maxLines: 1,
           softWrap: false,
           overflow: TextOverflow.ellipsis,
@@ -1228,7 +1237,11 @@ class _EditPropertyState extends State<EditProperty> {
         title: Text(
           selectedPropertyType != null ? selectedPropertyType!.name! : "",
           style: TextStyle(
-              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+            color: blackFont,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            fontFamily: "Inter",
+          ),
           maxLines: 1,
           softWrap: false,
           overflow: TextOverflow.ellipsis,
@@ -1255,7 +1268,12 @@ class _EditPropertyState extends State<EditProperty> {
             Text(
               bedroomCount.toString(),
               style: TextStyle(
-                  color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+                color: blackFont,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                fontFamily: "Inter",
+              ),
+              maxLines: 1,
             ),
           ],
         ),
@@ -1281,7 +1299,12 @@ class _EditPropertyState extends State<EditProperty> {
             Text(
               bathroomCount.toString(),
               style: TextStyle(
-                  color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+                color: blackFont,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                fontFamily: "Inter",
+              ),
+              maxLines: 1,
             ),
           ],
         ),
@@ -1307,7 +1330,12 @@ class _EditPropertyState extends State<EditProperty> {
             Text(
               livingRoomCount.toString(),
               style: TextStyle(
-                  color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+                color: blackFont,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                fontFamily: "Inter",
+              ),
+              maxLines: 1,
             ),
           ],
         ),
@@ -1661,7 +1689,11 @@ class _EditPropertyState extends State<EditProperty> {
         title: Text(
           getAmenities(),
           style: TextStyle(
-              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+            color: blackFont,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            fontFamily: "Inter",
+          ),
           maxLines: 1,
           softWrap: false,
           overflow: TextOverflow.ellipsis,
@@ -1816,7 +1848,11 @@ class _EditPropertyState extends State<EditProperty> {
         title: Text(
           getPetPolicySelection(),
           style: TextStyle(
-              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+            color: blackFont,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            fontFamily: "Inter",
+          ),
           maxLines: 1,
           softWrap: false,
           overflow: TextOverflow.ellipsis,
@@ -1971,7 +2007,11 @@ class _EditPropertyState extends State<EditProperty> {
         title: Text(
           getPropertyFurnitureDetail(),
           style: TextStyle(
-              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+            color: blackFont,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            fontFamily: "Inter",
+          ),
           maxLines: 1,
           softWrap: false,
           overflow: TextOverflow.ellipsis,
@@ -2230,7 +2270,9 @@ class _EditPropertyState extends State<EditProperty> {
               color: blackFont,
               fontWeight: FontWeight.w600,
               fontSize: 16,
+              fontFamily: "Inter",
             ),
+            maxLines: 1,
           ),
           trailing: Icon(
             SlydoAppIcon.date,

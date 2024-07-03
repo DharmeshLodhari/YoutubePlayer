@@ -271,7 +271,7 @@ class _QRCodeViewState extends State<QRCodeView> {
                       if (isPaid) {
                         Navigator.pop(context);
                         // _dashboardBloc.index = 0;
-                        Navigator.pushNamed(context, Routes.ORDERS_LIST);
+                        Navigator.pushNamed(context, Routes.ORDER_LIST);
                         showToast(message: 'Paid successfully');
                       } else {
                         Navigator.pop(context);

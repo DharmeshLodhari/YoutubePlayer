@@ -106,6 +106,7 @@ class _StepsInfoState extends State<StepsInfo> {
 
   Widget _buildAppBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       backgroundColor: white,
       title: Text(
         'Rider Registration',

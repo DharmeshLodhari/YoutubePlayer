@@ -80,6 +80,7 @@ class _ProductAddOnOptionCreateState extends State<ProductAddOnOptionCreate> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,
@@ -210,7 +211,7 @@ class _ProductAddOnOptionCreateState extends State<ProductAddOnOptionCreate> {
     final imageSource = await showDialog<ImageSource>(
         context: context,
         builder: (context) => AlertDialog(
-      backgroundColor: Colors.white,
+              backgroundColor: Colors.white,
               title: Text(AppLocalization.of(context)!.selectTheImageSource),
               actions: <Widget>[
                 MaterialButton(

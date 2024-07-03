@@ -100,6 +100,7 @@ class _AddInvoiceState extends State<AddInvoice> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,
@@ -631,6 +632,7 @@ class _AddInvoiceState extends State<AddInvoice> {
                     color: blackFont,
                     fontWeight: FontWeight.w600,
                     fontSize: 16,
+                    fontFamily: "Inter",
                   ),
                   overflow: TextOverflow.fade,
                   softWrap: false,
@@ -672,6 +674,7 @@ class _AddInvoiceState extends State<AddInvoice> {
                     color: blackFont,
                     fontWeight: FontWeight.w600,
                     fontSize: 16,
+                    fontFamily: "Inter",
                   ),
                   overflow: TextOverflow.fade,
                   softWrap: false,

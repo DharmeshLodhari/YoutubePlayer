@@ -159,7 +159,7 @@ class PackageDetailsModel {
         return "Shipping";
 
       case DeliveryOptions.eatIn:
-        return "Eatin";
+        return "In Store/Eat In";
 
       case DeliveryOptions.pickUp:
         return "Pickup";

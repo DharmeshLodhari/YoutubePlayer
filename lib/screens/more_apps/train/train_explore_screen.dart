@@ -42,6 +42,7 @@ class _TrainExploreScreenState extends State<TrainExploreScreen> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,
@@ -237,10 +238,11 @@ class _TrainExploreScreenState extends State<TrainExploreScreen> {
                     color: blackFont,
                     fontWeight: FontWeight.w600,
                     fontSize: 16,
+                    fontFamily: "Inter",
                   ),
+                  maxLines: 1,
                   overflow: TextOverflow.fade,
                   softWrap: false,
-                  maxLines: 1,
                 ),
                 trailing: Icon(
                   SlydoAppIcon.date,
@@ -284,10 +286,11 @@ class _TrainExploreScreenState extends State<TrainExploreScreen> {
                       color: blackFont,
                       fontWeight: FontWeight.w600,
                       fontSize: 16,
+                      fontFamily: "Inter",
                     ),
+                    maxLines: 1,
                     overflow: TextOverflow.fade,
                     softWrap: false,
-                    maxLines: 1,
                   ),
                   trailing: Icon(
                     SlydoAppIcon.date,

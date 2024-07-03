@@ -19,16 +19,16 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../../../../routes/route_constants.dart';
 import '../../shopping_auth.dart';
-import '../../tiles/order_tile.dart';
+import '../../tiles/order_tile_old.dart';
 
-class OrdersList extends StatefulWidget {
-  const OrdersList({super.key});
+class OrderListOld extends StatefulWidget {
+  const OrderListOld({super.key});
 
   @override
-  State<OrdersList> createState() => _OrdersListState();
+  State<OrderListOld> createState() => _OrderListOldState();
 }
 
-class _OrdersListState extends State<OrdersList>
+class _OrderListOldState extends State<OrderListOld>
     with SingleTickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _scaffoldOrderListKey =
       GlobalKey<ScaffoldState>();
@@ -192,6 +192,7 @@ class _OrdersListState extends State<OrdersList>
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       automaticallyImplyLeading: false,
@@ -435,6 +436,7 @@ class _OrdersListState extends State<OrdersList>
     return [
       SlideActionButton(
         borderRadius: BorderRadius.circular(5),
+        padding: EdgeInsets.zero,
         backgroundColor: navyBlue,
         icon: Icons.done,
         onPressed: (con) {
@@ -468,6 +470,7 @@ class _OrdersListState extends State<OrdersList>
     return [
       SlideActionButton(
         borderRadius: BorderRadius.circular(5),
+        padding: EdgeInsets.zero,
         backgroundColor: naturalGreen,
         icon: SlydoAppIcon.text_message,
         onPressed: (con) {
@@ -548,7 +551,7 @@ class VerticalListItem extends StatelessWidget {
       },
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 2),
-        child: OrderTile(
+        child: OrderTileOld(
           order: order,
           key: Key(
             "Order:${order.id}",

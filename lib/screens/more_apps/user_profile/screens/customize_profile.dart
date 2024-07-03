@@ -152,6 +152,7 @@ class CustomizeProfileScreenState extends State<CustomizeProfileScreen> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       titleSpacing: 0,
       backgroundColor: Colors.white,
@@ -205,7 +206,7 @@ class CustomizeProfileScreenState extends State<CustomizeProfileScreen> {
             softWrap: false,
           ),
           trailing: SizedBox(
-            width: 45,
+            width: 40,
             height: 30,
             child: FittedBox(
               fit: BoxFit.fill,

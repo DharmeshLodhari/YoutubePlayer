@@ -103,6 +103,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,
@@ -379,7 +380,12 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
         title: Text(
           selectedProductCategory != null ? selectedProductCategory!.name : "",
           style: TextStyle(
-              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+            color: blackFont,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            fontFamily: "Inter",
+          ),
+          maxLines: 1,
         ),
         trailing: Icon(
           Icons.keyboard_arrow_down,
@@ -582,7 +588,12 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
                   ? selectedProductCondition!.name
                   : "",
               style: TextStyle(
-                  color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+                color: blackFont,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                fontFamily: "Inter",
+              ),
+              maxLines: 1,
             ),
             Expanded(
               child: Text(
@@ -870,7 +881,9 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
               color: blackFont,
               fontWeight: FontWeight.w600,
               fontSize: 16,
+              fontFamily: "Inter",
             ),
+            maxLines: 1,
           ),
           trailing: Icon(
             SlydoAppIcon.date,

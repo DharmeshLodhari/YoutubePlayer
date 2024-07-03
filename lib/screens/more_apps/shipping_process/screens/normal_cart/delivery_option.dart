@@ -22,7 +22,7 @@ class DeliveryOption extends StatefulWidget {
 }
 
 class _DeliveryOptionState extends State<DeliveryOption> {
-  List<String?> deliveryOption = ["Shipping", "Eatin", "Pickup"];
+  List<String?> deliveryOption = ["Shipping", "In Store/Eat In", "Pickup"];
 
   late ShippingProcessBloc shippingProcessBloc;
   TextEditingController userNoteController = TextEditingController();
@@ -64,6 +64,7 @@ class _DeliveryOptionState extends State<DeliveryOption> {
 
   Widget _buildAppBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       backgroundColor: white,
       automaticallyImplyLeading: false,
       centerTitle: false,
@@ -151,9 +152,12 @@ class _DeliveryOptionState extends State<DeliveryOption> {
   }
 
   Widget shippingOptionalWid(
-      {required String title, required String subTitle}) {
+      {required BoxFit fit,
+      required String icon,
+      required String title,
+      required String subTitle}) {
     return Card(
-      elevation: 20,
+      elevation: 15,
       shape: RoundedRectangleBorder(
           side: BorderSide(color: selectedListItemBackgroundBlue),
           borderRadius: BorderRadius.circular(10)),
@@ -163,6 +167,13 @@ class _DeliveryOptionState extends State<DeliveryOption> {
       child: Container(
         decoration: decorateBox(),
         child: ListTile(
+          leading: Image.asset(
+            icon,
+            height: 30,
+            width: 35,
+            fit: fit,
+            frameBuilder: imageFrameBuilder,
+          ),
           title: Text(
             title,
             style: TextStyle(
@@ -303,59 +314,75 @@ class _DeliveryOptionState extends State<DeliveryOption> {
         const SizedBox(
           height: 16,
         ),
-        GestureDetector(
-          onTap: () async {
-            if (shippingProcessBloc.getPackageDetailModel().deliveryAddress !=
-                null) {
-              shippingProcessBloc.updateShippingOptionType(ShippingTypes.slydo);
-              await Navigator.of(context).pushNamed(Routes.SHIPPING_OPTION);
-            } else {
-              showToast(message: "Please select delivery address.");
-            }
-          },
-          child: shippingOptionalWid(
-            title: "Ship with Slydo",
-            subTitle: "Use slydo dispatch rider to get your orders.",
+        if (shippingProcessBloc.getPackageDetailModel().hasSlydoDispatch ??
+            false)
+          GestureDetector(
+            onTap: () async {
+              if (shippingProcessBloc.getPackageDetailModel().deliveryAddress !=
+                  null) {
+                shippingProcessBloc
+                    .updateShippingOptionType(ShippingTypes.slydo);
+                await Navigator.of(context).pushNamed(Routes.SHIPPING_OPTION);
+              } else {
+                showToast(message: "Please select delivery address.");
+              }
+            },
+            child: shippingOptionalWid(
+              icon: "assets/images/app_logo_navyBlue.png",
+              fit: BoxFit.fitHeight,
+              title: "Ship with Slydo",
+              subTitle: "Use slydo dispatch rider to get your orders.",
+            ),
           ),
-        ),
-        const SizedBox(
-          height: 16,
-        ),
-        GestureDetector(
-          onTap: () async {
-            if (shippingProcessBloc.getPackageDetailModel().deliveryAddress !=
-                null) {
-              shippingProcessBloc
-                  .updateShippingOptionType(ShippingTypes.merchant);
-              await Navigator.of(context).pushNamed(Routes.SHIPPING_OPTION);
-            } else {
-              showToast(message: "Please select delivery address.");
-            }
-          },
-          child: shippingOptionalWid(
-            title: "Merchant Option",
-            subTitle: "Use merchant rider to get your orders delivered",
+        if (shippingProcessBloc.getPackageDetailModel().hasMerchantDispatch ??
+            false) ...[
+          const SizedBox(
+            height: 16,
           ),
-        ),
-        const SizedBox(
-          height: 16,
-        ),
-        GestureDetector(
-          onTap: () async {
-            if (shippingProcessBloc.getPackageDetailModel().deliveryAddress !=
-                null) {
-              shippingProcessBloc
-                  .updateShippingOptionType(ShippingTypes.courier);
-              await Navigator.of(context).pushNamed(Routes.SHIPPING_OPTION);
-            } else {
-              showToast(message: "Please select delivery address.");
-            }
-          },
-          child: shippingOptionalWid(
-            title: "Ship with Courier",
-            subTitle: "Use courier service to get your order delivered to you.",
+          GestureDetector(
+            onTap: () async {
+              if (shippingProcessBloc.getPackageDetailModel().deliveryAddress !=
+                  null) {
+                shippingProcessBloc
+                    .updateShippingOptionType(ShippingTypes.merchant);
+                await Navigator.of(context).pushNamed(Routes.SHIPPING_OPTION);
+              } else {
+                showToast(message: "Please select delivery address.");
+              }
+            },
+            child: shippingOptionalWid(
+              icon: "assets/images/bike_icon.png",
+              fit: BoxFit.fitHeight,
+              title: "Merchant Option",
+              subTitle: "Use merchant rider to get your orders delivered",
+            ),
           ),
-        ),
+        ],
+        if (shippingProcessBloc.getPackageDetailModel().hasCourierDispatch ??
+            false) ...[
+          const SizedBox(
+            height: 16,
+          ),
+          GestureDetector(
+            onTap: () async {
+              if (shippingProcessBloc.getPackageDetailModel().deliveryAddress !=
+                  null) {
+                shippingProcessBloc
+                    .updateShippingOptionType(ShippingTypes.courier);
+                await Navigator.of(context).pushNamed(Routes.SHIPPING_OPTION);
+              } else {
+                showToast(message: "Please select delivery address.");
+              }
+            },
+            child: shippingOptionalWid(
+              icon: "assets/images/courier_icon.png",
+              fit: BoxFit.fill,
+              title: "Ship with Courier",
+              subTitle:
+                  "Use courier service to get your order delivered to you.",
+            ),
+          ),
+        ],
       ],
     );
   }
@@ -393,7 +420,7 @@ class _DeliveryOptionState extends State<DeliveryOption> {
           },
           backgroundColor: navyBlue,
           textColor: white,
-          text: 'Done',
+          text: 'Continue',
         ),
       );
     }

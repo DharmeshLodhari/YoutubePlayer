@@ -77,6 +77,7 @@ class _MomentSearchScreenState extends State<MomentSearchScreen> {
 
   AppBar appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       centerTitle: false,
       elevation: 0,
       backgroundColor: Colors.white,

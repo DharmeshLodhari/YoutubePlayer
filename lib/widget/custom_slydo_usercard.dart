@@ -179,6 +179,7 @@ class _CustomSlydoUserCardState extends State<CustomSlydoUserCard>
       if (isNotCurrentUser)
         SlideActionButton(
           borderRadius: BorderRadius.circular(5),
+          padding: EdgeInsets.zero,
           icon: Icons.payments_rounded,
           onPressed: (con) async {
             if (appConfigurationModel?.enablePayment == true) {
@@ -201,6 +202,7 @@ class _CustomSlydoUserCardState extends State<CustomSlydoUserCard>
       if (isNotCurrentUser)
         SlideActionButton(
           borderRadius: BorderRadius.circular(5),
+          padding: EdgeInsets.zero,
           icon: Icons.payments_rounded,
           onPressed: (con) async {
             if (appConfigurationModel?.enablePayment == true) {
@@ -225,6 +227,7 @@ class _CustomSlydoUserCardState extends State<CustomSlydoUserCard>
           widget.user.userName != userBloc.user.userName)
         SlideActionButton(
           borderRadius: BorderRadius.circular(5),
+          padding: EdgeInsets.zero,
           icon: SlydoAppIcon.add,
           onPressed: (con) async {
             connectUserAlert(widget.user);
@@ -236,6 +239,7 @@ class _CustomSlydoUserCardState extends State<CustomSlydoUserCard>
       if (userBloc.user.userName != widget.user.userName)
         SlideActionButton(
           borderRadius: BorderRadius.circular(5),
+          padding: EdgeInsets.zero,
           icon: SlydoAppIcon.block,
           onPressed: (con) async {
             blockUserAlert(widget.user);

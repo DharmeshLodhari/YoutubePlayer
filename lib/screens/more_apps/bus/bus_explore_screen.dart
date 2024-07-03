@@ -42,6 +42,7 @@ class _BusExploreScreenState extends State<BusExploreScreen> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,
@@ -237,6 +238,7 @@ class _BusExploreScreenState extends State<BusExploreScreen> {
                     color: blackFont,
                     fontWeight: FontWeight.w600,
                     fontSize: 16,
+                    fontFamily: "Inter",
                   ),
                   overflow: TextOverflow.fade,
                   softWrap: false,
@@ -284,6 +286,7 @@ class _BusExploreScreenState extends State<BusExploreScreen> {
                       color: blackFont,
                       fontWeight: FontWeight.w600,
                       fontSize: 16,
+                      fontFamily: "Inter",
                     ),
                     overflow: TextOverflow.fade,
                     softWrap: false,

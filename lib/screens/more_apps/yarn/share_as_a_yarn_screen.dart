@@ -385,6 +385,7 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
 
   PreferredSizeWidget _buildAppBar(String? appTitle) {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       backgroundColor: Colors.white,
       shape: Border(bottom: BorderSide(color: HexColor("#D9D9D9"))),
       centerTitle: false,
@@ -1066,7 +1067,12 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
             title: Text(
               selectedAskCategory != null ? selectedAskCategory!.name! : "",
               style: TextStyle(
-                  color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+                color: blackFont,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                fontFamily: "Inter",
+              ),
+              maxLines: 1,
             ),
             trailing: Icon(
               Icons.keyboard_arrow_down,

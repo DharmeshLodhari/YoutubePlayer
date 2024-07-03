@@ -121,10 +121,8 @@ import 'package:Slydo/screens/more_apps/shopping/forms/edit_product.dart';
 import 'package:Slydo/screens/more_apps/shopping/forms/edit_service.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/mix_cart_item.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/order/order_detail_page.dart';
-import 'package:Slydo/screens/more_apps/shopping/screens/order/order_detail_page_new.dart';
-import 'package:Slydo/screens/more_apps/shopping/screens/order/order_list_new.dart';
+import 'package:Slydo/screens/more_apps/shopping/screens/order/order_list.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/order/order_status_updated.dart';
-import 'package:Slydo/screens/more_apps/shopping/screens/order/orders_list.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/order/track_order.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/order/write_review_page.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/print_qrcode.dart';
@@ -644,16 +642,9 @@ class RouteGenerator {
           curve: Curves.ease,
           settings: settings,
         );
-      case Routes.ORDERS_LIST:
+      case Routes.ORDER_LIST:
         return PageTransition(
-          child: const OrdersList(),
-          type: PageTransitionType.bottomToTop,
-          curve: Curves.ease,
-          settings: settings,
-        );
-      case Routes.ORDER_LIST_NEW:
-        return PageTransition(
-          child: const OrderListNew(),
+          child: const OrderList(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -668,13 +659,6 @@ class RouteGenerator {
       case Routes.ORDER_DETAIL_PAGE:
         return PageTransition(
           child: OrderDetailPage(arguments: settings.arguments),
-          type: PageTransitionType.bottomToTop,
-          curve: Curves.ease,
-          settings: settings,
-        );
-      case Routes.ORDER_DETAIL_PAGE_NEW:
-        return PageTransition(
-          child: OrderDetailPageNew(arguments: settings.arguments),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -908,14 +892,6 @@ class RouteGenerator {
       case Routes.INVOICE_SCREEN:
         return PageTransition(
           child: const InvoiceScreen(),
-          type: PageTransitionType.bottomToTop,
-          curve: Curves.ease,
-          settings: settings,
-        );
-
-      case Routes.CONTRACT_SCREEN:
-        return PageTransition(
-          child: const ContractScreen(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,

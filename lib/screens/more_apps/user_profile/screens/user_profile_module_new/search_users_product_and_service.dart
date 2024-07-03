@@ -1219,6 +1219,7 @@ class _SearchUsersProductAndServiceState
 
   Widget appBar() {
     return AppBar(
+        surfaceTintColor: Colors.transparent,
         elevation: 0,
         titleSpacing: 0,
         backgroundColor: Colors.white,
@@ -1961,6 +1962,7 @@ class _SearchUsersProductAndServiceState
     return [
       SlideActionButton(
         borderRadius: BorderRadius.circular(5),
+        padding: EdgeInsets.zero,
         icon: SlydoAppIcon.cart,
         onPressed: (con) async {
           final CustomerProfileBloc customerProfileBloc =
@@ -1981,6 +1983,7 @@ class _SearchUsersProductAndServiceState
     return [
       SlideActionButton(
         borderRadius: BorderRadius.circular(5),
+        padding: EdgeInsets.zero,
         icon: SlydoAppIcon.text_message,
         onPressed: (con) async {
           Navigator.of(context).pushNamed('/compose_message', arguments: {
@@ -2015,6 +2018,7 @@ class _SearchUsersProductAndServiceState
     return [
       SlideActionButton(
           borderRadius: BorderRadius.circular(5),
+          padding: EdgeInsets.zero,
           label: AppLocalization.of(context)!.pay,
           backgroundColor: naturalGreen,
           icon: SlydoAppIcon.cart,
@@ -2033,6 +2037,7 @@ class _SearchUsersProductAndServiceState
     return [
       SlideActionButton(
         borderRadius: BorderRadius.circular(5),
+        padding: EdgeInsets.zero,
         label: AppLocalization.of(context)!.message,
         backgroundColor: navyBlue,
         icon: SlydoAppIcon.text_message,

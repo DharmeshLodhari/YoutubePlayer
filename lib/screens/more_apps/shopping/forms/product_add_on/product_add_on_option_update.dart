@@ -101,6 +101,7 @@ class _ProductAddOnOptionUpdateState extends State<ProductAddOnOptionUpdate> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 20,

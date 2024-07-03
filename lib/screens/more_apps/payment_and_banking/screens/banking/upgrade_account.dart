@@ -32,6 +32,7 @@ class _UpgradeAccountState extends State<UpgradeAccount> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       titleSpacing: 0,
       backgroundColor: Colors.white,
@@ -99,7 +100,12 @@ class _UpgradeAccountState extends State<UpgradeAccount> {
         title: Text(
           _selectedTier ?? "",
           style: TextStyle(
-              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+            color: blackFont,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            fontFamily: "Inter",
+          ),
+          maxLines: 1,
         ),
         trailing: Icon(Icons.keyboard_arrow_down, color: darkGrey),
         onTap: () {
@@ -122,7 +128,7 @@ class _UpgradeAccountState extends State<UpgradeAccount> {
         barrierDismissible: false,
         context: context,
         builder: (context) => AlertDialog(
-      backgroundColor: Colors.white,
+              backgroundColor: Colors.white,
               insetPadding:
                   const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,

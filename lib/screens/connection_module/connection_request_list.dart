@@ -191,6 +191,7 @@ class _ConnectionRequestListState extends State<ConnectionRequestList>
     return [
       SlideActionButton(
         borderRadius: BorderRadius.circular(5),
+        padding: EdgeInsets.zero,
         backgroundColor: navyBlue,
         icon: SlydoAppIcon.send_connection_request,
         onPressed: (con) {
@@ -211,6 +212,7 @@ class _ConnectionRequestListState extends State<ConnectionRequestList>
     return [
       SlideActionButton(
         borderRadius: BorderRadius.circular(5),
+        padding: EdgeInsets.zero,
         backgroundColor: mateRed,
         icon: SlydoAppIcon.cancel_connection_request,
         onPressed: (con) {

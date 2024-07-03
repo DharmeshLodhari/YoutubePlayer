@@ -169,6 +169,7 @@ class _PaymentLinkSearchState extends State<PaymentLinkSearch>
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,
@@ -252,6 +253,7 @@ class _PaymentLinkSearchState extends State<PaymentLinkSearch>
     return [
       SlideActionButton(
         borderRadius: BorderRadius.circular(5),
+        padding: EdgeInsets.zero,
         backgroundColor: mateRed,
         icon: SlydoAppIcon.cancel_connection_request,
         onPressed: (con) {

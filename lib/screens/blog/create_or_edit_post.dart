@@ -31,7 +31,7 @@ class CreateOrEditPostScreen extends StatefulWidget {
   final UserPost? userPost;
   final String? channel;
 
-  CreateOrEditPostScreen({super.key, this.userPost, this.channel});
+  const CreateOrEditPostScreen({super.key, this.userPost, this.channel});
 
   @override
   State<CreateOrEditPostScreen> createState() => _CreateOrEditPostScreenState();
@@ -103,7 +103,7 @@ class _CreateOrEditPostScreenState extends State<CreateOrEditPostScreen> {
     super.dispose();
   }
 
-  initializeUserPostVariables() {
+  void initializeUserPostVariables() {
     isImagePicked = _imagePath != null;
     _imagePath = widget.userPost!.image;
     _videoPath = widget.userPost!.video;
@@ -365,6 +365,7 @@ class _CreateOrEditPostScreenState extends State<CreateOrEditPostScreen> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,

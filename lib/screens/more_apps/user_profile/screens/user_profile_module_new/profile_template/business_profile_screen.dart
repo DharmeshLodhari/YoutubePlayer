@@ -433,9 +433,11 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
             pinned: true,
             delegate: SliverAppBarDelegate(
               TabBar(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                tabAlignment: TabAlignment.start,
                 controller: _tabController,
                 isScrollable: true,
-                labelPadding: EdgeInsets.zero,
+                labelPadding: const EdgeInsets.symmetric(horizontal: 5),
                 indicator: const BoxDecoration(),
                 onTap: (int index) {
                   changeIndex(index);
@@ -492,7 +494,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
       color: white,
       child: Column(
         children: [
-          const SizedBox(height: 15),
+          const SizedBox(height: 10),
           Container(
             height: 32,
             padding: const EdgeInsets.only(left: 12),
@@ -588,7 +590,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
             _currentUser.tabs[_currentIndex].name == "product")
           customCategoryWidget(),
         const SizedBox(
-          height: 20,
+          height: 15,
         ),
         Expanded(
           child: (customCategories.isNotEmpty &&
@@ -685,6 +687,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,
@@ -805,16 +808,23 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
 
   Widget _buildCrawlingAlert() {
     if (flashTagString != "") {
-      return Container(
-        color: Colors.black,
-        padding: const EdgeInsets.symmetric(vertical: 14),
-        child: TextScroll(
-          flashTagString.length <= 90
-              ? flashTagString.padRight(90, " ")
-              : flashTagString,
-          style: TextStyle(color: white, fontWeight: FontWeight.w600),
-          mode: TextScrollMode.endless,
-        ),
+      return Column(
+        children: [
+          Container(
+            color: Colors.black,
+            padding: const EdgeInsets.symmetric(vertical: 14),
+            child: TextScroll(
+              flashTagString.length <= 90
+                  ? flashTagString.padRight(90, " ")
+                  : flashTagString,
+              style: TextStyle(color: white, fontWeight: FontWeight.w600),
+              mode: TextScrollMode.endless,
+            ),
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+        ],
       );
     }
     return const SizedBox.shrink();

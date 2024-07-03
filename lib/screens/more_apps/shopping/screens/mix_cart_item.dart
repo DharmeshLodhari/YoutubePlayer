@@ -101,6 +101,7 @@ class _MixCartItemState extends State<MixCartItem> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       titleSpacing: 0,
       backgroundColor: Colors.white,
@@ -620,7 +621,7 @@ class _MixCartItemState extends State<MixCartItem> {
                       response.statusCode == 201) {
                     Navigator.popAndPushNamed(
                       context,
-                      Routes.ORDERS_LIST,
+                      Routes.ORDER_LIST,
                     );
                   } else if (response.statusCode == 500) {
                     Navigator.pop(context);

@@ -683,6 +683,7 @@ Widget buildJumpingLoadingIndicator({required bool isLoading}) {
 
 Widget customAppBar({required BuildContext context, required String title}) {
   return AppBar(
+    surfaceTintColor: Colors.transparent,
     elevation: 0,
     titleSpacing: 0,
     backgroundColor: Colors.white,

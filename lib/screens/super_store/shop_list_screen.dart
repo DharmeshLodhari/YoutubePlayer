@@ -3,6 +3,7 @@ import 'package:Slydo/screens/super_store/widget/section_products.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/custom_pagination.dart';
 import 'package:Slydo/widget/empty_page.dart';
+import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -23,6 +24,8 @@ class ShopListScreen extends StatefulWidget {
   final String industry;
   final String? nextUrl;
   final String? type;
+  final String? categoryId;
+  final String? industryId;
 
   const ShopListScreen({
     super.key,
@@ -31,6 +34,8 @@ class ShopListScreen extends StatefulWidget {
     required this.industry,
     this.nextUrl,
     this.type,
+    this.categoryId,
+    this.industryId,
   });
 
   @override
@@ -69,6 +74,7 @@ class ShopListScreenState extends State<ShopListScreen> {
 
   AppBar appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       titleSpacing: 16,
       backgroundColor: Colors.white,
@@ -180,6 +186,7 @@ class ShopListScreenState extends State<ShopListScreen> {
         if (mounted) {
           setState(() {
             noProductInList = true;
+            isProductLoading = false;
           });
         }
       } else if (productNext == null &&
@@ -208,6 +215,8 @@ class ShopListScreenState extends State<ShopListScreen> {
 
         final Map<String, dynamic>? result = await ShoppingAuthService()
             .getProductListForSuperStore(todayDealNext, todayDealPrevious,
+                categoryId: widget.categoryId,
+                industryId: widget.industryId,
                 todaysDeal: true);
 
         if (result == null) {
@@ -314,6 +323,9 @@ class ShopListScreenState extends State<ShopListScreen> {
                       ...rowHeaders.map((headers) => rowTitle(headers)),
                     if (rowHeaders.isEmpty &&
                         !isProductLoading &&
+                        !isTodayDealLoading &&
+                        todaysDealList.isEmpty &&
+                        productList.isEmpty &&
                         widget.type != null)
                       EmptyPage(
                         msg: AppLocalization.of(context)!.noResultFound,
@@ -374,92 +386,88 @@ class ShopListScreenState extends State<ShopListScreen> {
   }
 
   Widget superStoreProducts() {
-    if (productList.isEmpty) {
-      return const SizedBox.shrink();
+    if (isProductLoading) {
+      return Container();
     }
-    return productNext == "" && isProductLoading
-        ? const SizedBox.shrink()
-        : Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (noProductInList)
-                const SizedBox.shrink()
-              else
-                todaysDealsEmpty
-                    ? const SizedBox.shrink()
-                    : Text(
-                        "Other deals",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontFamily: "Inter",
-                          color: blackFont,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-              if (noProductInList)
-                const SizedBox.shrink()
-              else
-                const SizedBox(height: 16),
-              Container(
-                margin: const EdgeInsets.only(bottom: 15.0),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    "Found $productCount ${widget.industry}",
-                    style: TextStyle(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 18,
-                      fontFamily: "Inter",
-                      color: blackFont,
-                    ),
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (noProductInList)
+          const SizedBox.shrink()
+        else
+          todaysDealsEmpty
+              ? const SizedBox.shrink()
+              : Text(
+                  "Other deals",
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontFamily: "Inter",
+                    color: blackFont,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
+        if (noProductInList)
+          const SizedBox.shrink()
+        else ...[
+          const SizedBox(height: 16),
+          Container(
+            margin: const EdgeInsets.only(bottom: 15.0),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                "Found $productCount ${widget.industry}",
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 18,
+                  fontFamily: "Inter",
+                  color: blackFont,
+                ),
               ),
-              CustomScrollView(
-                physics: const ScrollPhysics(),
-                shrinkWrap: true,
-                slivers: <Widget>[
-                  SliverGrid(
-                    delegate: SliverChildBuilderDelegate(
-                      (c, i) => SizedBox(
-                        child: SuperStoreSingleCard(
-                          product: productList[i],
-                        ),
-                      ),
-                      childCount: productList.length,
-                    ),
-                    gridDelegate:
-                        const SliverGridDelegateWithMaxCrossAxisExtent(
-                      mainAxisSpacing: 22,
-                      mainAxisExtent: 260,
-                      crossAxisSpacing: 15,
-                      maxCrossAxisExtent: 200,
+            ),
+          ),
+        ],
+        if (productList.isEmpty && !isProductLoading && todaysDealList.isEmpty)
+          SizedBox(
+            height: MediaQuery.of(context).size.height,
+            child: NoItemInList(
+              msg: AppLocalization.of(context)!.noResultFound,
+            ),
+          )
+        else if (isProductLoading &&
+            productList.isEmpty &&
+            todaysDealList.isEmpty)
+          const SizedBox
+              .shrink() // Shimmer effect is already handled above in the ListView
+        else
+          CustomScrollView(
+            physics: const ScrollPhysics(),
+            shrinkWrap: true,
+            slivers: <Widget>[
+              SliverGrid(
+                delegate: SliverChildBuilderDelegate(
+                  (c, i) => SizedBox(
+                    child: SuperStoreSingleCard(
+                      product: productList[i],
                     ),
                   ),
-                  SliverToBoxAdapter(
-                    child: buildJumpingLoadingIndicator(
-                        isLoading: isProductLoading),
-                  ),
-                ],
+                  childCount: productList.length,
+                ),
+                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                  mainAxisSpacing: 22,
+                  mainAxisExtent: 260,
+                  crossAxisSpacing: 15,
+                  maxCrossAxisExtent: 200,
+                ),
               ),
-              // GridView.builder(
-              //   shrinkWrap: true,
-              //   physics: const NeverScrollableScrollPhysics(),
-              //   gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-              //     mainAxisSpacing: 22,
-              //     mainAxisExtent: 274,
-              //     crossAxisSpacing: 15,
-              //     maxCrossAxisExtent: 200,
-              //   ),
-              //   itemCount: productList.length,
-              //   itemBuilder: (context, index) {
-              //     return SuperStoreSingleCard(
-              //       product: productList[index],
-              //     );
-              //   },
-              // ),
+              SliverToBoxAdapter(
+                child:
+                    buildJumpingLoadingIndicator(isLoading: isProductLoading),
+              ),
             ],
-          );
+          ),
+      ],
+    );
   }
 
   Widget getTodaysDealList() {

@@ -74,7 +74,7 @@ class _CashoutTransactionsListState extends State<CashoutTransactionsList> {
         key: _scaffoldMessengerKey,
         child: Scaffold(
           key: _scaffoldKey,
-          backgroundColor: Colors.white,
+          backgroundColor: lightGrey,
           body: SmartRefresher(
               enablePullDown: true,
               header: WaterDropHeader(

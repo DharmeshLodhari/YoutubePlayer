@@ -60,6 +60,7 @@ class _CancellationScreenState extends State<CancellationScreen> {
 
   Widget _buildAppBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       backgroundColor: white,
       automaticallyImplyLeading: false,
       centerTitle: false,

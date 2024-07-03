@@ -42,6 +42,7 @@ class _RidersUpdateState extends State<RidersUpdate> {
 
   Widget _buildAppBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       backgroundColor: white,
       automaticallyImplyLeading: false,
       centerTitle: false,

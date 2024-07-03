@@ -51,6 +51,7 @@ class _MyServicesState extends State<MyServices> {
 
   Widget _buildAppBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       backgroundColor: Colors.white,
       title: Text(
         AppLocalization.of(context)!.myServices,

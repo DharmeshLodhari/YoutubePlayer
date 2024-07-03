@@ -132,13 +132,14 @@ class _SuperStoreState extends State<SuperStore> {
 
     return Scaffold(
       backgroundColor: lightGrey,
-      appBar: _buildAppBar() as PreferredSizeWidget,
+      appBar: _buildAppBar() as PreferredSizeWidget?,
       body: _buildBody(),
     );
   }
 
   Widget _buildAppBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       backgroundColor: Colors.white,
       title: Text(
         appTitle!,
@@ -159,7 +160,7 @@ class _SuperStoreState extends State<SuperStore> {
           size: 24,
         ),
         onPressed: () {
-          Navigator.pop(context, "back pressed");
+          if (mounted) Navigator.pop(context);
         },
       ),
       shadowColor: greySecondaryYarn,
@@ -334,6 +335,8 @@ class _SuperStoreState extends State<SuperStore> {
               category: categoryName,
               industry: appTitle!,
               nextUrl: nextUrl,
+              industryId: industry.id,
+              categoryId: categoryId,
               type: categoryId == null || categoryId == "" ? "sessions" : null)
         else
           ListCategoryProduct(

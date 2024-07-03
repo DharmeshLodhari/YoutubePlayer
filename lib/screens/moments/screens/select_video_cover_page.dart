@@ -54,6 +54,7 @@ class _SelectVideoCoverPageState extends State<SelectVideoCoverPage> {
 
   AppBar appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       titleSpacing: 0,
       backgroundColor: Colors.white,
@@ -83,7 +84,6 @@ class _SelectVideoCoverPageState extends State<SelectVideoCoverPage> {
             padding: const EdgeInsets.all(12.0),
             child: CurvedButton(
               width: 100,
-              height: 10,
               borderRadius: 20,
               text: 'Save',
               fontSize: 14,

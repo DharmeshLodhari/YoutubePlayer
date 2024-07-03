@@ -1,10 +1,8 @@
 import 'package:Slydo/routes/route_constants.dart';
-import 'package:Slydo/screens/more_apps/rider_delivery/auth/rider_delivery_auth.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/models/delivery_model.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/order/tracker_stepper.dart'
     as track;
-import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/rounded_elevated_button.dart';
 import 'package:badges/badges.dart' as badges;
@@ -24,9 +22,6 @@ class TrackOrder extends StatefulWidget {
 
 class _TrackOrderState extends State<TrackOrder> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
-  bool isLoading = true;
-  final _auth = ShoppingAuthService();
-  List<Map<String, dynamic>> items = [];
   DeliveryModel? deliveryModel;
   Order? order;
   int _currentStep = 0;
@@ -34,50 +29,7 @@ class _TrackOrderState extends State<TrackOrder> {
   @override
   void initState() {
     order = widget.arguments['order'];
-    fetchOrder(order?.id.toString() ?? "");
-    if (order?.journeyId != null) {
-      fetchJobData();
-    }
     super.initState();
-  }
-
-  void fetchOrder(String orderId) async {
-    setState(() {
-      isLoading = true;
-    });
-    _auth.getOrder(orderId).then((value) {
-      if (value != null) {
-        debugPrint('VALUE :: $value');
-        if (mounted) {
-          setState(() {
-            order = value;
-            items = order?.items ?? [];
-            isLoading = false;
-          });
-        }
-      }
-    });
-  }
-
-  Future<void> fetchJobData() async {
-    isLoading = true;
-    if (mounted) setState(() {});
-
-    await RiderDeliveryAuthService()
-        .fetchJob(order?.journeyId)
-        .then((value) async {
-      if (value != null) {
-        deliveryModel = value;
-
-        isLoading = false;
-        if (mounted) setState(() {});
-      }
-    }).catchError((error) {
-      isLoading = false;
-      if (mounted) setState(() {});
-      debugPrint(error.toString());
-      showToast(message: error.toString());
-    });
   }
 
   @override
@@ -101,6 +53,7 @@ class _TrackOrderState extends State<TrackOrder> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       automaticallyImplyLeading: false,
@@ -166,19 +119,16 @@ class _TrackOrderState extends State<TrackOrder> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              OrderStep(
-                icon: Icons.inventory,
-                color: navyBlue,
+              const OrderStep(
+                icon: "assets/images/package.svg",
               ),
               DottedLine(),
-              OrderStep(
-                icon: Icons.local_shipping,
-                color: navyBlue,
+              const OrderStep(
+                icon: "assets/images/rider_image.png",
               ),
               DottedLine(),
-              OrderStep(
-                icon: Icons.home,
-                color: navyBlue,
+              const OrderStep(
+                icon: "assets/images/flat_house.svg",
               ),
             ],
           ),
@@ -218,10 +168,10 @@ class _TrackOrderState extends State<TrackOrder> {
           height: 5,
         ),
         Text(
-          'Tracking Number : 36789021',
+          'Tracking Number : ${order?.id}',
           style: TextStyle(
             fontSize: 14,
-            color: darkGrey,
+            color: lightBlackFont,
             fontWeight: FontWeight.w400,
             fontFamily: "Inter",
           ),
@@ -278,8 +228,8 @@ class _TrackOrderState extends State<TrackOrder> {
               (element) {
                 final String statusTitle =
                     element.keys.first; // Get the key (status title)
-                final String statusTimeStamp =
-                    element.values.first; // Get the value (timestamp)
+                final String statusTimeStamp = formatDate(
+                    element.values.first); // Get the value (timestamp)
                 return track.Step(
                   title: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -300,16 +250,24 @@ class _TrackOrderState extends State<TrackOrder> {
                             ),
                         ],
                       ),
-                      Text(getOrderStatus(statusTitle)[0],
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w400)),
-                      Text(statusTimeStamp,
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w400)),
+                      Text(
+                        getOrderStatus(statusTitle)[0],
+                        style: TextStyle(
+                          color: lightBlackFont,
+                          fontSize: 10,
+                          fontFamily: "Inter",
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                      Text(
+                        statusTimeStamp,
+                        style: TextStyle(
+                          color: lightBlackFont,
+                          fontSize: 10,
+                          fontFamily: "Inter",
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
                       const SizedBox(height: 5),
                       if (statusTitle == 'Order Picked Up' &&
                           deliveryModel?.isInProgress == true)
@@ -495,29 +453,44 @@ class _TrackOrderState extends State<TrackOrder> {
         return ["", track.StepState.disabled];
     }
   }
+
+  String formatDate(String inputString) {
+    // Parse the input string to a DateTime object
+    DateTime dateTime = DateTime.parse(inputString);
+
+    // Format the DateTime object to the desired format
+    String formattedDate = DateFormat('EEEE MMMM d HH:mm:ss').format(dateTime);
+
+    return formattedDate;
+  }
 }
 
 class OrderStep extends StatelessWidget {
-  final IconData icon;
-  final Color color;
+  final String icon;
 
-  const OrderStep({super.key, required this.icon, required this.color});
+  const OrderStep({super.key, required this.icon});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(8),
-      width: 40,
-      height: 40,
+      width: 35,
+      height: 35,
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: navyBlue.withOpacity(0.1),
         shape: BoxShape.circle,
       ),
-      child: Icon(
-        icon,
-        color: color,
-        size: 20,
-      ),
+      child: icon.contains(".png")
+          ? Image.asset(
+              icon,
+              width: 18,
+              height: 18,
+            )
+          : SvgPicture.asset(
+              icon,
+              width: 18,
+              height: 18,
+            ),
     );
   }
 }

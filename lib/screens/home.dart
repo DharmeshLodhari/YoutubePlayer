@@ -4,6 +4,7 @@ import 'package:Slydo/constant.dart';
 import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/home_tab/qr_code_page.dart';
 import 'package:Slydo/screens/moments/models/moments_model.dart';
 import 'package:Slydo/screens/moments/screens/moments_service.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/virtual_account.dart';
@@ -15,7 +16,6 @@ import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_list_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_dashboard_bloc.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_detail_screen.dart';
-import 'package:Slydo/screens/scan_qr_code.dart';
 import 'package:Slydo/services/app_tutorial_controller.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/global_key.dart';
@@ -97,6 +97,7 @@ class _HomeState extends State<Home> {
   List<MomentsModel> momentsList = [];
   final ScrollController _myConnectionsScrollController = ScrollController();
   SharedPreferences? _sharedPreferences;
+  CustomerProfile? user;
 
   List<Yarn> yarnTopicList = [];
   late YarnDashboardBloc yarnDashboardBloc;
@@ -580,6 +581,11 @@ class _HomeState extends State<Home> {
         'title': ProtectionPermission.request,
         'ForReadPermission': '2',
       },
+      {
+        'imagePath': 'home/order',
+        'title': ProtectionPermission.order,
+        'ForReadPermission': '2',
+      },
       // {
       //   'imagePath': 'home/request',
       //   'title': 'Dispatch',
@@ -720,6 +726,10 @@ class _HomeState extends State<Home> {
       //   hideBalance();
       //   Navigator.pushNamed(context, Routes.DISPATCH);
       //   break;
+      case ProtectionPermission.order:
+        hideBalance();
+        Navigator.pushNamed(context, Routes.ORDER_LIST);
+        break;
       case ProtectionPermission.yarn:
         hideBalance();
         NavigationUtil.push(context, screen: const YarnDashboard());
@@ -1009,6 +1019,7 @@ class _HomeState extends State<Home> {
     final Color borderColor =
         getUserTypeColorByType(type: userBloc.user.type ?? "");
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       backgroundColor: Colors.transparent,
       automaticallyImplyLeading: false,
       elevation: 0,
@@ -1541,9 +1552,30 @@ class _HomeState extends State<Home> {
 
   Widget qrCodeIcon() {
     return GestureDetector(
-      onTap: () {
+      onTap: () async {
+        try {
+          user = await UserAuth()
+              .fetchCustomerProfileWithAuth(userBloc.user.userName);
+        } catch (e) {
+          Navigator.pop(context);
+          showToast(message: 'User not found');
+        }
+
+        final VirtualAccount virtualAccount = VirtualAccount(
+          accountName: user?.wallet?.accountName,
+          accountNumber: user?.wallet?.accountNumber,
+          financialInstitution: user?.wallet?.financialInstitution!,
+          customerUsername: user?.wallet?.customerUsername,
+          note: "",
+        );
+
         NavigationUtil.push(context,
-            screen: const QRCodeView(arguments: {'isRequest': false}));
+            screen: QrCodePage(arguments: {
+              'isProfile': user,
+              'virtualAccount': virtualAccount
+            }));
+        // NavigationUtil.push(context,
+        //     screen: const QRCodeView(arguments: {'isRequest': false}));
         // NavigationUtil.push(context, screen: QrCodePage(arguments: {'isProfile': 'false', 'virtualAccount': virtualAccount}));
       },
       child: Container(
@@ -1618,7 +1650,7 @@ class _HomeState extends State<Home> {
                     icon: SlydoAppIcon.cart,
                     title: "Orders",
                     onTap: () {
-                      Navigator.pushNamed(context, Routes.ORDERS_LIST);
+                      Navigator.pushNamed(context, Routes.ORDER_LIST);
                     },
                     iconColor: HexColor("#FFAB00"),
                   )),
@@ -1739,7 +1771,7 @@ class _HomeState extends State<Home> {
                     icon: SlydoAppIcon.cart,
                     title: "Orders",
                     onTap: () {
-                      Navigator.pushNamed(context, Routes.ORDERS_LIST);
+                      Navigator.pushNamed(context, Routes.ORDER_LIST);
                     },
                     iconColor: HexColor("#FFAB00"),
                   )),

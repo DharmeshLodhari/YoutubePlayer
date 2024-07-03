@@ -109,6 +109,7 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
 
   Widget _buildAppBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       backgroundColor: white,
       automaticallyImplyLeading: false,
       centerTitle: false,
@@ -184,7 +185,7 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
           if (shippingProcessBloc.isPaymentSuccessful == true)
             _buildDoneButton()
           else
-            _buildPayButton(),
+            _buildPayButton(context),
         ],
       ),
     );
@@ -242,34 +243,45 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
     );
   }
 
-  Widget _buildPayButton() {
+  Widget _buildPayButton(BuildContext context) {
     if (shippingProcessBloc.isAllShippingProcessCompleted() == false) {
       return Container();
     }
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: CurvedButton(
-        onPressed: () {
-          isSharedCart == true
-              ? Navigator.of(context).pushNamed(Routes.SHARED_CART_PAYMENT)
-              : BottomSheetPassCode(
-                  context: context,
-                  isValidCallback: () async {
-                    // await checkAccountBalance();
 
-                    // Create the orders
-                    await placeOrder();
-                  },
-                  cancelCallBack: () {
-                    Navigator.pop(context);
-                  });
-        },
-        backgroundColor: navyBlue,
-        textColor: white,
-        text:
-            'Pay ${worldCurrencies[userBloc.user.currency]}${moneyDisplayNormalizer(shippingProcessBloc.getTotalOrder())}',
-        isLoading: isOrderLoading,
-      ),
+    return FutureBuilder<bool>(
+      future: checkAccountBalance(context),
+      builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+        if (!snapshot.hasData) {
+          return const SizedBox.shrink();
+        }
+
+        if (!snapshot.data!) {
+          return const SizedBox.shrink();
+        }
+        return Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: CurvedButton(
+            onPressed: () {
+              isSharedCart == true
+                  ? Navigator.of(context).pushNamed(Routes.SHARED_CART_PAYMENT)
+                  : BottomSheetPassCode(
+                      context: context,
+                      isValidCallback: () async {
+                        // Create the orders
+                        await placeOrder();
+                      },
+                      cancelCallBack: () {
+                        Navigator.pop(context);
+                      });
+            },
+            backgroundColor: navyBlue,
+            textColor: white,
+            text:
+                'Pay ${worldCurrencies[userBloc.user.currency]}${moneyDisplayNormalizer(shippingProcessBloc.getTotalOrder())}',
+            isLoading: isOrderLoading,
+          ),
+        );
+      },
     );
   }
 
@@ -287,6 +299,19 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
         text: 'Done',
       ),
     );
+  }
+
+  Future<bool> checkAccountBalance(BuildContext context) async {
+    final double accountBalance = await getAccountBalance();
+    debugPrint("accountBalance:- $accountBalance");
+    final double spendingAmount = shippingProcessBloc.getTotalOrder()! / 100;
+    debugPrint("spendingAmount:- $spendingAmount");
+    if (spendingAmount > accountBalance) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text("You don't have enough money in Slydo account!!")));
+      return false;
+    }
+    return true;
   }
 
   Future<void> placeOrder() async {
@@ -451,10 +476,8 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
               ),
             ),
             Text(
-              moneyDisplayNormalizer(shippingProcessBloc
-                      .getPackageDetailModel()
-                      .customerServiceFee ??
-                  0),
+              moneyDisplayNormalizer(
+                  shippingProcessBloc.getServiceCharge() ?? 0),
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,

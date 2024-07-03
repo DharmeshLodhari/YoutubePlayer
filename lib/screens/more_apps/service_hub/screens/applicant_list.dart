@@ -195,6 +195,7 @@ class _ApplicantListState extends State<ApplicantList>
 
   AppBar appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       titleSpacing: 16,
       backgroundColor: Colors.white,
@@ -320,6 +321,7 @@ class _ApplicantListState extends State<ApplicantList>
     return [
       SlideActionButton(
         borderRadius: BorderRadius.circular(5),
+        padding: EdgeInsets.zero,
         backgroundColor: mateRed,
         icon: SlydoAppIcon.close_2,
         onPressed: (con) {
@@ -334,6 +336,7 @@ class _ApplicantListState extends State<ApplicantList>
     return [
       SlideActionButton(
         borderRadius: BorderRadius.circular(5),
+        padding: EdgeInsets.zero,
         backgroundColor: const Color(0xff46ce7c),
         icon: Icons.person_add,
         onPressed: (con) {

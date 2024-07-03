@@ -289,7 +289,7 @@ class Product extends PurchasableItem {
   int? discountValue;
   String? discountType;
   bool? discountIsActive;
-  int? discountedPrice;
+  dynamic discountedPrice;
   int? oldPrice;
   bool? isShippable;
   String? addressId;
@@ -1968,6 +1968,7 @@ class Order {
   String? currency;
   List<dynamic>? statusTimeStamp;
   String? customer;
+
   // ShippingAddress? deliveryAddress;
   String? deliveryAddressId;
   String? journeyId;
@@ -1979,8 +1980,28 @@ class Order {
   int? shippingPrice;
   DateTime? updatedAt;
   DateTime? date;
-  String? qty;
+  List<OrderItem>? orderItems;
   List<Map<String, dynamic>>? items;
+  bool hasReview = false;
+  List<String> orderConfirmState = [
+    "Complete",
+    "Payment Successful",
+    "Canceled",
+    "Processing",
+    "Order Placed",
+  ];
+  List<String> orderCancelledState = [
+    "Awaiting Payment",
+    "Payment Successful",
+    "Order Placed",
+  ];
+  List<String> shippedStatus = [
+    "Out For Delivery",
+    "Order Picked Up",
+    "Rider In Delivery Location",
+    "Order Arrived",
+    "Rider Picked Up Order"
+  ];
 
   Order({
     this.id,
@@ -2010,8 +2031,9 @@ class Order {
     this.shippingPrice,
     this.updatedAt,
     this.date,
-    this.qty,
+    this.orderItems,
     this.items,
+    this.hasReview = false,
   });
 
   Order.fromJson(object) {
@@ -2047,7 +2069,9 @@ class Order {
         ? null
         : DateTime.parse(object["updated_at"]);
     date = object["date"] == null ? null : DateTime.parse(object["date"]);
-    qty = object["qty"];
+    orderItems = (object['order_items'] as List)
+        .map((item) => OrderItem.fromJson(item))
+        .toList();
 
     if (object["item"] != null &&
         object["item"] is Map &&
@@ -2069,6 +2093,81 @@ class Order {
           "qty": int.parse(object["qty"]),
         });
       }
+      hasReview = object["has_review"] ?? false;
     }
+  }
+
+  String? getCustomerOrMerchantName(String? userName) {
+    final customerOrMerchant =
+        customerName == userName ? merchant : customerName;
+    return customerOrMerchant;
+  }
+
+  bool? isMerchant(String? userName) {
+    if (merchant == userName) {
+      return true;
+    }
+    return false;
+  }
+
+  bool? isCustomer(String? userName) {
+    if (customerName == userName) {
+      return true;
+    }
+    return false;
+  }
+
+  bool canWriteReview() {
+    if (status == "Complete" && !hasReview) {
+      return true;
+    }
+    return false;
+  }
+
+  bool isShipped() {
+    if (shippedStatus.contains(status) == true) {
+      return true;
+    }
+    return false;
+  }
+
+  String? normalizeName(String? userName) {
+    final String name = getCustomerOrMerchantName(userName) ?? "";
+    if (name == "__anonymous__") {
+      return "Anonymous User";
+    }
+    return name;
+  }
+}
+
+class OrderItem {
+  dynamic item; // Can be either Product or Service
+  int? qty;
+  double? price;
+  int? id;
+
+  OrderItem({
+    this.item,
+    this.qty,
+    this.price,
+    this.id,
+  });
+
+  factory OrderItem.fromJson(Map<String, dynamic> json) {
+    var item;
+    if (json['item']['type'] == 'product') {
+      item = Product.fromJson(json['item']);
+    } else if (json['item']['type'] == 'service') {
+      item = Service.fromJson(json['item']);
+    } else {
+      throw Exception('Unknown item type');
+    }
+
+    return OrderItem(
+      item: item,
+      qty: json['qty'],
+      price: json['price'].toDouble(),
+      id: json['id'],
+    );
   }
 }

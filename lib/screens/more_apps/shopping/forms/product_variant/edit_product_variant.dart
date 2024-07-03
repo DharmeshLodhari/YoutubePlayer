@@ -38,6 +38,7 @@ class _EditProductVariantState extends State<EditProductVariant> {
   UserBloc? userBloc;
   int imageCount = 5;
   final ScrollController _scrollController = ScrollController();
+  TextEditingController inventoryController = TextEditingController();
   List<PickedFile> productLocalImages = [];
   List<String?> productImagesFromServer = [];
   List<String> croppedImageList = [];
@@ -110,6 +111,7 @@ class _EditProductVariantState extends State<EditProductVariant> {
     isDiscountAvailable = variant!.discountIsActive ?? false;
     inventoryIsAvailable = variant!.trackInventory ?? false;
     inventoryCount = variant!.quantity ?? 1;
+    inventoryController.text = variant!.quantity.toString();
     if (variant!.availableFrom != null) {
       productAvailableFrom = variant!.availableFrom;
     } else {
@@ -207,6 +209,7 @@ class _EditProductVariantState extends State<EditProductVariant> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,
@@ -991,23 +994,52 @@ class _EditProductVariantState extends State<EditProductVariant> {
           child: ListTile(
             dense: true,
             title: Center(
-              child: Container(
-                decoration: BoxDecoration(
-                    border: Border.all(
-                      color: greyBorderColor,
+              // child: Container(
+              //   decoration: BoxDecoration(
+              //       border: Border.all(
+              //         color: greyBorderColor,
+              //       ),
+              //       borderRadius: const BorderRadius.all(Radius.circular(10))),
+              //   child: Padding(
+              //     padding: const EdgeInsets.only(
+              //         left: 10.0, top: 5.0, bottom: 5.0, right: 10.0),
+              //     child: Text(
+              //       inventoryCount.toString(),
+              //       style: TextStyle(
+              //         color: blackFont,
+              //         fontWeight: FontWeight.w600,
+              //         fontSize: 16,
+              //       ),
+              //     ),
+              //   ),
+              // ),
+              child: SizedBox(
+                width: 50,
+                child: TextField(
+                  controller: inventoryController,
+                  keyboardType: TextInputType.number,
+                  textAlign: TextAlign.center,
+                  decoration: InputDecoration(
+                    isDense: true,
+                    contentPadding: EdgeInsets.all(5),
+                    border: const OutlineInputBorder(),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: greyBorderColor,
+                      ),
                     ),
-                    borderRadius: const BorderRadius.all(Radius.circular(10))),
-                child: Padding(
-                  padding: const EdgeInsets.only(
-                      left: 10.0, top: 5.0, bottom: 5.0, right: 10.0),
-                  child: Text(
-                    inventoryCount.toString(),
-                    style: TextStyle(
-                      color: blackFont,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: greyBorderColor,
+                      ),
                     ),
                   ),
+                  onChanged: (value) {
+                    // if (value.isEmpty) {
+                    //   inventoryController.text = '1';
+                    // }
+                    inventoryCount = int.parse(inventoryController.text);
+                  },
                 ),
               ),
             ),
@@ -1042,6 +1074,7 @@ class _EditProductVariantState extends State<EditProductVariant> {
   void addInventory() {
     setState(() {
       inventoryCount++;
+      inventoryController.text = inventoryCount.toString();
     });
   }
 
@@ -1049,6 +1082,7 @@ class _EditProductVariantState extends State<EditProductVariant> {
     if (inventoryCount > 0) {
       setState(() {
         inventoryCount--;
+        inventoryController.text = inventoryCount.toString();
       });
     }
   }
@@ -1230,6 +1264,7 @@ class _EditProductVariantState extends State<EditProductVariant> {
   @override
   void dispose() {
     _scrollController.dispose();
+    inventoryController.dispose();
     super.dispose();
   }
 }

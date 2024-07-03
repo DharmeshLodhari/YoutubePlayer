@@ -199,6 +199,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       backgroundColor: Colors.white,
       elevation: 0,
       leading: IconButton(

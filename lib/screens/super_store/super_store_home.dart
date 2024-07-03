@@ -69,6 +69,7 @@ class _SuperStoreHomeState extends State<SuperStoreHome> {
 
   Widget _buildAppBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       backgroundColor: Colors.white,
       title: Text(
         AppLocalization.of(context)!.superStore,
@@ -246,11 +247,12 @@ class _SuperStoreHomeState extends State<SuperStoreHome> {
               child: GestureDetector(
                   // key: showTutorial(shortcut['title']),
                   onTap: () {
-                    NavigationUtil.push(
+                    Navigator.push(
                       context,
-                      screen: SuperStore(
-                        arguments: {"industry": shortcut},
-                      ),
+                      MaterialPageRoute(
+                          builder: (context) => SuperStore(
+                                arguments: {"industry": shortcut},
+                              )),
                     );
                   },
                   child: shortcutView(shortcut)),

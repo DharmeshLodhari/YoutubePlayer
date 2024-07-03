@@ -99,6 +99,7 @@ class _AddEditDiscountState extends State<AddEditDiscount> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0.5,
       backgroundColor: Colors.white,
       titleSpacing: 0,
@@ -126,7 +127,7 @@ class _AddEditDiscountState extends State<AddEditDiscount> {
   Widget scaffoldBody() {
     return SingleChildScrollView(
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
+        padding: const EdgeInsets.all(16),
         child: Center(
           child: Form(
             key: _formKey,
@@ -740,13 +741,27 @@ class _AddEditDiscountState extends State<AddEditDiscount> {
   Widget toggleActiveTag() {
     return Row(
       children: [
-        Switch(
-          onChanged: (value) {
-            discountModel.isActive = !discountModel.isActive;
-            setState(() {});
-          },
-          value: discountModel.isActive,
-          activeColor: Theme.of(context).primaryColor,
+        SizedBox(
+          width: 40,
+          height: 30,
+          child: FittedBox(
+            fit: BoxFit.fill,
+            child: Switch(
+              onChanged: (value) {
+                discountModel.isActive = !discountModel.isActive;
+                setState(() {});
+              },
+              value: discountModel.isActive,
+              thumbIcon: MaterialStateProperty.all(const Icon(null)),
+              activeTrackColor: navyBlue,
+              activeColor: Colors.white,
+              inactiveTrackColor: darkGreyYarn,
+              inactiveThumbColor: Colors.white,
+            ),
+          ),
+        ),
+        SizedBox(
+          width: 5,
         ),
         Text(
           discountModel.isActive

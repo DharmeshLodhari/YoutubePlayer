@@ -25,16 +25,18 @@ class _CustomTextFieldTagState extends State<CustomTextFieldTag> {
   @override
   Widget build(BuildContext context) {
     return TextFieldTags(
-        validator: (value) {
-          return null;
-        },
-        initialTags: widget.initialTags,
-        textfieldTagsController: widget.textFieldTagsController,
-        inputFieldBuilder: (context, inputFieldValues) {
+      validator: (value) {
+        return null;
+      },
+      // initialTags: (userTags).map((e) => jsonEncode(e.toJson())).toList(),
+      initialTags: widget.initialTags,
+      textfieldTagsController: widget.textFieldTagsController,
+      inputfieldBuilder: (context, tec, fn, error, onChanged, onSubmitted) {
+        return ((context, sc, tags, onTagDelete) {
           return TextField(
             readOnly: widget.readOnly,
-            controller: inputFieldValues.textEditingController,
-            focusNode: inputFieldValues.focusNode,
+            controller: tec,
+            focusNode: fn,
             decoration: InputDecoration(
               isDense: true,
               enabledBorder: OutlineInputBorder(
@@ -53,61 +55,61 @@ class _CustomTextFieldTagState extends State<CustomTextFieldTag> {
               ),
               helperText: '',
               hintText: '',
-              errorText: '',
-              prefixIcon: inputFieldValues.tags.isNotEmpty
+              errorText: error,
+              prefixIcon: tags.isNotEmpty
                   ? SingleChildScrollView(
-                      // controller: sc,
+                      controller: sc,
                       scrollDirection: Axis.horizontal,
                       child: Row(
-                          children: _buildCustomTags(inputFieldValues.tags)),
+                          children: tags.map((String tag) {
+                        // Map<String, dynamic> tagData = jsonDecode(tag);
+                        return Container(
+                          decoration: BoxDecoration(
+                            borderRadius: const BorderRadius.all(
+                              Radius.circular(20.0),
+                            ),
+                            border: Border.all(color: darkGrey, width: 1.0),
+                          ),
+                          margin: const EdgeInsets.symmetric(horizontal: 3.0),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 5.0, vertical: 2.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              InkWell(
+                                child: Text(
+                                  '$tag',
+                                  // tagData['name'],
+                                  style: TextStyle(color: blackFont),
+                                ),
+                                onTap: () {
+                                  debugPrint("$tag selected");
+                                },
+                              ),
+                              const SizedBox(width: 4.0),
+                              InkWell(
+                                child: Icon(
+                                  Icons.cancel,
+                                  size: 14.0,
+                                  color: darkGrey,
+                                ),
+                                onTap: () {
+                                  onTagDelete(tag);
+                                  widget.onTap(tag);
+                                },
+                              )
+                            ],
+                          ),
+                        );
+                      }).toList()),
                     )
                   : null,
             ),
-            // onChanged: onChanged,
-            // onSubmitted: onSubmitted,
+            onChanged: onChanged,
+            onSubmitted: onSubmitted,
           );
         });
-  }
-
-  List<Widget> _buildCustomTags(List<dynamic> tags) {
-    return tags.map((dynamic tag) {
-      final String tagName = tag.toString(); // Ensure tag is a string
-      return Container(
-        decoration: BoxDecoration(
-          borderRadius: const BorderRadius.all(
-            Radius.circular(20.0),
-          ),
-          border: Border.all(color: Colors.grey, width: 1.0),
-        ),
-        margin: const EdgeInsets.symmetric(horizontal: 3.0),
-        padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 2.0),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            InkWell(
-              child: Text(
-                tagName,
-                style: const TextStyle(color: Colors.black),
-              ),
-              onTap: () {
-                debugPrint("$tagName selected");
-              },
-            ),
-            const SizedBox(width: 4.0),
-            InkWell(
-              child: const Icon(
-                Icons.cancel,
-                size: 14.0,
-                color: Colors.grey,
-              ),
-              onTap: () {
-                widget.onTap(tagName);
-              },
-            ),
-          ],
-        ),
-      );
-    }).toList();
+      },
+    );
   }
 }

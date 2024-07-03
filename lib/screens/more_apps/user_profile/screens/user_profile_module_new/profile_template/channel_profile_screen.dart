@@ -230,6 +230,9 @@ class _ChannelProfileScreenState extends State<ChannelProfileScreen>
               pinned: true,
               delegate: SliverAppBarDelegate(
                 TabBar(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  tabAlignment: TabAlignment.start,
+                  labelPadding: const EdgeInsets.symmetric(horizontal: 5),
                   controller: _tabController,
                   isScrollable: true,
                   indicator: const BoxDecoration(),
@@ -357,6 +360,7 @@ class _ChannelProfileScreenState extends State<ChannelProfileScreen>
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,

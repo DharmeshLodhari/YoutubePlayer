@@ -145,6 +145,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
 
   Widget _buildAppBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       titleSpacing: 16,
       backgroundColor: Colors.white,

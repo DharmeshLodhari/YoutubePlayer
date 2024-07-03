@@ -66,32 +66,34 @@ class _ProductVariantListState extends State<ProductVariantList>
 
   void getVariantList() async {
     if (!isLoading) {
-      if (mounted) {
-        setState(() {
-          isLoading = true;
-        });
-      }
-      final Map<String, dynamic>? result =
-          await _auth.getVariantList(productId!, next, previous);
-      if (result == null) {
-        isLoading = false;
-        noItemInList = true;
-        return;
-      }
-      // count = result['count'];
-      // next = result['next'];
-      // previous = result['previous'];
-      final tempList = result['results'];
-
-      // productVariantList = Variant.convertToVariantList(tempList);
-      // productVariantList = tempList;
-      productVariantList.addAll(tempList);
-
-      if (mounted) {
-        setState(() {
+      if (next != null && !isLoading) {
+        if (mounted) {
+          setState(() {
+            isLoading = true;
+          });
+        }
+        final Map<String, dynamic>? result =
+            await _auth.getVariantList(productId!, next, previous);
+        if (result == null) {
           isLoading = false;
-          noItemInList = false;
-        });
+          noItemInList = true;
+          return;
+        }
+        count = result['count'];
+        next = result['next'];
+        previous = result['previous'];
+        final tempList = result['results'];
+
+        // productVariantList = Variant.convertToVariantList(tempList);
+        // productVariantList = tempList;
+        productVariantList.addAll(tempList);
+
+        if (mounted) {
+          setState(() {
+            isLoading = false;
+            noItemInList = false;
+          });
+        }
       }
 
       if (productVariantList.isEmpty) {
@@ -164,6 +166,7 @@ class _ProductVariantListState extends State<ProductVariantList>
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       titleSpacing: 0,
       backgroundColor: Colors.white,
@@ -261,59 +264,77 @@ class _ProductVariantListState extends State<ProductVariantList>
       child: Container(
         decoration: decorateBox(),
         padding: const EdgeInsets.symmetric(vertical: 7.0),
-        child: ListTile(
-          title: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                appendStringDot(variant.title!, 20),
-                maxLines: 1,
-                style: TextStyle(
-                    color: blackFont,
-                    fontWeight: FontWeight.w600,
-                    fontFamily: "Inter",
-                    fontSize: 14),
-              ),
-              const SizedBox(height: 3.0),
-              Text(
-                'Available . ${variant.quantity!}',
-                maxLines: 1,
-                style: TextStyle(
-                    color: darkGrey,
-                    fontWeight: FontWeight.w400,
-                    fontFamily: "Inter",
-                    fontSize: 12),
-              ),
-              const SizedBox(height: 3.0),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Text(
-                    worldCurrencies[variant.currency!]!,
-                    style: TextStyle(
-                        fontFamily: "Inter",
-                        fontSize: 14.0,
-                        color: blackFont,
-                        fontWeight: FontWeight.w600),
-                  ),
-                  Text(
-                    moneyDisplayNormalizer(int.parse(variant.price.toString())),
-                    style: TextStyle(
-                        fontSize: 14.0,
-                        color: blackFont,
-                        fontWeight: FontWeight.w600),
-                  ),
-                ],
-              )
-            ],
-          ),
-          leading: GestureDetector(
-            onTap: () {
-              final String url = variant.serverImages![0]!;
-              Navigator.of(context).pushNamed("/photo-viewer", arguments: url);
-            },
-            child: checkProductImage(variant),
+        child: GestureDetector(
+          onTap: () async {
+            final data = await Navigator.of(context)
+                .pushNamed(Routes.PRODUCT_VARIANT_UPDATE, arguments: {
+              'variant': variant,
+            });
+
+            // Handle the result (map) received from PRODUCT_VARIANT_UPDATE
+            if (data != null && data is Variant) {
+              //save the variant details for later use
+              // variantData = data;
+              _onRefresh();
+              if (mounted) setState(() {});
+            }
+          },
+          child: ListTile(
+            title: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  appendStringDot(variant.title!, 20),
+                  maxLines: 1,
+                  style: TextStyle(
+                      color: blackFont,
+                      fontWeight: FontWeight.w600,
+                      fontFamily: "Inter",
+                      fontSize: 14),
+                ),
+                const SizedBox(height: 3.0),
+                Text(
+                  'Available . ${variant.quantity!}',
+                  maxLines: 1,
+                  style: TextStyle(
+                      color: darkGrey,
+                      fontWeight: FontWeight.w400,
+                      fontFamily: "Inter",
+                      fontSize: 12),
+                ),
+                const SizedBox(height: 3.0),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Text(
+                      worldCurrencies[variant.currency!]!,
+                      style: TextStyle(
+                          fontFamily: "Inter",
+                          fontSize: 14.0,
+                          color: blackFont,
+                          fontWeight: FontWeight.w600),
+                    ),
+                    Text(
+                      moneyDisplayNormalizer(
+                          int.parse(variant.price.toString())),
+                      style: TextStyle(
+                          fontSize: 14.0,
+                          color: blackFont,
+                          fontWeight: FontWeight.w600),
+                    ),
+                  ],
+                )
+              ],
+            ),
+            leading: GestureDetector(
+              onTap: () {
+                final String url = variant.serverImages![0]!;
+                Navigator.of(context)
+                    .pushNamed("/photo-viewer", arguments: url);
+              },
+              child: checkProductImage(variant),
+            ),
           ),
         ),
       ),
@@ -357,49 +378,51 @@ class _ProductVariantListState extends State<ProductVariantList>
   Widget _getSlidableWithLists(
       BuildContext context, Widget bankAccountTile, Variant variant) {
     return Slidable(
-      startActionPane: ActionPane(
+      endActionPane: ActionPane(
         motion: const BehindMotion(),
         extentRatio: 0.25,
         children: listActionSlideActions(variant: variant),
       ),
-      endActionPane: ActionPane(
-        motion: const BehindMotion(),
-        extentRatio: 0.25,
-        children: listSecondaryActions(variant: variant),
-      ),
+      // endActionPane: ActionPane(
+      //   motion: const BehindMotion(),
+      //   extentRatio: 0.25,
+      //   children: listSecondaryActions(variant: variant),
+      // ),
       child: VerticalListItem(bankAccountTile),
     );
   }
 
-  List<Widget> listSecondaryActions({required Variant variant}) {
-    return [
-      SlideActionButton(
-        borderRadius: BorderRadius.circular(5),
-        backgroundColor: starYellow,
-        icon: Icons.edit,
-        onPressed: (con) async {
-          final data = await Navigator.of(context)
-              .pushNamed(Routes.PRODUCT_VARIANT_UPDATE, arguments: {
-            'variant': variant,
-          });
-
-          // Handle the result (map) received from PRODUCT_VARIANT_UPDATE
-          if (data != null && data is Variant) {
-            //save the variant details for later use
-            // variantData = data;
-            _onRefresh();
-            if (mounted) setState(() {});
-          }
-        },
-        label: AppLocalization.of(context)!.edit,
-      ),
-    ];
-  }
+  // List<Widget> listSecondaryActions({required Variant variant}) {
+  //   return [
+  //     SlideActionButton(
+  //       borderRadius: BorderRadius.circular(5),
+  //       padding: EdgeInsets.zero,
+  //       backgroundColor: starYellow,
+  //       icon: Icons.edit,
+  //       onPressed: (con) async {
+  //         final data = await Navigator.of(context)
+  //             .pushNamed(Routes.PRODUCT_VARIANT_UPDATE, arguments: {
+  //           'variant': variant,
+  //         });
+  //
+  //         // Handle the result (map) received from PRODUCT_VARIANT_UPDATE
+  //         if (data != null && data is Variant) {
+  //           //save the variant details for later use
+  //           // variantData = data;
+  //           _onRefresh();
+  //           if (mounted) setState(() {});
+  //         }
+  //       },
+  //       label: AppLocalization.of(context)!.edit,
+  //     ),
+  //   ];
+  // }
 
   List<Widget> listActionSlideActions({Variant? variant}) {
     return [
       SlideActionButton(
         borderRadius: BorderRadius.circular(5),
+        padding: EdgeInsets.zero,
         backgroundColor: mateRed,
         icon: SlydoAppIcon.remove,
         onPressed: (con) async {

@@ -217,6 +217,7 @@ class _DiscountListState extends State<DiscountList> {
 
   Widget _buildAppBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       backgroundColor: Colors.white,
       title: Text(
         'Discount',

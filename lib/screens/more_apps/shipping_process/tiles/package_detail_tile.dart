@@ -12,8 +12,8 @@ class PackageDetailTile extends StatelessWidget {
 
   final PackageDetailsModel packageDetailsModel;
   final int index;
-  late final ShippingProcessBloc shippingProcessBloc;
-  late final UserBloc userBloc;
+  late ShippingProcessBloc shippingProcessBloc;
+  late UserBloc userBloc;
 
   @override
   Widget build(BuildContext context) {
@@ -187,7 +187,7 @@ class PackageDetailTile extends StatelessWidget {
           break;
         case DeliveryOptions.eatIn:
           child = Text(
-            "Eatin",
+            "In Store/Eat In",
             style: TextStyle(
               fontSize: 10,
               fontWeight: FontWeight.w500,

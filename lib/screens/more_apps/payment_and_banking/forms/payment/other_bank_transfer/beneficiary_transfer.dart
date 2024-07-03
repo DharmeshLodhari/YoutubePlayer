@@ -72,7 +72,7 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer>
   List bankAccountListStore = [];
   bool noItemInList = false;
   BankAccount? selectedBank;
-  final TextEditingController _amountController = TextEditingController();
+  // final TextEditingController _amountController = TextEditingController();
   final searchItemTextController = TextEditingController();
   GlobalKey searchItemTextFormField = GlobalKey();
   final RefreshController _refreshController =
@@ -557,7 +557,7 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer>
             };
             BottomSheetPassCode(
                 context: context,
-                isValidCallback: () {
+                isValidCallback: () async {
                   showDialog(
                       context: context,
                       builder: (context) =>
@@ -574,7 +574,9 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer>
                             )),
                   );
 
-                  _auth.accountPayout(data).then((value) {
+                  await Future.delayed(const Duration(seconds: 3));
+
+                  await _auth.accountPayout(data).then((value) {
                     response = value;
 
                     Navigator.pop(context);
@@ -1186,6 +1188,7 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer>
     return [
       SlideActionButton(
         borderRadius: BorderRadius.circular(5),
+        padding: EdgeInsets.zero,
         backgroundColor: naturalGreen,
         icon: Icons.device_hub,
         onPressed: account.isDefault!
@@ -1208,6 +1211,7 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer>
     return [
       SlideActionButton(
         borderRadius: BorderRadius.circular(5),
+        padding: EdgeInsets.zero,
         backgroundColor: mateRed,
         icon: SlydoAppIcon.remove,
         onPressed: (con) {

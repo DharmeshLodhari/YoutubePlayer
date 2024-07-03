@@ -50,6 +50,7 @@ class _UserProductServiceDiscountState
 
   Widget _buildAppBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0.5,
       backgroundColor: Colors.white,
       titleSpacing: 0,

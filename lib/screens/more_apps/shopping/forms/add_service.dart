@@ -167,6 +167,7 @@ class _AddServiceState extends State<AddService> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,
@@ -481,10 +482,12 @@ class _AddServiceState extends State<AddService> {
         title: Text(
           selectedServiceCategory != null ? selectedServiceCategory!.name : "",
           style: TextStyle(
-              color: blackFont,
-              fontSize: 16,
-              fontFamily: "Inter",
-              fontWeight: FontWeight.w600),
+            color: blackFont,
+            fontSize: 16,
+            fontFamily: "Inter",
+            fontWeight: FontWeight.w600,
+          ),
+          maxLines: 1,
         ),
         trailing: Icon(
           Icons.keyboard_arrow_down,
@@ -827,6 +830,7 @@ class _AddServiceState extends State<AddService> {
               fontSize: 16,
               fontFamily: "Inter",
             ),
+            maxLines: 1,
           ),
           trailing: Icon(
             SlydoAppIcon.date,
@@ -853,10 +857,12 @@ class _AddServiceState extends State<AddService> {
                   ""
               : "",
           style: TextStyle(
-              color: blackFont,
-              fontSize: 16,
-              fontFamily: "Inter",
-              fontWeight: FontWeight.w600),
+            color: blackFont,
+            fontSize: 16,
+            fontFamily: "Inter",
+            fontWeight: FontWeight.w600,
+          ),
+          maxLines: 1,
         ),
         trailing: Icon(
           Icons.keyboard_arrow_down,

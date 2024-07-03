@@ -69,6 +69,7 @@ class _ContractScreenState extends State<ContractScreen>
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,
@@ -335,6 +336,7 @@ class _ContractScreenState extends State<ContractScreen>
                           children: [
                             SlideActionButton(
                               borderRadius: BorderRadius.circular(5),
+                              padding: EdgeInsets.zero,
                               backgroundColor: mateRed,
                               icon: Icons.stop_circle_outlined,
                               onPressed: (con) {
@@ -373,6 +375,7 @@ class _ContractScreenState extends State<ContractScreen>
                                 children: [
                                   SlideActionButton(
                                     borderRadius: BorderRadius.circular(5),
+                                    padding: EdgeInsets.zero,
                                     backgroundColor: naturalGreen,
                                     icon: Icons.stop_circle_outlined,
                                     onPressed: (con) {
@@ -445,6 +448,7 @@ class _ContractScreenState extends State<ContractScreen>
     return [
       SlideActionButton(
         borderRadius: BorderRadius.circular(5),
+        padding: EdgeInsets.zero,
         backgroundColor: getSecondaryActionIconColor(contract),
         icon: getSecondaryActionIcon(contract),
         onPressed: (con) {
@@ -525,6 +529,7 @@ class _ContractScreenState extends State<ContractScreen>
     return [
       SlideActionButton(
         borderRadius: BorderRadius.circular(5),
+        padding: EdgeInsets.zero,
         backgroundColor: mateRed,
         icon: Icons.stop_circle_outlined,
         onPressed: (con) {

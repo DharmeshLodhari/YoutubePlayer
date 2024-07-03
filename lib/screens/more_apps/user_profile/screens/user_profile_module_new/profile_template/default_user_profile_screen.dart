@@ -260,6 +260,9 @@ class _DefaultUserProfileScreenState extends State<DefaultUserProfileScreen>
             pinned: true,
             delegate: SliverAppBarDelegate(
               TabBar(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                tabAlignment: TabAlignment.start,
+                labelPadding: const EdgeInsets.symmetric(horizontal: 5),
                 controller: _tabController,
                 isScrollable: true,
                 indicator: const BoxDecoration(),

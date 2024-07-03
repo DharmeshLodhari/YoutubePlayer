@@ -286,6 +286,7 @@ Future<bool?> showDialogBox(
     Color? actionOneTextColor,
     Color? actionTwoBgColor,
     Color? actionTwoTextColor,
+    double? fontSize,
     Function()? leftButtonOnPressed,
     Function()? rightButtonOnPressed,
     required String actionTwoText, // DialogButton's text
@@ -311,6 +312,7 @@ Future<bool?> showDialogBox(
         },
         textColor: actionOneTextColor,
         text: actionOneText,
+        fontSize: fontSize,
         backgroundColor: actionOneBgColor,
       ),
       DialogButton(
@@ -322,6 +324,7 @@ Future<bool?> showDialogBox(
         },
         textColor: actionTwoTextColor,
         text: actionTwoText,
+        fontSize: fontSize,
         backgroundColor: actionTwoBgColor,
       )
     ],

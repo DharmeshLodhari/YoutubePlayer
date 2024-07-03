@@ -204,7 +204,7 @@ class _PaymentLinkState extends State<PaymentLink>
                               ? 'Pending'
                               : status,
                           style: TextStyle(
-                            color: colorStats(status!),
+                            color: colorStats(status),
                             fontSize: 10.80,
                             fontFamily: "Inter",
                             fontWeight: FontWeight.w600,
@@ -371,6 +371,7 @@ class _PaymentLinkState extends State<PaymentLink>
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       titleSpacing: 0,
       backgroundColor: Colors.white,
@@ -593,6 +594,7 @@ class _PaymentLinkState extends State<PaymentLink>
     return [
       SlideActionButton(
         borderRadius: BorderRadius.circular(5),
+        padding: EdgeInsets.zero,
         backgroundColor: mateRed,
         icon: SlydoAppIcon.cancel_connection_request,
         onPressed: (con) {

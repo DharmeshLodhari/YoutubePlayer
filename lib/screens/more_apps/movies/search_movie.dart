@@ -78,6 +78,7 @@ class _SearchMovieState extends State<SearchMovie> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,

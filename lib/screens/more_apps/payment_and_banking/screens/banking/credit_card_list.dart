@@ -111,6 +111,7 @@ class _CreditCardListState extends State<CreditCardList>
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       titleSpacing: 0,
       backgroundColor: Colors.white,
@@ -324,6 +325,7 @@ class _CreditCardListState extends State<CreditCardList>
     return [
       SlideActionButton(
         borderRadius: BorderRadius.circular(5),
+        padding: EdgeInsets.zero,
         backgroundColor: naturalGreen,
         icon: Icons.device_hub,
         onPressed: creditCard.isDefault!
@@ -346,6 +348,7 @@ class _CreditCardListState extends State<CreditCardList>
     return [
       SlideActionButton(
         borderRadius: BorderRadius.circular(5),
+        padding: EdgeInsets.zero,
         backgroundColor: mateRed,
         icon: SlydoAppIcon.remove,
         onPressed: (con) {

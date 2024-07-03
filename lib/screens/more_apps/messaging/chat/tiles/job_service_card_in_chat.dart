@@ -53,9 +53,9 @@ class _JobCardChatDescriptionState extends State<JobCardChatDescription> {
     log('message${widget.jobMessage.toString()}');
     userBloc = Provider.of<UserBloc>(context);
 
-    if (widget.jobMessage!["meta_data"] is String) {
+    if (widget.jobMessage["meta_data"] is String) {
       data = jsonDecode(widget.jobMessage["meta_data"]);
-    } else if (widget.jobMessage!["meta_data"] is Map) {
+    } else if (widget.jobMessage["meta_data"] is Map) {
       data = widget.jobMessage["meta_data"];
     }
 
@@ -237,7 +237,7 @@ class _JobCardChatDescriptionState extends State<JobCardChatDescription> {
                   width: 20,
                   child: isSend
                       ? Center(
-                          child: getMessageTick(message: widget.jobMessage!),
+                          child: getMessageTick(message: widget.jobMessage),
                         )
                       : Container(),
                 )

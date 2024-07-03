@@ -180,6 +180,7 @@ class _AddOnOptionListState extends State<AddOnOptionList>
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       titleSpacing: 0,
       backgroundColor: Colors.white,
@@ -469,6 +470,7 @@ class _AddOnOptionListState extends State<AddOnOptionList>
     return [
       SlideActionButton(
         borderRadius: BorderRadius.circular(5),
+        padding: EdgeInsets.zero,
         backgroundColor: starYellow,
         icon: Icons.edit,
         onPressed: (con) async {
@@ -504,6 +506,7 @@ class _AddOnOptionListState extends State<AddOnOptionList>
     return [
       SlideActionButton(
         borderRadius: BorderRadius.circular(5),
+        padding: EdgeInsets.zero,
         backgroundColor: mateRed,
         icon: SlydoAppIcon.remove,
         onPressed: (con) async {

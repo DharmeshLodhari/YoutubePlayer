@@ -69,6 +69,7 @@ class _VideoRecorderState extends State<VideoRecorder> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.transparent,
       titleSpacing: 0,

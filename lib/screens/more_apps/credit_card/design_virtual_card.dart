@@ -76,6 +76,7 @@ class DesignVirtualCardState extends State<DesignVirtualCard> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,
@@ -423,7 +424,12 @@ class DesignVirtualCardState extends State<DesignVirtualCard> {
         title: Text(
           cardBrand.isNotEmpty ? cardBrand : "",
           style: TextStyle(
-              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+            color: blackFont,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            fontFamily: "Inter",
+          ),
+          maxLines: 1,
         ),
         trailing: Icon(
           Icons.keyboard_arrow_down,
@@ -444,7 +450,12 @@ class DesignVirtualCardState extends State<DesignVirtualCard> {
         title: Text(
           cardType.isNotEmpty ? cardType : "",
           style: TextStyle(
-              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+            color: blackFont,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            fontFamily: "Inter",
+          ),
+          maxLines: 1,
         ),
         trailing: Icon(
           Icons.keyboard_arrow_down,

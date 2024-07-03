@@ -54,7 +54,7 @@ class SlideActionButton extends StatelessWidget {
         children: [
           Icon(
             icon,
-            size: 18,
+            size: 17,
             color: iconColor,
           ),
           const SizedBox(
@@ -65,7 +65,7 @@ class SlideActionButton extends StatelessWidget {
               label!,
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 13,
+                fontSize: 12,
                 fontWeight: FontWeight.w600,
                 color: iconColor,
                 fontFamily: "Inter",

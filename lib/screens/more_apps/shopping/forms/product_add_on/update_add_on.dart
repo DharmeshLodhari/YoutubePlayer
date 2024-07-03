@@ -99,6 +99,7 @@ class _UpdateAddOnState extends State<UpdateAddOn> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,
@@ -530,6 +531,7 @@ class _UpdateAddOnState extends State<UpdateAddOn> {
             height: 80 * productAddOnOptionList.length.toDouble(),
             child: ListView.builder(
               padding: const EdgeInsets.symmetric(vertical: 16),
+              physics: const NeverScrollableScrollPhysics(),
               //+1 for progressbar
               itemCount: productAddOnOptionList.length + 1,
               controller: scrollControllerAddOnOption,

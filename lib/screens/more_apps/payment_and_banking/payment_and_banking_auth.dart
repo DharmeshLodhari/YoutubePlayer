@@ -45,6 +45,7 @@ class PaymentAndBankingAuth extends AuthService {
     } else {
       debugPrint(
           "URL:- $url StatusCode:- ${response.statusCode} Body:- ${response.body}");
+      return [];
       return Future.error(
           "ERROR while calling $url StatusCode:- ${response.statusCode} Body:- ${response.body}");
     }

@@ -67,6 +67,7 @@ class _AddReportScreenState extends State<AddReportScreen> {
 
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
+        surfaceTintColor: Colors.transparent,
         backgroundColor: Colors.white,
         title: Text(
           "Report",
@@ -168,7 +169,12 @@ class _AddReportScreenState extends State<AddReportScreen> {
         title: Text(
           selectedViolationType != null ? selectedViolationType!.type! : "",
           style: TextStyle(
-              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+            color: blackFont,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            fontFamily: "Inter",
+          ),
+          maxLines: 1,
         ),
         trailing: Icon(
           Icons.keyboard_arrow_down,

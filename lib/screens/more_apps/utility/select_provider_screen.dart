@@ -14,8 +14,7 @@ class SelectProviderScreen extends StatefulWidget {
   final String nameOfProvider;
   final UtilitiesProvidersEnum providerEnum;
   const SelectProviderScreen(
-      {super.key, required this.providerEnum, required this.nameOfProvider})
-     ;
+      {super.key, required this.providerEnum, required this.nameOfProvider});
 
   @override
   State<SelectProviderScreen> createState() => _SelectProviderScreenState();
@@ -93,6 +92,7 @@ class _SelectProviderScreenState extends State<SelectProviderScreen> {
 
   AppBar appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       titleSpacing: 0,
       backgroundColor: Colors.transparent,

@@ -81,6 +81,7 @@ class _SharedCartMembersState extends State<SharedCartMembers>
 
   Widget _buildAppBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       leading: IconButton(
         icon: Icon(
           Icons.keyboard_arrow_left,
@@ -263,6 +264,7 @@ class _SharedCartMembersState extends State<SharedCartMembers>
     return [
       SlideActionButton(
         borderRadius: BorderRadius.circular(5),
+        padding: EdgeInsets.zero,
         backgroundColor: mateRed,
         icon: SlydoAppIcon.remove,
         onPressed: (con) async {

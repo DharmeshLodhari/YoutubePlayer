@@ -1,19 +1,18 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:Slydo/main.dart';
 import 'package:Slydo/screens/moments/screens/preview_moment_screen.dart';
 import 'package:Slydo/screens/moments/screens/trimmer_view.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/storage_permission.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/image_crop.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:video_player/video_player.dart';
-
-import '../../../main.dart';
-import '../../../widget/image_crop.dart';
 
 class CreateMediaMomentScreen extends StatefulWidget {
   final dynamic arguments;

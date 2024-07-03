@@ -13,8 +13,7 @@ import 'package:shimmer/shimmer.dart';
 
 class JobsCategoryJobsList extends StatefulWidget {
   final String categoryId;
-  const JobsCategoryJobsList({super.key, required this.categoryId})
-     ;
+  const JobsCategoryJobsList({super.key, required this.categoryId});
 
   @override
   State<JobsCategoryJobsList> createState() => _JobsCategoryJobsListState();
@@ -210,6 +209,7 @@ class _JobsCategoryJobsListState extends State<JobsCategoryJobsList> {
 
   AppBar appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       titleSpacing: 16,
       backgroundColor: Colors.white,

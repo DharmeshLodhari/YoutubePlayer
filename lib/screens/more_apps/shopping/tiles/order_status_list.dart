@@ -22,38 +22,20 @@ class _OrderStatusListState extends State<OrderStatusList> {
 
   @override
   void initState() {
-    // fetchCartData();
     statusList = [
-      SharedCartModel(id: 'awaiting-payment', name: 'Awaiting payment'),
-      SharedCartModel(id: 'processing', name: 'Processing'),
-      SharedCartModel(id: 'on-hold', name: 'On hold'),
-      SharedCartModel(id: 'pending', name: 'Pending'),
-      SharedCartModel(id: 'shipped', name: 'Shipped'),
-      SharedCartModel(id: 'out-of-delivery', name: 'Out of delivery'),
-      SharedCartModel(id: 'ready-for-delivery', name: 'Ready for delivery'),
+      SharedCartModel(id: 'awaiting payment', name: 'Awaiting payment'),
       SharedCartModel(id: 'canceled', name: 'Canceled'),
+      SharedCartModel(id: 'completed', name: 'Completed'),
+      SharedCartModel(id: 'on hold', name: 'On Hold'),
+      SharedCartModel(id: 'processing', name: 'Processing'),
     ];
     super.initState();
   }
 
-  // void fetchCartData() async {
-  //   isLoading = true;
-  //   if (mounted) setState(() {});
-  //   final List<SharedCartModel> result = await getCartList();
-  //   cartList.add(SharedCartModel(id: 'my-cart', name: 'My cart'));
-  //   if (result.isNotEmpty) {
-  //     for (SharedCartModel cart in result) {
-  //       cartList.add(cart);
-  //     }
-  //   }
-  //   isLoading = false;
-  //   if (mounted) setState(() {});
-  // }
-
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: MediaQuery.of(context).size.height * 0.55,
+      height: MediaQuery.of(context).size.height * 0.45,
       child: SingleChildScrollView(
         child: Padding(
           padding:
@@ -127,22 +109,25 @@ class _OrderStatusListState extends State<OrderStatusList> {
   }
 
   Widget getSubmitButton() {
-    return CurvedButton(
-      onPressed: () {
-        Navigator.pushNamed(context, Routes.ORDER_UPDATED,
-            arguments: {"orderId": widget.orderId});
-      },
-      // onPressed: isAPILoading
-      //     ? () {}
-      //     : () async {
-      //   FocusScope.of(context).unfocus();
-      //
-      //   await goToGeneratePage();
-      // },
-      backgroundColor: navyBlue,
-      textColor: Colors.white,
-      text: "Save",
-      // isLoading: isAPILoading,
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10.0),
+      child: CurvedButton(
+        onPressed: () {
+          Navigator.pushNamed(context, Routes.ORDER_UPDATED,
+              arguments: {"orderId": widget.orderId});
+        },
+        // onPressed: isAPILoading
+        //     ? () {}
+        //     : () async {
+        //   FocusScope.of(context).unfocus();
+        //
+        //   await goToGeneratePage();
+        // },
+        backgroundColor: navyBlue,
+        textColor: Colors.white,
+        text: "Save",
+        // isLoading: isAPILoading,
+      ),
     );
   }
 }

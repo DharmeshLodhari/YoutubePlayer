@@ -103,8 +103,8 @@ class _EditProductState extends State<EditProduct> {
   TextEditingController heightController = TextEditingController();
   TextEditingController widthController = TextEditingController();
   TextEditingController searchKeywordController = TextEditingController();
-  TextEditingController inventoryCountController = TextEditingController();
-  int inventoryCount = 0;
+  TextEditingController inventoryController = TextEditingController();
+  int inventoryCount = 1;
   List<Variant> productVariantList = [];
   List<AddOns> productAddOnsList = [];
   bool inventoryIsAvailable = false;
@@ -190,7 +190,8 @@ class _EditProductState extends State<EditProduct> {
           currentProduct = value;
 
           // assigning to our edit controllers
-          productTitleController.text = currentProduct.name ?? "";
+          productTitleController.text =
+              messageDecoderWithEmoji(currentProduct.name) ?? "";
           productDescriptionController.text =
               messageDecoderWithEmoji(currentProduct.description) ?? "";
 
@@ -255,7 +256,7 @@ class _EditProductState extends State<EditProduct> {
               ? currentProduct.width.toString()
               : '';
           inventoryCount = currentProduct.quantity!;
-          inventoryCountController.text = inventoryCount.toString();
+          inventoryController.text = inventoryCount.toString();
 
           //convert list to variant
           productVariantList = currentProduct.variantModels ?? [];
@@ -459,6 +460,7 @@ class _EditProductState extends State<EditProduct> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,
@@ -1008,7 +1010,12 @@ class _EditProductState extends State<EditProduct> {
         title: Text(
           selectedWeight.isNotEmpty ? selectedWeight : "",
           style: TextStyle(
-              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+            color: blackFont,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            fontFamily: "Inter",
+          ),
+          maxLines: 1,
         ),
         trailing: Icon(
           Icons.keyboard_arrow_down,
@@ -1059,7 +1066,12 @@ class _EditProductState extends State<EditProduct> {
         title: Text(
           selectedHeight.isNotEmpty ? selectedHeight : "",
           style: TextStyle(
-              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+            color: blackFont,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            fontFamily: "Inter",
+          ),
+          maxLines: 1,
         ),
         trailing: Icon(
           Icons.keyboard_arrow_down,
@@ -1110,7 +1122,12 @@ class _EditProductState extends State<EditProduct> {
         title: Text(
           selectedWidth.isNotEmpty ? selectedWidth : "",
           style: TextStyle(
-              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+            color: blackFont,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            fontFamily: "Inter",
+          ),
+          maxLines: 1,
         ),
         trailing: Icon(
           Icons.keyboard_arrow_down,
@@ -1478,7 +1495,12 @@ class _EditProductState extends State<EditProduct> {
         title: Text(
           selectedProductCategory != null ? selectedProductCategory!.name : "",
           style: TextStyle(
-              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+            color: blackFont,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            fontFamily: "Inter",
+          ),
+          maxLines: 1,
         ),
         trailing: Icon(
           Icons.keyboard_arrow_down,
@@ -1504,7 +1526,12 @@ class _EditProductState extends State<EditProduct> {
                   ? selectedPreparationCondition!.description
                   : "",
               style: TextStyle(
-                  color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+                color: blackFont,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                fontFamily: "Inter",
+              ),
+              maxLines: 1,
             ),
           ],
         ),
@@ -1630,11 +1657,10 @@ class _EditProductState extends State<EditProduct> {
 
                   for (var tags in result) {
                     if (tags.isSelected == true) {
-                      // _myController.addTag = tags.name
-                      //         ?.replaceAll(" ", "-")
-                      //         .toLowerCase() ??
+                      _myController.addTag =
+                          tags.name?.replaceAll(" ", "-").toLowerCase() ?? "";
 
-                      _myController.addTag(tags.name ?? "");
+                      // _myController.addTag(tags.name ?? "");
 
                       final Tags tagData = Tags(id: tags.id, name: tags.name);
                       userTags.add(tagData);
@@ -1659,7 +1685,7 @@ class _EditProductState extends State<EditProduct> {
           height: 6,
         ),
         CustomTextFieldTag(
-          initialTags: (userTags).map((e) => e.name!).toList(),
+          // initialTags: (userTags).map((e) => e.name!).toList(),
           textFieldTagsController: _myController,
           onTap: (String tag) {
             setState(() {
@@ -1684,7 +1710,12 @@ class _EditProductState extends State<EditProduct> {
                   ? selectedProductCondition!.name
                   : "",
               style: TextStyle(
-                  color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+                color: blackFont,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                fontFamily: "Inter",
+              ),
+              maxLines: 1,
             ),
             Expanded(
               child: Text(
@@ -1744,7 +1775,12 @@ class _EditProductState extends State<EditProduct> {
               ? selectedCustomCategory?.name ?? ""
               : "",
           style: TextStyle(
-              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+            color: blackFont,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            fontFamily: "Inter",
+          ),
+          maxLines: 1,
         ),
         trailing: Icon(
           Icons.keyboard_arrow_down,
@@ -1766,7 +1802,12 @@ class _EditProductState extends State<EditProduct> {
         title: Text(
           selectedSubCategory != null ? selectedSubCategory!.name : "",
           style: TextStyle(
-              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+            color: blackFont,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            fontFamily: "Inter",
+          ),
+          maxLines: 1,
         ),
         trailing: Icon(
           Icons.keyboard_arrow_down,
@@ -2462,7 +2503,9 @@ class _EditProductState extends State<EditProduct> {
               color: blackFont,
               fontWeight: FontWeight.w600,
               fontSize: 16,
+              fontFamily: "Inter",
             ),
+            maxLines: 1,
           ),
           trailing: Icon(
             SlydoAppIcon.date,
@@ -2491,33 +2534,108 @@ class _EditProductState extends State<EditProduct> {
   }
 
   Widget getInventoryFormField() {
-    return CustomizedTextFormField(
-      labelText: "Inventory (Available Quantity)",
-      keyboardType: Platform.isIOS
-          ? const TextInputType.numberWithOptions(decimal: false)
-          : TextInputType.number,
-      controller: inventoryCountController,
-      onChanged: (val) {
-        if (val.isNotEmpty) {
-          try {
-            inventoryCount = int.parse(val);
-          } catch (e) {
-            showToast(message: e.toString());
-          }
-        }
-      },
-      validator: (val) {
-        if (val.isNotEmpty) {
-          try {
-            val;
-            return null;
-          } catch (e) {
-            return AppLocalization.of(context)!.invalidCount;
-          }
-        }
-        return AppLocalization.of(context)!.pleaseEnterValidCount;
-      },
+    return CustomizedDropDownField(
+      title: "Inventory (Available Quantity)",
+      child: ListTile(
+        dense: true,
+        title: Center(
+          child: SizedBox(
+            width: 50,
+            child: TextField(
+              controller: inventoryController,
+              keyboardType: TextInputType.number,
+              textAlign: TextAlign.center,
+              decoration: InputDecoration(
+                isDense: true,
+                contentPadding: const EdgeInsets.all(5),
+                border: const OutlineInputBorder(),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: greyBorderColor,
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: greyBorderColor,
+                  ),
+                ),
+              ),
+              onChanged: (value) {
+                // if (value.isEmpty) {
+                //   inventoryController.text = '1';
+                // }
+                inventoryCount = int.parse(inventoryController.text);
+              },
+            ),
+          ),
+        ),
+        trailing: Padding(
+          padding: const EdgeInsets.only(right: 30.0),
+          child: RoundedBackgroundIcon(
+              backgroundColor: greyBorderColor,
+              icon: Icon(
+                SlydoAppIcon.plus,
+                color: blackFont,
+                size: 14,
+              ),
+              onTap: () => addInventory()),
+        ),
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 30.0),
+          child: RoundedBackgroundIcon(
+              backgroundColor: greyBorderColor,
+              icon: Icon(
+                SlydoAppIcon.minus,
+                color: blackFont,
+                size: 2,
+              ),
+              onTap: () => subtractInventory()),
+        ),
+      ),
     );
+    // return CustomizedTextFormField(
+    //   labelText: "Inventory (Available Quantity)",
+    //   keyboardType: Platform.isIOS
+    //       ? const TextInputType.numberWithOptions(decimal: false)
+    //       : TextInputType.number,
+    //   controller: inventoryCountController,
+    //   onChanged: (val) {
+    //     if (val.isNotEmpty) {
+    //       try {
+    //         inventoryCount = int.parse(val);
+    //       } catch (e) {
+    //         showToast(message: e.toString());
+    //       }
+    //     }
+    //   },
+    //   validator: (val) {
+    //     if (val.isNotEmpty) {
+    //       try {
+    //         val;
+    //         return null;
+    //       } catch (e) {
+    //         return AppLocalization.of(context)!.invalidCount;
+    //       }
+    //     }
+    //     return AppLocalization.of(context)!.pleaseEnterValidCount;
+    //   },
+    // );
+  }
+
+  void addInventory() {
+    setState(() {
+      inventoryCount++;
+      inventoryController.text = inventoryCount.toString();
+    });
+  }
+
+  void subtractInventory() {
+    if (inventoryCount > 0) {
+      setState(() {
+        inventoryCount--;
+        inventoryController.text = inventoryCount.toString();
+      });
+    }
   }
 
   Widget getMeasurementField() {
@@ -2563,7 +2681,12 @@ class _EditProductState extends State<EditProduct> {
               ? pickedMeasurementList.join(', ')
               : '',
           style: TextStyle(
-              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+            color: blackFont,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            fontFamily: "Inter",
+          ),
+          maxLines: 1,
         ),
         trailing: Icon(
           Icons.keyboard_arrow_down,
@@ -2668,10 +2791,12 @@ class _EditProductState extends State<EditProduct> {
                   ""
               : "",
           style: TextStyle(
-              color: blackFont,
-              fontSize: 16,
-              fontFamily: "Inter",
-              fontWeight: FontWeight.w600),
+            color: blackFont,
+            fontSize: 16,
+            fontFamily: "Inter",
+            fontWeight: FontWeight.w600,
+          ),
+          maxLines: 1,
         ),
         trailing: Icon(
           Icons.keyboard_arrow_down,
@@ -2825,7 +2950,9 @@ class _EditProductState extends State<EditProduct> {
                   color: blackFont,
                   fontWeight: FontWeight.w500,
                   fontSize: 14,
+                  fontFamily: "Inter",
                 ),
+                maxLines: 1,
               ),
             ),
           ),
@@ -3135,6 +3262,7 @@ class _EditProductState extends State<EditProduct> {
     scrollControllerVariant.dispose();
     searchKeywordController.dispose();
     _myController.dispose();
+    inventoryController.dispose();
 
     super.dispose();
   }

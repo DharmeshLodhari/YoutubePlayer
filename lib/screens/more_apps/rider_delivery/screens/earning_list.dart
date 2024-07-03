@@ -44,6 +44,7 @@ class _EarningListState extends State<EarningList> {
 
   Widget _buildAppBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       backgroundColor: white,
       title: Text(
         '15/02/04 - 22/08/2020',

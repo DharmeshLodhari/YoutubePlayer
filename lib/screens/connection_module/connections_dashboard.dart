@@ -91,6 +91,7 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,

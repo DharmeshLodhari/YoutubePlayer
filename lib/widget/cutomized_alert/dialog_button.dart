@@ -16,6 +16,7 @@ class DialogButton extends StatelessWidget {
   final Function onPressed;
   final Color? textColor;
   final String? text;
+  final double? fontSize;
 
   /// DialogButton constructor
   const DialogButton({
@@ -23,6 +24,7 @@ class DialogButton extends StatelessWidget {
     this.backgroundColor,
     this.text,
     this.textColor,
+    this.fontSize,
     required this.onPressed,
   });
 
@@ -43,7 +45,7 @@ class DialogButton extends StatelessWidget {
               text!,
               style: TextStyle(
                   color: textColor,
-                  fontSize: 16,
+                  fontSize: fontSize ?? 16,
                   fontWeight: FontWeight.w700,
                   fontFamily: "Inter"),
             ),

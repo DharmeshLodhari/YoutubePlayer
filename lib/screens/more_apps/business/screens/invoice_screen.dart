@@ -69,6 +69,7 @@ class _InvoiceScreenState extends State<InvoiceScreen>
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,
@@ -338,6 +339,7 @@ class _InvoiceScreenState extends State<InvoiceScreen>
                             children: [
                                 SlideActionButton(
                                   borderRadius: BorderRadius.circular(5),
+                                  padding: EdgeInsets.zero,
                                   backgroundColor: mateRed,
                                   icon: Icons.delete,
                                   onPressed: (con) => deleteInvoice(invoice),
@@ -353,6 +355,7 @@ class _InvoiceScreenState extends State<InvoiceScreen>
                             children: [
                                 SlideActionButton(
                                   borderRadius: BorderRadius.circular(5),
+                                  padding: EdgeInsets.zero,
                                   backgroundColor: getBgColor(invoice),
                                   icon: getIcon(invoice),
                                   onPressed: (con) => canPay

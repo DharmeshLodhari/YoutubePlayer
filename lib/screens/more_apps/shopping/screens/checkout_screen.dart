@@ -61,6 +61,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
   AppBar appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       titleSpacing: 16,
       backgroundColor: Colors.white,

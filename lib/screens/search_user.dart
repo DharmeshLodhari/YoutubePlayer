@@ -367,6 +367,7 @@ class _SearchUserState extends State<SearchUser> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       titleSpacing: 16,
       backgroundColor: Colors.white,

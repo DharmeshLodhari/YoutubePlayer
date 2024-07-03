@@ -106,6 +106,7 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
 
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       backgroundColor: Colors.white,
       title: Text(
         finalYarn != null

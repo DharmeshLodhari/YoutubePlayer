@@ -16,8 +16,7 @@ import '../utils.dart';
 
 class OrderSummaryScreen extends StatefulWidget {
   final ShippingAddress address;
-  const OrderSummaryScreen({super.key, required this.address})
-     ;
+  const OrderSummaryScreen({super.key, required this.address});
 
   @override
   State<OrderSummaryScreen> createState() => _OrderSummaryScreenState();
@@ -162,7 +161,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
               if (response.statusCode == 200 || response.statusCode == 201) {
                 Navigator.of(context)
                     .popUntil(ModalRoute.withName(Routes.DASHBOARD));
-                Navigator.pushNamed(context, Routes.ORDERS_LIST);
+                Navigator.pushNamed(context, Routes.ORDER_LIST);
                 showToast(message: 'Order placed successfully');
               } else if (response.statusCode == 500) {
                 Navigator.pop(context);
@@ -193,6 +192,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
 
   AppBar appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       titleSpacing: 16,
       backgroundColor: Colors.white,

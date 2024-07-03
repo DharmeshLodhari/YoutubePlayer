@@ -62,7 +62,7 @@ class YarnOptions extends StatefulWidget {
 
 class _YarnOptionsState extends State<YarnOptions> {
   late YarnDashboardBloc yarnDashboardBloc;
-  late PageController _pageViewController;
+  // late PageController _pageViewController;
   int currentAskTapOnHome = 0;
   bool? pinned = false;
 
@@ -765,7 +765,7 @@ class _YarnOptionsState extends State<YarnOptions> {
         await YarnAuth().deleteSingleTopics(yarnId: widget.yarnTopic!.id);
     if (data != null && data) {
       showToast(
-          message: isQuestion ?? false
+          message: isQuestion
               ? "Question Deleted Successfully"
               : "Yarn Deleted Successfully");
       if (widget.yarnTopic != null) {

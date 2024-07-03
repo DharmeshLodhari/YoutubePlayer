@@ -39,6 +39,7 @@ class _AddProductVariantState extends State<AddProductVariant> {
 
   int imageCount = 5;
   final ScrollController _scrollController = ScrollController();
+  TextEditingController inventoryController = TextEditingController();
   List<PickedFile> productImages = [];
   List<String> croppedImageList = [];
   String size = "";
@@ -90,6 +91,7 @@ class _AddProductVariantState extends State<AddProductVariant> {
     optionOnWhatToDo = widget.arguments["option"];
     productAvailableFrom = DateFormat('yyyy-MM-dd').format(todayDate);
     getDiscountList();
+    inventoryController.text = "1";
     super.initState();
   }
 
@@ -161,6 +163,7 @@ class _AddProductVariantState extends State<AddProductVariant> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,
@@ -738,56 +741,60 @@ class _AddProductVariantState extends State<AddProductVariant> {
   Widget getInventoryFormField() {
     return CustomizedDropDownField(
       title: "Inventory (Available Quantity)",
-      child: SizedBox(
-        height: 55,
-        child: Padding(
-          padding: const EdgeInsets.only(bottom: 8.0),
-          child: ListTile(
-            dense: true,
-            title: Center(
-              child: Container(
-                decoration: BoxDecoration(
-                    border: Border.all(
-                      color: greyBorderColor,
-                    ),
-                    borderRadius: const BorderRadius.all(Radius.circular(10))),
-                child: Padding(
-                  padding: const EdgeInsets.only(
-                      left: 10.0, top: 5.0, bottom: 5.0, right: 10.0),
-                  child: Text(
-                    inventoryCount.toString(),
-                    style: TextStyle(
-                      color: blackFont,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
-                    ),
+      child: ListTile(
+        dense: true,
+        title: Center(
+          child: SizedBox(
+            width: 50,
+            child: TextField(
+              controller: inventoryController,
+              keyboardType: TextInputType.number,
+              textAlign: TextAlign.center,
+              decoration: InputDecoration(
+                isDense: true,
+                contentPadding: EdgeInsets.all(5),
+                border: const OutlineInputBorder(),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: greyBorderColor,
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: greyBorderColor,
                   ),
                 ),
               ),
-            ),
-            trailing: Padding(
-              padding: const EdgeInsets.only(right: 30.0),
-              child: RoundedBackgroundIcon(
-                  backgroundColor: greyBorderColor,
-                  icon: Icon(
-                    SlydoAppIcon.plus,
-                    color: blackFont,
-                    size: 14,
-                  ),
-                  onTap: () => addInventory()),
-            ),
-            leading: Padding(
-              padding: const EdgeInsets.only(left: 30.0),
-              child: RoundedBackgroundIcon(
-                  backgroundColor: greyBorderColor,
-                  icon: Icon(
-                    SlydoAppIcon.minus,
-                    color: blackFont,
-                    size: 2,
-                  ),
-                  onTap: () => subtractInventory()),
+              onChanged: (value) {
+                // if (value.isEmpty) {
+                //   inventoryController.text = '1';
+                // }
+                inventoryCount = int.parse(inventoryController.text);
+              },
             ),
           ),
+        ),
+        trailing: Padding(
+          padding: const EdgeInsets.only(right: 30.0),
+          child: RoundedBackgroundIcon(
+              backgroundColor: greyBorderColor,
+              icon: Icon(
+                SlydoAppIcon.plus,
+                color: blackFont,
+                size: 14,
+              ),
+              onTap: () => addInventory()),
+        ),
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 30.0),
+          child: RoundedBackgroundIcon(
+              backgroundColor: greyBorderColor,
+              icon: Icon(
+                SlydoAppIcon.minus,
+                color: blackFont,
+                size: 2,
+              ),
+              onTap: () => subtractInventory()),
         ),
       ),
     );
@@ -796,6 +803,7 @@ class _AddProductVariantState extends State<AddProductVariant> {
   void addInventory() {
     setState(() {
       inventoryCount++;
+      inventoryController.text = inventoryCount.toString();
     });
   }
 
@@ -803,6 +811,7 @@ class _AddProductVariantState extends State<AddProductVariant> {
     if (inventoryCount > 0) {
       setState(() {
         inventoryCount--;
+        inventoryController.text = inventoryCount.toString();
       });
     }
   }
@@ -1001,6 +1010,7 @@ class _AddProductVariantState extends State<AddProductVariant> {
   @override
   void dispose() {
     _scrollController.dispose();
+    inventoryController.dispose();
     super.dispose();
   }
 }

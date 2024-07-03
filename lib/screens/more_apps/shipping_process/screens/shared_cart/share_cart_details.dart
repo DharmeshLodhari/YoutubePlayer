@@ -102,6 +102,7 @@ class _SharedCartDetailsState extends State<SharedCartDetails> {
 
   Widget _buildAppBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       leading: IconButton(
         icon: Icon(
           Icons.keyboard_arrow_left,

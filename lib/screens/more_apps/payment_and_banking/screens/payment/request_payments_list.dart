@@ -226,6 +226,7 @@ class _PaymentRequestListState extends State<PaymentRequestList>
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       titleSpacing: 16,
       backgroundColor: Colors.white,
@@ -587,6 +588,7 @@ class _PaymentRequestListState extends State<PaymentRequestList>
     return [
       SlideActionButton(
         borderRadius: BorderRadius.circular(5),
+        padding: EdgeInsets.zero,
         backgroundColor: navyBlue,
         icon: SlydoAppIcon.send,
         onPressed: (con) {
@@ -605,6 +607,7 @@ class _PaymentRequestListState extends State<PaymentRequestList>
     return [
       SlideActionButton(
         borderRadius: BorderRadius.circular(5),
+        padding: EdgeInsets.zero,
         backgroundColor: mateRed,
         icon: SlydoAppIcon.remove,
         onPressed: (con) {

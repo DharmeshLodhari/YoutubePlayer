@@ -19,7 +19,8 @@ List<String> videoExtensions = [
   "flv",
   "avi",
   "webm",
-  "mkv"
+  "mkv",
+  "temp",
 ];
 List<String> fileExtensions = ['txt', 'pdf', 'apk', 'zip', 'xls'];
 List<String> audioExtensions = ["m4a", "mp3", "ogg", "aac"];

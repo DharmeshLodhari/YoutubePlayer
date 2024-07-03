@@ -169,6 +169,7 @@ class _MessageListState extends State<MessageList>
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,
@@ -358,6 +359,7 @@ class _MessageListState extends State<MessageList>
 
     return SlideActionButton(
       borderRadius: BorderRadius.circular(5),
+      padding: EdgeInsets.zero,
       backgroundColor: naturalGreen,
       icon: actionIcon,
       onPressed: (con) async {
@@ -397,6 +399,7 @@ class _MessageListState extends State<MessageList>
   Widget displayDeleteButton(PartialMessage partialMessage, int index) {
     return SlideActionButton(
       borderRadius: BorderRadius.circular(5),
+      padding: EdgeInsets.zero,
       backgroundColor: mateRed,
       icon: Icons.delete,
       onPressed: (con) {

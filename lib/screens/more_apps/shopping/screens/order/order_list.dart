@@ -8,19 +8,19 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-class OrderListNew extends StatefulWidget {
-  const OrderListNew({super.key});
+class OrderList extends StatefulWidget {
+  const OrderList({super.key});
 
   @override
-  State<OrderListNew> createState() => _OrderListNewState();
+  State<OrderList> createState() => _OrderListState();
 }
 
-class _OrderListNewState extends State<OrderListNew> {
+class _OrderListState extends State<OrderList> {
   late UserBloc userBloc;
   final GlobalKey<ScaffoldState> _scaffoldOrderListKey =
       GlobalKey<ScaffoldState>();
 
-  DateFormat dateFormat = DateFormat('yyyy-MM-dd');
+  DateFormat dateFormat = DateFormat('yyyy/MM/dd');
 
   DateTimeRange? newDateTimeRange;
   List<ProductCategory> customCategories = [];
@@ -32,13 +32,16 @@ class _OrderListNewState extends State<OrderListNew> {
   @override
   void initState() {
     customCategories = const [
-      ProductCategory("All"),
-      ProductCategory("Awaiting payment"),
+      ProductCategory("New Order"),
       ProductCategory("Processing"),
+      ProductCategory("Awaiting Payment"),
       ProductCategory("Shipped"),
-      ProductCategory("Delivered"),
-      ProductCategory("Cancelled")
+      ProductCategory("Completed"),
+      ProductCategory("On Hold"),
+      ProductCategory("Canceled"),
+      ProductCategory("All"),
     ];
+    selectedStatus = customCategories.first.name;
     super.initState();
   }
 
@@ -56,13 +59,12 @@ class _OrderListNewState extends State<OrderListNew> {
         length: 2,
         child: Scaffold(
           key: _scaffoldOrderListKey,
-          backgroundColor: Colors.white,
+          backgroundColor: lightGrey,
           appBar: appBar() as PreferredSizeWidget?,
           body: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               orderTabView(),
-              const SizedBox(height: 20),
               getDateRangeText(),
               Expanded(
                 child: PageStorage(
@@ -85,15 +87,17 @@ class _OrderListNewState extends State<OrderListNew> {
   Widget getDateRangeText() {
     return newDateTimeRange != null
         ? Container(
+            padding: const EdgeInsets.all(10),
             color: greyBorderColor.withOpacity(0.2),
             margin: const EdgeInsets.symmetric(vertical: 5),
             child: Text(
               '${dateFormat.format(newDateTimeRange!.start)} - ${dateFormat.format(newDateTimeRange!.end)}',
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: blackFont,
-                fontSize: 14,
-              ),
+                  color: blackFont,
+                  fontSize: 14,
+                  fontFamily: "Inter",
+                  fontWeight: FontWeight.w600),
             ),
           )
         : const SizedBox.shrink();
@@ -101,6 +105,7 @@ class _OrderListNewState extends State<OrderListNew> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       automaticallyImplyLeading: false,

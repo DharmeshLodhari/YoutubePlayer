@@ -96,6 +96,7 @@ class _AddContractState extends State<AddContract> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,
@@ -455,6 +456,7 @@ class _AddContractState extends State<AddContract> {
                     color: blackFont,
                     fontWeight: FontWeight.w600,
                     fontSize: 16,
+                    fontFamily: "Inter",
                   ),
                   overflow: TextOverflow.fade,
                   softWrap: false,
@@ -498,6 +500,7 @@ class _AddContractState extends State<AddContract> {
                     color: blackFont,
                     fontWeight: FontWeight.w600,
                     fontSize: 16,
+                    fontFamily: "Inter",
                   ),
                   overflow: TextOverflow.fade,
                   softWrap: false,

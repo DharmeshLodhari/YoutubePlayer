@@ -20,6 +20,7 @@ import 'package:Slydo/widget/customized_dropdown_field.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/image_crop.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
+import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -55,6 +56,7 @@ class _AddProductState extends State<AddProduct> {
   // TextEditingController _myController = TextEditingController();
   final TextfieldTagsController _myController = TextfieldTagsController();
   TextfieldTagsController textfieldTagsController = TextfieldTagsController();
+  TextEditingController inventoryController = TextEditingController();
   List<PickedFile> productImages = [];
   String productName = "";
   String productDescription = "";
@@ -125,6 +127,7 @@ class _AddProductState extends State<AddProduct> {
   @override
   void deactivate() {
     CacheManager().deleteCache();
+
     super.deactivate();
   }
 
@@ -138,6 +141,7 @@ class _AddProductState extends State<AddProduct> {
       obtainCustomCategory();
       getAddressList();
     });
+    inventoryController.text = "1";
     super.initState();
   }
 
@@ -285,6 +289,7 @@ class _AddProductState extends State<AddProduct> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,
@@ -715,10 +720,12 @@ class _AddProductState extends State<AddProduct> {
               ? selectedProductCategory?.name ?? ""
               : "",
           style: TextStyle(
-              color: blackFont,
-              fontSize: 16,
-              fontFamily: "Inter",
-              fontWeight: FontWeight.w600),
+            color: blackFont,
+            fontSize: 16,
+            fontFamily: "Inter",
+            fontWeight: FontWeight.w600,
+          ),
+          maxLines: 1,
         ),
         trailing: Icon(
           Icons.keyboard_arrow_down,
@@ -766,10 +773,12 @@ class _AddProductState extends State<AddProduct> {
               ? selectedCustomCategory?.name ?? ""
               : "",
           style: TextStyle(
-              color: blackFont,
-              fontSize: 16,
-              fontFamily: "Inter",
-              fontWeight: FontWeight.w600),
+            color: blackFont,
+            fontSize: 16,
+            fontFamily: "Inter",
+            fontWeight: FontWeight.w600,
+          ),
+          maxLines: 1,
         ),
         trailing: Icon(
           Icons.keyboard_arrow_down,
@@ -791,10 +800,12 @@ class _AddProductState extends State<AddProduct> {
         title: Text(
           selectedSubCategory != null ? selectedSubCategory!.name : "",
           style: TextStyle(
-              color: blackFont,
-              fontSize: 16,
-              fontFamily: "Inter",
-              fontWeight: FontWeight.w600),
+            color: blackFont,
+            fontSize: 16,
+            fontFamily: "Inter",
+            fontWeight: FontWeight.w600,
+          ),
+          maxLines: 1,
         ),
         trailing: Icon(
           Icons.keyboard_arrow_down,
@@ -1231,7 +1242,6 @@ class _AddProductState extends State<AddProduct> {
   }
 
   Widget getProductConditionField() {
-    debugPrint("my controller :- $_myController");
     return CustomizedDropDownField(
       title: "Product condition",
       child: ListTile(
@@ -1243,10 +1253,12 @@ class _AddProductState extends State<AddProduct> {
                   ? selectedProductCondition!.name
                   : "",
               style: TextStyle(
-                  color: blackFont,
-                  fontSize: 16,
-                  fontFamily: "Inter",
-                  fontWeight: FontWeight.w600),
+                color: blackFont,
+                fontSize: 16,
+                fontFamily: "Inter",
+                fontWeight: FontWeight.w600,
+              ),
+              maxLines: 1,
             ),
             Expanded(
               child: Text(
@@ -1292,21 +1304,21 @@ class _AddProductState extends State<AddProduct> {
                     Routes.ADD_TAGS,
                     arguments: {"tagList": userTags});
                 if (result != null && result is List<Tags>) {
-                  userTags = [];
-                  _myController.clearTags();
+                  setState(() {
+                    userTags = [];
+                    _myController.clearTags();
 
-                  for (var tags in result) {
-                    if (tags.isSelected == true) {
-                      // _myController.addTag = tags.name
-                      //         ?.replaceAll(" ", "-")
-                      //         .toLowerCase() ??
-                      _myController.addTag(tags.name ?? "");
-                      final Tags tagData = Tags(id: tags.id, name: tags.name);
-                      userTags.add(tagData);
+                    for (var tags in result) {
+                      if (tags.isSelected == true) {
+                        _myController.addTag =
+                            tags.name?.replaceAll(" ", "-").toLowerCase() ?? "";
+                        // _myIntTagController.addTag(tags.name ?? "");
+                        final Tags tagData = Tags(id: tags.id, name: tags.name);
+                        userTags.add(tagData);
+                      }
                     }
-                  }
+                  });
                 }
-                setState(() {});
               },
               child: Text(
                 "Add Tags",
@@ -1329,7 +1341,7 @@ class _AddProductState extends State<AddProduct> {
             setState(() {
               userTags.removeWhere((e) => e.name == tag);
             });
-            userTags.removeWhere((tag) => tag.name!.isEmpty);
+            // userTags.removeWhere((tag) => tag.name!.isEmpty);
           },
         ),
       ],
@@ -1348,10 +1360,12 @@ class _AddProductState extends State<AddProduct> {
                   ? selectedDeliveryTimeCondition!.description
                   : "",
               style: TextStyle(
-                  color: blackFont,
-                  fontSize: 16,
-                  fontFamily: "Inter",
-                  fontWeight: FontWeight.w600),
+                color: blackFont,
+                fontSize: 16,
+                fontFamily: "Inter",
+                fontWeight: FontWeight.w600,
+              ),
+              maxLines: 1,
             ),
           ],
         ),
@@ -1629,10 +1643,12 @@ class _AddProductState extends State<AddProduct> {
         title: Text(
           selectedWeight.isNotEmpty ? selectedWeight : "",
           style: TextStyle(
-              color: blackFont,
-              fontSize: 16,
-              fontFamily: "Inter",
-              fontWeight: FontWeight.w600),
+            color: blackFont,
+            fontSize: 16,
+            fontFamily: "Inter",
+            fontWeight: FontWeight.w600,
+          ),
+          maxLines: 1,
         ),
         trailing: Icon(
           Icons.keyboard_arrow_down,
@@ -1687,10 +1703,12 @@ class _AddProductState extends State<AddProduct> {
         title: Text(
           selectedHeight.isNotEmpty ? selectedHeight : "",
           style: TextStyle(
-              color: blackFont,
-              fontSize: 16,
-              fontFamily: "Inter",
-              fontWeight: FontWeight.w600),
+            color: blackFont,
+            fontSize: 16,
+            fontFamily: "Inter",
+            fontWeight: FontWeight.w600,
+          ),
+          maxLines: 1,
         ),
         trailing: Icon(
           Icons.keyboard_arrow_down,
@@ -1745,10 +1763,12 @@ class _AddProductState extends State<AddProduct> {
         title: Text(
           selectedWidth.isNotEmpty ? selectedWidth : "",
           style: TextStyle(
-              color: blackFont,
-              fontSize: 16,
-              fontFamily: "Inter",
-              fontWeight: FontWeight.w600),
+            color: blackFont,
+            fontSize: 16,
+            fontFamily: "Inter",
+            fontWeight: FontWeight.w600,
+          ),
+          maxLines: 1,
         ),
         trailing: Icon(
           Icons.keyboard_arrow_down,
@@ -2303,6 +2323,7 @@ class _AddProductState extends State<AddProduct> {
               fontSize: 16,
               fontFamily: "Inter",
             ),
+            maxLines: 1,
           ),
           trailing: Icon(
             SlydoAppIcon.date,
@@ -2315,32 +2336,107 @@ class _AddProductState extends State<AddProduct> {
   }
 
   Widget getInventoryFormField() {
-    return CustomizedTextFormField(
-      labelText: "Inventory (Available Quantity)",
-      keyboardType: Platform.isIOS
-          ? const TextInputType.numberWithOptions(decimal: false)
-          : TextInputType.number,
-      onChanged: (val) {
-        if (val.isNotEmpty) {
-          try {
-            inventoryCount = int.parse(val);
-          } catch (e) {
-            showToast(message: e.toString());
-          }
-        }
-      },
-      validator: (val) {
-        if (val.isNotEmpty) {
-          try {
-            val;
-            return null;
-          } catch (e) {
-            return AppLocalization.of(context)!.invalidCount;
-          }
-        }
-        return AppLocalization.of(context)!.pleaseEnterValidCount;
-      },
+    return CustomizedDropDownField(
+      title: "Inventory (Available Quantity)",
+      child: ListTile(
+        dense: true,
+        title: Center(
+          child: SizedBox(
+            width: 50,
+            child: TextField(
+              controller: inventoryController,
+              keyboardType: TextInputType.number,
+              textAlign: TextAlign.center,
+              decoration: InputDecoration(
+                isDense: true,
+                contentPadding: EdgeInsets.all(5),
+                border: const OutlineInputBorder(),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: greyBorderColor,
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: greyBorderColor,
+                  ),
+                ),
+              ),
+              onChanged: (value) {
+                // if (value.isEmpty) {
+                //   inventoryController.text = '1';
+                // }
+                inventoryCount = int.parse(inventoryController.text);
+              },
+            ),
+          ),
+        ),
+        trailing: Padding(
+          padding: const EdgeInsets.only(right: 30.0),
+          child: RoundedBackgroundIcon(
+              backgroundColor: greyBorderColor,
+              icon: Icon(
+                SlydoAppIcon.plus,
+                color: blackFont,
+                size: 14,
+              ),
+              onTap: () => addInventory()),
+        ),
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 30.0),
+          child: RoundedBackgroundIcon(
+              backgroundColor: greyBorderColor,
+              icon: Icon(
+                SlydoAppIcon.minus,
+                color: blackFont,
+                size: 2,
+              ),
+              onTap: () => subtractInventory()),
+        ),
+      ),
     );
+    // return CustomizedTextFormField(
+    //   labelText: "Inventory (Available Quantity)",
+    //   keyboardType: Platform.isIOS
+    //       ? const TextInputType.numberWithOptions(decimal: false)
+    //       : TextInputType.number,
+    //   onChanged: (val) {
+    //     if (val.isNotEmpty) {
+    //       try {
+    //         inventoryCount = int.parse(val);
+    //       } catch (e) {
+    //         showToast(message: e.toString());
+    //       }
+    //     }
+    //   },
+    //   validator: (val) {
+    //     if (val.isNotEmpty) {
+    //       try {
+    //         val;
+    //         return null;
+    //       } catch (e) {
+    //         return AppLocalization.of(context)!.invalidCount;
+    //       }
+    //     }
+    //     return AppLocalization.of(context)!.pleaseEnterValidCount;
+    //   },
+    // );
+  }
+
+  void addInventory() {
+    setState(() {
+      inventoryCount++;
+      inventoryController.text = inventoryCount.toString();
+    });
+  }
+
+  void subtractInventory() {
+    if (inventoryCount > 0) {
+      setState(() {
+        inventoryCount--;
+        inventoryController.text = inventoryCount.toString();
+      });
+    }
   }
 
   // Widget getAddVariationFormField() {
@@ -2478,10 +2574,12 @@ class _AddProductState extends State<AddProduct> {
               ? pickedMeasurementList.join(', ')
               : '',
           style: TextStyle(
-              color: blackFont,
-              fontSize: 16,
-              fontFamily: "Inter",
-              fontWeight: FontWeight.w600),
+            color: blackFont,
+            fontSize: 16,
+            fontFamily: "Inter",
+            fontWeight: FontWeight.w600,
+          ),
+          maxLines: 1,
         ),
         trailing: Icon(
           Icons.keyboard_arrow_down,
@@ -2509,10 +2607,12 @@ class _AddProductState extends State<AddProduct> {
                   ""
               : "",
           style: TextStyle(
-              color: blackFont,
-              fontSize: 16,
-              fontFamily: "Inter",
-              fontWeight: FontWeight.w600),
+            color: blackFont,
+            fontSize: 16,
+            fontFamily: "Inter",
+            fontWeight: FontWeight.w600,
+          ),
+          maxLines: 1,
         ),
         trailing: Icon(
           Icons.keyboard_arrow_down,
@@ -2952,6 +3052,7 @@ class _AddProductState extends State<AddProduct> {
     _scrollController.dispose();
     _myController.dispose();
     textfieldTagsController.dispose();
+    inventoryController.dispose();
     userTags = [];
     super.dispose();
   }

@@ -79,6 +79,7 @@ class _EditInvoiceItemState extends State<EditInvoiceItem> {
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,

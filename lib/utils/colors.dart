@@ -21,6 +21,7 @@ Color naturalGreenLight = HexColor("#E9FFF2");
 Color brownLight = HexColor("#FFEFE0");
 Color whiteBackground = HexColor("#F9F8F8");
 Color blackFont = HexColor("#030F36");
+Color lightBlackFont = HexColor("#FF475367");
 Color black = HexColor("#000000");
 Color lightPink = HexColor("#FFE6E2");
 Color deepPink = HexColor("#FD7D75");

@@ -246,6 +246,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
   Widget appBar() {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,
