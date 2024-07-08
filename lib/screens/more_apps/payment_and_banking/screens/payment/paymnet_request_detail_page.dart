@@ -1,10 +1,23 @@
+import 'dart:convert';
+
+import 'package:Slydo/constant.dart';
 import 'package:Slydo/data/currency.dart';
+import 'package:Slydo/data/state_notifiers/user_bloc.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/curved_btn.dart';
+import 'package:Slydo/widget/customized_passcode_sheet/bottomsheet_passcode.dart';
+import 'package:Slydo/widget/dialog.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
+import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
 class PaymentRequestDetail extends StatefulWidget {
@@ -17,7 +30,13 @@ class PaymentRequestDetail extends StatefulWidget {
 }
 
 class _PaymentRequestDetailState extends State<PaymentRequestDetail> {
+  late UserBloc userBloc;
   PaymentRequest? paymentRequest;
+  final _auth = PaymentAndBankingAuth();
+  String? userName;
+  PermissionType? hasPermission;
+  final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerPaymentListKey =
+      GlobalKey<ScaffoldMessengerState>();
 
   @override
   void initState() {
@@ -43,6 +62,10 @@ class _PaymentRequestDetailState extends State<PaymentRequestDetail> {
 
   @override
   Widget build(BuildContext context) {
+    userBloc = Provider.of<UserBloc>(context);
+
+    hasPermission =
+        userBloc.user.hasWritePermission(ProtectionPermission.request);
     return PopScope(
       onPopInvoked: (didPop) async {
         if (didPop) {
@@ -54,6 +77,8 @@ class _PaymentRequestDetailState extends State<PaymentRequestDetail> {
         resizeToAvoidBottomInset: true,
         appBar: appBar() as PreferredSizeWidget?,
         body: scaffoldBody(),
+        floatingActionButton: _buildPaymentRequestButton(paymentRequest!),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       ),
     );
   }
@@ -140,8 +165,8 @@ class _PaymentRequestDetailState extends State<PaymentRequestDetail> {
 
   Widget getLeading() {
     return ClipOval(
-        child: userImageUserInitialsPic(paymentRequest!.avatar!,
-            paymentRequest!.displayToCustomer, 25, 48));
+        child: userImageUserInitialsPic(paymentRequest?.avatar ?? "",
+            paymentRequest?.displayToCustomer ?? "", 25, 48));
   }
 
   Widget getSender() {
@@ -171,7 +196,7 @@ class _PaymentRequestDetailState extends State<PaymentRequestDetail> {
         Text(
           moneyDisplayNormalizer(int.parse(paymentRequest!.amount.toString())),
           style: TextStyle(
-              color: paymentRequest!.isCredit! ? navyBlue : blackFont,
+              color: paymentRequest?.isCredit ?? false ? navyBlue : blackFont,
               fontWeight: FontWeight.bold,
               fontSize: 14),
         ),
@@ -208,8 +233,12 @@ class _PaymentRequestDetailState extends State<PaymentRequestDetail> {
           thickness: 1,
           height: 0,
         ),
-        transactionOrPayoutTile('assets/images/payout/status.svg',
-            AppLocalization.of(context)!.status, paymentRequest!.status!, true),
+        transactionOrPayoutTile(
+          'assets/images/payout/status.svg',
+          AppLocalization.of(context)!.status,
+          paymentRequest!.status!,
+          true,
+        ),
         transactionOrPayoutTile(
             'assets/images/payout/description.svg',
             AppLocalization.of(context)!.reference,
@@ -219,5 +248,223 @@ class _PaymentRequestDetailState extends State<PaymentRequestDetail> {
             false),
       ],
     );
+  }
+
+  Widget _buildPaymentRequestButton(PaymentRequest paymentRequest) {
+    final isShowButton =
+        hasPermission == PermissionType.WRITE && paymentRequest.isCredit!;
+    return Padding(
+      padding: const EdgeInsets.all(10),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          if (isShowButton)
+            Expanded(child: _buildPayButton(paymentRequest))
+          else
+            const SizedBox(),
+          SizedBox(width: isShowButton ? 25 : 0),
+          Expanded(
+              child: _buildCancelOrRejectButton(paymentRequest, isShowButton)),
+        ],
+      ),
+    );
+  }
+
+  Future<void> rejectPaymentRequestAlert(PaymentRequest paymentRequest) async {
+    final bool? result = await showDialogBox(
+      context: context,
+      roundedBackgroundIcon: RoundedBackgroundIcon(
+        backgroundColor: mateRed.withOpacity(0.08),
+        borderRadius: 20,
+        width: 48,
+        height: 48,
+        icon: Icon(
+          SlydoAppIcon.false_icon,
+          color: mateRed,
+          size: 16,
+        ),
+        enableMargin: false,
+      ),
+      actionOneBgColor: naturalGreen,
+      actionOneTextColor: Colors.white,
+      actionTwoBgColor: greyBorderColor,
+      actionTwoTextColor: blackFont,
+      title: AppLocalization.of(context)!.reject,
+      description:
+          AppLocalization.of(context)!.areYouSureWantToRejectThisPayment,
+      actionOneText: 'Yes',
+      actionTwoText: 'No',
+    );
+    if (result != null && result) {
+      final bool done = await _auth.rejectPaymentRequests(paymentRequest);
+      if (done) {
+        _showSnackBar(
+            context, AppLocalization.of(context)!.paymentRequestRejected);
+        Navigator.popAndPushNamed(context, Routes.ACCOUNTS);
+      } else {
+        _showSnackBar(context, AppLocalization.of(context)!.error);
+      }
+    }
+  }
+
+  void _showSnackBar(BuildContext context, String text) {
+    _scaffoldMessengerPaymentListKey.currentState
+        ?.showSnackBar(SnackBar(content: Text(text)));
+  }
+
+  Future<void> cancelPaymentRequestAlert(PaymentRequest paymentRequest) async {
+    // final String actionText = paymentRequest.isCredit! ? 'Reject' : 'Cancel';
+    final String actionText = paymentRequest.isCredit!
+        ? AppLocalization.of(context)!.reject
+        : AppLocalization.of(context)!.cancel;
+    final bool? result = await showDialogBox(
+      context: context,
+      roundedBackgroundIcon: RoundedBackgroundIcon(
+        backgroundColor: mateRed.withOpacity(0.08),
+        borderRadius: 20,
+        width: 48,
+        height: 48,
+        icon: Icon(
+          SlydoAppIcon.false_icon,
+          color: mateRed,
+          size: 16,
+        ),
+        enableMargin: false,
+      ),
+      actionOneBgColor: naturalGreen,
+      actionOneTextColor: Colors.white,
+      actionTwoBgColor: greyBorderColor,
+      actionTwoTextColor: blackFont,
+      title: paymentRequest.isCredit!
+          ? AppLocalization.of(context)!.reject
+          : AppLocalization.of(context)!.cancel,
+      description: "Are you sure you want to $actionText this request?",
+      actionOneText: paymentRequest.isCredit!
+          ? AppLocalization.of(context)!.reject
+          : 'Yes',
+      actionTwoText: "No",
+    );
+    if (result == null) return;
+    if (result) {
+      final bool done = await _auth.rejectPaymentRequests(paymentRequest);
+      if (done) {
+        _showSnackBar(
+            context, AppLocalization.of(context)!.paymentRequestCancelled);
+        Navigator.popAndPushNamed(context, Routes.ACCOUNTS);
+      } else {
+        _showSnackBar(context, AppLocalization.of(context)!.error);
+      }
+    }
+  }
+
+  Widget _buildCancelOrRejectButton(
+      PaymentRequest paymentRequest, bool isShowButton) {
+    final String caption = isShowButton
+        ? AppLocalization.of(context)!.reject
+        : AppLocalization.of(context)!.cancel;
+    return CurvedButton(
+      onPressed: () {
+        if (isShowButton) {
+          rejectPaymentRequestAlert(paymentRequest);
+        } else {
+          cancelPaymentRequestAlert(paymentRequest);
+        }
+      },
+      backgroundColor: mateRed,
+      textColor: white,
+      fontSize: 15,
+      text: caption,
+    );
+  }
+
+  Widget _buildPayButton(PaymentRequest paymentRequest) {
+    return CurvedButton(
+      onPressed: () {
+        acceptPaymentRequestAlert(paymentRequest);
+      },
+      backgroundColor: navyBlue,
+      textColor: white,
+      fontSize: 15,
+      text: "Pay",
+    );
+  }
+
+  void acceptPaymentRequestAlert(PaymentRequest paymentRequest) async {
+    final bool? result = await showDialogBox(
+      context: context,
+      roundedBackgroundIcon: RoundedBackgroundIcon(
+        backgroundColor: navyBlue.withOpacity(0.08),
+        borderRadius: 20,
+        width: 48,
+        height: 48,
+        icon: Icon(
+          SlydoAppIcon.true_icon,
+          color: navyBlue,
+          size: 16,
+        ),
+        enableMargin: false,
+      ),
+      actionOneBgColor: navyBlue,
+      actionOneTextColor: Colors.white,
+      actionTwoBgColor: mateRed,
+      actionTwoTextColor: Colors.white,
+      firstActionPrimary: true,
+      title: "Pay",
+      description:
+          AppLocalization.of(context)!.areYouSureWantToAcceptThisRequest,
+      actionOneText: "Pay",
+      actionTwoText: AppLocalization.of(context)!.cancel,
+    );
+    if (result != null && result) {
+      BottomSheetPassCode(
+          context: context,
+          isValidCallback: () async {
+            showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (context) =>
+                    Center(child: CircularLoadingIndicator()));
+
+            final bool result = await checkAccountBalance(paymentRequest);
+            if (!result) return;
+
+            final response = await _auth.acceptPaymentRequests(paymentRequest);
+            if (response.statusCode == 200 || response.statusCode == 201) {
+              _showSnackBar(
+                  context, AppLocalization.of(context)!.paymentRequestAccepted);
+              Navigator.popAndPushNamed(context, Routes.ACCOUNTS);
+            } else if (response.statusCode == 500) {
+              showToast(message: AppLocalization.of(context)!.serverError);
+            }
+            // else if (response.statusCode == 800) {
+            //   Navigator.pushNamed(context, "/add-document");
+            // }
+            else {
+              final Map<String, dynamic> errorData = jsonDecode(response.body);
+              String? error = "Error";
+              if (errorData.containsKey("errors")) {
+                error = errorData['errors'];
+              }
+              _showSnackBar(context, error!);
+            }
+          },
+          cancelCallBack: () {
+            Navigator.pop(context);
+          });
+    }
+  }
+
+  Future<bool> checkAccountBalance(PaymentRequest paymentRequest) async {
+    final double accountBalance = await getAccountBalance();
+    Navigator.of(context).pop();
+    debugPrint("accountBalance:- $accountBalance");
+    final double spendingAmount = paymentRequest.amount! / 100;
+    debugPrint("spendingAmount:- $spendingAmount");
+    if (spendingAmount > accountBalance) {
+      showToast(message: "You don't have enough money in Slydo account!!");
+      return false;
+    }
+    return true;
   }
 }

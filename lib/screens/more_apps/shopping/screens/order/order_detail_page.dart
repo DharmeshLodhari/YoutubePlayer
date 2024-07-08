@@ -140,7 +140,13 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildOrderStatus(),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            _buildOrderStatus(),
+            _buildPaymentStatus(),
+          ],
+        ),
         Divider(
           color: lightBlue,
           thickness: 0.5,
@@ -251,6 +257,28 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
           fontSize: 16,
           fontFamily: "Inter",
           fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPaymentStatus() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 7.0, horizontal: 16.0),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 3),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(5),
+          color: order?.checkOrderStatusBgColor(userBloc.user.userName ?? ""),
+        ),
+        child: Text(
+          order?.isOrderStatus(userBloc.user.userName ?? "") ?? "",
+          style: TextStyle(
+            color: order?.checkStatusForColor(userBloc.user.userName ?? ""),
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            fontFamily: "Inter",
+          ),
         ),
       ),
     );

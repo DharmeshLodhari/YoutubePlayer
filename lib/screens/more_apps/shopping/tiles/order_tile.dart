@@ -21,6 +21,7 @@ import 'package:Slydo/widget/customized_passcode_sheet/bottomsheet_passcode.dart
 import 'package:Slydo/widget/customized_popup_menu.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
@@ -39,7 +40,6 @@ class _OrderTileState extends State<OrderTile> {
   late UserBloc userBloc;
   Order? order;
   final GlobalKey _key = LabeledGlobalKey("orderListPopUpMenu");
-
   late CustomizedPopUpMenu menu;
   int selectedMenuItemIndex = 0;
   bool isPopMenuOpen = false;
@@ -52,6 +52,7 @@ class _OrderTileState extends State<OrderTile> {
   late http.Response response;
   String errorMessage = "";
   String cartId = "";
+  String? status = "";
 
   @override
   void initState() {
@@ -112,14 +113,12 @@ class _OrderTileState extends State<OrderTile> {
                       thickness: 0.5,
                     ),
                   ),
-                  Text(
-                    order?.normalizeName(userBloc.user.userName) ?? "",
-                    style: TextStyle(
-                      color: lightBlackFont,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      fontFamily: "Inter",
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _buildUserName(),
+                      _buildOrdersStatus(),
+                    ],
                   ),
                   if (order!.orderItems!.length > 1)
                     getMultipleItemsTileUI()
@@ -827,5 +826,36 @@ class _OrderTileState extends State<OrderTile> {
         "MakePaymentForOrder Unsuccessful",
       );
     }
+  }
+
+  Widget _buildUserName() {
+    return Text(
+      order?.normalizeName(userBloc.user.userName) ?? "",
+      style: TextStyle(
+        color: lightBlackFont,
+        fontSize: 14,
+        fontWeight: FontWeight.w600,
+        fontFamily: "Inter",
+      ),
+    );
+  }
+
+  Widget _buildOrdersStatus() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 3),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(5),
+        color: order?.checkOrderStatusBgColor(userBloc.user.userName ?? ""),
+      ),
+      child: Text(
+        order?.isOrderStatus(userBloc.user.userName ?? "") ?? "",
+        style: TextStyle(
+          color: order?.checkStatusForColor(userBloc.user.userName ?? ""),
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+          fontFamily: "Inter",
+        ),
+      ),
+    );
   }
 }

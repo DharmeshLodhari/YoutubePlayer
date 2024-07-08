@@ -2144,6 +2144,45 @@ class Order {
     }
     return name;
   }
+
+  String? isOrderStatus(String userName) {
+    if (refundPaymentId != null) {
+      return "Refund Successfuly";
+    } else if (refundPaymentRequestId != null) {
+      return "Status Pending Request";
+    } else if (customerName == userName) {
+      return "Pickup";
+    } else if (merchant == userName) {
+      return "Delivery";
+    }
+    return "";
+  }
+
+  Color checkStatusForColor(String status) {
+    if (refundPaymentId != null) {
+      return naturalGreen;
+    } else if (refundPaymentRequestId != null) {
+      return starYellow;
+    } else if (customerName == status) {
+      return navyBlue;
+    } else if (merchant == status) {
+      return blackFont;
+    }
+    return navyBlue;
+  }
+
+  Color checkOrderStatusBgColor(String userName) {
+    if (refundPaymentId != null) {
+      return naturalGreen.withOpacity(0.1);
+    } else if (refundPaymentRequestId != null) {
+      return starYellow.withOpacity(0.1);
+    } else if (customerName == userName) {
+      return navyBlue.withOpacity(0.1);
+    } else if (merchant == userName) {
+      return blackFont.withOpacity(0.1);
+    }
+    return navyBlue;
+  }
 }
 
 class OrderItem {

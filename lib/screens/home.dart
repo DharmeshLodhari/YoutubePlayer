@@ -583,7 +583,7 @@ class _HomeState extends State<Home> {
       },
       {
         'imagePath': 'home/order',
-        'title': ProtectionPermission.order,
+        'title': ProtectionPermission.orders,
         'ForReadPermission': '2',
       },
       // {
@@ -726,7 +726,7 @@ class _HomeState extends State<Home> {
       //   hideBalance();
       //   Navigator.pushNamed(context, Routes.DISPATCH);
       //   break;
-      case ProtectionPermission.order:
+      case ProtectionPermission.orders:
         hideBalance();
         Navigator.pushNamed(context, Routes.ORDER_LIST);
         break;
