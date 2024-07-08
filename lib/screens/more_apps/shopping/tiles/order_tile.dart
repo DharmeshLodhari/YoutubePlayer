@@ -90,61 +90,70 @@ class _OrderTileState extends State<OrderTile> {
     menu.onChange = menuItemSelectionChange;
     menu.menuState = menuStateChange;
     return order?.orderItems != null && order?.orderItems?.isNotEmpty == true
-        ? Card(
-            shadowColor: boxShadowTwo,
-            elevation: 0,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(0)),
-            child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 15),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  orderNumberAndAmount(),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  orderStatusAndDate(),
-                  Container(
-                    margin: const EdgeInsets.symmetric(vertical: 5),
-                    child: Divider(
-                      color: lightBlue,
-                      thickness: 0.5,
-                    ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        ? Column(
+            children: [
+              Card(
+                color: Colors.white,
+                shadowColor: boxShadowTwo,
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(0)),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0, vertical: 15),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _buildUserName(),
-                      _buildOrdersStatus(),
+                      orderNumberAndAmount(),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      orderStatusAndDate(),
+                      Container(
+                        margin: const EdgeInsets.symmetric(vertical: 5),
+                        child: Divider(
+                          color: lightBlue,
+                          thickness: 0.5,
+                        ),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          _buildUserName(),
+                          _buildOrdersStatus(),
+                        ],
+                      ),
+                      if (order!.orderItems!.length > 1)
+                        getMultipleItemsTileUI()
+                      else
+                        getItemTileUi(),
+                      const SizedBox(
+                        height: 5,
+                      ),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Flexible(child: _buildFirstButton()),
+                          const SizedBox(
+                            width: 7,
+                          ),
+                          Flexible(child: _buildSecondButton()),
+                          const SizedBox(
+                            width: 7,
+                          ),
+                          Flexible(child: _buildThirdButton())
+                        ],
+                      ),
                     ],
                   ),
-                  if (order!.orderItems!.length > 1)
-                    getMultipleItemsTileUI()
-                  else
-                    getItemTileUi(),
-                  const SizedBox(
-                    height: 5,
-                  ),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Flexible(child: _buildFirstButton()),
-                      const SizedBox(
-                        width: 7,
-                      ),
-                      Flexible(child: _buildSecondButton()),
-                      const SizedBox(
-                        width: 7,
-                      ),
-                      Flexible(child: _buildThirdButton())
-                    ],
-                  ),
-                ],
+                ),
               ),
-            ),
+              Container(
+                color: lightBlue,
+                height: 5,
+              ),
+            ],
           )
         : const SizedBox.shrink();
   }

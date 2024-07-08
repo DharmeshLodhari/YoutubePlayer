@@ -517,6 +517,11 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
         color: blackFont,
         fontWeight: FontWeight.w600,
       ),
+      dropdownStyleData: const DropdownStyleData(
+        decoration: BoxDecoration(
+          color: Colors.white,
+        ),
+      ),
       decoration: InputDecoration(
         contentPadding: const EdgeInsets.symmetric(horizontal: 0),
         enabledBorder: OutlineInputBorder(
@@ -628,6 +633,7 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
       popupProps: PopupProps.dialog(
           showSearchBox: true,
           dialogProps: DialogProps(
+            backgroundColor: Colors.white,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(5),
             ),
@@ -725,59 +731,59 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
       selectedItem: selectedState,
     );
 
-    return DropdownButtonFormField2(
-      // buttonHeight: 50,
-      isExpanded: true,
-      value: selectedCity,
-      style: TextStyle(
-        fontSize: 16,
-        color: blackFont,
-        fontWeight: FontWeight.w600,
-      ),
-      decoration: InputDecoration(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 0),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(
-            color: greyBorderColor,
-            width: 1.0,
-          ),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(
-            color: greyBorderColor,
-            width: 1.0,
-          ),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(
-            color: greyBorderColor,
-            width: 1.0,
-          ),
-        ),
-      ),
-      items: cityList.map((Cities item) {
-        return DropdownMenuItem<String>(
-          value: item.name,
-          child: Text(item.name!),
-        );
-      }).toList(),
-      onChanged: (String? value) {
-        shippingAddress.city = value;
-        setState(() {
-          selectedCity = value!;
-        });
-      },
-      validator: (String? value) {
-        if (value != null && value.isNotEmpty) {
-          return null;
-        } else {
-          return 'Pick a city';
-        }
-      },
-    );
+    // return DropdownButtonFormField2(
+    //   // buttonHeight: 50,
+    //   isExpanded: true,
+    //   value: selectedCity,
+    //   style: TextStyle(
+    //     fontSize: 16,
+    //     color: blackFont,
+    //     fontWeight: FontWeight.w600,
+    //   ),
+    //   decoration: InputDecoration(
+    //     contentPadding: const EdgeInsets.symmetric(horizontal: 0),
+    //     enabledBorder: OutlineInputBorder(
+    //       borderRadius: BorderRadius.circular(10),
+    //       borderSide: BorderSide(
+    //         color: greyBorderColor,
+    //         width: 1.0,
+    //       ),
+    //     ),
+    //     focusedBorder: OutlineInputBorder(
+    //       borderRadius: BorderRadius.circular(10),
+    //       borderSide: BorderSide(
+    //         color: greyBorderColor,
+    //         width: 1.0,
+    //       ),
+    //     ),
+    //     errorBorder: OutlineInputBorder(
+    //       borderRadius: BorderRadius.circular(10),
+    //       borderSide: BorderSide(
+    //         color: greyBorderColor,
+    //         width: 1.0,
+    //       ),
+    //     ),
+    //   ),
+    //   items: cityList.map((Cities item) {
+    //     return DropdownMenuItem<String>(
+    //       value: item.name,
+    //       child: Text(item.name!),
+    //     );
+    //   }).toList(),
+    //   onChanged: (String? value) {
+    //     shippingAddress.city = value;
+    //     setState(() {
+    //       selectedCity = value!;
+    //     });
+    //   },
+    //   validator: (String? value) {
+    //     if (value != null && value.isNotEmpty) {
+    //       return null;
+    //     } else {
+    //       return 'Pick a city';
+    //     }
+    //   },
+    // );
   }
 
   // Widget cityDropdown() {
@@ -841,6 +847,7 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
       popupProps: PopupProps.dialog(
           showSearchBox: true,
           dialogProps: DialogProps(
+            backgroundColor: Colors.white,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(5),
             ),

@@ -1240,6 +1240,11 @@ class _SignUpState extends State<SignUp> {
       child: DropdownButtonFormField2(
         // buttonHeight: 50,
         isExpanded: true,
+        dropdownStyleData: const DropdownStyleData(
+          decoration: BoxDecoration(
+            color: Colors.white,
+          ),
+        ),
         value: subscriptionsModel,
         style: TextStyle(
           fontSize: 16,

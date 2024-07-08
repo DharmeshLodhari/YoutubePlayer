@@ -359,6 +359,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
           popupProps: PopupProps.dialog(
               showSearchBox: true,
               dialogProps: DialogProps(
+                backgroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(5),
                 ),

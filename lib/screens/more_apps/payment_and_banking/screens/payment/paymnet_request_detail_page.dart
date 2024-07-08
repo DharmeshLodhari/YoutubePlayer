@@ -77,7 +77,8 @@ class _PaymentRequestDetailState extends State<PaymentRequestDetail> {
         resizeToAvoidBottomInset: true,
         appBar: appBar() as PreferredSizeWidget?,
         body: scaffoldBody(),
-        floatingActionButton: _buildPaymentRequestButton(paymentRequest!),
+        floatingActionButton:
+            _buildPaymentRequestButton(paymentRequest ?? PaymentRequest()),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       ),
     );
@@ -259,8 +260,8 @@ class _PaymentRequestDetailState extends State<PaymentRequestDetail> {
   }
 
   Widget _buildPaymentRequestButton(PaymentRequest paymentRequest) {
-    final isShowButton =
-        hasPermission == PermissionType.WRITE && paymentRequest.isCredit!;
+    final isShowButton = hasPermission == PermissionType.WRITE &&
+        (paymentRequest.isCredit ?? false);
     return Padding(
       padding: const EdgeInsets.all(10),
       child: Row(
