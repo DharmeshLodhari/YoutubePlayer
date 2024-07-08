@@ -437,7 +437,8 @@ class _PaymentRequestDetailState extends State<PaymentRequestDetail> {
             final bool result = await checkAccountBalance(paymentRequest);
             if (!result) return;
 
-            final response = await _auth.acceptPaymentRequests(paymentRequest);
+            final response =
+                await _auth.acceptPaymentRequests(paymentRequest.id ?? "");
             if (response.statusCode == 200 || response.statusCode == 201) {
               _showSnackBar(
                   context, AppLocalization.of(context)!.paymentRequestAccepted);
