@@ -2097,10 +2097,10 @@ class Order {
           "qty": int.parse(object["qty"]),
         });
       }
-      hasReview = object["has_review"] ?? false;
-      refundPaymentRequestId = object["refund_payment_request_id"];
-      refundPaymentId = object["refund_payment_id"];
     }
+    hasReview = object["has_review"] ?? false;
+    refundPaymentRequestId = object["refund_payment_request_id"];
+    refundPaymentId = object["refund_payment_id"];
   }
 
   String? getCustomerOrMerchantName(String? userName) {

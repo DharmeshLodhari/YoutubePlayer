@@ -20,6 +20,7 @@ import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_passcode_sheet/bottomsheet_passcode.dart';
 import 'package:Slydo/widget/customized_popup_menu.dart';
 import 'package:Slydo/widget/dialog.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -166,8 +167,8 @@ class _OrderTileState extends State<OrderTile> {
       } else if (order?.orderConfirmState.contains(order?.status) == false) {
         return _buildConfirmDelivery();
       } else if (order?.status == "Canceled" &&
-          order?.refundPaymentRequestId != null &&
-          order?.refundPaymentId != null) {
+          order?.refundPaymentRequestId == null &&
+          order?.refundPaymentId == null) {
         return _buildRequestRefund();
       } else {
         if (order?.notAllowedStatusUpdate.contains(order?.status) == false) {
@@ -177,7 +178,7 @@ class _OrderTileState extends State<OrderTile> {
     } else {
       if (order?.status == "Canceled" &&
           order?.refundPaymentRequestId != null &&
-          order?.refundPaymentId != null) {
+          order?.refundPaymentId == null) {
         return _buildRefundPayment();
       }
       if (order?.notAllowedStatusUpdate.contains(order?.status) == false) {
@@ -237,8 +238,7 @@ class _OrderTileState extends State<OrderTile> {
     return RoundedBorderButton(
       title: "Refund Payment",
       onTap: () {
-        // await Navigator.pushNamed(context, Routes.WRITE_REVIEW_PAGE,
-        //     arguments: {"order": order});
+        acceptPaymentRequestAlert();
       },
     );
   }
@@ -463,11 +463,80 @@ class _OrderTileState extends State<OrderTile> {
         title: AppLocalization.of(context)!.refundRequest,
         description:
             'Will you like to send a refund request of ${worldCurrencies[order?.currency]}${moneyDisplayNormalizer(order?.totalPrice)} to this merchant?',
-        actionOneText: 'No, Cancel',
-        actionTwoText: 'Confirm Delivery',
+        actionOneText: 'No',
+        actionTwoText: 'Yes',
         rightButtonOnPressed: () async {
           await customerOrderRefundRequest();
         });
+  }
+
+  void acceptPaymentRequestAlert() async {
+    final bool? result = await showDialogBox(
+      context: context,
+      roundedBackgroundIcon: RoundedBackgroundIcon(
+        backgroundColor: navyBlue.withOpacity(0.08),
+        borderRadius: 20,
+        width: 48,
+        height: 48,
+        icon: Icon(
+          SlydoAppIcon.true_icon,
+          color: navyBlue,
+          size: 16,
+        ),
+        enableMargin: false,
+      ),
+      actionOneBgColor: navyBlue,
+      actionOneTextColor: Colors.white,
+      actionTwoBgColor: mateRed,
+      actionTwoTextColor: Colors.white,
+      firstActionPrimary: true,
+      title: "Pay",
+      description:
+          AppLocalization.of(context)!.areYouSureWantToAcceptThisRequest,
+      actionOneText: "Pay",
+      actionTwoText: AppLocalization.of(context)!.cancel,
+    );
+    if (result != null && result) {
+      BottomSheetPassCode(
+          context: context,
+          isValidCallback: () async {
+            showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (context) =>
+                    Center(child: CircularLoadingIndicator()));
+
+            final bool result = await checkAccountBalance();
+            if (!result) return;
+
+            final response = await PaymentAndBankingAuth()
+                .acceptPaymentRequests(order?.refundPaymentRequestId ?? "");
+            if (response.statusCode == 200 || response.statusCode == 201) {
+              final jsonData = json.decode(response.body);
+              debugPrint("jsonData: ====> $jsonData");
+              final String paymentId = jsonData["id"] ?? 0;
+              if (paymentId != null || paymentId != 0) {
+                sendOrderRefundPaymentId(paymentId);
+              }
+            } else if (response.statusCode == 500) {
+              showToast(message: AppLocalization.of(context)!.serverError);
+            }
+            // else if (response.statusCode == 800) {
+            //   Navigator.pushNamed(context, "/add-document");
+            // }
+            else {
+              final Map<String, dynamic> errorData = jsonDecode(response.body);
+              String? error = "Error";
+              if (errorData.containsKey("errors")) {
+                error = errorData['errors'];
+              }
+              showToast(message: error!);
+            }
+          },
+          cancelCallBack: () {
+            Navigator.pop(context);
+          });
+    }
   }
 
   Widget orderStatusAndDate() {
@@ -655,19 +724,20 @@ class _OrderTileState extends State<OrderTile> {
       "from_customer": userBloc.user.userName!.trim(),
       "to_customer": order?.merchant,
       "currency": userBloc.user.currency,
-      "amount": moneyInputNormalizer(order?.totalPrice.toString() ?? "0"),
+      "amount": order?.totalPrice,
       "category": 'Finance',
       "notes": 'Refund Order Ref: ${order?.id}',
       "description": 'Refund Order Ref: ${order?.id} ',
       "latitude": Platform.isIOS ? userLocation.latitude : "",
       "longitude": Platform.isIOS ? userLocation.longitude : "",
       "made_from_chat": false,
+      "cart_id`": cartId,
       "data": {
         "order_id": order?.id,
       },
-      "cart_id`": cartId,
     };
 
+    debugPrint("data $data");
     await PaymentAndBankingAuth().createPaymentRequests(data).then((value) {
       response = value;
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -710,7 +780,6 @@ class _OrderTileState extends State<OrderTile> {
           .updateOrderRefundStatus(data, order?.id.toString() ?? "")
           .then((value) {
         if (value) {
-          showToast(message: 'Payment request sent');
           Navigator.popAndPushNamed(context, Routes.ORDER_LIST);
           return true;
         }
@@ -734,15 +803,17 @@ class _OrderTileState extends State<OrderTile> {
     };
     // Please send request to that API
     await updateOrderRefundStatus(requestData);
+    showToast(message: 'Payment request sent');
   }
 
   // Merchants call this function to send the payment id after make in refund payment
-  Future<void> sendOrderRefundPaymentId(int paymentTransactionId) async {
+  Future<void> sendOrderRefundPaymentId(String paymentTransactionId) async {
     final Map<String, dynamic> requestData = {
       "refund_payment_id": paymentTransactionId,
     };
 
     await updateOrderRefundStatus(requestData);
+    showToast(message: AppLocalization.of(context)!.paymentRequestAccepted);
   }
 
   Widget statusListTile(
@@ -799,8 +870,9 @@ class _OrderTileState extends State<OrderTile> {
     if (spendingAmount > accountBalance) {
       showToast(message: "You don't have enough money in Slydo account!!");
       return false;
+    } else {
+      return true;
     }
-    return true;
   }
 
   Future<void> placeOrder() async {

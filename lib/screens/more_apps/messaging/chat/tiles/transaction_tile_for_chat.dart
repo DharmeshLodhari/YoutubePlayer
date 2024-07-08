@@ -728,7 +728,7 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
         context: context,
         isValidCallback: () async {
           final response = await PaymentAndBankingAuth().acceptPaymentRequests(
-              paymentRequest,
+              paymentRequest.id ?? "",
               messageId: widget.message!["id"]);
 
           if (response.statusCode == 200 || response.statusCode == 201) {

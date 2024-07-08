@@ -175,7 +175,7 @@ class PaymentRequest {
     this.description,
     this.payee,
     this.avatar,
-    this.createdAt,
+    this.createdAt = "",
     this.currency,
     this.userType = "User",
     this.amount,

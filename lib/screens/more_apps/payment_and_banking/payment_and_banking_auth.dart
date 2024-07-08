@@ -591,7 +591,7 @@ class PaymentAndBankingAuth extends AuthService {
   }
 
   // Accept Payment with POST method with empty data  post
-  Future<http.Response> acceptPaymentRequests(PaymentRequest paymentRequest,
+  Future<http.Response> acceptPaymentRequests(String paymentRequestId,
       {String? messageId}) async {
     String url =
         "${AppConfig.baseUrl}/api/v1/transactions/request-payment/accept/";
@@ -600,7 +600,7 @@ class PaymentAndBankingAuth extends AuthService {
       url += "?message-id=$messageId";
     }
     debugPrint("URL:- $url");
-    final data = {"id": paymentRequest.id};
+    final data = {"id": paymentRequestId};
     final headers = await getAuthHeaders();
     final data0 = jsonEncode(data);
     final response = await httpPatch(url, headers: headers, body: data0);
@@ -735,7 +735,15 @@ class PaymentAndBankingAuth extends AuthService {
         "${AppConfig.baseUrl}/api/v1/transactions/request-payment/$paymentRequestId/";
     final headers = await getAuthHeaders();
     final response = await httpGet(url, headers: headers);
+
+    try {
+      handleServerErrors(response);
+    } catch (e) {
+      return Future.error(response.body);
+    }
+
     if (response.statusCode == 200 || response.statusCode == 201) {
+      debugPrint("json == > ${json.decode(response.body)}");
       return PaymentRequest.fromJson(json.decode(response.body));
     } else {
       final jsonData = json.decode(response.body);

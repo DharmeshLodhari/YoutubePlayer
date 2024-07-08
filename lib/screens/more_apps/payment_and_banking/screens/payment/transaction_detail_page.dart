@@ -95,28 +95,32 @@ class _TransactionDetailState extends State<TransactionDetail> {
         size: 16,
         color: blackFont,
       ),
-      onTap: transaction!.latitude != "" ? goToMap : () {},
+      onTap: transaction?.latitude != "" ? goToMap : () {},
       backgroundColor: iconBtnGrey,
       enableMargin: true,
     );
   }
 
   Widget scaffoldBody() {
-    return SingleChildScrollView(
-      child: Container(
-        height: MediaQuery.of(context).size.height -
-            (AppBar().preferredSize.height +
-                MediaQuery.of(context).padding.top),
-        width: MediaQuery.of(context).size.width,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-        child: Column(
-          children: [
-            displayTransactionInfo(),
-            flexibleSpace(),
-          ],
+    if (transaction == null) {
+      return const Center(child: CircularProgressIndicator());
+    } else {
+      return SingleChildScrollView(
+        child: Container(
+          height: MediaQuery.of(context).size.height -
+              (AppBar().preferredSize.height +
+                  MediaQuery.of(context).padding.top),
+          width: MediaQuery.of(context).size.width,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          child: Column(
+            children: [
+              displayTransactionInfo(),
+              flexibleSpace(),
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    }
   }
 
   Widget displaySenderInfo() {
@@ -148,12 +152,15 @@ class _TransactionDetailState extends State<TransactionDetail> {
   }
 
   Widget getSubtitle() {
-    final DateTime transactionTime = DateTime.parse(transaction!.createdAt!);
-    final String date = DateFormat("dd/MM/yyyy").format(transactionTime);
-    final String time = DateFormat("hh:mm a").format(transactionTime);
-
+    String? text;
+    if (transaction?.createdAt != null) {
+      final DateTime transactionTime = DateTime.parse(transaction!.createdAt!);
+      final String date = DateFormat("dd/MM/yyyy").format(transactionTime);
+      final String time = DateFormat("hh:mm a").format(transactionTime);
+      text = "$date • $time";
+    }
     return Text(
-      "$date • $time",
+      text ?? '',
       softWrap: false,
       overflow: TextOverflow.visible,
       style: TextStyle(color: darkGrey, fontSize: 12),
@@ -162,7 +169,7 @@ class _TransactionDetailState extends State<TransactionDetail> {
 
   Widget getLeading() {
     return ClipOval(
-        child: transaction!.isAnonymous!
+        child: transaction?.isAnonymous ?? false
             ? Container(
                 padding: const EdgeInsets.all(4.0),
                 child: Image.asset(
@@ -173,8 +180,8 @@ class _TransactionDetailState extends State<TransactionDetail> {
                   fit: BoxFit.fitHeight,
                 ),
               )
-            : userImageUserInitialsPic(
-                transaction!.avatar!, transaction!.displayToCustomer, 25, 48));
+            : userImageUserInitialsPic(transaction?.avatar ?? "",
+                transaction?.displayToCustomer ?? "", 25, 48));
   }
 
   Widget getSender() {
@@ -193,18 +200,18 @@ class _TransactionDetailState extends State<TransactionDetail> {
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         Text(
-          worldCurrencies[transaction!.currency!]!,
+          worldCurrencies[transaction?.currency] ?? "₦",
           style: TextStyle(
-            color: transaction!.isCredit! ? navyBlue : blackFont,
+            color: transaction?.isCredit ?? false ? navyBlue : blackFont,
             fontWeight: FontWeight.bold,
             fontSize: 14,
             fontFamily: "Inter",
           ),
         ),
         Text(
-          moneyDisplayNormalizer(int.parse(transaction!.amount.toString())),
+          moneyDisplayNormalizer(transaction?.amount ?? 0),
           style: TextStyle(
-              color: transaction!.isCredit! ? navyBlue : blackFont,
+              color: transaction?.isCredit ?? false ? navyBlue : blackFont,
               fontWeight: FontWeight.bold,
               fontSize: 14),
         ),
@@ -241,24 +248,28 @@ class _TransactionDetailState extends State<TransactionDetail> {
           thickness: 1,
           height: 0,
         ),
-        transactionOrPayoutTile('assets/images/payout/status.svg',
-            AppLocalization.of(context)!.status, transaction!.status!, true),
+        transactionOrPayoutTile(
+            'assets/images/payout/status.svg',
+            AppLocalization.of(context)!.status,
+            transaction?.status ?? "",
+            true),
         transactionOrPayoutTile(
             'assets/images/payout/category.svg',
             AppLocalization.of(context)!.category,
-            transaction!.category!,
+            transaction?.category ?? "",
             false),
         transactionOrPayoutTile(
             'assets/images/payout/note.svg',
             AppLocalization.of(context)!.note,
-            messageDecoderWithEmoji(appendStringDot(transaction!.note!, 35)) ??
+            messageDecoderWithEmoji(
+                    appendStringDot(transaction?.note ?? "", 35)) ??
                 '---',
             false),
         transactionOrPayoutTile(
             'assets/images/payout/description.svg',
             AppLocalization.of(context)!.description,
             messageDecoderWithEmoji(
-                    appendStringDot(transaction!.description!, 35)) ??
+                    appendStringDot(transaction?.description ?? "", 35)) ??
                 '---',
             false),
       ],

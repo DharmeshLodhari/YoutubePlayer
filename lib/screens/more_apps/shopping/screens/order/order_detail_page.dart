@@ -680,10 +680,10 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
         order?.refundPaymentId != null) {
       // Merchant has made a refund payment
       if (order?.refundPaymentId != null) {
-        return _buildViewRefundTransaction();
+        return Expanded(child: _buildViewRefundTransaction());
       }
       // Customer has made a refund request
-      return _buildViewRefundPaymentRequest();
+      return Expanded(child: _buildViewRefundPaymentRequest());
     }
 
     if (order?.isCustomer(userBloc.user.userName) ?? false) {
@@ -692,22 +692,22 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
       } else if (order?.orderConfirmState.contains(order?.status) == false) {
         return Expanded(child: _buildConfirmDelivery());
       } else if (order?.status == "Canceled" &&
-          order?.refundPaymentRequestId != null &&
-          order?.refundPaymentId != null) {
-        return _buildRequestRefund();
+          order?.refundPaymentRequestId == null &&
+          order?.refundPaymentId == null) {
+        return Expanded(child: _buildRequestRefund());
       } else {
         if (order?.notAllowedStatusUpdate.contains(order?.status) == false) {
-          return _buildUpdateStatus();
+          return Expanded(child: _buildUpdateStatus());
         }
       }
     } else {
       if (order?.status == "Canceled" &&
           order?.refundPaymentRequestId != null &&
-          order?.refundPaymentId != null) {
-        return _buildRefundPayment();
+          order?.refundPaymentId == null) {
+        return Expanded(child: _buildRefundPayment());
       }
       if (order?.notAllowedStatusUpdate.contains(order?.status) == false) {
-        return _buildUpdateStatus();
+        return Expanded(child: _buildUpdateStatus());
       }
     }
     return const SizedBox.shrink();

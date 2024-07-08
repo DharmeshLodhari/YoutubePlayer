@@ -84,21 +84,25 @@ class _PaymentRequestDetailState extends State<PaymentRequestDetail> {
   }
 
   Widget scaffoldBody() {
-    return SingleChildScrollView(
-      child: Container(
-        height: MediaQuery.of(context).size.height -
-            (AppBar().preferredSize.height +
-                MediaQuery.of(context).padding.top),
-        width: MediaQuery.of(context).size.width,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-        child: Column(
-          children: [
-            displayTransactionInfo(),
-            flexibleSpace(),
-          ],
+    if (paymentRequest == null) {
+      return const Center(child: CircularProgressIndicator());
+    } else {
+      return SingleChildScrollView(
+        child: Container(
+          height: MediaQuery.of(context).size.height -
+              (AppBar().preferredSize.height +
+                  MediaQuery.of(context).padding.top),
+          width: MediaQuery.of(context).size.width,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          child: Column(
+            children: [
+              displayTransactionInfo(),
+              flexibleSpace(),
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    }
   }
 
   Widget displaySenderInfo() {
@@ -126,12 +130,17 @@ class _PaymentRequestDetailState extends State<PaymentRequestDetail> {
   }
 
   Widget getSubtitle() {
-    final DateTime transactionTime = DateTime.parse(paymentRequest!.createdAt!);
-    final String date = DateFormat("dd/MM/yyyy").format(transactionTime);
-    final String time = DateFormat("hh:mm a").format(transactionTime);
+    String? text;
+    if (paymentRequest?.createdAt != null) {
+      final DateTime transactionTime =
+          DateTime.parse(paymentRequest!.createdAt!);
+      final String date = DateFormat("dd/MM/yyyy").format(transactionTime);
+      final String time = DateFormat("hh:mm a").format(transactionTime);
 
+      text = "$date • $time";
+    }
     return Text(
-      "$date • $time",
+      text ?? '',
       softWrap: false,
       overflow: TextOverflow.visible,
       style: TextStyle(color: darkGrey, fontSize: 12),
@@ -140,8 +149,8 @@ class _PaymentRequestDetailState extends State<PaymentRequestDetail> {
 
   Widget getLeading() {
     return ClipOval(
-        child: userImageUserInitialsPic(paymentRequest!.avatar!,
-            paymentRequest!.displayToCustomer, 25, 48));
+        child: userImageUserInitialsPic(paymentRequest?.avatar ?? "",
+            paymentRequest?.displayToCustomer ?? "", 25, 48));
   }
 
   Widget getSender() {
@@ -160,18 +169,18 @@ class _PaymentRequestDetailState extends State<PaymentRequestDetail> {
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         Text(
-          worldCurrencies[paymentRequest!.currency!]!,
+          worldCurrencies[paymentRequest?.currency] ?? "₦",
           style: TextStyle(
-            color: paymentRequest!.isCredit! ? navyBlue : blackFont,
+            color: paymentRequest?.isCredit ?? false ? navyBlue : blackFont,
             fontWeight: FontWeight.bold,
             fontSize: 14,
             fontFamily: "Inter",
           ),
         ),
         Text(
-          moneyDisplayNormalizer(int.parse(paymentRequest!.amount.toString())),
+          moneyDisplayNormalizer(paymentRequest?.amount ?? 0),
           style: TextStyle(
-              color: paymentRequest!.isCredit! ? navyBlue : blackFont,
+              color: paymentRequest?.isCredit ?? false ? navyBlue : blackFont,
               fontWeight: FontWeight.bold,
               fontSize: 14),
         ),
@@ -208,13 +217,16 @@ class _PaymentRequestDetailState extends State<PaymentRequestDetail> {
           thickness: 1,
           height: 0,
         ),
-        transactionOrPayoutTile('assets/images/payout/status.svg',
-            AppLocalization.of(context)!.status, paymentRequest!.status!, true),
+        transactionOrPayoutTile(
+            'assets/images/payout/status.svg',
+            AppLocalization.of(context)!.status,
+            paymentRequest?.status ?? "",
+            true),
         transactionOrPayoutTile(
             'assets/images/payout/description.svg',
             AppLocalization.of(context)!.reference,
             messageDecoderWithEmoji(
-                    appendStringDot(paymentRequest!.description!, 35)) ??
+                    appendStringDot(paymentRequest?.description ?? "", 35)) ??
                 '---',
             false),
       ],
