@@ -811,6 +811,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
       popupProps: PopupProps.dialog(
         showSearchBox: true,
         dialogProps: DialogProps(
+          backgroundColor: Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(5),
           ),
@@ -915,6 +916,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
       popupProps: PopupProps.dialog(
           showSearchBox: true,
           dialogProps: DialogProps(
+            backgroundColor: Colors.white,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(5),
             ),

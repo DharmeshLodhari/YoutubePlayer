@@ -1453,6 +1453,7 @@ class _EditJobState extends State<EditJob> {
       popupProps: PopupProps.dialog(
         showSearchBox: true,
         dialogProps: DialogProps(
+          backgroundColor: Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(5),
           ),
@@ -1557,6 +1558,7 @@ class _EditJobState extends State<EditJob> {
       popupProps: PopupProps.dialog(
           showSearchBox: true,
           dialogProps: DialogProps(
+            backgroundColor: Colors.white,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(5),
             ),

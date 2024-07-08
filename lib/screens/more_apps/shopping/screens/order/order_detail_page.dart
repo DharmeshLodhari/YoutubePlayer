@@ -197,18 +197,14 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
         ),
         Container(
           margin: const EdgeInsets.symmetric(vertical: 10),
-          child: Divider(
-            color: lightGrey,
-            thickness: 5,
-          ),
+          color: lightBlue,
+          height: 5,
         ),
         checkoutWidget(),
         Container(
           margin: const EdgeInsets.symmetric(vertical: 10),
-          child: Divider(
-            color: lightGrey,
-            thickness: 5,
-          ),
+          color: lightBlue,
+          height: 5,
         ),
         _buildNoteAndOrderDetails(),
       ],

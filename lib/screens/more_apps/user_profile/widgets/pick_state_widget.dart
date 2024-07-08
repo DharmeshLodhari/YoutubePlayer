@@ -104,9 +104,11 @@ class _PickStateWidgetState extends State<PickStateWidget> {
                   isExpanded: true,
                   value: pickedStateValue,
                   underline: const SizedBox.shrink(),
-                  // dropdownDecoration: BoxDecoration(
-                  //   borderRadius: BorderRadius.circular(14),
-                  // ),
+                  dropdownStyleData: const DropdownStyleData(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                    ),
+                  ),
                   style: TextStyle(
                     fontSize: 16,
                     color: blackFont,
