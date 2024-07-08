@@ -160,7 +160,7 @@ class _SuperStoreState extends State<SuperStore> {
           size: 24,
         ),
         onPressed: () {
-          if (mounted) Navigator.pop(context);
+          Navigator.pop(context);
         },
       ),
       shadowColor: greySecondaryYarn,

@@ -24,8 +24,10 @@ import 'package:flutter/material.dart';
 import '../../../../../../utils/util.dart';
 import '../event_list.dart';
 
-double getBgHeightOfAppBar(String bio, bool hasAddress, bool hasContact) {
+double getBgHeightOfAppBar(
+    double textHeight, String bio, bool hasAddress, bool hasContact) {
   final int bioLength = bio.length;
+  debugPrint('GET Text Height -> $textHeight');
   debugPrint('GET BIO LEN -> $bioLength');
   debugPrint('GET ADDRESS -> $hasAddress');
   debugPrint('GET CONTACT -> $hasContact');

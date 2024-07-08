@@ -22,6 +22,7 @@ class Routes {
   static const String TRANSACTIONS = "/transactions";
   static const String TRANSACTION_GRAPH = "/transaction-graph";
   static const String TRANSACTION_DETAIL = "/transaction-detail";
+  static const String PAYMENT_REQUEST_DETAIL = "/paymnet-request-detail";
   static const String ADD_ACCOUNT = "/add-account";
   static const String SEND_PAYMENT = "/send-payment";
   static const String REQUEST_PAYMENT = "/request-payment";

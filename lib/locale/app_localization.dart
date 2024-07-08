@@ -552,6 +552,13 @@ class AppLocalization {
     );
   }
 
+  String get save {
+    return Intl.message(
+      "Save",
+      name: "save",
+    );
+  }
+
   String get discard {
     return Intl.message(
       "Discard",
@@ -584,6 +591,13 @@ class AppLocalization {
     return Intl.message(
       "Process",
       name: "process",
+    );
+  }
+
+  String get refundRequest {
+    return Intl.message(
+      "Refund Request",
+      name: "refundRequest",
     );
   }
 

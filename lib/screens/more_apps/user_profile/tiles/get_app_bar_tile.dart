@@ -87,7 +87,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
   bool isLoading = false;
   bool hasAddress = false;
   bool hasContact = false;
-
+  double? textHeight;
   @override
   void initState() {
     appConfigurationModel = getIt<AppConfigurationBloc>().appConfigurationModel;
@@ -128,6 +128,28 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
       isOwner = true;
     }
 
+    // return LayoutBuilder(
+    //   builder: (context, constraints) {
+    //     if (searchedUser?.bio == null) {
+    //       final textSpan = TextSpan(
+    //         text: searchedUser?.bio,
+    //         style:
+    //             TextStyle(color: blackFont, fontSize: 14, fontFamily: "Inter"),
+    //       );
+    //
+    //       final textPainter = TextPainter(
+    //         text: textSpan,
+    //         textDirection: ui.TextDirection.ltr,
+    //         maxLines: null,
+    //       );
+    //
+    //       textPainter.layout(maxWidth: constraints.maxWidth);
+    //
+    //       textHeight = textPainter.size.height;
+    //     } else {
+    //       textHeight = 0;
+    //     }
+
     return SliverOverlapAbsorber(
       handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
       sliver: SliverSafeArea(
@@ -139,6 +161,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
           stretch: true,
           automaticallyImplyLeading: false,
           expandedHeight: getBgHeightOfAppBar(
+            textHeight ?? 0,
             searchedUser?.bio == null
                 ? ''
                 : messageDecoderWithEmoji(searchedUser?.bio)!,
@@ -186,6 +209,8 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
         ),
       ),
     );
+    // },
+    // );
   }
 
   Widget getBgWidgetForAppBar(BuildContext context) {
@@ -1022,8 +1047,8 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
           const SizedBox(height: 10),
           YarnSmartText(
             text: messageDecoderWithEmoji(searchedUser?.bio)!,
-            style: TextStyle(
-                color: blackFont, fontSize: 14, fontFamily: "OpenSans"),
+            style:
+                TextStyle(color: blackFont, fontSize: 14, fontFamily: "Inter"),
             maxLines: 6,
             disableAt: false,
             onTagClick: (tag) {

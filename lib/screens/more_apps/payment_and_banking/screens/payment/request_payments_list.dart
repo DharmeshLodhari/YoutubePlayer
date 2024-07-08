@@ -880,8 +880,10 @@ class _VerticalListItemState extends State<VerticalListItem> {
         // Slidable.of(context)?.renderingMode == SlidableRenderingMode.none
         //     ? Slidable.of(context)?.open()
         //     : Slidable.of(context)?.close();
-        Navigator.pushNamed(context, Routes.USER_PROFILE,
-            arguments: {"searchedUserName": widget.paymentRequest.payee});
+        // Navigator.pushNamed(context, Routes.USER_PROFILE,
+        //     arguments: {"searchedUserName": widget.paymentRequest.payee});
+        Navigator.of(context).pushNamed(Routes.PAYMENT_REQUEST_DETAIL,
+            arguments: {'paymentRequest': widget.paymentRequest});
       },
       onLongPress: () {
         if (mounted) {

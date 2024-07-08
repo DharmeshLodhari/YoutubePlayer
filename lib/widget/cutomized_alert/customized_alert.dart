@@ -79,7 +79,7 @@ class CustomizedAlert {
                                 ),
                                 _getImage() ?? Container(),
                                 const SizedBox(
-                                  height: 10,
+                                  height: 20,
                                 ),
                                 Text(
                                   title ?? "",
@@ -102,7 +102,7 @@ class CustomizedAlert {
                                     child: Text(
                                       desc ?? "",
                                       style: TextStyle(
-                                          color: darkGrey,
+                                          color: lightBlackFont,
                                           fontSize: 14.0,
                                           fontWeight: FontWeight.w400,
                                           fontFamily: "Inter"),

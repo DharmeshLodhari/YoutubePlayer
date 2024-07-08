@@ -1,13 +1,19 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifiers/user_bloc.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
+import 'package:Slydo/screens/more_apps/shipping_process/auth/shipping_process_auth.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/shopping/tiles/order_detail_item_tile_new.dart';
 import 'package:Slydo/screens/more_apps/shopping/widget/outline_border_button.dart';
 import 'package:Slydo/screens/more_apps/shopping/widget/rounded_border_button.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/services/location_service.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
@@ -16,6 +22,7 @@ import 'package:Slydo/widget/customized_popup_menu.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -38,15 +45,26 @@ class _OrderTileState extends State<OrderTile> {
   bool isPopMenuOpen = false;
   String? statusOfOrder = "";
   bool isAPILoading = false;
+  bool isRefundAPILoading = false;
   final _auth = ShoppingAuthService();
   List<int?> orders = [];
   bool isOrderLoading = false;
+  late http.Response response;
+  String errorMessage = "";
+  String cartId = "";
 
   @override
   void initState() {
     order = widget.order;
     statusOfOrder = order?.status?.toLowerCase();
+    getCartId();
     super.initState();
+  }
+
+  Future<void> getCartId() async {
+    if (mounted) setState(() {});
+
+    cartId = await ShippingProcessAuthService().getCartId();
   }
 
   @override
@@ -115,18 +133,14 @@ class _OrderTileState extends State<OrderTile> {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       Flexible(child: _buildFirstButton()),
-                      ...[
-                        const SizedBox(
-                          width: 7,
-                        ),
-                        Flexible(child: _buildSecondButton())
-                      ],
-                      ...[
-                        const SizedBox(
-                          width: 7,
-                        ),
-                        Flexible(child: _buildThirdButton())
-                      ],
+                      const SizedBox(
+                        width: 7,
+                      ),
+                      Flexible(child: _buildSecondButton()),
+                      const SizedBox(
+                        width: 7,
+                      ),
+                      Flexible(child: _buildThirdButton())
                     ],
                   ),
                 ],
@@ -151,9 +165,26 @@ class _OrderTileState extends State<OrderTile> {
         return _buildPayNow();
       } else if (order?.orderConfirmState.contains(order?.status) == false) {
         return _buildConfirmDelivery();
+      } else if (order?.status == "Canceled" &&
+          order?.refundPaymentRequestId != null &&
+          order?.refundPaymentId != null) {
+        return _buildRequestRefund();
+      } else {
+        if (order?.notAllowedStatusUpdate.contains(order?.status) == false) {
+          return _buildUpdateStatus();
+        }
+      }
+    } else {
+      if (order?.status == "Canceled" &&
+          order?.refundPaymentRequestId != null &&
+          order?.refundPaymentId != null) {
+        return _buildRefundPayment();
+      }
+      if (order?.notAllowedStatusUpdate.contains(order?.status) == false) {
+        return _buildUpdateStatus();
       }
     }
-    return _buildUpdateStatus();
+    return const SizedBox.shrink();
   }
 
   Widget _buildFirstButton() {
@@ -162,7 +193,7 @@ class _OrderTileState extends State<OrderTile> {
 
   Widget _buildPayNow() {
     return RoundedBorderButton(
-      title: "Pay Now",
+      title: AppLocalization.of(context)!.payNow,
       onTap: () {
         BottomSheetPassCode(
             context: context,
@@ -182,7 +213,7 @@ class _OrderTileState extends State<OrderTile> {
 
   Widget _buildConfirmDelivery() {
     return RoundedBorderButton(
-      title: "Confirm Delivery",
+      title: AppLocalization.of(context)!.confirmDelivery,
       onTap: () {
         showConfirmDialogForOrder();
       },
@@ -191,7 +222,20 @@ class _OrderTileState extends State<OrderTile> {
 
   Widget _buildRequestRefund() {
     return RoundedBorderButton(
-      title: "Request Refund",
+      title: AppLocalization.of(context)!.refundRequest,
+      onTap: () {
+        if ((order?.totalPrice ?? 0) > 0) {
+          showRequestRefundDialog();
+        } else {
+          showToast(message: 'You can not send request for money');
+        }
+      },
+    );
+  }
+
+  Widget _buildRefundPayment() {
+    return RoundedBorderButton(
+      title: "Refund Payment",
       onTap: () {
         // await Navigator.pushNamed(context, Routes.WRITE_REVIEW_PAGE,
         //     arguments: {"order": order});
@@ -225,7 +269,7 @@ class _OrderTileState extends State<OrderTile> {
       title: "Cancel Order",
       color: redBtn,
       onTap: () {
-        // showChangeStatusAndroidSheet();
+        showDeleteDialogForOrder();
       },
     );
   }
@@ -261,6 +305,29 @@ class _OrderTileState extends State<OrderTile> {
   void menuStateChange(bool isOpen) {
     isPopMenuOpen = isOpen;
     setState(() {});
+  }
+
+  void showDeleteDialogForOrder() {
+    showDialogBox(
+      context: context,
+      actionOneTextColor: blackFont,
+      actionOneBgColor: greyBorderColor,
+      actionTwoTextColor: white,
+      actionTwoBgColor: mateRed,
+      title: 'Cancel Order',
+      actionOneText: 'Go Back',
+      actionTwoText: AppLocalization.of(context)!.cancel,
+      description: 'Are you sure you want to cancel this order?',
+      roundedBackgroundIcon: RoundedBackgroundIcon(
+        enableMargin: false,
+        width: 90,
+        height: 90,
+        image: Image.asset('assets/images/delete_dialog_icon.png'),
+      ),
+      rightButtonOnPressed: () async {
+        await updateStatus("Canceled", isRefresh: true);
+      },
+    );
   }
 
   Widget getItemTileUi() {
@@ -299,7 +366,7 @@ class _OrderTileState extends State<OrderTile> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          "Ref # : ${widget.order?.id}",
+          "Ref # : ${order?.id}",
           style: TextStyle(
             color: blackFont,
             fontWeight: FontWeight.bold,
@@ -319,7 +386,7 @@ class _OrderTileState extends State<OrderTile> {
               ),
             ),
             Text(
-              worldCurrencies[widget.order?.currency] ?? "",
+              worldCurrencies[order?.currency] ?? "",
               style: TextStyle(
                 color: blackFont,
                 fontWeight: FontWeight.bold,
@@ -328,7 +395,7 @@ class _OrderTileState extends State<OrderTile> {
               ),
             ),
             Text(
-              moneyDisplayNormalizer(widget.order?.totalPrice),
+              moneyDisplayNormalizer(order?.totalPrice),
               style: TextStyle(
                 color: blackFont,
                 fontWeight: FontWeight.bold,
@@ -372,6 +439,37 @@ class _OrderTileState extends State<OrderTile> {
         });
   }
 
+  void showRequestRefundDialog() {
+    showDialogBox(
+        context: context,
+        roundedBackgroundIcon: RoundedBackgroundIcon(
+          backgroundColor: navyBlue.withOpacity(0.08),
+          borderRadius: 30,
+          width: 55,
+          height: 55,
+          icon: Icon(
+            SlydoAppIcon.false_icon,
+            color: navyBlue,
+            size: 18,
+          ),
+          enableMargin: false,
+        ),
+        actionOneBgColor: greySecondaryYarn,
+        actionOneTextColor: black,
+        actionTwoBgColor: navyBlue,
+        actionTwoTextColor: Colors.white,
+        fontSize: 14,
+        firstActionPrimary: false,
+        title: AppLocalization.of(context)!.refundRequest,
+        description:
+            'Will you like to send a refund request of ${worldCurrencies[order?.currency]}${moneyDisplayNormalizer(order?.totalPrice)} to this merchant?',
+        actionOneText: 'No, Cancel',
+        actionTwoText: 'Confirm Delivery',
+        rightButtonOnPressed: () async {
+          await customerOrderRefundRequest();
+        });
+  }
+
   Widget orderStatusAndDate() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -379,7 +477,7 @@ class _OrderTileState extends State<OrderTile> {
         Row(
           children: [
             Text(
-              widget.order?.status ?? "",
+              order?.status ?? "",
               style: TextStyle(
                 color: blackFont,
                 fontSize: 14,
@@ -392,7 +490,7 @@ class _OrderTileState extends State<OrderTile> {
               width: 5,
             ),
             Text(
-              "(${widget.order?.orderItems?[0].qty ?? "0"} item)",
+              "(${order?.orderItems?[0].qty ?? "0"} item)",
               style: TextStyle(
                 color: blackFont,
                 fontWeight: FontWeight.w500,
@@ -417,8 +515,9 @@ class _OrderTileState extends State<OrderTile> {
             return Card(
                 shape: const RoundedRectangleBorder(
                   borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(20),
-                      topRight: Radius.circular(20)),
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20),
+                  ),
                 ),
                 color: Colors.white,
                 margin: EdgeInsets.zero,
@@ -444,48 +543,7 @@ class _OrderTileState extends State<OrderTile> {
                         color: dividerColor,
                         thickness: 1,
                       ),
-                      Expanded(
-                        child: ListView(
-                          children: <Widget>[
-                            statusListTile(
-                              title: AppLocalization.of(context)!.newOrder,
-                              value: "new order",
-                              setState: setState,
-                            ),
-                            statusListTile(
-                              title: AppLocalization.of(context)!.processing,
-                              value: "processing",
-                              setState: setState,
-                            ),
-                            statusListTile(
-                              title:
-                                  AppLocalization.of(context)!.awaitingPayment,
-                              value: "awaiting payment",
-                              setState: setState,
-                            ),
-                            statusListTile(
-                              title: AppLocalization.of(context)!.shipped,
-                              value: "shipped",
-                              setState: setState,
-                            ),
-                            statusListTile(
-                              title: AppLocalization.of(context)!.completed,
-                              value: "complete",
-                              setState: setState,
-                            ),
-                            statusListTile(
-                              title: AppLocalization.of(context)!.onHold,
-                              value: "on hold",
-                              setState: setState,
-                            ),
-                            statusListTile(
-                              title: AppLocalization.of(context)!.canceled,
-                              value: "canceled",
-                              setState: setState,
-                            ),
-                          ],
-                        ),
-                      ),
+                      Expanded(child: getOrderUpdateStatusList()),
                       const SizedBox(
                         height: 10,
                       ),
@@ -495,6 +553,44 @@ class _OrderTileState extends State<OrderTile> {
                 ));
           });
         });
+  }
+
+  Widget getOrderUpdateStatusList() {
+    if (order?.isMerchant(userBloc.user.userName) ?? false) {
+      return ListView(
+        children: <Widget>[
+          statusListTile(
+            title: "Processing",
+            value: "Processing",
+            setState: setState,
+          ),
+          statusListTile(
+            title: "On Hold",
+            value: "On Hold",
+            setState: setState,
+          ),
+          statusListTile(
+            title: "Ready For Delivery",
+            value: "Ready For Delivery",
+            setState: setState,
+          ),
+        ],
+      );
+    }
+    return ListView(
+      children: <Widget>[
+        statusListTile(
+          title: "Confirm Delivery",
+          value: "Confirm Delivery",
+          setState: setState,
+        ),
+        statusListTile(
+          title: "Completed",
+          value: "Complete",
+          setState: setState,
+        ),
+      ],
+    );
   }
 
   Widget getSubmitButton() {
@@ -508,7 +604,7 @@ class _OrderTileState extends State<OrderTile> {
               },
         backgroundColor: navyBlue,
         textColor: Colors.white,
-        text: "Save",
+        text: "Update",
         isLoading: isAPILoading,
       ),
     );
@@ -522,17 +618,14 @@ class _OrderTileState extends State<OrderTile> {
           .updateOrderStatus(value, order?.id.toString() ?? "")
           .then((updated) {
         if (updated) {
+          showToast(message: 'Status updated successfully');
           if (isRefresh) {
-            showToast(message: 'Confirm delivery successfully');
             Navigator.popAndPushNamed(context, Routes.ORDER_LIST);
           } else {
-            Navigator.pop(context); // Dismiss bottom-sheet.
-            showToast(message: 'Status updated successfully');
             Navigator.popAndPushNamed(context, Routes.ORDER_UPDATED,
                 arguments: {"orderId": order?.id});
           }
         } else {
-          Navigator.pop(context); // Dismiss bottom-sheet.
           statusOfOrder = order?.status?.toLowerCase();
           showToast(message: 'Something went wrong while updating status.');
         }
@@ -540,11 +633,116 @@ class _OrderTileState extends State<OrderTile> {
         if (mounted) setState(() {});
       });
     } catch (e) {
-      Navigator.pop(context); // Dismiss bottom-sheet.
       statusOfOrder = order?.status?.toLowerCase();
       isAPILoading = false;
       if (mounted) setState(() {});
     }
+  }
+
+  // Customer will send this request to merchant to get the refund
+  Future<void> customerOrderRefundRequest() async {
+    final locationService = LocationService();
+    final UserLocation? userLocation =
+        await locationService.getLocation().catchError((error) {
+      showToast(message: "$error");
+    });
+
+    if (userLocation == null) {
+      return null;
+    }
+
+    final data = {
+      "from_customer": userBloc.user.userName!.trim(),
+      "to_customer": order?.merchant,
+      "currency": userBloc.user.currency,
+      "amount": moneyInputNormalizer(order?.totalPrice.toString() ?? "0"),
+      "category": 'Finance',
+      "notes": 'Refund Order Ref: ${order?.id}',
+      "description": 'Refund Order Ref: ${order?.id} ',
+      "latitude": Platform.isIOS ? userLocation.latitude : "",
+      "longitude": Platform.isIOS ? userLocation.longitude : "",
+      "made_from_chat": false,
+      "data": {
+        "order_id": order?.id,
+      },
+      "cart_id`": cartId,
+    };
+
+    await PaymentAndBankingAuth().createPaymentRequests(data).then((value) {
+      response = value;
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final jsonData = json.decode(response.body);
+        debugPrint("jsonData: ====> $jsonData");
+        final int paymentRequestId = jsonData["id"] ?? 0;
+        if (paymentRequestId != null || paymentRequestId != 0) {
+          sendOrderRefundPaymentRequestId(paymentRequestId);
+        }
+      } else if (response.statusCode == 500) {
+        if (mounted) {
+          setState(() {
+            errorMessage = AppLocalization.of(context)!.serverError;
+            showToast(message: errorMessage);
+          });
+        }
+      } else {
+        if (mounted) {
+          if (response.statusCode == 406) {
+            errorMessage = jsonDecode(value.body)[0];
+            showToast(message: errorMessage);
+            setState(() {});
+          } else {
+            debugPrint("ERROR:- ${response.body}");
+            setState(() {
+              errorMessage = AppLocalization.of(context)!.somethingWentWrong;
+              showToast(message: errorMessage);
+            });
+          }
+        }
+      }
+    });
+  }
+
+  Future<bool> updateOrderRefundStatus(Map<String, dynamic> data) async {
+    try {
+      isRefundAPILoading = true;
+      if (mounted) setState(() {});
+      await _auth
+          .updateOrderRefundStatus(data, order?.id.toString() ?? "")
+          .then((value) {
+        if (value) {
+          showToast(message: 'Payment request sent');
+          Navigator.popAndPushNamed(context, Routes.ORDER_LIST);
+          return true;
+        }
+        isRefundAPILoading = false;
+        if (mounted) setState(() {});
+        return false;
+      });
+    } catch (e) {
+      Navigator.pop(context); // Dismiss bottom-sheet.
+      // statusOfOrder = order?.status?.toLowerCase();
+      isRefundAPILoading = false;
+      if (mounted) setState(() {});
+    }
+    return false;
+  }
+
+  // Customer call this function to send the payment-request-id after payment request to update order
+  Future<void> sendOrderRefundPaymentRequestId(int paymentRequestId) async {
+    final Map<String, dynamic> requestData = {
+      "refund_payment_request_id": paymentRequestId,
+    };
+    // Please send request to that API
+    await updateOrderRefundStatus(requestData);
+  }
+
+  // Merchants call this function to send the payment id after make in refund payment
+  Future<void> sendOrderRefundPaymentId(int paymentTransactionId) async {
+    final Map<String, dynamic> requestData = {
+      "refund_payment_id": paymentTransactionId,
+    };
+
+    await updateOrderRefundStatus(requestData);
   }
 
   Widget statusListTile(
@@ -577,9 +775,8 @@ class _OrderTileState extends State<OrderTile> {
   }
 
   Widget getDateTime() {
-    debugPrint(widget.order?.createdAt);
-    final DateTime orderTime =
-        DateTime.parse(widget.order?.createdAt ?? '').toLocal();
+    debugPrint(order?.createdAt);
+    final DateTime orderTime = DateTime.parse(order?.createdAt ?? '').toLocal();
     final String date = DateFormat("MMM d, yyyy").format(orderTime);
     return Text(
       date,

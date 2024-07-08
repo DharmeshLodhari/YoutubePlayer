@@ -10,6 +10,7 @@ class OutlineBorderButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialButton(
+      padding: const EdgeInsets.symmetric(horizontal: 10),
       height: 33,
       elevation: 0,
       shape: OutlineInputBorder(
@@ -21,6 +22,7 @@ class OutlineBorderButton extends StatelessWidget {
       onPressed: onTap as void Function()?,
       child: Text(
         title,
+        textAlign: TextAlign.center,
         style: TextStyle(
           color: navyBlue,
           fontSize: 11,

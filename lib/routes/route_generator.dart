@@ -67,6 +67,7 @@ import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/cred
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/payout_transactions.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/upgrade_account.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/virtual_account_detail.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/screens/payment/paymnet_request_detail_page.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/payment/request_payments_list.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/payment/transaction_detail_page.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/payment/transaction_graph.dart';
@@ -370,6 +371,15 @@ class RouteGenerator {
       case Routes.TRANSACTION_DETAIL:
         return PageTransition(
           child: TransactionDetail(
+            arguments: settings.arguments,
+          ),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+      case Routes.PAYMENT_REQUEST_DETAIL:
+        return PageTransition(
+          child: PaymentRequestDetail(
             arguments: settings.arguments,
           ),
           type: PageTransitionType.bottomToTop,

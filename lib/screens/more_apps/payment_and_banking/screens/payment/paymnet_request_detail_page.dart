@@ -2,40 +2,41 @@ import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
-import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:maps_launcher/maps_launcher.dart';
 
 // ignore: must_be_immutable
-class TransactionDetail extends StatefulWidget {
+class PaymentRequestDetail extends StatefulWidget {
   final dynamic arguments;
 
-  const TransactionDetail({super.key, required this.arguments});
+  const PaymentRequestDetail({super.key, required this.arguments});
 
   @override
-  State<TransactionDetail> createState() => _TransactionDetailState();
+  State<PaymentRequestDetail> createState() => _PaymentRequestDetailState();
 }
 
-class _TransactionDetailState extends State<TransactionDetail> {
-  Transaction? transaction;
+class _PaymentRequestDetailState extends State<PaymentRequestDetail> {
+  PaymentRequest? paymentRequest;
 
   @override
   void initState() {
     fetchTransaction();
-
     super.initState();
   }
 
+  // void fetchTransaction() async {
+  //   paymentRequest = widget.arguments['paymentRequest'];
+  //   debugPrint("paymentRequest id: ${paymentRequest?.id}");
+  // }
+
   void fetchTransaction() async {
-    final transactionFromArgs = widget.arguments['transaction'];
-    if (transactionFromArgs is String) {
-      transaction = await PaymentAndBankingAuth()
-          .getRefundTransaction(transactionFromArgs);
+    final paymentReqFromArgs = widget.arguments['paymentRequest'];
+    if (paymentReqFromArgs is String) {
+      paymentRequest =
+          await PaymentAndBankingAuth().getPaymentRequests(paymentReqFromArgs);
     } else {
-      transaction = transactionFromArgs;
+      paymentRequest = paymentReqFromArgs;
     }
     if (mounted) setState(() {});
   }
@@ -75,29 +76,10 @@ class _TransactionDetailState extends State<TransactionDetail> {
       ),
       centerTitle: false,
       title: Text(
-        AppLocalization.of(context)!.transaction,
+        AppLocalization.of(context)!.paymentRequests,
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
-      actions: <Widget>[
-        showMap(),
-        const SizedBox(width: 16),
-      ],
-    );
-  }
-
-  Widget showMap() {
-    return RoundedBackgroundIcon(
-      height: 34,
-      width: 34,
-      icon: Icon(
-        SlydoAppIcon.location,
-        size: 16,
-        color: blackFont,
-      ),
-      onTap: transaction!.latitude != "" ? goToMap : () {},
-      backgroundColor: iconBtnGrey,
-      enableMargin: true,
     );
   }
 
@@ -126,15 +108,11 @@ class _TransactionDetailState extends State<TransactionDetail> {
       subtitle: getSubtitle(),
       trailing: getAmount(),
       onTap: () async {
-        if (transaction?.payee == "slydo_envelope" ||
-            transaction?.payee == "slydo" ||
-            transaction?.displayCustomer == "slydo" ||
-            transaction?.displayCustomer == "slydo_envelope") {
+        if (paymentRequest?.payee == "slydo_envelope" ||
+            paymentRequest?.payee == "slydo" ||
+            paymentRequest?.displayCustomer == "slydo" ||
+            paymentRequest?.displayCustomer == "slydo_envelope") {
           return;
-        }
-        if (!transaction!.isAnonymous!) {
-          Navigator.pushNamed(context, '/profile',
-              arguments: {"searchedUserName": transaction!.payee});
         }
       },
     );
@@ -142,13 +120,13 @@ class _TransactionDetailState extends State<TransactionDetail> {
 
   Widget getDescriptionWidget() {
     return Text(
-      messageDecoderWithEmoji(transaction?.description) ?? "",
+      messageDecoderWithEmoji(paymentRequest?.description) ?? "",
       maxLines: 1,
     );
   }
 
   Widget getSubtitle() {
-    final DateTime transactionTime = DateTime.parse(transaction!.createdAt!);
+    final DateTime transactionTime = DateTime.parse(paymentRequest!.createdAt!);
     final String date = DateFormat("dd/MM/yyyy").format(transactionTime);
     final String time = DateFormat("hh:mm a").format(transactionTime);
 
@@ -162,24 +140,13 @@ class _TransactionDetailState extends State<TransactionDetail> {
 
   Widget getLeading() {
     return ClipOval(
-        child: transaction!.isAnonymous!
-            ? Container(
-                padding: const EdgeInsets.all(4.0),
-                child: Image.asset(
-                  "assets/images/anonymous.png",
-                  height: 48,
-                  width: 48,
-                  colorBlendMode: BlendMode.darken,
-                  fit: BoxFit.fitHeight,
-                ),
-              )
-            : userImageUserInitialsPic(
-                transaction!.avatar!, transaction!.displayToCustomer, 25, 48));
+        child: userImageUserInitialsPic(paymentRequest!.avatar!,
+            paymentRequest!.displayToCustomer, 25, 48));
   }
 
   Widget getSender() {
     return Text(
-      messageDecoderWithEmoji(transaction?.displayCustomer) ?? "",
+      messageDecoderWithEmoji(paymentRequest?.displayCustomer) ?? "",
       style: TextStyle(
         color: blackFont,
         fontWeight: FontWeight.bold,
@@ -193,18 +160,18 @@ class _TransactionDetailState extends State<TransactionDetail> {
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         Text(
-          worldCurrencies[transaction!.currency!]!,
+          worldCurrencies[paymentRequest!.currency!]!,
           style: TextStyle(
-            color: transaction!.isCredit! ? navyBlue : blackFont,
+            color: paymentRequest!.isCredit! ? navyBlue : blackFont,
             fontWeight: FontWeight.bold,
             fontSize: 14,
             fontFamily: "Inter",
           ),
         ),
         Text(
-          moneyDisplayNormalizer(int.parse(transaction!.amount.toString())),
+          moneyDisplayNormalizer(int.parse(paymentRequest!.amount.toString())),
           style: TextStyle(
-              color: transaction!.isCredit! ? navyBlue : blackFont,
+              color: paymentRequest!.isCredit! ? navyBlue : blackFont,
               fontWeight: FontWeight.bold,
               fontSize: 14),
         ),
@@ -242,32 +209,15 @@ class _TransactionDetailState extends State<TransactionDetail> {
           height: 0,
         ),
         transactionOrPayoutTile('assets/images/payout/status.svg',
-            AppLocalization.of(context)!.status, transaction!.status!, true),
-        transactionOrPayoutTile(
-            'assets/images/payout/category.svg',
-            AppLocalization.of(context)!.category,
-            transaction!.category!,
-            false),
-        transactionOrPayoutTile(
-            'assets/images/payout/note.svg',
-            AppLocalization.of(context)!.note,
-            messageDecoderWithEmoji(appendStringDot(transaction!.note!, 35)) ??
-                '---',
-            false),
+            AppLocalization.of(context)!.status, paymentRequest!.status!, true),
         transactionOrPayoutTile(
             'assets/images/payout/description.svg',
-            AppLocalization.of(context)!.description,
+            AppLocalization.of(context)!.reference,
             messageDecoderWithEmoji(
-                    appendStringDot(transaction!.description!, 35)) ??
+                    appendStringDot(paymentRequest!.description!, 35)) ??
                 '---',
             false),
       ],
     );
-  }
-
-  void goToMap() {
-    debugPrint("go to Map Called !");
-    MapsLauncher.launchCoordinates(double.parse(transaction!.latitude!),
-        double.parse(transaction!.longitude!));
   }
 }

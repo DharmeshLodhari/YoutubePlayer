@@ -1968,7 +1968,6 @@ class Order {
   String? currency;
   List<dynamic>? statusTimeStamp;
   String? customer;
-
   // ShippingAddress? deliveryAddress;
   String? deliveryAddressId;
   String? journeyId;
@@ -1983,6 +1982,8 @@ class Order {
   List<OrderItem>? orderItems;
   List<Map<String, dynamic>>? items;
   bool hasReview = false;
+  String? refundPaymentRequestId;
+  String? refundPaymentId;
   List<String> orderConfirmState = [
     "Complete",
     "Payment Successful",
@@ -2002,6 +2003,7 @@ class Order {
     "Order Arrived",
     "Rider Picked Up Order"
   ];
+  List<String> notAllowedStatusUpdate = ["Canceled", "Complete"];
 
   Order({
     this.id,
@@ -2034,6 +2036,8 @@ class Order {
     this.orderItems,
     this.items,
     this.hasReview = false,
+    this.refundPaymentRequestId,
+    this.refundPaymentId,
   });
 
   Order.fromJson(object) {
@@ -2094,6 +2098,8 @@ class Order {
         });
       }
       hasReview = object["has_review"] ?? false;
+      refundPaymentRequestId = object["refund_payment_request_id"];
+      refundPaymentId = object["refund_payment_id"];
     }
   }
 

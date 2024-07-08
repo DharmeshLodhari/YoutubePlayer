@@ -1620,6 +1620,26 @@ class ShoppingAuthService extends AuthService {
     return false;
   }
 
+  // Order Refund Request
+  Future<bool> updateOrderRefundStatus(
+      Map<String, dynamic> data, String orderId) async {
+    final data0 = jsonEncode(data);
+    final String url = "${AppConfig.baseUrl}/api/v1/order/$orderId/add-refund/";
+    final headers = await getAuthHeaders();
+    final response = await httpPatch(url, headers: headers, body: data0);
+
+    try {
+      handleServerErrors(response);
+    } catch (e) {
+      return Future.error(response.body);
+    }
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return true;
+    }
+    return false;
+  }
+
   // Update Order Note
   Future<bool> updateOrderNote(String note, String orderId) async {
     final data = {"note": note};
@@ -1638,11 +1658,12 @@ class ShoppingAuthService extends AuthService {
       DateTimeRange? dateTimeRange,
       {required bool isMerchant}) async {
     final List<String> shippedStatus = [
+      "Shipped",
       "Out For Delivery",
       "Order Picked Up",
       "Rider In Delivery Location",
       "Order Arrived",
-      "Rider Picked Up Order"
+      "Rider Picked Up Order",
     ];
     String url = "";
 
@@ -1657,14 +1678,14 @@ class ShoppingAuthService extends AuthService {
 
       if (filterValue != "") {
         if (filterValue == "New Order") {
-          filterValue = 'New Order&status=Payment Successful';
+          filterValue =
+              'New Order&status=Payment Successful&status=Order Placed&status=Payment Received';
         }
         if (filterValue == "Completed") {
           filterValue = 'Complete';
         }
-        if (shippedStatus.contains(filterValue) == true) {
-          filterValue =
-              "Out For Delivery&status=Order Picked Up&status=Rider In Delivery Location&status=Order Arrived&status=Rider Picked Up Order";
+        if (filterValue == "Shipped") {
+          filterValue = 'shipped';
         }
         url = "$url&status=$filterValue";
       }

@@ -647,6 +647,7 @@ class PaymentAndBankingAuth extends AuthService {
     return response;
   }
 
+  // List of payment request
   Future<Map<String, dynamic>?> listPaymentRequests(
       String? next, String? previous,
       {required bool? fromMe,
@@ -728,6 +729,20 @@ class PaymentAndBankingAuth extends AuthService {
     }
   }
 
+  // detail for payment request
+  Future<PaymentRequest> getPaymentRequests(String paymentRequestId) async {
+    final String url =
+        "${AppConfig.baseUrl}/api/v1/transactions/request-payment/$paymentRequestId/";
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers);
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return PaymentRequest.fromJson(json.decode(response.body));
+    } else {
+      final jsonData = json.decode(response.body);
+      throw jsonData;
+    }
+  }
+
   // List users transactions
   Future<Map<String, dynamic>?> getTransactions(
     String? next,
@@ -806,6 +821,20 @@ class PaymentAndBankingAuth extends AuthService {
       return result;
     } else {
       throw response.body;
+    }
+  }
+
+  // detail for refund transaction
+  Future<Transaction> getRefundTransaction(String transactionId) async {
+    final String url =
+        "${AppConfig.baseUrl}/api/v1/transactions/$transactionId/";
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers);
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return Transaction.fromJson(json.decode(response.body));
+    } else {
+      final jsonData = json.decode(response.body);
+      throw jsonData;
     }
   }
 

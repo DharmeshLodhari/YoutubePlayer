@@ -14,6 +14,7 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_passcode_sheet/bottomsheet_passcode.dart';
 import 'package:Slydo/widget/customized_popup_menu.dart';
+import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
@@ -44,12 +45,13 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   final _auth = ShoppingAuthService();
   List<int?> orders = [];
   bool isOrderLoading = false;
+  String noteDetails = "";
 
   @override
   void initState() {
     order = widget.arguments['order'];
-    userNoteController.text = order?.note ?? "";
     statusOfOrder = order?.status?.toLowerCase();
+
     super.initState();
   }
 
@@ -154,18 +156,21 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child:
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            _buildCustomerName(),
-            ListView.builder(
-              physics: const NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-              // padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
-              itemCount: order?.orderItems?.length,
-              itemBuilder: (BuildContext context, int index) =>
-                  getItemTileUi(index),
-            )
-          ]),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildCustomerName(),
+              ListView.builder(
+                physics: const NeverScrollableScrollPhysics(),
+                padding: EdgeInsets.zero,
+                shrinkWrap: true,
+                // padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
+                itemCount: order?.orderItems?.length,
+                itemBuilder: (BuildContext context, int index) =>
+                    getItemTileUi(index),
+              ),
+            ],
+          ),
         ),
         Container(
           margin: const EdgeInsets.symmetric(vertical: 10),
@@ -202,19 +207,15 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   Widget getItemTileUi(int index) {
     if (order?.orderItems?[index].item is Product) {
       if (order?.status == AppLocalization.of(context)!.completed) {
-        return Container(
-          color: Colors.red,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              OrderTileForProductNew(
-                order: order?.orderItems?[index],
-              ),
-              if (order?.status == "Complete" &&
-                  order?.canWriteReview() == false)
-                _buildWriteReview(index, 'isProduct'),
-            ],
-          ),
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            OrderTileForProductNew(
+              order: order?.orderItems?[index],
+            ),
+            if (order?.status == "Complete" && order?.canWriteReview() == false)
+              _buildWriteReview(index, 'isProduct'),
+          ],
         );
       }
       return OrderTileForProductNew(
@@ -324,7 +325,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                     ),
                   ),
                   Text(
-                    moneyDisplayNormalizer(0),
+                    moneyDisplayNormalizer(order?.shippingPrice),
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
@@ -439,32 +440,122 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   }
 
   Widget _buildNotes() {
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Container(
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+              color: darkGrey.withOpacity(
+                .4,
+              ),
+              width: .5)),
+      padding: const EdgeInsets.all(10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                AppLocalization.of(context)!.note,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: blackFont,
+                  fontFamily: "Inter",
+                ),
+              ),
+              if (userBloc.user.userName != order?.merchant)
+                GestureDetector(
+                  onTap: () {
+                    showEditNoteDialog();
+                  },
+                  child: SvgPicture.asset(
+                    'edit_icon'.toSVG(),
+                    width: 20,
+                    height: 20,
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(height: 5),
+          Text(
+            getOrderNote(),
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+              color: blackFont,
+              fontFamily: "Inter",
+            ),
+            maxLines: 5,
+          ),
+          // _buildNoteTextField(),
+        ],
+      ),
+    );
+  }
+
+  void addNote() async {
+    await _auth
+        .updateOrderNote(noteDetails, order?.id.toString() ?? "")
+        .then((value) {
+      if (value) {
+        setState(() {
+          order?.note = noteDetails;
+          Navigator.pop(context);
+        });
+      }
+    });
+  }
+
+  String getOrderNote() {
+    if (order?.note == "") {
+      return "${AppLocalization.of(context)!.noSpecialNoteAttached} !!";
+    }
+    return order?.note ?? "";
+  }
+
+  Future<void> showEditNoteDialog() async {
+    final result = await showDialogBoxWithInput(
+        context: context,
+        actionOneTextColor: blackFont,
+        actionOneBgColor: greyBorderColor,
+        actionTwoTextColor: white,
+        actionTwoBgColor: navyBlue,
+        actionOneText: AppLocalization.of(context)!.cancel,
+        actionTwoText: AppLocalization.of(context)!.save,
+        firstActionPrimary: false,
+        content: Column(
           children: [
-            Text(
-              AppLocalization.of(context)!.note,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: blackFont,
-                fontFamily: "Inter",
+            Text("Edit Note",
+                style: TextStyle(
+                  color: blackFont,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16.0,
+                  fontFamily: "Inter",
+                ),
+                textAlign: TextAlign.center),
+            Container(
+              margin: const EdgeInsets.symmetric(vertical: 20),
+              child: CustomizedTextFormField(
+                labelText: 'Note',
+                onChanged: (val) {
+                  noteDetails = val;
+                },
               ),
             ),
-            if (userBloc.user.userName != order?.merchant)
-              SvgPicture.asset(
-                'edit_icon'.toSVG(),
-                width: 20,
-                height: 20,
-              ),
           ],
         ),
-        const SizedBox(height: 5),
-        _buildNoteTextField(),
-      ],
-    );
+        leftButtonOnPressed: () async {
+          Navigator.pop(context);
+          return;
+        },
+        rightButtonOnPressed: () async {
+          addNote();
+          return;
+        });
+    if (result != null && result == true) {
+      Navigator.of(context).pop(true);
+    }
   }
 
   Widget _buildNoteTextField() {
@@ -560,22 +651,18 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     return Padding(
       padding: const EdgeInsets.all(5.0),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        mainAxisAlignment: MainAxisAlignment.end,
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.max,
         children: [
-          Flexible(child: _buildFirstButton()),
-          ...[
-            const SizedBox(
-              width: 7,
-            ),
-            Flexible(child: _buildSecondButton())
-          ],
-          ...[
-            const SizedBox(
-              width: 7,
-            ),
-            Flexible(child: _buildThirdButton())
-          ],
+          _buildFirstButton(),
+          const SizedBox(
+            width: 8,
+          ),
+          _buildSecondButton(),
+          const SizedBox(
+            width: 8,
+          ),
+          _buildThirdButton()
         ],
       ),
     );
@@ -583,29 +670,56 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
 
   Widget _buildThirdButton() {
     if (order?.orderCancelledState.contains(order?.status) == true) {
-      return _buildCancelOrder();
+      return Expanded(child: _buildCancelOrder());
     }
     return const SizedBox.shrink();
   }
 
   Widget _buildSecondButton() {
+    if (order?.refundPaymentRequestId != null ||
+        order?.refundPaymentId != null) {
+      // Merchant has made a refund payment
+      if (order?.refundPaymentId != null) {
+        return _buildViewRefundTransaction();
+      }
+      // Customer has made a refund request
+      return _buildViewRefundPaymentRequest();
+    }
+
     if (order?.isCustomer(userBloc.user.userName) ?? false) {
       if (order?.status == "Awaiting payment") {
-        return _buildPayNow();
+        return Expanded(child: _buildPayNow());
       } else if (order?.orderConfirmState.contains(order?.status) == false) {
-        return _buildConfirmDelivery();
+        return Expanded(child: _buildConfirmDelivery());
+      } else if (order?.status == "Canceled" &&
+          order?.refundPaymentRequestId != null &&
+          order?.refundPaymentId != null) {
+        return _buildRequestRefund();
+      } else {
+        if (order?.notAllowedStatusUpdate.contains(order?.status) == false) {
+          return _buildUpdateStatus();
+        }
+      }
+    } else {
+      if (order?.status == "Canceled" &&
+          order?.refundPaymentRequestId != null &&
+          order?.refundPaymentId != null) {
+        return _buildRefundPayment();
+      }
+      if (order?.notAllowedStatusUpdate.contains(order?.status) == false) {
+        return _buildUpdateStatus();
       }
     }
-    return _buildUpdateStatus();
+    return const SizedBox.shrink();
   }
 
   Widget _buildFirstButton() {
-    return _buildTrackOrder();
+    return Expanded(child: _buildTrackOrder());
   }
 
   Widget _buildPayNow() {
     return RoundedBorderButton(
-        title: "Pay Now",
+        title: AppLocalization.of(context)!.payNow,
         onTap: () {
           BottomSheetPassCode(
               context: context,
@@ -622,19 +736,50 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
         isLoading: isOrderLoading);
   }
 
-  Widget _buildConfirmDelivery() {
+  Widget _buildViewRefundTransaction() {
     return RoundedBorderButton(
-      title: "Confirm Delivery",
+      title: 'View Refund Transaction',
       onTap: () {
-        showConfirmDialogForOrder();
+        Navigator.of(context).pushNamed(Routes.TRANSACTION_DETAIL,
+            arguments: {'transaction': order?.refundPaymentId});
       },
       isLoading: isAPILoading,
     );
   }
 
+  Widget _buildViewRefundPaymentRequest() {
+    return RoundedBorderButton(
+      title: 'View Refund Request',
+      onTap: () {
+        Navigator.of(context).pushNamed(Routes.PAYMENT_REQUEST_DETAIL,
+            arguments: {'paymentRequest': order?.refundPaymentRequestId});
+      },
+      isLoading: isAPILoading,
+    );
+  }
+
+  Widget _buildConfirmDelivery() {
+    return RoundedBorderButton(
+      title: AppLocalization.of(context)!.confirmDelivery,
+      onTap: () {
+        showConfirmDialogForOrder();
+      },
+    );
+  }
+
   Widget _buildRequestRefund() {
     return RoundedBorderButton(
-      title: "Request Refund",
+      title: AppLocalization.of(context)!.refundRequest,
+      onTap: () {
+        // await Navigator.pushNamed(context, Routes.WRITE_REVIEW_PAGE,
+        //     arguments: {"order": order});
+      },
+    );
+  }
+
+  Widget _buildRefundPayment() {
+    return RoundedBorderButton(
+      title: "Refund Payment",
       onTap: () {
         // await Navigator.pushNamed(context, Routes.WRITE_REVIEW_PAGE,
         //     arguments: {"order": order});
@@ -668,7 +813,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
       title: "Cancel Order",
       color: redBtn,
       onTap: () {
-        // showChangeStatusAndroidSheet();
+        showDeleteDialogForOrder();
       },
     );
   }
@@ -781,6 +926,29 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                 ));
           });
         });
+  }
+
+  void showDeleteDialogForOrder() {
+    showDialogBox(
+      context: context,
+      actionOneTextColor: blackFont,
+      actionOneBgColor: greyBorderColor,
+      actionTwoTextColor: white,
+      actionTwoBgColor: mateRed,
+      title: 'Cancel Order',
+      actionOneText: 'Go Back',
+      actionTwoText: AppLocalization.of(context)!.cancel,
+      description: 'Are you sure you want to cancel this order?',
+      roundedBackgroundIcon: RoundedBackgroundIcon(
+        enableMargin: false,
+        width: 90,
+        height: 90,
+        image: Image.asset('assets/images/delete_dialog_icon.png'),
+      ),
+      rightButtonOnPressed: () async {
+        await updateStatus("Canceled", isRefresh: true);
+      },
+    );
   }
 
   Widget statusListTile(

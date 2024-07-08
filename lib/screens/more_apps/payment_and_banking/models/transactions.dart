@@ -166,28 +166,31 @@ class PaymentRequest {
   String displayFromCustomer;
   String displayToCustomer;
   String displayCustomer;
+  String note;
 
   // Pass in as named parameter in constructor
-  PaymentRequest(
-      {this.status,
-      this.id,
-      this.description,
-      this.payee,
-      this.avatar,
-      this.createdAt,
-      this.currency,
-      this.userType = "User",
-      this.amount,
-      this.toCustomer = "",
-      this.fromCustomer = "",
-      this.displayFromCustomer = "",
-      this.displayToCustomer = "",
-      this.displayCustomer = "",
-      this.conversationId = "",
-      this.fromCustomerAvatar = "",
-      this.madeFromChat = false,
-      this.toCustomerAvatar = "",
-      this.isCredit});
+  PaymentRequest({
+    this.status,
+    this.id,
+    this.description,
+    this.payee,
+    this.avatar,
+    this.createdAt,
+    this.currency,
+    this.userType = "User",
+    this.amount,
+    this.toCustomer = "",
+    this.fromCustomer = "",
+    this.displayFromCustomer = "",
+    this.displayToCustomer = "",
+    this.displayCustomer = "",
+    this.conversationId = "",
+    this.fromCustomerAvatar = "",
+    this.madeFromChat = false,
+    this.toCustomerAvatar = "",
+    this.isCredit,
+    this.note = "",
+  });
 
   factory PaymentRequest.fromJson(Map<String, dynamic> json) {
     final UserBloc currentUser =
@@ -227,6 +230,7 @@ class PaymentRequest {
         displayCustomer: displayCustomer,
         madeFromChat: json['made_from_chat'],
         toCustomer: json['to_customer'],
-        toCustomerAvatar: json['to_customer_avatar']);
+        toCustomerAvatar: json['to_customer_avatar'],
+        note: json['note'] ?? "");
   }
 }

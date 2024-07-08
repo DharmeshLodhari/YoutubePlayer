@@ -18,6 +18,7 @@ class RoundedBorderButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialButton(
+      padding: const EdgeInsets.symmetric(horizontal: 10),
       height: 33,
       elevation: 0,
       shape: const RoundedRectangleBorder(
@@ -37,6 +38,7 @@ class RoundedBorderButton extends StatelessWidget {
             )
           : Text(
               title,
+              textAlign: TextAlign.center,
               style: TextStyle(
                 color: white,
                 fontSize: 11,
