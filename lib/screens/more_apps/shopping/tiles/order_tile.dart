@@ -91,7 +91,7 @@ class _OrderTileState extends State<OrderTile> {
     menu.menuState = menuStateChange;
     return order?.orderItems != null && order?.orderItems?.isNotEmpty == true
         ? Card(
-            shadowColor: boxShadowTwo,
+            shadowColor: white,
             elevation: 0,
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(0)),
@@ -922,7 +922,7 @@ class _OrderTileState extends State<OrderTile> {
         order?.isOrderStatus(userBloc.user.userName ?? "") ?? "",
         style: TextStyle(
           color: order?.checkStatusForColor(userBloc.user.userName ?? ""),
-          fontSize: 12,
+          fontSize: 10,
           fontWeight: FontWeight.w600,
           fontFamily: "Inter",
         ),

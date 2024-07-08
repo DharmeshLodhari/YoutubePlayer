@@ -292,7 +292,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
           order?.isOrderStatus(userBloc.user.userName ?? "") ?? "",
           style: TextStyle(
             color: order?.checkStatusForColor(userBloc.user.userName ?? ""),
-            fontSize: 10,
+            fontSize: 12,
             fontWeight: FontWeight.w600,
             fontFamily: "Inter",
           ),
