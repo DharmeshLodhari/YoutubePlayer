@@ -167,7 +167,7 @@ class _HomeQuickViewState extends State<HomeQuickView> {
     final List<Map<String, String>> lifestyle = [
       {
         'imagePath': 'home/order',
-        'title': ProtectionPermission.order,
+        'title': ProtectionPermission.orders,
         'ForReadPermission': '2',
       },
       {
@@ -602,7 +602,7 @@ class _HomeQuickViewState extends State<HomeQuickView> {
           screen: const ChannelsList(),
         );
         break;
-      case ProtectionPermission.order:
+      case ProtectionPermission.orders:
         Navigator.pushNamed(context, Routes.ORDER_LIST);
         break;
       case ProtectionPermission.superStore:

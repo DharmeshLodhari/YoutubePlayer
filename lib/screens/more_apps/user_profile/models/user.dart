@@ -448,7 +448,7 @@ class Permissions {
         return getPermissionLevel(payment);
       case ProtectionPermission.chat:
         return getPermissionLevel(message);
-      case ProtectionPermission.order:
+      case ProtectionPermission.orders:
         return getPermissionLevel(order);
       case ProtectionPermission.superStore:
         return getPermissionLevel(product);
