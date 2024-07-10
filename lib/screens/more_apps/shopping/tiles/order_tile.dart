@@ -939,7 +939,7 @@ class _OrderTileState extends State<OrderTile> {
         order?.isOrderStatus(userBloc.user.userName ?? "") ?? "",
         style: TextStyle(
           color: order?.checkStatusForColor(userBloc.user.userName ?? ""),
-          fontSize: 12,
+          fontSize: 10,
           fontWeight: FontWeight.w600,
           fontFamily: "Inter",
         ),

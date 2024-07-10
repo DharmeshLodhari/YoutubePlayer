@@ -75,7 +75,7 @@ class _TransactionDetailState extends State<TransactionDetail> {
       ),
       centerTitle: false,
       title: Text(
-        AppLocalization.of(context)!.transaction,
+        getAppLable(),
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
@@ -84,6 +84,13 @@ class _TransactionDetailState extends State<TransactionDetail> {
         const SizedBox(width: 16),
       ],
     );
+  }
+
+  String getAppLable() {
+    if (transaction?.note?.contains("Refund") ?? true) {
+      return "Refund Transaction";
+    }
+    return "Transaction";
   }
 
   Widget showMap() {

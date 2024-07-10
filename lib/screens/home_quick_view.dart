@@ -76,7 +76,7 @@ class _HomeQuickViewState extends State<HomeQuickView> {
     final List<Map<String, String>> payment = [
       {
         'imagePath': 'home/transaction',
-        'title': ProtectionPermission.transaction,
+        'title': "Transactions",
         'ForReadPermission': '2', // 1 : Read, 2 : Write
       },
       {

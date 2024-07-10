@@ -568,7 +568,7 @@ class _HomeState extends State<Home> {
     final List<Map<String, String>> shortcuts = [
       {
         'imagePath': 'home/transaction',
-        'title': ProtectionPermission.transaction,
+        'title': "Transactions",
         'ForReadPermission': '2', // 1 : Read, 2 : Write
       },
       {

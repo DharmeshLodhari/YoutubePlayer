@@ -102,11 +102,18 @@ class _PaymentRequestDetailState extends State<PaymentRequestDetail> {
       ),
       centerTitle: false,
       title: Text(
-        AppLocalization.of(context)!.paymentRequests,
+        getAppLable(),
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
     );
+  }
+
+  String getAppLable() {
+    if (paymentRequest?.description?.contains("Refund") ?? true) {
+      return "Refund Payment Request";
+    }
+    return "Payment Request";
   }
 
   Widget scaffoldBody() {
