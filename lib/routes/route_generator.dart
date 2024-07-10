@@ -67,7 +67,7 @@ import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/cred
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/payout_transactions.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/upgrade_account.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/virtual_account_detail.dart';
-import 'package:Slydo/screens/more_apps/payment_and_banking/screens/payment/paymnet_request_detail_page.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/screens/payment/payment_request_detail_page.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/payment/request_payments_list.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/payment/transaction_detail_page.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/payment/transaction_graph.dart';

@@ -1093,6 +1093,14 @@ class Variant {
       return DateTime.now();
     }
 
+    int? cleanObjects(Map<String, dynamic> data, String key) {
+      var value = data[key] ?? 0;
+      if (value.runtimeType is bool) {
+        return 0;
+      }
+      return value;
+    }
+
     return Variant(
       id: object["id"].toString(),
       title: object["title"].toString(),
@@ -1119,7 +1127,7 @@ class Variant {
       discountValue: object['discount_value'],
       discountType: object['discount_type'],
       discountIsActive: object['discount_is_active'],
-      discountedPrice: object['discounted_price'],
+      discountedPrice: cleanObjects(object, "discounted_price"),
     );
   }
 
@@ -1973,9 +1981,11 @@ class Order {
   String? journeyId;
   String? paymentType;
   String? pickupAddressId;
+  String? pickupDateTime;
   int? price;
   String? rateId;
   int? shippingOption;
+  String? shippingType;
   int? shippingPrice;
   DateTime? updatedAt;
   DateTime? date;
@@ -2027,9 +2037,11 @@ class Order {
     this.journeyId,
     this.paymentType,
     this.pickupAddressId,
+    this.pickupDateTime,
     this.price,
     this.rateId,
     this.shippingOption,
+    this.shippingType,
     this.shippingPrice,
     this.updatedAt,
     this.date,
@@ -2065,9 +2077,11 @@ class Order {
     journeyId = object["journey_id"];
     paymentType = object["payment_type"];
     pickupAddressId = object["pickup_address_id"];
+    pickupDateTime = object["pickup_datetime"];
     price = object["price"];
     rateId = object["rate_id"];
     shippingOption = object["shipping_option"];
+    shippingType = object["shipping_type"];
     shippingPrice = object["shipping_price"];
     updatedAt = object["updated_at"] == null
         ? null
@@ -2150,12 +2164,8 @@ class Order {
       return "Refund Successfuly";
     } else if (refundPaymentRequestId != null) {
       return "Status Pending Request";
-    } else if (customerName == userName) {
-      return "Pickup";
-    } else if (merchant == userName) {
-      return "Delivery";
     }
-    return "";
+    return shipmentType();
   }
 
   Color checkStatusForColor(String status) {
@@ -2163,10 +2173,6 @@ class Order {
       return naturalGreen;
     } else if (refundPaymentRequestId != null) {
       return starYellow;
-    } else if (customerName == status) {
-      return navyBlue;
-    } else if (merchant == status) {
-      return blackFont;
     }
     return navyBlue;
   }
@@ -2176,12 +2182,18 @@ class Order {
       return naturalGreen.withOpacity(0.1);
     } else if (refundPaymentRequestId != null) {
       return starYellow.withOpacity(0.1);
-    } else if (customerName == userName) {
-      return navyBlue.withOpacity(0.1);
-    } else if (merchant == userName) {
-      return blackFont.withOpacity(0.1);
     }
-    return navyBlue;
+    return navyBlue.withOpacity(0.1);
+  }
+
+  String shipmentType() {
+    if (deliveryAddressId == null || deliveryAddressId == "") {
+      if (pickupDateTime == null || pickupDateTime == "") {
+        return "In Store/Eat In";
+      }
+      return "PickUp";
+    }
+    return "Delivery";
   }
 }
 

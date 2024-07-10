@@ -619,7 +619,7 @@ class _OrderTileState extends State<OrderTile> {
                         color: dividerColor,
                         thickness: 1,
                       ),
-                      Expanded(child: getOrderUpdateStatusList()),
+                      Expanded(child: getOrderUpdateStatusList(setState)),
                       const SizedBox(
                         height: 10,
                       ),
@@ -631,7 +631,7 @@ class _OrderTileState extends State<OrderTile> {
         });
   }
 
-  Widget getOrderUpdateStatusList() {
+  Widget getOrderUpdateStatusList(StateSetter setState) {
     if (order?.isMerchant(userBloc.user.userName) ?? false) {
       return ListView(
         children: <Widget>[

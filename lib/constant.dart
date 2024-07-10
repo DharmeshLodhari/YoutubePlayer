@@ -13,6 +13,7 @@ class ProtectionPermission {
   static const String channel = "Channel";
   static const String group = "Group";
   static const String transaction = "Transaction";
+  static const String transactions = "Transactions";
   static const String sendMoney = "Send money";
   static const String requestMoney = "Request money";
   static const String paymentLinks = "Payment Links";
