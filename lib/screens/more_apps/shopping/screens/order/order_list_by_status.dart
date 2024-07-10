@@ -15,9 +15,11 @@ class OrderListByStatus extends StatefulWidget {
     super.key,
     this.selectedStatus,
     this.dateRange,
+    this.filterValue,
   });
 
   final String? selectedStatus;
+  final String? filterValue;
   final DateTimeRange? dateRange;
 
   @override
@@ -70,6 +72,7 @@ class _OrderListByStatusState extends State<OrderListByStatus> {
           previous,
           widget.selectedStatus ?? "",
           widget.dateRange,
+          filterValue: widget.filterValue,
           isMerchant: isNormalUser ? false : true,
         );
         if (result == null) {

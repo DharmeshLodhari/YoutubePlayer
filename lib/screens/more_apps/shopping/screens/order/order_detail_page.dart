@@ -577,6 +577,8 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
             Container(
               margin: const EdgeInsets.symmetric(vertical: 20),
               child: CustomizedTextFormField(
+                keyboardType: TextInputType.multiline,
+                maxLines: 4,
                 labelText: 'Note',
                 onChanged: (val) {
                   noteDetails = val;

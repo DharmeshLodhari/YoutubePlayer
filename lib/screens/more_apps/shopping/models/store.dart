@@ -435,7 +435,7 @@ class Product extends PurchasableItem {
       "category": category,
       "sub_category": subCategory,
       "custom_category": customCategory,
-      "tags": tags!.map((v) => v.toJson()).toList(),
+      "tags": tags?.map((v) => v.toJson()).toList() ?? [],
       "preparation_time": preparationTime,
       "manufacturer": manufacturer,
       "is_available": isAvailable,

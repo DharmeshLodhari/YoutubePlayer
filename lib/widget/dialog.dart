@@ -1,3 +1,4 @@
+import 'package:Slydo/screens/more_apps/user_profile/models/states_model.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';

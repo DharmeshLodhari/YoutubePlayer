@@ -1654,9 +1654,11 @@ class ShoppingAuthService extends AuthService {
   }
 
   // List of Orders
-  Future<dynamic> listOrders(String? next, String? previous, String filterValue,
-      DateTimeRange? dateTimeRange,
-      {required bool isMerchant}) async {
+  Future<dynamic> listOrders(String? next, String? previous,
+      String selectedStatus, DateTimeRange? dateTimeRange,
+      {required bool isMerchant,
+      String? searchValue,
+      String? filterValue}) async {
     final List<String> shippedStatus = [
       "Shipped",
       "Out For Delivery",
@@ -1675,19 +1677,24 @@ class ShoppingAuthService extends AuthService {
       url = "${AppConfig.baseUrl}/api/v1/order/";
 
       url = "$url?merchant=$isMerchant";
-
-      if (filterValue != "") {
-        if (filterValue == "New Order") {
-          filterValue =
+      if (filterValue != null) {
+        url = "$url&shipping_type=$filterValue";
+      }
+      if (searchValue != null) {
+        url = "$url&id=$searchValue";
+      }
+      if (selectedStatus != "") {
+        if (selectedStatus == "New Order") {
+          selectedStatus =
               'New Order&status=Payment Successful&status=Order Placed&status=Payment Received';
         }
-        if (filterValue == "Completed") {
-          filterValue = 'Complete';
+        if (selectedStatus == "Completed") {
+          selectedStatus = 'Complete';
         }
-        if (filterValue == "Shipped") {
-          filterValue = 'shipped';
+        if (selectedStatus == "Shipped") {
+          selectedStatus = 'shipped';
         }
-        url = "$url&status=$filterValue";
+        url = "$url&status=$selectedStatus";
       }
       if (dateTimeRange != null) {
         final DateFormat dateFormat = DateFormat('yyyy-MM-dd');
