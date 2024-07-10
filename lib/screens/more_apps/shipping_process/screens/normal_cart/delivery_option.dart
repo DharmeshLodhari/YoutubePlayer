@@ -2,15 +2,23 @@ import 'dart:io';
 
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/models/package_details_model.dart';
+import 'package:Slydo/utils/country_picker/country_picker_dialog.dart';
+import 'package:Slydo/utils/country_picker/utils.dart';
+import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
+import 'package:Slydo/widget/customized_checkbox_field.dart';
+import 'package:Slydo/widget/customized_dropdown_field.dart';
+import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:Slydo/utils/country_picker/country.dart';
 
 class DeliveryOption extends StatefulWidget {
   const DeliveryOption({
@@ -25,7 +33,12 @@ class _DeliveryOptionState extends State<DeliveryOption> {
   List<String?> deliveryOption = ["Shipping", "In Store/Eat In", "Pickup"];
 
   late ShippingProcessBloc shippingProcessBloc;
+  late Country _selectedDialogCountry;
   TextEditingController userNoteController = TextEditingController();
+  TextEditingController phoneNumberController = TextEditingController();
+  DateTime? startFrom;
+  DateTime? startTimeFrom;
+  bool isTimeAvailable = false;
 
   @override
   void initState() {
@@ -35,7 +48,7 @@ class _DeliveryOptionState extends State<DeliveryOption> {
         deliveryOption.removeAt(0);
       }
     });
-
+    _selectedDialogCountry = CountryPickerUtils.getCountryByIsoCode('NG');
     super.initState();
   }
 
@@ -117,16 +130,21 @@ class _DeliveryOptionState extends State<DeliveryOption> {
                     ),
                     if (shippingProcessBloc
                             .getPackageDetailModel()
-                            .deliveryOption !=
-                        null)
-                      shippingProcessBloc.getPackageDetailModel().requireNote()
-                          ? _buildNote()
-                          : _buildDeliveryAddressAndOptions(),
-                    if (shippingProcessBloc
-                            .getPackageDetailModel()
                             .shippingOption !=
                         null)
                       _buildShippingOptionSelected(),
+                    _buildEatInOptions(),
+                    if (shippingProcessBloc
+                                .getPackageDetailModel()
+                                .deliveryOption !=
+                            null &&
+                        (isTimeAvailable ||
+                            shippingProcessBloc
+                                .getPackageDetailModel()
+                                .requirePickUp()))
+                      shippingProcessBloc.getPackageDetailModel().requireNote()
+                          ? _buildNote()
+                          : _buildDeliveryAddressAndOptions(),
                   ],
                 ),
               ),
@@ -228,6 +246,18 @@ class _DeliveryOptionState extends State<DeliveryOption> {
   }
 
   Future<void> pickDeliveryOptions() async {
+    final String? pickedDeliveryOption = await showPickItemDialog<String>(
+      context: context,
+      items: deliveryOption,
+      selectedItem:
+          shippingProcessBloc.getPackageDetailModel().getDeliveryOption(),
+    );
+    if (pickedDeliveryOption != null) {
+      shippingProcessBloc.updateDeliveryOption(pickedDeliveryOption);
+    }
+  }
+
+  Future<void> dateOption() async {
     final String? pickedDeliveryOption = await showPickItemDialog<String>(
       context: context,
       items: deliveryOption,
@@ -682,6 +712,335 @@ class _DeliveryOptionState extends State<DeliveryOption> {
         filled: true,
         fillColor: white, // Background color
       ),
+    );
+  }
+
+  Widget _buildPhoneNumberWidget(
+      {required String? selectedItem, required Function onTap, String? label}) {
+    return phoneNumberField();
+  }
+
+  Widget phoneNumberField() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        Expanded(flex: 3, child: getCountryDropdown()),
+        const SizedBox(
+          width: 8,
+        ),
+        Expanded(
+          flex: 5,
+          child: CustomizedTextFormField(
+            labelColor: darkGrey,
+            keyboardType: TextInputType.phone,
+            hintText: "3387710700",
+            controller: phoneNumberController,
+            validator: (val) {
+              if (val.isNotEmpty && val.length >= 9) {
+                return null;
+              }
+              return AppLocalization.of(context)!.invalidPhoneNumber;
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget getCountryDropdown() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          "Phone number",
+          style: TextStyle(
+            color: darkGrey,
+            fontSize: 14,
+            fontWeight: FontWeight.w400,
+            fontFamily: "Inter",
+          ),
+        ),
+        const SizedBox(
+          height: 6,
+        ),
+        Card(
+          color: whiteBackground,
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+              side: BorderSide(color: greyBorderColor)),
+          margin: const EdgeInsets.all(0),
+          borderOnForeground: true,
+          child: ListTile(
+            dense: true,
+            contentPadding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
+            onTap: () {
+              _openCountryPickerDialog(isForLogin: true);
+            },
+            title: _buildDialogItem(_selectedDialogCountry),
+          ),
+        ),
+      ],
+    );
+  }
+
+  void _openCountryPickerDialog({bool isForLogin = false}) => showDialog(
+        context: context,
+        builder: (context) => Theme(
+          data: Theme.of(context).copyWith(primaryColor: navyBlue),
+          child: CountryPickerDialog(
+            isForLogin: isForLogin,
+            titlePadding: const EdgeInsets.all(8.0),
+            searchCursorColor: navyBlue,
+            searchInputDecoration: InputDecoration(
+              hintText: AppLocalization.of(context)!.search,
+              hintStyle: TextStyle(
+                fontSize: 16,
+                color: darkGrey,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+            isSearchable: true,
+            title: Text(
+              AppLocalization.of(context)?.selectYourPhoneCode ?? "",
+              style: TextStyle(
+                fontSize: 14,
+                color: blackFont,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+            onValuePicked: (country) =>
+                setState(() => _selectedDialogCountry = country),
+            itemBuilder: _buildDialogItemWithName,
+          ),
+        ),
+      );
+  Widget _buildDialogItem(Country country) {
+    return Row(
+      children: <Widget>[
+        const SizedBox(width: 4.0),
+        CountryPickerUtils.getDefaultFlagImage(country),
+        const SizedBox(width: 8.0),
+        Expanded(
+          child: Text(
+            "+${country.phoneCode}",
+            overflow: TextOverflow.fade,
+            softWrap: false,
+            style: TextStyle(
+              fontSize: 16,
+              color: blackFont,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+        Icon(
+          Icons.keyboard_arrow_down,
+          color: blackFont,
+        ),
+        const SizedBox(width: 4.0),
+      ],
+    );
+  }
+
+  Widget _buildDialogItemWithName(Country country) {
+    return Row(
+      children: <Widget>[
+        CountryPickerUtils.getDefaultFlagImage(country),
+        const SizedBox(width: 8.0),
+        Text(
+          "+${country.phoneCode}",
+          style: TextStyle(
+            fontSize: 16,
+            color: blackFont,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        const SizedBox(width: 8.0),
+        Expanded(
+          child: Text(
+            "(${country.name})",
+            overflow: TextOverflow.fade,
+            softWrap: false,
+            style: TextStyle(
+              fontSize: 16,
+              color: blackFont,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        )
+      ],
+    );
+  }
+
+  Widget _buildDate() {
+    return GestureDetector(
+      onTap: () {
+        showDatePicker(
+          builder: customThemeBuilder,
+          context: context,
+          initialDate: DateTime(
+              DateTime.now().year, DateTime.now().month, DateTime.now().day),
+          firstDate: DateTime(
+              DateTime.now().year, DateTime.now().month, DateTime.now().day),
+          lastDate: DateTime(2101),
+        ).then((value) {
+          startFrom = DateTime(value!.year, value.month, value.day);
+          // discountModel.startDate = startFrom;
+          setState(() {});
+        }).catchError((error) {});
+      },
+      child: CustomizedDropDownField(
+        title: "Date",
+        child: ListTile(
+          dense: true,
+          title: Text(
+            startFrom != null ? formatDate(startFrom) : "",
+            style: TextStyle(
+              color: blackFont,
+              fontWeight: FontWeight.w600,
+              fontSize: 16,
+            ),
+          ),
+          trailing: Icon(
+            SlydoAppIcon.date,
+            size: 16,
+            color: black,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTime() {
+    return GestureDetector(
+      onTap: () {
+        showTimePicker(
+          builder: (BuildContext context, Widget? child) {
+            return MediaQuery(
+              data: MediaQuery.of(context).copyWith(
+                alwaysUse24HourFormat: true, // Forces 24-hour format
+              ),
+              child: Theme(
+                data: ThemeData(
+                  colorScheme: ColorScheme.light(
+                    primary:
+                        navyBlue, // Sets the color for the time picker clock
+                    onSurface:
+                        Colors.black, // Sets the color for the time numbers
+                  ),
+                ),
+                child: child!,
+              ),
+            );
+          },
+          context: context,
+          initialTime: TimeOfDay.now(),
+        ).then((value) {
+          if (value != null) {
+            setState(() {
+              startTimeFrom = DateTime(
+                DateTime.now().year,
+                DateTime.now().month,
+                DateTime.now().day,
+                value.hour,
+                value.minute,
+              );
+              // discountModel.onlyFrom = startTimeFrom;
+            });
+          }
+        }).catchError((error) {});
+      },
+      child: CustomizedDropDownField(
+        title: "Time",
+        child: ListTile(
+          dense: true,
+          title: Text(
+            startTimeFrom != null ? formatTime24hrs(startTimeFrom) : "",
+            style: TextStyle(
+              color: blackFont,
+              fontWeight: FontWeight.w600,
+              fontSize: 16,
+            ),
+          ),
+          trailing: Icon(
+            SlydoAppIcon.clock,
+            size: 16,
+            color: black,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEatInOptions() {
+    final deliveryOptionCondition =
+        shippingProcessBloc.getPackageDetailModel().deliveryOption != null &&
+            shippingProcessBloc.getPackageDetailModel().requireNote();
+    if (deliveryOptionCondition) {
+      return Column(
+        children: [
+          if (shippingProcessBloc.getPackageDetailModel().requireTableNo())
+            _buildTableNo(),
+          if (shippingProcessBloc.getPackageDetailModel().requireTableNo())
+            const SizedBox(height: 16),
+          if (isTimeAvailable ||
+              shippingProcessBloc.getPackageDetailModel().requirePickUp())
+            Column(
+              children: [
+                _buildDate(),
+                const SizedBox(height: 16),
+                _buildTime(),
+                const SizedBox(height: 16),
+                _buildPhoneNumberWidget(
+                  label: 'Phone number',
+                  selectedItem: shippingProcessBloc
+                      .getPackageDetailModel()
+                      .getDeliveryOption(),
+                  onTap: () => dateOption(),
+                ),
+                const SizedBox(height: 16),
+              ],
+            ),
+        ],
+      );
+    }
+    return Container();
+  }
+
+  Widget _buildTableNo() {
+    return Column(
+      children: [
+        _buildTableNoTextField(),
+        const SizedBox(height: 15),
+        CustomizedCheckBoxField(
+          onTap: () {
+            isTimeAvailable = !isTimeAvailable;
+            setState(() {});
+          },
+          isChecked: isTimeAvailable,
+          title: "Schedule",
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTableNoTextField() {
+    return CustomizedTextFormField(
+      labelText: "Table No(Optional)",
+      // initialValue: discountModel.value?.toString(),
+      keyboardType: TextInputType.number,
+      validator: (val) {
+        if (val.isNotEmpty) {
+          return null;
+        }
+        if (int.tryParse(val) == null) {
+          return "Invalid value";
+        }
+        return "This field should not be empty";
+      },
+      onChanged: (val) {
+        // discountModel.value = int.tryParse(val);
+      },
     );
   }
 }

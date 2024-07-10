@@ -2,6 +2,9 @@ import 'package:Slydo/data/state_notifiers/user_bloc.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/order/order_list_by_status.dart';
+import 'package:Slydo/screens/more_apps/shopping/screens/order/search_order_screen.dart';
+import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_product_list.dart';
+import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
@@ -21,13 +24,18 @@ class _OrderListState extends State<OrderList> {
       GlobalKey<ScaffoldState>();
 
   DateFormat dateFormat = DateFormat('yyyy/MM/dd');
-
   DateTimeRange? newDateTimeRange;
   List<ProductCategory> customCategories = [];
   String selectedStatus = "";
   bool isMerchant = true;
-
   final PageStorageBucket _bucket = PageStorageBucket();
+  String selectedFilter = "";
+  List<Filter> filterList = [
+    Filter(title: "All", value: "all"),
+    Filter(title: "Delivery", value: "delivery"),
+    Filter(title: "Eat in/ In store", value: 'eat_in/in_store'),
+    Filter(title: "Pickup", value: 'pickup'),
+  ];
 
   @override
   void initState() {
@@ -48,7 +56,6 @@ class _OrderListState extends State<OrderList> {
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
-
     return PopScope(
       onPopInvoked: (didPop) async {
         if (didPop) {
@@ -68,12 +75,14 @@ class _OrderListState extends State<OrderList> {
               getDateRangeText(),
               Expanded(
                 child: PageStorage(
-                  key: PageStorageKey("$selectedStatus$newDateTimeRange"),
+                  key: PageStorageKey(
+                      "$selectedStatus$newDateTimeRange$selectedFilter"),
                   bucket: _bucket,
                   child: OrderListByStatus(
                     selectedStatus:
                         selectedStatus == "All" ? "" : selectedStatus,
                     dateRange: newDateTimeRange,
+                    filterValue: selectedFilter,
                   ),
                 ),
               ),
@@ -135,9 +144,34 @@ class _OrderListState extends State<OrderList> {
         ],
       ),
       actions: <Widget>[
+        _buildSearchIcon(),
+        const SizedBox(width: 16),
         dateFilterIcon(),
         const SizedBox(width: 16),
+        _buildFilterIcon(),
+        const SizedBox(width: 16),
       ],
+    );
+  }
+
+  Widget _buildSearchIcon() {
+    return RoundedBackgroundIcon(
+      height: 34,
+      width: 34,
+      icon: const Icon(
+        Icons.search,
+        size: 20,
+      ),
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const SearchOrderScreen(),
+          ),
+        );
+      },
+      backgroundColor: iconBtnGrey,
+      enableMargin: false,
     );
   }
 
@@ -233,5 +267,147 @@ class _OrderListState extends State<OrderList> {
         ],
       ),
     );
+  }
+
+  Widget _buildFilterIcon() {
+    return RoundedBackgroundIcon(
+      // key: _key,
+      height: 34,
+      width: 34,
+      icon: const Icon(
+        Icons.filter_alt_rounded,
+        size: 20,
+      ),
+      onTap: () async {
+        await Future.delayed(const Duration(milliseconds: 100))
+            .then((value) => showFilterProductSheet());
+      },
+      backgroundColor: iconBtnGrey,
+      enableMargin: false,
+    );
+  }
+
+  void showFilterProductSheet() {
+    showModalBottomSheet<void>(
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        context: context,
+        enableDrag: true,
+        builder: (BuildContext context) {
+          return StatefulBuilder(
+            builder: (BuildContext context, StateSetter bottomSheetSetState) =>
+                Card(
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20)),
+              ),
+              color: Colors.white,
+              margin: EdgeInsets.zero,
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Text(
+                      "Filter",
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontFamily: "Inter",
+                          fontWeight: FontWeight.w700,
+                          color: blackFont),
+                    ),
+                    const SizedBox(height: 40),
+                    SingleChildScrollView(
+                      child: Column(
+                        children: filterList.map<Widget>((filter) {
+                          if (selectedFilter == "") selectedFilter = "all";
+                          if (selectedFilter == filter.value) {
+                            return Container(
+                              color: selectedListItemBackgroundBlue,
+                              child: ListTile(
+                                dense: true,
+                                title: Text(
+                                  filter.title ?? "",
+                                  overflow: TextOverflow.fade,
+                                  softWrap: false,
+                                  style: TextStyle(
+                                      color: navyBlue,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600),
+                                ),
+                                trailing: Icon(
+                                  SlydoAppIcon.checked,
+                                  color: navyBlue,
+                                  size: 12,
+                                ),
+                                onTap: () {
+                                  Navigator.pop(context);
+                                  menuItemSelectionChange(filter.value ?? "");
+                                },
+                              ),
+                            );
+                          }
+                          return ListTile(
+                            title: Text(
+                              filter.title ?? "",
+                              softWrap: false,
+                              overflow: TextOverflow.fade,
+                              style: TextStyle(
+                                  color: blackFont,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w400),
+                            ),
+                            dense: true,
+                            onTap: () {
+                              Navigator.pop(context);
+                              menuItemSelectionChange(filter.value ?? "");
+                            },
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                  ],
+                ),
+              ),
+            ),
+          );
+        });
+  }
+
+  void menuItemSelectionChange(String value) {
+    switch (value) {
+      case "all":
+        setState(() {
+          selectedFilter = "";
+        });
+        break;
+      case "delivery":
+        setState(() {
+          selectedFilter = "delivery";
+        });
+        break;
+      case "eat_in/in_store":
+        setState(() {
+          selectedFilter = "eat_in/in_store";
+        });
+        break;
+      case "pickup":
+        setState(() {
+          selectedFilter = "pickup";
+        });
+        break;
+      default:
+        break;
+    }
+    setState(() {});
+    debugPrint('menuItemSelectionChange--->');
+    // _onRefresh();
+  }
+
+  void _onProductRefresh() async {
+    if (await checkConnection(context)) {}
   }
 }

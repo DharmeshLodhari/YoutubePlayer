@@ -1,3 +1,4 @@
+import 'package:Slydo/data/state_notifiers/shipping_process_bloc.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/models/shipping_option_model.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
@@ -26,6 +27,10 @@ class PackageDetailsModel {
   bool? hasMerchantDispatch;
   bool? hasCourierDispatch;
   int? customerServiceFee;
+  String? date;
+  String? time;
+  int? phoneNumber;
+  String? note;
 
   PackageDetailsModel({
     this.addressId,
@@ -47,6 +52,10 @@ class PackageDetailsModel {
     this.hasMerchantDispatch,
     this.hasCourierDispatch,
     this.customerServiceFee,
+    this.date,
+    this.time,
+    this.phoneNumber,
+    this.note,
   });
 
   factory PackageDetailsModel.fromJson(Map<String, dynamic> json) {
@@ -83,15 +92,34 @@ class PackageDetailsModel {
     return true;
   }
 
+  bool requireTableNo() {
+    if (deliveryOption == DeliveryOptions.eatIn) {
+      return true;
+    }
+    return false;
+  }
+
+  bool requirePickUp() {
+    if (deliveryOption == DeliveryOptions.pickUp ||
+        deliveryOption == DeliveryOptions.shipping) {
+      return true;
+    }
+    return false;
+  }
+
   bool getInSurePackage() {
     return insurePackage;
   }
 
+// add real api data
   Map<String, dynamic> toCartPlaceOrder() {
     final Map<String, dynamic> data = {
       "merchant": merchant,
       "pickup_address_id": addressId ?? "",
       "note": shippingNote,
+      "date": date,
+      "time": time,
+      "phoneNumber": phoneNumber,
     };
     dynamic shippingId = 0;
     if (deliveryOption == DeliveryOptions.shipping) {

@@ -14,9 +14,11 @@ import 'package:Slydo/screens/more_apps/shopping/widget/outline_border_button.da
 import 'package:Slydo/screens/more_apps/shopping/widget/rounded_border_button.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/services/location_service.dart';
+import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
+import 'package:Slydo/widget/customized_dropdown_field.dart';
 import 'package:Slydo/widget/customized_passcode_sheet/bottomsheet_passcode.dart';
 import 'package:Slydo/widget/customized_popup_menu.dart';
 import 'package:Slydo/widget/dialog.dart';
@@ -53,6 +55,8 @@ class _OrderTileState extends State<OrderTile> {
   String errorMessage = "";
   String cartId = "";
   String? status = "";
+  DateTime? startFrom;
+  DateTime? startTimeFrom;
 
   @override
   void initState() {
@@ -134,10 +138,14 @@ class _OrderTileState extends State<OrderTile> {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          Flexible(child: _buildFirstButton()),
+                          Flexible(child: _buildChangeDateButton()),
                           const SizedBox(
                             width: 7,
                           ),
+                          // Flexible(child: _buildFirstButton()),
+                          // const SizedBox(
+                          //   width: 7,
+                          // ),
                           Flexible(child: _buildSecondButton()),
                           const SizedBox(
                             width: 7,
@@ -936,6 +944,174 @@ class _OrderTileState extends State<OrderTile> {
           fontFamily: "Inter",
         ),
       ),
+    );
+  }
+
+  Widget _buildChangeDateButton() {
+    return OutlineBorderButton(
+      title: "Change Date/Time",
+      onTap: () async {
+        _showDialogDateTime();
+      },
+    );
+  }
+
+  Future _showDialogDateTime() {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            backgroundColor: white,
+            title: Text(
+              "Change Date/Time",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: blackFont,
+                fontSize: 20,
+                fontFamily: "Inter",
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            actions: [
+              Column(
+                children: [
+                  _buildDate(),
+                  const SizedBox(height: 15),
+                  _buildTime(),
+                  const SizedBox(height: 15),
+                  Row(
+                    children: [
+                      Expanded(child: _buildCancelButton()),
+                      const SizedBox(width: 20),
+                      Expanded(child: _buildUpdateButton()),
+                    ],
+                  )
+                ],
+              )
+            ],
+          );
+        });
+  }
+
+  Widget _buildDate() {
+    return GestureDetector(
+      onTap: () {
+        showDatePicker(
+          builder: customThemeBuilder,
+          context: context,
+          initialDate: DateTime(
+              DateTime.now().year, DateTime.now().month, DateTime.now().day),
+          firstDate: DateTime(
+              DateTime.now().year, DateTime.now().month, DateTime.now().day),
+          lastDate: DateTime(2101),
+        ).then((value) {
+          startFrom = DateTime(value!.year, value.month, value.day);
+          // discountModel.startDate = startFrom;
+          setState(() {});
+        }).catchError((error) {});
+      },
+      child: CustomizedDropDownField(
+        title: "Date",
+        child: ListTile(
+          dense: true,
+          title: Text(
+            startFrom != null ? formatDate(startFrom) : "",
+            style: TextStyle(
+              color: blackFont,
+              fontWeight: FontWeight.w600,
+              fontSize: 16,
+            ),
+          ),
+          trailing: Icon(
+            SlydoAppIcon.date,
+            size: 16,
+            color: black,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTime() {
+    return GestureDetector(
+      onTap: () {
+        showTimePicker(
+          builder: (BuildContext context, Widget? child) {
+            return MediaQuery(
+              data: MediaQuery.of(context).copyWith(
+                alwaysUse24HourFormat: true, // Forces 24-hour format
+              ),
+              child: Theme(
+                data: ThemeData(
+                  colorScheme: ColorScheme.light(
+                    primary:
+                        navyBlue, // Sets the color for the time picker clock
+                    onSurface:
+                        Colors.black, // Sets the color for the time numbers
+                  ),
+                ),
+                child: child!,
+              ),
+            );
+          },
+          context: context,
+          initialTime: TimeOfDay.now(),
+        ).then((value) {
+          if (value != null) {
+            setState(() {
+              startTimeFrom = DateTime(
+                DateTime.now().year,
+                DateTime.now().month,
+                DateTime.now().day,
+                value.hour,
+                value.minute,
+              );
+              // discountModel.onlyFrom = startTimeFrom;
+            });
+          }
+        }).catchError((error) {});
+      },
+      child: CustomizedDropDownField(
+        title: "Time",
+        child: ListTile(
+          dense: true,
+          title: Text(
+            startTimeFrom != null ? formatTime24hrs(startTimeFrom) : "",
+            style: TextStyle(
+              color: blackFont,
+              fontWeight: FontWeight.w600,
+              fontSize: 16,
+            ),
+          ),
+          trailing: Icon(
+            SlydoAppIcon.clock,
+            size: 16,
+            color: black,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCancelButton() {
+    return CurvedButton(
+      onPressed: () {
+        Navigator.pop(context);
+      },
+      backgroundColor: greyBorderColor,
+      textColor: blackFont,
+      text: 'No,Cancel',
+    );
+  }
+
+  Widget _buildUpdateButton() {
+    return CurvedButton(
+      onPressed: () {
+        Navigator.pop(context);
+      },
+      backgroundColor: navyBlue,
+      textColor: white,
+      text: 'Update',
     );
   }
 }

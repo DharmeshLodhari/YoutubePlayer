@@ -2519,10 +2519,10 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
   }
 
   Future<void> checkShowBackDialog(BuildContext context) async {
-    if (yarnDashboardBloc!.productService != null ||
+    if (yarnDashboardBloc?.productService != null ||
         textController!.text.isNotEmpty ||
         newMediaList.isNotEmpty ||
-        selectedAskCategory!.name != null) {
+        selectedAskCategory?.name != null) {
       final bool? result = await showDialogBox(
         context: context,
         actionOneBgColor: greyBorderColor,
@@ -2535,8 +2535,8 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
         actionTwoText: AppLocalization.of(context)!.noContinue,
       );
       if (result != null && result) {
-        if (yarnDashboardBloc!.productService != null) {
-          yarnDashboardBloc!.productService == null;
+        if (yarnDashboardBloc?.productService != null) {
+          yarnDashboardBloc?.productService == null;
         }
         Navigator.of(context).pop();
       } else {
