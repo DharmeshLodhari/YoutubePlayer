@@ -568,7 +568,7 @@ class _HomeState extends State<Home> {
     final List<Map<String, String>> shortcuts = [
       {
         'imagePath': 'home/transaction',
-        'title': "Transactions",
+        'title': ProtectionPermission.transactions,
         'ForReadPermission': '2', // 1 : Read, 2 : Write
       },
       {
@@ -706,7 +706,7 @@ class _HomeState extends State<Home> {
         Navigator.of(context).pushNamed(Routes.SEND_PAYMENT,
             arguments: <String, bool>{'isFromProfile': true});
         break;
-      case ProtectionPermission.transaction:
+      case ProtectionPermission.transactions:
         hideBalance();
         BottomSheetPassCode(
             context: context,

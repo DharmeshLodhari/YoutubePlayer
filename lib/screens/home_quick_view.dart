@@ -76,7 +76,7 @@ class _HomeQuickViewState extends State<HomeQuickView> {
     final List<Map<String, String>> payment = [
       {
         'imagePath': 'home/transaction',
-        'title': "Transactions",
+        'title': ProtectionPermission.transactions,
         'ForReadPermission': '2', // 1 : Read, 2 : Write
       },
       {
@@ -507,7 +507,7 @@ class _HomeQuickViewState extends State<HomeQuickView> {
 
   void onClickShortcut(String title) {
     switch (title) {
-      case ProtectionPermission.transaction:
+      case ProtectionPermission.transactions:
         BottomSheetPassCode(
             context: context,
             isValidCallback: () {

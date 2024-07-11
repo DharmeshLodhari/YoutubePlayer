@@ -756,6 +756,10 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   }
 
   Widget _buildFirstButton() {
+    if ((order?.isCustomer(userBloc.user.userName) ?? false) &&
+        (order?.newOrderStatus.contains(order?.status) ?? false)) {
+      return Expanded(child: _buildChangeDateButton());
+    }
     return Expanded(child: _buildTrackOrder());
   }
 
@@ -776,6 +780,15 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
               });
         },
         isLoading: isOrderLoading);
+  }
+
+  Widget _buildChangeDateButton() {
+    return OutlineBorderButton(
+      title: "Change Date/Time",
+      onTap: () async {
+        // _showDialogDateTime();
+      },
+    );
   }
 
   Widget _buildViewRefundTransaction() {
