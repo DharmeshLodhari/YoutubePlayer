@@ -54,6 +54,7 @@ class _OrderTileState extends State<OrderTile> {
   String errorMessage = "";
   String cartId = "";
   String? status = "";
+  String? dateText;
   DateTime? startFrom;
   DateTime? startTimeFrom;
 
@@ -62,6 +63,9 @@ class _OrderTileState extends State<OrderTile> {
     order = widget.order;
     statusOfOrder = order?.status?.toLowerCase();
     getCartId();
+    DateTime now = DateTime.now();
+    startFrom = now;
+    dateText = formatDate(now);
     super.initState();
   }
 
@@ -1019,23 +1023,26 @@ class _OrderTileState extends State<OrderTile> {
         showDatePicker(
           builder: customThemeBuilder,
           context: context,
-          initialDate: DateTime(
-              DateTime.now().year, DateTime.now().month, DateTime.now().day),
-          firstDate: DateTime(
-              DateTime.now().year, DateTime.now().month, DateTime.now().day),
+          initialDate: DateTime.now(),
+          firstDate: DateTime.now(),
           lastDate: DateTime(2101),
         ).then((value) {
-          startFrom = DateTime(value!.year, value.month, value.day);
-          // discountModel.startDate = startFrom;
-          setState(() {});
-        }).catchError((error) {});
+          if (value != null) {
+            setState(() {
+              startFrom = DateTime(value.year, value.month, value.day);
+              dateText = formatDate(startFrom!);
+            });
+          }
+        }).catchError((error) {
+          print('Error: $error'); // Debug print
+        });
       },
       child: CustomizedDropDownField(
         title: "Date",
         child: ListTile(
           dense: true,
           title: Text(
-            startFrom != null ? formatDate(startFrom) : "",
+            dateText ?? "",
             style: TextStyle(
               color: blackFont,
               fontWeight: FontWeight.w600,

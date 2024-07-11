@@ -27,8 +27,8 @@ class PackageDetailsModel {
   bool? hasMerchantDispatch;
   bool? hasCourierDispatch;
   int? customerServiceFee;
-  String? date;
-  String? time;
+  String? pickUpDateTime;
+  String? inStoreDateTime;
   int? phoneNumber;
   String? note;
 
@@ -52,8 +52,8 @@ class PackageDetailsModel {
     this.hasMerchantDispatch,
     this.hasCourierDispatch,
     this.customerServiceFee,
-    this.date,
-    this.time,
+    this.pickUpDateTime,
+    this.inStoreDateTime,
     this.phoneNumber,
     this.note,
   });
@@ -99,27 +99,18 @@ class PackageDetailsModel {
     return false;
   }
 
-  bool requirePickUp() {
-    if (deliveryOption == DeliveryOptions.pickUp ||
-        deliveryOption == DeliveryOptions.shipping) {
-      return true;
-    }
-    return false;
-  }
-
   bool getInSurePackage() {
     return insurePackage;
   }
 
-// add real api data
   Map<String, dynamic> toCartPlaceOrder() {
     final Map<String, dynamic> data = {
       "merchant": merchant,
       "pickup_address_id": addressId ?? "",
       "note": shippingNote,
-      "date": date,
-      "time": time,
-      "phoneNumber": phoneNumber,
+      "customer_contact_number": phoneNumber,
+      "pickup_datetime": pickUpDateTime,
+      "instore_datetime": inStoreDateTime,
     };
     dynamic shippingId = 0;
     if (deliveryOption == DeliveryOptions.shipping) {

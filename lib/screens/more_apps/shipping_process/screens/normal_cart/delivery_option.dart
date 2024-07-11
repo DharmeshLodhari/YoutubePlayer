@@ -38,6 +38,8 @@ class _DeliveryOptionState extends State<DeliveryOption> {
   TextEditingController phoneNumberController = TextEditingController();
   DateTime? startFrom;
   DateTime? startTimeFrom;
+  DateTime? selectedDateTime;
+  String? dateText;
   bool isTimeAvailable = false;
 
   @override
@@ -49,6 +51,10 @@ class _DeliveryOptionState extends State<DeliveryOption> {
       }
     });
     _selectedDialogCountry = CountryPickerUtils.getCountryByIsoCode('NG');
+    final DateTime now = DateTime.now();
+    startFrom = now;
+    dateText = formatDate(now);
+    startFrom = selectedDateTime;
     super.initState();
   }
 
@@ -129,22 +135,11 @@ class _DeliveryOptionState extends State<DeliveryOption> {
                       height: 16,
                     ),
                     if (shippingProcessBloc
-                            .getPackageDetailModel()
-                            .shippingOption !=
-                        null)
+                        .getPackageDetailModel()
+                        .requireNote())
+                      _buildPickupAndEatInSelected()
+                    else
                       _buildShippingOptionSelected(),
-                    _buildEatInOptions(),
-                    if (shippingProcessBloc
-                                .getPackageDetailModel()
-                                .deliveryOption !=
-                            null &&
-                        (isTimeAvailable ||
-                            shippingProcessBloc
-                                .getPackageDetailModel()
-                                .requirePickUp()))
-                      shippingProcessBloc.getPackageDetailModel().requireNote()
-                          ? _buildNote()
-                          : _buildDeliveryAddressAndOptions(),
                   ],
                 ),
               ),
@@ -153,6 +148,30 @@ class _DeliveryOptionState extends State<DeliveryOption> {
           _buildDoneButton(),
         ],
       ),
+    );
+  }
+
+  Widget _buildPickupAndEatInSelected() {
+    return Column(
+      children: [
+        // _buildTableNo(),
+        if (shippingProcessBloc.getPackageDetailModel().requireTableNo())
+          CustomizedCheckBoxField(
+            onTap: () {
+              isTimeAvailable = !isTimeAvailable;
+              setState(() {});
+            },
+            isChecked: isTimeAvailable,
+            title: "Schedule",
+          ),
+        if (isTimeAvailable ||
+            shippingProcessBloc.getPackageDetailModel().requireTableNo() ==
+                false)
+          _buildEatInOptions()
+        else
+          const SizedBox(),
+        _buildNote(),
+      ],
     );
   }
 
@@ -872,29 +891,55 @@ class _DeliveryOptionState extends State<DeliveryOption> {
     );
   }
 
+  Widget _buildEatInOptions() {
+    return Column(
+      children: [
+        Column(
+          children: [
+            _buildDate(),
+            const SizedBox(height: 16),
+            _buildTime(),
+            const SizedBox(height: 16),
+            _buildPhoneNumberWidget(
+              label: 'Phone number',
+              selectedItem: shippingProcessBloc
+                  .getPackageDetailModel()
+                  .getDeliveryOption(),
+              onTap: () => dateOption(),
+            ),
+            const SizedBox(height: 16),
+          ],
+        ),
+      ],
+    );
+  }
+
   Widget _buildDate() {
     return GestureDetector(
       onTap: () {
         showDatePicker(
           builder: customThemeBuilder,
           context: context,
-          initialDate: DateTime(
-              DateTime.now().year, DateTime.now().month, DateTime.now().day),
-          firstDate: DateTime(
-              DateTime.now().year, DateTime.now().month, DateTime.now().day),
+          initialDate: DateTime.now(),
+          firstDate: DateTime.now(),
           lastDate: DateTime(2101),
         ).then((value) {
-          startFrom = DateTime(value!.year, value.month, value.day);
-          // discountModel.startDate = startFrom;
-          setState(() {});
-        }).catchError((error) {});
+          if (value != null) {
+            setState(() {
+              startFrom = DateTime(value.year, value.month, value.day);
+              dateText = formatDate(startFrom!);
+            });
+          }
+        }).catchError((error) {
+          print('Error: $error'); // Debug print
+        });
       },
       child: CustomizedDropDownField(
         title: "Date",
         child: ListTile(
           dense: true,
           title: Text(
-            startFrom != null ? formatDate(startFrom) : "",
+            dateText ?? "",
             style: TextStyle(
               color: blackFont,
               fontWeight: FontWeight.w600,
@@ -911,6 +956,68 @@ class _DeliveryOptionState extends State<DeliveryOption> {
     );
   }
 
+  // Widget _buildTime() {
+  //   return GestureDetector(
+  //     onTap: () {
+  //       showTimePicker(
+  //         builder: (BuildContext context, Widget? child) {
+  //           return MediaQuery(
+  //             data: MediaQuery.of(context).copyWith(
+  //               alwaysUse24HourFormat: true, // Forces 24-hour format
+  //             ),
+  //             child: Theme(
+  //               data: ThemeData(
+  //                 colorScheme: ColorScheme.light(
+  //                   primary:
+  //                       navyBlue, // Sets the color for the time picker clock
+  //                   onSurface:
+  //                       Colors.black, // Sets the color for the time numbers
+  //                 ),
+  //               ),
+  //               child: child!,
+  //             ),
+  //           );
+  //         },
+  //         context: context,
+  //         initialTime: TimeOfDay.now(),
+  //       ).then((time) {
+  //         if (time != null) {
+  //           setState(() {
+  //             if (startFrom != null) {
+  //               startFrom = DateTime(
+  //                 startFrom?.year ?? 0,
+  //                 startFrom?.month ?? 0,
+  //                 startFrom?.day ?? 0,
+  //                 time.hour,
+  //                 time.minute,
+  //               );
+  //             } else {
+  //               // Handle case where startFrom is null (if needed)
+  //             }
+  //             print("=====>$startFrom");
+  //           });
+  //         }
+  //       }).catchError((error) {});
+  //     },
+  //     child: CustomizedDropDownField(
+  //       title: "Time",
+  //       child: ListTile(
+  //         dense: true,
+  //         title: Text(
+  //           startFrom != null ? formatTime24hrs(startFrom) : "",
+  //           style: const TextStyle(
+  //             fontWeight: FontWeight.w600,
+  //             fontSize: 16,
+  //           ),
+  //         ),
+  //         trailing: const Icon(
+  //           Icons.access_time,
+  //           size: 16,
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
   Widget _buildTime() {
     return GestureDetector(
       onTap: () {
@@ -935,18 +1042,30 @@ class _DeliveryOptionState extends State<DeliveryOption> {
           },
           context: context,
           initialTime: TimeOfDay.now(),
-        ).then((value) {
-          if (value != null) {
+        ).then((time) {
+          if (time != null) {
             setState(() {
-              startTimeFrom = DateTime(
-                DateTime.now().year,
-                DateTime.now().month,
-                DateTime.now().day,
-                value.hour,
-                value.minute,
-              );
-              // discountModel.onlyFrom = startTimeFrom;
+              if (startFrom != null) {
+                startFrom = DateTime(
+                  startFrom!.year,
+                  startFrom!.month,
+                  startFrom!.day,
+                  time.hour,
+                  time.minute,
+                );
+                print("======>Hemali1 $startFrom");
+              } else {
+                // Handle case where startFrom is null (if needed)
+                startFrom = DateTime(
+                  DateTime.now().year,
+                  DateTime.now().month,
+                  DateTime.now().day,
+                  time.hour,
+                  time.minute,
+                );
+              }
             });
+            print("======>Hemali $startFrom");
           }
         }).catchError((error) {});
       },
@@ -955,56 +1074,19 @@ class _DeliveryOptionState extends State<DeliveryOption> {
         child: ListTile(
           dense: true,
           title: Text(
-            startTimeFrom != null ? formatTime24hrs(startTimeFrom) : "",
-            style: TextStyle(
-              color: blackFont,
+            startFrom != null ? formatTime24hrs(startFrom) : "",
+            style: const TextStyle(
               fontWeight: FontWeight.w600,
               fontSize: 16,
             ),
           ),
-          trailing: Icon(
-            SlydoAppIcon.clock,
+          trailing: const Icon(
+            Icons.access_time,
             size: 16,
-            color: black,
           ),
         ),
       ),
     );
-  }
-
-  Widget _buildEatInOptions() {
-    final deliveryOptionCondition =
-        shippingProcessBloc.getPackageDetailModel().deliveryOption != null &&
-            shippingProcessBloc.getPackageDetailModel().requireNote();
-    if (deliveryOptionCondition) {
-      return Column(
-        children: [
-          if (shippingProcessBloc.getPackageDetailModel().requireTableNo())
-            _buildTableNo(),
-          if (shippingProcessBloc.getPackageDetailModel().requireTableNo())
-            const SizedBox(height: 16),
-          if (isTimeAvailable ||
-              shippingProcessBloc.getPackageDetailModel().requirePickUp())
-            Column(
-              children: [
-                _buildDate(),
-                const SizedBox(height: 16),
-                _buildTime(),
-                const SizedBox(height: 16),
-                _buildPhoneNumberWidget(
-                  label: 'Phone number',
-                  selectedItem: shippingProcessBloc
-                      .getPackageDetailModel()
-                      .getDeliveryOption(),
-                  onTap: () => dateOption(),
-                ),
-                const SizedBox(height: 16),
-              ],
-            ),
-        ],
-      );
-    }
-    return Container();
   }
 
   Widget _buildTableNo() {
