@@ -1620,6 +1620,37 @@ class ShoppingAuthService extends AuthService {
     return false;
   }
 
+  //Update Date & Time
+  Future<bool> updateOrderDateTime(
+      String? shipmentType, String? dateTime, String orderId) async {
+    final Map<String, dynamic> data = {};
+    if (shipmentType == "PickUp") {
+      data.addAll({
+        "pickup_datetime": dateTime,
+      });
+    } else if (shipmentType == "In Store/Eat In") {
+      data.addAll({
+        "instore_datetime": dateTime,
+      });
+    }
+    print(data);
+    final data0 = jsonEncode(data);
+    final String url = "${AppConfig.baseUrl}/api/v1/order/$orderId/";
+    final headers = await getAuthHeaders();
+    final response = await httpPatch(url, headers: headers, body: data0);
+
+    try {
+      handleServerErrors(response);
+    } catch (e) {
+      return Future.error(response.body);
+    }
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return true;
+    }
+    return false;
+  }
+
   // Order Refund Request
   Future<bool> updateOrderRefundStatus(
       Map<String, dynamic> data, String orderId) async {

@@ -800,11 +800,28 @@ String formatTime24hrs(DateTime? date) {
   return DateFormat("HH:mm").format(date);
 }
 
+bool isMidnight(DateTime dateTime) {
+  return dateTime.hour == 0 && dateTime.minute == 0 && dateTime.second == 0;
+}
+
+String formatDateTime(DateTime dateTime) {
+  return '${formatDateForOrder(dateTime)} ${formatTime24hrs(dateTime)}';
+}
+
 String formatDate(DateTime? dateTime) {
   if (dateTime == null) {
     return '';
   }
   final String date = "${dateTime.day}/${dateTime.month}/${dateTime.year}";
+
+  return date;
+}
+
+String formatDateForOrder(DateTime? dateTime) {
+  if (dateTime == null) {
+    return '';
+  }
+  final String date = "${dateTime.year}-${dateTime.month}-${dateTime.day}";
 
   return date;
 }

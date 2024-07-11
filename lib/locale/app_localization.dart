@@ -2987,6 +2987,13 @@ class AppLocalization {
     );
   }
 
+  String get serviceUpdateSuccessfully {
+    return Intl.message(
+      "Service Update Succesfully",
+      name: "serviceUpdateSuccessfully",
+    );
+  }
+
   //edit product
   String get editProduct {
     return Intl.message(

@@ -1985,6 +1985,7 @@ class Order {
   String? paymentType;
   String? pickupAddressId;
   String? pickupDateTime;
+  String? inStoreDateTime;
   int? price;
   String? rateId;
   int? shippingOption;

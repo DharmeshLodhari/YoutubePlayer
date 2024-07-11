@@ -1,7 +1,7 @@
-import 'package:Slydo/data/state_notifiers/shipping_process_bloc.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/models/shipping_option_model.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/utils/util.dart';
 
 enum DeliveryOptions { shipping, eatIn, pickUp }
 
@@ -218,14 +218,17 @@ class PackageDetailsModel {
   }
 
   String? getShippingLogo() {
-    switch (shippingType!) {
-      case ShippingTypes.slydo:
-        return "assets/images/slydo.png";
-      case ShippingTypes.merchant:
-        return "assets/images/merchant_logo.png";
-      case ShippingTypes.courier:
-        return shippingOption?.carrierLogo ?? "";
+    if (shippingType != null) {
+      switch (shippingType!) {
+        case ShippingTypes.slydo:
+          return "assets/images/slydo.png";
+        case ShippingTypes.merchant:
+          return "assets/images/merchant_logo.png";
+        case ShippingTypes.courier:
+          return shippingOption?.carrierLogo ?? "";
+      }
     }
+    return null;
   }
 
   void updateDeliveryAddress(ShippingAddress? shippingAddress) {
@@ -234,6 +237,18 @@ class PackageDetailsModel {
 
   void updateShippingNote(String? note) {
     shippingNote = note;
+  }
+
+  void updateDateTime(String? deliveryOption, DateTime? selectedDateTime) {
+    if (selectedDateTime != null && deliveryOption == DeliveryOptions.pickUp) {
+      pickUpDateTime = formatDateForOrder(selectedDateTime);
+    } else if (deliveryOption == DeliveryOptions.eatIn) {
+      if (selectedDateTime != null) {
+        inStoreDateTime = formatDateForOrder(selectedDateTime);
+      } else {
+        inStoreDateTime = "now";
+      }
+    }
   }
 
   bool hasSlydoDispatchAvailable() {

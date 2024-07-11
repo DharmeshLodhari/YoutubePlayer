@@ -4,15 +4,18 @@ import 'dart:io';
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifiers/user_bloc.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/locator.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/auth/shipping_process_auth.dart';
+import 'package:Slydo/screens/more_apps/shipping_process/models/package_details_model.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/shopping/tiles/order_detail_item_tile_new.dart';
 import 'package:Slydo/screens/more_apps/shopping/widget/outline_border_button.dart';
 import 'package:Slydo/screens/more_apps/shopping/widget/rounded_border_button.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/services/app_config_bloc.dart';
 import 'package:Slydo/services/location_service.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -55,17 +58,16 @@ class _OrderTileState extends State<OrderTile> {
   String cartId = "";
   String? status = "";
   String? dateText;
-  DateTime? startFrom;
-  DateTime? startTimeFrom;
+  DateTime? selectDateTime;
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
     order = widget.order;
     statusOfOrder = order?.status?.toLowerCase();
     getCartId();
-    DateTime now = DateTime.now();
-    startFrom = now;
-    dateText = formatDate(now);
+    selectDateTime = DateTime.now();
+    dateText = formatDate(selectDateTime ?? DateTime.now());
     super.initState();
   }
 
@@ -982,42 +984,46 @@ class _OrderTileState extends State<OrderTile> {
 
   Future _showDialogDateTime() {
     return showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            backgroundColor: white,
-            title: Text(
-              "Change Date/Time",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: blackFont,
-                fontSize: 20,
-                fontFamily: "Inter",
-                fontWeight: FontWeight.w600,
-              ),
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: Colors.white,
+          title: const Text(
+            "Change Date/Time",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 20,
+              fontFamily: "Inter",
+              fontWeight: FontWeight.w600,
             ),
-            actions: [
-              Column(
+          ),
+          content: StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+              return Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  _buildDate(),
+                  _buildDate(setState),
                   const SizedBox(height: 15),
-                  _buildTime(),
+                  _buildTime(setState),
                   const SizedBox(height: 15),
                   Row(
                     children: [
                       Expanded(child: _buildCancelButton()),
                       const SizedBox(width: 20),
-                      Expanded(child: _buildUpdateButton()),
+                      Expanded(child: _buildUpdateButton(setState)),
                     ],
-                  )
+                  ),
                 ],
-              )
-            ],
-          );
-        });
+              );
+            },
+          ),
+        );
+      },
+    );
   }
 
-  Widget _buildDate() {
+  Widget _buildDate(StateSetter setState) {
     return GestureDetector(
       onTap: () {
         showDatePicker(
@@ -1029,8 +1035,9 @@ class _OrderTileState extends State<OrderTile> {
         ).then((value) {
           if (value != null) {
             setState(() {
-              startFrom = DateTime(value.year, value.month, value.day);
-              dateText = formatDate(startFrom!);
+              selectDateTime = DateTime(value.year, value.month, value.day,
+                  selectDateTime?.hour ?? 0, selectDateTime?.minute ?? 0);
+              dateText = formatDate(selectDateTime!);
             });
           }
         }).catchError((error) {
@@ -1059,7 +1066,7 @@ class _OrderTileState extends State<OrderTile> {
     );
   }
 
-  Widget _buildTime() {
+  Widget _buildTime(StateSetter setState) {
     return GestureDetector(
       onTap: () {
         showTimePicker(
@@ -1083,18 +1090,31 @@ class _OrderTileState extends State<OrderTile> {
           },
           context: context,
           initialTime: TimeOfDay.now(),
-        ).then((value) {
-          if (value != null) {
+        ).then((time) {
+          if (time != null) {
             setState(() {
-              startTimeFrom = DateTime(
-                DateTime.now().year,
-                DateTime.now().month,
-                DateTime.now().day,
-                value.hour,
-                value.minute,
-              );
-              // discountModel.onlyFrom = startTimeFrom;
+              if (selectDateTime != null) {
+                selectDateTime = DateTime(
+                  selectDateTime!.year,
+                  selectDateTime!.month,
+                  selectDateTime!.day,
+                  time.hour,
+                  time.minute,
+                );
+              } else {
+                selectDateTime = DateTime(
+                  DateTime.now().year,
+                  DateTime.now().month,
+                  DateTime.now().day,
+                  time.hour,
+                  time.minute,
+                );
+              }
             });
+            print("======>$selectDateTime");
+          }
+          if (mounted) {
+            setState(() {});
           }
         }).catchError((error) {});
       },
@@ -1103,17 +1123,17 @@ class _OrderTileState extends State<OrderTile> {
         child: ListTile(
           dense: true,
           title: Text(
-            startTimeFrom != null ? formatTime24hrs(startTimeFrom) : "",
-            style: TextStyle(
-              color: blackFont,
+            selectDateTime != null && !isMidnight(selectDateTime!)
+                ? formatTime24hrs(selectDateTime!)
+                : "",
+            style: const TextStyle(
               fontWeight: FontWeight.w600,
               fontSize: 16,
             ),
           ),
-          trailing: Icon(
-            SlydoAppIcon.clock,
+          trailing: const Icon(
+            Icons.access_time,
             size: 16,
-            color: black,
           ),
         ),
       ),
@@ -1123,18 +1143,33 @@ class _OrderTileState extends State<OrderTile> {
   Widget _buildCancelButton() {
     return CurvedButton(
       onPressed: () {
-        Navigator.pop(context);
+        setState(() {
+          selectDateTime = null;
+          Navigator.pop(context);
+        });
       },
       backgroundColor: greyBorderColor,
       textColor: blackFont,
-      text: 'No,Cancel',
+      text: 'No,cancel',
     );
   }
 
-  Widget _buildUpdateButton() {
+  Widget _buildUpdateButton(StateSetter setState) {
     return CurvedButton(
       onPressed: () {
-        Navigator.pop(context);
+        setState(() {
+          _auth
+              .updateOrderDateTime(order?.shipmentType(),
+                  formatDateTime(selectDateTime!), order?.id.toString() ?? "")
+              .then((value) {
+            showToast(
+                message:
+                    AppLocalization.of(context)!.serviceUpdateSuccessfully);
+          }).catchError((error) {
+            showToast(message: error.toString());
+          });
+          Navigator.pop(context);
+        });
       },
       backgroundColor: navyBlue,
       textColor: white,

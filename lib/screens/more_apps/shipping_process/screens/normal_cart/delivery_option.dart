@@ -36,8 +36,6 @@ class _DeliveryOptionState extends State<DeliveryOption> {
   late Country _selectedDialogCountry;
   TextEditingController userNoteController = TextEditingController();
   TextEditingController phoneNumberController = TextEditingController();
-  DateTime? startFrom;
-  DateTime? startTimeFrom;
   DateTime? selectedDateTime;
   String? dateText;
   bool isTimeAvailable = false;
@@ -51,10 +49,8 @@ class _DeliveryOptionState extends State<DeliveryOption> {
       }
     });
     _selectedDialogCountry = CountryPickerUtils.getCountryByIsoCode('NG');
-    final DateTime now = DateTime.now();
-    startFrom = now;
-    dateText = formatDate(now);
-    startFrom = selectedDateTime;
+    selectedDateTime = DateTime.now();
+    dateText = formatDate(selectedDateTime ?? DateTime.now());
     super.initState();
   }
 
@@ -461,6 +457,9 @@ class _DeliveryOptionState extends State<DeliveryOption> {
             shippingProcessBloc
                 .getPackageDetailModel()
                 .updateShippingNote(userNoteController.text.trim());
+            shippingProcessBloc.getPackageDetailModel().updateDateTime(
+                shippingProcessBloc.getPackageDetailModel().getDeliveryOption(),
+                selectedDateTime);
             shippingProcessBloc.updateShippingProcessCompleted(true);
             shippingProcessBloc.isUseCart == true
                 ? Navigator.of(context).pop()
@@ -926,8 +925,9 @@ class _DeliveryOptionState extends State<DeliveryOption> {
         ).then((value) {
           if (value != null) {
             setState(() {
-              startFrom = DateTime(value.year, value.month, value.day);
-              dateText = formatDate(startFrom!);
+              selectedDateTime = DateTime(value.year, value.month, value.day,
+                  selectedDateTime?.hour ?? 0, selectedDateTime?.minute ?? 0);
+              dateText = formatDate(selectedDateTime!);
             });
           }
         }).catchError((error) {
@@ -956,68 +956,6 @@ class _DeliveryOptionState extends State<DeliveryOption> {
     );
   }
 
-  // Widget _buildTime() {
-  //   return GestureDetector(
-  //     onTap: () {
-  //       showTimePicker(
-  //         builder: (BuildContext context, Widget? child) {
-  //           return MediaQuery(
-  //             data: MediaQuery.of(context).copyWith(
-  //               alwaysUse24HourFormat: true, // Forces 24-hour format
-  //             ),
-  //             child: Theme(
-  //               data: ThemeData(
-  //                 colorScheme: ColorScheme.light(
-  //                   primary:
-  //                       navyBlue, // Sets the color for the time picker clock
-  //                   onSurface:
-  //                       Colors.black, // Sets the color for the time numbers
-  //                 ),
-  //               ),
-  //               child: child!,
-  //             ),
-  //           );
-  //         },
-  //         context: context,
-  //         initialTime: TimeOfDay.now(),
-  //       ).then((time) {
-  //         if (time != null) {
-  //           setState(() {
-  //             if (startFrom != null) {
-  //               startFrom = DateTime(
-  //                 startFrom?.year ?? 0,
-  //                 startFrom?.month ?? 0,
-  //                 startFrom?.day ?? 0,
-  //                 time.hour,
-  //                 time.minute,
-  //               );
-  //             } else {
-  //               // Handle case where startFrom is null (if needed)
-  //             }
-  //             print("=====>$startFrom");
-  //           });
-  //         }
-  //       }).catchError((error) {});
-  //     },
-  //     child: CustomizedDropDownField(
-  //       title: "Time",
-  //       child: ListTile(
-  //         dense: true,
-  //         title: Text(
-  //           startFrom != null ? formatTime24hrs(startFrom) : "",
-  //           style: const TextStyle(
-  //             fontWeight: FontWeight.w600,
-  //             fontSize: 16,
-  //           ),
-  //         ),
-  //         trailing: const Icon(
-  //           Icons.access_time,
-  //           size: 16,
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
   Widget _buildTime() {
     return GestureDetector(
       onTap: () {
@@ -1045,16 +983,16 @@ class _DeliveryOptionState extends State<DeliveryOption> {
         ).then((time) {
           if (time != null) {
             setState(() {
-              if (startFrom != null) {
-                startFrom = DateTime(
-                  startFrom!.year,
-                  startFrom!.month,
-                  startFrom!.day,
+              if (selectedDateTime != null) {
+                selectedDateTime = DateTime(
+                  selectedDateTime!.year,
+                  selectedDateTime!.month,
+                  selectedDateTime!.day,
                   time.hour,
                   time.minute,
                 );
               } else {
-                startFrom = DateTime(
+                selectedDateTime = DateTime(
                   DateTime.now().year,
                   DateTime.now().month,
                   DateTime.now().day,
@@ -1063,7 +1001,7 @@ class _DeliveryOptionState extends State<DeliveryOption> {
                 );
               }
             });
-            print("======>$startFrom");
+            print("======>$selectedDateTime");
           }
         }).catchError((error) {});
       },
@@ -1072,8 +1010,8 @@ class _DeliveryOptionState extends State<DeliveryOption> {
         child: ListTile(
           dense: true,
           title: Text(
-            startFrom != null && !isMidnight(startFrom!)
-                ? formatTime24hrs(startFrom!)
+            selectedDateTime != null && !isMidnight(selectedDateTime!)
+                ? formatTime24hrs(selectedDateTime!)
                 : "",
             style: const TextStyle(
               fontWeight: FontWeight.w600,
@@ -1087,10 +1025,6 @@ class _DeliveryOptionState extends State<DeliveryOption> {
         ),
       ),
     );
-  }
-
-  bool isMidnight(DateTime dateTime) {
-    return dateTime.hour == 0 && dateTime.minute == 0 && dateTime.second == 0;
   }
 
   Widget _buildTableNo() {
