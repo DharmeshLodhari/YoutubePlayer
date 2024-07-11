@@ -1053,9 +1053,7 @@ class _DeliveryOptionState extends State<DeliveryOption> {
                   time.hour,
                   time.minute,
                 );
-                print("======>Hemali1 $startFrom");
               } else {
-                // Handle case where startFrom is null (if needed)
                 startFrom = DateTime(
                   DateTime.now().year,
                   DateTime.now().month,
@@ -1065,7 +1063,7 @@ class _DeliveryOptionState extends State<DeliveryOption> {
                 );
               }
             });
-            print("======>Hemali $startFrom");
+            print("======>$startFrom");
           }
         }).catchError((error) {});
       },
@@ -1074,7 +1072,9 @@ class _DeliveryOptionState extends State<DeliveryOption> {
         child: ListTile(
           dense: true,
           title: Text(
-            startFrom != null ? formatTime24hrs(startFrom) : "",
+            startFrom != null && !isMidnight(startFrom!)
+                ? formatTime24hrs(startFrom!)
+                : "",
             style: const TextStyle(
               fontWeight: FontWeight.w600,
               fontSize: 16,
@@ -1087,6 +1087,10 @@ class _DeliveryOptionState extends State<DeliveryOption> {
         ),
       ),
     );
+  }
+
+  bool isMidnight(DateTime dateTime) {
+    return dateTime.hour == 0 && dateTime.minute == 0 && dateTime.second == 0;
   }
 
   Widget _buildTableNo() {
