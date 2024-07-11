@@ -418,21 +418,23 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   Future shareAsYarn() async {
-    NavigationUtil.push(context,
-        screen: ShareAsAyarnScreen(
-            askCategories: yarnDashboardBloc.yarnCategories,
-            shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
-            productModel: product,
-            callback: (params) async {
-              params.attachment = {
-                "product": product?.toJson().cast<String, dynamic>() ?? {}
-              };
-              final bool data =
-                  await YarnAuth().addYarnAndQuestion(params, '', '');
-              if (data) {
-                showToast(message: "Shared in Yarn successfully");
-              }
-            }));
+    NavigationUtil.push(
+      context,
+      screen: ShareAsAyarnScreen(
+        askCategories: yarnDashboardBloc.yarnCategories,
+        shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
+        productModel: product,
+        callback: (params) async {
+          params.attachment = {
+            "product": product?.toJson().cast<String, dynamic>() ?? {}
+          };
+          final bool data = await YarnAuth().addYarnAndQuestion(params, '', '');
+          if (data) {
+            showToast(message: "Shared in Yarn successfully");
+          }
+        },
+      ),
+    );
   }
 
   void sendItemToUsersInChat() async {

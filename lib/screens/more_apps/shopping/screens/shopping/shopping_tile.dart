@@ -275,7 +275,7 @@ class _ShoppingTileWithHeartWithProductState
                         (MediaQuery.of(context).size.height * 0.6).toInt(),
                   ),
                 ),
-                const SizedBox(width: 16),
+                const SizedBox(width: 15),
                 Expanded(
                   child: SizedBox(
                     height: 60,
@@ -283,13 +283,15 @@ class _ShoppingTileWithHeartWithProductState
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Text(
-                          messageDecoderWithEmoji(widget.product?.name) ?? "",
-                          maxLines: 1,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w700,
-                            fontSize: 14,
-                            color: blackFont,
+                        Expanded(
+                          child: Text(
+                            messageDecoderWithEmoji(widget.product?.name) ?? "",
+                            maxLines: 1,
+                            style: TextStyle(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 14,
+                              color: blackFont,
+                            ),
                           ),
                         ),
                         const SizedBox(height: 2),
