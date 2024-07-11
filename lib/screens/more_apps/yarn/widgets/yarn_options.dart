@@ -790,11 +790,11 @@ class _YarnOptionsState extends State<YarnOptions> {
     final bool? data =
         await YarnAuth().deleteComment(widget.commentDetail!.id!);
     if (data != null && data) {
-      showToast(message: "Comment deleted successfully");
-      if (widget.commentDetail != null) {
+      if (widget.onDeleteComment != null && widget.commentDetail != null) {
         widget.onDeleteComment!(widget.commentDetail!);
+        showToast(message: "Comment deleted successfully");
+        Navigator.pop(context);
       }
-      Navigator.pop(context);
     }
   }
 

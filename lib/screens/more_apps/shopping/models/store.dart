@@ -1055,7 +1055,7 @@ class Variant {
       "title": title,
       "colour": colour,
       "price": price,
-      "type": type,
+      "type": type?.name,
       "value": value,
       "quantity": quantity,
       "is_available": isAvailable,
@@ -1095,7 +1095,10 @@ class Variant {
 
     int? cleanObjects(Map<String, dynamic> data, String key) {
       var value = data[key] ?? 0;
-      if (value.runtimeType is bool) {
+      debugPrint("data: $data");
+      debugPrint("type: ${value.runtimeType}");
+      if (value is bool) {
+        debugPrint("bool: ${value.runtimeType}");
         return 0;
       }
       return value;
@@ -2013,6 +2016,13 @@ class Order {
     "Order Arrived",
     "Rider Picked Up Order"
   ];
+
+  List<String> newOrderStatus = [
+    "New Order",
+    "Payment Successful",
+    "Order Placed",
+    "Payment Received"
+  ];
   List<String> notAllowedStatusUpdate = ["Canceled", "Complete"];
 
   Order({
@@ -2117,6 +2127,7 @@ class Order {
     refundPaymentId = object["refund_payment_id"];
   }
 
+  //todo: invetiget deprecating this function or delete this function
   String? getCustomerOrMerchantName(String? userName) {
     final customerOrMerchant =
         customerName == userName ? merchant : customerName;
@@ -2152,11 +2163,10 @@ class Order {
   }
 
   String? normalizeName(String? userName) {
-    final String name = getCustomerOrMerchantName(userName) ?? "";
-    if (name == "__anonymous__") {
+    if (userName == "__anonymous__") {
       return "Anonymous User";
     }
-    return name;
+    return userName;
   }
 
   String? isOrderStatus(String userName) {

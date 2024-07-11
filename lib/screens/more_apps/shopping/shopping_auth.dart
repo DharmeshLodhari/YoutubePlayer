@@ -1677,7 +1677,7 @@ class ShoppingAuthService extends AuthService {
       url = "${AppConfig.baseUrl}/api/v1/order/";
 
       url = "$url?merchant=$isMerchant";
-      if (filterValue != null) {
+      if (filterValue != null && filterValue != "") {
         url = "$url&shipping_type=$filterValue";
       }
       if (searchValue != null) {

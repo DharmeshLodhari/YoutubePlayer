@@ -30,6 +30,7 @@ class _OrderListState extends State<OrderList> {
   bool isMerchant = true;
   final PageStorageBucket _bucket = PageStorageBucket();
   String selectedFilter = "";
+  bool isFilterApplied = false;
   List<Filter> filterList = [
     Filter(title: "All", value: "all"),
     Filter(title: "Delivery", value: "delivery"),
@@ -270,20 +271,46 @@ class _OrderListState extends State<OrderList> {
   }
 
   Widget _buildFilterIcon() {
-    return RoundedBackgroundIcon(
-      // key: _key,
-      height: 34,
-      width: 34,
-      icon: const Icon(
-        Icons.filter_alt_rounded,
-        size: 20,
-      ),
-      onTap: () async {
-        await Future.delayed(const Duration(milliseconds: 100))
-            .then((value) => showFilterProductSheet());
-      },
-      backgroundColor: iconBtnGrey,
-      enableMargin: false,
+    return Stack(
+      children: [
+        Container(
+          padding: const EdgeInsets.only(right: 8),
+          child: Column(
+            children: [
+              Expanded(
+                child: RoundedBackgroundIcon(
+                  height: 34,
+                  width: 34,
+                  icon: const Icon(
+                    Icons.filter_alt_rounded,
+                    size: 20,
+                  ),
+                  onTap: () async {
+                    await Future.delayed(const Duration(milliseconds: 100))
+                        .then((value) => showFilterProductSheet());
+                  },
+                  backgroundColor: iconBtnGrey,
+                  enableMargin: true,
+                ),
+              ),
+            ],
+          ),
+        ),
+        if (isFilterApplied)
+          Positioned(
+            top: 10,
+            right: 6,
+            child: ClipOval(
+              child: Container(
+                height: 8,
+                width: 8,
+                color: naturalGreen,
+              ),
+            ),
+          )
+        else
+          Container()
+      ],
     );
   }
 
@@ -382,24 +409,31 @@ class _OrderListState extends State<OrderList> {
       case "all":
         setState(() {
           selectedFilter = "";
+          isFilterApplied = false;
         });
         break;
       case "delivery":
         setState(() {
           selectedFilter = "delivery";
+          isFilterApplied = true;
         });
         break;
       case "eat_in/in_store":
         setState(() {
           selectedFilter = "eat_in/in_store";
+          isFilterApplied = true;
         });
         break;
       case "pickup":
         setState(() {
           selectedFilter = "pickup";
+          isFilterApplied = true;
         });
         break;
       default:
+        setState(() {
+          isFilterApplied = false;
+        });
         break;
     }
     setState(() {});

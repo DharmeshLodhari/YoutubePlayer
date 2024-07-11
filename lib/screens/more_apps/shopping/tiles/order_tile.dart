@@ -14,7 +14,6 @@ import 'package:Slydo/screens/more_apps/shopping/widget/outline_border_button.da
 import 'package:Slydo/screens/more_apps/shopping/widget/rounded_border_button.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/services/location_service.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
@@ -123,7 +122,7 @@ class _OrderTileState extends State<OrderTile> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          _buildUserName(),
+                          _buildMerchantName(),
                           _buildOrdersStatus(),
                         ],
                       ),
@@ -138,19 +137,21 @@ class _OrderTileState extends State<OrderTile> {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          Flexible(child: _buildChangeDateButton()),
+                          Flexible(
+                            child: _buildFirstButton(),
+                          ),
                           const SizedBox(
                             width: 7,
                           ),
-                          // Flexible(child: _buildFirstButton()),
-                          // const SizedBox(
-                          //   width: 7,
-                          // ),
-                          Flexible(child: _buildSecondButton()),
+                          Flexible(
+                            child: _buildSecondButton(),
+                          ),
                           const SizedBox(
                             width: 7,
                           ),
-                          Flexible(child: _buildThirdButton())
+                          Flexible(
+                            child: _buildThirdButton(),
+                          )
                         ],
                       ),
                     ],
@@ -204,6 +205,10 @@ class _OrderTileState extends State<OrderTile> {
   }
 
   Widget _buildFirstButton() {
+    if ((order?.isCustomer(userBloc.user.userName) ?? false) &&
+        (order?.newOrderStatus.contains(order?.status) ?? false)) {
+      return _buildChangeDateButton();
+    }
     return _buildTrackOrder();
   }
 
@@ -914,6 +919,21 @@ class _OrderTileState extends State<OrderTile> {
         "MakePaymentForOrder Unsuccessful",
       );
     }
+  }
+
+  // todo: trancate the length of username
+  // todo: change font cour and size of the merchant user name lightgray
+  Widget _buildMerchantName() {
+    final String merchantUserName = order?.normalizeName(order?.merchant) ?? "";
+    return Text(
+      "Sold By: $merchantUserName",
+      style: TextStyle(
+        color: lightBlackFont,
+        fontSize: 14,
+        fontWeight: FontWeight.w600,
+        fontFamily: "Inter",
+      ),
+    );
   }
 
   Widget _buildUserName() {
