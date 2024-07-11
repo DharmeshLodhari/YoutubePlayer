@@ -1,4 +1,3 @@
-import 'package:Slydo/data/state_notifiers/shipping_process_bloc.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/models/shipping_option_model.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
@@ -218,6 +217,9 @@ class PackageDetailsModel {
   }
 
   String? getShippingLogo() {
+    if (shippingType == null) {
+      return null;
+    }
     switch (shippingType!) {
       case ShippingTypes.slydo:
         return "assets/images/slydo.png";

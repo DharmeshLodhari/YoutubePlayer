@@ -1,10 +1,10 @@
 import 'dart:io';
 
-import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/models/package_details_model.dart';
+import 'package:Slydo/utils/country_picker/country.dart';
 import 'package:Slydo/utils/country_picker/country_picker_dialog.dart';
 import 'package:Slydo/utils/country_picker/utils.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
@@ -18,7 +18,6 @@ import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:Slydo/utils/country_picker/country.dart';
 
 class DeliveryOption extends StatefulWidget {
   const DeliveryOption({
@@ -135,10 +134,16 @@ class _DeliveryOptionState extends State<DeliveryOption> {
                       height: 16,
                     ),
                     if (shippingProcessBloc
-                        .getPackageDetailModel()
-                        .requireNote())
-                      _buildPickupAndEatInSelected()
-                    else
+                            .getPackageDetailModel()
+                            .deliveryOption !=
+                        null)
+                      shippingProcessBloc.getPackageDetailModel().requireNote()
+                          ? _buildPickupAndEatInSelected()
+                          : _buildDeliveryAddressAndOptions(),
+                    if (shippingProcessBloc
+                            .getPackageDetailModel()
+                            .shippingOption !=
+                        null)
                       _buildShippingOptionSelected(),
                   ],
                 ),
@@ -627,15 +632,15 @@ class _DeliveryOptionState extends State<DeliveryOption> {
                   fontFamily: "Inter",
                 ),
               ),
-              Text(
-                "${worldCurrencies[shippingProcessBloc.getPackageDetailModel().shippingOption?.currency]}${moneyDisplayNormalizer(shippingProcessBloc.getPackageDetailModel().shippingOption?.price)}",
-                style: TextStyle(
-                  color: blackFont,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                  fontFamily: "Inter",
-                ),
-              ),
+              // Text(
+              //   "${worldCurrencies[shippingProcessBloc.getPackageDetailModel().shippingOption?.currency]}${moneyDisplayNormalizer(shippingProcessBloc.getPackageDetailModel().shippingOption?.price)}",
+              //   style: TextStyle(
+              //     color: blackFont,
+              //     fontSize: 14,
+              //     fontWeight: FontWeight.w700,
+              //     fontFamily: "Inter",
+              //   ),
+              // ),
             ],
           ),
         ),
