@@ -212,7 +212,8 @@ class _OrderTileState extends State<OrderTile> {
 
   Widget _buildFirstButton() {
     if ((order?.isCustomer(userBloc.user.userName) ?? false) &&
-        (order?.newOrderStatus.contains(order?.status) ?? false)) {
+        (order?.newOrderStatus.contains(order?.status) ?? false) &&
+        order?.shipmentType() != "Delivery") {
       return _buildChangeDateButton();
     }
     return _buildTrackOrder();
@@ -930,9 +931,17 @@ class _OrderTileState extends State<OrderTile> {
   // todo: trancate the length of username
   // todo: change font cour and size of the merchant user name lightgray
   Widget _buildMerchantName() {
-    final String merchantUserName = order?.normalizeName(order?.merchant) ?? "";
+    String name;
+    String lable;
+    if (order?.isCustomer(userBloc.user.userName) ?? false) {
+      lable = "Sold by";
+      name = order?.normalizeName(order?.merchant) ?? "";
+    } else {
+      name = order?.normalizeName(order?.customerName) ?? "";
+      lable = "Bought by";
+    }
     return Text(
-      "Sold By: $merchantUserName",
+      "$lable: $name",
       style: TextStyle(
         color: lightBlackFont,
         fontSize: 14,

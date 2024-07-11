@@ -1998,6 +1998,7 @@ class Order {
   bool hasReview = false;
   String? refundPaymentRequestId;
   String? refundPaymentId;
+  String? deliveryDatetime;
   List<String> orderConfirmState = [
     "Complete",
     "Payment Successful",
@@ -2061,6 +2062,7 @@ class Order {
     this.hasReview = false,
     this.refundPaymentRequestId,
     this.refundPaymentId,
+    this.deliveryDatetime,
   });
 
   Order.fromJson(object) {
@@ -2126,6 +2128,7 @@ class Order {
     hasReview = object["has_review"] ?? false;
     refundPaymentRequestId = object["refund_payment_request_id"];
     refundPaymentId = object["refund_payment_id"];
+    deliveryDatetime = object["delivery_datetime"] ?? object["created_at"];
   }
 
   //todo: invetiget deprecating this function or delete this function

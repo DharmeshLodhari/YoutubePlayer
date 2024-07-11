@@ -218,17 +218,17 @@ class PackageDetailsModel {
   }
 
   String? getShippingLogo() {
-    if (shippingType != null) {
-      switch (shippingType!) {
-        case ShippingTypes.slydo:
-          return "assets/images/slydo.png";
-        case ShippingTypes.merchant:
-          return "assets/images/merchant_logo.png";
-        case ShippingTypes.courier:
-          return shippingOption?.carrierLogo ?? "";
-      }
+    if (shippingType == null) {
+      return null;
     }
-    return null;
+    switch (shippingType!) {
+      case ShippingTypes.slydo:
+        return "assets/images/slydo.png";
+      case ShippingTypes.merchant:
+        return "assets/images/merchant_logo.png";
+      case ShippingTypes.courier:
+        return shippingOption?.carrierLogo ?? "";
+    }
   }
 
   void updateDeliveryAddress(ShippingAddress? shippingAddress) {
