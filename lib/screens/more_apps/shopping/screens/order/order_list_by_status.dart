@@ -133,6 +133,7 @@ class _OrderListByStatusState extends State<OrderListByStatus> {
   Widget _buildOrderList() {
     return noItemInList
         ? NoOrderInList(
+            image: "assets/images/no_order.svg",
             title: AppLocalization.of(context)!.noOrdersToShow,
             msg: 'Browse product to make your first order.',
           )

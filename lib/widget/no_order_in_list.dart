@@ -10,9 +10,14 @@ class NoOrderInList extends StatelessWidget {
   String msg = "";
   String? title = "";
   bool isResult;
+  String? image;
 
   NoOrderInList(
-      {super.key, required this.msg, this.isResult = true, this.title});
+      {super.key,
+      required this.msg,
+      this.isResult = true,
+      this.title,
+      this.image});
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +27,7 @@ class NoOrderInList extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           SvgPicture.asset(
-            'assets/images/no_order.svg',
+            image ?? "",
             colorBlendMode: BlendMode.color,
             height: 100,
             width: 100,
