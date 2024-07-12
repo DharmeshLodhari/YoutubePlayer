@@ -1133,7 +1133,11 @@ class _OrderTileState extends State<OrderTile> {
           dense: true,
           title: Text(
             selectDateTime != null && !isMidnight(selectDateTime!)
-                ? formatTime24hrs(selectDateTime!)
+                ? formatTime24hrs(
+                    selectDateTime?.add(
+                      const Duration(hours: 1),
+                    ),
+                  )
                 : "",
             style: const TextStyle(
               fontWeight: FontWeight.w600,

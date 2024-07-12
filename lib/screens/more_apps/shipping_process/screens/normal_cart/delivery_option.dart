@@ -998,6 +998,9 @@ class _DeliveryOptionState extends State<DeliveryOption> {
                   time.minute,
                 );
               } else {
+                if (isTimeAvailable) {
+                  selectedDateTime = null;
+                }
                 selectedDateTime = DateTime(
                   DateTime.now().year,
                   DateTime.now().month,
@@ -1017,7 +1020,8 @@ class _DeliveryOptionState extends State<DeliveryOption> {
           dense: true,
           title: Text(
             (selectedDateTime) != null && !isMidnight(selectedDateTime!)
-                ? formatTime24hrs(selectedDateTime!)
+                ? formatTime24hrs(
+                    selectedDateTime?.add(const Duration(hours: 1)))
                 : "",
             style: const TextStyle(
               fontWeight: FontWeight.w600,
