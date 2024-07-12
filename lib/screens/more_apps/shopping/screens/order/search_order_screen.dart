@@ -10,7 +10,6 @@ import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_dropdown_field.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/no_order_in_list.dart';
-import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -117,28 +116,28 @@ class _SearchOrderScreenState extends State<SearchOrderScreen> {
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
-      actions: <Widget>[
-        if (orderList.isNotEmpty)
-          RoundedBackgroundIcon(
-            height: 34,
-            width: 34,
-            icon: Icon(
-              SlydoAppIcon.filter,
-              size: 16,
-              color: blackFont,
-            ),
-            onTap: () {
-              setState(() {
-                showSortByBox = !showSortByBox;
-              });
-            },
-            backgroundColor: iconBtnGrey,
-            enableMargin: true,
-          )
-        else
-          const SizedBox.shrink(),
-        const SizedBox(width: 16),
-      ],
+      // actions: <Widget>[
+      //   if (orderList.isNotEmpty)
+      //     RoundedBackgroundIcon(
+      //       height: 34,
+      //       width: 34,
+      //       icon: Icon(
+      //         SlydoAppIcon.filter,
+      //         size: 16,
+      //         color: blackFont,
+      //       ),
+      //       onTap: () {
+      //         setState(() {
+      //           showSortByBox = !showSortByBox;
+      //         });
+      //       },
+      //       backgroundColor: iconBtnGrey,
+      //       enableMargin: true,
+      //     )
+      //   else
+      //     const SizedBox.shrink(),
+      //   const SizedBox(width: 16),
+      // ],
     );
   }
 
@@ -149,9 +148,19 @@ class _SearchOrderScreenState extends State<SearchOrderScreen> {
         const SizedBox(height: 6),
         searchBox(),
         const SizedBox(height: 12),
-        if (noItemInList)
+        if (isSearchIsEmpty)
           Expanded(
             child: NoOrderInList(
+              image: "assets/images/oder_serach.svg",
+              msg: AppLocalization.of(context)!.noResultFound,
+            ),
+          )
+        else if (noItemInList)
+          Expanded(
+            child: NoOrderInList(
+              height: 120,
+              width: 120,
+              image: "assets/images/no_order.svg",
               title: AppLocalization.of(context)!.noOrdersToShow,
               msg: 'Browse product to make your first order.',
             ),
@@ -272,12 +281,13 @@ class _SearchOrderScreenState extends State<SearchOrderScreen> {
           cursorWidth: 1.5,
           cursorColor: navyBlue,
           decoration: InputDecoration(
+            suffixIcon: searchIcon(),
             hintStyle: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: darkGrey,
-            ),
-            hintText: "Search name, manufacturer, categories",
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: darkGrey,
+                fontFamily: "Inter"),
+            hintText: "Search order number",
             fillColor: Colors.white,
             filled: true,
             contentPadding: const EdgeInsets.symmetric(vertical: 10),
@@ -315,6 +325,17 @@ class _SearchOrderScreenState extends State<SearchOrderScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget searchIcon() {
+    return IconButton(
+      icon: Icon(
+        SlydoAppIcon.search,
+        color: darkGrey,
+        size: 16,
+      ),
+      onPressed: () {},
     );
   }
 

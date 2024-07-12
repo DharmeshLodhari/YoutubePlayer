@@ -9,10 +9,20 @@ import 'package:flutter_svg/flutter_svg.dart';
 class NoOrderInList extends StatelessWidget {
   String msg = "";
   String? title = "";
-  bool isResult;
+  String? image;
+  double? height;
+  double? width;
+  bool isBrowseProduct;
 
-  NoOrderInList(
-      {super.key, required this.msg, this.isResult = true, this.title});
+  NoOrderInList({
+    super.key,
+    required this.msg,
+    this.title,
+    this.image,
+    this.width,
+    this.height,
+    this.isBrowseProduct = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -22,10 +32,11 @@ class NoOrderInList extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           SvgPicture.asset(
-            'assets/images/no_order.svg',
+            image ?? "",
             colorBlendMode: BlendMode.color,
-            height: 100,
-            width: 100,
+            height: height,
+            width: width,
+            fit: BoxFit.fill,
           ),
           const SizedBox(
             height: 20,
@@ -60,16 +71,17 @@ class NoOrderInList extends StatelessWidget {
           const SizedBox(
             height: 20,
           ),
-          CurvedButton(
-            backgroundColor: navyBlue,
-            width: 170,
-            height: 37,
-            onPressed: () {
-              NavigationUtil.push(context, screen: const SuperStoreHome());
-            },
-            text: "Browse Product",
-            textColor: Colors.white,
-          ),
+          if (isBrowseProduct == true)
+            CurvedButton(
+              backgroundColor: navyBlue,
+              width: 170,
+              height: 37,
+              onPressed: () {
+                NavigationUtil.push(context, screen: const SuperStoreHome());
+              },
+              text: "Browse Product",
+              textColor: Colors.white,
+            ),
         ],
       ),
     );

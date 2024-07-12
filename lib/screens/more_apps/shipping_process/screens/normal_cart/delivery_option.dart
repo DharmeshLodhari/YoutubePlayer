@@ -900,6 +900,7 @@ class _DeliveryOptionState extends State<DeliveryOption> {
       children: [
         Column(
           children: [
+            const SizedBox(height: 16),
             _buildDate(),
             const SizedBox(height: 16),
             _buildTime(),
@@ -997,6 +998,9 @@ class _DeliveryOptionState extends State<DeliveryOption> {
                   time.minute,
                 );
               } else {
+                if (isTimeAvailable) {
+                  selectedDateTime = null;
+                }
                 selectedDateTime = DateTime(
                   DateTime.now().year,
                   DateTime.now().month,
@@ -1015,8 +1019,9 @@ class _DeliveryOptionState extends State<DeliveryOption> {
         child: ListTile(
           dense: true,
           title: Text(
-            selectedDateTime != null && !isMidnight(selectedDateTime!)
-                ? formatTime24hrs(selectedDateTime!)
+            (selectedDateTime) != null && !isMidnight(selectedDateTime!)
+                ? formatTime24hrs(
+                    selectedDateTime?.add(const Duration(hours: 1)))
                 : "",
             style: const TextStyle(
               fontWeight: FontWeight.w600,

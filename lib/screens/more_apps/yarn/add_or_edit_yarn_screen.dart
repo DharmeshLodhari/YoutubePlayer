@@ -298,10 +298,15 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     itemSearchTypeSelectionMenu!.menuState = menuStateChange;
 
     return PopScope(
-      onPopInvoked: (didPop) async {
+      canPop: false,
+      onPopInvoked: (bool didPop) {
         if (didPop) {
-          return checkShowBackDialog(context);
+          return;
         }
+        checkShowBackDialog(context);
+        // onPopInvoked: (didPop) async {
+        //   if (didPop) {
+        // }
       },
       child: Scaffold(
         backgroundColor: lightGrey,

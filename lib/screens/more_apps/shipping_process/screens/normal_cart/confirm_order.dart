@@ -86,24 +86,24 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
       bottom: Platform.isIOS ? true : false,
       top: false,
       color: white,
-      child: PopScope(
-        onPopInvoked: (didPop) async {
-          if (didPop) {
-            if (shippingProcessBloc.isPaymentSuccessful) {
-              shippingProcessBloc.clearBuyNowData();
-              Navigator.of(context).pop();
-              Navigator.of(context).pop();
-            } else {
-              Navigator.of(context).pop();
-            }
-          }
-        },
-        child: Scaffold(
-          backgroundColor: lightGrey,
-          appBar: _buildAppBar() as PreferredSizeWidget?,
-          body: _buildBody(),
-        ),
+      // child: PopScope(
+      //   canPop: false,
+      //   onPopInvoked: (didPop) async {
+      //     if (didPop) {
+      //       if (shippingProcessBloc.isPaymentSuccessful) {
+      //         shippingProcessBloc.clearBuyNowData();
+      //         Navigator.of(context).pop();
+      //       } else {
+      //         Navigator.of(context).pop();
+      //       }
+      //     }
+      //   },
+      child: Scaffold(
+        backgroundColor: lightGrey,
+        appBar: _buildAppBar() as PreferredSizeWidget?,
+        body: _buildBody(),
       ),
+      // ),
     );
   }
 
@@ -133,7 +133,6 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
         onPressed: () {
           if (shippingProcessBloc.isPaymentSuccessful) {
             shippingProcessBloc.clearBuyNowData();
-            Navigator.of(context).pop();
             Navigator.of(context).pop();
           } else {
             Navigator.of(context).pop();
