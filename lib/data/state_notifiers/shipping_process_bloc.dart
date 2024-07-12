@@ -77,7 +77,8 @@ class ShippingProcessBloc extends ChangeNotifier {
     return (totalItemCost ?? 0) + (totalShipping ?? 0) + (serviceCharge ?? 0);
   }
 
-  void updateDeliveryOption(String pickedDeliveryOption) {
+  void updateDeliveryOption(String pickedDeliveryOption,
+      {void Function()? pickUpSelectCallBack}) {
     if (pickedDeliveryOption == "Shipping") {
       getPackageDetailModel().deliveryOption = DeliveryOptions.shipping;
     } else if (pickedDeliveryOption == "In Store/Eat In") {
@@ -85,6 +86,7 @@ class ShippingProcessBloc extends ChangeNotifier {
       updateShippingOption(null);
       getPackageDetailModel().updateDeliveryAddress(null);
     } else if (pickedDeliveryOption == "Pickup") {
+      pickUpSelectCallBack!();
       getPackageDetailModel().deliveryOption = DeliveryOptions.pickUp;
       updateShippingOption(null);
       getPackageDetailModel().updateDeliveryAddress(null);

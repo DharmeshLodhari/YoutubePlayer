@@ -160,7 +160,15 @@ class _DeliveryOptionState extends State<DeliveryOption> {
           CustomizedCheckBoxField(
             onTap: () {
               isTimeAvailable = !isTimeAvailable;
-              setState(() {});
+              setState(() {
+                if (isTimeAvailable) {
+                  selectedDateTime = DateTime.now();
+                  dateText = formatDate(selectedDateTime ?? DateTime.now());
+                } else {
+                  selectedDateTime = null;
+                  dateText = "";
+                }
+              });
             },
             isChecked: isTimeAvailable,
             title: "Schedule",
@@ -273,7 +281,11 @@ class _DeliveryOptionState extends State<DeliveryOption> {
           shippingProcessBloc.getPackageDetailModel().getDeliveryOption(),
     );
     if (pickedDeliveryOption != null) {
-      shippingProcessBloc.updateDeliveryOption(pickedDeliveryOption);
+      shippingProcessBloc.updateDeliveryOption(pickedDeliveryOption,
+          pickUpSelectCallBack: () {
+        selectedDateTime = DateTime.now();
+        dateText = formatDate(selectedDateTime ?? DateTime.now());
+      });
     }
   }
 
@@ -998,9 +1010,6 @@ class _DeliveryOptionState extends State<DeliveryOption> {
                   time.minute,
                 );
               } else {
-                if (isTimeAvailable) {
-                  selectedDateTime = null;
-                }
                 selectedDateTime = DateTime(
                   DateTime.now().year,
                   DateTime.now().month,

@@ -264,7 +264,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 7.0, horizontal: 16.0),
       child: Text(
-        "Status : ${order?.status}",
+        "Status : ${appendStringDot(order?.status ?? "", 15)}",
         style: TextStyle(
           color: blackFont,
           fontSize: 16,
@@ -278,21 +278,20 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   Widget _buildPaymentStatus() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 7.0, horizontal: 16.0),
-      child: Flexible(
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(5),
-            color: order?.checkOrderStatusBgColor(userBloc.user.userName ?? ""),
-          ),
-          child: Text(
-            order?.isOrderStatus(userBloc.user.userName ?? "") ?? "",
-            style: TextStyle(
-              color: order?.checkStatusForColor(userBloc.user.userName ?? ""),
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              fontFamily: "Inter",
-            ),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(5),
+          color: order?.checkOrderStatusBgColor(userBloc.user.userName ?? ""),
+        ),
+        child: Text(
+          order?.isOrderStatus(userBloc.user.userName ?? "") ?? "",
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+            color: order?.checkStatusForColor(userBloc.user.userName ?? ""),
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            fontFamily: "Inter",
           ),
         ),
       ),
