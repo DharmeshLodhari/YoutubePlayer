@@ -156,12 +156,13 @@ class _SearchOrderScreenState extends State<SearchOrderScreen> {
             child: NoOrderInList(
               image: "assets/images/oder_serach.svg",
               msg: AppLocalization.of(context)!.noResultFound,
-              isResult: false,
             ),
           )
         else if (noItemInList)
           Expanded(
             child: NoOrderInList(
+              height: 120,
+              width: 120,
               image: "assets/images/no_order.svg",
               title: AppLocalization.of(context)!.noOrdersToShow,
               msg: 'Browse product to make your first order.',
