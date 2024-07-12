@@ -643,10 +643,12 @@ class PaymentAndBankingAuth extends AuthService {
     final data0 = jsonEncode(data);
 
     try {
-      final response = await httpPost(url,
-          headers: headers,
-          body: data0,
-          newTimeOutDuration: Duration(seconds: 3));
+      final response = await httpPost(
+        url,
+        headers: headers,
+        body: data0,
+        newTimeOutDuration: const Duration(seconds: 3),
+      );
       debugPrint(
           "RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
       return response;
@@ -906,7 +908,7 @@ class PaymentAndBankingAuth extends AuthService {
       final response = await httpPost(url,
           headers: headers,
           body: data0,
-          newTimeOutDuration: Duration(seconds: 3));
+          newTimeOutDuration: const Duration(seconds: 3));
       debugPrint('message::::$response');
       return response;
     } catch (e) {
@@ -936,7 +938,7 @@ class PaymentAndBankingAuth extends AuthService {
       final response = await httpPost(url,
           headers: headers,
           body: data0,
-          newTimeOutDuration: Duration(seconds: 3));
+          newTimeOutDuration: const Duration(seconds: 3));
 
       return response;
     } catch (e) {
@@ -1104,7 +1106,7 @@ class PaymentAndBankingAuth extends AuthService {
       final response = await httpPost(url,
           headers: headers,
           body: data0,
-          newTimeOutDuration: Duration(seconds: 3));
+          newTimeOutDuration: const Duration(seconds: 3));
 
       debugPrint('MAKE PAYMENT ::: ${response.body}');
       return response;
