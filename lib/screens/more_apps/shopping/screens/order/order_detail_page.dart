@@ -710,42 +710,51 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     );
   }
 
-  Widget _buildThirdButton() {
-    if (order?.orderCancelledState.contains(order?.status) == true) {
-      return Expanded(child: _buildCancelOrder());
+  Widget _buildFirstButton() {
+    if ((order?.isCustomer(userBloc.user.userName) ?? false) &&
+        (order?.newOrderStatus.contains(order?.status) ?? false) &&
+        order?.shipmentType() != "Delivery") {
+      return Expanded(child: _buildChangeDateButton());
     }
-    return const SizedBox.shrink();
+    if (order?.newOrderStatus.contains(order?.status) ?? false) {
+      return SizedBox.shrink();
+    } else {
+      return Expanded(child: _buildTrackOrder());
+    }
   }
 
   Widget _buildSecondButton() {
-    if (order?.refundPaymentRequestId != null ||
-        order?.refundPaymentId != null) {
-      // Merchant has made a refund payment
-      if (order?.refundPaymentId != null) {
-        return Expanded(child: _buildViewRefundTransaction());
-      }
-      // Customer has made a refund request
-      return Expanded(child: _buildViewRefundPaymentRequest());
-    }
-
+    // When user is customer
     if (order?.isCustomer(userBloc.user.userName) ?? false) {
-      if (order?.status == "Awaiting payment") {
+      if ((order?.newOrderStatus.contains(order?.status) ?? false) ||
+          order?.status == "Processing" ||
+          order?.status == "On Hold") {
+        return const SizedBox.shrink();
+      }
+      if (order?.status == "Awaiting Payment") {
         return Expanded(child: _buildPayNow());
       } else if (order?.orderConfirmState.contains(order?.status) == false) {
         return Expanded(child: _buildConfirmDelivery());
       } else if (order?.status == "Canceled" &&
           order?.refundPaymentRequestId == null &&
-          order?.refundPaymentId == null) {
+          order?.refundPaymentId == null &&
+          order?.status != "Awaiting Payment") {
         return Expanded(child: _buildRequestRefund());
       } else {
         if (order?.notAllowedStatusUpdate.contains(order?.status) == false) {
           return Expanded(child: _buildUpdateStatus());
         }
       }
-    } else {
+    }
+    // When user is merchant
+    else {
+      if (order?.status == "Awaiting Payment") {
+        return const SizedBox.shrink();
+      }
       if (order?.status == "Canceled" &&
           order?.refundPaymentRequestId != null &&
-          order?.refundPaymentId == null) {
+          order?.refundPaymentId == null &&
+          order?.status != "Awaiting Payment") {
         return Expanded(child: _buildRefundPayment());
       }
       if (order?.notAllowedStatusUpdate.contains(order?.status) == false) {
@@ -755,12 +764,12 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     return const SizedBox.shrink();
   }
 
-  Widget _buildFirstButton() {
-    if ((order?.isCustomer(userBloc.user.userName) ?? false) &&
-        (order?.newOrderStatus.contains(order?.status) ?? false)) {
-      return Expanded(child: _buildChangeDateButton());
+  Widget _buildThirdButton() {
+    if (order?.newOrderStatus.contains(order?.status) == true ||
+        order?.status == "Awaiting Payment") {
+      return Expanded(child: _buildCancelOrder());
     }
-    return Expanded(child: _buildTrackOrder());
+    return const SizedBox.shrink();
   }
 
   Widget _buildPayNow() {

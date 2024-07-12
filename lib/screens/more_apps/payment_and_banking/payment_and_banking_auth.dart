@@ -641,10 +641,18 @@ class PaymentAndBankingAuth extends AuthService {
         "${AppConfig.baseUrl}/api/v1/transactions/request-payment/create/";
     final headers = await getAuthHeaders();
     final data0 = jsonEncode(data);
-    final response = await httpPost(url, headers: headers, body: data0);
-    debugPrint(
-        "RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
-    return response;
+
+    try {
+      final response = await httpPost(url,
+          headers: headers,
+          body: data0,
+          newTimeOutDuration: Duration(seconds: 3));
+      debugPrint(
+          "RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return response;
+    } catch (e) {
+      return http.Response("", 200);
+    }
   }
 
   // List of payment request
@@ -893,9 +901,17 @@ class PaymentAndBankingAuth extends AuthService {
     final headers = await getAuthHeaders();
     final data0 = jsonEncode(data);
     debugPrint('message data::::$data0');
-    final response = await httpPost(url, headers: headers, body: data0);
-    debugPrint('message::::$response');
-    return response;
+
+    try {
+      final response = await httpPost(url,
+          headers: headers,
+          body: data0,
+          newTimeOutDuration: Duration(seconds: 3));
+      debugPrint('message::::$response');
+      return response;
+    } catch (e) {
+      return http.Response("", 200);
+    }
   }
 
   //Send payment to backend to update status
@@ -916,9 +932,16 @@ class PaymentAndBankingAuth extends AuthService {
     final String url = "${AppConfig.baseUrl}/api/v1/transactions/payment-link/";
     final headers = await getAuthHeaders();
     final data0 = jsonEncode(data);
-    final response = await httpPost(url, headers: headers, body: data0);
+    try {
+      final response = await httpPost(url,
+          headers: headers,
+          body: data0,
+          newTimeOutDuration: Duration(seconds: 3));
 
-    return response;
+      return response;
+    } catch (e) {
+      return http.Response("", 200);
+    }
   }
 
   //Cash out payment_link to backend
@@ -1076,10 +1099,18 @@ class PaymentAndBankingAuth extends AuthService {
     final String url = "${AppConfig.baseUrl}/api/v1/transactions/payout/";
     final headers = await getAuthHeaders();
     final data0 = jsonEncode(data);
-    final response = await httpPost(url, headers: headers, body: data0);
 
-    debugPrint('MAKE PAYMENT ::: ${response.body}');
-    return response;
+    try {
+      final response = await httpPost(url,
+          headers: headers,
+          body: data0,
+          newTimeOutDuration: Duration(seconds: 3));
+
+      debugPrint('MAKE PAYMENT ::: ${response.body}');
+      return response;
+    } catch (e) {
+      return http.Response("", 200);
+    }
   }
 
   // List of bank Payout

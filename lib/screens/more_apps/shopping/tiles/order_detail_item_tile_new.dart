@@ -174,7 +174,7 @@ class _OrderTileForProductNewState extends State<OrderTileForProductNew> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                variantColor,
+                messageDecoderWithEmoji(variantColor) ?? "",
                 style: TextStyle(
                   fontSize: 10,
                   color: blackFont,

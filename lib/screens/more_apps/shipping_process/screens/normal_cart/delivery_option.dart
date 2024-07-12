@@ -425,7 +425,7 @@ class _DeliveryOptionState extends State<DeliveryOption> {
               }
             },
             child: shippingOptionalWid(
-              icon: "assets/images/courier_icon.png",
+              icon: "assets/images/bike_icon.png",
               fit: BoxFit.fill,
               title: "Ship with Courier",
               subTitle:

@@ -2175,9 +2175,9 @@ class Order {
 
   String? isOrderStatus(String userName) {
     if (refundPaymentId != null) {
-      return "Refund Successfuly";
+      return "Refund Successful";
     } else if (refundPaymentRequestId != null) {
-      return "Status Pending Request";
+      return "Pending Refund Request";
     }
     return shipmentType();
   }

@@ -879,7 +879,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
         barrierDismissible: false,
         context: context,
         builder: (context) => AlertDialog(
-      backgroundColor: Colors.white,
+              backgroundColor: Colors.white,
               insetPadding:
                   const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,
@@ -1059,7 +1059,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
       builder: (context) =>
           StatefulBuilder(builder: (context, rentDurationStateSetter) {
         return AlertDialog(
-      backgroundColor: Colors.white,
+          backgroundColor: Colors.white,
           insetPadding:
               const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
           contentPadding: EdgeInsets.zero,
@@ -1252,8 +1252,6 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
                                 )),
                       );
 
-                      await Future.delayed(const Duration(seconds: 3));
-
                       deviceData = await getDeviceInfo();
 
                       const String description = 'General Payment';
@@ -1296,6 +1294,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
                             "status code:- ${value.statusCode}  body:- ${value.body}");
 
                         response = value;
+                        Navigator.pop(context);
 
                         try {
                           handleServerErrors(response);
@@ -1351,7 +1350,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
                               }
                             }
 
-                            Navigator.pop(context);
+                            // Navigator.pop(context);
                             //Pop send payment page
                             Navigator.pop(context);
 

@@ -574,8 +574,6 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer>
                             )),
                   );
 
-                  await Future.delayed(const Duration(seconds: 3));
-
                   await _auth.accountPayout(data).then((value) {
                     response = value;
 

@@ -36,6 +36,8 @@ class _OrderListState extends State<OrderList> {
     Filter(title: "Delivery", value: "delivery"),
     Filter(title: "Eat in/ In store", value: 'eat_in/in_store'),
     Filter(title: "Pickup", value: 'pickup'),
+    Filter(title: "Refund Successful", value: 'refundSuccessful'),
+    Filter(title: "Pending Refund Request", value: 'pendingRefundRequest'),
   ];
 
   @override
@@ -350,7 +352,7 @@ class _OrderListState extends State<OrderList> {
                       child: Column(
                         children: filterList.map<Widget>((filter) {
                           if (selectedFilter == "") selectedFilter = "all";
-                          if (selectedFilter == filter.value) {
+                          if (selectedFilter == filter.title) {
                             return Container(
                               color: selectedListItemBackgroundBlue,
                               child: ListTile(
@@ -414,19 +416,31 @@ class _OrderListState extends State<OrderList> {
         break;
       case "delivery":
         setState(() {
-          selectedFilter = "delivery";
+          selectedFilter = "Delivery";
           isFilterApplied = true;
         });
         break;
       case "eat_in/in_store":
         setState(() {
-          selectedFilter = "eat_in/in_store";
+          selectedFilter = "InStore-EatIn";
           isFilterApplied = true;
         });
         break;
       case "pickup":
         setState(() {
-          selectedFilter = "pickup";
+          selectedFilter = "Pickup";
+          isFilterApplied = true;
+        });
+        break;
+      case "refundSuccessful":
+        setState(() {
+          selectedFilter = "Refund Successful";
+          isFilterApplied = true;
+        });
+        break;
+      case "pendingRefundRequest":
+        setState(() {
+          selectedFilter = "Pending Refund Request";
           isFilterApplied = true;
         });
         break;

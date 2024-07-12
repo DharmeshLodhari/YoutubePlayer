@@ -328,9 +328,12 @@ class _SearchProductState extends State<SearchProduct> {
           child: DropdownButton2(
             isExpanded: true,
             underline: const SizedBox.shrink(),
-            // dropdownDecoration: BoxDecoration(
-            //   borderRadius: BorderRadius.circular(14),
-            // ),
+            dropdownStyleData: DropdownStyleData(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: Colors.white,
+              ),
+            ),
             value: sortByMenuItemValue,
             items: sortByMenuItems.map((String item) {
               return DropdownMenuItem(

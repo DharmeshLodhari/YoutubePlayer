@@ -517,8 +517,9 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
         color: blackFont,
         fontWeight: FontWeight.w600,
       ),
-      dropdownStyleData: const DropdownStyleData(
+      dropdownStyleData: DropdownStyleData(
         decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
           color: Colors.white,
         ),
       ),

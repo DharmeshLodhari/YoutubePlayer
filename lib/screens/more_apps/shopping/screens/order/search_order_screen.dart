@@ -1,18 +1,14 @@
 import 'package:Slydo/data/state_notifiers/user_bloc.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
-import 'package:Slydo/screens/more_apps/service_hub/auth/service_hub_auth.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
-import 'package:Slydo/screens/more_apps/shopping/screens/shopping/shopping_tile.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/shopping/tiles/order_tile.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_dropdown_field.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
-import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:Slydo/widget/no_order_in_list.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
@@ -207,9 +203,12 @@ class _SearchOrderScreenState extends State<SearchOrderScreen> {
           child: DropdownButton2(
             isExpanded: true,
             underline: const SizedBox.shrink(),
-            // dropdownDecoration: BoxDecoration(
-            //   borderRadius: BorderRadius.circular(14),
-            // ),
+            dropdownStyleData: DropdownStyleData(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: Colors.white,
+              ),
+            ),
             value: sortByMenuItemValue,
             items: sortByMenuItems.map((String item) {
               return DropdownMenuItem(

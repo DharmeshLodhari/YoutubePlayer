@@ -4,18 +4,15 @@ import 'dart:io';
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifiers/user_bloc.dart';
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/locator.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/auth/shipping_process_auth.dart';
-import 'package:Slydo/screens/more_apps/shipping_process/models/package_details_model.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/shopping/tiles/order_detail_item_tile_new.dart';
 import 'package:Slydo/screens/more_apps/shopping/widget/outline_border_button.dart';
 import 'package:Slydo/screens/more_apps/shopping/widget/rounded_border_button.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
-import 'package:Slydo/services/app_config_bloc.dart';
 import 'package:Slydo/services/location_service.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -173,34 +170,53 @@ class _OrderTileState extends State<OrderTile> {
         : const SizedBox.shrink();
   }
 
-  Widget _buildThirdButton() {
-    if (order?.orderCancelledState.contains(order?.status) == true) {
-      return _buildCancelOrder();
+  Widget _buildFirstButton() {
+    if ((order?.isCustomer(userBloc.user.userName) ?? false) &&
+        (order?.newOrderStatus.contains(order?.status) ?? false) &&
+        order?.shipmentType() != "Delivery") {
+      return _buildChangeDateButton();
     }
-    return const SizedBox.shrink();
+    if (order?.newOrderStatus.contains(order?.status) ?? false) {
+      return SizedBox.shrink();
+    } else {
+      return _buildTrackOrder();
+    }
   }
 
   Widget _buildSecondButton() {
+    // When user is customer
     if (order?.isCustomer(userBloc.user.userName) ?? false) {
+      if ((order?.newOrderStatus.contains(order?.status) ?? false) ||
+          order?.status == "Processing" ||
+          order?.status == "On Hold") {
+        return const SizedBox.shrink();
+      }
       if (order?.status == "Complete") {
         if (order?.canWriteReview() == false) return _buildWriteReview();
-      } else if (order?.status == "Awaiting payment") {
+      } else if (order?.status == "Awaiting Payment") {
         return _buildPayNow();
       } else if (order?.orderConfirmState.contains(order?.status) == false) {
         return _buildConfirmDelivery();
       } else if (order?.status == "Canceled" &&
           order?.refundPaymentRequestId == null &&
-          order?.refundPaymentId == null) {
+          order?.refundPaymentId == null &&
+          order?.status != "Awaiting Payment") {
         return _buildRequestRefund();
       } else {
         if (order?.notAllowedStatusUpdate.contains(order?.status) == false) {
           return _buildUpdateStatus();
         }
       }
-    } else {
+    }
+    // When user is merchant
+    else {
+      if (order?.status == "Awaiting Payment") {
+        return const SizedBox.shrink();
+      }
       if (order?.status == "Canceled" &&
           order?.refundPaymentRequestId != null &&
-          order?.refundPaymentId == null) {
+          order?.refundPaymentId == null &&
+          order?.status != "Awaiting Payment") {
         return _buildRefundPayment();
       }
       if (order?.notAllowedStatusUpdate.contains(order?.status) == false) {
@@ -210,13 +226,12 @@ class _OrderTileState extends State<OrderTile> {
     return const SizedBox.shrink();
   }
 
-  Widget _buildFirstButton() {
-    if ((order?.isCustomer(userBloc.user.userName) ?? false) &&
-        (order?.newOrderStatus.contains(order?.status) ?? false) &&
-        order?.shipmentType() != "Delivery") {
-      return _buildChangeDateButton();
+  Widget _buildThirdButton() {
+    if (order?.newOrderStatus.contains(order?.status) == true ||
+        order?.status == "Awaiting Payment") {
+      return _buildCancelOrder();
     }
-    return _buildTrackOrder();
+    return const SizedBox.shrink();
   }
 
   Widget _buildPayNow() {

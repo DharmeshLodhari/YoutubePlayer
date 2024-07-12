@@ -403,6 +403,12 @@ class _SignUpState extends State<SignUp> {
       // buttonHeight: 50,
       isExpanded: true,
       value: industryType,
+      dropdownStyleData: DropdownStyleData(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: Colors.white,
+        ),
+      ),
       style: TextStyle(
         fontSize: 16,
         color: blackFont,
@@ -1160,7 +1166,6 @@ class _SignUpState extends State<SignUp> {
         "firstname": firstName,
         "lastname": lastName,
         "full_name": "$firstName $lastName",
-        "referral_code": referralCode,
         "dob": dateFormat.format(dob),
         "gender": selectedGender,
         "username": userName,
@@ -1170,6 +1175,10 @@ class _SignUpState extends State<SignUp> {
         "password2": _confirmPasswordController.text.trim(),
         "otp_code": otpCode,
       };
+
+      if (referralCode != null && referralCode != "") {
+        data["referral_code"] = referralCode;
+      }
 
       if (accountType != 'Personal') {
         data['profile'] = {
@@ -1240,8 +1249,9 @@ class _SignUpState extends State<SignUp> {
       child: DropdownButtonFormField2(
         // buttonHeight: 50,
         isExpanded: true,
-        dropdownStyleData: const DropdownStyleData(
+        dropdownStyleData: DropdownStyleData(
           decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
             color: Colors.white,
           ),
         ),

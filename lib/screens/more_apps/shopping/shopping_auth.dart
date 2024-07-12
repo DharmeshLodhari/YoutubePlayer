@@ -1715,10 +1715,6 @@ class ShoppingAuthService extends AuthService {
         url = "$url&id=$searchValue";
       }
       if (selectedStatus != "") {
-        if (selectedStatus == "New Order") {
-          selectedStatus =
-              'New Order&status=Payment Successful&status=Order Placed&status=Payment Received';
-        }
         if (selectedStatus == "Completed") {
           selectedStatus = 'Complete';
         }

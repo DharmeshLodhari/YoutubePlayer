@@ -385,6 +385,7 @@ class UserAuth extends AuthService {
         body: data0, headers: headers as Map<String, dynamic>?);
 
     debugPrint('VERIFY PHONE NUMBER RESPONSE DATA ::: ${response.body}');
+
     final jsonData = json.decode(response.body);
     if (response.statusCode == 200 || response.statusCode == 201) {
       final resetToken = jsonData['reset-token'];

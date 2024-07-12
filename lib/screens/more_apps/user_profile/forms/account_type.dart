@@ -54,8 +54,8 @@ class _AccountTypeState extends State<AccountType> {
           if (FocusScope.of(context).hasFocus) {
             FocusScope.of(context).unfocus();
           }
-
-          Navigator.pop(context);
+          return;
+          // Navigator.pop(context);
         }
       },
       child: Scaffold(
@@ -105,9 +105,12 @@ class _AccountTypeState extends State<AccountType> {
                         child: DropdownButton2(
                           isExpanded: true,
                           value: accountType,
-                          // dropdownDecoration: BoxDecoration(
-                          //   borderRadius: BorderRadius.circular(14),
-                          // ),
+                          dropdownStyleData: DropdownStyleData(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: Colors.white,
+                            ),
+                          ),
                           hint: const Text('Select an account type'),
                           underline: const SizedBox.shrink(),
                           items: ['Personal', 'Business'].map((String item) {
@@ -254,11 +257,16 @@ class _AccountTypeState extends State<AccountType> {
       FocusScope.of(context).unfocus();
     }
 
-    Navigator.of(context).popAndPushNamed(Routes.SIGN_UP, arguments: {
+    Navigator.popAndPushNamed(context, Routes.SIGN_UP, arguments: {
       'phoneNumber': phoneNumber,
       'otpCode': otpCode,
       'accountType': accountType
     });
+    // Navigator.of(context).popAndPushNamed(Routes.SIGN_UP, arguments: {
+    //   'phoneNumber': phoneNumber,
+    //   'otpCode': otpCode,
+    //   'accountType': accountType
+    // });
   }
 
   Widget setTextInfo(String text) {
