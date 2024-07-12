@@ -900,6 +900,7 @@ class _DeliveryOptionState extends State<DeliveryOption> {
       children: [
         Column(
           children: [
+            const SizedBox(height: 16),
             _buildDate(),
             const SizedBox(height: 16),
             _buildTime(),
@@ -1015,7 +1016,7 @@ class _DeliveryOptionState extends State<DeliveryOption> {
         child: ListTile(
           dense: true,
           title: Text(
-            selectedDateTime != null && !isMidnight(selectedDateTime!)
+            (selectedDateTime) != null && !isMidnight(selectedDateTime!)
                 ? formatTime24hrs(selectedDateTime!)
                 : "",
             style: const TextStyle(

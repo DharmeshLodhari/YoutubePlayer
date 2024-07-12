@@ -278,19 +278,21 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   Widget _buildPaymentStatus() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 7.0, horizontal: 16.0),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(5),
-          color: order?.checkOrderStatusBgColor(userBloc.user.userName ?? ""),
-        ),
-        child: Text(
-          order?.isOrderStatus(userBloc.user.userName ?? "") ?? "",
-          style: TextStyle(
-            color: order?.checkStatusForColor(userBloc.user.userName ?? ""),
-            fontSize: 12,
-            fontWeight: FontWeight.w600,
-            fontFamily: "Inter",
+      child: Flexible(
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(5),
+            color: order?.checkOrderStatusBgColor(userBloc.user.userName ?? ""),
+          ),
+          child: Text(
+            order?.isOrderStatus(userBloc.user.userName ?? "") ?? "",
+            style: TextStyle(
+              color: order?.checkStatusForColor(userBloc.user.userName ?? ""),
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              fontFamily: "Inter",
+            ),
           ),
         ),
       ),

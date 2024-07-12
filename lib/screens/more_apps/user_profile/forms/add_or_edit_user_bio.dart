@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/main.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/OpeningHour.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/UserAbout.dart';
@@ -266,27 +267,30 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
       isUserIsSimpleUser = true;
     }
 
-    return PopScope(
-      onPopInvoked: (didPop) async {
-        if (didPop) {
-          Navigator.pop(context, {
-            "userAbout": userBloc.userAbout,
-            "user_avatar": userBloc.user.avatar
-          });
-        }
-      },
-      child: SafeArea(
-        bottom: false,
-        child: Scaffold(
-          backgroundColor: lightGrey,
-          body: NestedScrollView(
-            headerSliverBuilder: (BuildContext context, bool boxIsScrolled) {
-              return [getAppbar(context)];
-            },
-            body: scaffoldBody(),
-          ),
+    return
+        // PopScope(
+        // canPop: false,
+        // onPopInvoked: (didPop) async {
+        //   if (didPop) {
+        //     Navigator.pop(context, {
+        //       "userAbout": userBloc.userAbout,
+        //       "user_avatar": userBloc.user.avatar
+        //     });
+        //   }
+        // },
+        // child:
+        SafeArea(
+      bottom: false,
+      child: Scaffold(
+        backgroundColor: lightGrey,
+        body: NestedScrollView(
+          headerSliverBuilder: (BuildContext context, bool boxIsScrolled) {
+            return [getAppbar(context)];
+          },
+          body: scaffoldBody(),
         ),
       ),
+      // ),
     );
   }
 
@@ -611,6 +615,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
               size: 26,
             ),
             onPressed: () {
+              logger.d("Leading button tapped");
               Navigator.pop(context, {
                 "userAbout": userBloc.userAbout,
                 "user_avatar": userBloc.user.avatar
