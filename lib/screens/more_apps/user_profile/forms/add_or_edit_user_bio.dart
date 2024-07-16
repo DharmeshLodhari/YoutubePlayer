@@ -267,8 +267,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
       isUserIsSimpleUser = true;
     }
 
-    return
-        // PopScope(
+    return // PopScope(
         // canPop: false,
         // onPopInvoked: (didPop) async {
         //   if (didPop) {

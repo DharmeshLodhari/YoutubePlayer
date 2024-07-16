@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:typed_data';
 
+import 'package:Slydo/data/state_notifiers/rider_delivery_bloc.dart';
 import 'package:Slydo/flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:Slydo/flutter_polyline_points/utils/polyline_result.dart';
 import 'package:Slydo/flutter_polyline_points/utils/request_enums.dart';
@@ -13,6 +14,8 @@ import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:location/location.dart';
+import 'package:provider/provider.dart';
 
 class CustomerViewMap extends StatefulWidget {
   const CustomerViewMap({
@@ -30,6 +33,7 @@ class _CustomerViewMapState extends State<CustomerViewMap> {
   final Completer<GoogleMapController> _mapController =
       Completer<GoogleMapController>();
 
+  late RiderDeliveryBloc riderDeliveryBloc;
   String rideMarkerImage = "assets/images/bike_top.png";
   bool isLoading = false;
 
@@ -69,10 +73,38 @@ class _CustomerViewMapState extends State<CustomerViewMap> {
         final LatLng latLng = LatLng(location?["location"]["latitude"],
             location?["location"]["longitude"]);
 
+        final LocationData locationData = LocationData.fromMap({
+          'latitude': location?["location"]["latitude"],
+          'longitude': location?["location"]
+              ["longitude"], // set current time or fetch if available
+        });
+
         riderLocation = RiderLocation(
             latitude: latLng.latitude,
             longitude: latLng.longitude,
             dispatcherHeading: location?["dispatcher_heading"]);
+
+        final double pickupDistance = distanceBetween(
+            locationData,
+            LatLng(widget.journeyDetail?.pickupAddress?.latitude ?? 0.0,
+                widget.journeyDetail?.pickupAddress?.longitude ?? 0.0));
+
+        if (pickupDistance <= 50) {
+          riderDeliveryBloc.isRiderNearbyPickupLocation(true);
+        } else {
+          riderDeliveryBloc.isRiderNearbyPickupLocation(false);
+        }
+
+        final double destiDistance = distanceBetween(
+            locationData,
+            LatLng(widget.journeyDetail?.deliveryAddress?.latitude ?? 0.0,
+                widget.journeyDetail?.deliveryAddress?.longitude ?? 0.0));
+
+        if (destiDistance <= 50) {
+          riderDeliveryBloc.isRiderNearbyDestinationLocation(true);
+        } else {
+          riderDeliveryBloc.isRiderNearbyDestinationLocation(false);
+        }
 
         if (mounted) setState(() {});
       });
@@ -97,6 +129,7 @@ class _CustomerViewMapState extends State<CustomerViewMap> {
 
   @override
   Widget build(BuildContext context) {
+    riderDeliveryBloc = Provider.of<RiderDeliveryBloc>(context);
     return Scaffold(
       body: _buildShowRoute(),
     );
@@ -105,46 +138,86 @@ class _CustomerViewMapState extends State<CustomerViewMap> {
   Widget _buildShowRoute() {
     return isLoading
         ? const Center(child: CircularProgressIndicator())
-        : GoogleMap(
-            onMapCreated: ((GoogleMapController controller) {
-              controller.setMapStyle(_mapStyle);
-              _mapController.complete(controller);
-            }),
-            initialCameraPosition: CameraPosition(
-              target: LatLng(
-                  widget.journeyDetail?.pickupAddress?.latitude ?? 0.0,
-                  widget.journeyDetail?.pickupAddress?.longitude ?? 0.0),
-              zoom: 13,
-            ),
-            markers: {
-              Marker(
-                markerId: const MarkerId("_riderLocation"),
-                icon: BitmapDescriptor.fromBytes(_markerImageData!),
-                rotation: (riderLocation?.getHeading() ?? 0) + 12,
-                position: LatLng(riderLocation?.latitude ?? 0.0,
-                    riderLocation?.longitude ?? 0.0),
-                anchor: const Offset(0.5, 0.5),
-                draggable: false,
-                zIndex: 2,
-                flat: true,
-              ),
-              Marker(
-                markerId: const MarkerId("_sourceLocation"),
-                icon: BitmapDescriptor.defaultMarkerWithHue(0),
-                position: LatLng(
-                    widget.journeyDetail?.pickupAddress?.latitude ?? 0.0,
-                    widget.journeyDetail?.pickupAddress?.longitude ?? 0.0),
-              ),
-              Marker(
-                markerId: const MarkerId("_destinationLocation"),
-                icon: BitmapDescriptor.defaultMarkerWithHue(250),
-                position: LatLng(
-                    widget.journeyDetail?.deliveryAddress?.latitude ?? 0.0,
-                    widget.journeyDetail?.deliveryAddress?.longitude ?? 0.0),
-              )
-            },
-            polylines: Set<Polyline>.of(polylines.values),
+        : Stack(
+            children: [
+              _buildTrackNotificationWidget(),
+              _buildGoogleMap(),
+            ],
           );
+  }
+
+  Widget _buildTrackNotificationWidget() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+      child: Container(
+        height: 50,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(25),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Row(
+            children: [
+              CircleAvatar(
+                backgroundColor: navyBlue,
+                maxRadius: 5,
+              ),
+              const SizedBox(width: 10),
+              Text(
+                _getRiderStatus(),
+                style: const TextStyle(
+                  fontFamily: 'Inter',
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGoogleMap() {
+    return GoogleMap(
+      onMapCreated: ((GoogleMapController controller) {
+        controller.setMapStyle(_mapStyle);
+        _mapController.complete(controller);
+      }),
+      initialCameraPosition: CameraPosition(
+        target: LatLng(widget.journeyDetail?.pickupAddress?.latitude ?? 0.0,
+            widget.journeyDetail?.pickupAddress?.longitude ?? 0.0),
+        zoom: 13,
+      ),
+      markers: {
+        Marker(
+          markerId: const MarkerId("_riderLocation"),
+          icon: BitmapDescriptor.fromBytes(_markerImageData!),
+          rotation: (riderLocation?.getHeading() ?? 0) + 12,
+          position: LatLng(
+              riderLocation?.latitude ?? 0.0, riderLocation?.longitude ?? 0.0),
+          anchor: const Offset(0.5, 0.5),
+          draggable: false,
+          zIndex: 2,
+          flat: true,
+        ),
+        Marker(
+          markerId: const MarkerId("_sourceLocation"),
+          icon: BitmapDescriptor.defaultMarkerWithHue(0),
+          position: LatLng(widget.journeyDetail?.pickupAddress?.latitude ?? 0.0,
+              widget.journeyDetail?.pickupAddress?.longitude ?? 0.0),
+        ),
+        Marker(
+          markerId: const MarkerId("_destinationLocation"),
+          icon: BitmapDescriptor.defaultMarkerWithHue(250),
+          position: LatLng(
+              widget.journeyDetail?.deliveryAddress?.latitude ?? 0.0,
+              widget.journeyDetail?.deliveryAddress?.longitude ?? 0.0),
+        )
+      },
+      polylines: Set<Polyline>.of(polylines.values),
+    );
   }
 
   Future<List<LatLng>> getPolylinePoints() async {
@@ -191,5 +264,19 @@ class _CustomerViewMapState extends State<CustomerViewMap> {
   void dispose() {
     _timer?.cancel();
     super.dispose();
+  }
+
+  String _getRiderStatus() {
+    if (riderDeliveryBloc.isNearbyPickupLocation == true) {
+      return 'Driving to pickup';
+    } else if (riderDeliveryBloc.isNearbyPickupLocation == false) {
+      return 'Ride has arrived for pickup';
+    } else if (riderDeliveryBloc.isNearbyDestinationLocation == true) {
+      return 'Driving to your location';
+    } else if (riderDeliveryBloc.isNearbyDestinationLocation == false) {
+      return 'Your order has been delivered';
+    } else {
+      return '';
+    }
   }
 }

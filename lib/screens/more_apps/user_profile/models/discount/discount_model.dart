@@ -1,5 +1,6 @@
 import 'package:Slydo/screens/more_apps/taxi/model/place.dart';
 import 'package:Slydo/utils/extensions.dart';
+import 'package:intl/intl.dart';
 
 class DiscountModel {
   String? id;
@@ -56,9 +57,7 @@ class DiscountModel {
           .toList()
           .map((e) => int.parse(e))
           .toList();
-      if (parse != null) {
-        startDate = DateTime(parse[0], parse[1], parse[2]);
-      }
+      startDate = DateTime(parse[0], parse[1], parse[2]);
     }
 
     if (json['end_date'] != null) {
@@ -68,9 +67,7 @@ class DiscountModel {
           .toList()
           .map((e) => int.parse(e))
           .toList();
-      if (parse != null) {
-        endDate = DateTime(parse[0], parse[1], parse[2]);
-      }
+      endDate = DateTime(parse[0], parse[1], parse[2]);
     }
 
     if (json['only_from'] != null) {
@@ -80,10 +77,8 @@ class DiscountModel {
           .toList()
           .map((e) => int.parse(e))
           .toList();
-      if (parse != null) {
-        onlyFrom = DateTime(DateTime.now().year, DateTime.now().month,
-            DateTime.now().day, parse[0], parse[1]);
-      }
+      onlyFrom = DateTime(DateTime.now().year, DateTime.now().month,
+          DateTime.now().day, parse[0], parse[1]);
     }
     if (json['only_to'] != null) {
       final List<int> parse = json['only_to']
@@ -92,10 +87,8 @@ class DiscountModel {
           .toList()
           .map((e) => int.parse(e))
           .toList();
-      if (parse != null) {
-        onlyTo = DateTime(DateTime.now().year, DateTime.now().month,
-            DateTime.now().day, parse[0], parse[1]);
-      }
+      onlyTo = DateTime(DateTime.now().year, DateTime.now().month,
+          DateTime.now().day, parse[0], parse[1]);
     }
 
     if (json['created_at'] != null) {
@@ -162,10 +155,10 @@ class DiscountModel {
           endDate?.toDateFormatString(dateFormat: "yyyy-MM-dd").toString();
     }
     if (onlyFrom != null) {
-      map['only_from'] = onlyFrom?.toDateFormatString(dateFormat: "hh:mm");
+      map['only_from'] = onlyFrom?.toDateFormatString(dateFormat: 'HH:mm:ss');
     }
     if (onlyTo != null) {
-      map['only_to'] = onlyTo?.toDateFormatString(dateFormat: "hh:mm");
+      map['only_to'] = onlyTo?.toDateFormatString(dateFormat: 'HH:mm:ss');
     }
     if (consumables != null) {
       map['consumables'] = consumables?.toJson() ?? {};

@@ -345,11 +345,13 @@ class _TrackOrderState extends State<TrackOrder> {
         ),
         const SizedBox(width: 3),
         GestureDetector(
-            onTap: () {
-              _makePhoneCall();
-            },
-            child:
-                RoundedElevatedButton(svgImg: 'assets/images/call_icon.svg')),
+          onTap: () {
+            _makePhoneCall();
+          },
+          child: RoundedElevatedButton(
+            svgImg: 'assets/images/call_icon.svg',
+          ),
+        ),
         const SizedBox(width: 3),
         badges.Badge(
           position: badges.BadgePosition.topEnd(top: 0, end: 0),
@@ -496,6 +498,8 @@ class OrderStep extends StatelessWidget {
 }
 
 class DottedLine extends StatelessWidget {
+  const DottedLine({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Expanded(

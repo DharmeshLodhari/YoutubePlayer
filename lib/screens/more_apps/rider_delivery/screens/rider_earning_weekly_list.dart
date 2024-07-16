@@ -4,6 +4,7 @@ import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class RiderEarningWeeklyList extends StatefulWidget {
@@ -82,68 +83,59 @@ class _RiderEarningWeeklyListState extends State<RiderEarningWeeklyList> {
   }
 
   Widget getSearchBtn() {
-    return SizedBox(
-      height: 34,
-      width: 34,
-      child: Card(
-        color: iconBtnGrey,
-        elevation: 0,
-        margin: const EdgeInsets.symmetric(vertical: 10),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
+    return Card(
+      color: iconBtnGrey,
+      elevation: 0,
+      margin: const EdgeInsets.only(left: 4, right: 5, bottom: 8, top: 8),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: IconButton(
+        icon: const Icon(
+          Icons.search,
+          color: Colors.black,
+          size: 20,
         ),
-        child: IconButton(
-          icon: const Icon(
-            Icons.search,
-            color: Colors.black,
-            size: 20,
-          ),
-          onPressed: () async {
-            // CustomerProfile? userFound = await NavigationUtil.push(
-            //   context,
-            //   screen: const SearchUser(),
-            // );
-            //
-            // if (userFound != null) {
-            //   userName = userFound.userName;
-            // }
-          },
-        ),
+        onPressed: () async {
+          // CustomerProfile? userFound = await NavigationUtil.push(
+          //   context,
+          //   screen: const SearchUser(),
+          // );
+          //
+          // if (userFound != null) {
+          //   userName = userFound.userName;
+          // }
+        },
       ),
     );
   }
 
   Widget dateFilterIcon() {
-    return SizedBox(
-      height: 34,
-      width: 34,
-      child: Card(
-        color: iconBtnGrey,
-        elevation: 0,
-        margin: const EdgeInsets.symmetric(vertical: 10),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
+    return Card(
+      color: iconBtnGrey,
+      elevation: 0,
+      margin: const EdgeInsets.only(left: 0, right: 0, bottom: 8, top: 8),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: IconButton(
+        icon: const Icon(
+          Icons.date_range_rounded,
+          color: Colors.black,
         ),
-        child: IconButton(
-          icon: const Icon(
-            Icons.date_range_rounded,
-            color: Colors.black,
-            size: 20,
-          ),
-          onPressed: () async {
-            newDateTimeRange = await showDateRangePicker(
-              context: context,
-              firstDate: DateTime.parse("2020-01-01"),
-              lastDate: DateTime.now(),
-              builder: customThemeBuilder,
-            );
+        onPressed: () async {
+          newDateTimeRange = await showDateRangePicker(
+            context: context,
+            firstDate: DateTime.parse("2020-01-01"),
+            lastDate: DateTime.now(),
+            builder: customThemeBuilder,
+          );
 
-            if (newDateTimeRange != null) {
-              setState(() {});
-              // _onRefresh();
-            }
-          },
-        ),
+          if (newDateTimeRange != null) {
+            setState(() {});
+            // _onRefresh();
+          }
+        },
       ),
     );
   }

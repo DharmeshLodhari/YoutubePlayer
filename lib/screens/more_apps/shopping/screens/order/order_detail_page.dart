@@ -347,7 +347,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Text(
-                AppLocalization.of(context)!.shipping,
+                AppLocalization.of(context)?.shipping ?? "",
                 style: TextStyle(
                   fontSize: 14,
                   color: black,
@@ -358,7 +358,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
               Row(
                 children: [
                   Text(
-                    worldCurrencies[order?.currency!]!,
+                    worldCurrencies[order?.currency] ?? "",
                     style: TextStyle(
                       fontFamily: "Inter",
                       fontSize: 14,
@@ -386,7 +386,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Text(
-                AppLocalization.of(context)!.tax,
+                AppLocalization.of(context)?.tax ?? "",
                 style: TextStyle(
                   fontSize: 14,
                   color: black,
@@ -397,7 +397,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
               Row(
                 children: [
                   Text(
-                    worldCurrencies[order?.currency!]!,
+                    worldCurrencies[order?.currency] ?? "",
                     style: TextStyle(
                       fontFamily: "Inter",
                       fontSize: 14,
@@ -425,7 +425,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Text(
-                AppLocalization.of(context)!.total,
+                AppLocalization.of(context)?.total ?? "",
                 style: TextStyle(
                   fontSize: 14,
                   color: black,
@@ -436,7 +436,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
               Row(
                 children: [
                   Text(
-                    worldCurrencies[order?.currency!]!,
+                    worldCurrencies[order?.currency] ?? "",
                     style: TextStyle(
                       fontFamily: "Inter",
                       fontSize: 14,
@@ -498,7 +498,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                AppLocalization.of(context)!.note,
+                AppLocalization.of(context)?.note ?? "",
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -550,7 +550,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
 
   String getOrderNote() {
     if (order?.note == "") {
-      return "${AppLocalization.of(context)!.noSpecialNoteAttached} !!";
+      return "${AppLocalization.of(context)?.noSpecialNoteAttached} !!";
     }
     return order?.note ?? "";
   }
@@ -660,7 +660,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            AppLocalization.of(context)!.orderDetail,
+            AppLocalization.of(context)?.orderDetail ?? "",
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
@@ -718,7 +718,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
       return Expanded(child: _buildChangeDateButton());
     }
     if (order?.newOrderStatus.contains(order?.status) ?? false) {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     } else {
       return Expanded(child: _buildTrackOrder());
     }

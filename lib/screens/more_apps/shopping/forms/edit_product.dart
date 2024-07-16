@@ -3065,9 +3065,9 @@ class _EditProductState extends State<EditProduct> {
     return GestureDetector(
       onTap: () async {
         //disable click if add-on is not empty
-        if (productAddOnsList.isNotEmpty) {
-          return;
-        }
+        // if (productAddOnsList.isNotEmpty) {
+        //   return;
+        // }
         final result = await Navigator.of(context).pushNamed(
             Routes.PRODUCT_NEW_OPTION,
             arguments: {'productId': productId, 'option': 'edit'});
@@ -3105,9 +3105,9 @@ class _EditProductState extends State<EditProduct> {
     return GestureDetector(
       onTap: () async {
         //disable click if variant is not empty
-        if (productVariantList.isNotEmpty) {
-          return;
-        }
+        // if (productVariantList.isNotEmpty) {
+        //   return;
+        // }
 
         final result = await Navigator.of(context)
             .pushNamed(Routes.PRODUCT_ADD_ON_LIST, arguments: {

@@ -14,9 +14,9 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shimmer/shimmer.dart';
 
 class UserProductDiscount extends StatefulWidget {
-  DiscountModel item;
+  final DiscountModel item;
 
-  UserProductDiscount({
+  const UserProductDiscount({
     required this.item,
     super.key,
   });

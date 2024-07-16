@@ -7,7 +7,7 @@ class TabSelection extends StatefulWidget {
   final String firstTab;
   final String secondTab;
 
-  TabSelection(
+  const TabSelection(
       {super.key,
       required this.onTap,
       this.currentIndex = 0,

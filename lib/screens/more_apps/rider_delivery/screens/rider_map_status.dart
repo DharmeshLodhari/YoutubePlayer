@@ -154,9 +154,9 @@ class _RiderMapStatusState extends State<RiderMapStatus> {
       minChildSize: 0.15,
       builder: (context, scrollController) => Container(
         clipBehavior: Clip.hardEdge,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           color: Colors.white,
-          borderRadius: const BorderRadius.only(
+          borderRadius: BorderRadius.only(
             topLeft: Radius.circular(25),
             topRight: Radius.circular(25),
           ),

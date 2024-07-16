@@ -98,6 +98,7 @@ class _SearchOrderScreenState extends State<SearchOrderScreen> {
     return AppBar(
       surfaceTintColor: Colors.transparent,
       elevation: 0,
+      centerTitle: false,
       backgroundColor: Colors.white,
       titleSpacing: 0,
       automaticallyImplyLeading: false,
@@ -335,7 +336,12 @@ class _SearchOrderScreenState extends State<SearchOrderScreen> {
         color: darkGrey,
         size: 16,
       ),
-      onPressed: () {},
+      onPressed: () {
+        if (mounted) {
+          _refreshList();
+          FocusScope.of(context).unfocus();
+        }
+      },
     );
   }
 
@@ -428,7 +434,12 @@ class _SearchOrderScreenState extends State<SearchOrderScreen> {
           isMerchant: isNormalUser ? false : isMerchant,
         );
         if (result == null) {
-          isLoading = false;
+          if (mounted) {
+            setState(() {
+              noItemInList = true;
+              isLoading = false;
+            });
+          }
           return;
         }
         next = result['next'];
@@ -438,38 +449,45 @@ class _SearchOrderScreenState extends State<SearchOrderScreen> {
 
         isLoading = false;
         orderList.addAll(tempList);
-        // noItemInList = false;
+        noItemInList = false;
         if (mounted) setState(() {});
 
-        if (isFirstTime && next != null && next != "") {
-          isFirstTime = false;
-          getList();
-        }
+        // if (isFirstTime && next != null && next != "") {
+        //   isFirstTime = false;
+        //   getList();
+        // }
       }
       if (orderList.isEmpty) {
         noItemInList = true;
 
         if (mounted) setState(() {});
       } else if (next == null && orderList.length > 6) {
-        showReachedToBottomSnackBar();
-      }
-    }
-  }
-
-  void showReachedToBottomSnackBar() {
-    if (mounted) {
-      if (next == null &&
-          _scrollController.position.pixels ==
-              _scrollController.position.maxScrollExtent &&
-          _scrollController.position.pixels != 0) {
         _scaffoldMessengerSearchKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: const Duration(milliseconds: 500),
         ));
       }
+      // } else if (next == null && orderList.length > 6) {
+      //   showReachedToBottomSnackBar();
+      // }
     }
   }
+
+  // void showReachedToBottomSnackBar() {
+  //   if (mounted) {
+  //     if (next == null &&
+  //         _scrollController.position.pixels ==
+  //             _scrollController.position.maxScrollExtent &&
+  //         _scrollController.position.pixels != 0) {
+  //       _scaffoldMessengerSearchKey.currentState?.showSnackBar(SnackBar(
+  //         content:
+  //             Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
+  //         duration: const Duration(milliseconds: 500),
+  //       ));
+  //     }
+  //   }
+  // }
 
   Widget getCategoryField(StateSetter bottomSheetSetState) {
     return CustomizedDropDownField(

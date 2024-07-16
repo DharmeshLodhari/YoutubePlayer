@@ -187,14 +187,12 @@ class _RiderDashboardState extends State<RiderDashboard> {
   Widget popUpMenuButton() {
     return SizedBox(
       key: _key,
-      height: 34,
-      width: 34,
       child: Card(
         color: isPopMenuOpen ? navyBlue : iconBtnGrey,
         elevation: 0,
-        margin: const EdgeInsets.symmetric(vertical: 10),
+        margin: const EdgeInsets.only(left: 0, right: 0, bottom: 8, top: 8),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(12),
         ),
         child: IconButton(
           icon: Icon(
@@ -289,36 +287,32 @@ class _RiderDashboardState extends State<RiderDashboard> {
   }
 
   Widget dateFilterIcon() {
-    return SizedBox(
-      height: 34,
-      width: 34,
-      child: Card(
-        color: iconBtnGrey,
-        elevation: 0,
-        margin: const EdgeInsets.symmetric(vertical: 10),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
+    return Card(
+      color: iconBtnGrey,
+      elevation: 0,
+      margin: const EdgeInsets.only(left: 4, right: 5, bottom: 8, top: 8),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: IconButton(
+        icon: const Icon(
+          Icons.date_range_rounded,
+          color: Colors.black,
+          size: 20,
         ),
-        child: IconButton(
-          icon: const Icon(
-            Icons.date_range_rounded,
-            color: Colors.black,
-            size: 20,
-          ),
-          onPressed: () async {
-            newDateTimeRange = await showDateRangePicker(
-              context: context,
-              firstDate: DateTime.parse("2020-01-01"),
-              lastDate: DateTime.now(),
-              builder: customThemeBuilder,
-            );
+        onPressed: () async {
+          newDateTimeRange = await showDateRangePicker(
+            context: context,
+            firstDate: DateTime.parse("2020-01-01"),
+            lastDate: DateTime.now(),
+            builder: customThemeBuilder,
+          );
 
-            if (newDateTimeRange != null) {
-              setState(() {});
-              // _onRefresh();
-            }
-          },
-        ),
+          if (newDateTimeRange != null) {
+            setState(() {});
+            // _onRefresh();
+          }
+        },
       ),
     );
   }

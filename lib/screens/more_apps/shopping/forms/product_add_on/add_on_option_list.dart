@@ -54,7 +54,7 @@ class _AddOnOptionListState extends State<AddOnOptionList>
   @override
   void initState() {
     productId = widget.arguments["productId"];
-    selectedOptions = widget.arguments["options"];
+    selectedOptions = widget.arguments["options"] ?? [];
 
     getAddOnOptionList();
 
