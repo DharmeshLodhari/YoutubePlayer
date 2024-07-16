@@ -717,8 +717,9 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
         order?.shipmentType() != "Delivery") {
       return Expanded(child: _buildChangeDateButton());
     }
-    if (order?.newOrderStatus.contains(order?.status) ?? false) {
-      return SizedBox.shrink();
+    if ((order?.newOrderStatus.contains(order?.status) ?? false) ||
+        order?.status == "Awaiting Payment") {
+      return const SizedBox.shrink();
     } else {
       return Expanded(child: _buildTrackOrder());
     }

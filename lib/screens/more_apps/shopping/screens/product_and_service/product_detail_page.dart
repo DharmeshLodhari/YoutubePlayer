@@ -2355,69 +2355,70 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     return Expanded(
       child: CurvedButton(
         isPaymentBtn: true,
-        backgroundColor: product?.isProductAvailableNow() ?? false
-            ? navyBlue
-            : greyBorderColor,
+        // backgroundColor: product?.isProductAvailableNow() ?? false
+        //     ? navyBlue
+        //     : greyBorderColor,
+        backgroundColor: greyBorderColor,
         textColor: Colors.white,
         text: "BUY NOW",
         onPressed: () async {
-          if (product?.isProductAvailableNow() ?? false) {
-            if (isValidCustomer) {
-              //check if product has variant
-              if (product?.variantModels?.isNotEmpty ?? false) {
-                if (colorGroups.isNotEmpty && sizeGroups.isNotEmpty) {
-                  // debugPrint("Both color and size lists are showing.");
-                  if (selectedVariant != null) {
-                    processCartBuyNow(context);
-                  } else {
-                    showToast(
-                        message: AppLocalization.of(context)!
-                            .selectVariantColorSize);
-                  }
-                } else if (colorGroups.isNotEmpty && sizeGroups.isEmpty) {
-                  // debugPrint("color list is showing.");
-                  if (selectedVariant != null) {
-                    // debugPrint("Color list is showing.");
-                    processCartBuyNow(context);
-                  } else {
-                    showToast(
-                        message:
-                            AppLocalization.of(context)!.selectVariantColor);
-                  }
-                } else if (colorGroups.isEmpty && sizeGroups.isNotEmpty) {
-                  // debugPrint("size list is showing.");
-                  if (selectedVariant != null) {
-                    // debugPrint("Size list is showing.");
-                    processCartBuyNow(context);
-                  } else {
-                    showToast(
-                        message:
-                            AppLocalization.of(context)!.selectVariantSize);
-                  }
-                }
-              }
-              //check if product has add-ons
-              else if (product?.addOnsModels?.isNotEmpty ?? false) {
-                final bool isRequired =
-                    product?.isAllRequiredProductSelected() ?? false;
-                if (isRequired == true) {
-                  processCartBuyNow(context);
-                } else {
-                  showToast(
-                      message:
-                          AppLocalization.of(context)!.selectRequiredAddons);
-                }
-              } else {
-                processCartBuyNow(context);
-              }
-            } else {
-              showToast(
-                  message:
-                      AppLocalization.of(context)!.youCanNotPurchaseThisItem);
-            }
-          } else {
-            showToast(message: AppLocalization.of(context)!.productOutOfStock);
-          }
+          // if (product?.isProductAvailableNow() ?? false) {
+          //   if (isValidCustomer) {
+          //     //check if product has variant
+          //     if (product?.variantModels?.isNotEmpty ?? false) {
+          //       if (colorGroups.isNotEmpty && sizeGroups.isNotEmpty) {
+          //         // debugPrint("Both color and size lists are showing.");
+          //         if (selectedVariant != null) {
+          //           processCartBuyNow(context);
+          //         } else {
+          //           showToast(
+          //               message: AppLocalization.of(context)!
+          //                   .selectVariantColorSize);
+          //         }
+          //       } else if (colorGroups.isNotEmpty && sizeGroups.isEmpty) {
+          //         // debugPrint("color list is showing.");
+          //         if (selectedVariant != null) {
+          //           // debugPrint("Color list is showing.");
+          //           processCartBuyNow(context);
+          //         } else {
+          //           showToast(
+          //               message:
+          //                   AppLocalization.of(context)!.selectVariantColor);
+          //         }
+          //       } else if (colorGroups.isEmpty && sizeGroups.isNotEmpty) {
+          //         // debugPrint("size list is showing.");
+          //         if (selectedVariant != null) {
+          //           // debugPrint("Size list is showing.");
+          //           processCartBuyNow(context);
+          //         } else {
+          //           showToast(
+          //               message:
+          //                   AppLocalization.of(context)!.selectVariantSize);
+          //         }
+          //       }
+          //     }
+          //     //check if product has add-ons
+          //     else if (product?.addOnsModels?.isNotEmpty ?? false) {
+          //       final bool isRequired =
+          //           product?.isAllRequiredProductSelected() ?? false;
+          //       if (isRequired == true) {
+          //         processCartBuyNow(context);
+          //       } else {
+          //         showToast(
+          //             message:
+          //                 AppLocalization.of(context)!.selectRequiredAddons);
+          //       }
+          //     } else {
+          //       processCartBuyNow(context);
+          //     }
+          //   } else {
+          //     showToast(
+          //         message:
+          //             AppLocalization.of(context)!.youCanNotPurchaseThisItem);
+          //   }
+          // } else {
+          //   showToast(message: AppLocalization.of(context)!.productOutOfStock);
+          // }
         },
       ),
     );

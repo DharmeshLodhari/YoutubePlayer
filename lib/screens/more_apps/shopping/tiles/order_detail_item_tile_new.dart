@@ -48,25 +48,30 @@ class _OrderTileForProductNewState extends State<OrderTileForProductNew> {
           ),
         ),
       );
-    } catch (e) {
+    } catch (e, s) {
       return Container();
     }
   }
 
   Widget getProductImage() {
+    String? image;
+
+    image = product?.cover;
+
+    if (product?.variantModels?.isNotEmpty ?? false) {
+      image = product?.variantModels?.first.getCoverImage() ?? product?.cover;
+    }
     return ClipRRect(
-      borderRadius: BorderRadius.circular(10),
+      borderRadius: BorderRadius.circular(10.0),
       child: CachedNetworkImage(
-        height: 70,
-        width: 70,
-        imageUrl: product!.serverImages!.isNotEmpty
-            ? product!.serverImages!.first!
-            : defaultImage,
+        height: 48,
+        width: 48,
+        imageUrl: image ?? defaultImage,
         colorBlendMode: BlendMode.darken,
-        fit: BoxFit.fill,
+        fit: BoxFit.contain,
         errorWidget: productAndServiceErrorWidget,
         filterQuality: FilterQuality.high,
-        placeholder: (context, url) => product!.serverImages!.isNotEmpty
+        placeholder: (context, url) => product?.cover == null
             ? const Icon(Icons.widgets)
             : CircularLoadingIndicator(),
       ),
@@ -88,7 +93,7 @@ class _OrderTileForProductNewState extends State<OrderTileForProductNew> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            getTotalPriceWidget(),
+            getPriceWidget(),
             getProductCount(),
           ],
         ),
@@ -133,12 +138,17 @@ class _OrderTileForProductNewState extends State<OrderTileForProductNew> {
     return product!.price.toString();
   }
 
-  Widget getTotalPriceWidget() {
+  Widget getPriceWidget() {
+    if (product?.variantModels?.isEmpty ?? false) {
+      product?.variantModels = null;
+    }
+    final int productActualPrice =
+        product?.getDiscountedPrice(product?.variantModels?.first) ?? 0;
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         Text(
-          worldCurrencies[product?.currency!]!,
+          worldCurrencies[product?.currency]!,
           style: TextStyle(
             color: blackFont,
             fontFamily: "Inter",
@@ -147,10 +157,10 @@ class _OrderTileForProductNewState extends State<OrderTileForProductNew> {
           ),
         ),
         Text(
-          moneyDisplayNormalizer(product?.price!),
+          moneyDisplayNormalizer(productActualPrice),
           style: TextStyle(
-            color: blackFont,
-            fontWeight: FontWeight.w600,
+            color: black,
+            fontWeight: FontWeight.w500,
             fontSize: 14,
             fontFamily: "Inter",
           ),

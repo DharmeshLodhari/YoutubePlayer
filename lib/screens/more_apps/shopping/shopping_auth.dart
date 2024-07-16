@@ -901,8 +901,8 @@ class ShoppingAuthService extends AuthService {
   }
 
   // Add Product
-  Future<List<dynamic>> addProduct(
-      Product product, String channelUsername) async {
+  Future<List<dynamic>> addProduct(Product product, String channelUsername,
+      List<AddOns> productAddOnsList) async {
     final headers = await getAuthHeaders();
     String url = "${AppConfig.baseUrl}/api/v1/products/";
 
@@ -932,6 +932,14 @@ class ShoppingAuthService extends AuthService {
       data['width_si_unit'] = '';
     }
     debugPrint('DATA from ---> $data');
+
+    if (productAddOnsList.isNotEmpty) {
+      final List ids = productAddOnsList
+          .where((addOn) => addOn.id != null)
+          .map((addOn) => addOn.id!)
+          .toList();
+      data["add_ons"] = ids;
+    }
 
     data.forEach((k, v) {
       if (k == "search_keywords") {
@@ -1306,7 +1314,7 @@ class ShoppingAuthService extends AuthService {
     service.providerAvatar = item["provider_avatar"];
     service.rating = formatRating(item['rating'] ?? 0.0);
     service.canRate = item["can_rate"] ?? false;
-
+    service.isChecked = item["is_checked"] ?? false;
     return service;
   }
 
