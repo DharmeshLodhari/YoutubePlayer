@@ -176,7 +176,8 @@ class _OrderTileState extends State<OrderTile> {
         order?.shipmentType() != "Delivery") {
       return _buildChangeDateButton();
     }
-    if (order?.newOrderStatus.contains(order?.status) ?? false) {
+    if ((order?.newOrderStatus.contains(order?.status) ?? false) ||
+        order?.status == "Awaiting Payment") {
       return SizedBox.shrink();
     } else {
       return _buildTrackOrder();

@@ -2152,7 +2152,8 @@ class _AddProductState extends State<AddProduct> {
           // response to save the variant
 
           await _auth
-              .addProduct(product, widget.arguments['channelUsername'] ?? "")
+              .addProduct(product, widget.arguments['channelUsername'] ?? "",
+                  productAddOnsList)
               .then((value) async {
             final productId = value[1];
 

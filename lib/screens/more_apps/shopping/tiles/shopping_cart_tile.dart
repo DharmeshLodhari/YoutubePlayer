@@ -400,7 +400,7 @@ class ShoppingCartTileForProduct extends StatelessWidget {
         //   style: TextStyle(fontSize: 10, color: darkGrey),
         // ),
         Text(
-          "Size : $size",
+          "Size : ${messageDecoderWithEmoji(size)}",
           style: TextStyle(
             fontSize: 10,
             color: blackFont,

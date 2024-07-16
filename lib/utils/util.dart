@@ -786,8 +786,10 @@ bool isTimeAfter(DateTime startTime, DateTime endTime) {
   final TimeOfDay end = TimeOfDay.fromDateTime(endTime);
 
   if (start.hour < end.hour) {
+    print("startTime = $startTime endTIME $endTime");
     return true;
   } else if (start.hour == end.hour && start.minute < end.minute) {
+    print("startTime == $startTime endTIME == $endTime");
     return true;
   }
   return false;

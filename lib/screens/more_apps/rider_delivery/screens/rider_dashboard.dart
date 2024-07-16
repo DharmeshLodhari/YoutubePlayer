@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:Slydo/data/currency.dart';
+import 'package:Slydo/data/state_notifiers/user_bloc.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/auth/rider_delivery_auth.dart';
@@ -15,6 +17,7 @@ import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class RiderDashboard extends StatefulWidget {
   const RiderDashboard({super.key});
@@ -29,6 +32,7 @@ class _RiderDashboardState extends State<RiderDashboard> {
   late CustomizedPopUpMenu menu;
   int selectedMenuItemIndex = 0;
   bool isPopMenuOpen = false;
+  late UserBloc userBloc;
 
   int? listCount = 0;
   bool isLoading = false;
@@ -108,6 +112,7 @@ class _RiderDashboardState extends State<RiderDashboard> {
 
   @override
   Widget build(BuildContext context) {
+    userBloc = Provider.of<UserBloc>(context);
     menu = CustomizedPopUpMenu(
       buttonKey: _key,
       context: context,
@@ -379,10 +384,10 @@ class _RiderDashboardState extends State<RiderDashboard> {
             height: 20,
           ),
           _buildTotalAmount(),
-          const SizedBox(
-            height: 5,
-          ),
-          _buildCompareLastWeek(),
+          // const SizedBox(
+          //   height: 5,
+          // ),
+          // _buildCompareLastWeek(),
         ],
       ),
     );
@@ -429,14 +434,26 @@ class _RiderDashboardState extends State<RiderDashboard> {
   }
 
   Widget _buildTotalAmount() {
-    return Text(
-      '₦65,000',
-      style: TextStyle(
-        color: navyBlue,
-        fontSize: 32,
-        fontWeight: FontWeight.w700,
-        fontFamily: "Inter",
-      ),
+    return Row(
+      children: [
+        Text(
+          worldCurrencies[userBloc.user.currency]!,
+          style: TextStyle(
+              color: black,
+              fontFamily: "Inter",
+              fontWeight: FontWeight.w500,
+              fontSize: 14),
+        ),
+        Text(
+          '0',
+          style: TextStyle(
+            color: navyBlue,
+            fontSize: 32,
+            fontWeight: FontWeight.w700,
+            fontFamily: "Inter",
+          ),
+        ),
+      ],
     );
   }
 
@@ -454,7 +471,7 @@ class _RiderDashboardState extends State<RiderDashboard> {
           width: 5,
         ),
         Text(
-          '10%',
+          '0%',
           style: TextStyle(
             color: navyBlue,
             fontSize: 14,
@@ -496,7 +513,7 @@ class _RiderDashboardState extends State<RiderDashboard> {
 
   Widget _buildNextPayday() {
     return Text(
-      'Next Payday : 22/12/24',
+      '',
       style: TextStyle(
         color: blackFont,
         fontSize: 14,
@@ -506,10 +523,23 @@ class _RiderDashboardState extends State<RiderDashboard> {
     );
   }
 
+  // todo: Tobe reopen latter
+  // Widget _buildNextPayday() {
+  //   return Text(
+  //     'Next Payday : 22/12/24',
+  //     style: TextStyle(
+  //       color: blackFont,
+  //       fontSize: 14,
+  //       fontWeight: FontWeight.w500,
+  //       fontFamily: "Inter",
+  //     ),
+  //   );
+  // }
+
   Widget _buildViewTransaction() {
     return GestureDetector(
       onTap: () {
-        Navigator.of(context).pushNamed(Routes.RIDER_EARNING_WEEKLY_LIST);
+        // Navigator.of(context).pushNamed(Routes.RIDER_EARNING_WEEKLY_LIST);
       },
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -537,13 +567,13 @@ class _RiderDashboardState extends State<RiderDashboard> {
     return Row(
       children: [
         Expanded(
-          child: customCard(lightGreen, '1.2KM', 'Total Distance Covered'),
+          child: customCard(lightGreen, '0.0KM', 'Total Distance Covered'),
         ),
         const SizedBox(
           width: 10,
         ),
         Expanded(
-          child: customCard(richPink, '26', 'Total Order Delivered'),
+          child: customCard(richPink, '0', 'Total Order Delivered'),
         ),
       ],
     );

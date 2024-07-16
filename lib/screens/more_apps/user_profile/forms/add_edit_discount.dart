@@ -77,6 +77,10 @@ class _AddEditDiscountState extends State<AddEditDiscount> {
     productCount = discountModel.productCount ?? 0;
     serviceCount = discountModel.serviceCount ?? 0;
 
+    if (startTimeFrom != null && endTimeTo != null) {
+      isTimeAvailable = true;
+    }
+
     super.initState();
   }
 
@@ -798,6 +802,7 @@ class _AddEditDiscountState extends State<AddEditDiscount> {
               } else {
                 if (result["products"] != null) {
                   discountModel.addProductsToDiscount(result["ids"]);
+                  selectedProducts = result["products"];
                   selectedProducts = result["products"];
                   productCount = selectedProducts.length;
                 } else if (result["services"] != null) {

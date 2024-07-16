@@ -91,7 +91,6 @@ class _SignUpState extends State<SignUp> {
 
   @override
   void initState() {
-    getProductIndustries();
     phoneNumber = widget.arguments['phoneNumber'];
     otpCode = widget.arguments['otpCode'];
     accountType = widget.arguments['accountType'];
@@ -113,6 +112,9 @@ class _SignUpState extends State<SignUp> {
     _accountTypeController.text = accountType ?? "";
     accountTypeChosen = true;
     isPersonalAccount = accountType == 'Personal';
+
+    if (!isPersonalAccount) getProductIndustries();
+
     getSubscriptionList();
 
     _businessOrNickNameController.addListener(() {

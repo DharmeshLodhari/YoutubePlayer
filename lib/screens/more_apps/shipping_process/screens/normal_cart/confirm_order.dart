@@ -319,12 +319,16 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
       if (mounted) setState(() {});
       await ShippingProcessAuthService()
           .placeOrder(
-              data: shippingProcessBloc.toPlaceOrder(userBloc.user.userName),
-              isCartProcess: shippingProcessBloc.isUseCart,
-              isSharedCart: false,
-              sharedCartId: '')
+        data: shippingProcessBloc.toPlaceOrder(userBloc.user.userName),
+        isCartProcess: shippingProcessBloc.isUseCart,
+        isSharedCart: false,
+        sharedCartId: '',
+      )
           .then(
         (value) async {
+          if (value == "cart is empty") {
+            Navigator.popAndPushNamed(context, Routes.SHOPPING_CART);
+          }
           if (value != null) {
             // Send the list of of orders for payment processing
             for (int i = 0; i < value.length; i++) {
