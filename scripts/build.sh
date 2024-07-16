@@ -3,3 +3,4 @@
 fvm flutter build xcarchive
 open /Users/macmini8/Documents/Project/slydo/build/ios/archive/Runner.xcarchive
 #open /Users/brijeshsakariya/StudioProjects/slydo/build/ios/archive/Runner.xcarchive
+open /Users/macminisrashtasoft/Hemali/slydo/build/ios/archive/Runner.xcarchive
