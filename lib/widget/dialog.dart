@@ -580,12 +580,10 @@ void showUserLogoutCard({required BuildContext context}) {
   showDialog(
     barrierDismissible: true,
     context: context,
-    builder: (context) => PopScope(
-      onPopInvoked: (didPop) {
-        if (didPop) {
-          //  logoutUser(context);
-          return;
-        }
+    builder: (context) => WillPopScope(
+      onWillPop: () {
+        //  logoutUser(context);
+        return Future.value(true);
       },
       child: Dialog(
         elevation: 0,
@@ -635,11 +633,10 @@ Future<bool> showInAppLocationAlertPopUp(
   final bool? result = await showDialog<bool>(
     barrierDismissible: false,
     context: context,
-    builder: (context) => PopScope(
-      onPopInvoked: (didPop) async {
-        if (didPop) {
-          Navigator.pop(context, false);
-        }
+    builder: (context) => WillPopScope(
+      onWillPop: () async {
+        Navigator.pop(context, false);
+        return false;
       },
       child: Dialog(
         elevation: 0,

@@ -64,11 +64,11 @@ class _OrderTileForProductNewState extends State<OrderTileForProductNew> {
     return ClipRRect(
       borderRadius: BorderRadius.circular(10.0),
       child: CachedNetworkImage(
-        height: 80,
-        width: 80,
+        height: 70,
+        width: 70,
         imageUrl: image ?? defaultImage,
         colorBlendMode: BlendMode.darken,
-        fit: BoxFit.contain,
+        fit: BoxFit.fill,
         errorWidget: productAndServiceErrorWidget,
         filterQuality: FilterQuality.high,
         placeholder: (context, url) => product?.cover == null
@@ -205,7 +205,7 @@ class _OrderTileForProductNewState extends State<OrderTileForProductNew> {
                   ),
                 ),
               Text(
-                variantSize,
+                messageDecoderWithEmoji(variantSize) ?? "",
                 style: TextStyle(
                   fontSize: 10,
                   color: blackFont,

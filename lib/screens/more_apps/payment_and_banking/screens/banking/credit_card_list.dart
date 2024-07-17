@@ -82,15 +82,13 @@ class _CreditCardListState extends State<CreditCardList>
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      onPopInvoked: (didPop) async {
-        if (didPop) {
-          if (widget.arguments != null) {
-            Navigator.pop(context);
-            Navigator.pop(context);
-          }
-          return;
+    return WillPopScope(
+      onWillPop: () async {
+        if (widget.arguments != null) {
+          Navigator.pop(context);
+          Navigator.pop(context);
         }
+        return true;
       },
       child: Scaffold(
         key: _scaffoldKey,

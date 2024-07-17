@@ -59,11 +59,9 @@ class _SelectAddressScreenState extends State<SelectAddressScreen> {
   @override
   Widget build(BuildContext context) {
     taxiBloc = Provider.of<TaxiBloc>(context, listen: false);
-    return PopScope(
-      onPopInvoked: (didPop) async {
-        if (didPop) {
-          return;
-        }
+    return WillPopScope(
+      onWillPop: () async {
+        return Future.value(true);
       },
       child: Scaffold(
         resizeToAvoidBottomInset: false,

@@ -152,11 +152,9 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       isOwner = true;
     }
 
-    return PopScope(
-      onPopInvoked: (didPop) async {
-        if (didPop) {
-          return;
-        }
+    return WillPopScope(
+      onWillPop: () async {
+        return await Future.value(true);
       },
       child: SafeArea(
         top: false,

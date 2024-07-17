@@ -135,14 +135,12 @@ class _UserLoginState extends State<UserLogin> {
     sharedCartBloc = Provider.of<SharedCartBloc>(context);
     userBloc = Provider.of<UserBloc>(context);
 
-    return PopScope(
-      onPopInvoked: (didPop) async {
-        if (didPop) {
-          if (FocusScope.of(context).hasFocus) {
-            FocusScope.of(context).unfocus();
-          }
-          return;
+    return WillPopScope(
+      onWillPop: () {
+        if (FocusScope.of(context).hasFocus) {
+          FocusScope.of(context).unfocus();
         }
+        return Future.value(true);
       },
       child: Scaffold(
         backgroundColor: whiteBackground,

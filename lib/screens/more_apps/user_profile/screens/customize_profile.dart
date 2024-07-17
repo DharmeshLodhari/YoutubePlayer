@@ -56,11 +56,10 @@ class CustomizeProfileScreenState extends State<CustomizeProfileScreen> {
 
     // final Function(Map<String, dynamic>) callbackProductService = widget.arguments['callbackProductService'];
 
-    return PopScope(
-      onPopInvoked: (didPop) async {
-        if (didPop) {
-          Navigator.pop(context, reorderedBoolMap);
-        }
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.pop(context, reorderedBoolMap);
+        return true;
       },
       child: Scaffold(
         key: _scaffoldGeneralSettingKey,

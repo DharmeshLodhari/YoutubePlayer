@@ -189,22 +189,20 @@ class _SignUpState extends State<SignUp> {
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
-    return PopScope(
-      onPopInvoked: (didPop) async {
-        if (didPop) {
-          if (FocusScope.of(context).hasFocus) {
-            FocusScope.of(context).unfocus();
-          }
-
-          if (basicAccountInfo == false) {
-            Navigator.pop(context);
-          } else {
-            basicAccountInfo = false;
-            if (mounted) setState(() {});
-          }
-
-          return Future.value(false);
+    return WillPopScope(
+      onWillPop: () {
+        if (FocusScope.of(context).hasFocus) {
+          FocusScope.of(context).unfocus();
         }
+
+        if (basicAccountInfo == false) {
+          Navigator.pop(context);
+        } else {
+          basicAccountInfo = false;
+          if (mounted) setState(() {});
+        }
+
+        return Future.value(false);
       },
       child: Scaffold(
         backgroundColor: lightGrey,

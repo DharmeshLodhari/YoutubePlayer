@@ -24,6 +24,7 @@ import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:http/http.dart' as http;
@@ -94,11 +95,9 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     );
     menu.onChange = menuItemSelectionChange;
     menu.menuState = menuStateChange;
-    return PopScope(
-      onPopInvoked: (didPop) async {
-        if (didPop) {
-          return;
-        }
+    return WillPopScope(
+      onWillPop: () async {
+        return true;
       },
       child: Scaffold(
         key: scaffoldKey,
@@ -175,6 +174,15 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   }
 
   Widget _buildAllDetails() {
+    String name;
+    String? image;
+    if (order?.isCustomer(userBloc.user.userName) ?? false) {
+      image = order?.merchantAvatar;
+      name = order?.normalizeName(order?.merchant) ?? "";
+    } else {
+      name = order?.normalizeName(order?.customerName) ?? "";
+      image = order?.customerAvatar;
+    }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -183,7 +191,13 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildCustomerName(),
+              Row(
+                children: [
+                  _buildMerchantCustomerIcon(image),
+                  const SizedBox(width: 10),
+                  _buildCustomerName(name),
+                ],
+              ),
               ListView.builder(
                 physics: const NeverScrollableScrollPhysics(),
                 padding: EdgeInsets.zero,
@@ -211,9 +225,49 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     );
   }
 
-  Widget _buildCustomerName() {
+  Widget _buildMerchantCustomerIcon(String? image) {
+    return Stack(
+      children: [
+        ClipRRect(
+          borderRadius: BorderRadius.circular(80),
+          child: GestureDetector(
+            onTap: () {
+              Navigator.of(context)
+                  .pushNamed("/photo-viewer", arguments: image);
+            },
+            child: Container(
+              color: Colors.white,
+              child: CachedNetworkImage(
+                height: 30,
+                width: 30,
+                fit: BoxFit.fill,
+                filterQuality: FilterQuality.high,
+                imageUrl: image ?? "",
+                errorWidget: imageErrorWidget,
+              ),
+            ),
+          ),
+        ),
+        Positioned(
+          bottom: 0,
+          right: -1,
+          child: CircleAvatar(
+            maxRadius: 7,
+            backgroundColor: navyBlue,
+            child: Image.asset(
+              order?.isCustomer(userBloc.user.userName) ?? false
+                  ? 'assets/images/arrow-down-right.png'
+                  : 'assets/images/arrow-down-left.png',
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCustomerName(String name) {
     return Text(
-      order?.normalizeName(userBloc.user.userName) ?? "",
+      order?.normalizeName(name) ?? "",
       style: TextStyle(
         color: lightBlackFont,
         fontSize: 14,

@@ -58,12 +58,10 @@ class _MyMusicListState extends State<MyMusicList> {
   @override
   Widget build(BuildContext context) {
     _musicDashboardBloc = Provider.of<MusicDashboardBloc>(context);
-    return PopScope(
-      onPopInvoked: (didPop) async {
-        if (didPop) {
-          _musicDashboardBloc.index = 0;
-          return;
-        }
+    return WillPopScope(
+      onWillPop: () async {
+        _musicDashboardBloc.index = 0;
+        return Future.value(true);
       },
       child: Scaffold(
         backgroundColor: lightGrey,

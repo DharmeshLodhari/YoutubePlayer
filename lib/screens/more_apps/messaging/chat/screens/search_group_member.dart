@@ -143,13 +143,11 @@ class _SearchGroupMemberState extends State<SearchGroupMember>
     mainSocketProvider = Provider.of<MainSocketProvider>(context);
 
     initializeListener();
-    return PopScope(
-      onPopInvoked: (didPop) async {
-        if (didPop) {
-          mainSocketProvider.removeStreamSubscription(streamSubscription);
-          Navigator.pop(context, groupDetail);
-          return;
-        }
+    return WillPopScope(
+      onWillPop: () async {
+        mainSocketProvider.removeStreamSubscription(streamSubscription);
+        Navigator.pop(context, groupDetail);
+        return Future.value(false);
       },
       child: ScaffoldMessenger(
         key: _scaffoldMessengerSearchGroupMemberKey,

@@ -166,13 +166,11 @@ class _SlydoTransactionListState extends State<SlydoTransactionList>
     menu.onChange = menuItemSelectionChange;
     menu.menuState = menuStateChange;
 
-    return PopScope(
-      onPopInvoked: (didPop) async {
-        if (didPop) {
-          menu.closeMenu();
-          customerProfileBloc.customer = null;
-          return;
-        }
+    return WillPopScope(
+      onWillPop: () async {
+        menu.closeMenu();
+        customerProfileBloc.customer = null;
+        return true;
       },
       child: Scaffold(
         key: _scaffoldTransactionKey,

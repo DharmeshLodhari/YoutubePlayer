@@ -77,12 +77,10 @@ class _AddContractState extends State<AddContract> {
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
-    return PopScope(
-      onPopInvoked: (didPop) async {
-        if (didPop) {
-          _payee = null;
-          return;
-        }
+    return WillPopScope(
+      onWillPop: () async {
+        _payee = null;
+        return true;
       },
       child: Scaffold(
         backgroundColor: lightGrey,

@@ -103,12 +103,10 @@ class _RideOptionState extends State<RideOption> {
   @override
   Widget build(BuildContext context) {
     taxiBloc = Provider.of<TaxiBloc>(context);
-    return PopScope(
-      onPopInvoked: (didPop) async {
-        if (didPop) {
-          taxiBloc.rideDetail = null;
-          return;
-        }
+    return WillPopScope(
+      onWillPop: () async {
+        taxiBloc.rideDetail = null;
+        return Future.value(true);
       },
       child: Scaffold(
         backgroundColor: lightGrey,

@@ -20,12 +20,10 @@ class _FlightDashboardState extends State<FlightDashboard> {
   @override
   Widget build(BuildContext context) {
     _flightDashboardBloc = Provider.of<FlightDashboardBloc>(context);
-    return PopScope(
-      onPopInvoked: (didPop) async {
-        if (didPop) {
-          _flightDashboardBloc.index = 0;
-          return;
-        }
+    return WillPopScope(
+      onWillPop: () {
+        _flightDashboardBloc.index = 0;
+        return Future.value(true);
       },
       child: Scaffold(
         body: PageView(

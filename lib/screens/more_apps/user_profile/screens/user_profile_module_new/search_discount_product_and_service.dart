@@ -390,12 +390,10 @@ class _SearchDiscountProductAndServiceState
 
     userBloc = Provider.of<UserBloc>(context);
 
-    return PopScope(
-      onPopInvoked: (didPop) {
-        if (didPop) {
-          filterValue = "Products";
-          return;
-        }
+    return WillPopScope(
+      onWillPop: () {
+        filterValue = "Products";
+        return Future.value(true);
       },
       child: ScaffoldMessenger(
         key: _scaffoldMessengerSearchKey,

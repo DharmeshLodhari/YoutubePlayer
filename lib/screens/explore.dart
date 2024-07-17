@@ -50,11 +50,9 @@ class _ExploreListState extends State<ExploreList> {
   Widget build(BuildContext context) {
     final key = GlobalKey<ScaffoldState>();
 
-    return PopScope(
-      onPopInvoked: (didPop) async {
-        if (didPop) {
-          return;
-        }
+    return WillPopScope(
+      onWillPop: () async {
+        return true;
       },
       child: Scaffold(
         key: key,

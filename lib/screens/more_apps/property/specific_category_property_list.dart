@@ -46,12 +46,10 @@ class _SpecificCategoryPropertyListState
   @override
   Widget build(BuildContext context) {
     _propertyDashboardBloc = Provider.of<PropertyDashboardBloc>(context);
-    return PopScope(
-      onPopInvoked: (didPop) async {
-        if (didPop) {
-          _propertyDashboardBloc.index = 0;
-          return;
-        }
+    return WillPopScope(
+      onWillPop: () async {
+        _propertyDashboardBloc.index = 0;
+        return true;
       },
       child: Scaffold(
         backgroundColor: lightGrey,

@@ -213,11 +213,9 @@ class _ContractScreenState extends State<ContractScreen>
     menu.onChange = menuItemSelectionChange;
     menu.menuState = menuStateChange;
 
-    return PopScope(
-      onPopInvoked: (didPop) async {
-        if (didPop) {
-          return;
-        }
+    return WillPopScope(
+      onWillPop: () async {
+        return Future.value(true);
       },
       child: Scaffold(
         appBar: appBar() as PreferredSizeWidget?,

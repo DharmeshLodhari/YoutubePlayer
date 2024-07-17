@@ -107,11 +107,9 @@ class _ContractTransactionHistoryState
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      onPopInvoked: (didPop) async {
-        if (didPop) {
-          return;
-        }
+    return WillPopScope(
+      onWillPop: () async {
+        return Future.value(true);
       },
       child: ScaffoldMessenger(
         key: _scaffoldMessengerKey,

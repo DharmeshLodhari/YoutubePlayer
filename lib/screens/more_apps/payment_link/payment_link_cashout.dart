@@ -111,11 +111,10 @@ class _PaymentLinkCashOutState extends State<PaymentLinkCashOut> {
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      onPopInvoked: (didPop) async {
-        if (didPop) {
-          return;
-        }
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.pop(context, "back pressed");
+        return true;
       },
       child: Scaffold(
           backgroundColor: white,

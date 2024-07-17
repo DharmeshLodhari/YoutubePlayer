@@ -20,12 +20,10 @@ class _BusDashboardState extends State<BusDashboard> {
   @override
   Widget build(BuildContext context) {
     _busDashboardBloc = Provider.of<BusDashboardBloc>(context);
-    return PopScope(
-      onPopInvoked: (didPop) async {
-        if (didPop) {
-          _busDashboardBloc.index = 0;
-          return;
-        }
+    return WillPopScope(
+      onWillPop: () {
+        _busDashboardBloc.index = 0;
+        return Future.value(true);
       },
       child: Scaffold(
         backgroundColor: lightGrey,

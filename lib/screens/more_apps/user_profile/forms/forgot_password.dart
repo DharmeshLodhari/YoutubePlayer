@@ -41,11 +41,9 @@ class _ForgotPasswordState extends State<ForgotPassword> {
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-        onPopInvoked: (didPop) async {
-          if (didPop) {
-            return;
-          }
+    return WillPopScope(
+        onWillPop: () async {
+          return true;
         },
         child: Scaffold(
             backgroundColor: Colors.white,

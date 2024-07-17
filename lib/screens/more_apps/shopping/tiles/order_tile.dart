@@ -1246,8 +1246,8 @@ class _OrderTileState extends State<OrderTile> {
             backgroundColor: navyBlue,
             child: Image.asset(
               order?.isCustomer(userBloc.user.userName) ?? false
-                  ? 'assets/images/arrow-down-left.png'
-                  : 'assets/images/arrow-down-right.png',
+                  ? 'assets/images/arrow-down-right.png'
+                  : 'assets/images/arrow-down-left.png',
             ),
           ),
         ),

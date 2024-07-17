@@ -133,11 +133,9 @@ class _RiderDashboardState extends State<RiderDashboard> {
       bottom: Platform.isIOS ? true : false,
       top: false,
       color: white,
-      child: PopScope(
-        onPopInvoked: (didPop) async {
-          if (didPop) {
-            return;
-          }
+      child: WillPopScope(
+        onWillPop: () async {
+          return true;
         },
         child: ScaffoldMessenger(
           child: Scaffold(

@@ -266,30 +266,27 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
     if (userBloc.user.type!.toLowerCase() == "user") {
       isUserIsSimpleUser = true;
     }
-
-    return // PopScope(
-        // canPop: false,
-        // onPopInvoked: (didPop) async {
-        //   if (didPop) {
-        //     Navigator.pop(context, {
-        //       "userAbout": userBloc.userAbout,
-        //       "user_avatar": userBloc.user.avatar
-        //     });
-        //   }
-        // },
-        // child:
-        SafeArea(
-      bottom: false,
-      child: Scaffold(
-        backgroundColor: lightGrey,
-        body: NestedScrollView(
-          headerSliverBuilder: (BuildContext context, bool boxIsScrolled) {
-            return [getAppbar(context)];
-          },
-          body: scaffoldBody(),
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.pop(context, {
+          "userAbout": userBloc.userAbout,
+          "user_avatar": userBloc.user.avatar
+        });
+        return false;
+      },
+      child: SafeArea(
+        bottom: false,
+        child: Scaffold(
+          backgroundColor: lightGrey,
+          body: NestedScrollView(
+            headerSliverBuilder: (BuildContext context, bool boxIsScrolled) {
+              return [getAppbar(context)];
+            },
+            body: scaffoldBody(),
+          ),
         ),
+        // ),
       ),
-      // ),
     );
   }
 

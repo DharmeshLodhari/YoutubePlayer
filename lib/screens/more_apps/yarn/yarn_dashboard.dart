@@ -137,8 +137,7 @@ class _YarnDashboardState extends State<YarnDashboard> {
           size: 24,
         ),
         onPressed: () {
-          // Navigator.pop(context, "back pressed");
-          Navigator.pop(context);
+          Navigator.pop(context, "back pressed");
         },
       ),
       shadowColor: greySecondaryYarn,

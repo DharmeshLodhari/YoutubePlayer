@@ -50,11 +50,9 @@ class _SpecificCategoryEventListState extends State<SpecificCategoryEventList> {
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      onPopInvoked: (didPop) async {
-        if (didPop) {
-          return;
-        }
+    return WillPopScope(
+      onWillPop: () async {
+        return true;
       },
       child: Scaffold(
         backgroundColor: lightGrey,

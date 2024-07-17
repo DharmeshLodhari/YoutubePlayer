@@ -80,11 +80,9 @@ class _UserAddressProductServiceState extends State<UserAddressProductService> {
     addressBloc = Provider.of<AddressBloc>(context);
     basketBloc = Provider.of<BasketBloc>(context);
 
-    return PopScope(
-      onPopInvoked: (didPop) async {
-        if (didPop) {
-          return;
-        }
+    return WillPopScope(
+      onWillPop: () async {
+        return true;
       },
       child: Scaffold(
         backgroundColor: lightGrey,

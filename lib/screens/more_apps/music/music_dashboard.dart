@@ -25,12 +25,10 @@ class _MusicDashboardState extends State<MusicDashboard> {
   Widget build(BuildContext context) {
     _hotelDashboardBloc = Provider.of<MusicDashboardBloc>(context);
     musicPlayer = Provider.of<MusicPlayer>(context);
-    return PopScope(
-      onPopInvoked: (didPop) {
-        if (didPop) {
-          _hotelDashboardBloc.index = 0;
-          return;
-        }
+    return WillPopScope(
+      onWillPop: () {
+        _hotelDashboardBloc.index = 0;
+        return Future.value(true);
       },
       child: Scaffold(
         body: PageView(

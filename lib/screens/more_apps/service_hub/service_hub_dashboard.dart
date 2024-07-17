@@ -331,11 +331,9 @@ class _ServiceHubDashboardState extends State<ServiceHubDashboard> {
       bottom: Platform.isIOS ? true : false,
       top: false,
       color: Colors.white,
-      child: PopScope(
-        onPopInvoked: (didPop) async {
-          if (didPop) {
-            return;
-          }
+      child: WillPopScope(
+        onWillPop: () async {
+          return true;
         },
         child: DefaultTabController(
           length: 2,

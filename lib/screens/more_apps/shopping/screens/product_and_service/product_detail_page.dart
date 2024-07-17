@@ -227,12 +227,11 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     shippingProcessBloc = Provider.of<ShippingProcessBloc>(context);
 
     isValidCustomer = userBloc.user.userName != product?.seller;
-    return PopScope(
-      onPopInvoked: (didPop) async {
-        if (didPop) {
-          customerProfileBloc.customer = null;
-          return;
-        }
+    return WillPopScope(
+      onWillPop: () async {
+        customerProfileBloc.customer = null;
+        Navigator.pop(context, "back pressed");
+        return true;
       },
       child: Scaffold(
         backgroundColor: lightGrey,

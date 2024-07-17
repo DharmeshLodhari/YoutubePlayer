@@ -29,11 +29,10 @@ class _CablePlanPaymentDetailState extends State<CablePlanPaymentDetail> {
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      onPopInvoked: (didPop) async {
-        if (didPop) {
-          Navigator.of(context).popAndPushNamed("/utility-history");
-        }
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.of(context).popAndPushNamed("/utility-history");
+        return false;
       },
       child: Scaffold(
         backgroundColor: lightGrey,

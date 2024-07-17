@@ -102,11 +102,9 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
       checkCurrentUserState();
       counter++;
     }
-    return PopScope(
-      onPopInvoked: (didPop) async {
-        if (didPop) {
-          return;
-        }
+    return WillPopScope(
+      onWillPop: () async {
+        return true;
       },
       child: Scaffold(
         key: _scaffoldUserInfoKey,

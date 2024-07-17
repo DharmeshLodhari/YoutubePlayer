@@ -153,13 +153,11 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
     mainSocketProvider = Provider.of<MainSocketProvider>(context);
 
     initializeListener();
-    return PopScope(
-      onPopInvoked: (didPop) async {
-        if (didPop) {
-          mainSocketProvider.removeStreamSubscription(streamSubscription);
-          Navigator.of(context).pop(groupDetail);
-          return;
-        }
+    return WillPopScope(
+      onWillPop: () async {
+        mainSocketProvider.removeStreamSubscription(streamSubscription);
+        Navigator.of(context).pop(groupDetail);
+        return false;
       },
       child: Scaffold(
         key: _scaffoldGroupDetailScreen,

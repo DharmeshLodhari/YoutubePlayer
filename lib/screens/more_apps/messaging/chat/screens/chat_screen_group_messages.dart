@@ -1337,20 +1337,20 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       color: Colors.white,
       left: false,
       right: false,
-      child: PopScope(
-          canPop: showMoreAction ? false : true,
-          onPopInvoked: (didPop) async {
-            if (didPop) {
+      child: WillPopScope(
+          onWillPop: () async {
+            if (showMoreAction) {
+              setState(() {
+                showMoreAction = false;
+              });
+              return Future.value(false);
+            } else {
               disposeAudioPlayers();
               mainSocketProvider!.removeStreamSubscription(streamSubscription);
               mainSocketProvider!.currentConversationId = null;
               mainSocketProvider!.isChatOnScreen = false;
-              return;
-            } else {
-              setState(() {
-                showMoreAction = false;
-              });
-              return;
+
+              return Future.value(true);
             }
           },
           child: Platform.isAndroid

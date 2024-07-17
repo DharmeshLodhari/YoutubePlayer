@@ -137,12 +137,10 @@ class _ProductVariantListState extends State<ProductVariantList>
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
 
-    return PopScope(
-      onPopInvoked: (didPop) async {
-        if (didPop) {
-          Navigator.pop(context, productVariantList);
-          return;
-        }
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.pop(context, productVariantList);
+        return true;
       },
       child: ScaffoldMessenger(
         key: _scaffoldMessengerKey,

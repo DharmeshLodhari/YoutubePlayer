@@ -26,11 +26,9 @@ class _RiderEarningWeeklyListState extends State<RiderEarningWeeklyList> {
       bottom: Platform.isIOS ? true : false,
       top: false,
       color: white,
-      child: PopScope(
-        onPopInvoked: (didPop) async {
-          if (didPop) {
-            return;
-          }
+      child: WillPopScope(
+        onWillPop: () async {
+          return true;
         },
         child: ScaffoldMessenger(
           child: Scaffold(

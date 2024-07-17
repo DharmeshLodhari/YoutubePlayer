@@ -66,18 +66,16 @@ class _TaxiDashboardState extends State<TaxiDashboard> {
       top: false,
       left: false,
       right: false,
-      child: PopScope(
-        onPopInvoked: (didPop) async {
-          if (didPop) {
-            if (taxiBloc.destinationPoint != null) {
-              taxiBloc.destinationPoint = null;
-              return Future.value(false);
-            }
-
-            taxiBloc.startingPoint = null;
-            taxiBloc.rideDetail = null;
-            return Future.value(true);
+      child: WillPopScope(
+        onWillPop: () async {
+          if (taxiBloc.destinationPoint != null) {
+            taxiBloc.destinationPoint = null;
+            return Future.value(false);
           }
+
+          taxiBloc.startingPoint = null;
+          taxiBloc.rideDetail = null;
+          return Future.value(true);
         },
         child: Scaffold(
           backgroundColor: lightGrey,

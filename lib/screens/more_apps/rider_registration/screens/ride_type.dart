@@ -43,11 +43,9 @@ class _RideTypeState extends State<RideType> {
       bottom: Platform.isIOS ? true : false,
       top: false,
       color: white,
-      child: PopScope(
-        onPopInvoked: (didPop) async {
-          if (didPop) {
-            return;
-          }
+      child: WillPopScope(
+        onWillPop: () async {
+          return true;
         },
         child: Scaffold(
           backgroundColor: lightGrey,

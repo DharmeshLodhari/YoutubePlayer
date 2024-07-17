@@ -227,13 +227,8 @@ class _SplashScreenState extends State<SplashScreen>
     sharedCartBloc = Provider.of<SharedCartBloc>(context);
     userBloc = Provider.of<UserBloc>(context);
 
-    return PopScope(
-      onPopInvoked: (didPop) async {
-        if (didPop) {
-          return;
-        }
-        Future.value(false);
-      },
+    return WillPopScope(
+      onWillPop: () async => Future.value(false),
       child: hasConnection
           ? Scaffold(
               backgroundColor: lightGrey,

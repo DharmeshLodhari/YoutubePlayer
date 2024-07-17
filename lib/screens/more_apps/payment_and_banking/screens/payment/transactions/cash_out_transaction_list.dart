@@ -64,11 +64,9 @@ class _CashoutTransactionsListState extends State<CashoutTransactionsList> {
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      onPopInvoked: (didPop) async {
-        if (didPop) {
-          return;
-        }
+    return WillPopScope(
+      onWillPop: () async {
+        return true;
       },
       child: ScaffoldMessenger(
         key: _scaffoldMessengerKey,

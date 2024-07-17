@@ -102,12 +102,10 @@ class _ComposeMessageState extends State<ComposeMessage> {
     userBloc = Provider.of<UserBloc>(context);
     _dashboardBloc = Provider.of<DashboardBloc>(context);
 
-    return PopScope(
-      onPopInvoked: (didPop) async {
-        if (didPop) {
-          messageReceiver = null;
-          return;
-        }
+    return WillPopScope(
+      onWillPop: () async {
+        messageReceiver = null;
+        return true;
       },
       child: Scaffold(
           backgroundColor: lightGrey,

@@ -54,12 +54,10 @@ class _MyEventListState extends State<MyEventList> {
   @override
   Widget build(BuildContext context) {
     _eventDashboardBloc = Provider.of<EventDashboardBloc>(context);
-    return PopScope(
-      onPopInvoked: (didPop) async {
-        if (didPop) {
-          _eventDashboardBloc.index = 0;
-          return;
-        }
+    return WillPopScope(
+      onWillPop: () async {
+        _eventDashboardBloc.index = 0;
+        return Future.value(true);
       },
       child: Scaffold(
         backgroundColor: lightGrey,

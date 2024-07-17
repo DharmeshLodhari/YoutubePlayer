@@ -20,11 +20,9 @@ class _MovieDashboardState extends State<MovieDashboard> {
   @override
   Widget build(BuildContext context) {
     _movieDashboardBloc = Provider.of<MovieDashboardBloc>(context);
-    return PopScope(
-      onPopInvoked: (didPop) async {
-        if (didPop) {
-          return;
-        }
+    return WillPopScope(
+      onWillPop: () {
+        return Future.value(true);
       },
       child: Scaffold(
         body: PageView(

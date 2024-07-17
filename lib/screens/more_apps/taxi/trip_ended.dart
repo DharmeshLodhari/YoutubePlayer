@@ -18,11 +18,9 @@ class _TripEndedState extends State<TripEnded> {
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      onPopInvoked: (didPop) async {
-        if (didPop) {
-          return;
-        }
+    return WillPopScope(
+      onWillPop: () async {
+        return Future.value(true);
       },
       child: Scaffold(
         backgroundColor: lightGrey,

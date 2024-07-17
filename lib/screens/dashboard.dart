@@ -460,37 +460,33 @@ class _DashboardState extends State<Dashboard> {
       _currentIndex = 0;
     }
 
-    return PopScope(
-      canPop: false,
-      onPopInvoked: (didPop) async {
-        if (didPop) {
-          return;
-        } else {
-          if (_dashboardBloc.index == 0) {
-            final bool? result = await showDialogBox(
-              context: context,
-              actionOneBgColor: mateRed,
-              actionOneTextColor: Colors.white,
-              actionTwoBgColor: greyBorderColor,
-              actionTwoTextColor: blackFont,
-              title: appLocalization.exitApp,
-              description: appLocalization.youSureYouWantToExitApp,
-              actionOneText: AppLocalization.of(context)!.exit,
-              actionTwoText: AppLocalization.of(context)!.cancel,
-            );
-            if (result != null && result) {
-              SystemChannels.platform.invokeMethod<void>('SystemNavigator.pop');
-            }
-          }
-
-          if (_dashboardBloc.index != 0) {
-            if (mounted) {
-              setState(() {
-                _dashboardBloc.index = 0;
-              });
-            }
+    return WillPopScope(
+      onWillPop: () async {
+        if (_dashboardBloc.index == 0) {
+          final bool? result = await showDialogBox(
+            context: context,
+            actionOneBgColor: mateRed,
+            actionOneTextColor: Colors.white,
+            actionTwoBgColor: greyBorderColor,
+            actionTwoTextColor: blackFont,
+            title: appLocalization.exitApp,
+            description: appLocalization.youSureYouWantToExitApp,
+            actionOneText: AppLocalization.of(context)!.exit,
+            actionTwoText: AppLocalization.of(context)!.cancel,
+          );
+          if (result != null && result) {
+            SystemChannels.platform.invokeMethod<void>('SystemNavigator.pop');
           }
         }
+
+        if (_dashboardBloc.index != 0) {
+          if (mounted) {
+            setState(() {
+              _dashboardBloc.index = 0;
+            });
+          }
+        }
+        return false;
       },
       child: Scaffold(
         key: myGlobals.scaffoldKey,

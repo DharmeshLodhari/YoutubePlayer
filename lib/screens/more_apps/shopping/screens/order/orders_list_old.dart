@@ -149,11 +149,9 @@ class _OrderListOldState extends State<OrderListOld>
     menu.onChange = menuItemSelectionChange;
     menu.menuState = menuStateChange;
 
-    return PopScope(
-      onPopInvoked: (didPop) async {
-        if (didPop) {
-          return;
-        }
+    return WillPopScope(
+      onWillPop: () async {
+        return true;
       },
       child: ScaffoldMessenger(
         key: _scaffoldMessengerOrderListKey,

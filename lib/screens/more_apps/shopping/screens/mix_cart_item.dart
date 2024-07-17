@@ -526,11 +526,10 @@ class _MixCartItemState extends State<MixCartItem> {
   void addNoteDialog() {
     showMaterialDialog<String>(
       context: context,
-      child: PopScope(
-        onPopInvoked: (didPop) async {
-          if (didPop) {
-            Navigator.pop(context, 'cancel');
-          }
+      child: WillPopScope(
+        onWillPop: () async {
+          Navigator.pop(context, 'cancel');
+          return false;
         },
         child: AlertDialog(
           backgroundColor: Colors.white,

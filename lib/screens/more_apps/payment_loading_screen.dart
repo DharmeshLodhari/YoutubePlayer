@@ -12,12 +12,9 @@ class PaymentLoadingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      canPop: false, // Allow back button to pop the screen when not loading
-      onPopInvoked: (didPop) async {
-        if (didPop) {
-          return;
-        }
+    return WillPopScope(
+      onWillPop: () async {
+        return false; // Allow back button to pop the screen when not loading
       },
       child: Stack(
         children: <Widget>[

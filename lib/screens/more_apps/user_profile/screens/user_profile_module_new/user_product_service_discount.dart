@@ -33,12 +33,10 @@ class _UserProductServiceDiscountState
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      onPopInvoked: (didPop) async {
-        if (didPop) {
-          Navigator.pop(context, "back pressed");
-          return;
-        }
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.pop(context, "back pressed");
+        return true;
       },
       child: Scaffold(
         backgroundColor: lightGrey,

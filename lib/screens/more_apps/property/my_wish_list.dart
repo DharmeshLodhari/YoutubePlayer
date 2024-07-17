@@ -60,12 +60,10 @@ class _MyWishListState extends State<MyWishList> {
   Widget build(BuildContext context) {
     _propertyDashboardBloc = Provider.of<PropertyDashboardBloc>(context);
 
-    return PopScope(
-      onPopInvoked: (didPop) async {
-        if (didPop) {
-          _propertyDashboardBloc.index = 0;
-          return;
-        }
+    return WillPopScope(
+      onWillPop: () async {
+        _propertyDashboardBloc.index = 0;
+        return Future.value(true);
       },
       child: Scaffold(
         backgroundColor: lightGrey,

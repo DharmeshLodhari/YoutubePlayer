@@ -56,12 +56,10 @@ class _EventDetailPageState extends State<EventDetailPage> {
   @override
   Widget build(BuildContext context) {
     _eventDashboardBloc = Provider.of<EventDashboardBloc>(context);
-    return PopScope(
-      onPopInvoked: (didPop) {
-        if (didPop) {
-          _eventDashboardBloc.index = 0;
-          return;
-        }
+    return WillPopScope(
+      onWillPop: () {
+        _eventDashboardBloc.index = 0;
+        return Future.value(true);
       },
       child: Scaffold(
         backgroundColor: lightGrey,

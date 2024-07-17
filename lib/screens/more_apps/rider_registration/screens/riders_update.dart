@@ -24,12 +24,9 @@ class _RidersUpdateState extends State<RidersUpdate> {
       bottom: Platform.isIOS ? true : false,
       top: false,
       color: white,
-      child: PopScope(
-        canPop: false,
-        onPopInvoked: (didPop) async {
-          if (didPop) {
-            return;
-          }
+      child: WillPopScope(
+        onWillPop: () async {
+          return false;
         },
         child: Scaffold(
           backgroundColor: white,

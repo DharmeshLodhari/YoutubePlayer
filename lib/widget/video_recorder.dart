@@ -90,14 +90,12 @@ class _VideoRecorderState extends State<VideoRecorder> {
   @override
   Widget build(BuildContext context) {
     timerService = Provider.of<TimerService>(context);
-    return PopScope(
-      onPopInvoked: (didPop) async {
-        if (didPop) {
-          timerService.stop();
-          timerService.reset();
+    return WillPopScope(
+      onWillPop: () async {
+        timerService.stop();
+        timerService.reset();
 
-          return;
-        }
+        return Future.value(true);
       },
       child: Scaffold(
         key: _scaffoldKey,

@@ -97,11 +97,9 @@ class _ViewChatMediaState extends State<ViewChatMedia> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: PopScope(
-        onPopInvoked: (didPop) async {
-          if (didPop) {
-            return;
-          }
+      child: WillPopScope(
+        onWillPop: () async {
+          return Future.value(true);
         },
         child: Scaffold(
           backgroundColor: Colors.black,

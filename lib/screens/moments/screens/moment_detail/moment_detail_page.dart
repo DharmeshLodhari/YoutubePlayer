@@ -278,12 +278,10 @@ class _MomentsDetailsScreenState extends State<MomentsDetailsScreen> {
       );
     }
 
-    return PopScope(
-      onPopInvoked: (didPop) async {
-        if (didPop) {
-          clearAllMedia();
-          return;
-        }
+    return WillPopScope(
+      onWillPop: () {
+        clearAllMedia();
+        return Future.value(true);
       },
       child: Scaffold(
         backgroundColor: Colors.black,

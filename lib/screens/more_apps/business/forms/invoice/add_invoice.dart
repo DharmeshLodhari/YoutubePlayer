@@ -80,13 +80,11 @@ class _AddInvoiceState extends State<AddInvoice> {
     userBloc = Provider.of<UserBloc>(context);
     _addInvoiceBloc = Provider.of<AddInvoiceBloc>(context);
 
-    return PopScope(
-      onPopInvoked: (didPop) async {
-        if (didPop) {
-          _payee = null;
-          _addInvoiceBloc.clearItems();
-          return;
-        }
+    return WillPopScope(
+      onWillPop: () async {
+        _payee = null;
+        _addInvoiceBloc.clearItems();
+        return true;
       },
       child: Scaffold(
         backgroundColor: lightGrey,

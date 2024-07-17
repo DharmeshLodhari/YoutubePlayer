@@ -17,11 +17,9 @@ class _TermsAndConditionState extends State<TermsAndCondition> {
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      onPopInvoked: (didPop) async {
-        if (didPop) {
-          return;
-        }
+    return WillPopScope(
+      onWillPop: () async {
+        return Future.value(true);
       },
       child: Scaffold(
         backgroundColor: lightGrey,

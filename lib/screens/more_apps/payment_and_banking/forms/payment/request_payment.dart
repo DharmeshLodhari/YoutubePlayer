@@ -153,17 +153,16 @@ class _RequestPaymentState extends State<RequestPayment> {
     _dashboardBloc = Provider.of<DashboardBloc>(context);
     customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
 
-    return PopScope(
-      onPopInvoked: (didPop) async {
-        if (didPop) {
-          if (FocusScope.of(context).hasFocus) {
-            FocusScope.of(context).unfocus();
-            await Future.delayed(const Duration(milliseconds: 300));
-          }
-          _payee = null;
-          customerProfileBloc.customer = null;
-          return;
+    return WillPopScope(
+      onWillPop: () async {
+        if (FocusScope.of(context).hasFocus) {
+          FocusScope.of(context).unfocus();
+          await Future.delayed(const Duration(milliseconds: 300));
         }
+        _payee = null;
+        customerProfileBloc.customer = null;
+        Navigator.pop(context, "back pressed");
+        return true;
       },
       child: ScaffoldMessenger(
         key: requestPaymentScaffoldMessenger,

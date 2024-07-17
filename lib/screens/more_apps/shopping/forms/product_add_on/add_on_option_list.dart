@@ -148,12 +148,10 @@ class _AddOnOptionListState extends State<AddOnOptionList>
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
 
-    return PopScope(
-      onPopInvoked: (didPop) async {
-        if (didPop) {
-          Navigator.pop(context, addOnOptionList);
-          return;
-        }
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.pop(context, addOnOptionList);
+        return true;
       },
       child: ScaffoldMessenger(
         key: _scaffoldMessengerKey,

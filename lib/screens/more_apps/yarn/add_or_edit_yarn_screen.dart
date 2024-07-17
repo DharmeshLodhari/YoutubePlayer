@@ -297,25 +297,16 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     itemSearchTypeSelectionMenu!.onChange = menuItemSelectionChange;
     itemSearchTypeSelectionMenu!.menuState = menuStateChange;
 
-    return PopScope(
-      canPop: false,
-      onPopInvoked: (bool didPop) {
-        if (didPop) {
-          return;
-        }
-        checkShowBackDialog(context);
-        // onPopInvoked: (didPop) async {
-        //   if (didPop) {
-        // }
+    return WillPopScope(
+      onWillPop: () async {
+        return checkShowBackDialog(context);
       },
       child: Scaffold(
-        backgroundColor: lightGrey,
+        backgroundColor: Colors.white,
         appBar: _buildAppBar(),
         body: Consumer<YarnDashboardBloc>(builder: (context, model, child) {
           return Column(
-            children: [
-              _buildYarnForm(model),
-            ],
+            children: [_buildYarnForm(model)],
           );
         }),
       ),
@@ -2523,7 +2514,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
         ));
   }
 
-  Future<void> checkShowBackDialog(BuildContext context) async {
+  Future<bool> checkShowBackDialog(BuildContext context) async {
     if (yarnDashboardBloc?.productService != null ||
         textController!.text.isNotEmpty ||
         newMediaList.isNotEmpty ||
@@ -2544,12 +2535,11 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
           yarnDashboardBloc?.productService == null;
         }
         Navigator.of(context).pop();
-      } else {
-        return Future.value(false);
       }
+      return false;
     } else {
       Navigator.of(context).pop();
-      return Future.value(true);
+      return true;
     }
   }
 }

@@ -162,12 +162,10 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
       isAuthor = true;
     }
 
-    return PopScope(
-      onPopInvoked: (didPop) async {
-        if (didPop) {
-          await myAudioPlayer.stopAudio();
-          return;
-        }
+    return WillPopScope(
+      onWillPop: () async {
+        await myAudioPlayer.stopAudio();
+        return await Future.value(true);
       },
       child: ColorfulSafeArea(
         bottom: false,

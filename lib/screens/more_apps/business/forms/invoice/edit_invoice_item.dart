@@ -61,11 +61,9 @@ class _EditInvoiceItemState extends State<EditInvoiceItem> {
     addInvoiceBloc = Provider.of<AddInvoiceBloc>(context);
     userBloc = Provider.of<UserBloc>(context);
     getInvoiceItem();
-    return PopScope(
-      onPopInvoked: (didPop) async {
-        if (didPop) {
-          return;
-        }
+    return WillPopScope(
+      onWillPop: () async {
+        return true;
       },
       child: Scaffold(
         backgroundColor: lightGrey,

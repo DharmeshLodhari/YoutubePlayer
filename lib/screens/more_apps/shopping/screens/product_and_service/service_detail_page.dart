@@ -204,12 +204,11 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
     basketBloc = Provider.of<BasketBloc>(context);
     yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context, listen: false);
     isValidCustomer = userBloc.user.userName != service?.provider;
-    return PopScope(
-      onPopInvoked: (didPop) async {
-        if (didPop) {
-          customerProfileBloc.customer = null;
-          return;
-        }
+    return WillPopScope(
+      onWillPop: () async {
+        customerProfileBloc.customer = null;
+        Navigator.pop(context, "back pressed");
+        return true;
       },
       child: Scaffold(
         backgroundColor: lightGrey,

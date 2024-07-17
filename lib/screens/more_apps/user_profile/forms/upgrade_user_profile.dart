@@ -107,11 +107,9 @@ class _UpgradeUserProfileState extends State<UpgradeUserProfile> {
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
-    return PopScope(
-      onPopInvoked: (didPop) async {
-        if (didPop) {
-          return;
-        }
+    return WillPopScope(
+      onWillPop: () async {
+        return true;
       },
       child: Scaffold(
         key: _upgradeProfileScaffold,

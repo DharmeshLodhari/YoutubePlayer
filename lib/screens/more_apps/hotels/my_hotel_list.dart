@@ -53,12 +53,10 @@ class _MyHotelListState extends State<MyHotelList> {
   @override
   Widget build(BuildContext context) {
     _hotelDashboardBloc = Provider.of<HotelDashboardBloc>(context);
-    return PopScope(
-      onPopInvoked: (didPop) async {
-        if (didPop) {
-          _hotelDashboardBloc.index = 0;
-          return;
-        }
+    return WillPopScope(
+      onWillPop: () async {
+        _hotelDashboardBloc.index = 0;
+        return Future.value(true);
       },
       child: Scaffold(
         backgroundColor: lightGrey,

@@ -91,11 +91,9 @@ class _PutMoneyInEnvelopeState extends State<PutMoneyInEnvelope> {
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
 
-    return PopScope(
-      onPopInvoked: (didPop) async {
-        if (didPop) {
-          return;
-        }
+    return WillPopScope(
+      onWillPop: () async {
+        return true;
       },
       child: ScaffoldMessenger(
         key: _putMoneyInEnvelopeScaffoldMessenger,
