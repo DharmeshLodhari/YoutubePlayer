@@ -299,6 +299,7 @@ class _DiscountListState extends State<DiscountList> {
         );
         if (result != null && result == true) {
           getList(fetchFresh: true);
+          if (mounted) setState(() {});
         }
       },
       child: Container(

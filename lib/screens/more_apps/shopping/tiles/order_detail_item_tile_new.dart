@@ -64,8 +64,8 @@ class _OrderTileForProductNewState extends State<OrderTileForProductNew> {
     return ClipRRect(
       borderRadius: BorderRadius.circular(10.0),
       child: CachedNetworkImage(
-        height: 48,
-        width: 48,
+        height: 80,
+        width: 80,
         imageUrl: image ?? defaultImage,
         colorBlendMode: BlendMode.darken,
         fit: BoxFit.contain,
@@ -139,11 +139,13 @@ class _OrderTileForProductNewState extends State<OrderTileForProductNew> {
   }
 
   Widget getPriceWidget() {
-    if (product?.variantModels?.isEmpty ?? false) {
-      product?.variantModels = null;
+    final int productActualPrice;
+    if (product?.variantModels?.isNotEmpty ?? false) {
+      productActualPrice =
+          product?.getDiscountedPrice(product?.variantModels?.first) ?? 0;
+    } else {
+      productActualPrice = product?.getProductRealPrice() ?? 0;
     }
-    final int productActualPrice =
-        product?.getDiscountedPrice(product?.variantModels?.first) ?? 0;
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[

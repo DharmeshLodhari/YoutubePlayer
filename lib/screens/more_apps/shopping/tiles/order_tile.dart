@@ -13,6 +13,7 @@ import 'package:Slydo/screens/more_apps/shopping/tiles/order_detail_item_tile_ne
 import 'package:Slydo/screens/more_apps/shopping/widget/outline_border_button.dart';
 import 'package:Slydo/screens/more_apps/shopping/widget/rounded_border_button.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 import 'package:Slydo/services/location_service.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -23,13 +24,14 @@ import 'package:Slydo/widget/customized_popup_menu.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class OrderTile extends StatefulWidget {
-  OrderTile({super.key, this.order});
+  const OrderTile({super.key, this.order});
 
   final Order? order;
 
@@ -178,7 +180,7 @@ class _OrderTileState extends State<OrderTile> {
     }
     if ((order?.newOrderStatus.contains(order?.status) ?? false) ||
         order?.status == "Awaiting Payment") {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     } else {
       return _buildTrackOrder();
     }
@@ -948,22 +950,29 @@ class _OrderTileState extends State<OrderTile> {
   // todo: change font cour and size of the merchant user name lightgray
   Widget _buildMerchantName() {
     String name;
-    String lable;
+    String? image;
     if (order?.isCustomer(userBloc.user.userName) ?? false) {
-      lable = "Sold by";
+      image = order?.merchantAvatar;
       name = order?.normalizeName(order?.merchant) ?? "";
     } else {
       name = order?.normalizeName(order?.customerName) ?? "";
-      lable = "Bought by";
+      image = order?.customerAvatar;
     }
-    return Text(
-      "$lable: $name",
-      style: TextStyle(
-        color: lightBlackFont,
-        fontSize: 14,
-        fontWeight: FontWeight.w600,
-        fontFamily: "Inter",
-      ),
+    return Row(
+      children: [
+        _buildMerchantCustomerIcon(image),
+        const SizedBox(width: 10),
+        Text(
+          name,
+          // "$lable: $name",
+          style: TextStyle(
+            color: lightBlackFont,
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            fontFamily: "Inter",
+          ),
+        ),
+      ],
     );
   }
 
@@ -1203,6 +1212,46 @@ class _OrderTileState extends State<OrderTile> {
       backgroundColor: navyBlue,
       textColor: white,
       text: 'Update',
+    );
+  }
+
+  Widget _buildMerchantCustomerIcon(String? image) {
+    return Stack(
+      children: [
+        ClipRRect(
+          borderRadius: BorderRadius.circular(80),
+          child: GestureDetector(
+            onTap: () {
+              Navigator.of(context)
+                  .pushNamed("/photo-viewer", arguments: image);
+            },
+            child: Container(
+              color: Colors.white,
+              child: CachedNetworkImage(
+                height: 30,
+                width: 30,
+                fit: BoxFit.fill,
+                filterQuality: FilterQuality.high,
+                imageUrl: image ?? "",
+                errorWidget: imageErrorWidget,
+              ),
+            ),
+          ),
+        ),
+        Positioned(
+          bottom: 0,
+          right: -1,
+          child: CircleAvatar(
+            maxRadius: 7,
+            backgroundColor: navyBlue,
+            child: Image.asset(
+              order?.isCustomer(userBloc.user.userName) ?? false
+                  ? 'assets/images/arrow-down-left.png'
+                  : 'assets/images/arrow-down-right.png',
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
