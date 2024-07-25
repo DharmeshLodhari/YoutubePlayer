@@ -9,6 +9,7 @@ import 'package:Slydo/widget/custom_box_shadow.dart';
 import 'package:Slydo/widget/item_display_product_for_discount.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:flutter/material.dart';
+import 'package:percent_indicator/percent_indicator.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shimmer/shimmer.dart';
@@ -41,7 +42,7 @@ class _UserProductsDiscountState extends State<UserProductDiscount> {
   bool noProductInList = false;
 
   late UserBloc userBloc;
-
+  bool isLoader = false;
   bool isSelectAll = false;
 
   @override
@@ -241,6 +242,10 @@ class _UserProductsDiscountState extends State<UserProductDiscount> {
   Widget getSubmitButton() {
     return CurvedButton(
       onPressed: () async {
+        isLoader = true;
+        setState(() {});
+        await Future.delayed(const Duration(seconds: 2));
+        print("$isLoader===============>");
         final List<Product> selectedProducts =
             productList.where((e) => e.isChecked).toList();
 
@@ -249,11 +254,16 @@ class _UserProductsDiscountState extends State<UserProductDiscount> {
           "ids": selectedProducts.map((e) => e.id).toList(),
           "isAllProductSelected": isSelectAll
         };
+        setState(() {
+          isLoader = false;
+          print("$isLoader===============>");
+        });
         Navigator.pop(context, items);
       },
       backgroundColor: navyBlue,
       textColor: Colors.white,
       text: "Save",
+      isLoading: isLoader,
     );
   }
 

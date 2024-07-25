@@ -14,11 +14,13 @@ class PackageDetailTile extends StatelessWidget {
   final int index;
   late ShippingProcessBloc shippingProcessBloc;
   late UserBloc userBloc;
+  late BasketBloc basketBloc;
 
   @override
   Widget build(BuildContext context) {
     shippingProcessBloc = Provider.of<ShippingProcessBloc>(context);
     userBloc = Provider.of<UserBloc>(context);
+    basketBloc = Provider.of<BasketBloc>(context);
     return GestureDetector(
       onTap: () {
         shippingProcessBloc.currentSelectedIndex = index;
@@ -111,7 +113,8 @@ class PackageDetailTile extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  moneyDisplayNormalizer(packageDetailsModel.totalPrice ?? 0),
+                  moneyDisplayNormalizer(basketBloc.getTotalPrice()),
+                  // moneyDisplayNormalizer(packageDetailsModel.totalPrice ?? 0),
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w500,

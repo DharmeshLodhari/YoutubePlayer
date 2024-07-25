@@ -535,16 +535,22 @@ class Product extends PurchasableItem {
           return selectedVariant.discountedPrice;
         } else {
           if (checkProductDiscount()) {
-            return getCalDiscountedPrice(discountType, discountValue,
-                int.parse(selectedVariant.price ?? "0"));
+            return getCalDiscountedPrice(
+              discountType,
+              discountValue,
+              int.tryParse(selectedVariant.price ?? "") ?? 0,
+            );
           } else {
-            return int.parse(selectedVariant.price ?? "0");
+            return int.tryParse(selectedVariant.price ?? "") ?? 0;
           }
         }
       } else {
         if (checkVariantDiscount(selectedVariant)) {
-          return getCalDiscountedPrice(selectedVariant.discountType,
-              selectedVariant.discountValue, price ?? 0);
+          return getCalDiscountedPrice(
+            selectedVariant.discountType,
+            selectedVariant.discountValue,
+            price ?? 0,
+          );
         } else {
           return getProductRealPrice();
         }
@@ -668,7 +674,7 @@ class Product extends PurchasableItem {
 
   bool isProductAvailableNow() {
     if ((isAvailable ?? false) &&
-        quantity! >= 1 &&
+        (quantity ?? 0) >= 1 &&
         ((availableFrom?.isBefore(DateTime.now()) ?? false) ||
             (availableFrom?.isAtSameMomentAs(DateTime.now()) ?? false))) {
       return true;

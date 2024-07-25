@@ -1045,7 +1045,7 @@ class _AddEditDiscountState extends State<AddEditDiscount> {
             style: TextStyle(
               color: blackFont,
               fontWeight: FontWeight.w600,
-              fontSize: 16,
+              fontSize: 15,
             ),
           ),
           trailing: Icon(
@@ -1081,10 +1081,12 @@ class _AddEditDiscountState extends State<AddEditDiscount> {
           dense: true,
           title: Text(
             startFrom != null ? formatDate(startFrom) : "",
+            softWrap: false,
             style: TextStyle(
               color: blackFont,
               fontWeight: FontWeight.w600,
-              fontSize: 16,
+              fontSize: 15,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
           trailing: Icon(
@@ -1121,10 +1123,12 @@ class _AddEditDiscountState extends State<AddEditDiscount> {
           dense: true,
           title: Text(
             endTo != null ? formatDate(endTo) : "",
+            softWrap: false,
             style: TextStyle(
               color: blackFont,
               fontWeight: FontWeight.w600,
-              fontSize: 16,
+              fontSize: 15,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
           trailing: Icon(

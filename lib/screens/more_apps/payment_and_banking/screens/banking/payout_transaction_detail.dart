@@ -170,7 +170,8 @@ class _PayoutTransactionDetailState extends State<PayoutTransactionDetail> {
   }
 
   Widget getSubtitle() {
-    final DateTime transactionTime = DateTime.parse(payout!.timeStamp!);
+    final DateTime transactionTime =
+        DateTime.parse(payout!.timeStamp!).toLocal();
     final String date = DateFormat("dd/MM/yyyy").format(transactionTime);
     final String time = DateFormat("hh:mm a").format(transactionTime);
 

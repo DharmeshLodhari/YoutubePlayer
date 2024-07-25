@@ -102,14 +102,15 @@ class NormalCartScreenState extends State<NormalCartScreen> {
     return Stack(
       children: [
         SmartRefresher(
-            enablePullDown: true,
-            header: WaterDropHeader(
-              complete: Container(),
-              waterDropColor: navyBlue,
-            ),
-            controller: _refreshController,
-            onRefresh: _onRefresh,
-            child: _buildCartItemList()),
+          enablePullDown: true,
+          header: WaterDropHeader(
+            complete: Container(),
+            waterDropColor: navyBlue,
+          ),
+          controller: _refreshController,
+          onRefresh: _onRefresh,
+          child: _buildCartItemList(),
+        ),
         Positioned(
           bottom: 40, // Adjust the distance from the bottom as needed
           right: 0,
@@ -156,11 +157,11 @@ class NormalCartScreenState extends State<NormalCartScreen> {
                 Row(
                   children: <Widget>[
                     Text(
-                      "${AppLocalization.of(context)!.total} : ",
+                      "${AppLocalization.of(context)?.total} : ",
                       style: TextStyle(fontSize: 14, color: blackFont),
                     ),
                     Text(
-                      worldCurrencies[userBloc.user.currency!]!,
+                      worldCurrencies[userBloc.user.currency] ?? "",
                       style: const TextStyle(
                           fontFamily: "Inter",
                           fontSize: 16,

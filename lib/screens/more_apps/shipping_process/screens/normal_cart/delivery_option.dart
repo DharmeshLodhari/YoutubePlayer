@@ -1027,8 +1027,7 @@ class _DeliveryOptionState extends State<DeliveryOption> {
           dense: true,
           title: Text(
             (selectedDateTime) != null && !isMidnight(selectedDateTime!)
-                ? formatTime24hrs(
-                    selectedDateTime?.add(const Duration(hours: 1)))
+                ? formatTime24hrs(selectedDateTime)
                 : "",
             style: const TextStyle(
               fontWeight: FontWeight.w600,

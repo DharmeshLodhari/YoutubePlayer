@@ -820,6 +820,14 @@ String formatDate(DateTime? dateTime) {
   return date;
 }
 
+String formatDate1(DateTime? dateTime) {
+  if (dateTime == null) {
+    return '';
+  }
+  final DateFormat formatter = DateFormat('dd/MM/yyyy');
+  return formatter.format(dateTime);
+}
+
 String formatDateForOrder(DateTime? dateTime) {
   if (dateTime == null) {
     return '';
@@ -2712,5 +2720,31 @@ Future<bool> checkConnection(BuildContext context) async {
     showToast(
         message: AppLocalization.of(context)!.internetConnectionNotAvailable);
     return false;
+  }
+}
+
+Map<String, String> getFormattedDateTime(String? dateTimeString) {
+  try {
+    final String cleanedDateTimeString = dateTimeString?.split('.').first ?? "";
+
+    final DateTime dateTime = DateTime.parse(cleanedDateTimeString);
+    // final DateFormat dateFormatter = DateFormat('yyyy-MM-dd');
+    final DateFormat dateFormatter = DateFormat('dd-MM-yyyy');
+    final DateFormat timeFormatter = DateFormat('HH:mm:ss');
+
+    // Format the date and time
+    final String formattedDate = dateFormatter.format(dateTime);
+    final String formattedTime = timeFormatter.format(dateTime);
+
+    return {
+      'date': formattedDate,
+      'time': formattedTime,
+    };
+  } catch (e) {
+    print("Error parsing date: $e");
+    return {
+      'date': '',
+      'time': '',
+    };
   }
 }

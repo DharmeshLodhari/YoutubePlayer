@@ -29,11 +29,21 @@ class ShippingProcessBloc extends ChangeNotifier {
   }
 
   PackageDetailsModel getPackageDetailModel() {
-    if (isUseCart) {
+    if (isUseCart &&
+        _currentSelectedIndex != null &&
+        _currentSelectedIndex! >= 0 &&
+        _currentSelectedIndex! < _packagesList.length) {
       return _packagesList[_currentSelectedIndex!];
     }
     return buyNowPackageDetailsModel;
   }
+
+  // PackageDetailsModel getPackageDetailModel() {
+  //   if (isUseCart) {
+  //     return _packagesList[_currentSelectedIndex!];
+  //   }
+  //   return buyNowPackageDetailsModel;
+  // }
 
   bool? isAllShippingProcessCompleted() {
     bool result = true;

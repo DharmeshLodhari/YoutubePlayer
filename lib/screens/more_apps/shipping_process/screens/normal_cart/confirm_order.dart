@@ -342,6 +342,7 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
             } else if (response.statusCode == 500) {
               showToast(message: AppLocalization.of(context)!.serverError);
             } else {
+              showToast(message: "Payment Not Succsessfully");
               debugPrint(
                 "MakePaymentForCartOrder Unsuccessful",
               );
@@ -390,7 +391,8 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
               ),
             ),
             Text(
-              moneyDisplayNormalizer(shippingProcessBloc.getTotalItemCost()),
+              moneyDisplayNormalizer(basketBloc.getTotalPrice()),
+              // moneyDisplayNormalizer(shippingProcessBloc.getTotalItemCost()),
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
@@ -556,7 +558,7 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
               ),
             ),
             Text(
-              moneyDisplayNormalizer(shippingProcessBloc.getTotalOrder()),
+              moneyDisplayNormalizer(getTotalOrder()),
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
@@ -568,5 +570,14 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
         ),
       ],
     );
+  }
+
+  int? getTotalOrder() {
+    final int totalItemCost = basketBloc.getTotalPrice();
+    final int? totalShipping = shippingProcessBloc.getTotalShipping();
+    final int? serviceCharge = shippingProcessBloc.getServiceCharge();
+    int totalOrderAmount =
+        (totalItemCost) + (totalShipping ?? 0) + (serviceCharge ?? 0);
+    return totalOrderAmount;
   }
 }

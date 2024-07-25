@@ -332,7 +332,7 @@ class _TransactionListState extends State<TransactionList> {
         controller: _pageViewController,
         children: const [
           SlydoTransactionList(),
-          CashoutTransactionsList(),
+          CashOutTransactionsList(),
         ],
       ),
     );

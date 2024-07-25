@@ -160,7 +160,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
         },
       ),
       title: Text(
-        AppLocalization.of(context)!.basket,
+        AppLocalization.of(context)?.basket ?? "",
         style: TextStyle(
           fontSize: 20,
           fontFamily: "Inter",

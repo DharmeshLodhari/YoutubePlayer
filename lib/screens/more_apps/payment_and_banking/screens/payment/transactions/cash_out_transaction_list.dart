@@ -8,15 +8,15 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../../payment_and_banking_auth.dart';
 
-class CashoutTransactionsList extends StatefulWidget {
-  const CashoutTransactionsList({super.key});
+class CashOutTransactionsList extends StatefulWidget {
+  const CashOutTransactionsList({super.key});
 
   @override
-  State<CashoutTransactionsList> createState() =>
-      _CashoutTransactionsListState();
+  State<CashOutTransactionsList> createState() =>
+      _CashOutTransactionsListState();
 }
 
-class _CashoutTransactionsListState extends State<CashoutTransactionsList> {
+class _CashOutTransactionsListState extends State<CashOutTransactionsList> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey =
       GlobalKey<ScaffoldMessengerState>();

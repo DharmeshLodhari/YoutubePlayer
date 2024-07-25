@@ -38,6 +38,8 @@ class _OrderListState extends State<OrderList> {
     Filter(title: "Pickup", value: 'pickup'),
     Filter(title: "Refund Successful", value: 'refundSuccessful'),
     Filter(title: "Pending Refund Request", value: 'pendingRefundRequest'),
+    Filter(title: "Incoming Orders", value: 'incomingOrders'),
+    Filter(title: "Outgoing Orders", value: 'outgoingOrders'),
   ];
 
   @override
@@ -441,6 +443,18 @@ class _OrderListState extends State<OrderList> {
       case "pendingRefundRequest":
         setState(() {
           selectedFilter = "Pending Refund Request";
+          isFilterApplied = true;
+        });
+        break;
+      case "incomingOrders":
+        setState(() {
+          selectedFilter = "Incoming Orders";
+          isFilterApplied = true;
+        });
+        break;
+      case "outgoingOrders":
+        setState(() {
+          selectedFilter = "Outgoing Order";
           isFilterApplied = true;
         });
         break;

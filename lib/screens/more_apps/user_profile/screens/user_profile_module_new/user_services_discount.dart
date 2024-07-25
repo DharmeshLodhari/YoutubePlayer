@@ -32,6 +32,7 @@ class _UserServicesDiscountState extends State<UserServicesDiscount> {
   String? servicePrevious = "";
   List<Service> serviceList = [];
   bool isServiceLoading = false;
+  bool isLoader = false;
   bool noServiceInList = false;
   final ScrollController _serviceScrollController = ScrollController();
   final GlobalKey<ScaffoldState> _serviceScaffoldKey =
@@ -247,6 +248,9 @@ class _UserServicesDiscountState extends State<UserServicesDiscount> {
   Widget getSubmitButton() {
     return CurvedButton(
       onPressed: () async {
+        isLoader = true;
+        setState(() {});
+        await Future.delayed(const Duration(seconds: 2));
         final List<Service> selectedServices =
             serviceList.where((e) => e.isChecked).toList();
 
@@ -255,10 +259,14 @@ class _UserServicesDiscountState extends State<UserServicesDiscount> {
           "ids": selectedServices.map((e) => e.id).toList(),
           "isAllServiceSelected": isSelectAll
         };
+        setState(() {
+          isLoader = false;
+        });
         Navigator.pop(context, items);
       },
       backgroundColor: navyBlue,
       textColor: Colors.white,
+      isLoading: isLoader,
       text: "Save",
     );
   }

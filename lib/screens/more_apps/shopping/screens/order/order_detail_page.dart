@@ -7,6 +7,7 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/auth/shipping_process_auth.dart';
+import 'package:Slydo/screens/more_apps/shipping_process/models/package_details_model.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/shopping/tiles/order_detail_item_tile_new.dart';
@@ -45,7 +46,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   late UserBloc userBloc;
   TextEditingController userNoteController = TextEditingController();
   final GlobalKey _key = LabeledGlobalKey("orderDetailPagePopUpMenu");
-
+  late ShippingProcessBloc shippingProcessBloc;
   late CustomizedPopUpMenu menu;
   int selectedMenuItemIndex = 0;
   bool isPopMenuOpen = false;
@@ -77,6 +78,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
+    shippingProcessBloc = Provider.of<ShippingProcessBloc>(context);
     menu = CustomizedPopUpMenu(
       buttonKey: _key,
       context: context,
@@ -362,7 +364,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Text(
-                AppLocalization.of(context)!.subTotal,
+                AppLocalization.of(context)?.subTotal ?? "",
                 style: TextStyle(
                   fontSize: 14,
                   color: black,
@@ -422,7 +424,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                     ),
                   ),
                   Text(
-                    moneyDisplayNormalizer(order?.shippingPrice),
+                    moneyDisplayNormalizer(getShippingPrice()),
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
@@ -461,7 +463,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                     ),
                   ),
                   Text(
-                    moneyDisplayNormalizer(0),
+                    getTaxAmount(),
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
@@ -500,7 +502,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                     ),
                   ),
                   Text(
-                    moneyDisplayNormalizer(order?.totalPrice),
+                    moneyDisplayNormalizer(getTotalAmount()),
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
@@ -702,6 +704,8 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     final DateFormat dateFormat = DateFormat("MMMM dd, yyyy");
     final DateTime dateTime = DateTime.parse(order?.createdAt.toString() ?? "");
     final String date = dateFormat.format(dateTime);
+    final Map<String, String> formattedDateTime =
+        getFormattedDateTime(order?.pickupDateTime ?? "");
     return Container(
       padding: const EdgeInsets.all(7),
       decoration: BoxDecoration(
@@ -729,17 +733,22 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
             detail: '#1782903',
           ),
           OrderDetailRow(
-            title: 'Order placed on',
+            title: 'Order Placed on',
+            detail: date,
+          ),
+          OrderDetailRow(
+            title: 'Payment Date',
             detail: date,
           ),
           OrderDetailRow(
             title: 'Payment Method',
             detail: order?.paymentType ?? "",
           ),
-          const OrderDetailRow(
-            title: 'Address',
-            detail: 'No 5, Adetutu street, ikeja, lagos, Nigeria, 100001',
-          ),
+          if (order?.shipmentType() == "PickUp" ||
+              order?.shipmentType() == "In Store/Eat In")
+            _buildPickUpEatInStore(formattedDateTime['date'] ?? "",
+                formattedDateTime['time'] ?? ""),
+          if (order?.shipmentType() == "Delivery") _buildDeliveryDetails()
         ],
       ),
     );
@@ -1451,6 +1460,62 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
 
     print("=========>$subTotal");
     return subTotal;
+  }
+
+  int? getShippingPrice() {
+    return int.tryParse(order?.shippingPrice?.toString() ?? "0");
+  }
+
+  String getTaxAmount() {
+    return moneyDisplayNormalizer(0);
+  }
+
+  int getTotalAmount() {
+    final int subTotal = getSubTotalAmount();
+    final int? shippingPrice = getShippingPrice();
+    final int taxAmount = int.tryParse(getTaxAmount()) ?? 0;
+
+    final int totalAmount = subTotal + (shippingPrice ?? 0) + taxAmount;
+    print("Total Amount: $totalAmount");
+    return totalAmount;
+  }
+
+  Widget _buildPickUpEatInStore(String date, String time) {
+    return Column(
+      children: [
+        OrderDetailRow(
+          title: 'Delivery Option',
+          detail: order?.isOrderStatus(userBloc.user.userName ?? "") ?? "",
+        ),
+        OrderDetailRow(
+          title: 'Pickup Date',
+          detail: date,
+        ),
+        OrderDetailRow(
+          title: 'Pickup Time',
+          detail: time,
+        ),
+        OrderDetailRow(
+          title: 'Order Fulfilled',
+          detail: order?.pickupDateTime ?? "",
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDeliveryDetails() {
+    return Column(
+      children: [
+        const OrderDetailRow(
+          title: 'Address',
+          detail: 'No 5, Adetutu street, ikeja, lagos, Nigeria, 100001',
+        ),
+        OrderDetailRow(
+          title: 'Order delivered on',
+          detail: order?.deliveryDatetime ?? "",
+        ),
+      ],
+    );
   }
 }
 

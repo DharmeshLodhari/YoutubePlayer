@@ -223,7 +223,7 @@ class _EditProductVariantState extends State<EditProductVariant> {
         },
       ),
       title: Text(
-        AppLocalization.of(context)!.updateVariant,
+        AppLocalization.of(context)?.updateVariant ?? "",
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
@@ -955,7 +955,8 @@ class _EditProductVariantState extends State<EditProductVariant> {
           final DateTime selectedDate =
               DateTime(value!.year, value.month, value.day);
 
-          productAvailableFrom = DateFormat('yyyy-MM-dd').format(selectedDate);
+          // productAvailableFrom = DateFormat('yyyy-MM-dd').format(selectedDate);
+          productAvailableFrom = DateFormat('dd-MM-yyyy').format(selectedDate);
           // productAvailableFrom = DateTime(value!.year, value.month, value.day);
           setState(() {});
         }).catchError((error) {});
@@ -1240,8 +1241,15 @@ class _EditProductVariantState extends State<EditProductVariant> {
           } else {
             variant.discountId = "";
           }
+          // Convert date format for server
+          if (productAvailableFrom != null) {
+            DateTime dateForServer =
+                DateFormat('dd-MM-yyyy').parse(productAvailableFrom!);
+            variant.availableFrom =
+                DateFormat('yyyy-MM-dd').format(dateForServer);
+          }
           variant.isAvailable = productIsAvailable;
-          variant.availableFrom = productAvailableFrom;
+          // variant.availableFrom = productAvailableFrom;
           variant.trackInventory = inventoryIsAvailable;
           variant.currency = 'NGN';
 

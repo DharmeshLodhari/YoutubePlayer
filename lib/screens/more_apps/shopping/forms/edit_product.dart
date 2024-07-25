@@ -474,7 +474,7 @@ class _EditProductState extends State<EditProduct> {
         },
       ),
       title: Text(
-        "Edit product",
+        "Edit Product",
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
@@ -2485,8 +2485,8 @@ class _EditProductState extends State<EditProduct> {
         ).then((value) {
           if (mounted) {
             setState(() {
-              productAvailableFrom =
-                  DateTime(value!.year, value.month, value.day);
+              productAvailableFrom = DateTime(
+                  value?.year ?? 0, value?.month ?? 0, value?.day ?? 0);
             });
           }
         }).catchError((error) {});
@@ -2496,7 +2496,7 @@ class _EditProductState extends State<EditProduct> {
         child: ListTile(
           dense: true,
           title: Text(
-            formatDate(productAvailableFrom!),
+            formatDate1(productAvailableFrom),
             style: TextStyle(
               color: blackFont,
               fontWeight: FontWeight.w600,
