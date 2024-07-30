@@ -28,7 +28,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:uuid/uuid.dart';
-import "package:http/http.dart" as http;
 
 import '../../../../../super_store/shop_list_screen_with_tags.dart';
 
@@ -435,8 +434,7 @@ class _ProductViewMoreDetailsState extends State<ProductViewMoreDetails> {
         : isLoading && productDealOfTheDayList.isEmpty
             ? buildLoadingIndicator(isLoading: isLoading)
             : Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                padding: const EdgeInsets.all(16),
                 child: CustomScrollView(
                   controller: _scrollController,
                   physics: const ScrollPhysics(),

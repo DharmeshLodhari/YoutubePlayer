@@ -26,6 +26,7 @@ class _SuperBlogState extends State<SuperBlog> {
   String? lastInputValue;
   String? titleToSearch;
   int? postCount = 0;
+  int currentPage = 1;
   bool noPostInList = false;
   String? postNext = "";
   String? postPrevious = "";
@@ -106,12 +107,24 @@ class _SuperBlogState extends State<SuperBlog> {
           noPostInList = true;
         });
       }
-    } else if (postNext == null && postList.length > 5) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content:
-            Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-        duration: const Duration(milliseconds: 500),
-      ));
+    } else if (postNext == null && postList.length > 6) {
+      showReachedToBottomSnackBar();
+    }
+  }
+
+  void showReachedToBottomSnackBar() {
+    if (mounted) {
+      if (postNext == null &&
+          _postScrollController.position.pixels ==
+              _postScrollController.position.maxScrollExtent &&
+          _postScrollController.position.pixels != 0) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content:
+              Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
+          duration: const Duration(milliseconds: 500),
+        ));
+        ();
+      }
     }
   }
 
@@ -122,7 +135,7 @@ class _SuperBlogState extends State<SuperBlog> {
     _postScrollController.addListener(() {
       if (_postScrollController.position.pixels ==
               _postScrollController.position.maxScrollExtent &&
-          _postScrollController.position.pixels != 0) {
+          !isPostLoading) {
         getListOfBlogs();
       }
     });
@@ -462,9 +475,11 @@ class _SlydoBlogsListState extends State<SlydoBlogsList> {
     Map<String, dynamic>? result;
     if (!isPostLoading) {
       if (postNext != null && !isPostLoading) {
-        isPostLoading = true;
-        if (mounted) setState(() {});
-
+        if (mounted) {
+          setState(() {
+            isPostLoading = true;
+          });
+        }
         try {
           result = await UserPostAuth().listAllPosts(
               next: postNext,
@@ -482,9 +497,7 @@ class _SlydoBlogsListState extends State<SlydoBlogsList> {
 
         if (result == null) {
           isPostLoading = false;
-          if (mounted) {
-            setState(() {});
-          }
+          if (mounted) setState(() {});
           return;
         }
 
@@ -511,18 +524,33 @@ class _SlydoBlogsListState extends State<SlydoBlogsList> {
         }
       }
     }
+    if (isFirstTime && postNext != null && postNext != "") {
+      isFirstTime = false;
+      getListOfBlogs();
+    }
     if (postList.isEmpty) {
       if (mounted) {
         setState(() {
           noPostInList = true;
         });
       }
-    } else if (postNext == null && postList.length > 15) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content:
-            Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-        duration: const Duration(milliseconds: 500),
-      ));
+    } else if (postNext == null && postList.length > 3) {
+      showReachedToBottomSnackBar();
+    }
+  }
+
+  void showReachedToBottomSnackBar() {
+    if (mounted) {
+      if (postNext == null &&
+          _postScrollController.position.pixels ==
+              _postScrollController.position.maxScrollExtent &&
+          _postScrollController.position.pixels != 0) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content:
+              Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
+          duration: const Duration(milliseconds: 500),
+        ));
+      }
     }
   }
 
@@ -532,7 +560,7 @@ class _SlydoBlogsListState extends State<SlydoBlogsList> {
     _postScrollController.addListener(() {
       if (_postScrollController.position.pixels ==
               _postScrollController.position.maxScrollExtent &&
-          _postScrollController.position.pixels != 0) {
+          !isPostLoading) {
         getListOfBlogs();
       }
     });

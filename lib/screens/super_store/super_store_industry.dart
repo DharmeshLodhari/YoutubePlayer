@@ -1,4 +1,5 @@
 import 'package:Slydo/screens/super_store/shop_list_screen.dart';
+import 'package:Slydo/screens/super_store/widget/discount_details_page.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/widget/cart_with_badge.dart';
@@ -16,11 +17,13 @@ class SuperStoreIndustry extends StatefulWidget {
   final String next;
   final String appTitle;
   final Map<String, dynamic>? searchQuery;
+  final bool isShowDiscountPage;
   const SuperStoreIndustry(
       {super.key,
       required this.next,
       required this.appTitle,
-      this.searchQuery});
+      this.searchQuery,
+      this.isShowDiscountPage = true});
 
   @override
   State<SuperStoreIndustry> createState() => _SuperStoreState();
@@ -216,15 +219,26 @@ class _SuperStoreState extends State<SuperStoreIndustry> {
         },
         controller: _pageViewController,
         children: [
-          ShopListScreen(
-              onPageRefresh: (bool data) {
-                if (data == true) {
-                  _showTabs(true);
-                }
-              },
-              category: categoryName,
-              industry: widget.appTitle,
-              nextUrl: widget.next),
+          if (widget.isShowDiscountPage)
+            DiscountDetailsPage(
+                onPageRefresh: (bool data) {
+                  if (data == true) {
+                    _showTabs(true);
+                  }
+                },
+                category: categoryName,
+                industry: widget.appTitle,
+                nextUrl: widget.next)
+          else
+            ShopListScreen(
+                onPageRefresh: (bool data) {
+                  if (data == true) {
+                    _showTabs(true);
+                  }
+                },
+                category: categoryName,
+                industry: widget.appTitle,
+                nextUrl: widget.next)
           // FindBusinessListScreen(
           //     onPageRefresh: (bool data) {
           //       if (data == true) {

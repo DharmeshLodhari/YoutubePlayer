@@ -6,6 +6,7 @@ import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/product_view_more_details.dart';
 import 'package:Slydo/screens/more_apps/yarn/utils/yarn_enum.dart';
 import 'package:Slydo/screens/super_store/super_store_industry.dart';
+import 'package:Slydo/screens/super_store/widget/discount_details_page.dart';
 import 'package:Slydo/screens/super_store/widget/section_products.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
@@ -620,11 +621,15 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
                             onTap: () {
                               final String url =
                                   "${AppConfig.baseUrl}/api/v1/products/products-by-discount/${e.id}";
-                              NavigationUtil.push(context,
-                                  screen: SuperStoreIndustry(
-                                      next: url,
-                                      appTitle: e.name!,
-                                      searchQuery: {"discount": e.id!}));
+                              NavigationUtil.push(
+                                context,
+                                screen: SuperStoreIndustry(
+                                  next: url,
+                                  appTitle: e.name!,
+                                  searchQuery: {"discount": e.id!},
+                                  isShowDiscountPage: true,
+                                ),
+                              );
                             },
                             child: Container(
                               margin: const EdgeInsets.only(right: 8),

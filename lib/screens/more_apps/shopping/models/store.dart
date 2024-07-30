@@ -450,7 +450,7 @@ class Product extends PurchasableItem {
       // "variants": variant,
       "variants": variantModels,
       // "add_ons": addOns,
-      "add_ons": addOnsModels,
+      "add_ons": addOnsModels?.map((v) => v.toJson()).toList() ?? [],
       "weight": weight,
       'weight_si_unit': weightSiUnit,
       'height': height,

@@ -697,6 +697,7 @@ class _UserProductListState extends State<UserProductList> {
                                   next: url,
                                   appTitle: e.name ?? "",
                                   searchQuery: {"discount": e.id ?? ""},
+                                  isShowDiscountPage: true,
                                 ),
                               );
                             },
