@@ -34,12 +34,14 @@ class DisplayProduct extends StatefulWidget {
   final Product product;
   final bool giveRightPadding;
   final Function()? onProductRefresh;
+  final bool isProductShowIcon;
 
-  const DisplayProduct(
+  DisplayProduct(
       {super.key,
       required this.product,
       this.giveRightPadding = false,
-      this.onProductRefresh});
+      this.onProductRefresh,
+      this.isProductShowIcon = false});
 
   @override
   State<DisplayProduct> createState() => _DisplayProductState();
@@ -108,6 +110,18 @@ class _DisplayProductState extends State<DisplayProduct> {
                         ),
                       ),
                     ),
+                    if (widget.isProductShowIcon == true)
+                      Positioned(
+                        top: 10,
+                        left: 10,
+                        child: Image.asset(
+                          "assets/images/appIcon/heart.png",
+                          height: 17,
+                          width: 17,
+                        ),
+                      )
+                    else
+                      Container(),
                     Positioned(
                       left: 10,
                       bottom: 10,
@@ -680,12 +694,14 @@ class _DisplayProductState extends State<DisplayProduct> {
 
 class DisplayService extends StatefulWidget {
   final Service service;
+  final Product? product;
   final bool giveRightPadding;
   final Function()? onServiceRefresh;
 
   const DisplayService(
       {super.key,
       required this.service,
+      this.product,
       this.giveRightPadding = false,
       this.onServiceRefresh});
 

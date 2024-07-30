@@ -1311,6 +1311,13 @@ class AppLocalization {
     );
   }
 
+  String get dealOfTheDay {
+    return Intl.message(
+      "Deal of the day",
+      name: "DealsOfTheDay",
+    );
+  }
+
   String get youCanNotDeleteOnlyBankAccount {
     return Intl.message(
       "You can not delete your only bank account",
@@ -3049,6 +3056,14 @@ class AppLocalization {
     return Intl.message(
       "Product Detail",
       name: "productDetail",
+    );
+  }
+
+  //profile Discounted
+  String get profileDiscounted {
+    return Intl.message(
+      "Profile Discounted",
+      name: "profileDiscounted",
     );
   }
 

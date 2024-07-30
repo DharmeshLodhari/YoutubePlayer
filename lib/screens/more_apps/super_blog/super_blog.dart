@@ -106,7 +106,7 @@ class _SuperBlogState extends State<SuperBlog> {
           noPostInList = true;
         });
       }
-    } else if (postNext == null && postList.length > 15) {
+    } else if (postNext == null && postList.length > 5) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content:
             Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
@@ -118,7 +118,6 @@ class _SuperBlogState extends State<SuperBlog> {
   @override
   void initState() {
     _pageViewCtrl = PageController(initialPage: 0);
-
     getListOfBlogs();
     _postScrollController.addListener(() {
       if (_postScrollController.position.pixels ==
@@ -165,7 +164,7 @@ class _SuperBlogState extends State<SuperBlog> {
         },
       ),
       title: Text(
-        AppLocalization.of(context)!.blogs,
+        AppLocalization.of(context)?.blogs ?? "",
         style: TextStyle(
           color: blackFont,
           fontSize: 20,
@@ -265,7 +264,7 @@ class _SuperBlogState extends State<SuperBlog> {
                             controller: _postRefreshController,
                             onRefresh: _onPostRefresh,
                             child: ListView.builder(
-                              physics: const ClampingScrollPhysics(),
+                              physics: const ScrollPhysics(),
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 16),
                               controller: _postScrollController,

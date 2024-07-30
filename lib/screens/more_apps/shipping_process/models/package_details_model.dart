@@ -29,6 +29,7 @@ class PackageDetailsModel {
   int? customerServiceFee;
   String? pickUpDateTime;
   String? inStoreDateTime;
+  String? deliveryDateTime;
   int? phoneNumber;
   String? note;
 
@@ -54,6 +55,7 @@ class PackageDetailsModel {
     this.customerServiceFee,
     this.pickUpDateTime,
     this.inStoreDateTime,
+    this.deliveryDateTime,
     this.phoneNumber,
     this.note,
   });
@@ -111,6 +113,7 @@ class PackageDetailsModel {
       "customer_contact_number": phoneNumber,
       "pickup_datetime": pickUpDateTime,
       "instore_datetime": inStoreDateTime,
+      "delivery_datetime": deliveryDateTime,
     };
     dynamic shippingId = 0;
     if (deliveryOption == DeliveryOptions.shipping) {

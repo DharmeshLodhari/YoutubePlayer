@@ -23,10 +23,6 @@ String? messageDecoderWithEmoji(String? text) {
   }
 }
 
-String? messageDecoder(Uint8List data) {
-  return utf8.decode(data);
-}
-
 Future<bool> sendDataToSocket(Map<String, dynamic> data) async {
   final MainSocketProvider mainSocketProvider = Provider.of<MainSocketProvider>(
       myGlobals.navigationKey.currentContext!,

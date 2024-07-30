@@ -3,6 +3,7 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/discount/discount_model.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/product_view_more_details.dart';
 import 'package:Slydo/screens/more_apps/yarn/utils/yarn_enum.dart';
 import 'package:Slydo/screens/super_store/super_store_industry.dart';
 import 'package:Slydo/screens/super_store/widget/section_products.dart';
@@ -49,6 +50,8 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
   late BasketBloc basketBloc;
   List rowHeaders = [];
   List<Product> storeProducts = [];
+  List<Product> superStoreDealOftheDay = [];
+  int productHorizontalLength = 10;
   bool noItemInList = false;
   String? next = "1";
   String? previous = "";
@@ -58,9 +61,10 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
   List<CustomerProfile> customerProfileListNearBy = [];
   int? nearByCount = 0;
   String? nearByNext = "";
+  String? url = "";
   String? nearByPrevious = "";
   bool isNearbyLoading = false;
-  // bool noNearByInList = false;
+  bool dealsOfDayEmpty = false;
 
   final GlobalKey<ScaffoldMessengerState> _productScaffoldMessengerKey =
       GlobalKey<ScaffoldMessengerState>();
@@ -124,6 +128,7 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
   Future<void> getAllData() async {
     getNearByBusinessList();
     await fetchParallelData();
+    getSuperStoreDealOfTheDay();
     // final startTime1 = DateTime.now();
     // await listOfSuperStores();
     // final endTime1 = DateTime.now();
@@ -200,9 +205,9 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
           ShoppingAuthService()
               .listOfDiscounts(next, previous, activeDiscount: true),
 
-          ShoppingAuthService().getProductListForSuperStore(
-              todayDealNext, todayDealPrevious,
-              todaysDeal: true),
+          // ShoppingAuthService().getProductListForSuperStore(
+          //     todayDealNext, todayDealPrevious,
+          //     todaysDeal: true),
           // ShoppingAuthService().listOfMerchant(
           //     nearByNext, nearByPrevious, _currentCategory,
           //     nearBy: true),
@@ -318,6 +323,43 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: const Duration(milliseconds: 500),
         ));
+      }
+    }
+  }
+
+  void getSuperStoreDealOfTheDay() async {
+    if (!isLoading) {
+      if (todayDealNext != null && !isLoading) {
+        isLoading = true;
+        if (mounted) setState(() {});
+        url = "${AppConfig.baseUrl}/api/v1/products/?today_deals=true";
+        final Map<String, dynamic>? response = await ShoppingAuthService()
+            .getProductsStoreDeal(todayDealNext, todayDealPrevious, url ?? "");
+        if (response == null) {
+          todaysDealsEmpty = true;
+          todaysDealsSizeBox = 22;
+          isLoading = false;
+          if (mounted) {
+            setState(() {});
+          }
+          return;
+        }
+
+        todayDealNext = response['next'];
+        todayDealPrevious = response['previous'];
+        final tempList = response['results'];
+
+        todaysDealsEmpty = false;
+        isLoading = false;
+        superStoreDealOftheDay.addAll(tempList);
+        if (mounted) setState(() {});
+      }
+      if (superStoreDealOftheDay.isEmpty) {
+        if (mounted) {
+          setState(() {
+            todaysDealsEmpty = true;
+          });
+        }
       }
     }
   }
@@ -489,6 +531,7 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
                 controller: _productScrollController,
                 children: [
                   if (itemList.isNotEmpty) specialDeals(),
+                  if (superStoreDealOftheDay.isNotEmpty) _buildDealOfTheDay(),
                   SizedBox(height: todaysDealsSizeBox),
                   if (customerProfileListNearBy.isNotEmpty) nearByBuildView(),
                   sessionProducts(),
@@ -670,6 +713,100 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
       result.add(product);
     }
     return result;
+  }
+
+  Widget _buildDealOfTheDay() {
+    final bool showViewMoreButton =
+        superStoreDealOftheDay.length > productHorizontalLength;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (dealsOfDayEmpty)
+            const SizedBox.shrink()
+          else
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Text(
+                  AppLocalization.of(context)?.dealOfTheDay ?? "",
+                  style: TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 14,
+                    fontFamily: "Inter",
+                    color: blackFont,
+                  ),
+                ),
+                _buildViewMoreStore(context),
+              ],
+            ),
+          const SizedBox(
+            height: 15,
+          ),
+          SizedBox(
+            height: 260,
+            child: ListView.separated(
+              separatorBuilder: (BuildContext context, int index) {
+                return const SizedBox(width: 16);
+              },
+              shrinkWrap: true,
+              physics: const ScrollPhysics(),
+              scrollDirection: Axis.horizontal,
+              itemCount: showViewMoreButton
+                  ? productHorizontalLength
+                  : superStoreDealOftheDay.length,
+              itemBuilder: (context, index) {
+                if (index == superStoreDealOftheDay.length) {
+                  return buildLoadingIndicator(isLoading: isLoading);
+                } else {
+                  return SuperStoreSingleCard(
+                    product: superStoreDealOftheDay[index],
+                    // next: headers['next_url']
+                  );
+                }
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildViewMoreStore(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        // for (final product in superStoreDealOftheDay) {
+        NavigationUtil.push(
+          context,
+          screen: const ProductViewMoreDetails(
+              // appTitle: product.name,
+              ),
+        );
+        // }
+      },
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(
+            "View more",
+            style: TextStyle(
+              color: navyBlue,
+              fontSize: 12,
+              fontFamily: "Inter",
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Icon(
+            Icons.arrow_forward_ios_sharp,
+            color: navyBlue,
+            size: 12,
+          ),
+        ],
+      ),
+    );
   }
 
   Widget nearByBuildView() {
@@ -1057,12 +1194,18 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
 
 class SuperStoreSingleCard extends StatelessWidget {
   final Product product;
+  final bool isProductShowIcon;
 
   // final String? next;
-  const SuperStoreSingleCard({super.key, required this.product});
+  const SuperStoreSingleCard(
+      {super.key, required this.product, this.isProductShowIcon = false});
 
   @override
   Widget build(BuildContext context) {
-    return DisplayProduct(product: product, giveRightPadding: false);
+    return DisplayProduct(
+      product: product,
+      giveRightPadding: false,
+      isProductShowIcon: isProductShowIcon,
+    );
   }
 }

@@ -1,6 +1,7 @@
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
+import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/product_view_more_details.dart';
 import 'package:Slydo/screens/super_store/super_store_industry.dart';
 import 'package:Slydo/screens/super_store/widget/single_store_card.dart';
 import 'package:Slydo/utils/navigation_util.dart';
@@ -20,6 +21,11 @@ class SectionProducts extends StatefulWidget {
 class _SectionProductsState extends State<SectionProducts> {
   List<Product> result = [];
   bool isLoading = false;
+  bool dealsOfDayEmpty = false;
+  String? todayDealNext = "";
+  String? todayDealPrevious = "";
+  bool todaysDealsEmpty = false;
+  double todaysDealsSizeBox = 0;
 
   void getRowTitle(headers) async {
     isLoading = true;
@@ -49,6 +55,7 @@ class _SectionProductsState extends State<SectionProducts> {
             color: Colors.white,
             padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,

@@ -2729,8 +2729,8 @@ Map<String, String> getFormattedDateTime(String? dateTimeString) {
 
     final DateTime dateTime = DateTime.parse(cleanedDateTimeString);
     // final DateFormat dateFormatter = DateFormat('yyyy-MM-dd');
-    final DateFormat dateFormatter = DateFormat('dd-MM-yyyy');
-    final DateFormat timeFormatter = DateFormat('HH:mm:ss');
+    final DateFormat dateFormatter = DateFormat('dd/MM/yyyy');
+    final DateFormat timeFormatter = DateFormat('h:mm a');
 
     // Format the date and time
     final String formattedDate = dateFormatter.format(dateTime);
@@ -2746,5 +2746,28 @@ Map<String, String> getFormattedDateTime(String? dateTimeString) {
       'date': '',
       'time': '',
     };
+  }
+}
+
+String formatPickupDateTime(String? pickupDateTimeString) {
+  if (pickupDateTimeString == null || pickupDateTimeString.isEmpty) {
+    return "";
+  }
+
+  try {
+    final String cleanedDateTimeString = pickupDateTimeString.split('.').first;
+
+    final DateTime dateTime = DateTime.parse(cleanedDateTimeString);
+
+    final DateFormat dateFormatter = DateFormat('MMMM d, yyyy');
+    final DateFormat timeFormatter = DateFormat('h:mm a');
+
+    final String formattedDate = dateFormatter.format(dateTime);
+    final String formattedTime = timeFormatter.format(dateTime);
+
+    return '$formattedDate, $formattedTime';
+  } catch (e) {
+    print("Error parsing date: $e");
+    return "";
   }
 }

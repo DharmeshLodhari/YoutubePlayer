@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/models/shared_cart_model.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/Picture.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/basket_item_model.dart';

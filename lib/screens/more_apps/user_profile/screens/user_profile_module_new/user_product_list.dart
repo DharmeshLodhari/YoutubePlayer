@@ -4,6 +4,7 @@ import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/discount/discount_model.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/product_view_more_details.dart';
 import 'package:Slydo/screens/super_store/super_store_industry.dart';
 import 'package:Slydo/screens/super_store/widget/explore_products.dart';
 import 'package:Slydo/utils/navigation_util.dart';
@@ -18,6 +19,8 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shimmer/shimmer.dart';
+
+import '../../../../super_store/shop_list_screen_with_tags.dart';
 
 // ignore: must_be_immutable
 class UserProductList extends StatefulWidget {
@@ -60,8 +63,17 @@ class _UserProductListState extends State<UserProductList> {
   String? next = "";
   String? previous = "";
   List<DiscountModel> itemList = [];
+  bool dealsOfDayEmpty = false;
+  String url = "";
+  bool isMerchantProductLoading = false;
+  String? todayDealNext = "";
+  String? todayDealPrevious = "";
+  List<Product> productDealOfTheDayList = [];
+  bool todaysDealsEmpty = false;
+  double todaysDealsSizeBox = 0;
   bool noItemInList = false;
   int? itemCount = 0;
+  int productHorizontalLength = 10;
   final CarouselController _controller = CarouselController();
 
   String selectedFilter = "all";
@@ -92,7 +104,7 @@ class _UserProductListState extends State<UserProductList> {
         }
       }
     });
-
+    getDealsOfTheDayProducts();
     super.initState();
   }
 
@@ -137,6 +149,50 @@ class _UserProductListState extends State<UserProductList> {
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: const Duration(milliseconds: 500),
         ));
+      }
+    }
+  }
+
+  void getDealsOfTheDayProducts() async {
+    if (!isMerchantProductLoading) {
+      if (todayDealNext != null && !isMerchantProductLoading) {
+        isMerchantProductLoading = true;
+        if (mounted) setState(() {});
+        url =
+            "${AppConfig.baseUrl}/api/v1/products/?today_deals=true&merchant=${widget.user?.userName}";
+        final Map<String, dynamic>? response =
+            await ShoppingAuthService().getProductsDeals(
+          todayDealNext,
+          todayDealPrevious,
+          url: url,
+        );
+
+        if (response == null) {
+          todaysDealsEmpty = true;
+          todaysDealsSizeBox = 22;
+          isMerchantProductLoading = false;
+          if (mounted) {
+            setState(() {});
+          }
+          return;
+        }
+
+        todayDealNext = response['next'];
+        todayDealPrevious = response['previous'];
+        final tempList = response['results'];
+
+        todaysDealsEmpty = false;
+        isMerchantProductLoading = false;
+        productDealOfTheDayList.addAll(tempList);
+
+        if (mounted) setState(() {});
+      }
+      if (productDealOfTheDayList.isEmpty) {
+        if (mounted) {
+          setState(() {
+            todaysDealsEmpty = true;
+          });
+        }
       }
     }
   }
@@ -505,8 +561,105 @@ class _UserProductListState extends State<UserProductList> {
     return Column(
       children: [
         if (itemList.isNotEmpty) _buildMerchantDiscount(),
-        ...sectionProductList
-            .map((headers) => ExploreProducts(headers: headers))
+        if (productDealOfTheDayList.isNotEmpty) _buildDealOfTheDay(),
+        const SizedBox(
+          height: 15,
+        ),
+        ...sectionProductList.map((headers) => ExploreProducts(
+              headers: headers,
+            ))
+      ],
+    );
+  }
+
+  Widget _buildViewMoreStore(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        // for (final product in productDealOfTheDayList) {
+        NavigationUtil.push(
+          context,
+          screen: ProductViewMoreDetails(
+            merchantId: "${widget.user?.userName}",
+            // appTitle: product.name,
+          ),
+        );
+        // }
+      },
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(
+            "View more",
+            style: TextStyle(
+              color: navyBlue,
+              fontSize: 12,
+              fontFamily: "Inter",
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Icon(
+            Icons.arrow_forward_ios_sharp,
+            color: navyBlue,
+            size: 12,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDealOfTheDay() {
+    final bool showViewMoreButton =
+        productDealOfTheDayList.length > productHorizontalLength;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (dealsOfDayEmpty)
+          const SizedBox.shrink()
+        else
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Text(
+                AppLocalization.of(context)?.dealOfTheDay ?? "",
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 14,
+                  fontFamily: "Inter",
+                  color: blackFont,
+                ),
+              ),
+              _buildViewMoreStore(context),
+            ],
+          ),
+        const SizedBox(
+          height: 15,
+        ),
+        SizedBox(
+          height: 260,
+          child: ListView.separated(
+            separatorBuilder: (BuildContext context, int index) {
+              return const SizedBox(width: 16);
+            },
+            shrinkWrap: true,
+            physics: const ScrollPhysics(),
+            scrollDirection: Axis.horizontal,
+            itemCount: showViewMoreButton
+                ? productHorizontalLength
+                : productDealOfTheDayList.length,
+            itemBuilder: (context, index) {
+              if (index == productDealOfTheDayList.length) {
+                return buildLoadingIndicator(isLoading: isLoading);
+              } else {
+                return SuperStoreSingleCard(
+                  product: productDealOfTheDayList[index],
+                );
+              }
+            },
+          ),
+        ),
       ],
     );
   }
@@ -522,42 +675,73 @@ class _UserProductListState extends State<UserProductList> {
       child: Column(
         children: [
           Expanded(
-            child: CarouselSlider(
-              carouselController: _controller,
-              options: CarouselOptions(
-                  height: 150,
-                  autoPlay: true,
-                  enlargeCenterPage: true,
-                  viewportFraction: 1,
-                  aspectRatio: 16 / 9,
-                  onPageChanged: onPageFunction),
-              items: itemList
-                  .map(
-                    (e) => InkWell(
-                      onTap: () {
-                        final String url =
-                            "${AppConfig.baseUrl}/api/v1/products/products-by-discount/${e.id}";
-                        NavigationUtil.push(context,
-                            screen: SuperStoreIndustry(
-                                next: url,
-                                appTitle: e.name!,
-                                searchQuery: {"discount": e.id!}));
-                      },
-                      child: SizedBox(
+            child: itemList.length > 1
+                ? CarouselSlider(
+                    carouselController: _controller,
+                    options: CarouselOptions(
+                        height: 150,
+                        autoPlay: true,
+                        enlargeCenterPage: true,
+                        viewportFraction: 1,
+                        aspectRatio: 16 / 9,
+                        onPageChanged: onPageFunction),
+                    items: itemList
+                        .map(
+                          (e) => InkWell(
+                            onTap: () {
+                              final String url =
+                                  "${AppConfig.baseUrl}/api/v1/products/products-by-discount/${e.id}";
+                              NavigationUtil.push(
+                                context,
+                                screen: SuperStoreIndustry(
+                                  next: url,
+                                  appTitle: e.name ?? "",
+                                  searchQuery: {"discount": e.id ?? ""},
+                                ),
+                              );
+                            },
+                            child: SizedBox(
+                              width: MediaQuery.of(context).size.width,
+                              height: 150,
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(10.0),
+                                child: getImage(e),
+                              ),
+                            ),
+                          ),
+                        )
+                        .toList(),
+                  )
+                : itemList.isNotEmpty
+                    ? SizedBox(
                         width: MediaQuery.of(context).size.width,
                         height: 150,
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(10.0),
-                          child: getImage(e),
+                          child: getImage(itemList[0]),
                         ),
-                      ),
-                    ),
-                  )
-                  .toList(),
-            ),
+                      )
+                    : const SizedBox.shrink(),
+          ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: itemList.map((url) {
+              final int index = itemList.indexOf(url);
+              return Container(
+                width: 5.0,
+                height: 5.0,
+                margin:
+                    const EdgeInsets.symmetric(vertical: 10.0, horizontal: 2.0),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: currentIndex == index ? navyBlue : navyBlueLight,
+                ),
+              );
+            }).toList(),
           ),
           const SizedBox(
-            height: 20,
+            height: 10,
           ),
         ],
       ),
@@ -567,7 +751,7 @@ class _UserProductListState extends State<UserProductList> {
   Widget getImage(DiscountModel item) {
     if (item.poster != null) {
       return CachedNetworkImage(
-        imageUrl: item.poster!,
+        imageUrl: item.poster ?? "",
         errorWidget: imageErrorWidget,
         fit: BoxFit.fill,
       );

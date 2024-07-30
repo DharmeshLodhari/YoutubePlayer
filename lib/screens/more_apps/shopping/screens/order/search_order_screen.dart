@@ -64,7 +64,6 @@ class _SearchOrderScreenState extends State<SearchOrderScreen> {
   String? selectedRating;
   String? sortByMenuItemValue = 'Best match';
   DateTimeRange? newDateTimeRange;
-
   @override
   void initState() {
     searchController.addListener(() {

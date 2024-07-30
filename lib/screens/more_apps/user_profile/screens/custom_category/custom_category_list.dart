@@ -1,5 +1,6 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/utils/extensions.dart';
@@ -10,6 +11,7 @@ import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_quill_extensions/utils/dart_ui/dart_ui_real.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -37,7 +39,10 @@ class _CustomCategoryListState extends State<CustomCategoryList> {
       RefreshController(initialRefresh: false);
   bool isLoading = false;
   bool noItemInList = false;
+  bool saveRequired = false;
   UserBloc? userBloc;
+  Map<String, dynamic> reorderedBoolMap = {};
+  final Map<String, dynamic> data = {};
 
   final TextEditingController _controller = TextEditingController();
   @override
@@ -190,7 +195,7 @@ class _CustomCategoryListState extends State<CustomCategoryList> {
     );
   }
 
-  void deleteOrEditCategory(ProductCategory prod) {
+  void deleteOrEditCategory(ProductCategory prod, int index) {
     _controller.text = prod.name;
     showDialogBoxWithInput(
         context: context,
@@ -286,27 +291,32 @@ class _CustomCategoryListState extends State<CustomCategoryList> {
   Widget build(BuildContext context) {
     return ScaffoldMessenger(
       key: _messengerScaffoldKey,
-      child: Scaffold(
-        key: _scaffoldKey,
-        appBar: _buildAppBar() as PreferredSizeWidget,
-        body: Container(
-          color: white,
-          padding: const EdgeInsets.symmetric(horizontal: 4),
-          child: SmartRefresher(
-            enablePullDown: true,
-            header: WaterDropHeader(
-              complete: Container(),
-              waterDropColor: navyBlue,
+      child: WillPopScope(
+        onWillPop: () async {
+          return true;
+        },
+        child: Scaffold(
+          key: _scaffoldKey,
+          appBar: _buildAppBar() as PreferredSizeWidget,
+          body: Container(
+            color: white,
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            child: SmartRefresher(
+              enablePullDown: true,
+              header: WaterDropHeader(
+                complete: Container(),
+                waterDropColor: navyBlue,
+              ),
+              controller: _refreshController,
+              onRefresh: _onProductRefresh,
+              child: noItemInList
+                  ? NoItemInList(msg: AppLocalization.of(context)!.noResultFound
+                      // msg: AppLocalization.of(context)!.noProducts,
+                      )
+                  : isLoading
+                      ? _buildShimmerEffect()
+                      : _buildItemList(),
             ),
-            controller: _refreshController,
-            onRefresh: _onProductRefresh,
-            child: noItemInList
-                ? NoItemInList(msg: AppLocalization.of(context)!.noResultFound
-                    // msg: AppLocalization.of(context)!.noProducts,
-                    )
-                : isLoading
-                    ? _buildShimmerEffect()
-                    : _buildItemList(),
           ),
         ),
       ),
@@ -397,7 +407,9 @@ class _CustomCategoryListState extends State<CustomCategoryList> {
           size: 24,
         ),
         onPressed: () {
-          Navigator.pop(context, "back pressed");
+          Navigator.popUntil(context, ModalRoute.withName(Routes.DASHBOARD));
+          Navigator.pushNamed(context, Routes.USER_PROFILE,
+              arguments: {"searchedUserName": userBloc?.user.userName});
         },
       ),
       shadowColor: greySecondaryYarn,
@@ -429,15 +441,47 @@ class _CustomCategoryListState extends State<CustomCategoryList> {
         ? const SizedBox.shrink()
         : Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: ListView.builder(
-              shrinkWrap: true,
-              padding: EdgeInsets.zero,
-              controller: _scrollController,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: itemList.length,
-              itemBuilder: (context, index) {
-                return itemTile(index);
-              },
+            child: Theme(
+              data: Theme.of(context).copyWith(
+                canvasColor: Colors.transparent,
+                shadowColor: Colors.transparent,
+              ),
+              child: ReorderableListView.builder(
+                shrinkWrap: true,
+                padding: EdgeInsets.zero,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: itemList.length,
+                itemBuilder: (context, index) {
+                  final int key = itemList[index].id;
+                  return ReorderableDragStartListener(
+                    key: ValueKey(key),
+                    index: index,
+                    child: itemTile(index),
+                  );
+                },
+                onReorder: (oldIndex, newIndex) {
+                  setState(() {
+                    if (newIndex > oldIndex) {
+                      newIndex -= 1;
+                    }
+                    final entry = itemList.removeAt(oldIndex);
+                    itemList.insert(newIndex, entry);
+                    reorderedBoolMap = Map.fromEntries(
+                      itemList.map(
+                        (item) => MapEntry(item.name, item.id),
+                      ),
+                    );
+                    saveRequired = true;
+                    for (int index = 0; index < itemList.length; index++) {
+                      final customCategory = itemList[index];
+                      data.addAll({"${customCategory.id}": index + 1});
+                    }
+                    print("==============Custom Category==============>$data");
+                    ShoppingAuthService()
+                        .reOrderCustomCategory(data, userBloc?.user.userName);
+                  });
+                },
+              ),
             ),
           );
   }
@@ -445,7 +489,7 @@ class _CustomCategoryListState extends State<CustomCategoryList> {
   Widget itemTile(int index) {
     return InkWell(
       onTap: () async {
-        deleteOrEditCategory(itemList[index]);
+        deleteOrEditCategory(itemList[index], index);
       },
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 5.0),

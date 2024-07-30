@@ -2354,7 +2354,7 @@ class _EditProductState extends State<EditProduct> {
   }
 
   Future<void> editProduct() async {
-    if (_formKey.currentState!.validate()) {
+    if (_formKey.currentState!.validate() || validateDropdown()) {
       if (productLocalImages.length >= 0) {
         if (containsWeight() && selectedWeight.isEmpty && weight != 0.0) {
           showToast(message: AppLocalization.of(context)!.pleaseFillWeight);

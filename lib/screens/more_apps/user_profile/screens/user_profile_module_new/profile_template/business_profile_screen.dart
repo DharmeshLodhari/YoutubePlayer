@@ -458,7 +458,6 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
 
   void changeIndex(int index) {
     _currentIndex = index;
-
     if (mounted) setState(() {});
   }
 

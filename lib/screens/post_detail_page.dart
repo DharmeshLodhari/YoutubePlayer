@@ -311,6 +311,9 @@ class _PostDetailPageState extends State<PostDetailPage> {
         return flutterQuill.QuillEditor.basic(
           configurations: flutterQuill.QuillEditorConfigurations(
             controller: _quillController,
+            readOnlyMouseCursor: SystemMouseCursors.basic,
+            showCursor: false,
+            enableInteractiveSelection: false,
             embedBuilders:
                 FlutterQuillEmbeds.editorBuilders(), // readOnly: true,
           ),

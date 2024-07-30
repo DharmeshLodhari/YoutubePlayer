@@ -197,21 +197,22 @@ class _SuperStoreHomeState extends State<SuperStoreHome> {
                   ? SizedBox(
                       height: 100.0,
                       child: Shimmer.fromColors(
-                          baseColor: Colors.white,
-                          highlightColor: greyBorderColor,
-                          child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            padding: EdgeInsets.zero,
-                            itemCount: 6,
-                            itemBuilder: (context, index) {
-                              return Card(
-                                color: Colors.grey,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              );
-                            },
-                          )),
+                        baseColor: Colors.white,
+                        highlightColor: greyBorderColor,
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          padding: EdgeInsets.zero,
+                          itemCount: 6,
+                          itemBuilder: (context, index) {
+                            return Card(
+                              color: Colors.grey,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
                     )
                   : _displayShortcutButtons(industries),
             ),

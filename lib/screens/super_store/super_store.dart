@@ -1,4 +1,5 @@
 import 'package:Slydo/data/environment.dart';
+import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_dashboard_bloc.dart';
 import 'package:Slydo/screens/super_store/find_business_list_screen.dart';
 import 'package:Slydo/screens/super_store/list_category_product.dart';
@@ -332,8 +333,9 @@ class _SuperStoreState extends State<SuperStore> {
                   // _showTabs(true);
                 }
               },
+              arguments: industry,
               category: categoryName,
-              industry: appTitle!,
+              industry: appTitle ?? "",
               nextUrl: nextUrl,
               industryId: industry.id,
               categoryId: categoryId,

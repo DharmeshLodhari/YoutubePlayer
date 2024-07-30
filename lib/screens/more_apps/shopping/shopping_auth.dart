@@ -192,6 +192,119 @@ class ShoppingAuthService extends AuthService {
     }
   }
 
+// profile product today deals
+  Future<Map<String, dynamic>?> getProductsDeals(String? next, String? previous,
+      {String? url, bool todaysDeal = false}) async {
+    if (next == null) {
+      return null;
+    }
+    debugPrint('STORE URL ---> $url');
+
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url ?? "", headers: headers);
+    debugPrint('STORE URL BODY ---> ${response.body}');
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      final jsonData = json.decode(response.body);
+      debugPrint('SHOPPPING AUTH ---> ${jsonData["results"]}');
+
+      final List<Product> product = [];
+      for (var item in jsonData["results"]) {
+        product.add(Product.fromJson(item));
+      }
+
+      final Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": product
+      };
+
+      return result;
+    }
+    return null;
+    // }
+    // return null;
+  }
+
+  // super store items tab
+  Future<Map<String, dynamic>?> getProductsStoreTab(
+    String? next,
+    String? previous, {
+    String? url,
+  }) async {
+    debugPrint('STORE URL ---> $url');
+
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url ?? "", headers: headers);
+    debugPrint('STORE URL BODY ---> ${response.body}');
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      final jsonData = json.decode(response.body);
+      debugPrint('SHOPPPING AUTH ---> ${jsonData["results"]}');
+
+      final List<Product> product = [];
+      for (var item in jsonData["results"]) {
+        product.add(Product.fromJson(item));
+      }
+
+      final Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": product
+      };
+
+      return result;
+    }
+    return null;
+    // }
+    // return null;
+  }
+
+  // product deal of the day
+  Future<Map<String, dynamic>?> getProductsDealsOfTheDay(
+      String? next, String? previous,
+      {String? industryId, String? merchantId}) async {
+    if (next == null) {
+      return null;
+    }
+
+    String apiUrl = '${AppConfig.baseUrl}/api/v1/products/?today_deals=true';
+
+    if (industryId != null && industryId.isNotEmpty) {
+      apiUrl = '$apiUrl&industry=$industryId';
+    } else if (merchantId != null && merchantId.isNotEmpty) {
+      apiUrl = '$apiUrl&merchant=$merchantId';
+    }
+
+    debugPrint('STORE URL ---> $apiUrl');
+
+    final headers = await getAuthHeaders();
+    final response = await httpGet(apiUrl, headers: headers);
+    debugPrint('STORE URL BODY ---> ${response.body}');
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      final jsonData = json.decode(response.body);
+      debugPrint('SHOPPPING AUTH ---> ${jsonData["results"]}');
+
+      final List<Product> product = [];
+      for (var item in jsonData["results"]) {
+        product.add(Product.fromJson(item));
+      }
+
+      final Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": product
+      };
+
+      return result;
+    }
+    return null;
+  }
+
   Future<Map<String, dynamic>?> searchShoppingProductsInSuperStore(
       String searchedText, String? next, String? previous) async {
     String url = "${AppConfig.baseUrl}/api/v1/products/?search=$searchedText";
@@ -265,6 +378,36 @@ class ShoppingAuthService extends AuthService {
     } else {
       return false;
     }
+  }
+
+  // super store deal of the day
+  Future<Map<String, dynamic>?> getProductsStoreDeal(
+      String? next, String? previous, String url) async {
+    debugPrint('STORE URL ---> $url');
+
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers);
+    debugPrint('STORE URL BODY ---> ${response.body}');
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      final jsonData = json.decode(response.body);
+      debugPrint('SHOPPPING AUTH ---> ${jsonData["results"]}');
+
+      final List<Product> product = [];
+      for (var item in jsonData["results"]) {
+        product.add(Product.fromJson(item));
+      }
+
+      final Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": product
+      };
+
+      return result;
+    }
+    return null;
   }
 
   //Products
@@ -1762,7 +1905,6 @@ class ShoppingAuthService extends AuthService {
 
       final List<Order> items = [];
       final data = jsonData["results"];
-
       for (int i = 0; i < data.length; i++) {
         final Order order = Order.fromJson(data[i]);
         items.add(order);
@@ -2479,6 +2621,27 @@ class ShoppingAuthService extends AuthService {
     debugPrint("__________________________________ $data");
     debugPrint("__________________________________ $response");
     debugPrint("__________________________________ $id");
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return true;
+    }
+
+    return false;
+  }
+
+  //re-order custom category
+  Future<bool> reOrderCustomCategory(
+      Map<String, dynamic> categoryData, String? merchantUsername) async {
+    final String url =
+        "${AppConfig.baseUrl}/api/v1/products/merchant-custom-categories/merchant/$merchantUsername/";
+    final Map<String, dynamic> data = {"ordering": categoryData};
+    final data0 = jsonEncode(data);
+
+    final headers = await getAuthHeaders();
+    final response = await httpPatch(url, headers: headers, body: data0);
+    debugPrint("__________________________________ ${response.statusCode}");
+    debugPrint("__________________________________ $data");
+    debugPrint("__________________________________ $response");
+    debugPrint("__________________________________ $merchantUsername");
     if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     }

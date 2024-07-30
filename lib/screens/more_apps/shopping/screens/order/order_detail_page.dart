@@ -7,7 +7,6 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/auth/shipping_process_auth.dart';
-import 'package:Slydo/screens/more_apps/shipping_process/models/package_details_model.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/shopping/tiles/order_detail_item_tile_new.dart';
@@ -521,21 +520,22 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
 
   Widget _buildNoteAndOrderDetails() {
     return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildNotes(),
-            const SizedBox(
-              height: 15,
-            ),
-            _buildOrderDetails(),
-            const SizedBox(
-              height: 10,
-            ),
-            _buildButtons(),
-          ],
-        ));
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildNotes(),
+          const SizedBox(
+            height: 15,
+          ),
+          _buildOrderDetails(),
+          const SizedBox(
+            height: 10,
+          ),
+          _buildButtons(),
+        ],
+      ),
+    );
   }
 
   Widget _buildNotes() {
@@ -704,8 +704,8 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     final DateFormat dateFormat = DateFormat("MMMM dd, yyyy");
     final DateTime dateTime = DateTime.parse(order?.createdAt.toString() ?? "");
     final String date = dateFormat.format(dateTime);
-    final Map<String, String> formattedDateTime =
-        getFormattedDateTime(order?.pickupDateTime ?? "");
+    final Map<String, String> formattedDateTime = getFormattedDateTime(
+        order?.pickupDateTime ?? order?.inStoreDateTime ?? "");
     return Container(
       padding: const EdgeInsets.all(7),
       decoration: BoxDecoration(
@@ -746,7 +746,8 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
           ),
           if (order?.shipmentType() == "PickUp" ||
               order?.shipmentType() == "In Store/Eat In")
-            _buildPickUpEatInStore(formattedDateTime['date'] ?? "",
+            _buildPickUpEatInStore(
+                formattedDateTime['date'] ?? order?.inStoreDateTime ?? "",
                 formattedDateTime['time'] ?? ""),
           if (order?.shipmentType() == "Delivery") _buildDeliveryDetails()
         ],
@@ -1491,13 +1492,20 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
           title: 'Pickup Date',
           detail: date,
         ),
+        if (order?.isCustomer(userBloc.user.userName) ?? true)
+          OrderDetailRow(
+            title: 'Phone Number',
+            detail: userBloc.user.phoneNumber ?? "",
+          )
+        else
+          const SizedBox(),
         OrderDetailRow(
           title: 'Pickup Time',
           detail: time,
         ),
         OrderDetailRow(
           title: 'Order Fulfilled',
-          detail: order?.pickupDateTime ?? "",
+          detail: formatPickupDateTime(order?.pickupDateTime ?? ""),
         ),
       ],
     );
@@ -1506,6 +1514,13 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   Widget _buildDeliveryDetails() {
     return Column(
       children: [
+        if (order?.isCustomer(userBloc.user.userName) ?? true)
+          OrderDetailRow(
+            title: 'Phone Number',
+            detail: userBloc.user.phoneNumber ?? "",
+          )
+        else
+          const SizedBox(),
         const OrderDetailRow(
           title: 'Address',
           detail: 'No 5, Adetutu street, ikeja, lagos, Nigeria, 100001',

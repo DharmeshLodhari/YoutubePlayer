@@ -1,5 +1,13 @@
+// import 'package:Slydo/data/environment.dart';
+import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/product_view_more_details.dart';
+import 'package:Slydo/screens/super_store/models/product_industry_model.dart';
+// import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/product_view_more_details.dart';
+// import 'package:Slydo/screens/super_store/models/product_industry_model.dart';
 import 'package:Slydo/screens/super_store/widget/section_products.dart';
+import 'package:Slydo/utils/navigation_util.dart';
+// import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/custom_pagination.dart';
 import 'package:Slydo/widget/empty_page.dart';
@@ -26,6 +34,7 @@ class ShopListScreen extends StatefulWidget {
   final String? type;
   final String? categoryId;
   final String? industryId;
+  final dynamic arguments;
 
   const ShopListScreen({
     super.key,
@@ -36,6 +45,7 @@ class ShopListScreen extends StatefulWidget {
     this.type,
     this.categoryId,
     this.industryId,
+    this.arguments,
   });
 
   @override
@@ -47,9 +57,12 @@ class ShopListScreenState extends State<ShopListScreen> {
   bool isTodayDealLoading = false;
   double todaysDealsSizeBox = 0;
   List<ShoppingProduct> todaysDealList = [];
-
+  // List<Product> productDealOfTheDayList = [];
   List<Product> productList = [];
+  List<Product> superStoreProductTab = [];
+  int productHorizontalLength = 10;
   bool isProductLoading = false;
+  bool dealsOfDayEmpty = false;
   bool noProductInList = false;
   int? productCount = 0;
   String? todayDealNext = "";
@@ -59,6 +72,7 @@ class ShopListScreenState extends State<ShopListScreen> {
   late BasketBloc basketBloc;
   List rowHeaders = [];
   bool _isSnackBarShowing = false;
+  String url = "";
 
   final GlobalKey<ScaffoldMessengerState> _productScaffoldMessengerKey =
       GlobalKey<ScaffoldMessengerState>();
@@ -121,7 +135,8 @@ class ShopListScreenState extends State<ShopListScreen> {
     widget.type != null
         ? listOfSuperStores()
         : getProductList(_currentCategory);
-    getTodaysDealProducts();
+    getSuperStoreDealProducts();
+    // getDealsOfTheDayProducts(widget.arguments);
     // _productScrollController.addListener(() {
     //   if (_productScrollController.position.pixels ==
     //           _productScrollController.position.maxScrollExtent &&
@@ -135,7 +150,7 @@ class ShopListScreenState extends State<ShopListScreen> {
       if (_todayDealScrollController.position.pixels ==
               _todayDealScrollController.position.maxScrollExtent &&
           _todayDealScrollController.position.pixels != 0) {
-        getTodaysDealProducts();
+        getSuperStoreDealProducts();
       }
     });
   }
@@ -207,7 +222,7 @@ class ShopListScreenState extends State<ShopListScreen> {
     }
   }
 
-  void getTodaysDealProducts() async {
+  void getSuperStoreDealProducts() async {
     if (!isTodayDealLoading) {
       if (todayDealNext != null && !isTodayDealLoading) {
         isTodayDealLoading = true;
@@ -249,6 +264,50 @@ class ShopListScreenState extends State<ShopListScreen> {
     }
   }
 
+  // void getDealsOfTheDayProducts(ProductIndustryResults industry) async {
+  //   if (!isProductLoading) {
+  //     if (todayDealNext != null && !isProductLoading) {
+  //       isProductLoading = true;
+  //       if (mounted) setState(() {});
+  //       url =
+  //           "${AppConfig.baseUrl}/api/v1/products/?today_deals=true&?industry=${industry.id}";
+  //       final Map<String, dynamic>? response =
+  //           await ShoppingAuthService().getProductsStoreTab(
+  //         todayDealNext,
+  //         todayDealPrevious,
+  //         url: url,
+  //       );
+  //
+  //       if (response == null) {
+  //         todaysDealsEmpty = true;
+  //         todaysDealsSizeBox = 22;
+  //         isProductLoading = false;
+  //         if (mounted) {
+  //           setState(() {});
+  //         }
+  //         return;
+  //       }
+  //
+  //       todayDealNext = response['next'];
+  //       todayDealPrevious = response['previous'];
+  //       final tempList = response['results'];
+  //
+  //       todaysDealsEmpty = false;
+  //       isProductLoading = false;
+  //       superStoreProductTab.addAll(tempList);
+  //
+  //       if (mounted) setState(() {});
+  //     }
+  //     if (superStoreProductTab.isEmpty) {
+  //       if (mounted) {
+  //         setState(() {
+  //           todaysDealsEmpty = true;
+  //         });
+  //       }
+  //     }
+  //   }
+  // }
+
   void _onRefresh() async {
     if (await checkConnection(context)) {
       _refreshPage();
@@ -274,7 +333,7 @@ class ShopListScreenState extends State<ShopListScreen> {
     widget.type != null
         ? listOfSuperStores()
         : getProductList(_currentCategory);
-    getTodaysDealProducts();
+    getSuperStoreDealProducts();
   }
 
   @override
@@ -314,11 +373,10 @@ class ShopListScreenState extends State<ShopListScreen> {
                 child: ListView(
                   children: [
                     SizedBox(height: todaysDealsSizeBox),
-                    if (todaysDealList.isNotEmpty) getTodaysDealList(),
+                    if (todaysDealList.isNotEmpty) getDealOfTheDay(),
                     // const SizedBox(
                     //   height: 20,
                     // ),
-
                     if (widget.type != null && rowHeaders.isNotEmpty)
                       ...rowHeaders.map((headers) => rowTitle(headers)),
                     if (rowHeaders.isEmpty &&
@@ -377,6 +435,43 @@ class ShopListScreenState extends State<ShopListScreen> {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildViewMoreStore(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        // for (final product in todaysDealList) {
+        NavigationUtil.push(
+          context,
+          screen: ProductViewMoreDetails(
+            industryId: widget.industryId,
+            // appTitle: product.name,
+          ),
+        );
+        // }
+      },
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(
+            "View more",
+            style: TextStyle(
+              color: navyBlue,
+              fontSize: 12,
+              fontFamily: "Inter",
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Icon(
+            Icons.arrow_forward_ios_sharp,
+            color: navyBlue,
+            size: 12,
+          ),
+        ],
       ),
     );
   }
@@ -470,8 +565,11 @@ class ShopListScreenState extends State<ShopListScreen> {
     );
   }
 
-  Widget getTodaysDealList() {
+  Widget getDealOfTheDay() {
+    final bool showViewMoreButton =
+        todaysDealList.length > productHorizontalLength;
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (todaysDealsEmpty)
           const SizedBox.shrink()
@@ -479,42 +577,16 @@ class ShopListScreenState extends State<ShopListScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              Row(
-                children: [
-                  Text(
-                    "Today's deal",
-                    style: TextStyle(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 18,
-                      fontFamily: "Inter",
-                      color: blackFont,
-                    ),
-                  ),
-                  Icon(
-                    Icons.bolt_rounded,
-                    color: mateRed,
-                  ),
-                ],
+              Text(
+                AppLocalization.of(context)?.dealOfTheDay ?? "",
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 14,
+                  fontFamily: "Inter",
+                  color: blackFont,
+                ),
               ),
-              // GestureDetector(
-              //   child: Row(
-              //     children: [
-              //       Text(
-              //         "See all",
-              //         style: TextStyle(
-              //             fontWeight: FontWeight.w600,
-              //             fontSize: 14,
-              //             color: navyBlue),
-              //       ),
-              //       SizedBox(width: 8),
-              //       Icon(Icons.arrow_forward_ios_sharp,
-              //           size: 14, color: navyBlue),
-              //     ],
-              //   ),
-              //   onTap: () {
-              //     Navigator.of(context).pushNamed("/shopping-category");
-              //   },
-              // ),
+              _buildViewMoreStore(context),
             ],
           ),
         SizedBox(
@@ -523,7 +595,9 @@ class ShopListScreenState extends State<ShopListScreen> {
             padding: const EdgeInsets.only(bottom: 6),
             scrollDirection: Axis.horizontal,
             controller: _todayDealScrollController,
-            itemCount: todaysDealList.length + 1,
+            itemCount: showViewMoreButton
+                ? productHorizontalLength
+                : todaysDealList.length,
             itemBuilder: (BuildContext context, int index) {
               if (index == todaysDealList.length) {
                 return isTodayDealLoading

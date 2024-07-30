@@ -32,7 +32,7 @@ class AuthService {
   // static int authCallCount = 0;
   // static int authCallLimit = 5;
 
-  final Duration timeOutDuration = const Duration(seconds: 12);
+  final Duration timeOutDuration = const Duration(seconds: 30);
   final String timeOutErrorMessage = "Server is not responding";
 
   final DatabaseHelper _db = DatabaseHelper();

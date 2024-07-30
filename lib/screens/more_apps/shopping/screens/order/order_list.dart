@@ -138,7 +138,7 @@ class _OrderListState extends State<OrderList> {
       title: Row(
         children: [
           Text(
-            AppLocalization.of(context)!.orders,
+            AppLocalization.of(context)?.orders ?? "",
             style: TextStyle(
               color: blackFont,
               fontSize: 18,
@@ -448,13 +448,13 @@ class _OrderListState extends State<OrderList> {
         break;
       case "incomingOrders":
         setState(() {
-          selectedFilter = "Incoming Orders";
+          selectedFilter = "is_incoming_order";
           isFilterApplied = true;
         });
         break;
       case "outgoingOrders":
         setState(() {
-          selectedFilter = "Outgoing Order";
+          selectedFilter = "is_outgoing_order";
           isFilterApplied = true;
         });
         break;
