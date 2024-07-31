@@ -2526,9 +2526,10 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
         actionTwoBgColor: naturalGreen,
         actionTwoTextColor: Colors.white,
         title: "Do you want to leave this page?",
-        description: "If you leave, you will lose this draft",
+        description:
+            "You have unsaved changes that will be lost, Save your changes before exiting?",
         actionOneText: AppLocalization.of(context)!.leave,
-        actionTwoText: AppLocalization.of(context)!.noContinue,
+        actionTwoText: AppLocalization.of(context)!.saveAndLeave,
       );
       if (result != null && result) {
         if (yarnDashboardBloc?.productService != null) {

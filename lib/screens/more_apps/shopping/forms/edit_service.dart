@@ -223,18 +223,18 @@ class _EditServiceState extends State<EditService> {
     userBloc = Provider.of<UserBloc>(context);
     return WillPopScope(
       onWillPop: () async {
-        return true;
+        return await getExitDialog(context);
       },
       child: Scaffold(
         backgroundColor: lightGrey,
         resizeToAvoidBottomInset: true,
-        appBar: appBar() as PreferredSizeWidget?,
+        appBar: appBar(context) as PreferredSizeWidget?,
         body: scaffoldBody(),
       ),
     );
   }
 
-  Widget appBar() {
+  Widget appBar(BuildContext context) {
     return AppBar(
       surfaceTintColor: Colors.transparent,
       elevation: 0,
@@ -247,8 +247,12 @@ class _EditServiceState extends State<EditService> {
           color: navyBlue,
           size: 24,
         ),
-        onPressed: () {
-          Navigator.pop(context);
+        onPressed: () async {
+          ///check if page has content then show exit pop
+          final bool shouldLeave = await getExitDialog(context);
+          if (shouldLeave) {
+            Navigator.of(context).pop();
+          }
         },
       ),
       title: Text(
@@ -1121,6 +1125,37 @@ class _EditServiceState extends State<EditService> {
       }).catchError((error) {
         showToast(message: error.toString());
       });
+    }
+  }
+
+  Future<bool> getExitDialog(BuildContext context) async {
+    if (serviceCategories!.isNotEmpty ||
+        selectedServiceCategory!.name.isNotEmpty ||
+        serviceTitleController.text.isNotEmpty ||
+        selectedDiscount != null ||
+        serviceAvailableFrom != null) {
+      final bool? result = await showDialogBox(
+        context: context,
+        actionOneBgColor: greyBorderColor,
+        actionOneTextColor: blackFont,
+        actionTwoBgColor: Colors.green,
+        actionTwoTextColor: Colors.white,
+        title: "Do you want to leave this page?",
+        description:
+            "You have unsaved changes that will be lost, Save your changes before exiting?",
+        actionOneText: AppLocalization.of(context)!.leave,
+        actionTwoText: AppLocalization.of(context)!.saveAndLeave,
+      );
+      if (result != null && result) {
+        if (userBloc?.user != null) {
+          userBloc?.user == null;
+        }
+        Navigator.of(context).pop();
+      }
+      return false;
+    } else {
+      Navigator.of(context).pop();
+      return true;
     }
   }
 

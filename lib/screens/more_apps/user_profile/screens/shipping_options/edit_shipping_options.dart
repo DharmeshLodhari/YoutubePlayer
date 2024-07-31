@@ -64,14 +64,19 @@ class _EditShippingOptionsState extends State<EditShippingOptions> {
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
 
-    return ScaffoldMessenger(
-      key: _editShippingOptionScaffoldMessenger,
-      child: Scaffold(
-        backgroundColor: lightGrey,
-        key: _editShippingOptionScaffold,
-        resizeToAvoidBottomInset: true,
-        appBar: appBar() as PreferredSizeWidget?,
-        body: scaffoldBody(),
+    return WillPopScope(
+      onWillPop: () async {
+        return await getExitDialog(context);
+      },
+      child: ScaffoldMessenger(
+        key: _editShippingOptionScaffoldMessenger,
+        child: Scaffold(
+          backgroundColor: lightGrey,
+          key: _editShippingOptionScaffold,
+          resizeToAvoidBottomInset: true,
+          appBar: appBar() as PreferredSizeWidget?,
+          body: scaffoldBody(),
+        ),
       ),
     );
   }
@@ -178,8 +183,12 @@ class _EditShippingOptionsState extends State<EditShippingOptions> {
           color: navyBlue,
           size: 24,
         ),
-        onPressed: () {
-          Navigator.pop(context);
+        onPressed: () async {
+          ///check if page has content then show exit pop
+          final bool shouldLeave = await getExitDialog(context);
+          if (shouldLeave) {
+            Navigator.of(context).pop();
+          }
         },
       ),
       centerTitle: false,
@@ -407,6 +416,35 @@ class _EditShippingOptionsState extends State<EditShippingOptions> {
       showToast(message: e.toString());
     }
     // }
+  }
+
+  Future<bool> getExitDialog(BuildContext context) async {
+    if (_locationController.text.isNotEmpty ||
+        _amountController.text.isNotEmpty ||
+        userBloc.user != null) {
+      final bool? result = await showDialogBox(
+        context: context,
+        actionOneBgColor: greyBorderColor,
+        actionOneTextColor: blackFont,
+        actionTwoBgColor: Colors.green,
+        actionTwoTextColor: Colors.white,
+        title: "Do you want to leave this page?",
+        description:
+            "You have unsaved changes that will be lost, Save your changes before exiting?",
+        actionOneText: AppLocalization.of(context)!.leave,
+        actionTwoText: AppLocalization.of(context)!.saveAndLeave,
+      );
+      if (result != null && result) {
+        if (userBloc.user != null) {
+          userBloc.user == null;
+        }
+        Navigator.of(context).pop();
+      }
+      return false;
+    } else {
+      Navigator.of(context).pop();
+      return true;
+    }
   }
 
   @override

@@ -181,7 +181,10 @@ class _ProductViewMoreDetailsState extends State<ProductViewMoreDetails> {
     yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context, listen: false);
     return Scaffold(
       appBar: appBar(),
-      body: _buildBody(),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: _buildBody(),
+      ),
     );
   }
 
@@ -433,37 +436,52 @@ class _ProductViewMoreDetailsState extends State<ProductViewMoreDetails> {
           )
         : isLoading && productDealOfTheDayList.isEmpty
             ? buildLoadingIndicator(isLoading: isLoading)
-            : Padding(
-                padding: const EdgeInsets.all(16),
-                child: CustomScrollView(
-                  controller: _scrollController,
-                  physics: const ScrollPhysics(),
-                  shrinkWrap: true,
-                  slivers: <Widget>[
-                    SliverGrid(
-                      delegate: SliverChildBuilderDelegate(
-                        (c, i) => SizedBox(
-                          child: SuperStoreSingleCard(
-                            product: productDealOfTheDayList[i],
+            : Column(
+                children: [
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      "Found ${productDealOfTheDayList.length} results",
+                      style: TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 18,
+                        fontFamily: "Inter",
+                        color: blackFont,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Expanded(
+                    child: CustomScrollView(
+                      controller: _scrollController,
+                      physics: const ScrollPhysics(),
+                      shrinkWrap: true,
+                      slivers: <Widget>[
+                        SliverGrid(
+                          delegate: SliverChildBuilderDelegate(
+                            (c, i) => SizedBox(
+                              child: SuperStoreSingleCard(
+                                product: productDealOfTheDayList[i],
+                              ),
+                            ),
+                            childCount: productDealOfTheDayList.length,
+                          ),
+                          gridDelegate:
+                              const SliverGridDelegateWithMaxCrossAxisExtent(
+                            mainAxisSpacing: 22,
+                            mainAxisExtent: 260,
+                            crossAxisSpacing: 15,
+                            maxCrossAxisExtent: 200,
                           ),
                         ),
-                        childCount: productDealOfTheDayList.length,
-                      ),
-                      gridDelegate:
-                          const SliverGridDelegateWithMaxCrossAxisExtent(
-                        mainAxisSpacing: 22,
-                        mainAxisExtent: 260,
-                        crossAxisSpacing: 15,
-                        maxCrossAxisExtent: 200,
-                      ),
+                        SliverToBoxAdapter(
+                          child: buildJumpingLoadingIndicator(
+                              isLoading: isLoading),
+                        ),
+                      ],
                     ),
-                    SliverToBoxAdapter(
-                      child: isLoading
-                          ? buildJumpingLoadingIndicator(isLoading: isLoading)
-                          : const SizedBox.shrink(),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               );
   }
 }

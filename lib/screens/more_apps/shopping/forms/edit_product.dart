@@ -11,6 +11,7 @@ import 'package:Slydo/screens/more_apps/user_profile/forms/add_edit_shipping_add
 import 'package:Slydo/screens/more_apps/user_profile/models/discount/discount_model.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/cache_manager.dart';
+import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -444,19 +445,20 @@ class _EditProductState extends State<EditProduct> {
     userBloc = Provider.of<UserBloc>(context);
     return WillPopScope(
       onWillPop: () async {
-        return true;
+        return await getExitDialog(context);
+        // return true;
       },
       child: Scaffold(
         backgroundColor: lightGrey,
         resizeToAvoidBottomInset: true,
-        appBar: appBar() as PreferredSizeWidget?,
+        appBar: appBar(context) as PreferredSizeWidget?,
         body: scaffoldBody(),
       ),
     );
     //
   }
 
-  Widget appBar() {
+  Widget appBar(BuildContext context) {
     return AppBar(
       surfaceTintColor: Colors.transparent,
       elevation: 0,
@@ -469,8 +471,12 @@ class _EditProductState extends State<EditProduct> {
           color: navyBlue,
           size: 24,
         ),
-        onPressed: () {
-          Navigator.pop(context);
+        onPressed: () async {
+          ///check if page has content then show exit pop
+          final bool shouldLeave = await getExitDialog(context);
+          if (shouldLeave) {
+            Navigator.of(context).pop();
+          }
         },
       ),
       title: Text(
@@ -3209,6 +3215,36 @@ class _EditProductState extends State<EditProduct> {
               },
             ),
           );
+  }
+
+  Future<bool> getExitDialog(BuildContext context) async {
+    if (productCustomCategories!.isNotEmpty ||
+        productCategories!.isNotEmpty ||
+        selectedProductCategory!.name.isNotEmpty ||
+        selectedProductCondition!.name.isNotEmpty) {
+      final bool? result = await showDialogBox(
+        context: context,
+        actionOneBgColor: greyBorderColor,
+        actionOneTextColor: blackFont,
+        actionTwoBgColor: Colors.green,
+        actionTwoTextColor: Colors.white,
+        title: "Do you want to leave this page?",
+        description:
+            "You have unsaved changes that will be lost, Save your changes before exiting?",
+        actionOneText: AppLocalization.of(context)!.leave,
+        actionTwoText: AppLocalization.of(context)!.saveAndLeave,
+      );
+      if (result != null && result) {
+        if (userBloc?.user != null) {
+          userBloc?.user == null;
+        }
+        Navigator.of(context).pop();
+      }
+      return false;
+    } else {
+      Navigator.of(context).pop();
+      return true;
+    }
   }
 
   // Widget addOnTile({required AddOns addOns}) {

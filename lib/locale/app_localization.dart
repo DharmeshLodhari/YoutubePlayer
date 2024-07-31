@@ -559,6 +559,13 @@ class AppLocalization {
     );
   }
 
+  String get saveAndLeave {
+    return Intl.message(
+      "Save & Leave",
+      name: "save",
+    );
+  }
+
   String get discard {
     return Intl.message(
       "Discard",

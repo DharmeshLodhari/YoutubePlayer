@@ -1331,7 +1331,7 @@ class AddOnOption {
   String? price;
   bool? isAvailable;
   bool isSelected = false;
-  DateTime? createdAt;
+  String? createdAt;
   int quantity = 0;
   bool isChecked = false;
   List<AddedBy>? addedBy;
@@ -1364,7 +1364,8 @@ class AddOnOption {
     price = json['price'].toString();
     isAvailable = json['is_available'];
     isSelected = json['is_selected'] ?? false;
-    createdAt = getProductDateTime(json['created_at']);
+    // createdAt = getProductDateTime(json['created_at']);
+    createdAt = json['created_at'];
     quantity = json['quantity'] ?? 0;
     isChecked = json['is_checked'] ?? false;
     addedBy = json['added_by'] == null
@@ -1383,7 +1384,7 @@ class AddOnOption {
     String? price,
     bool? isAvailable,
     bool? isSelected,
-    DateTime? createdAt,
+    String? createdAt,
     int? quantity,
     bool? isChecked,
     List<AddedBy>? addedBy,
@@ -1499,7 +1500,7 @@ class AddOns {
   String? selectType;
   bool? isRequired;
   bool? isChecked;
-  DateTime? createdAt;
+  String? createdAt;
   String? groupValue;
 
   AddOns(
@@ -1530,7 +1531,8 @@ class AddOns {
     selectType = json['select_type'];
     isRequired = json['is_required'];
     isChecked = json['is_checked'] ?? false;
-    createdAt = getProductDateTime(json['created_at']);
+    createdAt = json['created_at'];
+    // createdAt = DateTime.parse(json['created_at']);
     groupValue = json['group_value'];
   }
 
@@ -1544,7 +1546,7 @@ class AddOns {
     String? selectType,
     bool? isRequired,
     bool? isChecked,
-    DateTime? createdAt,
+    String? createdAt,
     String? groupValue,
   }) {
     return AddOns(

@@ -293,7 +293,7 @@ class _CustomCategoryListState extends State<CustomCategoryList> {
       key: _messengerScaffoldKey,
       child: WillPopScope(
         onWillPop: () async {
-          return true;
+          return await getExitDialog(context);
         },
         child: Scaffold(
           key: _scaffoldKey,
@@ -406,10 +406,14 @@ class _CustomCategoryListState extends State<CustomCategoryList> {
           color: navyBlue,
           size: 24,
         ),
-        onPressed: () {
-          Navigator.popUntil(context, ModalRoute.withName(Routes.DASHBOARD));
-          Navigator.pushNamed(context, Routes.USER_PROFILE,
-              arguments: {"searchedUserName": userBloc?.user.userName});
+        onPressed: () async {
+          ///check if page has content then show exit pop
+          final bool shouldLeave = await getExitDialog(context);
+          if (shouldLeave) {
+            Navigator.popUntil(context, ModalRoute.withName(Routes.DASHBOARD));
+            Navigator.pushNamed(context, Routes.USER_PROFILE,
+                arguments: {"searchedUserName": userBloc?.user.userName});
+          }
         },
       ),
       shadowColor: greySecondaryYarn,
@@ -518,5 +522,34 @@ class _CustomCategoryListState extends State<CustomCategoryList> {
         ),
       ),
     );
+  }
+
+  Future<bool> getExitDialog(BuildContext context) async {
+    if (itemList.isNotEmpty ||
+        _scrollController != null ||
+        userBloc!.user != null) {
+      final bool? result = await showDialogBox(
+        context: context,
+        actionOneBgColor: greyBorderColor,
+        actionOneTextColor: blackFont,
+        actionTwoBgColor: Colors.green,
+        actionTwoTextColor: Colors.white,
+        title: "Do you want to leave this page?",
+        description:
+            "You have unsaved changes that will be lost, Save your changes before exiting?",
+        actionOneText: AppLocalization.of(context)!.leave,
+        actionTwoText: AppLocalization.of(context)!.saveAndLeave,
+      );
+      if (result != null && result) {
+        if (userBloc?.user != null) {
+          userBloc?.user == null;
+        }
+        Navigator.of(context).pop();
+      }
+      return false;
+    } else {
+      Navigator.of(context).pop();
+      return true;
+    }
   }
 }

@@ -140,7 +140,7 @@ class _ProductAddOnListState extends State<ProductAddOnList>
       onWillPop: () async {
         // Navigator.pop(context, productAddOnList);
         Navigator.pop(context);
-        return true;
+        return await getExitDialog(context);
       },
       child: ScaffoldMessenger(
         key: _scaffoldMessengerKey,
@@ -175,12 +175,16 @@ class _ProductAddOnListState extends State<ProductAddOnList>
           color: navyBlue,
           size: 24,
         ),
-        onPressed: () {
+        onPressed: () async {
           // List<AddOns> addOnList = productAddOnList
           //     .where((addOn) => addOn.isChecked == true)
           //     .toList();
           // Navigator.pop(context, addOnList);
-          Navigator.pop(context);
+          ///check if page has content then show exit pop
+          final bool shouldLeave = await getExitDialog(context);
+          if (shouldLeave) {
+            Navigator.of(context).pop();
+          }
         },
       ),
       centerTitle: false,
@@ -487,6 +491,35 @@ class _ProductAddOnListState extends State<ProductAddOnList>
     }).catchError((error) {
       showToast(message: error.toString());
     });
+  }
+
+  Future<bool> getExitDialog(BuildContext context) async {
+    if (noItemInList == false ||
+        userBloc.user != null ||
+        productAddOnList.isNotEmpty) {
+      final bool? result = await showDialogBox(
+        context: context,
+        actionOneBgColor: greyBorderColor,
+        actionOneTextColor: blackFont,
+        actionTwoBgColor: Colors.green,
+        actionTwoTextColor: Colors.white,
+        title: "Do you want to leave this page?",
+        description:
+            "You have unsaved changes that will be lost, Save your changes before exiting?",
+        actionOneText: AppLocalization.of(context)!.leave,
+        actionTwoText: AppLocalization.of(context)!.saveAndLeave,
+      );
+      if (result != null && result) {
+        if (userBloc.user != null) {
+          userBloc.user == null;
+        }
+        Navigator.of(context).pop();
+      }
+      return false;
+    } else {
+      Navigator.of(context).pop();
+      return true;
+    }
   }
 
   @override

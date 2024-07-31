@@ -40,7 +40,7 @@ class AddOnOptionTile extends StatelessWidget {
               ),
               const SizedBox(height: 5.0),
               Text(
-                'Created: ${addOnOption.createdAt.toString()}',
+                'Created: ${getProductDateTime(addOnOption.createdAt.toString())}',
                 maxLines: 1,
                 style: TextStyle(
                     color: darkGrey, fontWeight: FontWeight.w400, fontSize: 12),
@@ -83,6 +83,14 @@ class AddOnOptionTile extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  DateTime getProductDateTime(var date) {
+    if (date != null) {
+      final DateTime dateTime = DateTime.parse(date);
+      return dateTime;
+    }
+    return DateTime.now();
   }
 
   Widget checkProductImage(AddOnOption addOnOption) {

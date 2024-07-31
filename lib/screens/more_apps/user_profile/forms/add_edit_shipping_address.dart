@@ -232,7 +232,7 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        return true;
+        return await getExitDialog(context);
       },
       child: Scaffold(
         backgroundColor: lightGrey,
@@ -256,8 +256,12 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
           color: navyBlue,
           size: 24,
         ),
-        onPressed: () {
-          Navigator.pop(context);
+        onPressed: () async {
+          ///check if page has content then show exit pop
+          final bool shouldLeave = await getExitDialog(context);
+          if (shouldLeave) {
+            Navigator.of(context).pop();
+          }
         },
       ),
       title: Text(
@@ -1151,6 +1155,37 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
     );
   }
 
+  Future<bool> getExitDialog(BuildContext context) async {
+    if (mapController != null ||
+        shippingAddress != null ||
+        selectedProducts.isNotEmpty ||
+        itemList.isNotEmpty ||
+        cityList.isNotEmpty ||
+        userBloc.user != null) {
+      final bool? result = await showDialogBox(
+        context: context,
+        actionOneBgColor: greyBorderColor,
+        actionOneTextColor: blackFont,
+        actionTwoBgColor: Colors.green,
+        actionTwoTextColor: Colors.white,
+        title: "Do you want to leave this page?",
+        description:
+            "You have unsaved changes that will be lost, Save your changes before exiting?",
+        actionOneText: AppLocalization.of(context)!.leave,
+        actionTwoText: AppLocalization.of(context)!.saveAndLeave,
+      );
+      if (result != null && result) {
+        if (userBloc.user != null) {
+          userBloc.user == null;
+        }
+        Navigator.of(context).pop();
+      }
+      return false;
+    } else {
+      Navigator.of(context).pop();
+      return true;
+    }
+  }
 // Widget productSelection() {
 //   return Column(
 //     crossAxisAlignment: CrossAxisAlignment.start,

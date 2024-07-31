@@ -112,10 +112,11 @@ class _EditProductVariantState extends State<EditProductVariant> {
     inventoryIsAvailable = variant!.trackInventory ?? false;
     inventoryCount = variant!.quantity ?? 1;
     inventoryController.text = variant!.quantity.toString();
-    if (variant!.availableFrom != null) {
-      productAvailableFrom = variant!.availableFrom;
+    if (variant != null && variant!.availableFrom != null) {
+      productAvailableFrom = DateFormat('dd/MM/yyyy')
+          .format(DateFormat('yyyy-MM-dd').parse(variant!.availableFrom!));
     } else {
-      productAvailableFrom = DateFormat('yyyy-MM-dd').format(todayDate);
+      productAvailableFrom = DateFormat('dd/MM/yyyy').format(todayDate);
     }
     productImagesFromServer.addAll(variant!.serverImages!);
 
@@ -956,7 +957,7 @@ class _EditProductVariantState extends State<EditProductVariant> {
               DateTime(value!.year, value.month, value.day);
 
           // productAvailableFrom = DateFormat('yyyy-MM-dd').format(selectedDate);
-          productAvailableFrom = DateFormat('dd-MM-yyyy').format(selectedDate);
+          productAvailableFrom = DateFormat('dd/MM/yyyy').format(selectedDate);
           // productAvailableFrom = DateTime(value!.year, value.month, value.day);
           setState(() {});
         }).catchError((error) {});
@@ -1243,8 +1244,8 @@ class _EditProductVariantState extends State<EditProductVariant> {
           }
           // Convert date format for server
           if (productAvailableFrom != null) {
-            DateTime dateForServer =
-                DateFormat('dd-MM-yyyy').parse(productAvailableFrom!);
+            final DateTime dateForServer =
+                DateFormat('dd/MM/yyyy').parse(productAvailableFrom!);
             variant.availableFrom =
                 DateFormat('yyyy-MM-dd').format(dateForServer);
           }

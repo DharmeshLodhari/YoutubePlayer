@@ -159,7 +159,8 @@ class _TransactionDetailState extends State<TransactionDetail> {
   Widget getSubtitle() {
     String? text;
     if (transaction?.createdAt != null) {
-      final DateTime transactionTime = DateTime.parse(transaction!.createdAt!);
+      final DateTime transactionTime =
+          DateTime.parse(transaction!.createdAt!).toLocal();
       final String date = DateFormat("dd/MM/yyyy").format(transactionTime);
       final String time = DateFormat("hh:mm a").format(transactionTime);
       text = "$date • $time";

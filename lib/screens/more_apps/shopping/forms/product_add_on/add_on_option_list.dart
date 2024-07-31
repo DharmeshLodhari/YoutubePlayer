@@ -321,7 +321,7 @@ class _AddOnOptionListState extends State<AddOnOptionList>
               ),
               const SizedBox(height: 10.0),
               Text(
-                'Created: ${addOnOption.createdAt} ',
+                'Created: ${getProductDateTime(addOnOption.createdAt)}',
                 maxLines: 1,
                 style: TextStyle(
                   color: darkGrey,
@@ -374,6 +374,14 @@ class _AddOnOptionListState extends State<AddOnOptionList>
         ),
       ),
     );
+  }
+
+  DateTime getProductDateTime(var date) {
+    if (date != null) {
+      final DateTime dateTime = DateTime.parse(date);
+      return dateTime;
+    }
+    return DateTime.now();
   }
 
   void toggleAddOnCheckedState(int index) {
