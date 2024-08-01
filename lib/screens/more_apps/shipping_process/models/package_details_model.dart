@@ -1,7 +1,7 @@
 import 'package:Slydo/screens/more_apps/shipping_process/models/shipping_option_model.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
-import 'package:Slydo/utils/util.dart';
+import 'package:intl/intl.dart';
 
 enum DeliveryOptions { shipping, eatIn, pickUp }
 
@@ -111,9 +111,7 @@ class PackageDetailsModel {
       "pickup_address_id": addressId ?? "",
       "note": shippingNote,
       "customer_contact_number": phoneNumber,
-      "pickup_datetime": pickUpDateTime,
-      "instore_datetime": inStoreDateTime,
-      "delivery_datetime": deliveryDateTime,
+      "price": totalAmount
     };
     dynamic shippingId = 0;
     if (deliveryOption == DeliveryOptions.shipping) {
@@ -122,7 +120,7 @@ class PackageDetailsModel {
         data.addAll({
           "rate_id": shippingOption?.id ?? "",
           "insurance": false,
-          "price": totalAmount
+          "delivery_datetime": deliveryDateTime,
         });
       } else if (shippingType == ShippingTypes.merchant) {
         shippingId = shippingOption?.id ?? 0;
@@ -131,9 +129,16 @@ class PackageDetailsModel {
         data.addAll({"rate_id": shippingOption?.rateId ?? ""});
       }
       data.addAll({"delivery_address_id": deliveryAddress?.id ?? ""});
-    } else if (deliveryOption == DeliveryOptions.eatIn ||
-        deliveryOption == DeliveryOptions.pickUp) {
+    } else if (deliveryOption == DeliveryOptions.pickUp) {
       shippingId = 1;
+      data.addAll({
+        "pickup_datetime": pickUpDateTime,
+      });
+    } else {
+      shippingId = 1;
+      data.addAll({
+        "instore_datetime": inStoreDateTime,
+      });
     }
     data.addAll({
       "shipping_option_id": shippingId,
@@ -238,16 +243,21 @@ class PackageDetailsModel {
     deliveryAddress = shippingAddress;
   }
 
-  void updateShippingNote(String? note) {
+  void updateShippingNote(String note) {
     shippingNote = note;
   }
 
+  void updatePhoneNumber(String number) {
+    phoneNumber = int.parse(number);
+  }
+
   void updateDateTime(String? deliveryOption, DateTime? selectedDateTime) {
-    if (selectedDateTime != null && deliveryOption == DeliveryOptions.pickUp) {
-      pickUpDateTime = formatDateForOrder(selectedDateTime);
-    } else if (deliveryOption == DeliveryOptions.eatIn) {
+    final String date = DateFormat("$selectedDateTime").format(DateTime.now());
+    if (selectedDateTime != null && deliveryOption == "Pickup") {
+      pickUpDateTime = date;
+    } else if (deliveryOption == "In Store/Eat In") {
       if (selectedDateTime != null) {
-        inStoreDateTime = formatDateForOrder(selectedDateTime);
+        inStoreDateTime = date;
       } else {
         inStoreDateTime = "now";
       }

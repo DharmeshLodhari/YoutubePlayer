@@ -4,7 +4,6 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
-import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/widget/product_detail_shimmer.dart';
 import 'package:Slydo/screens/more_apps/user_profile/widgets/user_profile_shimmer.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_shimmer.dart';
@@ -2743,8 +2742,8 @@ Map<String, String> getFormattedDateTime(String? dateTimeString) {
   } catch (e) {
     print("Error parsing date: $e");
     return {
-      'date': '',
-      'time': '',
+      'date': '-',
+      'time': '-',
     };
   }
 }

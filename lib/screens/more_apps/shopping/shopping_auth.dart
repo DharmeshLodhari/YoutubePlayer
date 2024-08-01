@@ -1856,9 +1856,9 @@ class ShoppingAuthService extends AuthService {
     }
 
     if (next == "") {
-      url = "${AppConfig.baseUrl}/api/v1/order/";
+      url = "${AppConfig.baseUrl}/api/v1/order/?";
 
-      url = "$url?merchant=$isMerchant";
+      // url = "$url?merchant=$isMerchant";
       if (filterValue != null && filterValue != "") {
         url = "$url&shipping_type=$filterValue";
       }
@@ -1874,6 +1874,7 @@ class ShoppingAuthService extends AuthService {
         }
         url = "$url&status=$selectedStatus";
       }
+
       if (dateTimeRange != null) {
         final DateFormat dateFormat = DateFormat('yyyy-MM-dd');
         final String toDate = dateFormat.format(dateTimeRange.end);
@@ -1888,7 +1889,9 @@ class ShoppingAuthService extends AuthService {
     } else {
       url = getSecureUrl(url: next);
     }
-
+    if (url.endsWith("?")) {
+      url = url.replaceAll("?", "");
+    }
     debugPrint('URL ::: $url');
 
     final headers = await getAuthHeaders();
