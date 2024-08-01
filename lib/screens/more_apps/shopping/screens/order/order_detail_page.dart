@@ -1492,10 +1492,11 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
           title: 'Pickup Date',
           detail: date,
         ),
-        if (order?.isCustomer(userBloc.user.userName) ?? true)
+        if ((order?.customerContactNumber?.isNotEmpty ?? false) &&
+            order?.notAllowedStatusUpdate.contains(order?.status) == false)
           OrderDetailRow(
             title: 'Phone Number',
-            detail: userBloc.user.phoneNumber ?? "",
+            detail: order?.customerContactNumber ?? "",
           )
         else
           const SizedBox(),
@@ -1503,11 +1504,27 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
           title: 'Pickup Time',
           detail: time,
         ),
-        OrderDetailRow(
-          title: 'Order Fulfilled',
-          detail: formatPickupDateTime(order?.pickupDateTime ?? ""),
-        ),
+        orderFulfilledDetailRow(),
       ],
+    );
+  }
+
+  Widget orderFulfilledDetailRow() {
+    if (order?.notAllowedStatusUpdate.contains(order?.status) == true) {
+      String fulfilledTime = "";
+      for (Map<String, dynamic> statusMap in order?.statusTimeStamp ?? []) {
+        if (statusMap.keys.first == "Complete") {
+          fulfilledTime = statusMap.values.first;
+        }
+      }
+      return OrderDetailRow(
+        title: 'Order Fulfilled',
+        detail: formatPickupDateTime(fulfilledTime),
+      );
+    }
+    return const OrderDetailRow(
+      title: '',
+      detail: '',
     );
   }
 

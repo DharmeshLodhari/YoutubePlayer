@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/models/shared_cart_model.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/Picture.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/basket_item_model.dart';
@@ -2008,6 +2007,7 @@ class Order {
   String? refundPaymentRequestId;
   String? refundPaymentId;
   String? deliveryDatetime;
+  String? customerContactNumber;
   List<String> orderConfirmState = [
     "Complete",
     "Payment Successful",
@@ -2072,6 +2072,7 @@ class Order {
     this.refundPaymentRequestId,
     this.refundPaymentId,
     this.deliveryDatetime,
+    this.customerContactNumber,
   });
 
   Order.fromJson(object) {
@@ -2138,6 +2139,7 @@ class Order {
     refundPaymentRequestId = object["refund_payment_request_id"];
     refundPaymentId = object["refund_payment_id"];
     deliveryDatetime = object["delivery_datetime"] ?? object["created_at"];
+    customerContactNumber = object["customer_contact_number"];
   }
 
   //todo: invetiget deprecating this function or delete this function
