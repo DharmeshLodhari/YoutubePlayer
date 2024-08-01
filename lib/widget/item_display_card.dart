@@ -167,6 +167,7 @@ class _DisplayProductState extends State<DisplayProduct> {
                           lengthToTruncateAt: 45,
                           showEllipsis: true,
                         ),
+                        maxLines: 2,
                         style: TextStyle(
                           fontFamily: "Inter",
                           fontWeight: FontWeight.w400,
@@ -178,9 +179,11 @@ class _DisplayProductState extends State<DisplayProduct> {
                         height: 2,
                       ),
                       Row(
+                          mainAxisSize: MainAxisSize.max,
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Column(
+                              mainAxisSize: MainAxisSize.min,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Row(
@@ -194,16 +197,17 @@ class _DisplayProductState extends State<DisplayProduct> {
                                         fontWeight: FontWeight.bold,
                                         fontSize: 14,
                                         color: navyBlue,
+                                        overflow: TextOverflow.ellipsis,
                                       ),
                                     ),
                                     Text(
                                       moneyDisplayNormalizer(
                                           widget.product.getProductRealPrice()),
                                       style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 14,
-                                        color: navyBlue,
-                                      ),
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 14,
+                                          color: navyBlue,
+                                          overflow: TextOverflow.ellipsis),
                                     ),
                                   ],
                                 ),
