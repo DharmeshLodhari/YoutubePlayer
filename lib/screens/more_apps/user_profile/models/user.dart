@@ -535,7 +535,7 @@ class ShippingAddress {
     created_at = object['created_at'];
     updated_at = object['updated_at'];
     email = object['email'];
-    is_residential = object['is_residential'];
+    is_residential = object['is_residential'] ?? false;
     first_name = object['first_name'];
     last_name = object['last_name'];
     line_1 = object['line1'];

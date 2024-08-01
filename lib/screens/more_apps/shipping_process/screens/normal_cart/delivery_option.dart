@@ -474,6 +474,8 @@ class _DeliveryOptionState extends State<DeliveryOption> {
             shippingProcessBloc
                 .getPackageDetailModel()
                 .updateShippingNote(userNoteController.text.trim());
+            shippingProcessBloc.getPackageDetailModel().updatePhoneNumber(
+                "+${_selectedDialogCountry.phoneCode}${phoneNumberController.text.trim()}");
             shippingProcessBloc.getPackageDetailModel().updateDateTime(
                 shippingProcessBloc.getPackageDetailModel().getDeliveryOption(),
                 selectedDateTime);

@@ -193,4 +193,21 @@ class ShippingProcessAuthService extends AuthService {
       return Future.error(response.body);
     }
   }
+
+  Future<ShippingAddress> getSingleAddressDetail(String addressId) async {
+    final String url =
+        "${AppConfig.baseUrl}/api/v1/shipping/addresses/$addressId";
+
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers);
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      final jsonData = json.decode(response.body);
+      final ShippingAddress address = ShippingAddress.fromJson(jsonData);
+
+      return address;
+    } else {
+      return Future.error(response.body);
+    }
+  }
 }

@@ -58,13 +58,16 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   late http.Response response;
   String errorMessage = "";
   String cartId = "";
+  ShippingAddress? deliveryAddress;
   bool isRefundAPILoading = false;
+  bool isLoading = false;
 
   @override
   void initState() {
     order = widget.arguments['order'];
     statusOfOrder = order?.status?.toLowerCase();
     getCartId();
+    getDeliveryAddress();
     super.initState();
   }
 
@@ -72,6 +75,17 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     if (mounted) setState(() {});
 
     cartId = await ShippingProcessAuthService().getCartId();
+  }
+
+  Future<void> getDeliveryAddress() async {
+    isLoading = true;
+    if (mounted) setState(() {});
+
+    deliveryAddress = await ShippingProcessAuthService()
+        .getSingleAddressDetail(order?.deliveryAddressId ?? "");
+
+    isLoading = false;
+    if (mounted) setState(() {});
   }
 
   @override
@@ -155,23 +169,30 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   }
 
   Widget _buildBody() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            _buildOrderStatus(),
-            _buildPaymentStatus(),
-          ],
-        ),
-        Divider(
-          color: lightBlue,
-          thickness: 0.5,
-        ),
-        _buildAllDetails(),
-      ],
-    );
+    return isLoading
+        ? const Center(
+            child: Padding(
+              padding: EdgeInsets.only(top: 30),
+              child: CircularProgressIndicator(),
+            ),
+          )
+        : Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  _buildOrderStatus(),
+                  _buildPaymentStatus(),
+                ],
+              ),
+              Divider(
+                color: lightBlue,
+                thickness: 0.5,
+              ),
+              _buildAllDetails(),
+            ],
+          );
   }
 
   Widget _buildAllDetails() {
@@ -704,8 +725,11 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     final DateFormat dateFormat = DateFormat("MMMM dd, yyyy");
     final DateTime dateTime = DateTime.parse(order?.createdAt.toString() ?? "");
     final String date = dateFormat.format(dateTime);
-    final Map<String, String> formattedDateTime = getFormattedDateTime(
-        order?.pickupDateTime ?? order?.inStoreDateTime ?? "");
+    final Map<String, String> formattedDateTimeForPickUp =
+        getFormattedDateTime(order?.pickupDateTime ?? "");
+    final Map<String, String> formattedDateTimeForEatIn =
+        getFormattedDateTime(order?.inStoreDateTime ?? "");
+
     return Container(
       padding: const EdgeInsets.all(7),
       decoration: BoxDecoration(
@@ -744,11 +768,12 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
             title: 'Payment Method',
             detail: order?.paymentType ?? "",
           ),
-          if (order?.shipmentType() == "PickUp" ||
-              order?.shipmentType() == "In Store/Eat In")
-            _buildPickUpEatInStore(
-                formattedDateTime['date'] ?? order?.inStoreDateTime ?? "",
-                formattedDateTime['time'] ?? ""),
+          if (order?.shipmentType() == "PickUp")
+            _buildPickUpStore(formattedDateTimeForPickUp['date'] ?? "",
+                formattedDateTimeForPickUp['time'] ?? ""),
+          if (order?.shipmentType() == "In Store/Eat In")
+            _buildEatInStore(formattedDateTimeForEatIn['date'] ?? "",
+                formattedDateTimeForEatIn['time'] ?? ""),
           if (order?.shipmentType() == "Delivery") _buildDeliveryDetails()
         ],
       ),
@@ -1481,7 +1506,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     return totalAmount;
   }
 
-  Widget _buildPickUpEatInStore(String date, String time) {
+  Widget _buildPickUpStore(String date, String time) {
     return Column(
       children: [
         OrderDetailRow(
@@ -1509,43 +1534,72 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     );
   }
 
+  Widget _buildEatInStore(String date, String time) {
+    return Column(
+      children: [
+        OrderDetailRow(
+          title: 'Delivery Option',
+          detail: order?.isOrderStatus(userBloc.user.userName ?? "") ?? "",
+        ),
+        OrderDetailRow(
+          title: 'In Store/Eat In Date',
+          detail: date,
+        ),
+        if ((order?.customerContactNumber?.isNotEmpty ?? false) &&
+            order?.notAllowedStatusUpdate.contains(order?.status) == false)
+          OrderDetailRow(
+            title: 'Phone Number',
+            detail: order?.customerContactNumber ?? "",
+          )
+        else
+          const SizedBox(),
+        OrderDetailRow(
+          title: 'In Store/Eat In Time',
+          detail: time,
+        ),
+        orderFulfilledDetailRow(),
+      ],
+    );
+  }
+
   Widget orderFulfilledDetailRow() {
     if (order?.notAllowedStatusUpdate.contains(order?.status) == true) {
-      String fulfilledTime = "";
+      String fulfilledTime = "Unknown";
       for (Map<String, dynamic> statusMap in order?.statusTimeStamp ?? []) {
         if (statusMap.keys.first == "Complete") {
           fulfilledTime = statusMap.values.first;
+          fulfilledTime = formatPickupDateTime(fulfilledTime);
         }
       }
       return OrderDetailRow(
         title: 'Order Fulfilled',
-        detail: formatPickupDateTime(fulfilledTime),
+        detail: fulfilledTime,
       );
     }
-    return const OrderDetailRow(
-      title: '',
-      detail: '',
-    );
+    return const SizedBox();
   }
 
   Widget _buildDeliveryDetails() {
     return Column(
       children: [
-        if (order?.isCustomer(userBloc.user.userName) ?? true)
+        if ((order?.customerContactNumber?.isNotEmpty ?? false) &&
+            order?.notAllowedStatusUpdate.contains(order?.status) == false)
           OrderDetailRow(
             title: 'Phone Number',
-            detail: userBloc.user.phoneNumber ?? "",
+            detail: order?.customerContactNumber ?? "",
           )
         else
           const SizedBox(),
-        const OrderDetailRow(
-          title: 'Address',
-          detail: 'No 5, Adetutu street, ikeja, lagos, Nigeria, 100001',
-        ),
         OrderDetailRow(
-          title: 'Order delivered on',
-          detail: order?.deliveryDatetime ?? "",
+          title: 'Address',
+          detail:
+              '${deliveryAddress?.addressLineOne}, ${deliveryAddress?.addressLineTwo}',
         ),
+        if (order?.notAllowedStatusUpdate.contains(order?.status) == true)
+          OrderDetailRow(
+            title: 'Order delivered on',
+            detail: formatPickupDateTime(order?.deliveryDatetime ?? ""),
+          ),
       ],
     );
   }

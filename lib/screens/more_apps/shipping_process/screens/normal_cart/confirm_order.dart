@@ -343,7 +343,7 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
             } else if (response.statusCode == 500) {
               showToast(message: AppLocalization.of(context)!.serverError);
             } else {
-              showToast(message: "Payment Not Succsessfully");
+              showToast(message: "Payment Not Successful");
               debugPrint(
                 "MakePaymentForCartOrder Unsuccessful",
               );
