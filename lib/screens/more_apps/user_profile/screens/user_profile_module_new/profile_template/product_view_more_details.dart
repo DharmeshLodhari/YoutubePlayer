@@ -15,7 +15,6 @@ import 'package:Slydo/screens/more_apps/yarn/models/share_as_yarn_model.dart';
 import 'package:Slydo/screens/more_apps/yarn/share_as_a_yarn_screen.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_dashboard_bloc.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/slydo_app_icon_new_icons.dart';
@@ -441,7 +440,7 @@ class _ProductViewMoreDetailsState extends State<ProductViewMoreDetails> {
                   Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      "Found ${productDealOfTheDayList.length} results",
+                      "Found $count results",
                       style: TextStyle(
                         fontWeight: FontWeight.w700,
                         fontSize: 18,

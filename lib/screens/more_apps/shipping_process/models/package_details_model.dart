@@ -105,7 +105,7 @@ class PackageDetailsModel {
     return insurePackage;
   }
 
-  Map<String, dynamic> toCartPlaceOrder() {
+  Map<String, dynamic> toCartPlaceOrder(int? totalAmount) {
     final Map<String, dynamic> data = {
       "merchant": merchant,
       "pickup_address_id": addressId ?? "",
@@ -122,7 +122,7 @@ class PackageDetailsModel {
         data.addAll({
           "rate_id": shippingOption?.id ?? "",
           "insurance": false,
-          "price": shippingOption?.price
+          "price": totalAmount
         });
       } else if (shippingType == ShippingTypes.merchant) {
         shippingId = shippingOption?.id ?? 0;

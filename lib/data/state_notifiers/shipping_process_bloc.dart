@@ -144,10 +144,11 @@ class ShippingProcessBloc extends ChangeNotifier {
     notifyListeners();
   }
 
-  Map<String, dynamic> toPlaceOrder(String? userName) {
+  Map<String, dynamic> toPlaceOrder(String? userName, {int? totalAmount}) {
     final Map<String, dynamic> data = {
       "payment_type": "Slydo",
-      "shipping_details": packagesList.map((e) => e.toCartPlaceOrder()).toList()
+      "shipping_details":
+          packagesList.map((e) => e.toCartPlaceOrder(totalAmount)).toList()
     };
     if (isUseCart == false) {
       data.addAll({

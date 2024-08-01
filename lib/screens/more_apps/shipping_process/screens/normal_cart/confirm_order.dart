@@ -265,7 +265,7 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
                       context: context,
                       isValidCallback: () async {
                         // Create the orders
-                        await placeOrder();
+                        await placeOrder(getTotalOrder());
                       },
                       cancelCallBack: () {
                         Navigator.pop(context);
@@ -274,7 +274,7 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
             backgroundColor: navyBlue,
             textColor: white,
             text:
-                'Pay ${worldCurrencies[userBloc.user.currency]}${moneyDisplayNormalizer(shippingProcessBloc.getTotalOrder())}',
+                'Pay ${worldCurrencies[userBloc.user.currency]}${moneyDisplayNormalizer(getTotalOrder())}',
             isLoading: isOrderLoading,
           ),
         );
@@ -311,13 +311,14 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
     return true;
   }
 
-  Future<void> placeOrder() async {
+  Future<void> placeOrder(int? totalAmount) async {
     if (!isOrderLoading) {
       isOrderLoading = true;
       if (mounted) setState(() {});
       await ShippingProcessAuthService()
           .placeOrder(
-        data: shippingProcessBloc.toPlaceOrder(userBloc.user.userName),
+        data: shippingProcessBloc.toPlaceOrder(userBloc.user.userName,
+            totalAmount: totalAmount),
         isCartProcess: shippingProcessBloc.isUseCart,
         isSharedCart: false,
         sharedCartId: '',
