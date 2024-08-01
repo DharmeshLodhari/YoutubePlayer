@@ -17,6 +17,7 @@ import 'package:Slydo/widget/dialog.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 class DeliveryOption extends StatefulWidget {
@@ -29,7 +30,8 @@ class DeliveryOption extends StatefulWidget {
 }
 
 class _DeliveryOptionState extends State<DeliveryOption> {
-  List<String?> deliveryOption = ["Shipping", "In Store/Eat In", "Pickup"];
+  // List<String?> deliveryOption = ["Shipping", "In Store/Eat In", "Pickup"];
+  List<String?> deliveryOption = ["In Store/Eat In", "Pickup"];
 
   late ShippingProcessBloc shippingProcessBloc;
   late Country _selectedDialogCountry;
@@ -768,6 +770,10 @@ class _DeliveryOptionState extends State<DeliveryOption> {
             keyboardType: TextInputType.phone,
             hintText: "3387710700",
             controller: phoneNumberController,
+            inputFormatters: [
+              LengthLimitingTextInputFormatter(10),
+              FilteringTextInputFormatter.digitsOnly,
+            ],
             validator: (val) {
               if (val.isNotEmpty && val.length >= 9) {
                 return null;
