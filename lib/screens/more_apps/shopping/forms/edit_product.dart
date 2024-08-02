@@ -2715,6 +2715,10 @@ class _EditProductState extends State<EditProduct> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                _buildCancelIcon(),
+                const SizedBox(height: 10),
+                _buildMeasurementText(),
+                const SizedBox(height: 10),
                 Expanded(
                   child: ListView.builder(
                     shrinkWrap: true,
@@ -2749,7 +2753,7 @@ class _EditProductState extends State<EditProduct> {
                   ),
                 ),
                 CurvedButton(
-                  text: 'Pick',
+                  text: 'Save',
                   onPressed: () {
                     Navigator.pop(context);
                   },
@@ -3232,6 +3236,40 @@ class _EditProductState extends State<EditProduct> {
         FocusScope.of(context).unfocus();
         await editProduct();
       },
+    );
+  }
+
+  Widget _buildCancelIcon() {
+    return Padding(
+      padding: const EdgeInsets.only(right: 30),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          GestureDetector(
+            onTap: () {
+              Navigator.pop(context);
+            },
+            child: Icon(
+              Icons.close,
+              color: black,
+              size: 25,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMeasurementText() {
+    return Text(
+      "Measurement",
+      textAlign: TextAlign.center,
+      style: TextStyle(
+        color: blackFont,
+        fontSize: 20,
+        fontWeight: FontWeight.w700,
+      ),
     );
   }
 

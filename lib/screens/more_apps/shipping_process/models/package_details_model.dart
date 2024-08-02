@@ -267,19 +267,8 @@ class PackageDetailsModel {
   }
 
   String formatDateTime(DateTime dateTime) {
-    final DateTime adjustedDate = dateTime.toUtc().add(
-          const Duration(
-            hours: 11,
-            minutes: 30,
-            seconds: 58,
-            milliseconds: 60,
-            microseconds: 16,
-          ),
-        );
-
     final String formattedDate =
-        "${DateFormat("yyyy-MM-ddTHH:mm:ss.SSSSSS").format(adjustedDate)}+01:00";
-
+        "${DateFormat("yyyy-MM-ddTHH:mm:ss.SSSSSS").format(dateTime)}+01:00";
     return formattedDate;
   }
 

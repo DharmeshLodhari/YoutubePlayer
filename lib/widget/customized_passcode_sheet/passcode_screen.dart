@@ -105,10 +105,12 @@ class _CustomizedPassCodeScreenState extends State<CustomizedPassCodeScreen>
                 children: <Widget>[
                   Container(
                     decoration: const BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(20),
-                            topRight: Radius.circular(20))),
+                      color: Colors.white,
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(20),
+                        topRight: Radius.circular(20),
+                      ),
+                    ),
                     height:
                         MediaQuery.of(context).size.height > 600 ? 150 : 125,
                     child: Column(
