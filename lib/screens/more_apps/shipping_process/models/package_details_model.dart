@@ -2,6 +2,7 @@ import 'package:Slydo/screens/more_apps/shipping_process/models/shipping_option_
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:intl/intl.dart';
+import 'package:video_trimmer/video_trimmer.dart';
 
 enum DeliveryOptions { shipping, eatIn, pickUp }
 
@@ -252,7 +253,8 @@ class PackageDetailsModel {
   }
 
   void updateDateTime(String? deliveryOption, DateTime? selectedDateTime) {
-    final String date = DateFormat("$selectedDateTime").format(DateTime.now());
+    final String? date =
+        selectedDateTime != null ? formatDateTime(selectedDateTime) : null;
     if (selectedDateTime != null && deliveryOption == "Pickup") {
       pickUpDateTime = date;
     } else if (deliveryOption == "In Store/Eat In") {
@@ -262,6 +264,23 @@ class PackageDetailsModel {
         inStoreDateTime = "now";
       }
     }
+  }
+
+  String formatDateTime(DateTime dateTime) {
+    final DateTime adjustedDate = dateTime.toUtc().add(
+          const Duration(
+            hours: 11,
+            minutes: 30,
+            seconds: 58,
+            milliseconds: 60,
+            microseconds: 16,
+          ),
+        );
+
+    final String formattedDate =
+        "${DateFormat("yyyy-MM-ddTHH:mm:ss.SSSSSS").format(adjustedDate)}+01:00";
+
+    return formattedDate;
   }
 
   bool hasSlydoDispatchAvailable() {
