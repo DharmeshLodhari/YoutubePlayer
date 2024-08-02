@@ -729,11 +729,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
           size: 24,
         ),
         onPressed: () async {
-          ///check if page has content then show exit pop
-          final bool shouldLeave = await getExitDialog(context);
-          if (shouldLeave) {
-            Navigator.of(context).pop();
-          }
+          await getExitDialog(context);
         },
       ),
       title: Text(
@@ -1180,14 +1176,8 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
     }
   }
 
-  Future<bool> getExitDialog(BuildContext context) async {
-    if (payMeCtrl.text.isNotEmpty ||
-        urlTextCtrl.text.isNotEmpty ||
-        titleOfLinkCtrl.text.isNotEmpty ||
-        pickedAttachmentTFCtrl.text.isNotEmpty ||
-        itemAttachmentList!.isNotEmpty ||
-        userBloc.user != null) {
-      final bool? result = await showDialogBox(
+  dynamic getExitDialog(BuildContext context) async {
+    await showDialogBox(
         context: context,
         actionOneBgColor: greyBorderColor,
         actionOneTextColor: blackFont,
@@ -1198,18 +1188,56 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
             "You have unsaved changes that will be lost, Save your changes before exiting?",
         actionOneText: AppLocalization.of(context)!.leave,
         actionTwoText: AppLocalization.of(context)!.saveAndLeave,
-      );
-      if (result != null && result) {
-        if (userBloc.user != null) {
-          userBloc.user == null;
-        }
-        Navigator.of(context).pop();
-      }
-      return false;
-    } else {
-      Navigator.of(context).pop();
-      return true;
-    }
+        rightButtonOnPressed: () async {
+          if (enablePayMe && payMeCtrl.text.isEmpty) {
+            showToast(message: 'Payment label cannot be empty');
+            return;
+          }
+
+          if (pickedAttachmentType == 'Url' &&
+              (urlTextCtrl.text.isEmpty ||
+                  (!await canLaunchUrl(Uri.parse(urlTextCtrl.text))))) {
+            showToast(message: 'Please enter a valid url');
+            return;
+          }
+          showDialogBox(
+            context: context,
+            actionOneTextColor: blackFont,
+            actionTwoBgColor: navyBlue,
+            actionTwoTextColor: Colors.white,
+            actionOneBgColor: greyBorderColor,
+            title: AppLocalization.of(context)!.post,
+            actionTwoText: AppLocalization.of(context)!.post,
+            actionOneText: AppLocalization.of(context)!.notNow,
+            description: 'Are you sure you want to post\nyour moment now?',
+            roundedBackgroundIcon: RoundedBackgroundIcon(
+              enableMargin: false,
+              width: 90,
+              height: 90,
+              image: Image.asset(
+                'assets/images/accept_dialog_icon.png',
+                color: navyBlue,
+              ),
+            ),
+            rightButtonOnPressed: () {
+              postMoment();
+            },
+          );
+        },
+        leftButtonOnPressed: () {
+          Navigator.pop(context);
+        });
+    //   if (result != null && result) {
+    //     if (userBloc.user != null) {
+    //       userBloc.user == null;
+    //     }
+    //     Navigator.of(context).pop();
+    //   }
+    //   return false;
+    // } else {
+    //   Navigator.of(context).pop();
+    //   return true;
+    // }
   }
 }
 

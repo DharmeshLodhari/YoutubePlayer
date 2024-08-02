@@ -9,6 +9,7 @@ import 'package:Slydo/widget/customized_dropdown_field.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:pinput/pinput.dart';
 
 class ResetDevice extends StatefulWidget {
@@ -273,6 +274,10 @@ class _ResetDeviceState extends State<ResetDevice> {
             labelColor: darkGrey,
             keyboardType: TextInputType.phone,
             controller: phoneNumberController,
+            inputFormatters: [
+              LengthLimitingTextInputFormatter(10),
+              FilteringTextInputFormatter.digitsOnly,
+            ],
             validator: (val) {
               if (val.isNotEmpty && val.length >= 9) {
                 return null;

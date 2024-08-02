@@ -257,11 +257,7 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
           size: 24,
         ),
         onPressed: () async {
-          ///check if page has content then show exit pop
-          final bool shouldLeave = await getExitDialog(context);
-          if (shouldLeave) {
-            Navigator.of(context).pop();
-          }
+          await getExitDialog(context);
         },
       ),
       title: Text(
@@ -1155,14 +1151,8 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
     );
   }
 
-  Future<bool> getExitDialog(BuildContext context) async {
-    if (mapController != null ||
-        shippingAddress != null ||
-        selectedProducts.isNotEmpty ||
-        itemList.isNotEmpty ||
-        cityList.isNotEmpty ||
-        userBloc.user != null) {
-      final bool? result = await showDialogBox(
+  dynamic getExitDialog(BuildContext context) async {
+    await showDialogBox(
         context: context,
         actionOneBgColor: greyBorderColor,
         actionOneTextColor: blackFont,
@@ -1173,18 +1163,13 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
             "You have unsaved changes that will be lost, Save your changes before exiting?",
         actionOneText: AppLocalization.of(context)!.leave,
         actionTwoText: AppLocalization.of(context)!.saveAndLeave,
-      );
-      if (result != null && result) {
-        if (userBloc.user != null) {
-          userBloc.user == null;
-        }
-        Navigator.of(context).pop();
-      }
-      return false;
-    } else {
-      Navigator.of(context).pop();
-      return true;
-    }
+        leftButtonOnPressed: () {
+          Navigator.pop(context);
+        },
+        rightButtonOnPressed: () async {
+          FocusScope.of(context).unfocus();
+          await addEditItem();
+        });
   }
 // Widget productSelection() {
 //   return Column(

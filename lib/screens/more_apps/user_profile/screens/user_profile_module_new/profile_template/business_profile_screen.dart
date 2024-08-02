@@ -807,15 +807,14 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
 
   Widget _buildCrawlingAlert() {
     if (flashTagString != "") {
+      final String text = messageDecoderWithEmoji(flashTagString) ?? "";
       return Column(
         children: [
           Container(
             color: Colors.black,
             padding: const EdgeInsets.symmetric(vertical: 14),
             child: TextScroll(
-              flashTagString.length <= 90
-                  ? flashTagString.padRight(90, " ")
-                  : flashTagString,
+              text.length <= 90 ? text.padRight(90, " ") : text,
               style: TextStyle(color: white, fontWeight: FontWeight.w600),
               mode: TextScrollMode.endless,
             ),

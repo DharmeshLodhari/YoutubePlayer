@@ -140,7 +140,7 @@ class _ProductAddOnListState extends State<ProductAddOnList>
       onWillPop: () async {
         // Navigator.pop(context, productAddOnList);
         Navigator.pop(context);
-        return await getExitDialog(context);
+        return true;
       },
       child: ScaffoldMessenger(
         key: _scaffoldMessengerKey,
@@ -170,23 +170,18 @@ class _ProductAddOnListState extends State<ProductAddOnList>
       titleSpacing: 0,
       backgroundColor: Colors.white,
       leading: IconButton(
-        icon: Icon(
-          Icons.keyboard_arrow_left,
-          color: navyBlue,
-          size: 24,
-        ),
-        onPressed: () async {
-          // List<AddOns> addOnList = productAddOnList
-          //     .where((addOn) => addOn.isChecked == true)
-          //     .toList();
-          // Navigator.pop(context, addOnList);
-          ///check if page has content then show exit pop
-          final bool shouldLeave = await getExitDialog(context);
-          if (shouldLeave) {
+          icon: Icon(
+            Icons.keyboard_arrow_left,
+            color: navyBlue,
+            size: 24,
+          ),
+          onPressed: () async {
+            // List<AddOns> addOnList = productAddOnList
+            //     .where((addOn) => addOn.isChecked == true)
+            //     .toList();
+            // Navigator.pop(context, addOnList);
             Navigator.of(context).pop();
-          }
-        },
-      ),
+          }),
       centerTitle: false,
       title: Text(
         AppLocalization.of(context)!.addOn,
@@ -491,35 +486,6 @@ class _ProductAddOnListState extends State<ProductAddOnList>
     }).catchError((error) {
       showToast(message: error.toString());
     });
-  }
-
-  Future<bool> getExitDialog(BuildContext context) async {
-    if (noItemInList == false ||
-        userBloc.user != null ||
-        productAddOnList.isNotEmpty) {
-      final bool? result = await showDialogBox(
-        context: context,
-        actionOneBgColor: greyBorderColor,
-        actionOneTextColor: blackFont,
-        actionTwoBgColor: Colors.green,
-        actionTwoTextColor: Colors.white,
-        title: "Do you want to leave this page?",
-        description:
-            "You have unsaved changes that will be lost, Save your changes before exiting?",
-        actionOneText: AppLocalization.of(context)!.leave,
-        actionTwoText: AppLocalization.of(context)!.saveAndLeave,
-      );
-      if (result != null && result) {
-        if (userBloc.user != null) {
-          userBloc.user == null;
-        }
-        Navigator.of(context).pop();
-      }
-      return false;
-    } else {
-      Navigator.of(context).pop();
-      return true;
-    }
   }
 
   @override

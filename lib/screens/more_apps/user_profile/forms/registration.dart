@@ -9,6 +9,7 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../../../routes/route_constants.dart';
 import '../../../../widget/loading_indicator.dart';
@@ -142,6 +143,10 @@ class _RegistrationState extends State<Registration> {
       keyboardType: TextInputType.phone,
       textInputAction: TextInputAction.done,
       controller: phoneNumberController,
+      inputFormatters: [
+        LengthLimitingTextInputFormatter(10),
+        FilteringTextInputFormatter.digitsOnly,
+      ],
       validator: (val) => validatePhoneNumber(val),
       onChanged: (value) {
         if (value.isEmpty || value.length < 10) {

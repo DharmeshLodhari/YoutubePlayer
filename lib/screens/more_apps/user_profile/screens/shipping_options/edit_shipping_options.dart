@@ -184,11 +184,7 @@ class _EditShippingOptionsState extends State<EditShippingOptions> {
           size: 24,
         ),
         onPressed: () async {
-          ///check if page has content then show exit pop
-          final bool shouldLeave = await getExitDialog(context);
-          if (shouldLeave) {
-            Navigator.of(context).pop();
-          }
+          await getExitDialog(context);
         },
       ),
       centerTitle: false,
@@ -418,34 +414,25 @@ class _EditShippingOptionsState extends State<EditShippingOptions> {
     // }
   }
 
-  Future<bool> getExitDialog(BuildContext context) async {
-    if (_locationController.text.isNotEmpty ||
-        _amountController.text.isNotEmpty ||
-        userBloc.user != null) {
-      final bool? result = await showDialogBox(
-        context: context,
-        actionOneBgColor: greyBorderColor,
-        actionOneTextColor: blackFont,
-        actionTwoBgColor: Colors.green,
-        actionTwoTextColor: Colors.white,
-        title: "Do you want to leave this page?",
-        description:
-            "You have unsaved changes that will be lost, Save your changes before exiting?",
-        actionOneText: AppLocalization.of(context)!.leave,
-        actionTwoText: AppLocalization.of(context)!.saveAndLeave,
-      );
-      if (result != null && result) {
-        if (userBloc.user != null) {
-          userBloc.user == null;
-        }
-        Navigator.of(context).pop();
-      }
-      return false;
-    } else {
-      Navigator.of(context).pop();
-      return true;
+  dynamic getExitDialog(BuildContext context) async {
+   showDialogBox(
+          context: context,
+          actionOneBgColor: greyBorderColor,
+          actionOneTextColor: blackFont,
+          actionTwoBgColor: Colors.green,
+          actionTwoTextColor: Colors.white,
+          title: "Do you want to leave this page?",
+          description:
+              "You have unsaved changes that will be lost, Save your changes before exiting?",
+          actionOneText: AppLocalization.of(context)!.leave,
+          actionTwoText: AppLocalization.of(context)!.saveAndLeave,
+          leftButtonOnPressed: () {
+            Navigator.pop(context);
+          },
+          rightButtonOnPressed: () async {
+            onSubmit();
+          });
     }
-  }
 
   @override
   void dispose() {
@@ -453,4 +440,4 @@ class _EditShippingOptionsState extends State<EditShippingOptions> {
     _locationController.dispose();
     super.dispose();
   }
-}
+

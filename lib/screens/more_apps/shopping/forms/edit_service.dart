@@ -248,11 +248,7 @@ class _EditServiceState extends State<EditService> {
           size: 24,
         ),
         onPressed: () async {
-          ///check if page has content then show exit pop
-          final bool shouldLeave = await getExitDialog(context);
-          if (shouldLeave) {
-            Navigator.of(context).pop();
-          }
+          await getExitDialog(context);
         },
       ),
       title: Text(
@@ -1128,35 +1124,26 @@ class _EditServiceState extends State<EditService> {
     }
   }
 
-  Future<bool> getExitDialog(BuildContext context) async {
-    if (serviceCategories!.isNotEmpty ||
-        selectedServiceCategory!.name.isNotEmpty ||
-        serviceTitleController.text.isNotEmpty ||
-        selectedDiscount != null ||
-        serviceAvailableFrom != null) {
-      final bool? result = await showDialogBox(
-        context: context,
-        actionOneBgColor: greyBorderColor,
-        actionOneTextColor: blackFont,
-        actionTwoBgColor: Colors.green,
-        actionTwoTextColor: Colors.white,
-        title: "Do you want to leave this page?",
-        description:
-            "You have unsaved changes that will be lost, Save your changes before exiting?",
-        actionOneText: AppLocalization.of(context)!.leave,
-        actionTwoText: AppLocalization.of(context)!.saveAndLeave,
-      );
-      if (result != null && result) {
-        if (userBloc?.user != null) {
-          userBloc?.user == null;
-        }
+  dynamic getExitDialog(BuildContext context) async {
+    await showDialogBox(
+      context: context,
+      actionOneBgColor: greyBorderColor,
+      actionOneTextColor: blackFont,
+      actionTwoBgColor: Colors.green,
+      actionTwoTextColor: Colors.white,
+      title: "Do you want to leave this page?",
+      description:
+          "You have unsaved changes that will be lost, Save your changes before exiting?",
+      actionOneText: AppLocalization.of(context)!.leave,
+      actionTwoText: AppLocalization.of(context)!.saveAndLeave,
+      leftButtonOnPressed: () {
         Navigator.of(context).pop();
-      }
-      return false;
-    } else {
-      Navigator.of(context).pop();
-      return true;
-    }
+      },
+      rightButtonOnPressed: () async {
+        FocusScope.of(context).unfocus();
+        await editService();
+      },
+    );
   }
 
   @override

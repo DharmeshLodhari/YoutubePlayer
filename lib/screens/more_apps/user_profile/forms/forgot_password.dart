@@ -7,6 +7,7 @@ import 'package:Slydo/utils/country_picker/utils.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 
 import '../../../../utils/util.dart';
@@ -125,6 +126,10 @@ class _ForgotPasswordState extends State<ForgotPassword> {
             keyboardType: TextInputType.phone,
             controller: phoneNumberController,
             hintText: "08023000000",
+            inputFormatters: [
+              LengthLimitingTextInputFormatter(10),
+              FilteringTextInputFormatter.digitsOnly,
+            ],
             validator: (val) {
               if (val.isNotEmpty && val.length >= 9) {
                 return null;

@@ -9,6 +9,7 @@ import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_checkbox_field.dart';
 import 'package:Slydo/widget/customized_dropdown_field.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
+import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -84,7 +85,7 @@ class _UpdateAddOnState extends State<UpdateAddOn> {
     userBloc = Provider.of<UserBloc>(context);
     return WillPopScope(
       onWillPop: () async {
-        return true;
+        return await getExitDialog(context);
       },
       child: Scaffold(
         backgroundColor: lightGrey,
@@ -109,8 +110,8 @@ class _UpdateAddOnState extends State<UpdateAddOn> {
           color: navyBlue,
           size: 24,
         ),
-        onPressed: () {
-          Navigator.pop(context);
+        onPressed: () async {
+          await getExitDialog(context);
         },
       ),
       title: Text(
@@ -119,6 +120,27 @@ class _UpdateAddOnState extends State<UpdateAddOn> {
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
     );
+  }
+
+  dynamic getExitDialog(BuildContext context) async {
+    await showDialogBox(
+        context: context,
+        actionOneBgColor: greyBorderColor,
+        actionOneTextColor: blackFont,
+        actionTwoBgColor: Colors.green,
+        actionTwoTextColor: Colors.white,
+        title: "Do you want to leave this page?",
+        description:
+            "You have unsaved changes that will be lost, Save your changes before exiting?",
+        actionOneText: AppLocalization.of(context)!.leave,
+        actionTwoText: AppLocalization.of(context)!.saveAndLeave,
+        leftButtonOnPressed: () {
+          Navigator.pop(context);
+        },
+        rightButtonOnPressed: () async {
+          FocusScope.of(context).unfocus();
+          await addNewAddOns();
+        });
   }
 
   Widget scaffoldBody() {

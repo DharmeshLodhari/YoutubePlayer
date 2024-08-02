@@ -28,6 +28,7 @@ import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:pinput/pinput.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -487,6 +488,10 @@ class _UserLoginState extends State<UserLogin> {
             labelColor: darkGrey,
             keyboardType: TextInputType.phone,
             hintText: "08023000000",
+            inputFormatters: [
+              LengthLimitingTextInputFormatter(10),
+              FilteringTextInputFormatter.digitsOnly,
+            ],
             controller: phoneNumberController,
             validator: (val) {
               if (val.isNotEmpty && val.length >= 9) {

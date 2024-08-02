@@ -84,11 +84,7 @@ class _AddEditFlashTagAlertState extends State<AddEditFlashTagAlert> {
           size: 24,
         ),
         onPressed: () async {
-          ///check if page has content then show exit pop
-          final bool shouldLeave = await getExitDialog(context);
-          if (shouldLeave) {
-            Navigator.of(context).pop();
-          }
+          await getExitDialog(context);
         },
       ),
       title: Text(
@@ -153,7 +149,7 @@ class _AddEditFlashTagAlertState extends State<AddEditFlashTagAlert> {
   Widget addTitleField() {
     return CustomizedTextFormField(
       labelText: "Flash Name",
-      initialValue: flashTagAlertModel.title ?? "",
+      initialValue: messageDecoderWithEmoji(flashTagAlertModel.title ?? ""),
       validator: (val) {
         if (val.isNotEmpty) {
           return null;
@@ -540,12 +536,8 @@ class _AddEditFlashTagAlertState extends State<AddEditFlashTagAlert> {
     );
   }
 
-  Future<bool> getExitDialog(BuildContext context) async {
-    if (flashTagCategory.isNotEmpty ||
-        startFrom != null ||
-        endFrom != null ||
-        flashTagAlertModel != null) {
-      final bool? result = await showDialogBox(
+  dynamic getExitDialog(BuildContext context) async {
+    await showDialogBox(
         context: context,
         actionOneBgColor: greyBorderColor,
         actionOneTextColor: blackFont,
@@ -556,17 +548,12 @@ class _AddEditFlashTagAlertState extends State<AddEditFlashTagAlert> {
             "You have unsaved changes that will be lost, Save your changes before exiting?",
         actionOneText: AppLocalization.of(context)!.leave,
         actionTwoText: AppLocalization.of(context)!.saveAndLeave,
-      );
-      if (result != null && result) {
-        if (flashTagAlertModel != null) {
-          flashTagAlertModel == null;
-        }
-        Navigator.of(context).pop();
-      }
-      return false;
-    } else {
-      Navigator.of(context).pop();
-      return true;
-    }
+        rightButtonOnPressed: () async {
+          FocusScope.of(context).unfocus();
+          await addEditItem();
+        },
+        leftButtonOnPressed: () {
+          Navigator.pop(context);
+        });
   }
 }

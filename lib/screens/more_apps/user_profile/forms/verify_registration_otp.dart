@@ -457,6 +457,10 @@ class _VerifyRegistrationOTPScreenState
       isNumberOnlyInput: true,
       keyboardType: TextInputType.phone,
       controller: phoneNumberController,
+      inputFormatters: [
+        LengthLimitingTextInputFormatter(10),
+        FilteringTextInputFormatter.digitsOnly,
+      ],
       validator: validatePhoneNumber,
       onChanged: (value) {
         if (value.isEmpty || value.length < 10) {

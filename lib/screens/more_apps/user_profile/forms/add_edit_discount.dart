@@ -113,11 +113,7 @@ class _AddEditDiscountState extends State<AddEditDiscount> {
           size: 24,
         ),
         onPressed: () async {
-          ///check if page has content then show exit pop
-          final bool shouldLeave = await getExitDialog(context);
-          if (shouldLeave) {
-            Navigator.of(context).pop();
-          }
+          await getExitDialog(context);
         },
       ),
       title: Text(
@@ -1145,14 +1141,8 @@ class _AddEditDiscountState extends State<AddEditDiscount> {
     );
   }
 
-  Future<bool> getExitDialog(BuildContext context) async {
-    if (selectedServices.isNotEmpty ||
-        selectedProducts.isNotEmpty ||
-        discountModel != null ||
-        startFrom != null ||
-        endTo != null ||
-        discountImages.isNotEmpty) {
-      final bool? result = await showDialogBox(
+  dynamic getExitDialog(BuildContext context) async {
+    await showDialogBox(
         context: context,
         actionOneBgColor: greyBorderColor,
         actionOneTextColor: blackFont,
@@ -1163,19 +1153,48 @@ class _AddEditDiscountState extends State<AddEditDiscount> {
             "You have unsaved changes that will be lost, Save your changes before exiting?",
         actionOneText: AppLocalization.of(context)!.leave,
         actionTwoText: AppLocalization.of(context)!.saveAndLeave,
-      );
-      if (result != null && result) {
-        if (selectedProducts.isNotEmpty || selectedServices.isNotEmpty) {
-          selectedProducts == null;
-          selectedServices == null;
-        }
-        Navigator.of(context).pop();
-      }
-      return false;
-    } else {
-      Navigator.of(context).pop();
-      return true;
-    }
+        rightButtonOnPressed: () async {
+          FocusScope.of(context).unfocus();
+          if (!isTimeAvailable) {
+            discountModel.onlyFrom = null;
+            discountModel.onlyTo = null;
+            startTimeFrom = null;
+            endTimeTo = null;
+          }
+          if (startTimeFrom != null) {
+            if (endTimeTo != null) {
+              if (isTimeAfter(startTimeFrom!, endTimeTo!)) {
+                await addEditItem();
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text(
+                      'Start time cannot be greater than end time',
+                    ),
+                  ),
+                );
+              }
+            } else {
+              showToast(message: 'Select end time');
+            }
+          } else {
+            await addEditItem();
+          }
+        },
+        leftButtonOnPressed: () {
+          Navigator.pop(context);
+        });
+    //   if (result != null && result) {
+    //     if (selectedProducts.isNotEmpty || selectedServices.isNotEmpty) {
+    //       selectedProducts == null;
+    //       selectedServices == null;
+    //     }
+    //     Navigator.of(context).pop();
+    //   }
+    //   return false;
+    // } else {
+    //   Navigator.of(context).pop();
+    //   return true;
   }
 
   @override
