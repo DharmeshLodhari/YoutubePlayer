@@ -87,11 +87,13 @@ class _DisplayProductState extends State<DisplayProduct> {
           margin: EdgeInsets.only(
               right: widget.giveRightPadding ? 10 : 0.0, bottom: 2),
           elevation: 3,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
           shadowColor: boxShadow,
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 6.0),
+            padding:
+                const EdgeInsets.only(right: 6, left: 6, top: 2, bottom: 2),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
