@@ -200,15 +200,7 @@ class _DisplayProductState extends State<DisplayProduct> {
                                         overflow: TextOverflow.ellipsis,
                                       ),
                                     ),
-                                    Text(
-                                      moneyDisplayNormalizer(
-                                          widget.product.getProductRealPrice()),
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 14,
-                                          color: navyBlue,
-                                          overflow: TextOverflow.ellipsis),
-                                    ),
+                                    priceText(),
                                   ],
                                 ),
                                 if (widget.product.discountedPrice != null)
@@ -693,6 +685,24 @@ class _DisplayProductState extends State<DisplayProduct> {
     debugPrint("Data send From Remove Main : $data");
     basketBloc.removeItemFromCart(widget.product);
     await ShoppingAuthService().removeItemFromShoppingCart(data);
+  }
+
+  Widget priceText() {
+    String price;
+    if (widget.product.priceRange != null) {
+      price = widget.product.priceRange ?? "0";
+    } else {
+      price = moneyDisplayNormalizer(int.parse(widget.product.getPriceRange()));
+    }
+    return Text(
+      price,
+      style: TextStyle(
+        fontWeight: FontWeight.bold,
+        fontSize: 14,
+        color: navyBlue,
+        overflow: TextOverflow.ellipsis,
+      ),
+    );
   }
 }
 

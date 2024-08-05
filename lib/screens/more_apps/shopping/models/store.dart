@@ -296,6 +296,7 @@ class Product extends PurchasableItem {
   String? addressId;
   List<String>? searchKeywords;
   bool isChecked = false;
+  String? priceRange;
 
   // DateTime? createdAt;
   // bool? enableInSuperstore;
@@ -373,6 +374,7 @@ class Product extends PurchasableItem {
     this.itemAddedBy,
     this.searchKeywords,
     this.isChecked = false,
+    this.priceRange,
     // this.itemUpdatedBy,
     // this.qty,
   });
@@ -522,6 +524,14 @@ class Product extends PurchasableItem {
     return price ?? 0;
   }
 
+  String getPriceRange() {
+    if (priceRange != null) {
+      return priceRange ?? "0";
+    }
+    final int realPrice = getProductRealPrice();
+    return realPrice.toString();
+  }
+
   int? getOriginalPrice(Variant? selectedVariant) {
     if (selectedVariant != null) {
       return int.parse(selectedVariant.price ?? "0");
@@ -667,6 +677,7 @@ class Product extends PurchasableItem {
       searchKeywords: object["search_keywords"] == null
           ? <String>[]
           : List<String>.from(object["search_keywords"].map((x) => x)),
+      priceRange: object["price_range"] ?? "1k - 1M",
       // itemUpdatedBy: object["item_updated_by"] == null
       //     ? null
       //     : UserFollowers.fromJson(object["item_updated_by"]),

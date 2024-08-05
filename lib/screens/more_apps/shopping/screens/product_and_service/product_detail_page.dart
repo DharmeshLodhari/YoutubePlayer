@@ -155,7 +155,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
       reviewList = [];
 
-      tempList?.forEach((element) {
+      tempList.forEach((element) {
         reviewList.add(Review.fromJson(element));
       });
 
