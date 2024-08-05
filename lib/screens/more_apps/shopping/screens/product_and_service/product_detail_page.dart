@@ -1681,29 +1681,47 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   Widget _buildOriginalPrice() {
-    return Row(
-      children: [
-        Text(
-          worldCurrencies[product!.currency] ?? "NGN",
-          style: TextStyle(
-            fontFamily: "Inter",
-            fontWeight: FontWeight.w400,
-            fontSize: 12.8,
-            color: navyBlue,
-            decoration: TextDecoration.lineThrough,
-          ),
-        ),
-        Text(
-          moneyDisplayNormalizer(product?.getOriginalPrice(selectedVariant)),
-          style: TextStyle(
-            fontWeight: FontWeight.w400,
-            fontSize: 12,
-            color: navyBlue,
-            decoration: TextDecoration.lineThrough,
-          ),
-        ),
-      ],
-    );
+    final String currencyIcon = worldCurrencies[product?.currency] ?? "NGN";
+    return product?.variantModels?.isNotEmpty ?? false
+        ? Text(
+            "${getHighAndLowPriceValue(currencyIcon)}",
+            style: TextStyle(
+              fontWeight: FontWeight.w400,
+              fontSize: 12,
+              color: navyBlue,
+              decoration: TextDecoration.lineThrough,
+            ),
+          )
+        : Text(
+            "${worldCurrencies[product?.currency] ?? "NGN"} ${moneyDisplayNormalizer(
+              product?.getOriginalPrice(
+                selectedVariant,
+              ),
+            )}",
+            style: TextStyle(
+              fontWeight: FontWeight.w400,
+              fontSize: 12,
+              color: navyBlue,
+              decoration: TextDecoration.lineThrough,
+            ),
+          );
+  }
+
+  String? getHighAndLowPriceValue(String currencyIcon) {
+    "$currencyIcon ${moneyDisplayNormalizer(
+      product
+          ?.compareVariantPrice(
+            "low",
+          )
+          ?.toInt(),
+    )} - $currencyIcon ${moneyDisplayNormalizer(
+      product
+          ?.compareVariantPrice(
+            "high",
+          )
+          ?.toInt(),
+    )}";
+    return null;
   }
 
   Widget stockStatus() {

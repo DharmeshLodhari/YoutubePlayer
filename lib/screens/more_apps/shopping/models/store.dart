@@ -282,6 +282,7 @@ class Product extends PurchasableItem {
   double? width;
   String? widthSiUnit;
   bool? trackInventory;
+
   // DiscountModel? discount;
   String? discountId;
   int? quantity;
@@ -305,6 +306,7 @@ class Product extends PurchasableItem {
   // String? updatedByFullname;
   // String? updatedByAvatar;
   List<AddedBy>? itemAddedBy;
+
   // UserFollowers? itemUpdatedBy;
   // int? qty;
 
@@ -827,6 +829,23 @@ class Product extends PurchasableItem {
     return groupedVariants;
   }
 
+  double? compareVariantPrice(String type) {
+    final List<double> variantPrices = [];
+
+    for (Variant variant in variantModels ?? []) {
+      variantPrices.add(double.parse(variant.price ?? "0"));
+    }
+    final double highestPrice = variantPrices.reduce((a, b) => a > b ? a : b);
+    final double lowestPrice = variantPrices.reduce((a, b) => a < b ? a : b);
+    print('Highest Price: \$$highestPrice');
+    print('Lowest Price: \$$lowestPrice');
+    if (type == "high") {
+      return highestPrice;
+    }
+
+    return lowestPrice;
+  }
+
   // Group variants by size
   Map<String, List<Variant>> groupVariantsBySize() {
     final Map<String, List<Variant>> groupedVariants = {};
@@ -1100,7 +1119,7 @@ class Variant {
     }
 
     int? cleanObjects(Map<String, dynamic> data, String key) {
-      var value = data[key] ?? 0;
+      final value = data[key] ?? 0;
       debugPrint("data: $data");
       debugPrint("type: ${value.runtimeType}");
       if (value is bool) {
