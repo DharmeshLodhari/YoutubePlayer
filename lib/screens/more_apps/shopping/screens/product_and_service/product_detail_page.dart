@@ -107,6 +107,11 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   StreamController<Widget> overlayController =
       StreamController<Widget>.broadcast();
 
+  String? firstColor;
+  List<Variant>? variantsWithSize;
+
+  Variant? availableVariant;
+
   @override
   void initState() {
     product = widget.arguments[
@@ -117,7 +122,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       productId = widget.arguments[
           'productId']; // We get this when we are coming from the moment detail page.
     }
-
     userBloc = Provider.of<UserBloc>(context, listen: false);
 
     if (mounted) setState(() {});
@@ -155,9 +159,9 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
       reviewList = [];
 
-      tempList.forEach((element) {
+      for (var element in tempList) {
         reviewList.add(Review.fromJson(element));
-      });
+      }
 
       for (var element in reviewList) {
         debugPrint('LIKES :: ${element.likes}');
@@ -1528,6 +1532,14 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         colorGroups =
             product?.getVariants(variantType: VariantTypes.Color) ?? {};
         sizeGroups = product?.getVariants(variantType: VariantTypes.Size) ?? {};
+        if (colorGroups.isNotEmpty) {
+          firstColor = colorGroups.keys.elementAt(0);
+          variantsWithSize = colorGroups[firstColor];
+
+          availableVariant = getVariantImage(variantsWithSize ?? []);
+
+          _getSelectedVariantColor(availableVariant, variantsWithSize);
+        }
 
         if (mounted) setState(() {});
       } else {
@@ -1681,47 +1693,29 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   Widget _buildOriginalPrice() {
-    final String currencyIcon = worldCurrencies[product?.currency] ?? "NGN";
-    return product?.variantModels?.isNotEmpty ?? false
-        ? Text(
-            "${getHighAndLowPriceValue(currencyIcon)}",
-            style: TextStyle(
-              fontWeight: FontWeight.w400,
-              fontSize: 12,
-              color: navyBlue,
-              decoration: TextDecoration.lineThrough,
-            ),
-          )
-        : Text(
-            "${worldCurrencies[product?.currency] ?? "NGN"} ${moneyDisplayNormalizer(
-              product?.getOriginalPrice(
-                selectedVariant,
-              ),
-            )}",
-            style: TextStyle(
-              fontWeight: FontWeight.w400,
-              fontSize: 12,
-              color: navyBlue,
-              decoration: TextDecoration.lineThrough,
-            ),
-          );
-  }
-
-  String? getHighAndLowPriceValue(String currencyIcon) {
-    "$currencyIcon ${moneyDisplayNormalizer(
-      product
-          ?.compareVariantPrice(
-            "low",
-          )
-          ?.toInt(),
-    )} - $currencyIcon ${moneyDisplayNormalizer(
-      product
-          ?.compareVariantPrice(
-            "high",
-          )
-          ?.toInt(),
-    )}";
-    return null;
+    return Row(
+      children: [
+        Text(
+          worldCurrencies[product!.currency] ?? "NGN",
+          style: TextStyle(
+            fontFamily: "Inter",
+            fontWeight: FontWeight.w400,
+            fontSize: 12.8,
+            color: navyBlue,
+            decoration: TextDecoration.lineThrough,
+          ),
+        ),
+        Text(
+          moneyDisplayNormalizer(product?.getOriginalPrice(selectedVariant)),
+          style: TextStyle(
+            fontWeight: FontWeight.w400,
+            fontSize: 12,
+            color: navyBlue,
+            decoration: TextDecoration.lineThrough,
+          ),
+        ),
+      ],
+    );
   }
 
   Widget stockStatus() {
@@ -1899,59 +1893,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
             padding: const EdgeInsets.only(right: 2.0),
             child: GestureDetector(
               onTap: () {
-                /// IMAGE DISPLAY ACCORDING TO COLOR STARTS
-                //update the price, more information and list of images
-                displayProductImages = [];
-
-                // Get the ID of the selected image
-                final String? selectedImageId = availableVariant.id;
-
-                // Find the variant in the original list by ID
-                final Variant selectedVariant = (product?.variantModels ?? [])
-                    .firstWhere((variant) => variant.id == selectedImageId);
-
-                this.selectedVariant = variantsWithSize.first;
-
-                // Retrieve all images associated with the selected variant
-                final List<String?>? allImages = selectedVariant.serverImages;
-                // Now you have all the images for the selected variant
-                displayProductImages = allImages;
-
-                /// IMAGE DISPLAY ACCORDING TO COLOR ENDS
-
-                /// STOCK AVAILABILITY CHECK START
-                final bool allKeysAreNullOrEmpty =
-                    areAllKeysNullOrEmpty(sizeGroups);
-
-                if (allKeysAreNullOrEmpty) {
-                  // for (int index = 0;
-                  //     index < variantsWithSize.length;
-                  //     index++) {
-                  final Variant variant = availableVariant;
-                  // Update price or any other state based on the selected variant
-                  stockLeft = variant.getQuantity();
-                  // }
-                } else {
-                  //set the selected size to zero
-                  // selectedSizeIndex = -1;
-                  // this.selectedVariant = null;
-                }
-
-                /// STOCK AVAILABILITY CHECK ENDS
-
-                sizeGroups = {};
-
-                sizeGroups = product?.getVariants(
-                        variantType: VariantTypes.ColorAndSize,
-                        selectedColor: selectedVariant.getColor()) ??
-                    {};
-
-                //check if size is not empty, set stock to zero
-                if (sizeGroups.isNotEmpty && this.selectedVariant == null) {
-                  stockLeft = 0;
-                }
-
-                if (mounted) setState(() {});
+                _getSelectedVariantColor(availableVariant, variantsWithSize);
               },
               child: Container(
                 height: 80.0,
@@ -1990,6 +1932,65 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         },
       ),
     );
+  }
+
+  void _getSelectedVariantColor(
+    Variant? availableVariant,
+    List<Variant>? variantsWithSize,
+  ) {
+    /// IMAGE DISPLAY ACCORDING TO COLOR STARTS
+    //update the price, more information and list of images
+    displayProductImages = [];
+
+    // Get the ID of the selected image
+    final String? selectedImageId = availableVariant?.id;
+
+    // Find the variant in the original list by ID
+    final Variant selectedVariant = (product?.variantModels ?? []).firstWhere(
+        (variant) => variant.id == selectedImageId,
+        orElse: () => Variant());
+
+    this.selectedVariant = variantsWithSize?.first;
+
+    // Retrieve all images associated with the selected variant
+    final List<String?>? allImages = selectedVariant.serverImages;
+    // Now you have all the images for the selected variant
+    displayProductImages = allImages;
+
+    /// IMAGE DISPLAY ACCORDING TO COLOR ENDS
+
+    /// STOCK AVAILABILITY CHECK START
+    final bool allKeysAreNullOrEmpty = areAllKeysNullOrEmpty(sizeGroups);
+
+    if (allKeysAreNullOrEmpty) {
+      // for (int index = 0;
+      //     index < variantsWithSize.length;
+      //     index++) {
+      final Variant variant = availableVariant ?? Variant();
+      // Update price or any other state based on the selected variant
+      stockLeft = variant.getQuantity();
+      // }
+    } else {
+      //set the selected size to zero
+      // selectedSizeIndex = -1;
+      // this.selectedVariant = null;
+    }
+
+    /// STOCK AVAILABILITY CHECK ENDS
+
+    sizeGroups = {};
+
+    sizeGroups = product?.getVariants(
+            variantType: VariantTypes.ColorAndSize,
+            selectedColor: selectedVariant.getColor()) ??
+        {};
+
+    //check if size is not empty, set stock to zero
+    if (sizeGroups.isNotEmpty && this.selectedVariant == null) {
+      stockLeft = 0;
+    }
+
+    if (mounted) setState(() {});
   }
 
   int calculateColumnCount(int itemCount, int maxItemsPerRow) {

@@ -525,7 +525,7 @@ class Product extends PurchasableItem {
   }
 
   String getPriceRange() {
-    if (priceRange != null) {
+    if (priceRange != null && priceRange != "0") {
       return priceRange ?? "0";
     }
     final int realPrice = getProductRealPrice();
@@ -677,7 +677,7 @@ class Product extends PurchasableItem {
       searchKeywords: object["search_keywords"] == null
           ? <String>[]
           : List<String>.from(object["search_keywords"].map((x) => x)),
-      priceRange: object["price_range"] ?? "1k - 1M",
+      priceRange: object["price_range"] ?? "0",
       // itemUpdatedBy: object["item_updated_by"] == null
       //     ? null
       //     : UserFollowers.fromJson(object["item_updated_by"]),

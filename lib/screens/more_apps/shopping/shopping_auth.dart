@@ -480,6 +480,7 @@ class ShoppingAuthService extends AuthService {
         : (item['search_keywords'] as List).map((i) => i.toString()).toList();
     // product.qty = item['qty'];
     product.isChecked = item["is_checked"] ?? false;
+    product.priceRange = item["price_range"] ?? "0";
     return product;
   }
 

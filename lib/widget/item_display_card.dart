@@ -689,10 +689,14 @@ class _DisplayProductState extends State<DisplayProduct> {
 
   Widget priceText() {
     String price;
-    if (widget.product.priceRange != null) {
+    if (widget.product.priceRange != null && widget.product.priceRange != "0") {
       price = widget.product.priceRange ?? "0";
     } else {
-      price = moneyDisplayNormalizer(int.parse(widget.product.getPriceRange()));
+      price = moneyDisplayNormalizer(
+        int.parse(
+          widget.product.getPriceRange(),
+        ),
+      );
     }
     return Text(
       price,
