@@ -725,6 +725,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     final DateFormat dateFormat = DateFormat("MMMM dd, yyyy");
     final DateTime dateTime = DateTime.parse(order?.createdAt.toString() ?? "");
     final String date = dateFormat.format(dateTime);
+
     final Map<String, String> formattedDateTimeForPickUp =
         getFormattedDateTime(order?.pickupDateTime ?? "");
     final Map<String, String> formattedDateTimeForEatIn =
