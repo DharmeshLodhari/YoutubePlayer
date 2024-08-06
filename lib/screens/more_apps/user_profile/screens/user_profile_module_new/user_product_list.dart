@@ -714,12 +714,27 @@ class _UserProductListState extends State<UserProductList> {
                         .toList(),
                   )
                 : itemList.isNotEmpty
-                    ? SizedBox(
-                        width: MediaQuery.of(context).size.width,
-                        height: 150,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(10.0),
-                          child: getImage(itemList[0]),
+                    ? InkWell(
+                        onTap: () {
+                          final String url =
+                              "${AppConfig.baseUrl}/api/v1/products/products-by-discount/${itemList[0].id}";
+                          NavigationUtil.push(
+                            context,
+                            screen: SuperStoreIndustry(
+                              next: url,
+                              appTitle: itemList[0].name ?? "",
+                              searchQuery: {"discount": itemList[0].id ?? ""},
+                              isShowDiscountPage: true,
+                            ),
+                          );
+                        },
+                        child: SizedBox(
+                          width: MediaQuery.of(context).size.width,
+                          height: 150,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(10.0),
+                            child: getImage(itemList[0]),
+                          ),
                         ),
                       )
                     : const SizedBox.shrink(),

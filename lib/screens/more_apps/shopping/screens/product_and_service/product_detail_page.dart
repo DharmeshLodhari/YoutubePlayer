@@ -1388,14 +1388,16 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   Widget productStockAndDetailTag() {
-    if (product?.availableFrom?.isAfter(DateTime.now()) ?? false) {
+    if ((product?.variantModels?.isEmpty ?? false) &&
+        (product?.availableFrom?.isAfter(DateTime.now()) ?? false)) {
       return Positioned(
         top: 20,
         right: 10,
         child: showColoredLabeledWidget(
             text: AppLocalization.of(context)!.comingSoon, color: starYellow),
       );
-    } else if (product?.trackInventory == true &&
+    } else if ((product?.variantModels?.isEmpty ?? false) &&
+        product?.trackInventory == true &&
         ((product?.quantity ?? 0) <= 0)) {
       return Positioned(
         top: 20,
@@ -1640,9 +1642,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 children: <Widget>[
                   _buildProductName(),
                   _buildDiscountedPrice(),
-                  if ((product?.checkProductDiscount() ?? false) ||
-                      (product?.checkVariantDiscount(selectedVariant) ?? false))
-                    _buildOriginalPrice(),
+                  _buildOriginalPrice(),
                   const SizedBox(height: 5),
                   getRating(numberOfRating: product?.rating!.toInt()),
                   stockStatus(),
@@ -1693,29 +1693,61 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   Widget _buildOriginalPrice() {
-    return Row(
-      children: [
-        Text(
-          worldCurrencies[product!.currency] ?? "NGN",
-          style: TextStyle(
-            fontFamily: "Inter",
-            fontWeight: FontWeight.w400,
-            fontSize: 12.8,
-            color: navyBlue,
-            decoration: TextDecoration.lineThrough,
+    if (selectedVariant != null) {
+      if ((product?.checkVariantDiscount(selectedVariant) ?? false)) {
+        return Row(
+          children: [
+            Text(
+              worldCurrencies[product?.currency] ?? "NGN",
+              style: TextStyle(
+                fontFamily: "Inter",
+                fontWeight: FontWeight.w400,
+                fontSize: 12.8,
+                color: navyBlue,
+                decoration: TextDecoration.lineThrough,
+              ),
+            ),
+            Text(
+              moneyDisplayNormalizer(int.parse(selectedVariant?.price ?? "0")),
+              style: TextStyle(
+                fontWeight: FontWeight.w400,
+                fontSize: 12,
+                color: navyBlue,
+                decoration: TextDecoration.lineThrough,
+              ),
+            ),
+          ],
+        );
+      } else {
+        return const SizedBox.shrink();
+      }
+    } else if (product?.checkProductDiscount() ?? false) {
+      return Row(
+        children: [
+          Text(
+            worldCurrencies[product!.currency] ?? "NGN",
+            style: TextStyle(
+              fontFamily: "Inter",
+              fontWeight: FontWeight.w400,
+              fontSize: 12.8,
+              color: navyBlue,
+              decoration: TextDecoration.lineThrough,
+            ),
           ),
-        ),
-        Text(
-          moneyDisplayNormalizer(product?.getOriginalPrice(selectedVariant)),
-          style: TextStyle(
-            fontWeight: FontWeight.w400,
-            fontSize: 12,
-            color: navyBlue,
-            decoration: TextDecoration.lineThrough,
+          Text(
+            moneyDisplayNormalizer(product?.price),
+            style: TextStyle(
+              fontWeight: FontWeight.w400,
+              fontSize: 12,
+              color: navyBlue,
+              decoration: TextDecoration.lineThrough,
+            ),
           ),
-        ),
-      ],
-    );
+        ],
+      );
+    } else {
+      return const SizedBox.shrink();
+    }
   }
 
   Widget stockStatus() {
