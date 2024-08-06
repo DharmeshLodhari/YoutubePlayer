@@ -108,6 +108,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       StreamController<Widget>.broadcast();
 
   String? firstColor;
+  String? firstSize;
   List<Variant>? variantsWithSize;
 
   Variant? availableVariant;
@@ -125,7 +126,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     userBloc = Provider.of<UserBloc>(context, listen: false);
 
     if (mounted) setState(() {});
-    fetchProduct(productId!);
+    fetchProduct(productId ?? "0");
 
     if ((window.physicalSize.longestSide / window.devicePixelRatio) >= 870) {
       getOtherItems();
@@ -1541,6 +1542,18 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           availableVariant = getVariantImage(variantsWithSize ?? []);
 
           _getSelectedVariantColor(availableVariant, variantsWithSize);
+        } else if (sizeGroups.isNotEmpty) {
+          firstSize = sizeGroups.keys.elementAt(0);
+          variantsWithSize = sizeGroups[firstSize]!;
+
+          for (int index = 0; index < variantsWithSize!.length; index++) {
+            final Variant? variant = variantsWithSize?[index];
+
+            stockLeft = variant?.getQuantity() ?? 0;
+          }
+          selectedVariant = variantsWithSize?.first;
+
+          if (mounted) setState(() {});
         }
 
         if (mounted) setState(() {});
@@ -1897,8 +1910,12 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   Widget showVariantColorSelection() {
     final int itemCount =
         colorGroups.length; // Replace with your actual item count
+    // const int maxItemsPerRow = 5;
+    // final int totalColumns = calculateColumnCount(itemCount, maxItemsPerRow);
+    final List<Variant>? allVariants = product?.getAllVariantsWithImages();
     const int maxItemsPerRow = 5;
-    final int totalColumns = calculateColumnCount(itemCount, maxItemsPerRow);
+    final int totalColumns =
+        calculateColumnCount(allVariants?.length ?? 0, maxItemsPerRow);
 
     return SizedBox(
       height: 82.0 * totalColumns,
@@ -1911,21 +1928,27 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           childAspectRatio: 1.1,
         ),
         // scrollDirection: Axis.horizontal,
-        itemCount: colorGroups.length,
+        itemCount: allVariants?.length,
         shrinkWrap: true,
         itemBuilder: (context, index) {
-          final String color = colorGroups.keys.elementAt(index);
-          final List<Variant> variantsWithSize = colorGroups[color]!;
+          final Variant? variant = allVariants?[index];
+          final String? imageUrl = variant?.serverImages?.isNotEmpty == true
+              ? variant?.serverImages!.first
+              : null;
+
+          // final String color = colorGroups.keys.elementAt(index);
+          // final List<Variant> variantsWithSize = colorGroups[color]!;
 
           // Get the first variant with this size (assuming at least one variant exists)
 
-          final Variant availableVariant = getVariantImage(variantsWithSize);
+          // final Variant availableVariant = getVariantImage(variantsWithSize);
 
           return Padding(
             padding: const EdgeInsets.only(right: 2.0),
             child: GestureDetector(
               onTap: () {
-                _getSelectedVariantColor(availableVariant, variantsWithSize);
+                // _getSelectedVariantColor(availableVariant, variantsWithSize);
+                _getSelectedVariantColor(variant, [variant ?? Variant()]);
               },
               child: Container(
                 height: 80.0,
@@ -1933,9 +1956,12 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 decoration: BoxDecoration(
                   borderRadius: const BorderRadius.all(Radius.circular(5)),
                   border: Border.all(
-                    color: selectedVariant?.colour == availableVariant.colour
+                    color: selectedVariant?.colour == variant?.colour
                         ? black
                         : transparent,
+                    // color: selectedVariant?.colour == availableVariant?.colour
+                    //     ? black
+                    //     : transparent,
                     width: 1.0,
                   ),
                 ),
@@ -1944,7 +1970,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                   child: FittedBox(
                     fit: BoxFit.cover,
                     child: CachedNetworkImage(
-                      imageUrl: availableVariant.serverImages?.first ?? "",
+                      // imageUrl: availableVariant.serverImages?.first ?? "",
+                      imageUrl: imageUrl ?? "",
                       placeholder: (context, url) => Center(
                           child: Transform.scale(
                         scale: 0.5,
@@ -1965,6 +1992,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       ),
     );
   }
+
   // Widget showVariantColorSelection() {
   //   final List<String> colorKeys = colorGroups.keys.toList();
   //   final List<Variant> variantModels = product?.variantModels ?? [];
@@ -2206,7 +2234,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
             child: SizedBox(
               height: 20.0,
               child: Container(
-                // height: 20.0,
                 margin: const EdgeInsets.symmetric(vertical: 2),
                 decoration: BoxDecoration(
                   color: selectedVariant?.value == size ? black : white,

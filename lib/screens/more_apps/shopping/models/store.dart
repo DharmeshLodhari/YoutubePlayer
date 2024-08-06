@@ -911,6 +911,12 @@ class Product extends PurchasableItem {
     return selectedAddOnsList;
   }
 
+  List<Variant> getAllVariantsWithImages() {
+    return variantModels!
+        .where((variant) => variant.serverImages?.isNotEmpty ?? false)
+        .toList();
+  }
+
   bool isAllRequiredProductSelected() {
     bool isAllSelected = false;
     for (AddOns addOn in addOnsModels ?? []) {
