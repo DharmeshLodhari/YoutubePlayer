@@ -1912,7 +1912,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                   child: FittedBox(
                     fit: BoxFit.cover,
                     child: CachedNetworkImage(
-                      imageUrl: availableVariant.serverImages!.first!,
+                      imageUrl: availableVariant.serverImages?.first ?? "",
                       placeholder: (context, url) => Center(
                           child: Transform.scale(
                         scale: 0.5,
@@ -1933,6 +1933,138 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       ),
     );
   }
+  // Widget showVariantColorSelection() {
+  //   final List<String> colorKeys = colorGroups.keys.toList();
+  //   final List<Variant> variantModels = product?.variantModels ?? [];
+  //
+  //   final List<dynamic> combinedList = [...colorKeys, ...variantModels];
+  //
+  //   const int maxItemsPerRow = 5;
+  //   final int totalRows = (combinedList.length / maxItemsPerRow).ceil();
+  //
+  //   return SizedBox(
+  //     height: 82.0 * totalRows,
+  //     child: GridView.builder(
+  //       physics: const NeverScrollableScrollPhysics(),
+  //       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+  //         crossAxisCount: maxItemsPerRow,
+  //         crossAxisSpacing: 5.0,
+  //         mainAxisSpacing: 5.0,
+  //         childAspectRatio: 1.1,
+  //       ),
+  //       itemCount: combinedList.length,
+  //       shrinkWrap: true,
+  //       itemBuilder: (context, index) {
+  //         if (index < colorKeys.length) {
+  //           // Handle colorGroups
+  //           final String color = colorKeys[index];
+  //           final List<Variant> variantsWithSize = colorGroups[color]!;
+  //           final Variant? availableVariant = getVariantImage(variantsWithSize);
+  //
+  //           if (availableVariant == null ||
+  //               availableVariant.pictures == null ||
+  //               availableVariant.pictures!.isEmpty) {
+  //             return Container(); // or any placeholder widget
+  //           }
+  //
+  //           return Padding(
+  //             padding: const EdgeInsets.only(right: 2.0),
+  //             child: GestureDetector(
+  //               onTap: () {
+  //                 _getSelectedVariantColor(availableVariant, variantsWithSize);
+  //               },
+  //               child: Container(
+  //                 height: 80.0,
+  //                 width: 80.0,
+  //                 decoration: BoxDecoration(
+  //                   borderRadius: const BorderRadius.all(Radius.circular(5)),
+  //                   border: Border.all(
+  //                     color: selectedVariant?.colour == availableVariant.colour
+  //                         ? black
+  //                         : transparent,
+  //                     width: 1.0,
+  //                   ),
+  //                 ),
+  //                 child: ClipRRect(
+  //                   borderRadius: BorderRadius.circular(5),
+  //                   child: FittedBox(
+  //                     fit: BoxFit.cover,
+  //                     child: CachedNetworkImage(
+  //                       imageUrl: availableVariant.serverImages?.first ?? "",
+  //                       placeholder: (context, url) => Center(
+  //                         child: Transform.scale(
+  //                           scale: 0.5,
+  //                           child: CircularProgressIndicator(
+  //                             valueColor:
+  //                                 AlwaysStoppedAnimation<Color>(navyBlue),
+  //                             strokeWidth: 2.0,
+  //                           ),
+  //                         ),
+  //                       ),
+  //                       errorWidget: (context, url, error) =>
+  //                           const Icon(Icons.error),
+  //                     ),
+  //                   ),
+  //                 ),
+  //               ),
+  //             ),
+  //           );
+  //         } else {
+  //           // Handle variantModels
+  //           final int variantIndex = index - colorKeys.length;
+  //           final Variant variant = variantModels[variantIndex];
+  //
+  //           if (variant.pictures == null || variant.pictures!.isEmpty) {
+  //             return Container(); // or any placeholder widget
+  //           }
+  //
+  //           return Padding(
+  //             padding: const EdgeInsets.only(right: 2.0),
+  //             child: GestureDetector(
+  //               onTap: () {
+  //                 _getSelectedVariantColor(variant, [variant]);
+  //               },
+  //               child: Container(
+  //                 height: 80.0,
+  //                 width: 80.0,
+  //                 decoration: BoxDecoration(
+  //                   borderRadius: const BorderRadius.all(Radius.circular(5)),
+  //                   border: Border.all(
+  //                     color: selectedVariant?.colour == variant.colour
+  //                         ? black
+  //                         : transparent,
+  //                     width: 1.0,
+  //                   ),
+  //                 ),
+  //                 child: ClipRRect(
+  //                   borderRadius: BorderRadius.circular(5),
+  //                   child: FittedBox(
+  //                     fit: BoxFit.cover,
+  //                     child: CachedNetworkImage(
+  //                       imageUrl: variant.pictures!.first.path!,
+  //                       placeholder: (context, url) => Center(
+  //                         child: Transform.scale(
+  //                           scale: 0.5,
+  //                           child: CircularProgressIndicator(
+  //                             valueColor:
+  //                                 AlwaysStoppedAnimation<Color>(navyBlue),
+  //                             strokeWidth: 2.0,
+  //                           ),
+  //                         ),
+  //                       ),
+  //                       errorWidget: (context, url, error) =>
+  //                           const Icon(Icons.error),
+  //                     ),
+  //                   ),
+  //                 ),
+  //               ),
+  //             ),
+  //           );
+  //         }
+  //       },
+  //     ),
+  //   );
+  // }
 
   void _getSelectedVariantColor(
     Variant? availableVariant,

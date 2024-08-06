@@ -726,55 +726,60 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
   }
 
   Widget _buildAddImages() {
-    if (existingMediaList.isEmpty && newMediaList.isEmpty) return Container();
+    try {
+      if (existingMediaList.isEmpty && newMediaList.isEmpty) return Container();
 
-    bool showAddMediaButton = false;
+      bool showAddMediaButton = false;
 
-    if (existingMediaList.length + newMediaList.length < 4) {
-      showAddMediaButton = true;
-    } else {
-      showAddMediaButton = false;
-    }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(
-          height: 100,
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                if (showAddMediaButton) ...[
-                  addImageButton(),
-                  const SizedBox(
-                    width: 8,
-                  )
+      if (existingMediaList.length + newMediaList.length < 4) {
+        showAddMediaButton = true;
+      } else {
+        showAddMediaButton = false;
+      }
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            height: 100,
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  if (showAddMediaButton) ...[
+                    addImageButton(),
+                    const SizedBox(
+                      width: 8,
+                    )
+                  ],
+                  _buildNewAddedMedia(),
+                  _buildExistingMedia(),
                 ],
-                _buildNewAddedMedia(),
-                _buildExistingMedia(),
-              ],
+              ),
             ),
           ),
-        ),
 
-        // Container(
-        //   height: 100,
-        //   child: ListView.builder(
-        //     scrollDirection: Axis.horizontal,
-        //     itemCount: selectedImagesList.length + 1,
-        //     itemBuilder: (context, index) => Container(
-        //       padding: EdgeInsets.only(right: 6),
-        //       child: index == 0 ? addImageButton() : showImage(index),
-        //     ),
-        //   ),
-        // ),
-        const SizedBox(
-          height: 20,
-        ),
-      ],
-    );
+          // Container(
+          //   height: 100,
+          //   child: ListView.builder(
+          //     scrollDirection: Axis.horizontal,
+          //     itemCount: selectedImagesList.length + 1,
+          //     itemBuilder: (context, index) => Container(
+          //       padding: EdgeInsets.only(right: 6),
+          //       child: index == 0 ? addImageButton() : showImage(index),
+          //     ),
+          //   ),
+          // ),
+          const SizedBox(
+            height: 20,
+          ),
+        ],
+      );
+    } catch (e, s) {
+      print("$e===========> $s");
+    }
+
+    return Container();
   }
 
   Widget _buildNewAddedMedia() {

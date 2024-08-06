@@ -613,21 +613,26 @@ class _PostTileState extends State<PostTile> {
   }
 
   void shareAsYarn() {
-    NavigationUtil.push(context,
-        screen: ShareAsAyarnScreen(
-            askCategories: yarnDashboardBloc.yarnCategories,
-            shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
-            callback: (params) async {
-              params.body = widget.post?.title ?? "";
-              params.attachment = {
-                "blog": widget.post?.toJson().cast<String, dynamic>() ?? {}
-              };
-              final bool data =
-                  await YarnAuth().addYarnAndQuestion(params, '', '');
-              if (data) {
-                showToast(message: "Shared in Yarn successfully");
-              }
-            }));
+    try {
+      NavigationUtil.push(context,
+          screen: ShareAsAyarnScreen(
+              blogPost: widget.post,
+              askCategories: yarnDashboardBloc.yarnCategories,
+              shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
+              callback: (params) async {
+                params.body = widget.post?.title ?? "";
+                params.attachment = {
+                  "blog": widget.post?.toJson().cast<String, dynamic>() ?? {}
+                };
+                final bool data =
+                    await YarnAuth().addYarnAndQuestion(params, '', '');
+                if (data) {
+                  showToast(message: "Shared in Yarn successfully");
+                }
+              }));
+    } catch (e, s) {
+      print("$e===========> $s");
+    }
   }
 
   Widget _buildLikeUnLikeReportTile() {

@@ -21,15 +21,15 @@ class PermissionProtectionWidget extends StatelessWidget {
   final Widget child;
   final String permissionName;
   final double position;
-  late final UserBloc userBloc;
-  late final PermissionType? hasPermission;
+  UserBloc? userBloc;
+  PermissionType? hasPermission;
   bool isShowLock = false;
   final String? isLockForRead;
 
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
-    hasPermission = userBloc.user.hasWritePermission(
+    hasPermission = userBloc?.user.hasWritePermission(
         permissionName); // if user have permission for given variable
 
     return hasPermission == null ||
