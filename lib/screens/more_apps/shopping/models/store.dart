@@ -532,41 +532,38 @@ class Product extends PurchasableItem {
     return realPrice.toString();
   }
 
-  int? getOriginalPrice(Variant? selectedVariant) {
-    if (selectedVariant != null) {
-      return int.parse(selectedVariant.price ?? "0");
-    } else {
-      return price;
-    }
-  }
-
   int? getDiscountedPrice(Variant? selectedVariant) {
     if (selectedVariant != null) {
-      if (selectedVariant.price != null) {
-        if (checkVariantDiscount(selectedVariant)) {
-          return selectedVariant.discountedPrice;
-        } else {
-          if (checkProductDiscount()) {
-            return getCalDiscountedPrice(
-              discountType,
-              discountValue,
-              int.tryParse(selectedVariant.price ?? "") ?? 0,
-            );
-          } else {
-            return int.tryParse(selectedVariant.price ?? "") ?? 0;
-          }
-        }
+      if (checkVariantDiscount(selectedVariant)) {
+        return selectedVariant.discountedPrice;
       } else {
-        if (checkVariantDiscount(selectedVariant)) {
-          return getCalDiscountedPrice(
-            selectedVariant.discountType,
-            selectedVariant.discountValue,
-            price ?? 0,
-          );
-        } else {
-          return getProductRealPrice();
-        }
+        return int.tryParse(selectedVariant.price ?? "") ?? 0;
       }
+      // if (selectedVariant.price != null) {
+      //   if (checkVariantDiscount(selectedVariant)) {
+      //     return selectedVariant.discountedPrice;
+      //   } else {
+      //     if (checkProductDiscount()) {
+      //       return getCalDiscountedPrice(
+      //         discountType,
+      //         discountValue,
+      //         int.tryParse(selectedVariant.price ?? "") ?? 0,
+      //       );
+      //     } else {
+      //       return int.tryParse(selectedVariant.price ?? "") ?? 0;
+      //     }
+      //   }
+      // } else {
+      //   if (checkVariantDiscount(selectedVariant)) {
+      //     return getCalDiscountedPrice(
+      //       selectedVariant.discountType,
+      //       selectedVariant.discountValue,
+      //       price ?? 0,
+      //     );
+      //   } else {
+      //     return getProductRealPrice();
+      //   }
+      // }
     } else {
       return getProductRealPrice();
     }

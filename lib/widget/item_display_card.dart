@@ -131,7 +131,8 @@ class _DisplayProductState extends State<DisplayProduct> {
                           numberOfRating: widget.product.rating?.toInt()),
                     ),
 
-                    productStockAndDetailTag(),
+                    if (widget.product.variantModels?.isEmpty ?? false)
+                      productStockAndDetailTag(),
 
                     displayShoppingCartControls(),
                     // TODO: to be added in future
@@ -205,7 +206,9 @@ class _DisplayProductState extends State<DisplayProduct> {
                                     priceText(),
                                   ],
                                 ),
-                                if (widget.product.discountedPrice != null)
+                                if ((widget.product.variantModels?.isEmpty ??
+                                        false) &&
+                                    widget.product.discountedPrice != null)
                                   widget.product.checkProductDiscount()
                                       ? Row(
                                           children: [
