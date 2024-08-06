@@ -160,30 +160,88 @@ class _YarnProductTileState extends State<YarnProductTile> {
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               ),
-                              RichText(
-                                text: TextSpan(children: [
-                                  TextSpan(
-                                      text: worldCurrencies[
-                                          widget.product!.currency!],
-                                      style: TextStyle(
-                                        fontFamily: "Inter",
-                                        color: navyBlue,
-                                        fontWeight: FontWeight.w700,
-                                        fontSize: getFontSize(
-                                            widget.tileRenderPlace, context),
-                                      )),
-                                  TextSpan(
-                                      // text: widget.product.price.toString(),
-                                      text: moneyDisplayNormalizer(int.parse(
-                                          widget.product!.price.toString())),
-                                      style: TextStyle(
-                                        color: navyBlue,
-                                        fontSize: getFontSize(
-                                            widget.tileRenderPlace, context),
-                                        fontWeight: FontWeight.w700,
-                                      ))
-                                ]),
-                              )
+                              Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Text(
+                                        worldCurrencies[
+                                                widget.product?.currency] ??
+                                            "NGN",
+                                        style: TextStyle(
+                                          fontFamily: "Inter",
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 14,
+                                          color: navyBlue,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                      priceText(),
+                                    ],
+                                  ),
+                                  if ((widget.product?.variantModels?.isEmpty ??
+                                          false) &&
+                                      widget.product?.discountedPrice != null)
+                                    widget.product!.checkProductDiscount()
+                                        ? Row(
+                                            children: [
+                                              Text(
+                                                worldCurrencies[widget
+                                                        .product?.currency] ??
+                                                    "NGN",
+                                                style: TextStyle(
+                                                  fontFamily: "Inter",
+                                                  fontWeight: FontWeight.w400,
+                                                  fontSize: 12,
+                                                  color: navyBlue,
+                                                  decoration: TextDecoration
+                                                      .lineThrough,
+                                                ),
+                                              ),
+                                              Text(
+                                                moneyDisplayNormalizer(
+                                                    widget.product?.price),
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.w400,
+                                                  fontSize: 12,
+                                                  color: navyBlue,
+                                                  decoration: TextDecoration
+                                                      .lineThrough,
+                                                ),
+                                              ),
+                                            ],
+                                          )
+                                        : const SizedBox()
+                                  else
+                                    const SizedBox(),
+                                ],
+                              ),
+                              // RichText(
+                              //   text: TextSpan(children: [
+                              //     TextSpan(
+                              //         text: worldCurrencies[
+                              //             widget.product!.currency!],
+                              //         style: TextStyle(
+                              //           fontFamily: "Inter",
+                              //           color: navyBlue,
+                              //           fontWeight: FontWeight.w700,
+                              //           fontSize: getFontSize(
+                              //               widget.tileRenderPlace, context),
+                              //         )),
+                              //     TextSpan(
+                              //         // text: widget.product.price.toString(),
+                              //         text: moneyDisplayNormalizer(int.parse(
+                              //             widget.product!.price.toString())),
+                              //         style: TextStyle(
+                              //           color: navyBlue,
+                              //           fontSize: getFontSize(
+                              //               widget.tileRenderPlace, context),
+                              //           fontWeight: FontWeight.w700,
+                              //         ))
+                              //   ]),
+                              // )
                             ],
                           ),
                           SizedBox(
@@ -263,6 +321,27 @@ class _YarnProductTileState extends State<YarnProductTile> {
                 ),
               )),
         ),
+      ),
+    );
+  }
+
+  Widget priceText() {
+    String price;
+    if (widget.product?.priceRange != null &&
+        widget.product?.priceRange != "0") {
+      price = widget.product?.priceRange ?? "0";
+    } else {
+      price = moneyDisplayNormalizer(
+        int.parse(widget.product?.getPriceRange() ?? "0"),
+      );
+    }
+    return Text(
+      price,
+      style: TextStyle(
+        fontWeight: FontWeight.bold,
+        fontSize: 14,
+        color: navyBlue,
+        overflow: TextOverflow.ellipsis,
       ),
     );
   }

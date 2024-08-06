@@ -108,29 +108,80 @@ class DisplayProductForDiscount extends StatelessWidget {
                     ],
                   ),
                 ),
-                Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-                  Text(
-                    worldCurrencies[product.currency!]!,
-                    style: TextStyle(
-                      fontFamily: "Inter",
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14.8,
-                      color: navyBlue,
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          worldCurrencies[product.currency] ?? "NGN",
+                          style: TextStyle(
+                            fontFamily: "Inter",
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                            color: navyBlue,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        priceText(),
+                      ],
                     ),
-                  ),
-                  Text(
-                    moneyDisplayNormalizer(product.price!),
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                      color: navyBlue,
-                    ),
-                  ),
-                ]),
+                    if ((product.variantModels?.isEmpty ?? false) &&
+                        product.discountedPrice != null)
+                      product.checkProductDiscount()
+                          ? Row(
+                              children: [
+                                Text(
+                                  worldCurrencies[product.currency] ?? "NGN",
+                                  style: TextStyle(
+                                    fontFamily: "Inter",
+                                    fontWeight: FontWeight.w400,
+                                    fontSize: 12,
+                                    color: navyBlue,
+                                    decoration: TextDecoration.lineThrough,
+                                  ),
+                                ),
+                                Text(
+                                  moneyDisplayNormalizer(product.price),
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w400,
+                                    fontSize: 12,
+                                    color: navyBlue,
+                                    decoration: TextDecoration.lineThrough,
+                                  ),
+                                ),
+                              ],
+                            )
+                          : const SizedBox()
+                    else
+                      const SizedBox(),
+                  ],
+                ),
               ],
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget priceText() {
+    String price;
+    if (product.priceRange != null && product.priceRange != "0") {
+      price = product.priceRange ?? "0";
+    } else {
+      price = moneyDisplayNormalizer(
+        int.parse(product.getPriceRange()),
+      );
+    }
+    return Text(
+      price,
+      style: TextStyle(
+        fontWeight: FontWeight.bold,
+        fontSize: 14,
+        color: navyBlue,
+        overflow: TextOverflow.ellipsis,
       ),
     );
   }
