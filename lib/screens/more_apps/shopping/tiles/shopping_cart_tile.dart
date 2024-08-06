@@ -60,9 +60,6 @@ class ShoppingCartTileForProduct extends StatelessWidget {
                         arguments: {"product": product});
                   },
                 ),
-                const SizedBox(
-                  height: 10,
-                ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -173,49 +170,42 @@ class ShoppingCartTileForProduct extends StatelessWidget {
     return Container(
       width: 110,
       color: Colors.transparent,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Expanded(child: getProductPriceWidget()),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              RoundedBackgroundIcon(
-                backgroundColor: iconBtnGrey,
-                icon: Icon(
-                  SlydoAppIcon.minus,
-                  color: blackFont,
-                  size: 2,
-                ),
-                onTap: onDecreaseQty,
-              ),
-              const SizedBox(
-                width: 10,
-              ),
-              Text(
-                basketItem.getQty().toString(),
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: blackFont,
-                  fontFamily: "Inter",
-                ),
-              ),
-              const SizedBox(
-                width: 10,
-              ),
-              RoundedBackgroundIcon(
-                backgroundColor: iconBtnGrey,
-                icon: Icon(
-                  SlydoAppIcon.plus,
-                  color: blackFont,
-                  size: 14, // Adjust the size as needed
-                ),
-                onTap: onIncreaseQty,
-              ),
-            ],
+          RoundedBackgroundIcon(
+            backgroundColor: iconBtnGrey,
+            icon: Icon(
+              SlydoAppIcon.minus,
+              color: blackFont,
+              size: 2,
+            ),
+            onTap: onDecreaseQty,
+          ),
+          const SizedBox(
+            width: 10,
+          ),
+          Text(
+            basketItem.getQty().toString(),
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: blackFont,
+              fontFamily: "Inter",
+            ),
+          ),
+          const SizedBox(
+            width: 10,
+          ),
+          RoundedBackgroundIcon(
+            backgroundColor: iconBtnGrey,
+            icon: Icon(
+              SlydoAppIcon.plus,
+              color: blackFont,
+              size: 14, // Adjust the size as needed
+            ),
+            onTap: onIncreaseQty,
           ),
         ],
       ),
@@ -275,25 +265,16 @@ class ShoppingCartTileForProduct extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        const SizedBox(
-          height: 2,
-        ),
         getSellerName(context),
-        const SizedBox(
-          height: 10,
-        ),
-        if (color.isNotEmpty) ...[
-          const SizedBox(
-            height: 2,
-          ),
-          getColor(color),
-        ],
-        if (size.isNotEmpty) ...[
-          const SizedBox(
-            height: 2,
-          ),
-          getSize(size)
-        ],
+        if (color.isNotEmpty) getColor(color),
+        if (size.isNotEmpty) getSize(size),
+        getProductPriceWidget(),
+        getProductLinePriceWidget(),
+        if ((product.discountedPrice != null && product.discountedPrice != 0) ||
+            (product.pricePercentageChange != null &&
+                    product.pricePercentageChange != 0.0 ||
+                basketItem.variants != null))
+          _buildPricePercentageChanges(),
         if (concatenatedText != "") ...[
           Text(
             "Adds-ons : $concatenatedText",
@@ -311,10 +292,11 @@ class ShoppingCartTileForProduct extends StatelessWidget {
 
   Widget getSubTotalPriceWidget() {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         Text(
-          worldCurrencies[product.currency!]!,
+          worldCurrencies[product.currency]!,
           style: TextStyle(
               color: blackFont,
               fontFamily: "Inter",
@@ -341,18 +323,18 @@ class ShoppingCartTileForProduct extends StatelessWidget {
         Text(
           worldCurrencies[product.currency!]!,
           style: TextStyle(
-              color: black,
+              color: blackFont,
               fontFamily: "Inter",
-              fontWeight: FontWeight.w500,
-              fontSize: 14),
+              fontWeight: FontWeight.w600,
+              fontSize: 12),
         ),
         Text(
           moneyDisplayNormalizer(
               product.getDiscountedPrice(basketItem.variants?.first) ?? 0),
           style: TextStyle(
-            color: black,
-            fontWeight: FontWeight.w500,
-            fontSize: 14,
+            color: blackFont,
+            fontWeight: FontWeight.w600,
+            fontSize: 12,
             fontFamily: "Inter",
           ),
         ),
@@ -410,6 +392,110 @@ class ShoppingCartTileForProduct extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  Widget getProductLinePriceWidget() {
+    if (basketItem.variants?.first != null) {
+      if ((product.checkVariantDiscount(basketItem.variants?.first))) {
+        return Row(
+          children: [
+            Text(
+              worldCurrencies[product.currency] ?? "NGN",
+              style: TextStyle(
+                fontFamily: "Inter",
+                fontWeight: FontWeight.w400,
+                fontSize: 12,
+                color: black,
+                decoration: TextDecoration.lineThrough,
+              ),
+            ),
+            Text(
+              moneyDisplayNormalizer(
+                  int.parse(basketItem.variants?.first.price ?? "0")),
+              style: TextStyle(
+                fontWeight: FontWeight.w400,
+                fontSize: 12,
+                color: black,
+                decoration: TextDecoration.lineThrough,
+              ),
+            ),
+          ],
+        );
+      } else {
+        return const SizedBox.shrink();
+      }
+    } else if (product.checkProductDiscount()) {
+      return Row(
+        children: [
+          Text(
+            worldCurrencies[product.currency] ?? "NGN",
+            style: TextStyle(
+              fontFamily: "Inter",
+              fontWeight: FontWeight.w400,
+              fontSize: 12.8,
+              color: black,
+              decoration: TextDecoration.lineThrough,
+            ),
+          ),
+          Text(
+            moneyDisplayNormalizer(product.price),
+            style: TextStyle(
+              fontWeight: FontWeight.w400,
+              fontSize: 12,
+              color: black,
+              decoration: TextDecoration.lineThrough,
+            ),
+          ),
+        ],
+      );
+    } else {
+      return const SizedBox.shrink();
+    }
+  }
+
+  Widget _buildPricePercentageChanges() {
+    if (basketItem.variants != null) {
+      if (product.checkVariantDiscount(basketItem.variants?.first)) {
+        return Text(
+          "-${basketItem.variants?.first.discountType == "percentage" ? "${basketItem.variants?.first.discountValue}% off" : worldCurrencies[basketItem.variants?.first.currency ?? ""]! + moneyDisplayNormalizer(basketItem.variants?.first.discountValue?.toInt()).toString()}",
+          style: TextStyle(
+            color: naturalGreen,
+            fontSize: 11,
+            fontFamily: 'Inter',
+            fontWeight: FontWeight.w600,
+          ),
+        );
+      } else {
+        return const SizedBox();
+      }
+    } else if (product.discountedPrice != null &&
+        product.discountedPrice != 0) {
+      if (product.checkProductDiscount() ?? false) {
+        return Text(
+          "-${product.discountType == "percentage" ? "${product.discountValue}% off" : worldCurrencies[product.currency ?? ""]! + moneyDisplayNormalizer(product.discountValue?.toInt()).toString()}",
+          style: TextStyle(
+            color: naturalGreen,
+            fontSize: 11,
+            fontFamily: 'Inter',
+            fontWeight: FontWeight.w600,
+          ),
+        );
+      } else {
+        return const SizedBox();
+      }
+    } else if (product.pricePercentageChange != 0.0) {
+      return Text(
+        "${product.pricePercentageChange!.toInt()}% off",
+        style: TextStyle(
+          color: naturalGreen,
+          fontSize: 11,
+          fontFamily: 'Inter',
+          fontWeight: FontWeight.w600,
+        ),
+      );
+    } else {
+      return const SizedBox();
+    }
   }
 }
 

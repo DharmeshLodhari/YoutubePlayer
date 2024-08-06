@@ -43,7 +43,7 @@ class _OrderTileForProductNewState extends State<OrderTileForProductNew> {
               const SizedBox(
                 width: 15,
               ),
-              Expanded(child: getProductDetails()),
+              getProductDetails(),
             ],
           ),
         ),
@@ -84,11 +84,11 @@ class _OrderTileForProductNewState extends State<OrderTileForProductNew> {
       children: [
         getTitle(),
         const SizedBox(
-          height: 3,
+          height: 2,
         ),
         getProductColorSize(),
         const SizedBox(
-          height: 3,
+          height: 2,
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -97,6 +97,19 @@ class _OrderTileForProductNewState extends State<OrderTileForProductNew> {
             getProductCount(),
           ],
         ),
+        const SizedBox(
+          height: 2,
+        ),
+        getProductLinePriceWidget(),
+        const SizedBox(
+          height: 2,
+        ),
+        if ((product?.discountedPrice != null &&
+                product?.discountedPrice != 0) ||
+            (product?.pricePercentageChange != null &&
+                    product?.pricePercentageChange != 0.0 ||
+                (product?.variantModels?.isNotEmpty ?? false)))
+          _buildPricePercentageChanges(),
       ],
     );
   }
@@ -131,6 +144,110 @@ class _OrderTileForProductNewState extends State<OrderTileForProductNew> {
     );
   }
 
+  Widget getProductLinePriceWidget() {
+    if (product?.variantModels?.isNotEmpty ?? false) {
+      if ((product!.checkVariantDiscount(product?.variantModels?.first))) {
+        return Row(
+          children: [
+            Text(
+              worldCurrencies[product?.currency] ?? "NGN",
+              style: TextStyle(
+                fontFamily: "Inter",
+                fontWeight: FontWeight.w400,
+                fontSize: 12,
+                color: lightBlackFont,
+                decoration: TextDecoration.lineThrough,
+              ),
+            ),
+            Text(
+              moneyDisplayNormalizer(
+                  int.parse(product?.variantModels?.first.price ?? "0")),
+              style: TextStyle(
+                fontWeight: FontWeight.w400,
+                fontSize: 12,
+                color: lightBlackFont,
+                decoration: TextDecoration.lineThrough,
+              ),
+            ),
+          ],
+        );
+      } else {
+        return const SizedBox.shrink();
+      }
+    } else if (product!.checkProductDiscount()) {
+      return Row(
+        children: [
+          Text(
+            worldCurrencies[product?.currency] ?? "NGN",
+            style: TextStyle(
+              fontFamily: "Inter",
+              fontWeight: FontWeight.w400,
+              fontSize: 12.8,
+              color: black,
+              decoration: TextDecoration.lineThrough,
+            ),
+          ),
+          Text(
+            moneyDisplayNormalizer(product?.price),
+            style: TextStyle(
+              fontWeight: FontWeight.w400,
+              fontSize: 12,
+              color: black,
+              decoration: TextDecoration.lineThrough,
+            ),
+          ),
+        ],
+      );
+    } else {
+      return const SizedBox.shrink();
+    }
+  }
+
+  Widget _buildPricePercentageChanges() {
+    if (product?.variantModels?.isNotEmpty ?? false) {
+      if (product!.checkVariantDiscount(product?.variantModels?.first)) {
+        return Text(
+          "-${product?.variantModels?.first.discountType == "percentage" ? "${product?.variantModels?.first.discountValue}% off" : worldCurrencies[product?.variantModels?.first.currency ?? ""]! + moneyDisplayNormalizer(product?.variantModels?.first.discountValue?.toInt()).toString()}",
+          style: TextStyle(
+            color: naturalGreen,
+            fontSize: 11,
+            fontFamily: 'Inter',
+            fontWeight: FontWeight.w600,
+          ),
+        );
+      } else {
+        return const SizedBox();
+      }
+    } else if (product?.discountedPrice != null &&
+        product?.discountedPrice != 0) {
+      if (product?.checkProductDiscount() ?? false) {
+        return Text(
+          "-${product?.discountType == "percentage" ? "${product?.discountValue}% off" : worldCurrencies[product?.currency ?? ""]! + moneyDisplayNormalizer(product?.discountValue?.toInt()).toString()}",
+          style: TextStyle(
+            color: naturalGreen,
+            fontSize: 11,
+            fontFamily: 'Inter',
+            fontWeight: FontWeight.w600,
+          ),
+        );
+      } else {
+        return const SizedBox();
+      }
+    } else if (product?.pricePercentageChange != 0.0) {
+      return Text(
+        "${product?.pricePercentageChange!.toInt()}% off",
+        style: TextStyle(
+          color: naturalGreen,
+          fontSize: 11,
+          fontFamily: 'Inter',
+          fontWeight: FontWeight.w600,
+        ),
+      );
+    } else {
+      return const SizedBox();
+    }
+  }
+
   String getProductPrice() {
     if (product!.price.toString().length > 5) {
       return "${product!.price.toString().substring(0, 5)}..";
@@ -155,15 +272,15 @@ class _OrderTileForProductNewState extends State<OrderTileForProductNew> {
             color: blackFont,
             fontFamily: "Inter",
             fontWeight: FontWeight.w600,
-            fontSize: 14,
+            fontSize: 12,
           ),
         ),
         Text(
           moneyDisplayNormalizer(productActualPrice),
           style: TextStyle(
-            color: black,
-            fontWeight: FontWeight.w500,
-            fontSize: 14,
+            color: blackFont,
+            fontWeight: FontWeight.w600,
+            fontSize: 12,
             fontFamily: "Inter",
           ),
         ),
