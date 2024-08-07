@@ -1,3 +1,4 @@
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
@@ -10,6 +11,7 @@ import 'package:Slydo/widget/cutomized_alert/dialog_button.dart';
 import 'package:Slydo/widget/cutomized_alert/modified_customized_alert.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import 'curved_btn.dart';
 import 'cutomized_alert/customized_alert_for_nudge.dart';
@@ -536,6 +538,101 @@ Future<T?> showPickItemDialog<T>({
         ),
       ),
     ),
+  );
+}
+
+Future<bool?> showExitDialogBackButton(
+    {required BuildContext context,
+    Function()? leftButtonOnPressed,
+    Function()? rightButtonOnPressed,
+    bool firstActionPrimary = true,
+    double? fontSize}) {
+  return showDialog(
+    context: context,
+    builder: (ctx) => AlertDialog(
+      backgroundColor: Colors.white,
+      title: Column(
+        children: [
+          _buildCloseIcon(ctx),
+          _buildExitDialogIcon(),
+          Text(
+            "Do you want to leave this page?",
+            style: TextStyle(
+                color: blackFont,
+                fontWeight: FontWeight.w700,
+                fontFamily: "Inter",
+                fontSize: 16.0),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+      content: Text(
+        "You have unsaved changes that will be lost, Save your changes before exiting?",
+        style: TextStyle(
+            color: lightBlackFont,
+            fontSize: 12.0,
+            fontWeight: FontWeight.w400,
+            fontFamily: "Inter"),
+        textAlign: TextAlign.center,
+      ),
+      actions: <Widget>[
+        Row(
+          children: [
+            Expanded(
+              child: DialogButton(
+                onPressed: () {
+                  Navigator.pop(context, firstActionPrimary ? true : false);
+                  if (leftButtonOnPressed != null) {
+                    leftButtonOnPressed();
+                  }
+                },
+                textColor: blackFont,
+                text: AppLocalization.of(context)!.leave,
+                fontSize: fontSize,
+                backgroundColor: greyBorderColor,
+              ),
+            ),
+            const SizedBox(width: 15),
+            Expanded(
+              child: DialogButton(
+                onPressed: () {
+                  Navigator.pop(context, firstActionPrimary ? false : true);
+                  if (rightButtonOnPressed != null) {
+                    rightButtonOnPressed();
+                  }
+                },
+                textColor: Colors.white,
+                text: AppLocalization.of(context)!.saveAndLeave,
+                fontSize: fontSize,
+                backgroundColor: Colors.green,
+              ),
+            )
+          ],
+        )
+      ],
+    ),
+  );
+}
+
+Widget _buildCloseIcon(BuildContext context) {
+  return Row(
+    mainAxisAlignment: MainAxisAlignment.end,
+    children: [
+      GestureDetector(
+        onTap: () {
+          Navigator.pop(context);
+        },
+        child: const Icon(Icons.close),
+      ),
+    ],
+  );
+}
+
+Widget _buildExitDialogIcon() {
+  return Image.asset(
+    "assets/exit_dialog_icon.png",
+    height: 85,
+    width: 85,
   );
 }
 

@@ -1142,48 +1142,40 @@ class _AddEditDiscountState extends State<AddEditDiscount> {
   }
 
   dynamic getExitDialog(BuildContext context) async {
-    await showDialogBox(
-        context: context,
-        actionOneBgColor: greyBorderColor,
-        actionOneTextColor: blackFont,
-        actionTwoBgColor: Colors.green,
-        actionTwoTextColor: Colors.white,
-        title: "Do you want to leave this page?",
-        description:
-            "You have unsaved changes that will be lost, Save your changes before exiting?",
-        actionOneText: AppLocalization.of(context)!.leave,
-        actionTwoText: AppLocalization.of(context)!.saveAndLeave,
-        rightButtonOnPressed: () async {
-          FocusScope.of(context).unfocus();
-          if (!isTimeAvailable) {
-            discountModel.onlyFrom = null;
-            discountModel.onlyTo = null;
-            startTimeFrom = null;
-            endTimeTo = null;
-          }
-          if (startTimeFrom != null) {
-            if (endTimeTo != null) {
-              if (isTimeAfter(startTimeFrom!, endTimeTo!)) {
-                await addEditItem();
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text(
-                      'Start time cannot be greater than end time',
-                    ),
-                  ),
-                );
-              }
+    await showExitDialogBackButton(
+      context: context,
+      leftButtonOnPressed: () {
+        Navigator.pop(context);
+      },
+      rightButtonOnPressed: () async {
+        FocusScope.of(context).unfocus();
+        if (!isTimeAvailable) {
+          discountModel.onlyFrom = null;
+          discountModel.onlyTo = null;
+          startTimeFrom = null;
+          endTimeTo = null;
+        }
+        if (startTimeFrom != null) {
+          if (endTimeTo != null) {
+            if (isTimeAfter(startTimeFrom!, endTimeTo!)) {
+              await addEditItem();
             } else {
-              showToast(message: 'Select end time');
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text(
+                    'Start time cannot be greater than end time',
+                  ),
+                ),
+              );
             }
           } else {
-            await addEditItem();
+            showToast(message: 'Select end time');
           }
-        },
-        leftButtonOnPressed: () {
-          Navigator.pop(context);
-        });
+        } else {
+          await addEditItem();
+        }
+      },
+    );
     //   if (result != null && result) {
     //     if (selectedProducts.isNotEmpty || selectedServices.isNotEmpty) {
     //       selectedProducts == null;

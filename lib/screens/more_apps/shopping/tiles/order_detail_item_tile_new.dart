@@ -570,7 +570,7 @@ class _OrderTileForServiceState extends State<OrderTileForService> {
   }
 
   String getTotalPrice() {
-    final price = qty! * int.parse(service!.price!);
+    final price = qty! * int.parse(service?.price ?? "");
     return price.toString();
   }
 
@@ -592,7 +592,7 @@ class _OrderTileForServiceState extends State<OrderTileForService> {
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         Text(
-          worldCurrencies[service!.currency!]!,
+          worldCurrencies[service?.currency] ?? "",
           style: TextStyle(
               color: blackFont,
               fontFamily: "Inter",
@@ -610,7 +610,7 @@ class _OrderTileForServiceState extends State<OrderTileForService> {
 
   Widget getSellerName(BuildContext context) {
     return Text(
-      service!.provider!,
+      service?.provider ?? "",
       style: TextStyle(fontSize: 12, color: darkGrey),
     );
   }

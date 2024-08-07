@@ -772,7 +772,9 @@ class _UserProductListState extends State<UserProductList> {
         fit: BoxFit.fill,
       );
     } else {
-      return Image.asset(defaultProductAndServiceImage);
+      return Image.asset(
+          "assets/images/default_image/discount_defualt_image.jpeg",
+          fit: BoxFit.fill);
     }
   }
 

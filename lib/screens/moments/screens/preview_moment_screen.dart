@@ -1177,56 +1177,48 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
   }
 
   dynamic getExitDialog(BuildContext context) async {
-    await showDialogBox(
-        context: context,
-        actionOneBgColor: greyBorderColor,
-        actionOneTextColor: blackFont,
-        actionTwoBgColor: Colors.green,
-        actionTwoTextColor: Colors.white,
-        title: "Do you want to leave this page?",
-        description:
-            "You have unsaved changes that will be lost, Save your changes before exiting?",
-        actionOneText: AppLocalization.of(context)!.leave,
-        actionTwoText: AppLocalization.of(context)!.saveAndLeave,
-        rightButtonOnPressed: () async {
-          if (enablePayMe && payMeCtrl.text.isEmpty) {
-            showToast(message: 'Payment label cannot be empty');
-            return;
-          }
+    await showExitDialogBackButton(
+      context: context,
+      leftButtonOnPressed: () {
+        Navigator.pop(context);
+      },
+      rightButtonOnPressed: () async {
+        if (enablePayMe && payMeCtrl.text.isEmpty) {
+          showToast(message: 'Payment label cannot be empty');
+          return;
+        }
 
-          if (pickedAttachmentType == 'Url' &&
-              (urlTextCtrl.text.isEmpty ||
-                  (!await canLaunchUrl(Uri.parse(urlTextCtrl.text))))) {
-            showToast(message: 'Please enter a valid url');
-            return;
-          }
-          showDialogBox(
-            context: context,
-            actionOneTextColor: blackFont,
-            actionTwoBgColor: navyBlue,
-            actionTwoTextColor: Colors.white,
-            actionOneBgColor: greyBorderColor,
-            title: AppLocalization.of(context)!.post,
-            actionTwoText: AppLocalization.of(context)!.post,
-            actionOneText: AppLocalization.of(context)!.notNow,
-            description: 'Are you sure you want to post\nyour moment now?',
-            roundedBackgroundIcon: RoundedBackgroundIcon(
-              enableMargin: false,
-              width: 90,
-              height: 90,
-              image: Image.asset(
-                'assets/images/accept_dialog_icon.png',
-                color: navyBlue,
-              ),
+        if (pickedAttachmentType == 'Url' &&
+            (urlTextCtrl.text.isEmpty ||
+                (!await canLaunchUrl(Uri.parse(urlTextCtrl.text))))) {
+          showToast(message: 'Please enter a valid url');
+          return;
+        }
+        showDialogBox(
+          context: context,
+          actionOneTextColor: blackFont,
+          actionTwoBgColor: navyBlue,
+          actionTwoTextColor: Colors.white,
+          actionOneBgColor: greyBorderColor,
+          title: AppLocalization.of(context)!.post,
+          actionTwoText: AppLocalization.of(context)!.post,
+          actionOneText: AppLocalization.of(context)!.notNow,
+          description: 'Are you sure you want to post\nyour moment now?',
+          roundedBackgroundIcon: RoundedBackgroundIcon(
+            enableMargin: false,
+            width: 90,
+            height: 90,
+            image: Image.asset(
+              'assets/images/accept_dialog_icon.png',
+              color: navyBlue,
             ),
-            rightButtonOnPressed: () {
-              postMoment();
-            },
-          );
-        },
-        leftButtonOnPressed: () {
-          Navigator.pop(context);
-        });
+          ),
+          rightButtonOnPressed: () {
+            postMoment();
+          },
+        );
+      },
+    );
     //   if (result != null && result) {
     //     if (userBloc.user != null) {
     //       userBloc.user == null;
