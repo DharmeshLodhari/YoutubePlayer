@@ -2724,11 +2724,20 @@ Future<bool> checkConnection(BuildContext context) async {
 
 Map<String, String> getFormattedDateTime(String? dateTimeString) {
   try {
-    final String cleanedDateTimeString = dateTimeString?.split('.').first ?? "";
+    final parsedDateTime = DateTime.parse(dateTimeString ?? "");
 
-    final DateTime dateTime = DateTime.parse(cleanedDateTimeString);
-    // final DateFormat dateFormatter = DateFormat('yyyy-MM-dd');
-    final DateFormat dateFormatter = DateFormat('dd/MM/yyyy');
+    final dateTime = DateTime(
+      parsedDateTime.year,
+      parsedDateTime.month,
+      parsedDateTime.day,
+      parsedDateTime.hour,
+      parsedDateTime.minute,
+      parsedDateTime.second,
+      parsedDateTime.millisecond,
+      parsedDateTime.microsecond,
+    ).add(Duration(hours: 1));
+
+    final DateFormat dateFormatter = DateFormat('MMMM dd, yyyy');
     final DateFormat timeFormatter = DateFormat('h:mm a');
 
     // Format the date and time

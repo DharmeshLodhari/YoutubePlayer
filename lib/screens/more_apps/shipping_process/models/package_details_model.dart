@@ -2,7 +2,6 @@ import 'package:Slydo/screens/more_apps/shipping_process/models/shipping_option_
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:intl/intl.dart';
-import 'package:video_trimmer/video_trimmer.dart';
 
 enum DeliveryOptions { shipping, eatIn, pickUp }
 
@@ -268,7 +267,7 @@ class PackageDetailsModel {
 
   String formatDateTime(DateTime dateTime) {
     final String formattedDate =
-        "${DateFormat("yyyy-MM-ddTHH:mm:ss.SSSSSS").format(dateTime)}+01:00";
+        DateFormat("yyyy-MM-ddTHH:mm:ss.SSSSSS").format(dateTime);
     return formattedDate;
   }
 
