@@ -266,15 +266,37 @@ class ShoppingCartTileForProduct extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         getSellerName(context),
-        if (color.isNotEmpty) getColor(color),
-        if (size.isNotEmpty) getSize(size),
+        if (color.isNotEmpty) ...[
+          const SizedBox(
+            height: 2,
+          ),
+          getColor(color),
+        ],
+        if (size.isNotEmpty) ...[
+          const SizedBox(
+            height: 2,
+          ),
+          getSize(size)
+        ],
+        const SizedBox(
+          height: 2,
+        ),
         getProductPriceWidget(),
+        const SizedBox(
+          height: 2,
+        ),
         getProductLinePriceWidget(),
+        const SizedBox(
+          height: 2,
+        ),
         if ((product.discountedPrice != null && product.discountedPrice != 0) ||
             (product.pricePercentageChange != null &&
                     product.pricePercentageChange != 0.0 ||
                 basketItem.variants != null))
           _buildPricePercentageChanges(),
+        const SizedBox(
+          height: 2,
+        ),
         if (concatenatedText != "") ...[
           Text(
             "Adds-ons : $concatenatedText",
@@ -395,7 +417,7 @@ class ShoppingCartTileForProduct extends StatelessWidget {
   }
 
   Widget getProductLinePriceWidget() {
-    if (basketItem.variants?.first != null) {
+    if (basketItem.variants?.isNotEmpty ?? false) {
       if ((product.checkVariantDiscount(basketItem.variants?.first))) {
         return Row(
           children: [
@@ -454,7 +476,7 @@ class ShoppingCartTileForProduct extends StatelessWidget {
   }
 
   Widget _buildPricePercentageChanges() {
-    if (basketItem.variants != null) {
+    if (basketItem.variants?.isNotEmpty ?? false) {
       if (product.checkVariantDiscount(basketItem.variants?.first)) {
         return Text(
           "-${basketItem.variants?.first.discountType == "percentage" ? "${basketItem.variants?.first.discountValue}% off" : worldCurrencies[basketItem.variants?.first.currency ?? ""]! + moneyDisplayNormalizer(basketItem.variants?.first.discountValue?.toInt()).toString()}",
@@ -470,7 +492,7 @@ class ShoppingCartTileForProduct extends StatelessWidget {
       }
     } else if (product.discountedPrice != null &&
         product.discountedPrice != 0) {
-      if (product.checkProductDiscount() ?? false) {
+      if (product.checkProductDiscount()) {
         return Text(
           "-${product.discountType == "percentage" ? "${product.discountValue}% off" : worldCurrencies[product.currency ?? ""]! + moneyDisplayNormalizer(product.discountValue?.toInt()).toString()}",
           style: TextStyle(

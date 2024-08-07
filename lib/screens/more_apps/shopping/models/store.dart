@@ -297,6 +297,7 @@ class Product extends PurchasableItem {
   List<String>? searchKeywords;
   bool isChecked = false;
   String? priceRange;
+  int? originalPrice;
 
   // DateTime? createdAt;
   // bool? enableInSuperstore;
@@ -375,6 +376,7 @@ class Product extends PurchasableItem {
     this.searchKeywords,
     this.isChecked = false,
     this.priceRange,
+    this.originalPrice,
     // this.itemUpdatedBy,
     // this.qty,
   });
@@ -675,6 +677,7 @@ class Product extends PurchasableItem {
           ? <String>[]
           : List<String>.from(object["search_keywords"].map((x) => x)),
       priceRange: object["price_range"] ?? "0",
+      originalPrice: object["original_price"] ?? 0,
       // itemUpdatedBy: object["item_updated_by"] == null
       //     ? null
       //     : UserFollowers.fromJson(object["item_updated_by"]),
@@ -1039,6 +1042,7 @@ class Variant {
   String? discountType;
   bool? discountIsActive;
   int? discountedPrice;
+  int? originalPrice;
 
   Variant({
     this.id,
@@ -1062,6 +1066,7 @@ class Variant {
     this.discountType,
     this.discountIsActive,
     this.discountedPrice,
+    this.originalPrice,
   });
 
   Map toMap() {
@@ -1107,6 +1112,7 @@ class Variant {
       "discount_type": discountType,
       "discount_is_active": discountIsActive,
       "discounted_price": discountedPrice,
+      "original_price": originalPrice,
     };
   }
 
@@ -1170,6 +1176,7 @@ class Variant {
       discountType: object['discount_type'],
       discountIsActive: object['discount_is_active'],
       discountedPrice: cleanObjects(object, "discounted_price"),
+      originalPrice: cleanObjects(object, "original_price"),
     );
   }
 

@@ -43,7 +43,7 @@ class _OrderTileForProductNewState extends State<OrderTileForProductNew> {
               const SizedBox(
                 width: 15,
               ),
-              getProductDetails(),
+              Expanded(child: getProductDetails()),
             ],
           ),
         ),
@@ -137,7 +137,7 @@ class _OrderTileForProductNewState extends State<OrderTileForProductNew> {
             color: lightBlackFont,
             fontFamily: "Inter",
             fontWeight: FontWeight.w600,
-            fontSize: 14,
+            fontSize: 12,
           ),
         ),
       ],
@@ -161,7 +161,7 @@ class _OrderTileForProductNewState extends State<OrderTileForProductNew> {
             ),
             Text(
               moneyDisplayNormalizer(
-                  int.parse(product?.variantModels?.first.price ?? "0")),
+                  product?.variantModels?.first.originalPrice),
               style: TextStyle(
                 fontWeight: FontWeight.w400,
                 fontSize: 12,
@@ -188,7 +188,7 @@ class _OrderTileForProductNewState extends State<OrderTileForProductNew> {
             ),
           ),
           Text(
-            moneyDisplayNormalizer(product?.price),
+            moneyDisplayNormalizer(product?.originalPrice),
             style: TextStyle(
               fontWeight: FontWeight.w400,
               fontSize: 12,
@@ -253,6 +253,19 @@ class _OrderTileForProductNewState extends State<OrderTileForProductNew> {
       return "${product!.price.toString().substring(0, 5)}..";
     }
     return product!.price.toString();
+  }
+
+  int? reversePriceFromDiscount() {
+    if (product?.discountValue != null) {
+      if (product?.discountType == "price") {
+        return (product?.price ?? 0) + (product?.discountValue ?? 0);
+      } else {
+        return (product?.price ?? 0) *
+            100 ~/
+            (100 - (product?.discountValue ?? 0));
+      }
+    }
+    return product?.price;
   }
 
   Widget getPriceWidget() {

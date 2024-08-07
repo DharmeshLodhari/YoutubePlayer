@@ -481,6 +481,7 @@ class ShoppingAuthService extends AuthService {
     // product.qty = item['qty'];
     product.isChecked = item["is_checked"] ?? false;
     product.priceRange = item["price_range"] ?? "0";
+    product.originalPrice = item["original_price"] ?? 0;
     return product;
   }
 
