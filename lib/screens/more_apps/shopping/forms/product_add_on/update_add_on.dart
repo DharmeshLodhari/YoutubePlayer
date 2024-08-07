@@ -11,7 +11,9 @@ import 'package:Slydo/widget/customized_dropdown_field.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
+import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../../routes/route_constants.dart';
@@ -123,24 +125,16 @@ class _UpdateAddOnState extends State<UpdateAddOn> {
   }
 
   dynamic getExitDialog(BuildContext context) async {
-    await showDialogBox(
-        context: context,
-        actionOneBgColor: greyBorderColor,
-        actionOneTextColor: blackFont,
-        actionTwoBgColor: Colors.green,
-        actionTwoTextColor: Colors.white,
-        title: "Do you want to leave this page?",
-        description:
-            "You have unsaved changes that will be lost, Save your changes before exiting?",
-        actionOneText: AppLocalization.of(context)!.leave,
-        actionTwoText: AppLocalization.of(context)!.saveAndLeave,
-        leftButtonOnPressed: () {
-          Navigator.pop(context);
-        },
-        rightButtonOnPressed: () async {
-          FocusScope.of(context).unfocus();
-          await addNewAddOns();
-        });
+    await showExitDialogBackButton(
+      context: context,
+      leftButtonOnPressed: () {
+        Navigator.pop(context);
+      },
+      rightButtonOnPressed: () async {
+        FocusScope.of(context).unfocus();
+        await addNewAddOns();
+      },
+    );
   }
 
   Widget scaffoldBody() {

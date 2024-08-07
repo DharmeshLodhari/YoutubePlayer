@@ -1125,19 +1125,10 @@ class _EditServiceState extends State<EditService> {
   }
 
   dynamic getExitDialog(BuildContext context) async {
-    await showDialogBox(
+    await showExitDialogBackButton(
       context: context,
-      actionOneBgColor: greyBorderColor,
-      actionOneTextColor: blackFont,
-      actionTwoBgColor: Colors.green,
-      actionTwoTextColor: Colors.white,
-      title: "Do you want to leave this page?",
-      description:
-          "You have unsaved changes that will be lost, Save your changes before exiting?",
-      actionOneText: AppLocalization.of(context)!.leave,
-      actionTwoText: AppLocalization.of(context)!.saveAndLeave,
       leftButtonOnPressed: () {
-        Navigator.of(context).pop();
+        Navigator.pop(context);
       },
       rightButtonOnPressed: () async {
         FocusScope.of(context).unfocus();
