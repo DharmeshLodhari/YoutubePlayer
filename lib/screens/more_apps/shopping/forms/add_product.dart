@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
@@ -2601,7 +2602,8 @@ class _AddProductState extends State<AddProduct> {
         dense: true,
         title: Text(
           selectedDiscount != null
-              ? messageDecoderWithEmoji(selectedDiscount?.name) ??
+              ? messageDecoderWithEmoji(
+                      getDiscountDisplayName(selectedDiscount)) ??
                   selectedDiscount?.merchant ??
                   ""
               : "",
@@ -2668,7 +2670,8 @@ class _AddProductState extends State<AddProduct> {
                                 child: ListTile(
                                   dense: true,
                                   title: Text(
-                                    messageDecoderWithEmoji(discount.name) ??
+                                    messageDecoderWithEmoji(
+                                            getDiscountDisplayName(discount)) ??
                                         discount.merchant ??
                                         "",
                                     overflow: TextOverflow.fade,
@@ -2702,7 +2705,8 @@ class _AddProductState extends State<AddProduct> {
                             }
                             return ListTile(
                               title: Text(
-                                messageDecoderWithEmoji(discount.name) ??
+                                messageDecoderWithEmoji(
+                                        getDiscountDisplayName(discount)) ??
                                     discount.merchant ??
                                     "",
                                 softWrap: false,
@@ -3093,5 +3097,16 @@ class _AddProductState extends State<AddProduct> {
         fontWeight: FontWeight.w700,
       ),
     );
+  }
+
+  String getDiscountDisplayName(DiscountModel? discount) {
+    String name = '';
+    if (discount?.type?.toValue() == "percentage") {
+      name = '${discount?.name} (${discount?.value}%)';
+    } else {
+      name =
+          '${discount?.name} (${discount?.value}${worldCurrencies[userBloc?.user.currency]})';
+    }
+    return name;
   }
 }

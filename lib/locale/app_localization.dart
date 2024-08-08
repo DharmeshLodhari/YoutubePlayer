@@ -601,9 +601,9 @@ class AppLocalization {
     );
   }
 
-  String get refundRequest {
+  String get requestRefund {
     return Intl.message(
-      "Refund Request",
+      "Request Refund",
       name: "refundRequest",
     );
   }
@@ -1322,6 +1322,13 @@ class AppLocalization {
     return Intl.message(
       "Deal of the day",
       name: "DealsOfTheDay",
+    );
+  }
+
+  String get newArrivals {
+    return Intl.message(
+      "New Arrivals",
+      name: "NewArrivals",
     );
   }
 

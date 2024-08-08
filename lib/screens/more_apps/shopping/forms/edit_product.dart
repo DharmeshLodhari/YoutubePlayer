@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
@@ -2789,7 +2790,8 @@ class _EditProductState extends State<EditProduct> {
         dense: true,
         title: Text(
           selectedDiscount != null
-              ? messageDecoderWithEmoji(selectedDiscount?.name) ??
+              ? messageDecoderWithEmoji(
+                      getDiscountDisplayName(selectedDiscount)) ??
                   selectedDiscount?.merchant ??
                   ""
               : "",
@@ -2810,6 +2812,17 @@ class _EditProductState extends State<EditProduct> {
         },
       ),
     );
+  }
+
+  String getDiscountDisplayName(DiscountModel? discount) {
+    String name = '';
+    if (discount?.type?.toValue() == "percentage") {
+      name = '${discount?.name} (${discount?.value}%)';
+    } else {
+      name =
+          '${discount?.name} (${discount?.value}${worldCurrencies[userBloc?.user.currency]})';
+    }
+    return name;
   }
 
   void discountAndroidSheet() {
@@ -2855,7 +2868,8 @@ class _EditProductState extends State<EditProduct> {
                           child: ListTile(
                             dense: true,
                             title: Text(
-                              messageDecoderWithEmoji(discount.name) ??
+                              messageDecoderWithEmoji(
+                                      getDiscountDisplayName(discount)) ??
                                   discount.merchant ??
                                   "",
                               overflow: TextOverflow.fade,
@@ -2888,7 +2902,8 @@ class _EditProductState extends State<EditProduct> {
                       }
                       return ListTile(
                         title: Text(
-                          messageDecoderWithEmoji(discount.name) ??
+                          messageDecoderWithEmoji(
+                                  getDiscountDisplayName(discount)) ??
                               discount.merchant ??
                               "",
                           softWrap: false,

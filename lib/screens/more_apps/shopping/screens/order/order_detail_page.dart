@@ -926,7 +926,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
 
   Widget _buildRequestRefund() {
     return RoundedBorderButton(
-      title: AppLocalization.of(context)!.refundRequest,
+      title: AppLocalization.of(context)!.requestRefund,
       onTap: () {
         if ((order?.totalPrice ?? 0) > 0) {
           showRequestRefundDialog();
@@ -939,7 +939,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
 
   Widget _buildRefundPayment() {
     return RoundedBorderButton(
-      title: "Refund Payment",
+      title: "Refund",
       onTap: () {
         acceptPaymentRequestAlert();
       },
@@ -1018,7 +1018,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
         actionTwoTextColor: Colors.white,
         fontSize: 14,
         firstActionPrimary: false,
-        title: AppLocalization.of(context)!.refundRequest,
+        title: AppLocalization.of(context)!.requestRefund,
         description:
             'Will you like to send a refund request of ${worldCurrencies[order?.currency]}${moneyDisplayNormalizer(order?.totalPrice)} to this merchant?',
         actionOneText: 'No',
