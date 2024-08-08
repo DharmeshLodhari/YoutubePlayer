@@ -164,39 +164,43 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
                 child: Column(
                   children: [
                     ListView.builder(
-                      itemCount: shippingProcessBloc.packagesList.length,
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemBuilder: (BuildContext context, int index) {
-                        final BasketItem data = basketBloc.basketItems[index];
-
-                        if (data.item?.isProduct ?? false) {
-                          return PackageDetailTile(
-                              key: UniqueKey(),
-                              basketItem: data,
-                              onIncreaseQty: () {
-                                if (data.hasAddOns) {
-                                  confirmAddOnsDialog(data);
-                                } else {
-                                  basketBloc.increaseQty(
-                                    data: data,
-                                    currentUser: userBloc.user.convertToUser(),
-                                  );
-                                }
-                              },
-                              onDecreaseQty: () {
-                                basketBloc.decreaseQty(
-                                  data: data,
-                                  currentUser: userBloc.user.convertToUser(),
-                                );
-                              },
-                              isSharedCart: false,
-                              packageDetailsModel:
-                                  shippingProcessBloc.packagesList[index],
-                              index: index);
-                        }
-                      },
-                    ),
+                        itemCount: shippingProcessBloc.packagesList.length,
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemBuilder: (BuildContext context, int index) {
+                          // final BasketItem data = basketBloc.basketItems[index];
+                          if (index < basketBloc.basketItems.length) {
+                            final BasketItem data =
+                                basketBloc.basketItems[index];
+                            if (data.item?.isProduct ?? false) {
+                              return PackageDetailTile(
+                                  key: UniqueKey(),
+                                  basketItem: data,
+                                  onIncreaseQty: () {
+                                    if (data.hasAddOns) {
+                                      confirmAddOnsDialog(data);
+                                    } else {
+                                      basketBloc.increaseQty(
+                                        data: data,
+                                        currentUser:
+                                            userBloc.user.convertToUser(),
+                                      );
+                                    }
+                                  },
+                                  onDecreaseQty: () {
+                                    basketBloc.decreaseQty(
+                                      data: data,
+                                      currentUser:
+                                          userBloc.user.convertToUser(),
+                                    );
+                                  },
+                                  isSharedCart: false,
+                                  packageDetailsModel:
+                                      shippingProcessBloc.packagesList[index],
+                                  index: index);
+                            }
+                          }
+                        }),
                     const SizedBox(height: 10.0),
                     if (shippingProcessBloc.isAllShippingProcessCompleted() ==
                             true &&

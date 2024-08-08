@@ -5,6 +5,7 @@ import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/models/package_details_model.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/basket_item_model.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
+import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/utils.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
@@ -73,7 +74,11 @@ class PackageDetailTile extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
             child: GestureDetector(
               onTap: () {
-                _buildConfirmOrderDetailsBottomSheet(context);
+                if (shippingProcessBloc
+                        .packagesList[index].isShippingProcessCompleted ==
+                    true) {
+                  _buildConfirmOrderDetailsBottomSheet(context);
+                }
               },
               child: Column(
                 children: [
@@ -199,23 +204,55 @@ class PackageDetailTile extends StatelessWidget {
   }
 
   Widget _buildDeliveryBy() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Column(
       children: [
-        Text(
-          "Delivery By",
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: black,
-            fontFamily: "Inter",
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              "Delivery By",
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: black,
+                fontFamily: "Inter",
+              ),
+            ),
+            Icon(
+              Icons.arrow_forward_ios_rounded,
+              color: black,
+              size: 15,
+            )
+          ],
+        ),
+        Container(
+          height: 100,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(5),
+            color: Colors.green,
+          ),
+          child: Row(
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(10.0),
+                child: CachedNetworkImage(
+                  height: 50,
+                  width: 50,
+                  imageUrl: shippingProcessBloc.packagesList.first.variants
+                          ?.getCoverImage() ??
+                      defaultImage,
+                  colorBlendMode: BlendMode.darken,
+                  fit: BoxFit.contain,
+                  errorWidget: productAndServiceErrorWidget,
+                  filterQuality: FilterQuality.high,
+                  placeholder: (context, url) => product?.cover == null
+                      ? const Icon(Icons.widgets)
+                      : CircularLoadingIndicator(),
+                ),
+              ),
+            ],
           ),
         ),
-        Icon(
-          Icons.arrow_forward_ios_rounded,
-          color: black,
-          size: 15,
-        )
       ],
     );
   }
@@ -284,10 +321,10 @@ class PackageDetailTile extends StatelessWidget {
   }
 
   String getOrderNote(BuildContext context) {
-    // if (product?.description == "") {
-    return "${AppLocalization.of(context)?.noSpecialNoteAttached} !!";
-    // }
-    // return product?.description ?? "";
+    if (shippingProcessBloc.packagesList.first.note == "") {
+      return "${AppLocalization.of(context)?.noSpecialNoteAttached} !!";
+    }
+    return shippingProcessBloc.packagesList.first.note ?? "";
   }
 
   Future<void> showEditNoteDialog(BuildContext context) async {
@@ -328,7 +365,7 @@ class PackageDetailTile extends StatelessWidget {
           return;
         },
         rightButtonOnPressed: () async {
-          addNote();
+          addNote(context);
           return;
         });
     if (result != null && result == true) {
@@ -336,18 +373,11 @@ class PackageDetailTile extends StatelessWidget {
     }
   }
 
-  void addNote() async {
-    // await _auth
-    //     .updateOrderNote(noteDetails, order?.id.toString() ?? "")
-    //     .then((value) {
-    //   if (value) {
-    //     setState(() {
-    //       order?.note = noteDetails;
-    //       Navigator.pop(context);
-    //     });
-    //   }
-    // });
+  void addNote(BuildContext context) async {
+    shippingProcessBloc.packagesList.first.note = noteDetails;
+    Navigator.pop(context);
   }
+
   Widget _buildTotal() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -367,7 +397,7 @@ class PackageDetailTile extends StatelessWidget {
               ),
               TextSpan(
                 text:
-                    'Add ${worldCurrencies[product?.currency] ?? "NGN"}${moneyDisplayNormalizer(int.parse(product?.variantModels?.first.price ?? "0"))}',
+                    'Add ${worldCurrencies[product?.currency] ?? "NGN"}${_getFormattedPrice()}',
                 style: TextStyle(
                   color: blackFont,
                   fontWeight: FontWeight.bold,
@@ -382,6 +412,16 @@ class PackageDetailTile extends StatelessWidget {
         _buildSaveButton(),
       ],
     );
+  }
+
+  String _getFormattedPrice() {
+    if (product?.variantModels != null &&
+        (product?.variantModels?.isNotEmpty ?? false)) {
+      return moneyDisplayNormalizer(
+          int.parse(product?.variantModels?.first.price ?? "0"));
+    } else {
+      return moneyDisplayNormalizer(int.parse(getTotalPrice()));
+    }
   }
 
   Widget _buildSaveButton() {
@@ -559,7 +599,8 @@ class PackageDetailTile extends StatelessWidget {
     String color = '';
     String size = '';
 
-    if (basketItem?.variants?.first != null) {
+    if (basketItem?.variants != null &&
+        (basketItem?.variants?.isNotEmpty ?? false)) {
       final String variantColor = basketItem?.variants?.first.colour ?? '';
       final String variantSize = basketItem?.variants?.first.value ?? '';
 
@@ -571,6 +612,7 @@ class PackageDetailTile extends StatelessWidget {
         size = variantSize;
       }
     }
+
     final List<String> names = [];
 
     if (basketItem?.hasAddOns ?? false) {
@@ -597,7 +639,7 @@ class PackageDetailTile extends StatelessWidget {
                     product?.pricePercentageChange != 0.0 ||
                 basketItem?.variants != null))
           _buildPricePercentageChanges(),
-        if (concatenatedText != "") ...[
+        if (concatenatedText.isNotEmpty) ...[
           Text(
             "Adds-ons : $concatenatedText",
             maxLines: 3,
@@ -868,8 +910,7 @@ class PackageDetailTile extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  moneyDisplayNormalizer(basketBloc.getTotalPrice()),
-                  // moneyDisplayNormalizer(packageDetailsModel.totalPrice ?? 0),
+                  moneyDisplayNormalizer(packageDetailsModel.totalPrice ?? 0),
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
