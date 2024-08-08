@@ -11,7 +11,6 @@ import 'package:Slydo/screens/more_apps/user_profile/forms/add_edit_shipping_add
 import 'package:Slydo/screens/more_apps/user_profile/models/discount/discount_model.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/cache_manager.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -3108,23 +3107,23 @@ class _EditProductState extends State<EditProduct> {
   Widget productAddOns() {
     return GestureDetector(
       onTap: () async {
-        //disable click if variant is not empty
-        // if (productVariantList.isNotEmpty) {
-        //   return;
+        // //disable click if variant is not empty
+        // // if (productVariantList.isNotEmpty) {
+        // //   return;
+        // // }
+        //
+        // final result = await Navigator.of(context)
+        //     .pushNamed(Routes.PRODUCT_ADD_ON_LIST, arguments: {
+        //   'productId': productId,
+        //   'isForCheckboxSelection': true,
+        // });
+        //
+        // // Handle the result (map) received from PRODUCT_ADD_ON_LIST
+        // if (result != null && result is List<AddOns>) {
+        //   //save the add-on details
+        //   productAddOnsList = result;
+        //   if (mounted) setState(() {});
         // }
-
-        final result = await Navigator.of(context)
-            .pushNamed(Routes.PRODUCT_ADD_ON_LIST, arguments: {
-          'productId': productId,
-          'isForCheckboxSelection': true,
-        });
-
-        // Handle the result (map) received from PRODUCT_ADD_ON_LIST
-        if (result != null && result is List<AddOns>) {
-          //save the add-on details
-          productAddOnsList = result;
-          if (mounted) setState(() {});
-        }
       },
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -3133,7 +3132,8 @@ class _EditProductState extends State<EditProduct> {
             'Add Product Add-ons',
             maxLines: 1,
             style: TextStyle(
-                color: productVariantList.isNotEmpty ? darkGrey : navyBlue,
+                // color: productVariantList.isNotEmpty ? darkGrey : navyBlue,
+                color: darkGrey,
                 fontWeight: FontWeight.w500,
                 fontFamily: "Inter",
                 fontSize: 14),

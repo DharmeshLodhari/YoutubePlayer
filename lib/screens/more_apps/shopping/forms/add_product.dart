@@ -2918,22 +2918,22 @@ class _AddProductState extends State<AddProduct> {
     return GestureDetector(
       onTap: () async {
         //disable click if variant is not empty
-        if (productVariantList.isNotEmpty) {
-          return;
-        }
-
-        final result = await Navigator.of(context)
-            .pushNamed(Routes.PRODUCT_ADD_ON_LIST, arguments: {
-          'productId': '',
-          'isForCheckboxSelection': true,
-        });
-
-        // Handle the result (map) received from PRODUCT_ADD_ON_LIST
-        if (result != null && result is List<AddOns>) {
-          //save the add-on details
-          productAddOnsList = result;
-          if (mounted) setState(() {});
-        }
+        // if (productVariantList.isNotEmpty) {
+        //   return;
+        // }
+        //
+        // final result = await Navigator.of(context)
+        //     .pushNamed(Routes.PRODUCT_ADD_ON_LIST, arguments: {
+        //   'productId': '',
+        //   'isForCheckboxSelection': true,
+        // });
+        //
+        // // Handle the result (map) received from PRODUCT_ADD_ON_LIST
+        // if (result != null && result is List<AddOns>) {
+        //   //save the add-on details
+        //   productAddOnsList = result;
+        //   if (mounted) setState(() {});
+        // }
       },
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -2942,7 +2942,8 @@ class _AddProductState extends State<AddProduct> {
             'Add Product Add-ons',
             maxLines: 1,
             style: TextStyle(
-                color: productVariantList.isNotEmpty ? darkGrey : navyBlue,
+                // color: productVariantList.isNotEmpty ? darkGrey : navyBlue,
+                color: darkGrey,
                 fontWeight: FontWeight.w500,
                 fontFamily: "Inter",
                 fontSize: 14),

@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/models/shared_cart_model.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/Picture.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/basket_item_model.dart';
@@ -528,11 +527,6 @@ class Product extends PurchasableItem {
   }
 
   String getPriceRange() {
-    if (priceRange != null && priceRange != "0") {
-      final String? price = priceRange?.replaceAll(
-          " - ", " - ${worldCurrencies[currency] ?? "NGN"}");
-      return price ?? "0";
-    }
     final int realPrice = getProductRealPrice();
     return realPrice.toString();
   }
