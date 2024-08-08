@@ -74,11 +74,11 @@ class PackageDetailTile extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
             child: GestureDetector(
               onTap: () {
-                if (shippingProcessBloc
-                        .packagesList[index].isShippingProcessCompleted ==
-                    true) {
-                  _buildConfirmOrderDetailsBottomSheet(context);
-                }
+                // if (shippingProcessBloc
+                //         .packagesList[index].isShippingProcessCompleted ==
+                //     true) {
+                _buildConfirmOrderDetailsBottomSheet(context);
+                // }
               },
               child: Column(
                 children: [
@@ -112,7 +112,7 @@ class PackageDetailTile extends StatelessWidget {
         return FractionallySizedBox(
           heightFactor: 0.8,
           child: Container(
-            color: Colors.white,
+            color: lightGrey,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
               child: Column(
@@ -126,7 +126,7 @@ class PackageDetailTile extends StatelessWidget {
                   ),
                   _buildItemCount(),
                   _getConfirmOrderDetails(context),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 20),
                   _buildDeliveryBy(),
                   const SizedBox(height: 10),
                   _buildNotes(context),
@@ -225,29 +225,36 @@ class PackageDetailTile extends StatelessWidget {
             )
           ],
         ),
+        const SizedBox(height: 10),
         Container(
-          height: 100,
+          height: 110,
+          padding: const EdgeInsets.only(bottom: 5, left: 5),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(5),
-            color: Colors.green,
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.5),
+                spreadRadius: 0.2,
+                offset: const Offset(0, 0.5), // changes position of shadow
+              ),
+            ],
           ),
-          child: Row(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(10.0),
-                child: CachedNetworkImage(
-                  height: 50,
-                  width: 50,
-                  imageUrl: shippingProcessBloc.packagesList.first.variants
-                          ?.getCoverImage() ??
-                      defaultImage,
-                  colorBlendMode: BlendMode.darken,
-                  fit: BoxFit.contain,
-                  errorWidget: productAndServiceErrorWidget,
-                  filterQuality: FilterQuality.high,
-                  placeholder: (context, url) => product?.cover == null
-                      ? const Icon(Icons.widgets)
-                      : CircularLoadingIndicator(),
+              ListTile(
+                leading: _buildImageDelivery(),
+                title: _buildDeliveryTitle(),
+                subtitle: _buildDescription(),
+                trailing: _buildPriceWidget(),
+              ),
+              Text(
+                "Delivery Time 2-3 days",
+                style: TextStyle(
+                  fontSize: 14,
+                  color: black,
+                  fontFamily: "Inter",
                 ),
               ),
             ],
@@ -285,6 +292,7 @@ class PackageDetailTile extends StatelessWidget {
             ),
           ],
         ),
+        const SizedBox(height: 10),
         Container(
           height: 100,
           decoration: BoxDecoration(
@@ -1067,5 +1075,81 @@ class PackageDetailTile extends StatelessWidget {
           fit: BoxFit.fill,
         );
     }
+  }
+
+  Widget _buildImageDelivery() {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(10.0),
+      child: CachedNetworkImage(
+        height: 50,
+        width: 50,
+        imageUrl:
+            shippingProcessBloc.packagesList.first.variants?.getCoverImage() ??
+                defaultImage,
+        colorBlendMode: BlendMode.darken,
+        fit: BoxFit.contain,
+        errorWidget: productAndServiceErrorWidget,
+        filterQuality: FilterQuality.high,
+        placeholder: (context, url) => product?.cover == null
+            ? const Icon(Icons.widgets)
+            : CircularLoadingIndicator(),
+      ),
+    );
+  }
+
+  Widget _buildDeliveryTitle() {
+    return Text(
+      "DHL",
+      style: TextStyle(
+        fontSize: 14,
+        fontWeight: FontWeight.w600,
+        color: black,
+        fontFamily: "Inter",
+      ),
+    );
+  }
+
+  Widget _buildDescription() {
+    return Text(
+      "Delivery Time 2-3 days",
+      style: TextStyle(
+        fontSize: 14,
+        color: black,
+        fontFamily: "Inter",
+      ),
+    );
+  }
+
+  Widget _buildPriceWidget() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        Text(
+          " ${worldCurrencies[product?.currency] ?? ""}${shippingProcessBloc.packagesList.first.variants?.price ?? "0"}",
+          style: TextStyle(
+            fontSize: 14,
+            color: black,
+            fontFamily: "Inter",
+          ),
+        ),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(5),
+            color: greyBorderColor,
+          ),
+          child: Text(
+            "No Tracking activity",
+            style: TextStyle(
+              color: black,
+              fontSize: 10,
+              fontWeight: FontWeight.w600,
+              fontFamily: "Inter",
+            ),
+          ),
+        ),
+      ],
+    );
   }
 }

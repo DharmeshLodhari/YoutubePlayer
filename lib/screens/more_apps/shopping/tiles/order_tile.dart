@@ -13,7 +13,6 @@ import 'package:Slydo/screens/more_apps/shopping/tiles/order_detail_item_tile_ne
 import 'package:Slydo/screens/more_apps/shopping/widget/outline_border_button.dart';
 import 'package:Slydo/screens/more_apps/shopping/widget/rounded_border_button.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
-import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 import 'package:Slydo/services/location_service.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
