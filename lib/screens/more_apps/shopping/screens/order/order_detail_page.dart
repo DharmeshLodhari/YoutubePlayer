@@ -722,7 +722,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   }
 
   Widget _buildOrderDetails() {
-    final DateFormat dateFormat = DateFormat("MMMM dd, yyyy");
+    final DateFormat dateFormat = DateFormat("MMMM dd, yyyy, h:mm a");
     final DateTime dateTime = DateTime.parse(order?.createdAt.toString() ?? "");
     final String date = dateFormat.format(dateTime);
 

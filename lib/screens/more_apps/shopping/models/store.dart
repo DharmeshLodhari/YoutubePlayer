@@ -2153,9 +2153,7 @@ class Order {
         ? null
         : DateTime.parse(object["updated_at"]);
     date = object["date"] == null ? null : DateTime.parse(object["date"]);
-    orderItems = (object['order_items'] as List)
-        .map((item) => OrderItem.fromJson(item))
-        .toList();
+    orderItems = orderItemFromJSON(object['order_items']);
 
     if (object["item"] != null &&
         object["item"] is Map &&
@@ -2183,6 +2181,26 @@ class Order {
     refundPaymentId = object["refund_payment_id"];
     deliveryDatetime = object["delivery_datetime"] ?? object["created_at"];
     customerContactNumber = object["customer_contact_number"];
+  }
+
+  List<OrderItem> orderItemFromJSON(List ordersItemsList) {
+    final List<OrderItem> myListOfOrders = [];
+    for (var item in ordersItemsList) {
+      if (item['item']['variants'] != null &&
+          item['item']['variants'].isNotEmpty &&
+          item['item']['variants'].length > 1) {
+        for (var variant in item['item']['variants']) {
+          item['item']['variants'] = [variant];
+          item['qty'] = variant['quantity'];
+          final orderItem = OrderItem.fromJson(item);
+          myListOfOrders.add(orderItem);
+        }
+      } else {
+        final orderItem = OrderItem.fromJson(item);
+        myListOfOrders.add(orderItem);
+      }
+    }
+    return myListOfOrders;
   }
 
   //todo: invetiget deprecating this function or delete this function
