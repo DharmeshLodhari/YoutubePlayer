@@ -142,20 +142,27 @@ class _OrderTileState extends State<OrderTile> {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          Flexible(
-                            child: _buildFirstButton(),
-                          ),
-                          const SizedBox(
-                            width: 7,
-                          ),
-                          Flexible(
-                            child: _buildSecondButton(),
-                          ),
-                          const SizedBox(
-                            width: 7,
-                          ),
-                          Flexible(
-                            child: _buildThirdButton(),
+                          Wrap(
+                            children: [
+                              Flex(
+                                direction: Axis.horizontal,
+                                children: [_buildFirstButton()],
+                              ),
+                              const SizedBox(
+                                width: 5,
+                              ),
+                              Flex(
+                                direction: Axis.horizontal,
+                                children: [_buildSecondButton()],
+                              ),
+                              const SizedBox(
+                                width: 5,
+                              ),
+                              Flex(
+                                direction: Axis.horizontal,
+                                children: [_buildThirdButton()],
+                              )
+                            ],
                           )
                         ],
                       ),

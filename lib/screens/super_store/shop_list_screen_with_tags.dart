@@ -685,7 +685,10 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
         fit: BoxFit.fill,
       );
     } else {
-      return Image.asset(defaultProductAndServiceImage);
+      return Image.asset(
+        "assets/images/default_image/discount_defualt_image.jpeg",
+        fit: BoxFit.fill,
+      );
     }
   }
 

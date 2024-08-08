@@ -355,6 +355,7 @@ class _OrderTileForMultipleProductNewState
     extends State<OrderTileForMultipleProductNew> {
   List<OrderItem>? orderItem;
   List<String> listOfUrls = [];
+  int maxVisibleImages = 3;
 
   @override
   void initState() {
@@ -381,30 +382,81 @@ class _OrderTileForMultipleProductNewState
 
   @override
   Widget build(BuildContext context) {
+    final num hiddenImageCount = listOfUrls.length > maxVisibleImages
+        ? listOfUrls.length - maxVisibleImages
+        : 0;
+
     try {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 10.0),
         child: SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: Row(
-            children: listOfUrls.map((String url) {
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: CachedNetworkImage(
-                    height: 70,
-                    width: 70,
-                    imageUrl: url,
-                    colorBlendMode: BlendMode.darken,
-                    fit: BoxFit.fill,
-                    errorWidget: (context, url, error) => Icon(Icons.error),
-                    filterQuality: FilterQuality.high,
-                    placeholder: (context, url) => CircularProgressIndicator(),
+            children: [
+              for (int i = 0;
+                  i < maxVisibleImages && i < listOfUrls.length;
+                  i++)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: CachedNetworkImage(
+                      height: 70,
+                      width: 70,
+                      imageUrl: listOfUrls[i],
+                      colorBlendMode: BlendMode.darken,
+                      fit: BoxFit.fill,
+                      errorWidget: (context, url, error) =>
+                          const Icon(Icons.error),
+                      filterQuality: FilterQuality.high,
+                      placeholder: (context, url) =>
+                          const CircularProgressIndicator(),
+                    ),
                   ),
                 ),
-              );
-            }).toList(),
+              if (hiddenImageCount > 0)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: CachedNetworkImage(
+                          height: 70,
+                          width: 70,
+                          imageUrl: listOfUrls[maxVisibleImages],
+                          colorBlendMode: BlendMode.darken,
+                          fit: BoxFit.fill,
+                          errorWidget: (context, url, error) =>
+                              const Icon(Icons.error),
+                          filterQuality: FilterQuality.high,
+                          placeholder: (context, url) =>
+                              const CircularProgressIndicator(),
+                        ),
+                      ),
+                      Container(
+                        height: 70,
+                        width: 70,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: Colors.black.withOpacity(0.5),
+                        ),
+                        child: Center(
+                          child: Text(
+                            "+$hiddenImageCount",
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+            ],
           ),
         ),
       );
