@@ -256,7 +256,8 @@ class _OrderTileForProductNewState extends State<OrderTileForProductNew> {
 
   int? getOriginalPriceFromDiscount() {
     if (product?.variantModels?.isNotEmpty ?? false) {
-      if (product?.variantModels?.first.originalPrice != null) {
+      if (product?.variantModels?.first.originalPrice != null &&
+          product?.originalPrice != 0) {
         return product?.variantModels?.first.originalPrice;
       } // return the original price since server calculated the price
 
