@@ -721,8 +721,25 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     );
   }
 
+  Widget getPaymentDate() {
+    String paymentDate = "Awaiting Payment";
+    if (order?.transactionId != null) {
+      for (Map<String, dynamic> statusMap in order?.statusTimeStamp ?? []) {
+        if (statusMap.keys.first == "Awaiting Payment") {
+          paymentDate = statusMap.values.first;
+          paymentDate = formatPickupDateTime(paymentDate);
+        }
+      }
+    }
+
+    return OrderDetailRow(
+      title: 'Payment Date',
+      detail: paymentDate,
+    );
+  }
+
   Widget _buildOrderDetails() {
-    final DateFormat dateFormat = DateFormat("MMMM dd, yyyy");
+    final DateFormat dateFormat = DateFormat("MMMM dd, yyyy, h:mm a");
     final DateTime dateTime = DateTime.parse(order?.createdAt.toString() ?? "");
     final String date = dateFormat.format(dateTime);
 
@@ -761,10 +778,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
             title: 'Order Placed on',
             detail: date,
           ),
-          OrderDetailRow(
-            title: 'Payment Date',
-            detail: date,
-          ),
+          getPaymentDate(),
           OrderDetailRow(
             title: 'Payment Method',
             detail: order?.paymentType ?? "",
@@ -926,7 +940,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
 
   Widget _buildRequestRefund() {
     return RoundedBorderButton(
-      title: AppLocalization.of(context)!.refundRequest,
+      title: AppLocalization.of(context)!.requestRefund,
       onTap: () {
         if ((order?.totalPrice ?? 0) > 0) {
           showRequestRefundDialog();
@@ -939,7 +953,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
 
   Widget _buildRefundPayment() {
     return RoundedBorderButton(
-      title: "Refund Payment",
+      title: "Refund",
       onTap: () {
         acceptPaymentRequestAlert();
       },
@@ -1018,7 +1032,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
         actionTwoTextColor: Colors.white,
         fontSize: 14,
         firstActionPrimary: false,
-        title: AppLocalization.of(context)!.refundRequest,
+        title: AppLocalization.of(context)!.requestRefund,
         description:
             'Will you like to send a refund request of ${worldCurrencies[order?.currency]}${moneyDisplayNormalizer(order?.totalPrice)} to this merchant?',
         actionOneText: 'No',

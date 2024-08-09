@@ -211,6 +211,16 @@ class _OrderTileState extends State<OrderTile> {
           order?.refundPaymentId == null &&
           order?.status != "Awaiting Payment") {
         return _buildRequestRefund();
+      } else if (order?.status == "Canceled" &&
+          order?.refundPaymentRequestId != null &&
+          order?.refundPaymentId != null &&
+          order?.status != "Awaiting Payment") {
+        return _buildViewRefund();
+      } else if (order?.status == "Canceled" &&
+          order?.refundPaymentRequestId != null &&
+          order?.refundPaymentId == null &&
+          order?.status != "Awaiting Payment") {
+        return _buildViewRefundPaymentRequest();
       } else {
         if (order?.notAllowedStatusUpdate.contains(order?.status) == false) {
           return _buildUpdateStatus();
@@ -227,6 +237,16 @@ class _OrderTileState extends State<OrderTile> {
           order?.refundPaymentId == null &&
           order?.status != "Awaiting Payment") {
         return _buildRefundPayment();
+      } else if (order?.status == "Canceled" &&
+          order?.refundPaymentRequestId != null &&
+          order?.refundPaymentId != null &&
+          order?.status != "Awaiting Payment") {
+        return _buildViewRefund();
+      } else if (order?.status == "Canceled" &&
+          order?.refundPaymentRequestId != null &&
+          order?.refundPaymentId == null &&
+          order?.status != "Awaiting Payment") {
+        return _buildViewRefundPaymentRequest();
       }
       if (order?.notAllowedStatusUpdate.contains(order?.status) == false) {
         return _buildUpdateStatus();
@@ -274,7 +294,7 @@ class _OrderTileState extends State<OrderTile> {
 
   Widget _buildRequestRefund() {
     return RoundedBorderButton(
-      title: AppLocalization.of(context)!.refundRequest,
+      title: AppLocalization.of(context)!.requestRefund,
       onTap: () {
         if ((order?.totalPrice ?? 0) > 0) {
           showRequestRefundDialog();
@@ -287,10 +307,32 @@ class _OrderTileState extends State<OrderTile> {
 
   Widget _buildRefundPayment() {
     return RoundedBorderButton(
-      title: "Refund Payment",
+      title: "Refund",
       onTap: () {
         acceptPaymentRequestAlert();
       },
+    );
+  }
+
+  Widget _buildViewRefund() {
+    return RoundedBorderButton(
+      title: 'View Refund',
+      onTap: () {
+        Navigator.of(context).pushNamed(Routes.TRANSACTION_DETAIL,
+            arguments: {'transaction': order?.refundPaymentId});
+      },
+      isLoading: isAPILoading,
+    );
+  }
+
+  Widget _buildViewRefundPaymentRequest() {
+    return RoundedBorderButton(
+      title: 'View Refund Request',
+      onTap: () {
+        Navigator.of(context).pushNamed(Routes.PAYMENT_REQUEST_DETAIL,
+            arguments: {'paymentRequest': order?.refundPaymentRequestId});
+      },
+      isLoading: isAPILoading,
     );
   }
 
@@ -511,7 +553,7 @@ class _OrderTileState extends State<OrderTile> {
         actionTwoTextColor: Colors.white,
         fontSize: 14,
         firstActionPrimary: false,
-        title: AppLocalization.of(context)!.refundRequest,
+        title: AppLocalization.of(context)!.requestRefund,
         description:
             'Will you like to send a refund request of ${worldCurrencies[order?.currency]}${moneyDisplayNormalizer(order?.totalPrice)} to this merchant?',
         actionOneText: 'No',

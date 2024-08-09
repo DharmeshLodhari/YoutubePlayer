@@ -2767,7 +2767,7 @@ String formatPickupDateTime(String? pickupDateTimeString) {
 
     final DateTime dateTime = DateTime.parse(cleanedDateTimeString);
 
-    final DateFormat dateFormatter = DateFormat('MMMM d, yyyy');
+    final DateFormat dateFormatter = DateFormat('MMMM dd, yyyy');
     final DateFormat timeFormatter = DateFormat('h:mm a');
 
     final String formattedDate = dateFormatter.format(dateTime);

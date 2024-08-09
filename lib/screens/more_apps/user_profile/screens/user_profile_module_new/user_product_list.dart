@@ -623,7 +623,7 @@ class _UserProductListState extends State<UserProductList> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Text(
-                AppLocalization.of(context)?.dealOfTheDay ?? "",
+                AppLocalization.of(context)?.newArrivals ?? "",
                 style: TextStyle(
                   fontWeight: FontWeight.w700,
                   fontSize: 14,

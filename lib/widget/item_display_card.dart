@@ -696,8 +696,13 @@ class _DisplayProductState extends State<DisplayProduct> {
     String price;
     if (widget.product.priceRange != null && widget.product.priceRange != "0") {
       price = widget.product.priceRange ?? "0";
-      price = price.replaceAll(
-          " - ", " - ${worldCurrencies[widget.product.currency] ?? "NGN"}");
+      if (widget.product.priceRange?.contains('-') == false) {
+        price =
+            moneyDisplayNormalizer(int.parse(widget.product.priceRange ?? "0"));
+      } else {
+        price = price.replaceAll(
+            " - ", " - ${worldCurrencies[widget.product.currency] ?? "NGN"}");
+      }
     } else {
       price = moneyDisplayNormalizer(
         int.parse(

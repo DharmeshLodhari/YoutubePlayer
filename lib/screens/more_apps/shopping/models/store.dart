@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/models/shared_cart_model.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/Picture.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/basket_item_model.dart';
@@ -298,6 +297,7 @@ class Product extends PurchasableItem {
   List<String>? searchKeywords;
   bool isChecked = false;
   String? priceRange;
+  int? originalPrice;
 
   // DateTime? createdAt;
   // bool? enableInSuperstore;
@@ -376,6 +376,7 @@ class Product extends PurchasableItem {
     this.searchKeywords,
     this.isChecked = false,
     this.priceRange,
+    this.originalPrice,
     // this.itemUpdatedBy,
     // this.qty,
   });
@@ -526,11 +527,6 @@ class Product extends PurchasableItem {
   }
 
   String getPriceRange() {
-    if (priceRange != null && priceRange != "0") {
-      final String? price = priceRange?.replaceAll(
-          " - ", " - ${worldCurrencies[currency] ?? "NGN"}");
-      return price ?? "0";
-    }
     final int realPrice = getProductRealPrice();
     return realPrice.toString();
   }
@@ -678,6 +674,7 @@ class Product extends PurchasableItem {
           ? <String>[]
           : List<String>.from(object["search_keywords"].map((x) => x)),
       priceRange: object["price_range"] ?? "0",
+      originalPrice: object["original_price"] ?? 0,
       // itemUpdatedBy: object["item_updated_by"] == null
       //     ? null
       //     : UserFollowers.fromJson(object["item_updated_by"]),
@@ -1042,6 +1039,7 @@ class Variant {
   String? discountType;
   bool? discountIsActive;
   int? discountedPrice;
+  int? originalPrice;
 
   Variant({
     this.id,
@@ -1065,6 +1063,7 @@ class Variant {
     this.discountType,
     this.discountIsActive,
     this.discountedPrice,
+    this.originalPrice,
   });
 
   Map toMap() {
@@ -1110,6 +1109,7 @@ class Variant {
       "discount_type": discountType,
       "discount_is_active": discountIsActive,
       "discounted_price": discountedPrice,
+      "original_price": originalPrice,
     };
   }
 
@@ -1173,6 +1173,7 @@ class Variant {
       discountType: object['discount_type'],
       discountIsActive: object['discount_is_active'],
       discountedPrice: cleanObjects(object, "discounted_price"),
+      originalPrice: cleanObjects(object, "original_price"),
     );
   }
 
@@ -2146,9 +2147,7 @@ class Order {
         ? null
         : DateTime.parse(object["updated_at"]);
     date = object["date"] == null ? null : DateTime.parse(object["date"]);
-    orderItems = (object['order_items'] as List)
-        .map((item) => OrderItem.fromJson(item))
-        .toList();
+    orderItems = orderItemFromJSON(object['order_items']);
 
     if (object["item"] != null &&
         object["item"] is Map &&
@@ -2176,6 +2175,26 @@ class Order {
     refundPaymentId = object["refund_payment_id"];
     deliveryDatetime = object["delivery_datetime"] ?? object["created_at"];
     customerContactNumber = object["customer_contact_number"];
+  }
+
+  List<OrderItem> orderItemFromJSON(List ordersItemsList) {
+    final List<OrderItem> myListOfOrders = [];
+    for (var item in ordersItemsList) {
+      if (item['item']['variants'] != null &&
+          item['item']['variants'].isNotEmpty &&
+          item['item']['variants'].length > 1) {
+        for (var variant in item['item']['variants']) {
+          item['item']['variants'] = [variant];
+          item['qty'] = variant['quantity'];
+          final orderItem = OrderItem.fromJson(item);
+          myListOfOrders.add(orderItem);
+        }
+      } else {
+        final orderItem = OrderItem.fromJson(item);
+        myListOfOrders.add(orderItem);
+      }
+    }
+    return myListOfOrders;
   }
 
   //todo: invetiget deprecating this function or delete this function

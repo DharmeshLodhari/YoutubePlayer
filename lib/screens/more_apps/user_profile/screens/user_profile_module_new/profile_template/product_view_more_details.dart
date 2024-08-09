@@ -206,7 +206,7 @@ class _ProductViewMoreDetailsState extends State<ProductViewMoreDetails> {
         },
       ),
       title: Text(
-        AppLocalization.of(context)?.dealOfTheDay ?? "",
+        AppLocalization.of(context)?.newArrivals ?? "",
         // messageDecoderWithEmoji(widget.appTitle ?? "") ?? "",
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),

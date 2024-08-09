@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/main.dart';

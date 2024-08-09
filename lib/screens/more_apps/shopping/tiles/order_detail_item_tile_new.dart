@@ -43,7 +43,7 @@ class _OrderTileForProductNewState extends State<OrderTileForProductNew> {
               const SizedBox(
                 width: 15,
               ),
-              getProductDetails(),
+              Expanded(child: getProductDetails()),
             ],
           ),
         ),
@@ -137,7 +137,7 @@ class _OrderTileForProductNewState extends State<OrderTileForProductNew> {
             color: lightBlackFont,
             fontFamily: "Inter",
             fontWeight: FontWeight.w600,
-            fontSize: 14,
+            fontSize: 12,
           ),
         ),
       ],
@@ -160,8 +160,7 @@ class _OrderTileForProductNewState extends State<OrderTileForProductNew> {
               ),
             ),
             Text(
-              moneyDisplayNormalizer(
-                  int.parse(product?.variantModels?.first.price ?? "0")),
+              moneyDisplayNormalizer(getOriginalPriceFromDiscount()),
               style: TextStyle(
                 fontWeight: FontWeight.w400,
                 fontSize: 12,
@@ -188,7 +187,7 @@ class _OrderTileForProductNewState extends State<OrderTileForProductNew> {
             ),
           ),
           Text(
-            moneyDisplayNormalizer(product?.price),
+            moneyDisplayNormalizer(getOriginalPriceFromDiscount()),
             style: TextStyle(
               fontWeight: FontWeight.w400,
               fontSize: 12,
@@ -253,6 +252,45 @@ class _OrderTileForProductNewState extends State<OrderTileForProductNew> {
       return "${product!.price.toString().substring(0, 5)}..";
     }
     return product!.price.toString();
+  }
+
+  int? getOriginalPriceFromDiscount() {
+    if (product?.variantModels?.isNotEmpty ?? false) {
+      if (product?.variantModels?.first.originalPrice != null &&
+          product?.variantModels?.first.originalPrice != 0) {
+        return product?.variantModels?.first.originalPrice;
+      } // return the original price since server calculated the price
+
+      // get the original price from a product that has a discount already apply to the price
+      if (product?.variantModels?.first.discountValue != null) {
+        if (product?.variantModels?.first.discountType == "price") {
+          return (int.parse(product?.variantModels?.first.price ?? "0")) +
+              (product?.variantModels?.first.discountValue ?? 0);
+        } else {
+          return (int.parse(product?.variantModels?.first.price ?? "0")) *
+              100 ~/
+              (100 - (product?.variantModels?.first.discountValue ?? 0));
+        }
+      }
+      return int.parse(product?.variantModels?.first.price ?? "0");
+    } else {
+      // get the original price, if product have discount
+      if (product?.originalPrice != null && product?.originalPrice != 0) {
+        return product?.originalPrice;
+      } // return the original price since server calculated the price
+
+      // get the original price from a product that has a discount already apply to the price
+      if (product?.discountValue != null) {
+        if (product?.discountType == "price") {
+          return (product?.price ?? 0) + (product?.discountValue ?? 0);
+        } else {
+          return (product?.price ?? 0) *
+              100 ~/
+              (100 - (product?.discountValue ?? 0));
+        }
+      }
+      return product?.price;
+    }
   }
 
   Widget getPriceWidget() {

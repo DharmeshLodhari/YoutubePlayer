@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
@@ -260,7 +261,8 @@ class _AddProductVariantState extends State<AddProductVariant> {
         dense: true,
         title: Text(
           selectedDiscount != null
-              ? messageDecoderWithEmoji(selectedDiscount?.name) ??
+              ? messageDecoderWithEmoji(
+                      getDiscountDisplayName(selectedDiscount)) ??
                   selectedDiscount?.merchant ??
                   ""
               : "",
@@ -325,7 +327,8 @@ class _AddProductVariantState extends State<AddProductVariant> {
                                 child: ListTile(
                                   dense: true,
                                   title: Text(
-                                    messageDecoderWithEmoji(discount.name) ??
+                                    messageDecoderWithEmoji(
+                                            getDiscountDisplayName(discount)) ??
                                         discount.merchant ??
                                         "",
                                     overflow: TextOverflow.fade,
@@ -358,7 +361,8 @@ class _AddProductVariantState extends State<AddProductVariant> {
                             }
                             return ListTile(
                               title: Text(
-                                messageDecoderWithEmoji(discount.name) ??
+                                messageDecoderWithEmoji(
+                                        getDiscountDisplayName(discount)) ??
                                     discount.merchant ??
                                     "",
                                 softWrap: false,
@@ -1003,6 +1007,17 @@ class _AddProductVariantState extends State<AddProductVariant> {
       showToast(message: error.toString());
       // backValue = false;
     });
+  }
+
+  String getDiscountDisplayName(DiscountModel? discount) {
+    String name = '';
+    if (discount?.type?.toValue() == "percentage") {
+      name = '${discount?.name} (${discount?.value}%)';
+    } else {
+      name =
+          '${discount?.name} (${worldCurrencies[userBloc?.user.currency]}${discount?.value})';
+    }
+    return name;
   }
 
   @override

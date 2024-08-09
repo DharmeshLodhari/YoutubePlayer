@@ -571,7 +571,7 @@ class ShopListScreenState extends State<ShopListScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Text(
-                AppLocalization.of(context)?.dealOfTheDay ?? "",
+                AppLocalization.of(context)?.newArrivals ?? "",
                 style: TextStyle(
                   fontWeight: FontWeight.w700,
                   fontSize: 14,
