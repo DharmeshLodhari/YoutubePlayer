@@ -721,6 +721,23 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     );
   }
 
+  Widget getPaymentDate() {
+    String paymentDate = "Awaiting Payment";
+    if (order?.transactionId != null) {
+      for (Map<String, dynamic> statusMap in order?.statusTimeStamp ?? []) {
+        if (statusMap.keys.first == "Awaiting Payment") {
+          paymentDate = statusMap.values.first;
+          paymentDate = formatPickupDateTime(paymentDate);
+        }
+      }
+    }
+
+    return OrderDetailRow(
+      title: 'Payment Date',
+      detail: paymentDate,
+    );
+  }
+
   Widget _buildOrderDetails() {
     final DateFormat dateFormat = DateFormat("MMMM dd, yyyy, h:mm a");
     final DateTime dateTime = DateTime.parse(order?.createdAt.toString() ?? "");
@@ -761,10 +778,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
             title: 'Order Placed on',
             detail: date,
           ),
-          OrderDetailRow(
-            title: 'Payment Date',
-            detail: date,
-          ),
+          getPaymentDate(),
           OrderDetailRow(
             title: 'Payment Method',
             detail: order?.paymentType ?? "",

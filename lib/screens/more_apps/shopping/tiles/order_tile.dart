@@ -13,7 +13,6 @@ import 'package:Slydo/screens/more_apps/shopping/tiles/order_detail_item_tile_ne
 import 'package:Slydo/screens/more_apps/shopping/widget/outline_border_button.dart';
 import 'package:Slydo/screens/more_apps/shopping/widget/rounded_border_button.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
-import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 import 'package:Slydo/services/location_service.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -212,6 +211,16 @@ class _OrderTileState extends State<OrderTile> {
           order?.refundPaymentId == null &&
           order?.status != "Awaiting Payment") {
         return _buildRequestRefund();
+      } else if (order?.status == "Canceled" &&
+          order?.refundPaymentRequestId != null &&
+          order?.refundPaymentId != null &&
+          order?.status != "Awaiting Payment") {
+        return _buildViewRefund();
+      } else if (order?.status == "Canceled" &&
+          order?.refundPaymentRequestId != null &&
+          order?.refundPaymentId == null &&
+          order?.status != "Awaiting Payment") {
+        return _buildViewRefundPaymentRequest();
       } else {
         if (order?.notAllowedStatusUpdate.contains(order?.status) == false) {
           return _buildUpdateStatus();
@@ -228,6 +237,16 @@ class _OrderTileState extends State<OrderTile> {
           order?.refundPaymentId == null &&
           order?.status != "Awaiting Payment") {
         return _buildRefundPayment();
+      } else if (order?.status == "Canceled" &&
+          order?.refundPaymentRequestId != null &&
+          order?.refundPaymentId != null &&
+          order?.status != "Awaiting Payment") {
+        return _buildViewRefund();
+      } else if (order?.status == "Canceled" &&
+          order?.refundPaymentRequestId != null &&
+          order?.refundPaymentId == null &&
+          order?.status != "Awaiting Payment") {
+        return _buildViewRefundPaymentRequest();
       }
       if (order?.notAllowedStatusUpdate.contains(order?.status) == false) {
         return _buildUpdateStatus();
@@ -292,6 +311,28 @@ class _OrderTileState extends State<OrderTile> {
       onTap: () {
         acceptPaymentRequestAlert();
       },
+    );
+  }
+
+  Widget _buildViewRefund() {
+    return RoundedBorderButton(
+      title: 'View Refund',
+      onTap: () {
+        Navigator.of(context).pushNamed(Routes.TRANSACTION_DETAIL,
+            arguments: {'transaction': order?.refundPaymentId});
+      },
+      isLoading: isAPILoading,
+    );
+  }
+
+  Widget _buildViewRefundPaymentRequest() {
+    return RoundedBorderButton(
+      title: 'View Refund Request',
+      onTap: () {
+        Navigator.of(context).pushNamed(Routes.PAYMENT_REQUEST_DETAIL,
+            arguments: {'paymentRequest': order?.refundPaymentRequestId});
+      },
+      isLoading: isAPILoading,
     );
   }
 

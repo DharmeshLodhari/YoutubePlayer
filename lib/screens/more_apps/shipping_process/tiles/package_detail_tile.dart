@@ -57,73 +57,94 @@ class PackageDetailTile extends StatelessWidget {
     );
   }
 
+  // List getShoppingCartItemByAddressId(String addressId) {
+  //   var cartItems = [];
+  //   for (var item in basketBloc.basketItems) {
+  //     if (item.item?.isProduct ?? false) {
+  //       if ((item.item as Product).addressId == addressId) {
+  //         cartItems.add(item);
+  //       }
+  //     } else {
+  //       // if((item.item as Service).addressId == addressId) {
+  //       //   cartItems.add(item);
+  //       // }
+  //     }
+  //   }
+  //   return cartItems;
+  // }
+
   Widget _buildPackageDetail(BuildContext context) {
-    return ListTile(
-      contentPadding: EdgeInsets.zero,
-      leading: _buildImage(),
-      title: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            packageDetailsModel.merchant ?? "",
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: black,
-              fontFamily: "Inter",
-            ),
-          ),
-        ],
-      ),
-      subtitle: Text(
-        "Package 1 (${packageDetailsModel.totalItems} item)",
-        style: TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w500,
-          color: black,
-          fontFamily: "Inter",
-        ),
-      ),
-      trailing: SizedBox(
-        width: 100,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+    return GestureDetector(
+      onTap: () {
+        // getShoppingCartItemByAddressId("AD-I44QNOKY8EUF9MHU");
+      },
+      child: ListTile(
+        contentPadding: EdgeInsets.zero,
+        leading: _buildImage(),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            if (shippingProcessBloc
-                    .packagesList[index].isShippingProcessCompleted ==
-                true)
-              Checkbox(
-                visualDensity:
-                    const VisualDensity(horizontal: -4, vertical: -4),
-                checkColor: Colors.white,
-                activeColor: navyBlue,
-                value: true,
-                shape: const CircleBorder(),
-                onChanged: (bool? value) {},
+            Text(
+              packageDetailsModel.merchant ?? "",
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: black,
+                fontFamily: "Inter",
               ),
-            Row(
-              children: [
-                Text(
-                  "${worldCurrencies[userBloc.user.currency]}",
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: black,
-                    fontFamily: "Inter",
-                  ),
-                ),
-                Text(
-                  moneyDisplayNormalizer(packageDetailsModel.totalPrice ?? 0),
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: black,
-                    fontFamily: "Inter",
-                  ),
-                ),
-              ],
             ),
           ],
+        ),
+        subtitle: Text(
+          "Package ${index + 1} (${packageDetailsModel.totalItems} item)",
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+            color: black,
+            fontFamily: "Inter",
+          ),
+        ),
+        trailing: SizedBox(
+          width: 100,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (shippingProcessBloc
+                      .packagesList[index].isShippingProcessCompleted ==
+                  true)
+                Checkbox(
+                  visualDensity:
+                      const VisualDensity(horizontal: -4, vertical: -4),
+                  checkColor: Colors.white,
+                  activeColor: navyBlue,
+                  value: true,
+                  shape: const CircleBorder(),
+                  onChanged: (bool? value) {},
+                ),
+              Row(
+                children: [
+                  Text(
+                    "${worldCurrencies[userBloc.user.currency]}",
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: black,
+                      fontFamily: "Inter",
+                    ),
+                  ),
+                  Text(
+                    moneyDisplayNormalizer(packageDetailsModel.totalPrice ?? 0),
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: black,
+                      fontFamily: "Inter",
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

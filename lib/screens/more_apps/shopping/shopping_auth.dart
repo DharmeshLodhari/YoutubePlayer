@@ -128,6 +128,46 @@ class ShoppingAuthService extends AuthService {
     }
   }
 
+  // Get cart item by address id
+  Future<Map<String, dynamic>?> getCartItemsByAddressId(
+      String? next, String? previous,
+      {String? addressId}) async {
+    String url = '';
+    if (next == null) {
+      return null;
+    }
+    if (next == "") {
+      url =
+          "${AppConfig.baseUrl}/api/v1/shopping-cart/items-by-address/$addressId";
+    } else {
+      url = getSecureUrl(url: next);
+    }
+
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers);
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      final jsonData = json.decode(response.body);
+
+      final List<ShoppingProduct> shoppingProducts = [];
+      for (var item in jsonData["results"]) {
+        shoppingProducts.add(ShoppingProduct.fromJson(item));
+      }
+
+      final Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": shoppingProducts
+      };
+
+      return result;
+    }
+
+    final jsonData = json.decode(response.body);
+    return Future.error("$jsonData");
+  }
+
   // List the  item with pagination
   Future<Map<String, dynamic>?> searchShoppingProducts(
       String searchedText, String? next, String? previous) async {
