@@ -70,26 +70,16 @@ class PackageDetailTile extends StatelessWidget {
                     ),
                   )
                 : decorateBox(),
-            // decoration: decorateBox(),
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-            child: GestureDetector(
-              onTap: () {
-                // if (shippingProcessBloc
-                //         .packagesList[index].isShippingProcessCompleted ==
-                //     true) {
-                _buildConfirmOrderDetailsBottomSheet(context);
-                // }
-              },
-              child: Column(
-                children: [
-                  _buildPackageDetail(context),
-                  const SizedBox(
-                    height: 5.0,
-                  ),
-                  if (shippingProcessBloc.isPaymentSuccessful == false)
-                    _buildShippingDetail(context),
-                ],
-              ),
+            child: Column(
+              children: [
+                _buildPackageDetail(context),
+                const SizedBox(
+                  height: 5.0,
+                ),
+                if (shippingProcessBloc.isPaymentSuccessful == false)
+                  _buildShippingDetail(context),
+              ],
             ),
           ),
         ),
@@ -126,12 +116,8 @@ class PackageDetailTile extends StatelessWidget {
                   ),
                   _buildItemCount(),
                   _getConfirmOrderDetails(context),
-                  const SizedBox(height: 20),
-                  _buildDeliveryBy(),
-                  const SizedBox(height: 10),
-                  _buildNotes(context),
-                  const SizedBox(height: 10),
-                  _buildTotal(),
+                  // const SizedBox(height: 20),
+                  // _buildTotal(),
                 ],
               ),
             ),
@@ -164,7 +150,6 @@ class PackageDetailTile extends StatelessWidget {
           leading: getLeading(),
           title: getTitle(),
           subtitle: getSubtitle(context),
-          trailing: getTrailing(),
           onTap: () {
             Navigator.pushNamed(context, Routes.PRODUCT,
                 arguments: {"product": product});
@@ -201,189 +186,6 @@ class PackageDetailTile extends StatelessWidget {
         fontFamily: "Inter",
       ),
     );
-  }
-
-  Widget _buildDeliveryBy() {
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              "Delivery By",
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: black,
-                fontFamily: "Inter",
-              ),
-            ),
-            Icon(
-              Icons.arrow_forward_ios_rounded,
-              color: black,
-              size: 15,
-            )
-          ],
-        ),
-        const SizedBox(height: 10),
-        Container(
-          height: 110,
-          padding: const EdgeInsets.only(bottom: 5, left: 5),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(5),
-            color: Colors.white,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.5),
-                spreadRadius: 0.2,
-                offset: const Offset(0, 0.5), // changes position of shadow
-              ),
-            ],
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ListTile(
-                leading: _buildImageDelivery(),
-                title: _buildDeliveryTitle(),
-                subtitle: _buildDescription(),
-                trailing: _buildPriceWidget(),
-              ),
-              Text(
-                "Delivery Time 2-3 days",
-                style: TextStyle(
-                  fontSize: 14,
-                  color: black,
-                  fontFamily: "Inter",
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildNotes(BuildContext context) {
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              AppLocalization.of(context)?.note ?? "",
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: blackFont,
-                fontFamily: "Inter",
-              ),
-            ),
-            // if (userBloc.user.userName != order?.merchant)
-            GestureDetector(
-              onTap: () {
-                showEditNoteDialog(context);
-              },
-              child: SvgPicture.asset(
-                'edit_icon'.toSVG(),
-                width: 20,
-                height: 20,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 10),
-        Container(
-          height: 100,
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(
-                  color: darkGrey.withOpacity(
-                    .4,
-                  ),
-                  width: .5)),
-          padding: const EdgeInsets.all(10),
-          child: Row(
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 5),
-                  Text(
-                    getOrderNote(context),
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                      color: blackFont,
-                      fontFamily: "Inter",
-                    ),
-                    maxLines: 5,
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  String getOrderNote(BuildContext context) {
-    if (shippingProcessBloc.packagesList.first.note == "") {
-      return "${AppLocalization.of(context)?.noSpecialNoteAttached} !!";
-    }
-    return shippingProcessBloc.packagesList.first.note ?? "";
-  }
-
-  Future<void> showEditNoteDialog(BuildContext context) async {
-    final result = await showDialogBoxWithInput(
-        context: context,
-        actionOneTextColor: blackFont,
-        actionOneBgColor: greyBorderColor,
-        actionTwoTextColor: white,
-        actionTwoBgColor: navyBlue,
-        actionOneText: AppLocalization.of(context)!.cancel,
-        actionTwoText: AppLocalization.of(context)!.save,
-        firstActionPrimary: false,
-        content: Column(
-          children: [
-            Text("Edit Note",
-                style: TextStyle(
-                  color: blackFont,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16.0,
-                  fontFamily: "Inter",
-                ),
-                textAlign: TextAlign.center),
-            Container(
-              margin: const EdgeInsets.symmetric(vertical: 20),
-              child: CustomizedTextFormField(
-                keyboardType: TextInputType.multiline,
-                maxLines: 4,
-                labelText: 'Note',
-                onChanged: (val) {
-                  noteDetails = val;
-                },
-              ),
-            ),
-          ],
-        ),
-        leftButtonOnPressed: () async {
-          Navigator.pop(context);
-          return;
-        },
-        rightButtonOnPressed: () async {
-          addNote(context);
-          return;
-        });
-    if (result != null && result == true) {
-      Navigator.of(context).pop(true);
-    }
-  }
-
-  void addNote(BuildContext context) async {
-    shippingProcessBloc.packagesList.first.note = noteDetails;
-    Navigator.pop(context);
   }
 
   Widget _buildTotal() {
@@ -532,52 +334,6 @@ class PackageDetailTile extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-
-  Widget getTrailing() {
-    return Container(
-      width: 100,
-      color: Colors.transparent,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          RoundedBackgroundIcon(
-            backgroundColor: iconBtnGrey,
-            icon: Icon(
-              SlydoAppIcon.minus,
-              color: blackFont,
-              size: 2,
-            ),
-            onTap: onDecreaseQty,
-          ),
-          const SizedBox(
-            width: 10,
-          ),
-          Text(
-            "${basketItem?.getQty()}",
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: blackFont,
-              fontFamily: "Inter",
-            ),
-          ),
-          const SizedBox(
-            width: 10,
-          ),
-          RoundedBackgroundIcon(
-            backgroundColor: iconBtnGrey,
-            icon: Icon(
-              SlydoAppIcon.plus,
-              color: blackFont,
-              size: 14, // Adjust the size as needed
-            ),
-            onTap: onIncreaseQty,
-          ),
-        ],
-      ),
     );
   }
 
@@ -862,73 +618,95 @@ class PackageDetailTile extends StatelessWidget {
     }
   }
 
+  List getShoppingCartItemByAddressId(String addressId) {
+    final cartItems = [];
+    for (var item in basketBloc.basketItems) {
+      if (item.item?.isProduct ?? false) {
+        if ((item.item as Product).addressId == addressId) {
+          cartItems.add(item);
+        }
+      } else {
+        // if((item.item as Service).addressId == addressId) {
+        //   cartItems.add(item);
+        // }
+      }
+    }
+    return cartItems;
+  }
+
   Widget _buildPackageDetail(BuildContext context) {
-    return ListTile(
-      contentPadding: EdgeInsets.zero,
-      leading: _buildImage(),
-      title: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            packageDetailsModel.merchant ?? "",
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: black,
-              fontFamily: "Inter",
-            ),
-          ),
-        ],
-      ),
-      subtitle: Text(
-        "Package 1 (${packageDetailsModel.totalItems} item)",
-        style: TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w500,
-          color: black,
-          fontFamily: "Inter",
-        ),
-      ),
-      trailing: SizedBox(
-        width: 100,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+    return GestureDetector(
+      onTap: () {
+        // getShoppingCartItemByAddressId(packageDetailsModel.addressId ?? "");
+        _buildConfirmOrderDetailsBottomSheet(context);
+      },
+      child: ListTile(
+        contentPadding: EdgeInsets.zero,
+        leading: _buildImage(),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            if (shippingProcessBloc
-                    .packagesList[index].isShippingProcessCompleted ==
-                true)
-              Checkbox(
-                visualDensity:
-                    const VisualDensity(horizontal: -4, vertical: -4),
-                checkColor: Colors.white,
-                activeColor: navyBlue,
-                value: true,
-                shape: const CircleBorder(),
-                onChanged: (bool? value) {},
+            Text(
+              packageDetailsModel.merchant ?? "",
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: black,
+                fontFamily: "Inter",
               ),
-            Row(
-              children: [
-                Text(
-                  "${worldCurrencies[userBloc.user.currency]}",
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: black,
-                    fontFamily: "Inter",
-                  ),
-                ),
-                Text(
-                  moneyDisplayNormalizer(packageDetailsModel.totalPrice ?? 0),
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: black,
-                    fontFamily: "Inter",
-                  ),
-                ),
-              ],
             ),
           ],
+        ),
+        subtitle: Text(
+          "Package 1 (${packageDetailsModel.totalItems} item)",
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+            color: black,
+            fontFamily: "Inter",
+          ),
+        ),
+        trailing: SizedBox(
+          width: 100,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (shippingProcessBloc
+                      .packagesList[index].isShippingProcessCompleted ==
+                  true)
+                Checkbox(
+                  visualDensity:
+                      const VisualDensity(horizontal: -4, vertical: -4),
+                  checkColor: Colors.white,
+                  activeColor: navyBlue,
+                  value: true,
+                  shape: const CircleBorder(),
+                  onChanged: (bool? value) {},
+                ),
+              Row(
+                children: [
+                  Text(
+                    "${worldCurrencies[userBloc.user.currency]}",
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: black,
+                      fontFamily: "Inter",
+                    ),
+                  ),
+                  Text(
+                    moneyDisplayNormalizer(packageDetailsModel.totalPrice ?? 0),
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: black,
+                      fontFamily: "Inter",
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
