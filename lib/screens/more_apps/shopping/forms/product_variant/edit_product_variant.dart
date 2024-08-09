@@ -331,7 +331,7 @@ class _EditProductVariantState extends State<EditProductVariant> {
       name = '${discount?.name} (${discount?.value}%)';
     } else {
       name =
-          '${discount?.name} (${discount?.value}${worldCurrencies[userBloc?.user.currency]})';
+          '${discount?.name} (${worldCurrencies[userBloc?.user.currency]}${discount?.value})';
     }
     return name;
   }
