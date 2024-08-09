@@ -165,6 +165,21 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
           fontFamily: "Inter",
         ),
       ),
+      actions: [
+        GestureDetector(
+          onTap: () {
+            _buildBottomPrint();
+          },
+          child: Padding(
+            padding: const EdgeInsets.only(right: 12),
+            child: Image.asset(
+              "assets/images/appIcon/printer.png",
+              height: 24,
+              width: 24,
+            ),
+          ),
+        )
+      ],
     );
   }
 
@@ -1617,6 +1632,41 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
           ),
       ],
     );
+  }
+
+  void _buildBottomPrint() {
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext context) {
+          return Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: TextButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, Routes.ORDER_PREVIEW);
+                    },
+                    child: const Text(
+                      'Preview',
+                      style: TextStyle(
+                        color: Colors.blue,
+                        fontSize: 16.0,
+                      ),
+                    ),
+                  ),
+                ),
+                const Divider(),
+                ListTile(
+                  title: const Text('Print'),
+                  onTap: () {},
+                ),
+              ],
+            ),
+          );
+        });
   }
 }
 
