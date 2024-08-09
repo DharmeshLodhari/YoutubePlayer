@@ -281,6 +281,20 @@ class ShoppingCartTileForProduct extends StatelessWidget {
         const SizedBox(
           height: 2,
         ),
+        if (concatenatedText != "") ...[
+          Text(
+            "Adds-ons : $concatenatedText",
+            maxLines: 3,
+            style: TextStyle(
+                fontSize: 10,
+                color: blackFont,
+                fontWeight: FontWeight.w400,
+                fontFamily: "Inter"),
+          ),
+          const SizedBox(
+            height: 2,
+          ),
+        ],
         getProductPriceWidget(),
         const SizedBox(
           height: 2,
@@ -297,17 +311,6 @@ class ShoppingCartTileForProduct extends StatelessWidget {
         const SizedBox(
           height: 2,
         ),
-        if (concatenatedText != "") ...[
-          Text(
-            "Adds-ons : $concatenatedText",
-            maxLines: 3,
-            style: TextStyle(
-                fontSize: 10,
-                color: blackFont,
-                fontWeight: FontWeight.w400,
-                fontFamily: "Inter"),
-          ),
-        ],
       ],
     );
   }

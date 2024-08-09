@@ -6,10 +6,15 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/auth/shipping_process_auth.dart';
+import 'package:Slydo/screens/more_apps/shipping_process/models/shared_cart_model.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/tiles/package_detail_tile.dart';
+import 'package:Slydo/screens/more_apps/shopping/models/basket_item_model.dart';
+import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
+import 'package:Slydo/screens/more_apps/shopping/tiles/all_active_cart.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_passcode_sheet/bottomsheet_passcode.dart';
+import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/material.dart';
@@ -159,16 +164,23 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
                 child: Column(
                   children: [
                     ListView.builder(
-                      itemCount: shippingProcessBloc.packagesList.length,
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemBuilder: (BuildContext context, int index) {
-                        return PackageDetailTile(
-                            packageDetailsModel:
-                                shippingProcessBloc.packagesList[index],
-                            index: index);
-                      },
-                    ),
+                        itemCount: shippingProcessBloc.packagesList.length,
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemBuilder: (BuildContext context, int index) {
+                          // final BasketItem data = basketBloc.basketItems[index];
+                          if (index < basketBloc.basketItems.length) {
+                            final BasketItem data =
+                                basketBloc.basketItems[index];
+                            if (data.item?.isProduct ?? false) {
+                              return PackageDetailTile(
+                                  key: UniqueKey(),
+                                  packageDetailsModel:
+                                      shippingProcessBloc.packagesList[index],
+                                  index: index);
+                            }
+                          }
+                        }),
                     const SizedBox(height: 10.0),
                     if (shippingProcessBloc.isAllShippingProcessCompleted() ==
                             true &&
@@ -185,6 +197,31 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
             _buildPayButton(context),
         ],
       ),
+    );
+  }
+
+  Future<void> confirmAddOnsDialog(BasketItem data) async {
+    await showDialogBox(
+      context: context,
+      actionOneBgColor: greyBorderColor,
+      actionOneTextColor: blackFont,
+      actionTwoBgColor: naturalGreen,
+      actionTwoTextColor: Colors.white,
+      title: "Repeat last used Add-ons?",
+      actionOneText: "I'll choose",
+      actionTwoText: "Repeat last",
+      leftButtonOnPressed: () {
+        Navigator.pushNamed(context, Routes.PRODUCT, arguments: {
+          "product": data.item as Product,
+          "type": "changeAddons"
+        });
+      },
+      rightButtonOnPressed: () {
+        basketBloc.increaseQty(
+          data: data,
+          currentUser: userBloc.user.convertToUser(),
+        );
+      },
     );
   }
 
