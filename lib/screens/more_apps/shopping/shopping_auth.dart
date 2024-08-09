@@ -149,9 +149,9 @@ class ShoppingAuthService extends AuthService {
     if (response.statusCode == 200 || response.statusCode == 201) {
       final jsonData = json.decode(response.body);
 
-      final List<ShoppingProduct> shoppingProducts = [];
+      final List<Product> shoppingProducts = [];
       for (var item in jsonData["results"]) {
-        shoppingProducts.add(ShoppingProduct.fromJson(item));
+        shoppingProducts.add(Product.fromJson(item));
       }
 
       final Map<String, dynamic> result = {

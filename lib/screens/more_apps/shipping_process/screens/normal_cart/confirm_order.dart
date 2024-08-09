@@ -175,26 +175,6 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
                             if (data.item?.isProduct ?? false) {
                               return PackageDetailTile(
                                   key: UniqueKey(),
-                                  basketItem: data,
-                                  onIncreaseQty: () {
-                                    if (data.hasAddOns) {
-                                      confirmAddOnsDialog(data);
-                                    } else {
-                                      basketBloc.increaseQty(
-                                        data: data,
-                                        currentUser:
-                                            userBloc.user.convertToUser(),
-                                      );
-                                    }
-                                  },
-                                  onDecreaseQty: () {
-                                    basketBloc.decreaseQty(
-                                      data: data,
-                                      currentUser:
-                                          userBloc.user.convertToUser(),
-                                    );
-                                  },
-                                  isSharedCart: false,
                                   packageDetailsModel:
                                       shippingProcessBloc.packagesList[index],
                                   index: index);

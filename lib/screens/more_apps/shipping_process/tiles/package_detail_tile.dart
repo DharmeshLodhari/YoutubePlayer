@@ -2,26 +2,39 @@ import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/models/package_details_model.dart';
+import 'package:Slydo/screens/more_apps/shopping/models/basket_item_model.dart';
+import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
+import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class PackageDetailTile extends StatelessWidget {
-  PackageDetailTile(
-      {super.key, required this.packageDetailsModel, required this.index});
+  PackageDetailTile({
+    super.key,
+    required this.packageDetailsModel,
+    required this.index,
+    this.isSharedCart,
+  });
 
   final PackageDetailsModel packageDetailsModel;
   final int index;
   late ShippingProcessBloc shippingProcessBloc;
   late UserBloc userBloc;
-  late BasketBloc basketBloc;
+  final bool? isSharedCart;
+  List<Product> productList = [];
+  bool listEmpty = false;
+  bool productListLoading = false;
+  String? productNext = "";
+  String? productPrevious = "";
+  int? productCount = 0;
 
   @override
   Widget build(BuildContext context) {
     shippingProcessBloc = Provider.of<ShippingProcessBloc>(context);
     userBloc = Provider.of<UserBloc>(context);
-    basketBloc = Provider.of<BasketBloc>(context);
-    product = basketItem?.item as Product?;
     try {
       return GestureDetector(
         onTap: () {
@@ -62,44 +75,6 @@ class PackageDetailTile extends StatelessWidget {
     }
   }
 
-  void _buildConfirmOrderDetailsBottomSheet(BuildContext context) async {
-    showModalBottomSheet(
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(20),
-        ),
-      ),
-      isScrollControlled: true,
-      context: context,
-      builder: (context) {
-        return FractionallySizedBox(
-          heightFactor: 0.8,
-          child: Container(
-            color: lightGrey,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Expanded(child: _buildOrderName()),
-                      _buildCloseIcon(context),
-                    ],
-                  ),
-                  _buildItemCount(),
-                  _getConfirmOrderDetails(context),
-                  // const SizedBox(height: 20),
-                  // _buildTotal(),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
   Widget _buildCloseIcon(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
@@ -116,42 +91,49 @@ class PackageDetailTile extends StatelessWidget {
   }
 
   Widget _getConfirmOrderDetails(BuildContext context) {
-    return Column(
-      children: [
-        ListTile(
-          contentPadding: EdgeInsets.zero,
-          leading: getLeading(),
-          title: getTitle(),
-          subtitle: getSubtitle(context),
-          onTap: () {
-            Navigator.pushNamed(context, Routes.PRODUCT,
-                arguments: {"product": product});
-          },
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const SizedBox(),
-            Text(
-              "Subtotal",
-              style: TextStyle(
-                fontSize: 12,
-                color: darkGrey,
-                fontWeight: FontWeight.w600,
-                fontFamily: "Inter",
+    return Expanded(
+      child: ListView.builder(
+          itemCount: productList.length,
+          itemBuilder: (context, index) {
+            return Column(children: [
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: getLeading(index),
+                title: getTitle(index),
+                subtitle: getSubtitle(context, index),
+                onTap: () {
+                  Navigator.pushNamed(context, Routes.PRODUCT,
+                      arguments: {"product": productList[index]});
+                },
               ),
-            ),
-            const SizedBox(width: 60),
-            getSubTotalPriceWidget(),
-          ],
-        ),
-      ],
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const SizedBox(),
+                    Text(
+                      "Subtotal",
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: darkGrey,
+                        fontWeight: FontWeight.w600,
+                        fontFamily: "Inter",
+                      ),
+                    ),
+                    const SizedBox(width: 60),
+                    getSubTotalPriceWidget(index),
+                  ],
+                ),
+              ),
+            ]);
+          }),
     );
   }
 
   Widget _buildItemCount() {
     return Text(
-      "${packageDetailsModel.totalItems} Item",
+      "$productCount Item",
       style: TextStyle(
         fontSize: 14,
         fontWeight: FontWeight.w600,
@@ -161,142 +143,40 @@ class PackageDetailTile extends StatelessWidget {
     );
   }
 
-  Widget _buildTotal() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        RichText(
-          softWrap: true,
-          text: TextSpan(
-            text: 'Total :',
-            style: TextStyle(
-              color: blackFont,
-              fontSize: 16,
-              fontFamily: "Inter",
-            ),
-            children: [
-              const WidgetSpan(
-                child: SizedBox(width: 10),
-              ),
-              TextSpan(
-                text:
-                    'Add ${worldCurrencies[product?.currency] ?? "NGN"}${_getFormattedPrice()}',
-                style: TextStyle(
-                  color: blackFont,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                  fontFamily: "Inter",
-                ),
-              ),
-            ],
-          ),
-        ),
-        // Text("Total"),
-        _buildSaveButton(),
-      ],
-    );
-  }
-
-  String _getFormattedPrice() {
-    if (product?.variantModels != null &&
-        (product?.variantModels?.isNotEmpty ?? false)) {
-      return moneyDisplayNormalizer(
-          int.parse(product?.variantModels?.first.price ?? "0"));
-    } else {
-      return moneyDisplayNormalizer(int.parse(getTotalPrice()));
-    }
-  }
-
-  Widget _buildSaveButton() {
-    return TextButton(
-      style: ButtonStyle(
-        padding: const WidgetStatePropertyAll(
-          EdgeInsets.symmetric(horizontal: 22),
-        ),
-        shape: WidgetStatePropertyAll(
-          RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(5),
-          ),
-        ),
-        backgroundColor: WidgetStatePropertyAll(deepBlue),
-      ),
-      onPressed: () {},
-      child: Text(
-        "Save",
-        style: TextStyle(
-          color: white,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-    );
-  }
-
-  Widget getLeading() {
+  Widget getLeading(int index) {
     String? image;
 
-    image = product?.cover;
+    image = productList[index].cover;
 
-    if (basketItem?.hasVariant ?? false) {
-      image = basketItem?.variants?.first.getCoverImage() ?? product?.cover;
+    if (productList[index].variantModels?.isNotEmpty ?? false) {
+      image = productList[index].variantModels?.first.getCoverImage() ??
+          productList[index].cover;
     }
 
-    return isSharedCart == false
-        ? ClipRRect(
-            borderRadius: BorderRadius.circular(10.0),
-            child: CachedNetworkImage(
-              height: 50,
-              width: 50,
-              imageUrl: image ?? defaultImage,
-              colorBlendMode: BlendMode.darken,
-              fit: BoxFit.contain,
-              errorWidget: productAndServiceErrorWidget,
-              filterQuality: FilterQuality.high,
-              placeholder: (context, url) => product?.cover == null
-                  ? const Icon(Icons.widgets)
-                  : CircularLoadingIndicator(),
-            ),
-          )
-        : Stack(
-            children: [
-              Container(
-                height: 100,
-                padding: const EdgeInsets.only(top: 10, right: 25),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10.0),
-                  child: CachedNetworkImage(
-                    height: 50,
-                    width: 50,
-                    // imageUrl: widget.variant != null && widget.image!.isNotEmpty ? widget.image! : widget.item?.cover ?? defaultImage,
-                    imageUrl: image ?? defaultImage,
-                    colorBlendMode: BlendMode.darken,
-                    fit: BoxFit.contain,
-                    errorWidget: productAndServiceErrorWidget,
-                    filterQuality: FilterQuality.high,
-                    placeholder: (context, url) => product?.cover == null
-                        ? const Icon(Icons.widgets)
-                        : CircularLoadingIndicator(),
-                  ),
-                ),
-              ),
-              Positioned(
-                top: 0,
-                right: 0,
-                child: getMembersWidget(
-                    userImages: product?.variantModels?.isNotEmpty == true
-                        ? basketItem?.variants?.first
-                            .convertToUserFollowersList()
-                        : product?.convertToUserFollowersList()),
-              )
-            ],
-          );
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(10.0),
+      child: CachedNetworkImage(
+        height: 50,
+        width: 50,
+        imageUrl: image ?? defaultImage,
+        colorBlendMode: BlendMode.darken,
+        fit: BoxFit.contain,
+        errorWidget: productAndServiceErrorWidget,
+        filterQuality: FilterQuality.high,
+        placeholder: (context, url) => productList[index].cover == null
+            ? const Icon(Icons.widgets)
+            : CircularLoadingIndicator(),
+      ),
+    );
   }
 
-  Widget getTitle() {
+  Widget getTitle(int index) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          messageDecoderWithEmoji(appendStringDot(product?.name ?? "", 12)) ??
+          messageDecoderWithEmoji(
+                  appendStringDot(productList[index].name ?? "", 12)) ??
               "",
           maxLines: 1,
           style: TextStyle(
@@ -310,36 +190,40 @@ class PackageDetailTile extends StatelessWidget {
     );
   }
 
-  String getTotalPrice() {
+  String getTotalPrice(int index) {
     int totalPrice = 0;
     int addOnTotal = 0;
-    if (product?.isProduct ?? false) {
-      if (basketItem?.addOns != null) {
-        for (AddOns itemAddOn in basketItem?.addOns ?? []) {
+    if (productList[index].isProduct) {
+      if (productList[index].addOnsModels != null) {
+        for (AddOns itemAddOn in productList[index].addOnsModels ?? []) {
           for (var option in itemAddOn.options!) {
             addOnTotal += int.parse(option.price.toString()) * option.quantity;
           }
         }
-        final int priceQuantity =
-            (basketItem?.qty ?? 0) * (product?.getProductRealPrice() ?? 0);
+        final int priceQuantity = (productList[index].quantity ?? 0) *
+            getProductPrice(productList[index]);
         totalPrice += addOnTotal + priceQuantity;
+      } else if (productList[index].variantModels != null) {
+        totalPrice = (productList[index].variantModels?.first.quantity ?? 0) *
+            (getProductDiscountPrice(productList[index]) ?? 0);
       } else {
-        totalPrice = (basketItem?.qty ?? 0) *
-            (product?.getDiscountedPrice(basketItem?.variants?.first) ?? 0);
+        totalPrice = (productList[index].quantity ?? 0) *
+            (getProductDiscountPrice(productList[index]) ?? 0);
       }
     }
 
     return totalPrice.toString();
   }
 
-  Widget getSubtitle(BuildContext context) {
+  Widget getSubtitle(BuildContext context, int index) {
     String color = '';
     String size = '';
 
-    if (basketItem?.variants != null &&
-        (basketItem?.variants?.isNotEmpty ?? false)) {
-      final String variantColor = basketItem?.variants?.first.colour ?? '';
-      final String variantSize = basketItem?.variants?.first.value ?? '';
+    if (productList[index].variantModels?.isNotEmpty ?? false) {
+      final String variantColor =
+          productList[index].variantModels?.first.colour ?? '';
+      final String variantSize =
+          productList[index].variantModels?.first.value ?? '';
 
       if (variantColor.isNotEmpty) {
         color = variantColor;
@@ -349,11 +233,10 @@ class PackageDetailTile extends StatelessWidget {
         size = variantSize;
       }
     }
-
     final List<String> names = [];
 
-    if (basketItem?.hasAddOns ?? false) {
-      for (AddOns addOn in basketItem?.addOns ?? []) {
+    if (productList[index].addOnsModels?.isNotEmpty ?? false) {
+      for (AddOns addOn in productList[index].addOnsModels ?? []) {
         final List<String>? optionName =
             addOn.options?.map((e) => e.name ?? "").toList();
         names.addAll(optionName ?? []);
@@ -365,18 +248,10 @@ class PackageDetailTile extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        getSellerName(context),
-        if (color.isNotEmpty) getColor(color),
-        if (size.isNotEmpty) getSize(size),
-        getProductPriceWidget(),
-        getProductLinePriceWidget(),
-        if ((product?.discountedPrice != null &&
-                product?.discountedPrice != 0) ||
-            (product?.pricePercentageChange != null &&
-                    product?.pricePercentageChange != 0.0 ||
-                basketItem?.variants != null))
-          _buildPricePercentageChanges(),
-        if (concatenatedText.isNotEmpty) ...[
+        getSellerName(context, index),
+        if (color.isNotEmpty) getColor(color, index),
+        if (size.isNotEmpty) getSize(size, index),
+        if (concatenatedText != "") ...[
           Text(
             "Adds-ons : $concatenatedText",
             maxLines: 3,
@@ -387,17 +262,25 @@ class PackageDetailTile extends StatelessWidget {
                 fontFamily: "Inter"),
           ),
         ],
+        getProductPriceWidget(index),
+        getProductLinePriceWidget(index),
+        if ((productList[index].discountedPrice != null &&
+                productList[index].discountedPrice != 0) ||
+            (productList[index].pricePercentageChange != null &&
+                    productList[index].pricePercentageChange != 0.0 ||
+                productList[index].variantModels != null))
+          _buildPricePercentageChanges(index),
       ],
     );
   }
 
-  Widget getSubTotalPriceWidget() {
+  Widget getSubTotalPriceWidget(int index) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         Text(
-          worldCurrencies[product?.currency] ?? "",
+          worldCurrencies[productList[index].currency] ?? "",
           style: TextStyle(
               color: blackFont,
               fontFamily: "Inter",
@@ -405,7 +288,7 @@ class PackageDetailTile extends StatelessWidget {
               fontSize: 14),
         ),
         Text(
-          moneyDisplayNormalizer(int.parse(getTotalPrice())),
+          moneyDisplayNormalizer(int.parse(getTotalPrice(index))),
           style: TextStyle(
             color: blackFont,
             fontWeight: FontWeight.w600,
@@ -417,12 +300,12 @@ class PackageDetailTile extends StatelessWidget {
     );
   }
 
-  Widget getProductPriceWidget() {
+  Widget getProductPriceWidget(int index) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         Text(
-          worldCurrencies[product?.currency] ?? "",
+          worldCurrencies[productList[index].currency] ?? "",
           style: TextStyle(
               color: blackFont,
               fontFamily: "Inter",
@@ -431,7 +314,7 @@ class PackageDetailTile extends StatelessWidget {
         ),
         Text(
           moneyDisplayNormalizer(
-              product?.getDiscountedPrice(basketItem?.variants?.first) ?? 0),
+              getProductDiscountPrice(productList[index]) ?? 0),
           style: TextStyle(
             color: blackFont,
             fontWeight: FontWeight.w600,
@@ -443,9 +326,9 @@ class PackageDetailTile extends StatelessWidget {
     );
   }
 
-  Widget getSellerName(BuildContext context) {
+  Widget getSellerName(BuildContext context, int index) {
     return Text(
-      product?.seller ?? "",
+      productList[index].seller ?? "",
       style: TextStyle(
         fontSize: 12,
         color: darkGrey,
@@ -455,11 +338,11 @@ class PackageDetailTile extends StatelessWidget {
     );
   }
 
-  Widget getColor(String color) {
+  Widget getColor(String color, int index) {
     return Row(
       children: [
         Text(
-          "Color : $color",
+          "Color : ${messageDecoderWithEmoji(color)}",
           style: TextStyle(
             fontSize: 10,
             color: blackFont,
@@ -471,7 +354,7 @@ class PackageDetailTile extends StatelessWidget {
     );
   }
 
-  Widget getSize(String size) {
+  Widget getSize(String size, int index) {
     return Row(
       children: [
         Text(
@@ -487,13 +370,14 @@ class PackageDetailTile extends StatelessWidget {
     );
   }
 
-  Widget getProductLinePriceWidget() {
-    if (basketItem?.variants?.first != null) {
-      if ((product!.checkVariantDiscount(basketItem?.variants?.first))) {
+  Widget getProductLinePriceWidget(int index) {
+    if (productList[index].variantModels?.isNotEmpty ?? false) {
+      if (checkProductVariantDiscount(
+          productList[index].variantModels?.first)) {
         return Row(
           children: [
             Text(
-              worldCurrencies[product?.currency] ?? "NGN",
+              worldCurrencies[productList[index].currency] ?? "NGN",
               style: TextStyle(
                 fontFamily: "Inter",
                 fontWeight: FontWeight.w400,
@@ -503,8 +387,8 @@ class PackageDetailTile extends StatelessWidget {
               ),
             ),
             Text(
-              moneyDisplayNormalizer(
-                  int.parse(basketItem?.variants?.first.price ?? "0")),
+              moneyDisplayNormalizer(int.parse(
+                  productList[index].variantModels?.first.price ?? "0")),
               style: TextStyle(
                 fontWeight: FontWeight.w400,
                 fontSize: 12,
@@ -517,11 +401,11 @@ class PackageDetailTile extends StatelessWidget {
       } else {
         return const SizedBox.shrink();
       }
-    } else if (product?.checkProductDiscount() ?? false) {
+    } else if (checkProductDiscountOrNot(productList[index])) {
       return Row(
         children: [
           Text(
-            worldCurrencies[product?.currency] ?? "NGN",
+            worldCurrencies[productList[index].currency] ?? "NGN",
             style: TextStyle(
               fontFamily: "Inter",
               fontWeight: FontWeight.w400,
@@ -531,7 +415,7 @@ class PackageDetailTile extends StatelessWidget {
             ),
           ),
           Text(
-            moneyDisplayNormalizer(product?.price),
+            moneyDisplayNormalizer(productList[index].price),
             style: TextStyle(
               fontWeight: FontWeight.w400,
               fontSize: 12,
@@ -546,11 +430,12 @@ class PackageDetailTile extends StatelessWidget {
     }
   }
 
-  Widget _buildPricePercentageChanges() {
-    if (basketItem?.variants != null) {
-      if (product!.checkVariantDiscount(basketItem?.variants?.first)) {
+  Widget _buildPricePercentageChanges(int index) {
+    if (productList[index].variantModels?.isNotEmpty ?? false) {
+      if (checkProductVariantDiscount(
+          productList[index].variantModels?.first)) {
         return Text(
-          "-${basketItem?.variants?.first.discountType == "percentage" ? "${basketItem?.variants?.first.discountValue}% off" : worldCurrencies[basketItem?.variants?.first.currency ?? ""]! + moneyDisplayNormalizer(basketItem?.variants?.first.discountValue?.toInt()).toString()}",
+          "-${productList[index].variantModels?.first.discountType == "percentage" ? "${productList[index].variantModels?.first.discountValue}% off" : worldCurrencies[productList[index].variantModels?.first.currency ?? ""]! + moneyDisplayNormalizer(productList[index].variantModels?.first.discountValue?.toInt()).toString()}",
           style: TextStyle(
             color: naturalGreen,
             fontSize: 11,
@@ -561,11 +446,11 @@ class PackageDetailTile extends StatelessWidget {
       } else {
         return const SizedBox();
       }
-    } else if (product?.discountedPrice != null &&
-        product?.discountedPrice != 0) {
-      if (product?.checkProductDiscount() ?? false) {
+    } else if (productList[index].discountedPrice != null &&
+        productList[index].discountedPrice != 0) {
+      if (checkProductDiscountOrNot(productList[index])) {
         return Text(
-          "-${product?.discountType == "percentage" ? "${product?.discountValue}% off" : worldCurrencies[product?.currency ?? ""]! + moneyDisplayNormalizer(product?.discountValue?.toInt()).toString()}",
+          "-${productList[index].discountType == "percentage" ? "${productList[index].discountValue}% off" : worldCurrencies[productList[index].currency ?? ""]! + moneyDisplayNormalizer(productList[index].discountValue?.toInt()).toString()}",
           style: TextStyle(
             color: naturalGreen,
             fontSize: 11,
@@ -576,9 +461,9 @@ class PackageDetailTile extends StatelessWidget {
       } else {
         return const SizedBox();
       }
-    } else if (product?.pricePercentageChange != 0.0) {
+    } else if (productList[index].pricePercentageChange != 0.0) {
       return Text(
-        "${product?.pricePercentageChange!.toInt()}% off",
+        "${productList[index].pricePercentageChange!.toInt()}% off",
         style: TextStyle(
           color: naturalGreen,
           fontSize: 11,
@@ -591,114 +476,10 @@ class PackageDetailTile extends StatelessWidget {
     }
   }
 
-  List getShoppingCartItemByAddressId(String addressId) {
-    final cartItems = [];
-    for (var item in basketBloc.basketItems) {
-      if (item.item?.isProduct ?? false) {
-        if ((item.item as Product).addressId == addressId) {
-          cartItems.add(item);
-        }
-      } else {
-        // if((item.item as Service).addressId == addressId) {
-        //   cartItems.add(item);
-        // }
-      }
-    }
-    return cartItems;
-  }
-
-  // List getShoppingCartItemByAddressId(String addressId) {
-  //   var cartItems = [];
-  //   for (var item in basketBloc.basketItems) {
-  //     if (item.item?.isProduct ?? false) {
-  //       if ((item.item as Product).addressId == addressId) {
-  //         cartItems.add(item);
-  //       }
-  //     } else {
-  //       // if((item.item as Service).addressId == addressId) {
-  //       //   cartItems.add(item);
-  //       // }
-  //     }
-  //   }
-  //   return cartItems;
-  // }
-
   Widget _buildPackageDetail(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        // getShoppingCartItemByAddressId("AD-I44QNOKY8EUF9MHU");
-      },
-      child: ListTile(
-        contentPadding: EdgeInsets.zero,
-        leading: _buildImage(),
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              packageDetailsModel.merchant ?? "",
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: black,
-                fontFamily: "Inter",
-              ),
-            ),
-          ],
-        ),
-        subtitle: Text(
-          "Package ${index + 1} (${packageDetailsModel.totalItems} item)",
-          style: TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w500,
-            color: black,
-            fontFamily: "Inter",
-          ),
-        ),
-        trailing: SizedBox(
-          width: 100,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              if (shippingProcessBloc
-                      .packagesList[index].isShippingProcessCompleted ==
-                  true)
-                Checkbox(
-                  visualDensity:
-                      const VisualDensity(horizontal: -4, vertical: -4),
-                  checkColor: Colors.white,
-                  activeColor: navyBlue,
-                  value: true,
-                  shape: const CircleBorder(),
-                  onChanged: (bool? value) {},
-                ),
-              Row(
-                children: [
-                  Text(
-                    "${worldCurrencies[userBloc.user.currency]}",
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: black,
-                      fontFamily: "Inter",
-                    ),
-                  ),
-                  Text(
-                    moneyDisplayNormalizer(packageDetailsModel.totalPrice ?? 0),
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: black,
-                      fontFamily: "Inter",
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-    return GestureDetector(
-      onTap: () {
-        // getShoppingCartItemByAddressId(packageDetailsModel.addressId ?? "");
+      onTap: () async {
+        await getSuperStoreDealProducts();
         _buildConfirmOrderDetailsBottomSheet(context);
       },
       child: ListTile(
@@ -916,79 +697,134 @@ class PackageDetailTile extends StatelessWidget {
     }
   }
 
-  Widget _buildImageDelivery() {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(10.0),
-      child: CachedNetworkImage(
-        height: 50,
-        width: 50,
-        imageUrl:
-            shippingProcessBloc.packagesList.first.variants?.getCoverImage() ??
-                defaultImage,
-        colorBlendMode: BlendMode.darken,
-        fit: BoxFit.contain,
-        errorWidget: productAndServiceErrorWidget,
-        filterQuality: FilterQuality.high,
-        placeholder: (context, url) => product?.cover == null
-            ? const Icon(Icons.widgets)
-            : CircularLoadingIndicator(),
-      ),
-    );
-  }
-
-  Widget _buildDeliveryTitle() {
-    return Text(
-      "DHL",
-      style: TextStyle(
-        fontSize: 14,
-        fontWeight: FontWeight.w600,
-        color: black,
-        fontFamily: "Inter",
-      ),
-    );
-  }
-
-  Widget _buildDescription() {
-    return Text(
-      "Delivery Time 2-3 days",
-      style: TextStyle(
-        fontSize: 14,
-        color: black,
-        fontFamily: "Inter",
-      ),
-    );
-  }
-
-  Widget _buildPriceWidget() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        Text(
-          " ${worldCurrencies[product?.currency] ?? ""}${shippingProcessBloc.packagesList.first.variants?.price ?? "0"}",
-          style: TextStyle(
-            fontSize: 14,
-            color: black,
-            fontFamily: "Inter",
-          ),
+  void _buildConfirmOrderDetailsBottomSheet(BuildContext context) async {
+    showModalBottomSheet(
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(20),
         ),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(5),
-            color: greyBorderColor,
-          ),
-          child: Text(
-            "No Tracking activity",
-            style: TextStyle(
-              color: black,
-              fontSize: 10,
-              fontWeight: FontWeight.w600,
-              fontFamily: "Inter",
+      ),
+      isScrollControlled: true,
+      context: context,
+      builder: (context) {
+        return FractionallySizedBox(
+          heightFactor: 0.8,
+          child: Container(
+            color: Colors.white,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(child: _buildOrderName()),
+                      _buildCloseIcon(context),
+                    ],
+                  ),
+                  _buildItemCount(),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  _getConfirmOrderDetails(context),
+                ],
+              ),
             ),
           ),
-        ),
-      ],
+        );
+      },
     );
+  }
+
+  Future<void> getSuperStoreDealProducts() async {
+    if (!productListLoading) {
+      if (productNext != null && !productListLoading) {
+        productListLoading = true;
+
+        final Map<String, dynamic>? result = await ShoppingAuthService()
+            .getCartItemsByAddressId(productNext, productPrevious,
+                addressId: packageDetailsModel.addressId);
+
+        if (result == null) {
+          listEmpty = true;
+          productListLoading = false;
+          return;
+        }
+
+        productNext = result['next'];
+        productPrevious = result['previous'];
+        productCount = result['count'];
+        final tempList = await productItem(result['results']);
+
+        listEmpty = false;
+        productListLoading = false;
+        productList.addAll(tempList);
+      }
+      if (productList.isEmpty) {
+        listEmpty = true;
+      }
+    }
+  }
+
+  Future<List<Product>> productItem(List ordersItemsList) async {
+    final List<Product> myListOfOrders = [];
+    for (Product item in ordersItemsList) {
+      if (item.variantModels != null && item.variantModels!.isNotEmpty) {
+        for (var variant in item.variantModels!) {
+          // Create a new Product instance with the variant
+          Product newProduct = Product(
+            id: item.id,
+            name: item.name,
+            seller: item.seller,
+            price: item.price,
+            currency: item.currency,
+            quantity: item.quantity,
+            variantModels: [variant],
+          );
+          myListOfOrders.add(newProduct);
+          await Future.delayed(
+              const Duration(milliseconds: 200)); // Delay for processing
+        }
+      } else {
+        myListOfOrders.add(item);
+      }
+    }
+    return myListOfOrders;
+  }
+
+  int? getProductDiscountPrice(Product product) {
+    if (product.variantModels?.isNotEmpty ?? false) {
+      if (checkProductVariantDiscount(product.variantModels?.first)) {
+        return product.variantModels?.first.discountedPrice;
+      } else {
+        return int.tryParse(product.variantModels?.first.price ?? "0") ?? 0;
+      }
+    } else {
+      return getProductPrice(product);
+    }
+  }
+
+  bool checkProductVariantDiscount(Variant? selectedVariant) {
+    if (selectedVariant?.discountIsActive == true &&
+        selectedVariant?.discountedPrice != null) {
+      return true;
+    }
+    return false;
+  }
+
+  int getProductPrice(Product product) {
+    if (product.discountedPrice != null || product.discountedPrice != 0) {
+      if (checkProductDiscountOrNot(product)) {
+        return product.discountedPrice ?? 0;
+      }
+    }
+    return product.price ?? 0;
+  }
+
+  bool checkProductDiscountOrNot(Product product) {
+    if (product.discountIsActive == true && product.discountedPrice != null) {
+      return true;
+    }
+    return false;
   }
 }
