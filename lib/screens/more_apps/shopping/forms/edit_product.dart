@@ -2820,7 +2820,7 @@ class _EditProductState extends State<EditProduct> {
       name = '${discount?.name} (${discount?.value}%)';
     } else {
       name =
-          '${discount?.name} (${discount?.value}${worldCurrencies[userBloc?.user.currency]})';
+          '${discount?.name} (${worldCurrencies[userBloc?.user.currency]}${discount?.value})';
     }
     return name;
   }

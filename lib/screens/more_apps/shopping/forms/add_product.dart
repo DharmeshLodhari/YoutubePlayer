@@ -3105,7 +3105,7 @@ class _AddProductState extends State<AddProduct> {
       name = '${discount?.name} (${discount?.value}%)';
     } else {
       name =
-          '${discount?.name} (${discount?.value}${worldCurrencies[userBloc?.user.currency]})';
+          '${discount?.name} (${worldCurrencies[userBloc?.user.currency]}${discount?.value})';
     }
     return name;
   }
