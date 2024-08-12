@@ -92,9 +92,10 @@ class PackageDetailTile extends StatelessWidget {
   Widget _getConfirmOrderDetails(BuildContext context) {
     return Expanded(
       child: ListView.builder(
-          itemCount: productList.length,
-          itemBuilder: (context, index) {
-            return Column(children: [
+        itemCount: productList.length,
+        itemBuilder: (context, index) {
+          return Column(
+            children: [
               ListTile(
                 contentPadding: EdgeInsets.zero,
                 leading: getLeading(index),
@@ -125,8 +126,10 @@ class PackageDetailTile extends StatelessWidget {
                   ],
                 ),
               ),
-            ]);
-          }),
+            ],
+          );
+        },
+      ),
     );
   }
 
@@ -697,6 +700,9 @@ class PackageDetailTile extends StatelessWidget {
   }
 
   void _buildConfirmOrderDetailsBottomSheet(BuildContext context) async {
+    if (productList.isEmpty) {
+      return;
+    }
     showModalBottomSheet(
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(

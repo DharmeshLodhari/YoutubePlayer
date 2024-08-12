@@ -1657,7 +1657,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                   _buildDiscountedPrice(),
                   _buildOriginalPrice(),
                   const SizedBox(height: 5),
-                  getRating(numberOfRating: product?.rating!.toInt()),
+                  getRating(numberOfRating: product?.rating?.toInt()),
                   stockStatus(),
                 ],
               ),

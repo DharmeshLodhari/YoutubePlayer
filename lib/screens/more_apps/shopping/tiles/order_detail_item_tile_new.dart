@@ -146,7 +146,8 @@ class _OrderTileForProductNewState extends State<OrderTileForProductNew> {
 
   Widget getProductLinePriceWidget() {
     if (product?.variantModels?.isNotEmpty ?? false) {
-      if ((product!.checkVariantDiscount(product?.variantModels?.first))) {
+      if ((product?.checkVariantDiscount(product?.variantModels?.first)) ??
+          false) {
         return Row(
           children: [
             Text(
@@ -173,7 +174,7 @@ class _OrderTileForProductNewState extends State<OrderTileForProductNew> {
       } else {
         return const SizedBox.shrink();
       }
-    } else if (product!.checkProductDiscount()) {
+    } else if (product?.checkProductDiscount() ?? false) {
       return Row(
         children: [
           Text(
@@ -204,7 +205,8 @@ class _OrderTileForProductNewState extends State<OrderTileForProductNew> {
 
   Widget _buildPricePercentageChanges() {
     if (product?.variantModels?.isNotEmpty ?? false) {
-      if (product!.checkVariantDiscount(product?.variantModels?.first)) {
+      if (product?.checkVariantDiscount(product?.variantModels?.first) ??
+          false) {
         return Text(
           "-${product?.variantModels?.first.discountType == "percentage" ? "${product?.variantModels?.first.discountValue}% off" : worldCurrencies[product?.variantModels?.first.currency ?? ""]! + moneyDisplayNormalizer(product?.variantModels?.first.discountValue?.toInt()).toString()}",
           style: TextStyle(
@@ -247,13 +249,6 @@ class _OrderTileForProductNewState extends State<OrderTileForProductNew> {
     }
   }
 
-  String getProductPrice() {
-    if (product!.price.toString().length > 5) {
-      return "${product!.price.toString().substring(0, 5)}..";
-    }
-    return product!.price.toString();
-  }
-
   int? getOriginalPriceFromDiscount() {
     if (product?.variantModels?.isNotEmpty ?? false) {
       if (product?.variantModels?.first.originalPrice != null &&
@@ -264,15 +259,17 @@ class _OrderTileForProductNewState extends State<OrderTileForProductNew> {
       // get the original price from a product that has a discount already apply to the price
       if (product?.variantModels?.first.discountValue != null) {
         if (product?.variantModels?.first.discountType == "price") {
-          return (int.parse(product?.variantModels?.first.price ?? "0")) +
+          return ((int.tryParse(product?.variantModels?.first.price ?? "0")) ??
+                  0) +
               (product?.variantModels?.first.discountValue ?? 0);
         } else {
-          return (int.parse(product?.variantModels?.first.price ?? "0")) *
+          return ((int.tryParse(product?.variantModels?.first.price ?? "0")) ??
+                  0) *
               100 ~/
               (100 - (product?.variantModels?.first.discountValue ?? 0));
         }
       }
-      return int.parse(product?.variantModels?.first.price ?? "0");
+      return int.tryParse(product?.variantModels?.first.price ?? "0");
     } else {
       // get the original price, if product have discount
       if (product?.originalPrice != null && product?.originalPrice != 0) {
