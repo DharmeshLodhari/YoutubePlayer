@@ -2,7 +2,6 @@ import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/models/package_details_model.dart';
-import 'package:Slydo/screens/more_apps/shopping/models/basket_item_model.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/utils/util.dart';
@@ -133,7 +132,7 @@ class PackageDetailTile extends StatelessWidget {
 
   Widget _buildItemCount() {
     return Text(
-      "$productCount Item",
+      "${getItemCount()} Item",
       style: TextStyle(
         fontSize: 14,
         fontWeight: FontWeight.w600,
@@ -301,26 +300,26 @@ class PackageDetailTile extends StatelessWidget {
   }
 
   Widget getProductPriceWidget(int index) {
+    final currency = worldCurrencies[productList[index].currency] ?? "";
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         Text(
-          worldCurrencies[productList[index].currency] ?? "",
-          style: TextStyle(
-              color: blackFont,
-              fontFamily: "Inter",
-              fontWeight: FontWeight.w600,
-              fontSize: 12),
-        ),
-        Text(
-          moneyDisplayNormalizer(
-              getProductDiscountPrice(productList[index]) ?? 0),
+          "$currency${moneyDisplayNormalizer(getProductDiscountPrice(productList[index]) ?? 0)}",
           style: TextStyle(
             color: blackFont,
             fontWeight: FontWeight.w600,
             fontSize: 12,
             fontFamily: "Inter",
           ),
+        ),
+        Text(
+          " * ${getProductCount(productList[index])}",
+          style: TextStyle(
+              color: blackFont,
+              fontFamily: "Inter",
+              fontWeight: FontWeight.w600,
+              fontSize: 12),
         ),
       ],
     );
@@ -826,5 +825,27 @@ class PackageDetailTile extends StatelessWidget {
       return true;
     }
     return false;
+  }
+
+  int getItemCount() {
+    int quantity = 0;
+    for (var product in productList) {
+      if (product.variantModels?.isNotEmpty ?? false) {
+        quantity += product.variantModels?.first.quantity ?? 0;
+      } else {
+        quantity += product.quantity ?? 0;
+      }
+    }
+    return quantity;
+  }
+
+  int getProductCount(Product? product) {
+    int quantity = 0;
+    if (product?.variantModels?.isNotEmpty ?? false) {
+      quantity = product?.variantModels?.first.quantity ?? 0;
+    } else {
+      quantity = product?.quantity ?? 0;
+    }
+    return quantity;
   }
 }

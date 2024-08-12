@@ -282,30 +282,30 @@ class _YarnProductTileState extends State<YarnProductTile> {
                                             widget.tileRenderPlace, context),
                                         isPaymentBtn: true,
                                         textColor: Colors.white,
-                                        backgroundColor: navyBlue,
+                                        backgroundColor: greyBorderColor,
                                         text: "BUY NOW",
                                         borderRadius: 10,
                                         onPressed: () async {
                                           // if (appConfigurationModel
                                           //         ?.enablePayment ==
                                           //     true) {
-                                          final bool result =
-                                              await showDisclaimerDialogueForGoods(
-                                                  context);
-                                          if (result) {
-                                            customerProfileBloc.customer =
-                                                await UserAuth()
-                                                    .fetchCustomerProfile(
-                                                        widget.product!.seller);
-
-                                            Navigator.of(context).pushNamed(
-                                              '/send-payment',
-                                              arguments: {
-                                                'isFromProfile': false,
-                                                'product': widget.product
-                                              },
-                                            );
-                                          }
+                                          // final bool result =
+                                          //     await showDisclaimerDialogueForGoods(
+                                          //         context);
+                                          // if (result) {
+                                          //   customerProfileBloc.customer =
+                                          //       await UserAuth()
+                                          //           .fetchCustomerProfile(
+                                          //               widget.product!.seller);
+                                          //
+                                          //   Navigator.of(context).pushNamed(
+                                          //     '/send-payment',
+                                          //     arguments: {
+                                          //       'isFromProfile': false,
+                                          //       'product': widget.product
+                                          //     },
+                                          //   );
+                                          // }
                                           // }
                                         },
                                       ),
