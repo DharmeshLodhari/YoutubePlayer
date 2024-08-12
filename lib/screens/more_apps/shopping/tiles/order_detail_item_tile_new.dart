@@ -146,7 +146,8 @@ class _OrderTileForProductNewState extends State<OrderTileForProductNew> {
 
   Widget getProductLinePriceWidget() {
     if (product?.variantModels?.isNotEmpty ?? false) {
-      if ((product!.checkVariantDiscount(product?.variantModels?.first))) {
+      if ((product?.checkVariantDiscount(product?.variantModels?.first)) ??
+          false) {
         return Row(
           children: [
             Text(
@@ -255,26 +256,34 @@ class _OrderTileForProductNewState extends State<OrderTileForProductNew> {
   }
 
   int? getOriginalPriceFromDiscount() {
-    if (product?.variantModels?.isNotEmpty ?? false) {
-      if (product?.variantModels?.first.originalPrice != null &&
-          product?.variantModels?.first.originalPrice != 0) {
-        return product?.variantModels?.first.originalPrice;
-      } // return the original price since server calculated the price
+    int parseSafe(String value) {
+      try {
+        return int.parse(value);
+      } catch (e) {
+        // Handle parsing error or return a default value
+        return 0; // or any other default value
+      }
+    }
 
-      // get the original price from a product that has a discount already apply to the price
-      if (product?.variantModels?.first.discountValue != null) {
-        if (product?.variantModels?.first.discountType == "price") {
-          return (int.parse(product?.variantModels?.first.price ?? "0")) +
-              (product?.variantModels?.first.discountValue ?? 0);
+    if (product?.variantModels?.isNotEmpty ?? false) {
+      var variant = product?.variantModels?.first;
+      if (variant?.originalPrice != null && variant?.originalPrice != 0) {
+        return variant?.originalPrice;
+      }
+      // get the original price from a product that has a discount already applied to the price
+      if (variant?.discountValue != null) {
+        if (variant?.discountType == "price") {
+          return parseSafe(variant?.price ?? "0") +
+              (variant?.discountValue ?? 0);
         } else {
-          return (int.parse(product?.variantModels?.first.price ?? "0")) *
+          return parseSafe(variant?.price ?? "0") *
               100 ~/
-              (100 - (product?.variantModels?.first.discountValue ?? 0));
+              (100 - (variant?.discountValue ?? 0));
         }
       }
-      return int.parse(product?.variantModels?.first.price ?? "0");
+      return parseSafe(variant?.price ?? "0");
     } else {
-      // get the original price, if product have discount
+      // get the original price if the product has a discount
       if (product?.originalPrice != null && product?.originalPrice != 0) {
         return product?.originalPrice;
       } // return the original price since server calculated the price

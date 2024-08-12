@@ -168,6 +168,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
       actions: [
         GestureDetector(
           onTap: () {
+            Navigator.pop(context);
             _buildBottomPrint();
           },
           child: Padding(

@@ -1,3 +1,4 @@
+import 'package:Slydo/utils/colors.dart';
 import 'package:flutter/material.dart';
 
 class OrderPreview extends StatelessWidget {
@@ -7,12 +8,31 @@ class OrderPreview extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Receipt'),
-        centerTitle: true,
-        leading: const Icon(Icons.arrow_back_ios),
-        actions: const [
-          Icon(Icons.share),
-        ],
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+        backgroundColor: Colors.white,
+        automaticallyImplyLeading: false,
+        titleSpacing: 0,
+        leading: IconButton(
+          icon: Icon(
+            Icons.keyboard_arrow_left,
+            color: navyBlue,
+            size: 24,
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        centerTitle: false,
+        title: Text(
+          "Receipt",
+          style: TextStyle(
+            color: blackFont,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            fontFamily: "Inter",
+          ),
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(8.0),
