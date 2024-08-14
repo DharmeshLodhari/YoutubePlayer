@@ -2275,6 +2275,51 @@ class Order {
     }
     return "Delivery";
   }
+
+  int getSubTotalAmount() {
+    int subTotal = 0;
+    int productActualPrice = 0;
+
+    for (OrderItem item in orderItems ?? []) {
+      if (item.item is Product) {
+        final Product product = item.item;
+        if (product.variantModels?.isNotEmpty ?? false) {
+          productActualPrice =
+              product.getDiscountedPrice(product.variantModels?.first) ?? 0;
+        } else {
+          productActualPrice = product.getProductRealPrice();
+        }
+      }
+      final int? orderItems = item.qty;
+      final int totalPrice = (productActualPrice * (orderItems ?? 0)).toInt();
+      subTotal += totalPrice;
+    }
+
+    print("=========>$subTotal");
+    return subTotal;
+  }
+
+  int? getShippingPrice() {
+    return int.tryParse(shippingPrice?.toString() ?? "0");
+  }
+
+  String getTaxAmount() {
+    return moneyDisplayNormalizer(0);
+  }
+
+  int? getServiceCharge() {
+    return int.tryParse("0");
+  }
+
+  int getTotalAmount() {
+    final int subTotal = getSubTotalAmount();
+    final int? shippingPrice = getShippingPrice();
+    final int taxAmount = int.tryParse(getTaxAmount()) ?? 0;
+
+    final int totalAmount = subTotal + (shippingPrice ?? 0) + taxAmount;
+    print("Total Amount: $totalAmount");
+    return totalAmount;
+  }
 }
 
 class OrderItem {

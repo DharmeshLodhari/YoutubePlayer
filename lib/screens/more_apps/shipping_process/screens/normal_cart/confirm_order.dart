@@ -168,7 +168,6 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
                         itemBuilder: (BuildContext context, int index) {
-                          // final BasketItem data = basketBloc.basketItems[index];
                           if (index < basketBloc.basketItems.length) {
                             final BasketItem data =
                                 basketBloc.basketItems[index];

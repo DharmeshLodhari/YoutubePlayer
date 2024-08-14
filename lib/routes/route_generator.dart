@@ -2199,6 +2199,16 @@ class RouteGenerator {
           curve: Curves.ease,
           settings: settings,
         );
+      // Order Preview
+      case Routes.ORDER_PREVIEW:
+        return PageTransition(
+          child: OrderPreview(
+            arguments: settings.arguments,
+          ),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
       default:
         // If there is no such named route in the switch statement, e.g. /third
         return _errorRoute();
