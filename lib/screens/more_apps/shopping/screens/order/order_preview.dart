@@ -1,5 +1,8 @@
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
+import 'package:Slydo/screens/more_apps/shopping/screens/order/custom_pdf_print_order.dart';
+import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/common.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:custom_qr_generator/custom_qr_generator.dart';
 import 'package:dotted_line/dotted_line.dart';
@@ -18,7 +21,7 @@ class OrderPreview extends StatefulWidget {
 class _OrderPreviewState extends State<OrderPreview> {
   Order? order;
   Product? product;
-
+  String? currency;
   @override
   void initState() {
     order = widget.arguments?['order'];
@@ -27,6 +30,7 @@ class _OrderPreviewState extends State<OrderPreview> {
 
   @override
   Widget build(BuildContext context) {
+    currency = worldCurrencies[order?.currency] ?? "";
     return Scaffold(
       appBar: _buildAppBar(),
       body: _buildBody(),
@@ -64,7 +68,14 @@ class _OrderPreviewState extends State<OrderPreview> {
         Padding(
           padding: const EdgeInsets.only(right: 15),
           child: GestureDetector(
-            onTap: () {},
+            onTap: () {
+              final CustomPdfPrintOrder pdfPrint = CustomPdfPrintOrder(
+                order: order,
+                currency: currency,
+                product: product,
+              );
+              pdfPrint.printOrderDetails();
+            },
             child: Image.asset(
               "assets/images/appIcon/printer.png",
               height: 22,
@@ -77,7 +88,6 @@ class _OrderPreviewState extends State<OrderPreview> {
   }
 
   Widget _buildBody() {
-    final currency = worldCurrencies[order?.currency] ?? "";
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
       child: Column(
@@ -87,7 +97,7 @@ class _OrderPreviewState extends State<OrderPreview> {
           _buildHorizontalDotBorder(black),
           _buildOrderProductDetails(),
           _buildHorizontalDotBorder(lightBlackFont),
-          _buildProductPriceAndCharges(currency),
+          _buildProductPriceAndCharges(currency ?? ""),
           const SizedBox(height: 10.0),
           _buildDeliveryDetails(),
           const SizedBox(height: 20.0),
