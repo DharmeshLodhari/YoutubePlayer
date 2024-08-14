@@ -123,6 +123,7 @@ import 'package:Slydo/screens/more_apps/shopping/forms/edit_service.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/mix_cart_item.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/order/order_detail_page.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/order/order_list.dart';
+import 'package:Slydo/screens/more_apps/shopping/screens/order/order_preview.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/order/order_status_updated.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/order/track_order.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/order/write_review_page.dart';
@@ -2183,6 +2184,16 @@ class RouteGenerator {
       case Routes.DISCOUNT_PRODUCT_AND_SERVICE_SEARCH:
         return PageTransition(
           child: SearchDiscountProductAndService(
+            arguments: settings.arguments,
+          ),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+      // Order Preview
+      case Routes.ORDER_PREVIEW:
+        return PageTransition(
+          child: OrderPreview(
             arguments: settings.arguments,
           ),
           type: PageTransitionType.bottomToTop,

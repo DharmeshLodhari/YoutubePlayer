@@ -14,9 +14,11 @@ import 'package:Slydo/screens/more_apps/shopping/widget/outline_border_button.da
 import 'package:Slydo/screens/more_apps/shopping/widget/rounded_border_button.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/services/location_service.dart';
+import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/bottom_sheet_item.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_passcode_sheet/bottomsheet_passcode.dart';
 import 'package:Slydo/widget/customized_popup_menu.dart';
@@ -25,11 +27,22 @@ import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dotted_line/dotted_line.dart';
+import 'package:dotted_line/dotted_line.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:pdf/pdf.dart';
+import 'package:printing/printing.dart';
 import 'package:provider/provider.dart';
+import 'package:sunmi_printer_plus/column_maker.dart';
+import 'package:sunmi_printer_plus/enums.dart';
+import 'package:sunmi_printer_plus/sunmi_printer_plus.dart';
+import 'package:sunmi_printer_plus/sunmi_style.dart';
+import 'package:pdf/widgets.dart' as pw;
 
 class OrderDetailPage extends StatefulWidget {
   final dynamic arguments;
@@ -42,6 +55,7 @@ class OrderDetailPage extends StatefulWidget {
 class _OrderDetailPageState extends State<OrderDetailPage> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
   Order? order;
+  Product? product;
   late UserBloc userBloc;
   TextEditingController userNoteController = TextEditingController();
   final GlobalKey _key = LabeledGlobalKey("orderDetailPagePopUpMenu");
@@ -58,6 +72,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   late http.Response response;
   String errorMessage = "";
   String cartId = "";
+  String? currency;
   ShippingAddress? deliveryAddress;
   bool isRefundAPILoading = false;
   bool isLoading = false;
@@ -90,6 +105,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
 
   @override
   Widget build(BuildContext context) {
+    currency = worldCurrencies[order?.currency] ?? "";
     userBloc = Provider.of<UserBloc>(context);
     shippingProcessBloc = Provider.of<ShippingProcessBloc>(context);
     menu = CustomizedPopUpMenu(
@@ -165,9 +181,647 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
           fontFamily: "Inter",
         ),
       ),
+      actions: [
+        GestureDetector(
+          onTap: () {
+            _printAndroidSheet();
+          },
+          child: Padding(
+            padding: const EdgeInsets.only(right: 15),
+            child: Image.asset(
+              "assets/images/appIcon/printer.png",
+              height: 22,
+              width: 22,
+            ),
+          ),
+        )
+      ],
     );
   }
 
+  void _printAndroidSheet() {
+    androidBottomSheet(
+      context: context,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          bottomSheetItem(
+            title: AppLocalization.of(context)!.preview,
+            iconData: Icons.preview,
+            iconSize: 20,
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.pushNamed(
+                context,
+                Routes.ORDER_PREVIEW,
+                arguments: {"order": order},
+              );
+            },
+          ),
+          bottomSheetItem(
+            title: AppLocalization.of(context)!.print,
+            iconData: Icons.print,
+            iconSize: 20,
+            isLast: true,
+            onTap: () {
+              Navigator.pop(context);
+              _printOrderDetails();
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _printOrderDetails() async {
+    // final Uint8List qrCodeImageData = await loadImageData();
+
+    final pdf = pw.Document();
+    final customFont = await loadCustomFont();
+    pdf.addPage(
+      pw.Page(
+        build: (pw.Context context) {
+          return pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.center,
+            children: [
+              _buildPrintOrderDetails(),
+              _buildPdfHorizontalDotBorder(),
+              _buildOrderProductDetails(currency, customFont),
+              _buildPdfHorizontalDotBorder(),
+              _buildProductPriceAndCharges(currency ?? "", customFont),
+              pw.SizedBox(height: 10.0),
+              _buildPrintDeliveryDetails(),
+              pw.SizedBox(height: 20.0),
+              _buildQRCode(),
+              pw.SizedBox(height: 20.0),
+            ],
+          );
+        },
+      ),
+    );
+
+    await Printing.layoutPdf(
+      onLayout: (PdfPageFormat format) async => pdf.save(),
+    );
+  }
+
+  pw.Widget _buildPrintOrderDetails() {
+    return pw.Column(
+      children: [
+        _buildTitle(),
+        pw.SizedBox(height: 5.0),
+        _buildOrderNo(),
+        pw.SizedBox(height: 5.0),
+        _buildOrderPlaceDateTime(),
+        pw.SizedBox(height: 10.0),
+        _buildPaymentStatusTitle(),
+        _buildPrintOrderStatus(),
+      ],
+    );
+  }
+
+  pw.Widget _buildTitle() {
+    return pw.Text(
+      "${messageDecoderWithEmoji(order?.merchant)} Emporium",
+      style: pw.TextStyle(
+        fontWeight: pw.FontWeight.bold,
+        fontSize: 24.0,
+      ),
+    );
+  }
+
+  pw.Widget _buildOrderNo() {
+    return pw.Text(
+      'Order No: #${order?.id}',
+      style: pw.TextStyle(
+        fontWeight: pw.FontWeight.normal,
+        fontSize: 14.0,
+      ),
+    );
+  }
+
+  pw.Widget _buildOrderPlaceDateTime() {
+    final DateFormat dateFormat = DateFormat("dd MMMM, yyyy, HH:mm:ss");
+    final DateTime dateTime = DateTime.parse(order?.createdAt.toString() ?? "");
+    final String date = dateFormat.format(dateTime);
+
+    return pw.Text(
+      'Order Placed: $date',
+      style: pw.TextStyle(
+        fontWeight: pw.FontWeight.normal,
+        fontSize: 14.0,
+      ),
+    );
+  }
+
+  pw.Widget _buildPaymentStatusTitle() {
+    return pw.Text(
+      'Payment Status',
+      style: pw.TextStyle(
+        fontWeight: pw.FontWeight.normal,
+        fontSize: 14.0,
+      ),
+    );
+  }
+
+  pw.Widget _buildPrintOrderStatus() {
+    return pw.Text(
+      '${order?.status}',
+      style: pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold),
+    );
+  }
+
+  pw.Widget _buildPdfHorizontalDotBorder() {
+    return pw.Padding(
+      padding: const pw.EdgeInsets.symmetric(vertical: 15),
+      child: pw.Row(
+        children: List.generate(50, (index) {
+          return pw.Padding(
+            padding: const pw.EdgeInsets.symmetric(horizontal: 1, vertical: 1),
+            child: pw.Container(
+              width: 8,
+              height: 1,
+              color: PdfColors.black,
+            ),
+          );
+        }),
+      ),
+    );
+  }
+
+  pw.Widget _buildOrderProductDetails(String? currency, pw.Font customFont) {
+    return pw.Column(
+      children: [
+        pw.Row(
+          mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+          children: [
+            _buildItemText('Item', customFont),
+            _buildItemText('Amount', customFont),
+          ],
+        ),
+        pw.SizedBox(height: 10),
+        pw.ListView.builder(
+          padding: pw.EdgeInsets.zero,
+          itemCount: order?.orderItems!.length ?? 0,
+          itemBuilder: (context, index) {
+            if (order?.orderItems?[index].item is Product) {
+              product = order?.orderItems?[index].item;
+            }
+            return pw.Row(
+              mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+              children: [
+                getProductNameAndColor(),
+                _getProductAmount(currency, customFont),
+              ],
+            );
+          },
+        ),
+      ],
+    );
+  }
+
+  pw.Widget _buildItemText(
+    String text,
+    pw.Font customFont,
+  ) {
+    return pw.Text(
+      text,
+      style: pw.TextStyle(
+        fontWeight: pw.FontWeight.bold,
+        fontSize: 14,
+        font: customFont,
+      ),
+    );
+  }
+
+  pw.Widget getProductNameAndColor() {
+    return pw.Padding(
+      padding: const pw.EdgeInsets.symmetric(vertical: 3),
+      child: pw.Row(
+        children: [
+          pw.Text(
+            "${messageDecoderWithEmoji(product?.name)}",
+            style: pw.TextStyle(
+              fontSize: 14.0,
+              fontWeight: pw.FontWeight.normal,
+            ),
+          ),
+          getProductColorSize(),
+        ],
+      ),
+    );
+  }
+
+  pw.Widget _getProductAmount(String? currency, pw.Font? customFont) {
+    final int productActualPrice;
+    if (product?.variantModels?.isNotEmpty ?? false) {
+      productActualPrice =
+          product?.getDiscountedPrice(product?.variantModels?.first) ?? 0;
+    } else {
+      productActualPrice = product?.getProductRealPrice() ?? 0;
+    }
+    return pw.Padding(
+      padding: const pw.EdgeInsets.symmetric(vertical: 3),
+      child: pw.Row(
+        children: [
+          pw.Text(
+            "$currency${moneyDisplayNormalizer(productActualPrice)}",
+            style: pw.TextStyle(
+              fontWeight: pw.FontWeight.normal,
+              fontSize: 14,
+              font: customFont,
+            ),
+          ),
+          pw.SizedBox(width: 4),
+          if ((product?.discountedPrice != null &&
+                  product?.discountedPrice != 0) ||
+              (product?.pricePercentageChange != null &&
+                      product?.pricePercentageChange != 0.0 ||
+                  (product?.variantModels?.isNotEmpty ?? false)))
+            _buildPricePercentageChanges(currency, customFont),
+        ],
+      ),
+    );
+  }
+
+  pw.Widget _buildPricePercentageChanges(
+      String? currency, pw.Font? customFont) {
+    if (product?.variantModels?.isNotEmpty ?? false) {
+      if (product?.checkVariantDiscount(product?.variantModels?.first) ??
+          false) {
+        return pw.Text(
+          "(-${product?.variantModels?.first.discountType == "percentage" ? "${product?.variantModels?.first.discountValue}% off" : currency! + moneyDisplayNormalizer(product?.variantModels?.first.discountValue?.toInt()).toString()})",
+          style: pw.TextStyle(
+            fontSize: 11,
+            fontWeight: pw.FontWeight.normal,
+            font: customFont,
+          ),
+        );
+      } else {
+        return pw.SizedBox();
+      }
+    } else if (product?.discountedPrice != null &&
+        product?.discountedPrice != 0) {
+      if (product?.checkProductDiscount() ?? false) {
+        return pw.Text(
+          "(-${product?.discountType == "percentage" ? "${product?.discountValue}% off" : currency! + moneyDisplayNormalizer(product?.discountValue?.toInt()).toString()})",
+          style: pw.TextStyle(
+            fontSize: 11,
+            font: customFont,
+            fontWeight: pw.FontWeight.bold,
+          ),
+        );
+      } else {
+        return pw.SizedBox();
+      }
+    } else if (product?.pricePercentageChange != 0.0) {
+      return pw.Text(
+        "(${product?.pricePercentageChange!.toInt()}% off)",
+        style: pw.TextStyle(
+            fontSize: 11, fontWeight: pw.FontWeight.bold, font: customFont),
+      );
+    } else {
+      return pw.SizedBox();
+    }
+  }
+
+  pw.Widget getProductColorSize() {
+    if (product?.variantModels?.isNotEmpty ?? false) {
+      final String variantColor = product?.variantModels?.first.colour ?? '';
+      final String variantSize = product?.variantModels?.first.value ?? '';
+      if (variantColor.isNotEmpty || variantSize.isNotEmpty) {
+        return pw.Container(
+          padding: const pw.EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+          decoration: pw.BoxDecoration(
+            borderRadius: pw.BorderRadius.circular(20),
+          ),
+          child: pw.Row(
+            mainAxisSize: pw.MainAxisSize.min,
+            children: [
+              pw.Text(
+                "(${messageDecoderWithEmoji(variantColor)})",
+                style: pw.TextStyle(
+                  fontSize: 10,
+                  fontWeight: pw.FontWeight.normal,
+                ),
+              ),
+              if (variantColor.isNotEmpty && variantSize.isNotEmpty)
+                pw.Text(
+                  "/",
+                  style: pw.TextStyle(
+                    fontSize: 10,
+                    fontWeight: pw.FontWeight.normal,
+                  ),
+                ),
+              pw.Text(
+                "(${messageDecoderWithEmoji(variantSize)})",
+                style: pw.TextStyle(
+                  fontSize: 10,
+                  fontWeight: pw.FontWeight.normal,
+                ),
+              ),
+            ],
+          ),
+        );
+      } else {
+        return pw.Container();
+      }
+    } else {
+      return pw.Container();
+    }
+  }
+
+  pw.Widget buildPdfOrderProductDetails() {
+    return pw.Column(
+      children: [
+        pw.Row(
+          mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+          children: [
+            pw.Text('Item',
+                style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+            pw.Text('Amount',
+                style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+          ],
+        ),
+        pw.SizedBox(height: 10),
+        // Add more content here
+      ],
+    );
+  }
+
+  pw.Widget _buildProductPriceAndCharges(
+    String currency,
+    pw.Font customFont,
+  ) {
+    return pw.Column(
+      children: [
+        _buildProductAndChargesText(
+            'Subtotal',
+            '$currency${moneyDisplayNormalizer(order?.getSubTotalAmount())}',
+            customFont),
+        _buildProductAndChargesText(
+            'Shipping',
+            '$currency${moneyDisplayNormalizer(order?.getShippingPrice())}',
+            customFont),
+        _buildProductAndChargesText(
+            'Service Charge',
+            '$currency${moneyDisplayNormalizer(order?.getServiceCharge())}',
+            customFont),
+        _buildProductAndChargesText(
+            'Tax', '$currency${order?.getTaxAmount()}', customFont),
+        pw.SizedBox(height: 10),
+        _buildProductAndChargesText(
+            'Total',
+            '$currency${moneyDisplayNormalizer(order?.getTotalAmount())}',
+            customFont,
+            isTotal: true),
+        _buildPdfHorizontalDotBorder(),
+      ],
+    );
+  }
+
+  Future<pw.Font> loadCustomFont() async {
+    final fontData = await rootBundle.load('assets/fonts/Roboto-Medium.ttf');
+    return pw.Font.ttf(ByteData.sublistView(fontData.buffer.asUint8List()));
+  }
+
+  pw.Widget _buildProductAndChargesText(
+      String title, String amount, pw.Font customFont,
+      {bool isTotal = false}) {
+    return pw.Padding(
+      padding: const pw.EdgeInsets.symmetric(vertical: 4.0),
+      child: pw.Row(
+        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+        children: [
+          pw.Text(
+            title,
+            style: pw.TextStyle(
+              fontSize: isTotal ? 24.0 : 12.0,
+              fontWeight: isTotal ? pw.FontWeight.bold : pw.FontWeight.normal,
+            ),
+          ),
+          pw.Text(
+            amount,
+            style: pw.TextStyle(
+                fontSize: isTotal ? 24.0 : 12.0,
+                fontWeight: isTotal ? pw.FontWeight.bold : pw.FontWeight.normal,
+                font: customFont),
+          ),
+        ],
+      ),
+    );
+  }
+
+  pw.Widget _buildPrintDeliveryDetails() {
+    String formattedDate;
+    try {
+      final DateTime dateTime = DateTime.parse(order?.pickupDateTime ?? "");
+      final DateFormat dateFormat = DateFormat("MMMM dd, yyyy, h:mm:ss");
+      formattedDate = dateFormat.format(dateTime);
+    } catch (e) {
+      print("Error parsing date: $e");
+      formattedDate = "-";
+    }
+    return pw.Column(
+      children: [
+        pw.Text(
+          'Delivery Details',
+          style: pw.TextStyle(
+            fontWeight: pw.FontWeight.bold,
+            fontSize: 14,
+          ),
+        ),
+        pw.SizedBox(height: 8.0),
+        _buildDeliveryCustomText(
+            'Customer', "${order?.normalizeName(order?.customerName)}"),
+        _buildDeliveryCustomText('Username', '@${order?.customerName}'),
+        _buildDeliveryCustomText('Payment Method', order?.paymentType ?? ""),
+        _buildDeliveryCustomText(
+            'Delivery Option', order?.shipmentType() ?? ""),
+        _buildDeliveryCustomText('Pickup Date/Time', formattedDate),
+      ],
+    );
+  }
+
+  pw.Widget _buildDeliveryCustomText(String title, String info) {
+    return pw.Padding(
+      padding: const pw.EdgeInsets.symmetric(vertical: 3.0),
+      child: pw.Row(
+        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+        children: [
+          pw.Text(
+            '$title : ',
+            style: pw.TextStyle(
+              fontSize: 14.0,
+              fontWeight: pw.FontWeight.normal,
+            ),
+          ),
+          pw.Text(
+            info,
+            style: pw.TextStyle(
+              fontSize: 14.0,
+              fontWeight: pw.FontWeight.normal,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  pw.Widget _buildQRCode() {
+    return pw.Column(
+      crossAxisAlignment: pw.CrossAxisAlignment.center,
+      children: [
+        // pw.Image(
+        //   pw.MemoryImage(imageData),
+        //   width: 80,
+        //   height: 80,
+        // ),
+        pw.SizedBox(height: 8),
+        pw.Text(
+          'Powered by SLYDO',
+          style: pw.TextStyle(
+            fontSize: 14.0,
+            fontWeight: pw.FontWeight.normal,
+          ),
+        ),
+        pw.SizedBox(height: 5),
+        pw.Text(
+          'Download Slydo App on Google Play Store & App Store',
+          style: pw.TextStyle(
+            fontSize: 14.0,
+            fontWeight: pw.FontWeight.normal,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Future<Uint8List> loadImageData() async {
+    try {
+      final ByteData data = await rootBundle.load('assets/qr_code.png');
+      return data.buffer.asUint8List();
+    } catch (e) {
+      throw Exception('Error loading asset: $e');
+    }
+  }
+  // Optionally, you can open the PDF file using a package like open_file
+  // await OpenFile.open(file.path);
+
+  // void _printOrderDetails() async {
+  //   try {
+  //     await SunmiPrinter.initPrinter();
+  //     await SunmiPrinter.bindingPrinter();
+  //     await SunmiPrinter.startTransactionPrint(true);
+  //
+  //     // Proceed with printing
+  //     _buildTitle();
+  //     _buildOrderNo();
+  //     _buildOrderPlaceTime();
+  //     _buildOrderPaymentStatus();
+  //     _buildPrintOrderStatus();
+  //     await SunmiPrinter.line();
+  //     await SunmiPrinter.bold();
+  //
+  //     // Order Product Details
+  //     await SunmiPrinter.printRow(cols: [
+  //       ColumnMaker(
+  //         text: 'Item',
+  //         width: 25,
+  //         align: SunmiPrintAlign.LEFT,
+  //       ),
+  //       ColumnMaker(
+  //         text: 'Amount',
+  //         width: 6,
+  //         align: SunmiPrintAlign.RIGHT,
+  //       ),
+  //     ]);
+  //
+  //     // Print a list of products
+  //     for (int i = 0; i < (order?.orderItems?.length ?? 0); i++) {
+  //       if (order?.orderItems?[i].item is Product) {
+  //         product = order?.orderItems?[i].item;
+  //       }
+  //       _getProductNameColorAndAmount();
+  //     }
+  //     await SunmiPrinter.line();
+  //     // Product Price and Charges
+  //     _buildProductChargeText(
+  //         title: "Subtotal",
+  //         amount:
+  //             '$currency${moneyDisplayNormalizer(order?.getSubTotalAmount())}');
+  //     _buildProductChargeText(
+  //         title: "Shipping",
+  //         amount:
+  //             '$currency${moneyDisplayNormalizer(order?.getShippingPrice())}');
+  //     _buildProductChargeText(
+  //         title: "Service Charge",
+  //         amount:
+  //             '$currency${moneyDisplayNormalizer(order?.getServiceCharge())}');
+  //     _buildProductChargeText(
+  //         title: "Tax", amount: '$currency${order?.getTaxAmount()}');
+  //
+  //     await SunmiPrinter.bold();
+  //     await SunmiPrinter.printRow(cols: [
+  //       ColumnMaker(text: "Total", width: 6, align: SunmiPrintAlign.LEFT),
+  //       ColumnMaker(
+  //           text: '$currency${moneyDisplayNormalizer(order?.getTotalAmount())}',
+  //           width: 6,
+  //           align: SunmiPrintAlign.RIGHT)
+  //     ]);
+  //     await SunmiPrinter.line();
+  //
+  //     // Delivery Details
+  //     _buildPrintDelivery();
+  //     _buildPrintDeliveryText(
+  //         title: 'Customer',
+  //         info: "${order?.normalizeName(order?.customerName)}");
+  //     _buildPrintDeliveryText(
+  //         title: 'Username', info: "@${order?.customerName}");
+  //     _buildPrintDeliveryText(
+  //         title: 'Payment Method', info: "${order?.paymentType}");
+  //     _buildPrintDeliveryText(
+  //         title: 'Delivery Option', info: "${order?.shipmentType()}");
+  //     //format date
+  //     String formattedDate;
+  //     try {
+  //       final DateTime dateTime = DateTime.parse(order?.pickupDateTime ?? "");
+  //       final DateFormat dateFormat = DateFormat("MMMM dd, yyyy, h:mm:ss");
+  //       formattedDate = dateFormat.format(dateTime);
+  //     } catch (e) {
+  //       print("Error parsing date: $e");
+  //       formattedDate = "-";
+  //     }
+  //     _buildPrintDeliveryText(title: 'Pickup Date/Time', info: formattedDate);
+  //
+  //     // QRCode
+  //     _buildQrImage();
+  //     await SunmiPrinter.printText(
+  //       'Powered by SLYDO',
+  //       style: SunmiStyle(
+  //         fontSize: SunmiFontSize.MD,
+  //         bold: true,
+  //         align: SunmiPrintAlign.CENTER,
+  //       ),
+  //     );
+  //     await SunmiPrinter.printText(
+  //       'Download Slydo App on Google Play Store & App Store',
+  //       style: SunmiStyle(
+  //         fontSize: SunmiFontSize.MD,
+  //         bold: false,
+  //         align: SunmiPrintAlign.CENTER,
+  //       ),
+  //     );
+  //
+  //     await SunmiPrinter.lineWrap(2);
+  //     await SunmiPrinter.line();
+  //     await SunmiPrinter.cut();
+  //     await SunmiPrinter.exitTransactionPrint(true);
+  //     // await SunmiPrinter.submitTransactionPrint();
+  //   } catch (e) {
+  //     print("Error: $e");
+  //   }
+  // }
   Widget _buildBody() {
     return isLoading
         ? const Center(
@@ -404,7 +1058,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                     ),
                   ),
                   Text(
-                    moneyDisplayNormalizer(getSubTotalAmount()),
+                    moneyDisplayNormalizer(order?.getSubTotalAmount()),
                     // moneyDisplayNormalizer(order?.totalPrice),
                     style: TextStyle(
                       fontSize: 14,
@@ -444,7 +1098,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                     ),
                   ),
                   Text(
-                    moneyDisplayNormalizer(getShippingPrice()),
+                    moneyDisplayNormalizer(order?.getShippingPrice()),
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
@@ -483,7 +1137,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                     ),
                   ),
                   Text(
-                    getTaxAmount(),
+                    order?.getTaxAmount() ?? '',
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
@@ -522,7 +1176,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                     ),
                   ),
                   Text(
-                    moneyDisplayNormalizer(getTotalAmount()),
+                    moneyDisplayNormalizer(order?.getTotalAmount()),
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
@@ -742,7 +1396,6 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     final DateFormat dateFormat = DateFormat("MMMM dd, yyyy, h:mm a");
     final DateTime dateTime = DateTime.parse(order?.createdAt.toString() ?? "");
     final String date = dateFormat.format(dateTime);
-
     final Map<String, String> formattedDateTimeForPickUp =
         getFormattedDateTime(order?.pickupDateTime ?? "");
     final Map<String, String> formattedDateTimeForEatIn =
@@ -1480,47 +2133,6 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
         });
   }
 
-  int getSubTotalAmount() {
-    int subTotal = 0;
-    int productActualPrice = 0;
-
-    for (OrderItem item in order?.orderItems ?? []) {
-      if (item.item is Product) {
-        final Product product = item.item;
-        if (product.variantModels?.isNotEmpty ?? false) {
-          productActualPrice =
-              product.getDiscountedPrice(product.variantModels?.first) ?? 0;
-        } else {
-          productActualPrice = product.getProductRealPrice();
-        }
-      }
-      final int? orderItems = item.qty;
-      final int totalPrice = (productActualPrice * (orderItems ?? 0)).toInt();
-      subTotal += totalPrice;
-    }
-
-    print("=========>$subTotal");
-    return subTotal;
-  }
-
-  int? getShippingPrice() {
-    return int.tryParse(order?.shippingPrice?.toString() ?? "0");
-  }
-
-  String getTaxAmount() {
-    return moneyDisplayNormalizer(0);
-  }
-
-  int getTotalAmount() {
-    final int subTotal = getSubTotalAmount();
-    final int? shippingPrice = getShippingPrice();
-    final int taxAmount = int.tryParse(getTaxAmount()) ?? 0;
-
-    final int totalAmount = subTotal + (shippingPrice ?? 0) + taxAmount;
-    print("Total Amount: $totalAmount");
-    return totalAmount;
-  }
-
   Widget _buildPickUpStore(String date, String time) {
     return Column(
       children: [
@@ -1617,6 +2229,182 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
           ),
       ],
     );
+  }
+
+  // Future<void> _buildTitle() async {
+  //   await SunmiPrinter.printText(
+  //     '${messageDecoderWithEmoji(order?.merchant)} Emporium',
+  //     style: SunmiStyle(
+  //       fontSize: SunmiFontSize.LG,
+  //       bold: true,
+  //       align: SunmiPrintAlign.CENTER,
+  //     ),
+  //   );
+  // }
+  //
+  // Future<void> _buildOrderNo() async {
+  //   await SunmiPrinter.printText(
+  //     'Order No: #${order?.id}',
+  //     style: SunmiStyle(
+  //       fontSize: SunmiFontSize.MD,
+  //       bold: true,
+  //       align: SunmiPrintAlign.CENTER,
+  //     ),
+  //   );
+  // }
+  //
+  // Future<void> _buildOrderPlaceTime() async {
+  //   final DateFormat dateFormat = DateFormat("dd MMMM, yyyy, HH:mm:ss");
+  //   final DateTime dateTime = DateTime.parse(order?.createdAt.toString() ?? "");
+  //   final String date = dateFormat.format(dateTime);
+  //   await SunmiPrinter.printText(
+  //     date,
+  //     style: SunmiStyle(
+  //       fontSize: SunmiFontSize.MD,
+  //       bold: false,
+  //       align: SunmiPrintAlign.CENTER,
+  //     ),
+  //   );
+  // }
+  //
+  // Future<void> _buildOrderPaymentStatus() async {
+  //   await SunmiPrinter.printText(
+  //     'Payment Status',
+  //     style: SunmiStyle(
+  //       fontSize: SunmiFontSize.MD,
+  //       bold: true,
+  //       align: SunmiPrintAlign.CENTER,
+  //     ),
+  //   );
+  // }
+  //
+  // Future<void> _buildPrintOrderStatus() async {
+  //   await SunmiPrinter.printText(
+  //     '${order?.status}',
+  //     style: SunmiStyle(
+  //       fontSize: SunmiFontSize.LG,
+  //       bold: true,
+  //       align: SunmiPrintAlign.CENTER,
+  //     ),
+  //   );
+  // }
+  //
+  // Future<void> _buildProductChargeText({String? title, String? amount}) async {
+  //   await SunmiPrinter.printRow(cols: [
+  //     ColumnMaker(text: title ?? "", width: 6, align: SunmiPrintAlign.LEFT),
+  //     ColumnMaker(text: amount ?? '', width: 6, align: SunmiPrintAlign.RIGHT)
+  //   ]);
+  // }
+  //
+  // Future<void> _buildPrintDelivery() async {
+  //   await SunmiPrinter.printText(
+  //     'Delivery Details',
+  //     style: SunmiStyle(
+  //       fontSize: SunmiFontSize.MD,
+  //       bold: true,
+  //       align: SunmiPrintAlign.CENTER,
+  //     ),
+  //   );
+  // }
+  //
+  // Future<void> _buildPrintDeliveryText({String? title, String? info}) async {
+  //   await SunmiPrinter.printRow(cols: [
+  //     ColumnMaker(text: title ?? "", width: 6, align: SunmiPrintAlign.LEFT),
+  //     ColumnMaker(text: info ?? '', width: 6, align: SunmiPrintAlign.RIGHT)
+  //   ]);
+  // }
+  //
+  // Future<void> _buildQrImage() async {
+  //   await SunmiPrinter.printImage(
+  //     base64Decode(""),
+  //   );
+  // }
+  //
+  // Future<void> _buildQrDescriptionText(String description) async {
+  //   await SunmiPrinter.printText(
+  //     description,
+  //     style: SunmiStyle(
+  //       fontSize: SunmiFontSize.MD,
+  //       bold: true,
+  //       align: SunmiPrintAlign.CENTER,
+  //     ),
+  //   );
+  // }
+  //
+  // Future<void> _getProductNameColorAndAmount() async {
+  //   // Initialize the variant information strings
+  //   String variantColor = '';
+  //   String variantSize = '';
+  //
+  //   // Check if there are any variant models available
+  //   if (product?.variantModels?.isNotEmpty ?? false) {
+  //     variantColor = product?.variantModels?.first.colour ?? '';
+  //     variantSize = product?.variantModels?.first.value ?? '';
+  //   }
+  //
+  //   // Prepare the variant details string
+  //   String variantDetails = '';
+  //   if (variantColor.isNotEmpty || variantSize.isNotEmpty) {
+  //     variantDetails = "(${messageDecoderWithEmoji(variantColor)})";
+  //     if (variantColor.isNotEmpty && variantSize.isNotEmpty) {
+  //       variantDetails += "/";
+  //     }
+  //     variantDetails += "(${messageDecoderWithEmoji(variantSize)})";
+  //   }
+  //   await SunmiPrinter.printRow(cols: [
+  //     ColumnMaker(
+  //       text: "${messageDecoderWithEmoji(product?.name)} $variantDetails",
+  //       width: 25,
+  //       align: SunmiPrintAlign.LEFT,
+  //     ),
+  //     ColumnMaker(
+  //       text: _getProductAmountString('$currency'),
+  //       width: 6,
+  //       align: SunmiPrintAlign.RIGHT,
+  //     ),
+  //   ]);
+  // }
+
+  String _getProductAmountString([String? currency]) {
+    final int productActualPrice;
+    if (product?.variantModels?.isNotEmpty ?? false) {
+      productActualPrice =
+          product?.getDiscountedPrice(product?.variantModels?.first) ?? 0;
+    } else {
+      productActualPrice = product?.getProductRealPrice() ?? 0;
+    }
+
+    // Base amount text
+    String amountText =
+        "$currency${moneyDisplayNormalizer(productActualPrice)}";
+
+    // Append discount details if available
+    String discountText = _getPricePercentageChangesString(currency);
+
+    if (discountText.isNotEmpty) {
+      amountText += " $discountText";
+    }
+
+    return amountText;
+  }
+
+  String _getPricePercentageChangesString(String? currency) {
+    if (product?.variantModels?.isNotEmpty ?? false) {
+      if (product?.checkVariantDiscount(product?.variantModels?.first) ??
+          false) {
+        return "(-${product?.variantModels?.first.discountType == "percentage" ? "${product?.variantModels?.first.discountValue}% off" : currency! + moneyDisplayNormalizer(product?.variantModels?.first.discountValue?.toInt()).toString()})";
+      }
+      return '';
+    } else if (product?.discountedPrice != null &&
+        product?.discountedPrice != 0) {
+      if (product?.checkProductDiscount() ?? false) {
+        return "(-${product?.discountType == "percentage" ? "${product?.discountValue}% off" : currency! + moneyDisplayNormalizer(product?.discountValue?.toInt()).toString()})";
+      }
+      return '';
+    } else if (product?.pricePercentageChange != 0.0) {
+      return "(${product?.pricePercentageChange!.toInt()}% off)";
+    }
+    return '';
   }
 }
 

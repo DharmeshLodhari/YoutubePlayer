@@ -192,7 +192,7 @@ class PackageDetailTile extends StatelessWidget {
     );
   }
 
-  String getTotalPrice(int index) {
+  String getSubTotalPrice(int index) {
     int totalPrice = 0;
     int addOnTotal = 0;
     if (productList[index].isProduct) {
@@ -290,7 +290,7 @@ class PackageDetailTile extends StatelessWidget {
               fontSize: 14),
         ),
         Text(
-          moneyDisplayNormalizer(int.parse(getTotalPrice(index))),
+          moneyDisplayNormalizer(int.parse(getSubTotalPrice(index))),
           style: TextStyle(
             color: blackFont,
             fontWeight: FontWeight.w600,

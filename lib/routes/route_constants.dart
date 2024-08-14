@@ -240,6 +240,7 @@ class Routes {
   static const String RIDER_MAP_STATUS = "/rider-map-status";
   static const String CANCELLATION = "/cancellation";
   static const String YOU_TRIP_END = "/your-trip-end";
+  static const String ORDER_PREVIEW = "/order-preview";
   static const String DISCOUNT_PRODUCT_AND_SERVICE_SEARCH =
       "/discount-product-and-service-search";
 }

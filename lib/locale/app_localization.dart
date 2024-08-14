@@ -4402,6 +4402,13 @@ class AppLocalization {
     );
   }
 
+  String get preview {
+    return Intl.message(
+      "Preview",
+      name: "preview",
+    );
+  }
+
   String get jobCategoryFit {
     return Intl.message(
       "Which category best fit this task?",

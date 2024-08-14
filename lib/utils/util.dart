@@ -2735,7 +2735,7 @@ Map<String, String> getFormattedDateTime(String? dateTimeString) {
       parsedDateTime.second,
       parsedDateTime.millisecond,
       parsedDateTime.microsecond,
-    ).add(Duration(hours: 1));
+    ).add(const Duration(hours: 1));
 
     final DateFormat dateFormatter = DateFormat('MMMM dd, yyyy');
     final DateFormat timeFormatter = DateFormat('h:mm a');
