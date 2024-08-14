@@ -1,5 +1,8 @@
 import 'dart:io';
 
+import 'package:Slydo/data/environment.dart';
+import 'package:Slydo/data/state_notifiers/basket_bloc.dart';
+import 'package:Slydo/data/state_notifiers/user_bloc.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/models/shared_cart_model.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/Picture.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/basket_item_model.dart';
@@ -2197,11 +2200,53 @@ class Order {
     return myListOfOrders;
   }
 
+  String getOrderUrl() {
+    final String url = '${AppConfig.baseUrl}/api/v1/order/$id/';
+    return url;
+  }
+
+  // ToDO: take order item and add it to shopping cart
+  void recreateOrder(BasketBloc basketBloc, UserBloc userBloc) {
+    // loop though order items
+    // for each item and quantity add to shopping cart
+
+    for (var item in orderItems ?? []) {
+      if (item.item is Product) {
+        final Product orderedProduct = item.item;
+
+        const String type = "product";
+
+        final Product products =
+            orderedProduct.copyWith(quantity: 1, withSelectedAddOn: true);
+
+        Variant? variant;
+        if (orderedProduct.variantModels != null &&
+            (orderedProduct.variantModels?.isNotEmpty ?? false)) {
+          variant = orderedProduct.variantModels?.first?.copyWith(quantity: 1);
+        }
+        basketBloc.addItemToCart(
+          item: products,
+          type: type,
+          variant: variant,
+          addOns: products.addOnsModels,
+          currentUser: userBloc.user.convertToUser(),
+        );
+      }
+    }
+  }
+
   //todo: invetiget deprecating this function or delete this function
   String? getCustomerOrMerchantName(String? userName) {
     final customerOrMerchant =
         customerName == userName ? merchant : customerName;
     return customerOrMerchant;
+  }
+
+  bool isCompleted() {
+    if (status == 'Complete') {
+      return true;
+    }
+    return false;
   }
 
   bool? isMerchant(String? userName) {

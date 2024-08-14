@@ -14,8 +14,8 @@ import 'package:Slydo/screens/more_apps/shopping/widget/outline_border_button.da
 import 'package:Slydo/screens/more_apps/shopping/widget/rounded_border_button.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/services/location_service.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/extensions.dart';
+import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/bottom_sheet_item.dart';
@@ -27,22 +27,15 @@ import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:dotted_line/dotted_line.dart';
-import 'package:dotted_line/dotted_line.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import 'package:provider/provider.dart';
-import 'package:sunmi_printer_plus/column_maker.dart';
-import 'package:sunmi_printer_plus/enums.dart';
-import 'package:sunmi_printer_plus/sunmi_printer_plus.dart';
-import 'package:sunmi_printer_plus/sunmi_style.dart';
-import 'package:pdf/widgets.dart' as pw;
 
 class OrderDetailPage extends StatefulWidget {
   final dynamic arguments;
@@ -57,6 +50,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   Order? order;
   Product? product;
   late UserBloc userBloc;
+  late BasketBloc basketBloc;
   TextEditingController userNoteController = TextEditingController();
   final GlobalKey _key = LabeledGlobalKey("orderDetailPagePopUpMenu");
   late ShippingProcessBloc shippingProcessBloc;
@@ -76,14 +70,40 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   ShippingAddress? deliveryAddress;
   bool isRefundAPILoading = false;
   bool isLoading = false;
+  String? orderId;
 
   @override
   void initState() {
     order = widget.arguments['order'];
+
+    if (order != null) {
+      orderId = order?.id;
+    } else {
+      orderId = widget.arguments[
+          'orderId']; // We get this when we are coming from the scan order QR.
+    }
+
+    fetchOrderDetail(orderId ?? "");
+
     statusOfOrder = order?.status?.toLowerCase();
     getCartId();
     getDeliveryAddress();
     super.initState();
+  }
+
+  void fetchOrderDetail(String orderId) async {
+    setState(() {
+      isLoading = true;
+    });
+    await _auth.getOrder(orderId).then((value) {
+      debugPrint('VALUE :: $value');
+      if (mounted) {
+        setState(() {
+          order = value;
+          isLoading = false;
+        });
+      }
+    });
   }
 
   Future<void> getCartId() async {
@@ -107,6 +127,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   Widget build(BuildContext context) {
     currency = worldCurrencies[order?.currency] ?? "";
     userBloc = Provider.of<UserBloc>(context);
+    basketBloc = Provider.of<BasketBloc>(context);
     shippingProcessBloc = Provider.of<ShippingProcessBloc>(context);
     menu = CustomizedPopUpMenu(
       buttonKey: _key,
@@ -234,8 +255,6 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   }
 
   Future<void> _printOrderDetails() async {
-    // final Uint8List qrCodeImageData = await loadImageData();
-
     final pdf = pw.Document();
     final customFont = await loadCustomFont();
     pdf.addPage(
@@ -1394,7 +1413,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
 
   Widget _buildOrderDetails() {
     final DateFormat dateFormat = DateFormat("MMMM dd, yyyy, h:mm a");
-    final DateTime dateTime = DateTime.parse(order?.createdAt.toString() ?? "");
+    final DateTime dateTime = DateTime.parse(order?.createdAt ?? "");
     final String date = dateFormat.format(dateTime);
     final Map<String, String> formattedDateTimeForPickUp =
         getFormattedDateTime(order?.pickupDateTime ?? "");
@@ -1460,10 +1479,8 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
             width: 8,
           ),
           _buildSecondButton(),
-          const SizedBox(
-            width: 8,
-          ),
-          _buildThirdButton()
+          _buildThirdButton(),
+          _buildRepeatOrder(),
         ],
       ),
     );
@@ -1500,6 +1517,16 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
           order?.refundPaymentId == null &&
           order?.status != "Awaiting Payment") {
         return Expanded(child: _buildRequestRefund());
+      } else if (order?.status == "Canceled" &&
+          order?.refundPaymentRequestId != null &&
+          order?.refundPaymentId != null &&
+          order?.status != "Awaiting Payment") {
+        return Expanded(child: _buildViewRefund());
+      } else if (order?.status == "Canceled" &&
+          order?.refundPaymentRequestId != null &&
+          order?.refundPaymentId == null &&
+          order?.status != "Awaiting Payment") {
+        return Expanded(child: _buildViewRefundPaymentRequest());
       } else {
         if (order?.notAllowedStatusUpdate.contains(order?.status) == false) {
           return Expanded(child: _buildUpdateStatus());
@@ -1516,6 +1543,16 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
           order?.refundPaymentId == null &&
           order?.status != "Awaiting Payment") {
         return Expanded(child: _buildRefundPayment());
+      } else if (order?.status == "Canceled" &&
+          order?.refundPaymentRequestId != null &&
+          order?.refundPaymentId != null &&
+          order?.status != "Awaiting Payment") {
+        return Expanded(child: _buildViewRefund());
+      } else if (order?.status == "Canceled" &&
+          order?.refundPaymentRequestId != null &&
+          order?.refundPaymentId == null &&
+          order?.status != "Awaiting Payment") {
+        return Expanded(child: _buildViewRefundPaymentRequest());
       }
       if (order?.notAllowedStatusUpdate.contains(order?.status) == false) {
         return Expanded(child: _buildUpdateStatus());
@@ -1527,8 +1564,14 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   Widget _buildThirdButton() {
     if (order?.newOrderStatus.contains(order?.status) == true ||
         order?.status == "Awaiting Payment") {
-      return Expanded(child: _buildCancelOrder());
+      return Expanded(
+        child: Padding(
+          padding: const EdgeInsets.only(left: 8),
+          child: _buildCancelOrder(),
+        ),
+      );
     }
+
     return const SizedBox.shrink();
   }
 
@@ -1557,17 +1600,6 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
       onTap: () async {
         // _showDialogDateTime();
       },
-    );
-  }
-
-  Widget _buildViewRefundTransaction() {
-    return RoundedBorderButton(
-      title: 'View Refund Transaction',
-      onTap: () {
-        Navigator.of(context).pushNamed(Routes.TRANSACTION_DETAIL,
-            arguments: {'transaction': order?.refundPaymentId});
-      },
-      isLoading: isAPILoading,
     );
   }
 
@@ -1613,6 +1645,17 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     );
   }
 
+  Widget _buildViewRefund() {
+    return RoundedBorderButton(
+      title: 'View Refund',
+      onTap: () {
+        Navigator.of(context).pushNamed(Routes.TRANSACTION_DETAIL,
+            arguments: {'transaction': order?.refundPaymentId});
+      },
+      isLoading: isAPILoading,
+    );
+  }
+
   Widget _buildEditAddress() {
     return OutlineBorderButton(
       title: "Edit Address",
@@ -1632,6 +1675,25 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
         showChangeStatusAndroidSheet();
       },
     );
+  }
+
+  Widget _buildRepeatOrder() {
+    if (order?.isCompleted() ?? false) {
+      return Expanded(
+        child: Padding(
+          padding: const EdgeInsets.only(left: 8),
+          child: RoundedBorderButton(
+            title: "Buy it again",
+            onTap: () {
+              order?.recreateOrder(basketBloc, userBloc);
+              NavigationUtil.pushNamed(context,
+                  routeName: Routes.SHOPPING_CART);
+            },
+          ),
+        ),
+      );
+    }
+    return const SizedBox.shrink();
   }
 
   Widget _buildCancelOrder() {

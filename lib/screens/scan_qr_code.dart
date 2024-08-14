@@ -238,6 +238,20 @@ class _QRCodeViewState extends State<QRCodeView> {
           if (mounted) setState(() {});
         }
       }
+    } else if (scanDataList[qrCodeIndex] == "order") {
+      final orderId = scanDataList.last;
+
+      final result = await Navigator.pushNamed(
+          context, Routes.ORDER_DETAIL_PAGE,
+          arguments: {"orderId": orderId});
+
+      // Handle the result here
+      if (result != null) {
+        if (result == 'back pressed') {
+          canShowDialogBox = true;
+          if (mounted) setState(() {});
+        }
+      }
     } else if (scanDataList[qrCodeIndex - 1] == 'anonymous-shopping-cart') {
       try {
         final ShoppingCartModelFromQrCode? shoppingCartModel =
@@ -563,5 +577,12 @@ class _QRCodeViewState extends State<QRCodeView> {
     service.currency = userBloc.user.currency;
     service.pictureMap = [];
     return service;
+  }
+
+  Order getOrder(String orderId) {
+    final Order order = Order();
+    order.id = orderId;
+    order.createdAt = "";
+    return order;
   }
 }

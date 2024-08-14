@@ -1,14 +1,10 @@
 import 'package:Slydo/data/currency.dart';
-import 'package:Slydo/data/state_notifiers/user_bloc.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
-import 'package:Slydo/utils/colors.dart';
-import 'package:Slydo/utils/common.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:custom_qr_generator/custom_qr_generator.dart';
 import 'package:dotted_line/dotted_line.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
-import 'package:sunmi_printer_plus/sunmi_printer_plus.dart';
 
 class OrderPreview extends StatefulWidget {
   final dynamic arguments;
@@ -143,7 +139,7 @@ class _OrderPreviewState extends State<OrderPreview> {
 
   Widget _buildOrderPlaceDateTime() {
     final DateFormat dateFormat = DateFormat("dd MMMM, yyyy, HH:mm:ss");
-    final DateTime dateTime = DateTime.parse(order?.createdAt.toString() ?? "");
+    final DateTime dateTime = DateTime.parse(order?.createdAt ?? "");
     final String date = dateFormat.format(dateTime);
     return Text(
       'Order Placed: $date',
@@ -222,7 +218,7 @@ class _OrderPreviewState extends State<OrderPreview> {
             return Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                getProductNameAndColor(),
+                _getProductNameAndColor(),
                 _getProductAmount(currency),
               ],
             );
@@ -399,7 +395,7 @@ class _OrderPreviewState extends State<OrderPreview> {
     }
   }
 
-  Widget getProductNameAndColor() {
+  Widget _getProductNameAndColor() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 3),
       child: Row(
@@ -549,7 +545,18 @@ class _OrderPreviewState extends State<OrderPreview> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        const Icon(Icons.qr_code, size: 80.0),
+        CustomPaint(
+          painter: QrPainter(
+              data: order?.getOrderUrl() ?? "",
+              options: const QrOptions(
+                  shapes: QrShapes(
+                      darkPixel: QrPixelShapeCircle(radiusFraction: .8),
+                      frame: QrFrameShapeRoundCorners(cornerFraction: .25),
+                      ball: QrBallShapeRoundCorners(cornerFraction: .25)),
+                  colors: QrColors(
+                      light: QrColorSolid(Color.fromARGB(0, 0, 0, 0))))),
+          size: const Size(80, 80),
+        ),
         const SizedBox(height: 8),
         Text(
           'Powered by SLYDO',

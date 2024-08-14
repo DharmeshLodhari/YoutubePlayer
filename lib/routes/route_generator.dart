@@ -1427,15 +1427,6 @@ class RouteGenerator {
           settings: settings,
         );
 
-      // Order Privew
-      case Routes.ORDER_PREVIEW:
-        return PageTransition(
-          child: const OrderPreview(),
-          type: PageTransitionType.bottomToTop,
-          curve: Curves.ease,
-          settings: settings,
-        );
-
       /// Property Route
 
       case Routes.PROPERTY:
