@@ -1,9 +1,16 @@
+import 'package:Slydo/constant.dart';
+import 'package:Slydo/data/state_notifiers/user_bloc.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/payout.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/tiles/payout_tile.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
+import 'package:Slydo/widget/slide_action_button.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../../payment_and_banking_auth.dart';
@@ -21,6 +28,7 @@ class _CashOutTransactionsListState extends State<CashOutTransactionsList> {
   final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey =
       GlobalKey<ScaffoldMessengerState>();
 
+  late UserBloc userBloc;
   // Get list of users transactions
   int? count = 0;
   String? next = "";
@@ -64,6 +72,7 @@ class _CashOutTransactionsListState extends State<CashOutTransactionsList> {
 
   @override
   Widget build(BuildContext context) {
+    userBloc = Provider.of<UserBloc>(context);
     return WillPopScope(
       onWillPop: () async {
         return true;
@@ -94,29 +103,66 @@ class _CashOutTransactionsListState extends State<CashOutTransactionsList> {
           )
         : isLoading && payoutList.isEmpty
             ? buildLoadingIndicator(isLoading: isLoading)
-            : ListView.builder(
-                //+1 for progressbar
-                itemCount: payoutList.length + 1,
-                itemBuilder: (BuildContext context, int index) {
-                  if (index == payoutList.length) {
-                    return buildJumpingLoadingIndicator(isLoading: isLoading);
-                  } else {
-                    return Container(
-                      padding: const EdgeInsets.symmetric(vertical: 2),
-                      child: Column(
-                        children: [
-                          PayoutTile(
-                            payout: payoutList[index],
-                            key: Key(
-                                "Payout:${payoutList[index].uuid! + payoutList[index].timeStamp!}"),
-                          ),
-                        ],
-                      ),
-                    );
-                  }
-                },
-                controller: _scrollController,
+            : SlidableAutoCloseBehavior(
+                closeWhenOpened: true,
+                child: ListView.builder(
+                  //+1 for progressbar
+                  itemCount: payoutList.length + 1,
+                  itemBuilder: (BuildContext context, int index) {
+                    if (index == payoutList.length) {
+                      return buildJumpingLoadingIndicator(isLoading: isLoading);
+                    } else {
+                      // return PayoutTile(
+                      //   payout: payoutList[index],
+                      //   key: Key(
+                      //       "Payout:${payoutList[index].uuid! + payoutList[index].timeStamp!}"),
+                      // );
+                      return _getSlidableWithLists(
+                          context, payoutList[index], index);
+                    }
+                  },
+                  controller: _scrollController,
+                ),
               );
+  }
+
+  Widget _getSlidableWithLists(BuildContext context, Payout payout, int index) {
+    final PermissionType? hasPermission =
+        userBloc.user.hasWritePermission(ProtectionPermission.transaction);
+    return Slidable(
+      key: Key(payout.bankName!),
+      endActionPane: ActionPane(
+        motion: const BehindMotion(),
+        extentRatio: hasPermission == PermissionType.WRITE ? 0.25 : 0.0001,
+        children: listSecondaryActions(payout),
+      ),
+      child: PayoutTile(
+        payout: payoutList[index],
+        key: Key(
+            "Payout:${payoutList[index].uuid! + payoutList[index].timeStamp!}"),
+      ),
+    );
+  }
+
+  List<Widget> listSecondaryActions(Payout payout) {
+    return [
+      SlideActionButton(
+        borderRadius: BorderRadius.circular(5),
+        padding: EdgeInsets.zero,
+        backgroundColor: naturalGreen,
+        icon: Icons.send,
+        onPressed: (con) async {
+          await Navigator.of(context).pushNamed(
+            Routes.SEND_PAYMENT,
+            arguments: <String, dynamic>{
+              'isFromCashOut': true,
+              'payout': payout,
+            },
+          );
+        },
+        label: AppLocalization.of(context)!.resend,
+      ),
+    ];
   }
 
   void getList() async {

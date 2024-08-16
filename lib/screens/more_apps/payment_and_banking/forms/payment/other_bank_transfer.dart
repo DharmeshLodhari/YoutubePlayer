@@ -23,10 +23,17 @@ class _OtherBankTransferState extends State<OtherBankTransfer> {
   late UserBloc userBloc;
   late PageController _pageViewController;
   int currentAskTapOnHome = 0;
+  bool isFromCashOut = false;
 
   @override
   void initState() {
-    _pageViewController = PageController(initialPage: 0);
+    isFromCashOut = widget.arguments['isFromCashOut'] ?? false;
+    if (isFromCashOut) {
+      currentAskTapOnHome = 1;
+      _pageViewController = PageController(initialPage: currentAskTapOnHome);
+    } else {
+      _pageViewController = PageController(initialPage: 0);
+    }
 
     super.initState();
   }

@@ -352,20 +352,21 @@ class _SlydoTransactionListState extends State<SlydoTransactionList>
         borderRadius: BorderRadius.circular(5),
         padding: EdgeInsets.zero,
         backgroundColor: naturalGreen,
-        icon: SlydoAppIcon.send,
+        icon: Icons.send,
         onPressed: (con) async {
           if (appConfigurationModel?.enablePayment == true) {
             customerProfileBloc.customer =
                 await UserAuth().fetchCustomerProfile(transaction.payee);
             Navigator.of(context)
-                .pushNamed(Routes.SEND_PAYMENT, arguments: <String, bool>{
+                .pushNamed(Routes.SEND_PAYMENT, arguments: <String, dynamic>{
               'isFromProfile': false,
+              'transaction': transaction,
             });
           } else {
             showToast(message: 'Payment not available at the moment');
           }
         },
-        label: AppLocalization.of(context)!.send,
+        label: AppLocalization.of(context)!.resend,
       ),
     ];
   }

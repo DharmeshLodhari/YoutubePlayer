@@ -2014,7 +2014,9 @@ class Order {
   String? id;
   String? status;
   String? customerName;
+  String? customerFullName;
   String? merchant;
+  String? merchantFullName;
   String? customerAvatar;
   String? customerType;
   String? merchantAvatar;
@@ -2080,7 +2082,9 @@ class Order {
     this.id,
     this.status,
     this.customerName,
+    this.customerFullName,
     this.merchant,
+    this.merchantFullName,
     this.customerAvatar,
     this.customerType = "User",
     this.merchantAvatar,
@@ -2119,7 +2123,9 @@ class Order {
     id = object["id"].toString();
     status = object["status"];
     customerName = object["customer"];
+    customerFullName = object["customer_full_name"];
     merchant = object["merchant"];
+    merchantFullName = object["merchant_full_name"] ?? object['merchant'] ?? '';
     customerAvatar = object["customer_avatar"];
     customerType = object["customer_type"] ?? "User";
     merchantType = object["merchant_type"] ?? "Business";
@@ -2222,7 +2228,7 @@ class Order {
         Variant? variant;
         if (orderedProduct.variantModels != null &&
             (orderedProduct.variantModels?.isNotEmpty ?? false)) {
-          variant = orderedProduct.variantModels?.first?.copyWith(quantity: 1);
+          variant = orderedProduct.variantModels?.first.copyWith(quantity: 1);
         }
         basketBloc.addItemToCart(
           item: products,
@@ -2364,6 +2370,20 @@ class Order {
     final int totalAmount = subTotal + (shippingPrice ?? 0) + taxAmount;
     print("Total Amount: $totalAmount");
     return totalAmount;
+  }
+
+  String getHasPaidStatus() {
+    for (var v in statusTimeStamp ?? []) {
+      if (v.containsKey('Payment Successful') ||
+          v.containsKey('Payment Received')) {
+        if ((v['Payment Successful'] != null &&
+                v['Payment Successful'] != '') ||
+            (v['Payment Received'] != null && v['Payment Received'] != '')) {
+          return 'Paid';
+        }
+      }
+    }
+    return 'Awaiting Payment';
   }
 }
 

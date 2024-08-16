@@ -77,15 +77,16 @@ class _UserProductListState extends State<UserProductList> {
   final CarouselController _controller = CarouselController();
 
   String selectedFilter = "all";
+
   List<Filter> filterList = [
     Filter(title: "All", value: "all"),
     Filter(title: "Newest", value: "newest"),
     Filter(title: "Oldest", value: "oldest"),
-    Filter(title: "Highest Price", value: 'highest_price'),
-    Filter(title: "Lowest Price", value: 'lowest_price'),
-    Filter(title: "In stock", value: 'in_stock'),
-    Filter(title: "Coming soon", value: 'coming_soon'),
-    Filter(title: "Out of stock", value: 'out_of_stock'),
+    Filter(title: "Highest Price", value: 'highest-price'),
+    Filter(title: "Lowest Price", value: 'lowest-price'),
+    Filter(title: "In stock", value: 'on-sale'),
+    Filter(title: "Coming soon", value: 'coming-soon'),
+    Filter(title: "Out of stock", value: 'out-of-stock'),
   ];
 
   @override
@@ -379,31 +380,31 @@ class _UserProductListState extends State<UserProductList> {
           _onProductRefresh();
         });
         break;
-      case "highest_price":
+      case "highest-price":
         setState(() {
           selectedFilter = "highest-price";
           _onProductRefresh();
         });
         break;
-      case "lowest_price":
+      case "lowest-price":
         setState(() {
           selectedFilter = "lowest-price";
           _onProductRefresh();
         });
         break;
-      case "in_stock":
+      case "on-sale":
         setState(() {
           selectedFilter = "on-sale";
           _onProductRefresh();
         });
         break;
-      case "coming_soon":
+      case "coming-soon":
         setState(() {
           selectedFilter = "coming-soon";
           _onProductRefresh();
         });
         break;
-      case "out_of_stock":
+      case "out-of-stock":
         setState(() {
           selectedFilter = "out-of-stock";
           _onProductRefresh();

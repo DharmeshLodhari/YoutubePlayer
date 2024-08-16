@@ -1790,6 +1790,13 @@ class AppLocalization {
     );
   }
 
+  String get resend {
+    return Intl.message(
+      "Resend",
+      name: "resend",
+    );
+  }
+
   //index
   String get scanQrCode {
     return Intl.message(

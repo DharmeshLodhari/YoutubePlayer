@@ -1,8 +1,6 @@
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/order/custom_pdf_print_order.dart';
-import 'package:Slydo/utils/colors.dart';
-import 'package:Slydo/utils/common.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:custom_qr_generator/custom_qr_generator.dart';
 import 'package:dotted_line/dotted_line.dart';
@@ -100,7 +98,7 @@ class _OrderPreviewState extends State<OrderPreview> {
           _buildProductPriceAndCharges(currency ?? ""),
           const SizedBox(height: 10.0),
           _buildDeliveryDetails(),
-          const SizedBox(height: 20.0),
+          const SizedBox(height: 25.0),
           _buildQRCode(),
           const SizedBox(height: 20.0),
         ],
@@ -125,7 +123,7 @@ class _OrderPreviewState extends State<OrderPreview> {
 
   Widget _buildTitle() {
     return Text(
-      "${messageDecoderWithEmoji(order?.merchant)} Emporium",
+      "${messageDecoderWithEmoji(order?.merchantFullName)}",
       style: TextStyle(
         fontWeight: FontWeight.w700,
         fontSize: 24.0,
@@ -177,7 +175,7 @@ class _OrderPreviewState extends State<OrderPreview> {
   Widget _buildOrderStatus() {
     return Center(
       child: Text(
-        '${order?.status}',
+        '${order?.getHasPaidStatus()}',
         style: TextStyle(
           fontWeight: FontWeight.w600,
           color: blackFont,
@@ -539,9 +537,9 @@ class _OrderPreviewState extends State<OrderPreview> {
             fontSize: 14,
           ),
         ),
-        const SizedBox(height: 8.0),
+        const SizedBox(height: 10.0),
         _buildDeliveryCustomText(
-            'Customer', "${order?.normalizeName(order?.customerName)}"),
+            'Customer', "${order?.normalizeName(order?.customerFullName)}"),
         _buildDeliveryCustomText('Username', '@${order?.customerName}'),
         _buildDeliveryCustomText('Payment Method', order?.paymentType ?? ""),
         _buildDeliveryCustomText(
@@ -586,6 +584,7 @@ class _OrderPreviewState extends State<OrderPreview> {
             fontWeight: FontWeight.w400,
             fontFamily: "Inter",
           ),
+          textAlign: TextAlign.center,
         ),
       ],
     );

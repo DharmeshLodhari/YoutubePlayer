@@ -1,11 +1,13 @@
+import 'dart:ui' as ui;
+
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
-import 'package:Slydo/utils/common.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 class CustomPdfPrintOrder {
   CustomPdfPrintOrder({this.order, this.currency, this.product});
@@ -18,6 +20,11 @@ class CustomPdfPrintOrder {
 
     final pdf = pw.Document();
     final customFont = await loadCustomFont();
+
+    // Generate QR code image
+    final Uint8List qrCodeImage =
+        await _generateQRCodeImage(order?.getOrderUrl() ?? "");
+
     pdf.addPage(
       pw.Page(
         build: (pw.Context context) {
@@ -31,8 +38,8 @@ class CustomPdfPrintOrder {
               _buildProductPriceAndCharges(currency ?? "", customFont),
               pw.SizedBox(height: 10.0),
               _buildPrintDeliveryDetails(),
-              pw.SizedBox(height: 20.0),
-              _buildQRCode(),
+              pw.SizedBox(height: 30.0),
+              _buildQRCode(qrCodeImage),
               pw.SizedBox(height: 20.0),
             ],
           );
@@ -62,7 +69,7 @@ class CustomPdfPrintOrder {
 
   pw.Widget _buildTitle() {
     return pw.Text(
-      "${messageDecoderWithEmoji(order?.merchant)} Emporium",
+      "${messageDecoderWithEmoji(order?.merchantFullName)}",
       style: pw.TextStyle(
         fontWeight: pw.FontWeight.bold,
         fontSize: 24.0,
@@ -106,7 +113,7 @@ class CustomPdfPrintOrder {
 
   pw.Widget _buildPrintOrderStatus() {
     return pw.Text(
-      '${order?.status}',
+      '${order?.getHasPaidStatus()}',
       style: pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold),
     );
   }
@@ -115,7 +122,7 @@ class CustomPdfPrintOrder {
     return pw.Padding(
       padding: const pw.EdgeInsets.symmetric(vertical: 15),
       child: pw.Row(
-        children: List.generate(100, (index) {
+        children: List.generate(48, (_) {
           return pw.Padding(
             padding: const pw.EdgeInsets.symmetric(horizontal: 1),
             child: pw.Container(
@@ -411,9 +418,9 @@ class CustomPdfPrintOrder {
             fontSize: 14,
           ),
         ),
-        pw.SizedBox(height: 8.0),
+        pw.SizedBox(height: 10.0),
         _buildDeliveryCustomText(
-            'Customer', "${order?.normalizeName(order?.customerName)}"),
+            'Customer', "${order?.normalizeName(order?.customerFullName)}"),
         _buildDeliveryCustomText('Username', '@${order?.customerName}'),
         _buildDeliveryCustomText('Payment Method', order?.paymentType ?? ""),
         _buildDeliveryCustomText(
@@ -448,15 +455,15 @@ class CustomPdfPrintOrder {
     );
   }
 
-  pw.Widget _buildQRCode() {
+  pw.Widget _buildQRCode(Uint8List qrCodeImage) {
     return pw.Column(
       crossAxisAlignment: pw.CrossAxisAlignment.center,
       children: [
-        // pw.Image(
-        //   pw.MemoryImage(imageData),
-        //   width: 80,
-        //   height: 80,
-        // ),
+        pw.Image(
+          pw.MemoryImage(qrCodeImage), // Display the QR code image
+          width: 80,
+          height: 80,
+        ),
         pw.SizedBox(height: 8),
         pw.Text(
           'Powered by SLYDO',
@@ -466,23 +473,35 @@ class CustomPdfPrintOrder {
           ),
         ),
         pw.SizedBox(height: 5),
-        pw.Text(
-          'Download Slydo App on Google Play Store & App Store',
-          style: pw.TextStyle(
-            fontSize: 14.0,
-            fontWeight: pw.FontWeight.normal,
-          ),
-        ),
+        pw.Text('Download Slydo App on Google Play Store & App Store',
+            style: pw.TextStyle(
+              fontSize: 14.0,
+              fontWeight: pw.FontWeight.normal,
+            ),
+            textAlign: pw.TextAlign.center),
       ],
     );
   }
 
-  Future<Uint8List> loadImageData() async {
-    try {
-      final ByteData data = await rootBundle.load('assets/qr_code.png');
-      return data.buffer.asUint8List();
-    } catch (e) {
-      throw Exception('Error loading asset: $e');
-    }
+  Future<Uint8List> _generateQRCodeImage(String data) async {
+    final qrValidationResult = QrValidator.validate(
+      data: data,
+      version: QrVersions.auto,
+      errorCorrectionLevel: QrErrorCorrectLevel.Q,
+    );
+    final qrCode = qrValidationResult.qrCode;
+
+    final painter = QrPainter.withQr(
+      qr: qrCode!,
+      emptyColor: const Color(0xFFFFFFFF),
+      color: const Color(0xFF000000),
+      gapless: true,
+    );
+
+    final ui.Picture picture = painter.toPicture(80);
+    final ui.Image image = await picture.toImage(80, 80);
+    final ByteData? byteData =
+        await image.toByteData(format: ui.ImageByteFormat.png);
+    return byteData!.buffer.asUint8List();
   }
 }

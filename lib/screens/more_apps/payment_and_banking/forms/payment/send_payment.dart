@@ -23,11 +23,18 @@ class _SendPaymentState extends State<SendPayment> {
   int currentAskTapOnHome = 0;
   String? selectedCategoryId;
   bool isQuestionMode = false;
+  bool isFromCashOut = false;
   int count = 0;
 
   @override
   void initState() {
-    _pageViewController = PageController(initialPage: 0);
+    isFromCashOut = widget.arguments['isFromCashOut'] ?? false;
+    if (isFromCashOut) {
+      currentAskTapOnHome = 1;
+      _pageViewController = PageController(initialPage: currentAskTapOnHome);
+    } else {
+      _pageViewController = PageController(initialPage: 0);
+    }
 
     super.initState();
   }

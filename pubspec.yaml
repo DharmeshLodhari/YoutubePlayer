@@ -115,6 +115,7 @@ dependencies:
   sunmi_printer_plus: ^2.1.3
   path_provider: ^2.1.4
   google_fonts: ^6.2.1
+  qr_flutter: ^4.1.0
 
 dependency_overrides:
   js: ^0.7.1

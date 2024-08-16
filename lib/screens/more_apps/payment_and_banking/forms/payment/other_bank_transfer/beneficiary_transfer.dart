@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:Slydo/constant.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/models/payout.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
@@ -72,56 +73,72 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer>
   List bankAccountListStore = [];
   bool noItemInList = false;
   BankAccount? selectedBank;
-  // final TextEditingController _amountController = TextEditingController();
   final searchItemTextController = TextEditingController();
+  final TextEditingController _amountController = TextEditingController();
+  final TextEditingController _referenceController = TextEditingController();
   GlobalKey searchItemTextFormField = GlobalKey();
   final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
   bool isBalanceHidden = true;
   bool isBalanceLoading = true;
+  Payout? payout;
 
   @override
   void initState() {
-    _scrollController.addListener(() {
-      if (_scrollController.position.pixels ==
-              _scrollController.position.maxScrollExtent &&
-          _scrollController.position.pixels != 0) {
-        getList("");
-      }
-    });
+    payout = widget.arguments != null ? widget.arguments['payout'] : null;
 
-    getBankAccountDetail();
-
-    searchItemTextController.addListener(() {
-      if (searchItemTextController.text.length >= 3) {
-        searchText = searchItemTextController.text;
-
-        if (bottomSheetStateSetterGlobal != null && bottomSheetMounted) {
-          bottomSheetStateSetterGlobal!(() {});
+    if (payout != null) {
+      getBankAccountDetail(loadBanks: false);
+      getList(payout?.accountNumber ?? "");
+      _amountController.text = moneyDisplayNormalizer(payout?.amount);
+      amount =
+          int.parse(_amountController.text.replaceAll(",", "").split(".")[0]);
+      _referenceController.text = payout?.description ?? "";
+      description = _referenceController.text;
+    } else {
+      getBankAccountDetail(loadBanks: true);
+      _scrollController.addListener(() {
+        if (_scrollController.position.pixels ==
+                _scrollController.position.maxScrollExtent &&
+            _scrollController.position.pixels != 0) {
+          getList("");
         }
-        if (mounted) setState(() {});
+      });
 
-        // Call your search function here
-        searchBankList();
-      } else if (searchItemTextController.text.isEmpty) {
-        if (bottomSheetStateSetterGlobal != null && bottomSheetMounted) {
-          bottomSheetStateSetterGlobal!(() {});
+      searchItemTextController.addListener(() {
+        if (searchItemTextController.text.length >= 3) {
+          searchText = searchItemTextController.text;
+
+          if (bottomSheetStateSetterGlobal != null && bottomSheetMounted) {
+            bottomSheetStateSetterGlobal!(() {});
+          }
+          if (mounted) setState(() {});
+
+          // Call your search function here
+          searchBankList();
+        } else if (searchItemTextController.text.isEmpty) {
+          if (bottomSheetStateSetterGlobal != null && bottomSheetMounted) {
+            bottomSheetStateSetterGlobal!(() {});
+          }
+          if (mounted) setState(() {});
+
+          clearSearchAndAllBanks();
+          searchBankList();
         }
-        if (mounted) setState(() {});
-
-        clearSearchAndAllBanks();
-        searchBankList();
-      }
-    });
+      });
+    }
 
     super.initState();
   }
 
-  void getBankAccountDetail() async {
+  void getBankAccountDetail({bool loadBanks = true}) async {
     isBalanceLoading = true;
     setState(() {});
     await getAccountBalance();
-    getList("");
+    if (loadBanks) {
+      getList("");
+    }
+
     virtualAccount = await DatabaseHelper().getVirtualAccount();
     virtualAccount ??= await PaymentAndBankingAuth().getVirtualAccountDetail();
     if (virtualAccount != null) {
@@ -481,6 +498,7 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer>
       keyboardType: Platform.isIOS
           ? const TextInputType.numberWithOptions(decimal: true)
           : TextInputType.number,
+      controller: _amountController,
       onChanged: (val) {
         if (mounted) {
           setState(() {
@@ -508,6 +526,7 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer>
     return CustomizedTextFormField(
       labelText: AppLocalization.of(context)!.reference,
       keyboardType: TextInputType.text,
+      controller: _referenceController,
       enabled: true,
       onChanged: (val) {
         if (mounted) {
@@ -906,7 +925,12 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer>
       bankAccountListStore.addAll(tempList);
 
       for (BankAccount item in bankAccountList) {
-        if (item.isDefault == true) {
+        if (searchText == null || searchText.isEmpty) {
+          if (item.isDefault == true) {
+            bankAccountBloc.bankAccount = item;
+          }
+        } else if ((item.accountNumber?.contains(searchText) ?? false) ||
+            (item.accountName?.contains(searchText) ?? false)) {
           bankAccountBloc.bankAccount = item;
         }
       }

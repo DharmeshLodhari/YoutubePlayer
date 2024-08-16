@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:Slydo/data/currency.dart';
+import 'package:Slydo/data/state_notifiers/basket_bloc.dart';
 import 'package:Slydo/data/state_notifiers/user_bloc.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
@@ -14,6 +15,7 @@ import 'package:Slydo/screens/more_apps/shopping/widget/outline_border_button.da
 import 'package:Slydo/screens/more_apps/shopping/widget/rounded_border_button.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/services/location_service.dart';
+import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
@@ -40,6 +42,7 @@ class OrderTile extends StatefulWidget {
 
 class _OrderTileState extends State<OrderTile> {
   late UserBloc userBloc;
+  late BasketBloc basketBloc;
   Order? order;
   final GlobalKey _key = LabeledGlobalKey("orderListPopUpMenu");
   late CustomizedPopUpMenu menu;
@@ -58,6 +61,8 @@ class _OrderTileState extends State<OrderTile> {
   String? dateText;
   DateTime? selectDateTime;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -78,6 +83,7 @@ class _OrderTileState extends State<OrderTile> {
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
+    basketBloc = Provider.of<BasketBloc>(context);
     menu = CustomizedPopUpMenu(
       buttonKey: _key,
       context: context,
@@ -154,12 +160,13 @@ class _OrderTileState extends State<OrderTile> {
                                 direction: Axis.horizontal,
                                 children: [_buildSecondButton()],
                               ),
-                              const SizedBox(
-                                width: 5,
-                              ),
                               Flex(
                                 direction: Axis.horizontal,
                                 children: [_buildThirdButton()],
+                              ),
+                              Flex(
+                                direction: Axis.horizontal,
+                                children: [_buildRepeatOrder()],
                               )
                             ],
                           )
@@ -200,9 +207,10 @@ class _OrderTileState extends State<OrderTile> {
           order?.status == "On Hold") {
         return const SizedBox.shrink();
       }
-      if (order?.status == "Complete") {
-        if (order?.canWriteReview() == false) return _buildWriteReview();
-      } else if (order?.status == "Awaiting Payment") {
+      // if (order?.isCompleted() ?? false) {
+      //   return _buildWriteReview();
+      // }
+      else if (order?.status == "Awaiting Payment") {
         return _buildPayNow();
       } else if (order?.orderConfirmState.contains(order?.status) == false) {
         return _buildConfirmDelivery();
@@ -258,7 +266,14 @@ class _OrderTileState extends State<OrderTile> {
   Widget _buildThirdButton() {
     if (order?.newOrderStatus.contains(order?.status) == true ||
         order?.status == "Awaiting Payment") {
-      return _buildCancelOrder();
+      return Row(
+        children: [
+          const SizedBox(
+            width: 5,
+          ),
+          _buildCancelOrder(),
+        ],
+      );
     }
     return const SizedBox.shrink();
   }
@@ -281,6 +296,34 @@ class _OrderTileState extends State<OrderTile> {
       },
       isLoading: isOrderLoading,
     );
+  }
+
+  Widget _buildRepeatOrder() {
+    if ((order?.isCustomer(userBloc.user.userName) ?? false) &&
+        (order?.isCompleted() ?? false)) {
+      return Row(
+        children: [
+          const SizedBox(
+            width: 5,
+          ),
+          RoundedBorderButton(
+            isLoading: isLoading,
+            title: "Buy Again",
+            onTap: () async {
+              order?.recreateOrder(basketBloc, userBloc);
+              isLoading = true;
+              if (mounted) setState(() {});
+              await Future.delayed(const Duration(seconds: 2));
+              isLoading = false;
+              if (mounted) setState(() {});
+              NavigationUtil.pushNamed(context,
+                  routeName: Routes.SHOPPING_CART);
+            },
+          ),
+        ],
+      );
+    }
+    return const SizedBox.shrink();
   }
 
   Widget _buildConfirmDelivery() {
@@ -1266,37 +1309,38 @@ class _OrderTileState extends State<OrderTile> {
   Widget _buildMerchantCustomerIcon(String? image) {
     return Stack(
       children: [
-        ClipRRect(
-          borderRadius: BorderRadius.circular(80),
-          child: GestureDetector(
-            onTap: () {
-              Navigator.of(context)
-                  .pushNamed("/photo-viewer", arguments: image);
-            },
-            child: Container(
-              color: Colors.white,
-              child: CachedNetworkImage(
-                height: 30,
-                width: 30,
-                fit: BoxFit.fill,
-                filterQuality: FilterQuality.high,
-                imageUrl: image ?? "",
-                errorWidget: imageErrorWidget,
+        Padding(
+          padding: const EdgeInsets.all(2.0),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(80),
+            child: GestureDetector(
+              onTap: () {
+                Navigator.of(context)
+                    .pushNamed("/photo-viewer", arguments: image);
+              },
+              child: Container(
+                color: Colors.white,
+                child: CachedNetworkImage(
+                  height: 30,
+                  width: 30,
+                  fit: BoxFit.fill,
+                  filterQuality: FilterQuality.high,
+                  imageUrl: image ?? "",
+                  errorWidget: imageErrorWidget,
+                ),
               ),
             ),
           ),
         ),
         Positioned(
           bottom: 0,
-          right: -1,
-          child: CircleAvatar(
-            maxRadius: 7,
-            backgroundColor: navyBlue,
-            child: Image.asset(
-              order?.isCustomer(userBloc.user.userName) ?? false
-                  ? 'assets/images/arrow-down-right.png'
-                  : 'assets/images/arrow-down-left.png',
-            ),
+          right: 0,
+          child: Image.asset(
+            order?.isCustomer(userBloc.user.userName) ?? false
+                ? 'assets/images/arrow_down_blue.png'
+                : 'assets/images/arrow_up_pink.png',
+            height: 13,
+            width: 13,
           ),
         ),
       ],

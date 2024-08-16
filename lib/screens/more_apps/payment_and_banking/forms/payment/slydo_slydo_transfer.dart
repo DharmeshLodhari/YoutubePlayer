@@ -9,6 +9,7 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/fee_structure.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/virtual_account.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
 import 'package:Slydo/screens/more_apps/payment_loading_screen.dart';
@@ -66,6 +67,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
   //for Service payment
   Service? service;
 
+  Transaction? transaction;
   bool? isFromProfile = false;
   bool isFromChat = false;
   bool? isFromYarn = false;
@@ -105,6 +107,8 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
     _referenceController = TextEditingController(text: defaultReferenceText);
     reference = _referenceController.text;
 
+    transaction =
+        widget.arguments != null ? widget.arguments['transaction'] : null;
     isFromProfile = widget.arguments != null
         ? widget.arguments['isFromProfile'] ?? false
         : false;
@@ -123,6 +127,14 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
     service = widget.arguments != null ? widget.arguments['service'] : null;
     itemIndex = widget.arguments != null ? widget.arguments['itemIndex'] : null;
 
+    if (transaction != null) {
+      _amountController.text = moneyDisplayNormalizer(transaction?.amount);
+      amount = double.parse(_amountController.text.replaceAll(',', ''));
+      selectedCategory = transaction?.category ?? "";
+      _referenceController.text = transaction?.note ?? "";
+      reference = _referenceController.text ?? "";
+      sendMoneyAnonymous = transaction?.isAnonymous ?? false;
+    }
     if (product != null) {
       setAllFieldProduct();
     }

@@ -29,13 +29,9 @@ import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
-import 'package:pdf/pdf.dart';
-import 'package:pdf/widgets.dart' as pw;
-import 'package:printing/printing.dart';
 import 'package:provider/provider.dart';
 
 class OrderDetailPage extends StatefulWidget {
@@ -456,37 +452,38 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   Widget _buildMerchantCustomerIcon(String? image) {
     return Stack(
       children: [
-        ClipRRect(
-          borderRadius: BorderRadius.circular(80),
-          child: GestureDetector(
-            onTap: () {
-              Navigator.of(context)
-                  .pushNamed("/photo-viewer", arguments: image);
-            },
-            child: Container(
-              color: Colors.white,
-              child: CachedNetworkImage(
-                height: 30,
-                width: 30,
-                fit: BoxFit.fill,
-                filterQuality: FilterQuality.high,
-                imageUrl: image ?? "",
-                errorWidget: imageErrorWidget,
+        Padding(
+          padding: const EdgeInsets.all(2.0),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(80),
+            child: GestureDetector(
+              onTap: () {
+                Navigator.of(context)
+                    .pushNamed("/photo-viewer", arguments: image);
+              },
+              child: Container(
+                color: Colors.white,
+                child: CachedNetworkImage(
+                  height: 30,
+                  width: 30,
+                  fit: BoxFit.fill,
+                  filterQuality: FilterQuality.high,
+                  imageUrl: image ?? "",
+                  errorWidget: imageErrorWidget,
+                ),
               ),
             ),
           ),
         ),
         Positioned(
           bottom: 0,
-          right: -1,
-          child: CircleAvatar(
-            maxRadius: 7,
-            backgroundColor: navyBlue,
-            child: Image.asset(
-              order?.isCustomer(userBloc.user.userName) ?? false
-                  ? 'assets/images/arrow-down-right.png'
-                  : 'assets/images/arrow-down-left.png',
-            ),
+          right: 0,
+          child: Image.asset(
+            order?.isCustomer(userBloc.user.userName) ?? false
+                ? 'assets/images/arrow_down_blue.png'
+                : 'assets/images/arrow_up_pink.png',
+            height: 13,
+            width: 13,
           ),
         ),
       ],
@@ -507,15 +504,15 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
 
   Widget getItemTileUi(int index) {
     if (order?.orderItems?[index].item is Product) {
-      if (order?.status == AppLocalization.of(context)!.completed) {
+      if ((order?.isCustomer(userBloc.user.userName) ?? false) &&
+          (order?.isCompleted() ?? false)) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             OrderTileForProductNew(
               order: order?.orderItems?[index],
             ),
-            if (order?.status == "Complete" && order?.canWriteReview() == false)
-              _buildWriteReview(index, 'isProduct'),
+            _buildWriteReview(index, 'isProduct'),
           ],
         );
       }
@@ -523,14 +520,14 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
         order: order?.orderItems?[index],
       );
     } else if (order?.orderItems?[index].item is Service) {
-      if (order?.status == AppLocalization.of(context)!.completed) {
+      if ((order?.isCustomer(userBloc.user.userName) ?? false) &&
+          (order?.isCompleted() ?? false)) {
         return Column(
           children: [
             OrderTileForService(
               order?.orderItems?[index],
             ),
-            if (order?.status == "Complete" && order?.canWriteReview() == false)
-              _buildWriteReview(index, 'isService'),
+            _buildWriteReview(index, 'isService'),
           ],
         );
       }
@@ -1211,12 +1208,13 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   }
 
   Widget _buildRepeatOrder() {
-    if (order?.isCompleted() ?? false) {
+    if ((order?.isCustomer(userBloc.user.userName) ?? false) &&
+        (order?.isCompleted() ?? false)) {
       return Expanded(
         child: Padding(
           padding: const EdgeInsets.only(left: 8),
           child: RoundedBorderButton(
-            title: "Buy it again",
+            title: "Buy Again",
             onTap: () {
               order?.recreateOrder(basketBloc, userBloc);
               NavigationUtil.pushNamed(context,

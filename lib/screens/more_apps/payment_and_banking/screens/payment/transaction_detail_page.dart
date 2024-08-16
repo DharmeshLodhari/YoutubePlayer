@@ -1,9 +1,11 @@
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -121,6 +123,7 @@ class _TransactionDetailState extends State<TransactionDetail> {
             children: [
               displayTransactionInfo(),
               flexibleSpace(),
+              buildButtons(),
             ],
           ),
         ),
@@ -279,6 +282,43 @@ class _TransactionDetailState extends State<TransactionDetail> {
                 '---',
             false),
       ],
+    );
+  }
+
+  Widget buildButtons() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 30.0),
+      child: Row(
+        children: [
+          Expanded(
+            child: OutlineCurvedButton(
+              onPressed: () {
+                Navigator.of(context).pushNamed(Routes.SEND_PAYMENT,
+                    arguments: <String, dynamic>{
+                      'isFromProfile': false,
+                      'transaction': transaction,
+                    });
+              },
+              backgroundColor: white,
+              textColor: navyBlue,
+              text: "Send Again",
+            ),
+          ),
+          const SizedBox(
+            width: 15,
+          ),
+          Expanded(
+            child: CurvedButton(
+              onPressed: () {
+                showSnackbar(context, message: "Coming soon");
+              },
+              backgroundColor: navyBlue,
+              textColor: Colors.white,
+              text: "Share Receipt",
+            ),
+          ),
+        ],
+      ),
     );
   }
 
