@@ -478,13 +478,24 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
         Positioned(
           bottom: 0,
           right: 0,
-          child: Image.asset(
-            order?.isCustomer(userBloc.user.userName) ?? false
-                ? 'assets/images/arrow_down_blue.png'
-                : 'assets/images/arrow_up_pink.png',
-            height: 13,
-            width: 13,
+          child: CircleAvatar(
+            maxRadius: 7,
+            backgroundColor: order?.isCustomer(userBloc.user.userName) ?? false
+                ? navyBlue
+                : deepPink,
+            child: Image.asset(
+              order?.isCustomer(userBloc.user.userName) ?? false
+                  ? 'assets/images/sales.png'
+                  : 'assets/images/purchase.png',
+            ),
           ),
+          // child: Image.asset(
+          //   order?.isCustomer(userBloc.user.userName) ?? false
+          //       ? 'assets/images/arrow_down.png'
+          //       : 'assets/images/arrow_up.png',
+          //   height: 13,
+          //   width: 13,
+          // ),
         ),
       ],
     );

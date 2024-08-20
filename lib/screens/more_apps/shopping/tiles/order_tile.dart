@@ -1335,15 +1335,33 @@ class _OrderTileState extends State<OrderTile> {
         Positioned(
           bottom: 0,
           right: 0,
-          child: Image.asset(
-            order?.isCustomer(userBloc.user.userName) ?? false
-                ? 'assets/images/arrow_down_blue.png'
-                : 'assets/images/arrow_up_pink.png',
-            height: 13,
-            width: 13,
+          child: CircleAvatar(
+            maxRadius: 7,
+            backgroundColor: getPurchaseColor(),
+            child: getCustomerOrMerchantBuyIcon(),
           ),
         ),
       ],
     );
+  }
+
+  Widget getCustomerOrMerchantBuyIcon() {
+    String icon = '';
+    if (order?.isMerchant(userBloc.user.userName) ?? false) {
+      icon = 'assets/images/sales.png'; // using for incoming or sales
+    } else {
+      icon = 'assets/images/purchase.png'; // using for out going or purchase
+    }
+    return Image.asset(icon);
+  }
+
+  Color getPurchaseColor() {
+    Color color;
+    if (order?.isMerchant(userBloc.user.userName) ?? false) {
+      color = navyBlue; // using for incoming or sales
+    } else {
+      color = deepPink; // using for out going or purchase
+    }
+    return color;
   }
 }
