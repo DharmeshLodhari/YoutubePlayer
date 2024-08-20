@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
@@ -12,9 +14,14 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:maps_launcher/maps_launcher.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
 import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
 
 // ignore: must_be_immutable
 class TransactionDetail extends StatefulWidget {
@@ -330,8 +337,10 @@ class _TransactionDetailState extends State<TransactionDetail> {
           ),
           Expanded(
             child: CurvedButton(
-              onPressed: () {
-                showSnackbar(context, message: "Coming soon");
+              onPressed: () async {
+                // showSnackbar(context, message: "Coming soon");
+                final pdfFile = await createPdf();
+                await sharePdf(pdfFile);
               },
               backgroundColor: navyBlue,
               textColor: Colors.white,
@@ -347,5 +356,143 @@ class _TransactionDetailState extends State<TransactionDetail> {
     debugPrint("go to Map Called !");
     MapsLauncher.launchCoordinates(double.parse(transaction!.latitude!),
         double.parse(transaction!.longitude!));
+  }
+
+  Future<File> createPdf() async {
+    final pdf = pw.Document();
+
+    final ByteData logoBytes = await rootBundle.load('assets/logo.png');
+    final ByteData qrBytes = await rootBundle.load('assets/qr.png');
+
+    final Uint8List logo = logoBytes.buffer.asUint8List();
+    final Uint8List qr = qrBytes.buffer.asUint8List();
+
+    final double amount = 100000.00;
+    final String currency = "₦";
+    final String status = "Successful";
+    final String transactionType = "Slydo to Slydo";
+    final String receiverUsername = "@prineygladhair";
+    final String receiverAccountNumber = "542764367";
+    final String senderUsername = "@gbemiglad";
+    final String senderAccountNumber = "546789032";
+    final String referenceNumber = "00065234179306328977635";
+    final String category = "Shopping";
+    final String description = "Hair";
+    final DateTime transactionDate = DateTime(2024, 3, 28, 12, 6, 34);
+
+    pdf.addPage(
+      pw.Page(
+        build: (pw.Context context) {
+          return pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            children: [
+              pw.Center(
+                child: pw.Image(
+                  pw.MemoryImage(logo),
+                  height: 50,
+                ),
+              ),
+              pw.SizedBox(height: 10),
+              pw.Center(
+                child: pw.Text(
+                  "Transaction Receipt",
+                  style: pw.TextStyle(
+                      fontSize: 18, fontWeight: pw.FontWeight.bold),
+                ),
+              ),
+              pw.SizedBox(height: 10),
+              pw.Center(
+                child: pw.Text(
+                  DateFormat('dd MMMM, yyyy, HH:mm:ss').format(transactionDate),
+                  style: const pw.TextStyle(
+                      fontSize: 16, color: PdfColors.grey700),
+                ),
+              ),
+              pw.Divider(),
+              buildPdfReceiptDetail(
+                  "Amount", "$currency${amount.toStringAsFixed(2)}"),
+              buildPdfReceiptDetail("Status", status),
+              buildPdfReceiptDetail("Transaction Type", transactionType),
+              buildPdfReceiptDetail("Receiver Details",
+                  "$receiverUsername\n$receiverAccountNumber"),
+              buildPdfReceiptDetail(
+                  "Sender Details", "$senderUsername\n$senderAccountNumber"),
+              buildPdfReceiptDetail("Reference Number", referenceNumber),
+              buildPdfReceiptDetail("Category", category),
+              buildPdfReceiptDetail("Description", description),
+              pw.Divider(),
+              pw.SizedBox(height: 20),
+              pw.Center(
+                child: pw.Text(
+                  "Scan QR to download SLYDO APP",
+                  style: pw.TextStyle(
+                      fontSize: 16, fontWeight: pw.FontWeight.bold),
+                ),
+              ),
+              pw.SizedBox(height: 10),
+              pw.Center(
+                child: pw.Image(
+                  pw.MemoryImage(qr),
+                  height: 100,
+                ),
+              ),
+              pw.SizedBox(height: 10),
+              pw.Center(
+                child: pw.Text(
+                  "Experience the convenience of Slydo...",
+                  style: const pw.TextStyle(
+                      fontSize: 14, color: PdfColors.grey700),
+                  textAlign: pw.TextAlign.center,
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+
+    final output = await getTemporaryDirectory();
+    final file = File("${output.path}/receipt.pdf");
+    await file.writeAsBytes(await pdf.save());
+
+    return file;
+  }
+
+  pw.Widget buildPdfReceiptDetail(String title, String value) {
+    return pw.Padding(
+      padding: const pw.EdgeInsets.symmetric(vertical: 8.0),
+      child: pw.Row(
+        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+        children: [
+          pw.Text(
+            title,
+            style: const pw.TextStyle(
+              fontSize: 16,
+              color: PdfColors.black,
+            ),
+          ),
+          pw.Flexible(
+            child: pw.Text(
+              value,
+              style: pw.TextStyle(
+                fontSize: 16,
+                fontWeight: pw.FontWeight.bold,
+                color: PdfColors.black,
+              ),
+              textAlign: pw.TextAlign.right,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> sharePdf(File pdfFile) async {
+    try {
+      await Share.shareXFiles([XFile(pdfFile.path)],
+          text: "Here is your receipt.");
+    } catch (e) {
+      print('Error sharing PDF: $e');
+    }
   }
 }
