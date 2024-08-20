@@ -89,8 +89,11 @@ class CustomPdfPrintOrder {
 
   pw.Widget _buildOrderPlaceDateTime() {
     final DateFormat dateFormat = DateFormat("dd MMMM, yyyy, HH:mm:ss");
-    final DateTime dateTime = DateTime.parse(order?.createdAt.toString() ?? "");
-    final String date = dateFormat.format(dateTime);
+    final DateTime? dateTime = DateTime.tryParse(order?.createdAt ?? "");
+    String date = '';
+    if (dateTime != null) {
+      date = dateFormat.format(dateTime);
+    }
 
     return pw.Text(
       'Order Placed: $date',

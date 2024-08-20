@@ -418,15 +418,7 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer>
                           fontWeight: FontWeight.w600),
                       children: <InlineSpan>[
                         TextSpan(
-                          text: double.parse(moneyDisplayNormalizer(
-                                      displayPossibleCashOutAmount(
-                                          accountBalance!))) >=
-                                  35.00
-                              ? worldCurrencies[userBloc.user.currency!]! +
-                                  moneyDisplayNormalizer(
-                                      displayPossibleCashOutAmount(
-                                          accountBalance!))
-                              : '${worldCurrencies[userBloc.user.currency!]!}0.00',
+                          text: getAccountBalanceDisplay(),
                           style: TextStyle(
                               fontSize: 12,
                               color: blackFont,
@@ -439,6 +431,19 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer>
         ),
       ],
     );
+  }
+
+  String getAccountBalanceDisplay() {
+    final int balanceAmount = displayPossibleCashOutAmount(accountBalance ?? 0);
+    final allowedPayoutAsString = balanceAmount / 100;
+    final double allowedPayout = double.parse(allowedPayoutAsString.toString());
+
+    if (allowedPayout >= 35.00) {
+      return worldCurrencies[userBloc.user.currency!]! +
+          moneyDisplayNormalizer(amount);
+    } else {
+      return '${worldCurrencies[userBloc.user.currency!]!}0.00';
+    }
   }
 
   Widget getUserBankAccount() {

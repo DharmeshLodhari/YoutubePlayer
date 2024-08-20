@@ -343,7 +343,8 @@ class _SlydoTransactionListState extends State<SlydoTransactionList>
     if (transaction.payee! == "slydo_envelope" ||
         transaction.payee! == "slydo" ||
         transaction.displayCustomer == "slydo" ||
-        transaction.displayCustomer == "slydo_envelope") {
+        transaction.displayCustomer == "slydo_envelope" ||
+        transaction.isCredit!) {
       return [];
     }
     if (transaction.isAnonymous!) return [];
@@ -361,6 +362,7 @@ class _SlydoTransactionListState extends State<SlydoTransactionList>
                 .pushNamed(Routes.SEND_PAYMENT, arguments: <String, dynamic>{
               'isFromProfile': false,
               'transaction': transaction,
+              'showMoreOption': true,
             });
           } else {
             showToast(message: 'Payment not available at the moment');

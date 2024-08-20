@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
 
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
 import 'package:Slydo/screens/more_apps/shopping/widget/product_detail_shimmer.dart';
 import 'package:Slydo/screens/more_apps/user_profile/widgets/user_profile_shimmer.dart';
@@ -475,7 +476,8 @@ Widget transactionOrPayoutTile(
     String path, String title, String subtitle, bool val,
     {Transaction? transaction,
     Widget? trailingWidget,
-    TextStyle? subtitleTextStyle}) {
+    TextStyle? subtitleTextStyle,
+    BuildContext? context}) {
   // debugPrint("Fola ==>$subtitle");
 
   String? status = "";
@@ -522,20 +524,47 @@ Widget transactionOrPayoutTile(
             borderRadius: BorderRadius.circular(5.0),
             color: checkStatusBgColor(status),
           ),
-          child: Text(
-            getCurrency(subtitle, transaction?.currency),
-            style: subtitleTextStyle ??
-                TextStyle(
-                  color: checkStatusForColor(status),
-                  fontSize: 14,
-                  fontFamily: "Inter",
-                ),
-          ),
+          child: getDisplayContent(
+              subtitle, transaction, subtitleTextStyle, status, context),
         ),
         Container(),
       ],
     ),
     trailing: trailingWidget,
+  );
+}
+
+Widget getDisplayContent(String subtitle, Transaction? transaction,
+    TextStyle? subtitleTextStyle, String status, BuildContext? context) {
+  Color color = checkStatusForColor(status);
+  if (subtitle.contains('Order Ref:')) {
+    final String orderId =
+        subtitle.replaceAll('Order Ref:', '').replaceAll(' ', '');
+    color = checkStatusForColor('null');
+    return GestureDetector(
+      onTap: () async {
+        await Navigator.pushNamed(context!, Routes.ORDER_DETAIL_PAGE,
+            arguments: {"orderId": orderId});
+      },
+      child: Text(
+        getCurrency(subtitle, transaction?.currency),
+        style: subtitleTextStyle ??
+            TextStyle(
+              color: color,
+              fontSize: 14,
+              fontFamily: "Inter",
+            ),
+      ),
+    );
+  }
+  return Text(
+    getCurrency(subtitle, transaction?.currency),
+    style: subtitleTextStyle ??
+        TextStyle(
+          color: color,
+          fontSize: 14,
+          fontFamily: "Inter",
+        ),
   );
 }
 

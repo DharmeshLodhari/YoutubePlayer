@@ -150,10 +150,15 @@ class OrderTileOld extends StatelessWidget {
   }
 
   Widget getDateTime(BuildContext context) {
-    debugPrint(order?.createdAt);
-    final DateTime orderTime = DateTime.parse(order?.createdAt ?? '').toLocal();
-    final String date = DateFormat("hh:mm a").format(orderTime);
-    final String time = DateFormat("dd/MM/yyyy").format(orderTime);
+    final DateTime? orderTime =
+        DateTime.tryParse(order?.createdAt ?? "")?.toLocal();
+    String date = '';
+    String time = '';
+    if (orderTime != null) {
+      date = DateFormat("hh:mm a").format(orderTime);
+      time = DateFormat("dd/MM/yyyy").format(orderTime);
+    }
+
     return Text(
       "$date • $time",
       softWrap: false,

@@ -1,8 +1,12 @@
 import 'package:Slydo/data/currency.dart';
+import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/locator.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
+import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
+import 'package:Slydo/services/app_config_bloc.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
@@ -10,6 +14,7 @@ import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:maps_launcher/maps_launcher.dart';
+import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
 class TransactionDetail extends StatefulWidget {
@@ -23,9 +28,12 @@ class TransactionDetail extends StatefulWidget {
 
 class _TransactionDetailState extends State<TransactionDetail> {
   Transaction? transaction;
+  late CustomerProfileBloc customerProfileBloc;
+  AppConfigurationModel? appConfigurationModel;
 
   @override
   void initState() {
+    appConfigurationModel = getIt<AppConfigurationBloc>().appConfigurationModel;
     fetchTransaction();
 
     super.initState();
@@ -44,8 +52,10 @@ class _TransactionDetailState extends State<TransactionDetail> {
 
   @override
   Widget build(BuildContext context) {
+    customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
     return WillPopScope(
       onWillPop: () async {
+        customerProfileBloc.customer = null;
         return true;
       },
       child: Scaffold(
@@ -270,19 +280,22 @@ class _TransactionDetailState extends State<TransactionDetail> {
         transactionOrPayoutTile(
             'assets/images/payout/note.svg',
             AppLocalization.of(context)!.note,
-            messageDecoderWithEmoji(
-                    appendStringDot(transaction?.note ?? "", 35)) ??
-                '---',
-            false),
+            getNoteAndDiscription(transaction?.note ?? ""),
+            false,
+            context: context),
         transactionOrPayoutTile(
             'assets/images/payout/description.svg',
             AppLocalization.of(context)!.description,
-            messageDecoderWithEmoji(
-                    appendStringDot(transaction?.description ?? "", 35)) ??
-                '---',
-            false),
+            getNoteAndDiscription(transaction?.description ?? ""),
+            false,
+            context: context),
       ],
     );
+  }
+
+  String getNoteAndDiscription(String text) {
+    text = messageDecoderWithEmoji(appendStringDot(text, 35)) ?? '---';
+    return text;
   }
 
   Widget buildButtons() {
@@ -290,20 +303,28 @@ class _TransactionDetailState extends State<TransactionDetail> {
       padding: const EdgeInsets.symmetric(vertical: 30.0),
       child: Row(
         children: [
-          Expanded(
-            child: OutlineCurvedButton(
-              onPressed: () {
-                Navigator.of(context).pushNamed(Routes.SEND_PAYMENT,
-                    arguments: <String, dynamic>{
-                      'isFromProfile': false,
-                      'transaction': transaction,
-                    });
-              },
-              backgroundColor: white,
-              textColor: navyBlue,
-              text: "Send Again",
+          if (!transaction!.isCredit!)
+            Expanded(
+              child: OutlineCurvedButton(
+                onPressed: () async {
+                  if (appConfigurationModel?.enablePayment == true) {
+                    customerProfileBloc.customer = await UserAuth()
+                        .fetchCustomerProfile(transaction?.payee);
+                    Navigator.of(context).pushNamed(Routes.SEND_PAYMENT,
+                        arguments: <String, dynamic>{
+                          'isFromProfile': false,
+                          'transaction': transaction,
+                          'showMoreOption': true,
+                        });
+                  } else {
+                    showToast(message: 'Payment not available at the moment');
+                  }
+                },
+                backgroundColor: white,
+                textColor: navyBlue,
+                text: "Send Again",
+              ),
             ),
-          ),
           const SizedBox(
             width: 15,
           ),

@@ -109,6 +109,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
 
     transaction =
         widget.arguments != null ? widget.arguments['transaction'] : null;
+    showMoreOption = widget.arguments['showMoreOption'] ?? false;
     isFromProfile = widget.arguments != null
         ? widget.arguments['isFromProfile'] ?? false
         : false;

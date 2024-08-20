@@ -982,9 +982,13 @@ class _OrderTileState extends State<OrderTile> {
   }
 
   Widget getDateTime() {
-    debugPrint(order?.createdAt);
-    final DateTime orderTime = DateTime.parse(order?.createdAt ?? '').toLocal();
-    final String date = DateFormat("MMM d, yyyy").format(orderTime);
+    final DateFormat dateFormat = DateFormat("MMM d, yyyy");
+    final DateTime? dateTime =
+        DateTime.tryParse(order?.createdAt ?? "")?.toLocal();
+    String date = '';
+    if (dateTime != null) {
+      date = dateFormat.format(dateTime);
+    }
     return Text(
       date,
       softWrap: false,

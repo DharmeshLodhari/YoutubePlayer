@@ -67,6 +67,8 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   ShippingAddress? deliveryAddress;
   bool isRefundAPILoading = false;
   bool isLoading = false;
+  bool isButtonLoading = false;
+  bool isAddressLoading = false;
   String? orderId;
 
   @override
@@ -110,13 +112,13 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   }
 
   Future<void> getDeliveryAddress() async {
-    isLoading = true;
+    isAddressLoading = true;
     if (mounted) setState(() {});
 
     deliveryAddress = await ShippingProcessAuthService()
         .getSingleAddressDetail(order?.deliveryAddressId ?? "");
 
-    isLoading = false;
+    isAddressLoading = false;
     if (mounted) setState(() {});
   }
 
@@ -618,7 +620,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                     ),
                   ),
                   Text(
-                    moneyDisplayNormalizer(order?.getSubTotalAmount()),
+                    moneyDisplayNormalizer(order?.getSubTotalAmount() ?? 0),
                     // moneyDisplayNormalizer(order?.totalPrice),
                     style: TextStyle(
                       fontSize: 14,
@@ -658,7 +660,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                     ),
                   ),
                   Text(
-                    moneyDisplayNormalizer(order?.getShippingPrice()),
+                    moneyDisplayNormalizer(order?.getShippingPrice() ?? 0),
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
@@ -736,7 +738,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                     ),
                   ),
                   Text(
-                    moneyDisplayNormalizer(order?.getTotalAmount()),
+                    moneyDisplayNormalizer(order?.getTotalAmount() ?? 0),
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
@@ -954,8 +956,13 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
 
   Widget _buildOrderDetails() {
     final DateFormat dateFormat = DateFormat("MMMM dd, yyyy, h:mm a");
-    final DateTime dateTime = DateTime.parse(order?.createdAt ?? "");
-    final String date = dateFormat.format(dateTime);
+
+    final DateTime? dateTime = DateTime.tryParse(order?.createdAt ?? "");
+    String date = '';
+    if (dateTime != null) {
+      date = dateFormat.format(dateTime);
+    }
+
     final Map<String, String> formattedDateTimeForPickUp =
         getFormattedDateTime(order?.pickupDateTime ?? "");
     final Map<String, String> formattedDateTimeForEatIn =
@@ -1225,9 +1232,15 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
         child: Padding(
           padding: const EdgeInsets.only(left: 8),
           child: RoundedBorderButton(
+            isLoading: isButtonLoading,
             title: "Buy Again",
-            onTap: () {
+            onTap: () async {
               order?.recreateOrder(basketBloc, userBloc);
+              isButtonLoading = true;
+              if (mounted) setState(() {});
+              await Future.delayed(const Duration(seconds: 2));
+              isButtonLoading = false;
+              if (mounted) setState(() {});
               NavigationUtil.pushNamed(context,
                   routeName: Routes.SHOPPING_CART);
             },

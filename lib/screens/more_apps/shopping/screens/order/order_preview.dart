@@ -147,8 +147,11 @@ class _OrderPreviewState extends State<OrderPreview> {
 
   Widget _buildOrderPlaceDateTime() {
     final DateFormat dateFormat = DateFormat("dd MMMM, yyyy, HH:mm:ss");
-    final DateTime dateTime = DateTime.parse(order?.createdAt ?? "");
-    final String date = dateFormat.format(dateTime);
+    final DateTime? dateTime = DateTime.tryParse(order?.createdAt ?? "");
+    String date = '';
+    if (dateTime != null) {
+      date = dateFormat.format(dateTime);
+    }
     return Text(
       'Order Placed: $date',
       style: TextStyle(
