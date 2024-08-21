@@ -27,6 +27,7 @@ import 'package:intl/intl.dart';
 import 'package:jumping_dot/jumping_dot.dart';
 import 'package:path_provider/path_provider.dart' as pathProvider;
 import 'package:path_provider/path_provider.dart';
+import 'package:pdf/pdf.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
@@ -578,6 +579,27 @@ Color checkStatusBgColor(String status) {
   } else if (status == "") {
     return Colors.transparent;
   }
+  return navyBlue;
+}
+
+//PDF Color
+
+PdfColor checkStatusTextPdfColor(String status) {
+  final PdfColor green = PdfColor.fromHex('#0F973D');
+  final PdfColor yellow = PdfColor.fromHex("#F5B546");
+  final PdfColor red = PdfColor.fromHex("#DD524D");
+  final PdfColor navyBlue = PdfColor.fromHex("#3F61DB");
+
+  if (status == 'done') {
+    return green;
+  } else if (status == 'processing') {
+    return yellow;
+  } else if (status == 'cancel') {
+    return red;
+  } else if (status == "") {
+    return PdfColors.black;
+  }
+
   return navyBlue;
 }
 

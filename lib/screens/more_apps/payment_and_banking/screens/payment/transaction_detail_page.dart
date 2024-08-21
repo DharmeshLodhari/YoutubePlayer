@@ -360,91 +360,66 @@ class _TransactionDetailState extends State<TransactionDetail> {
 
   Future<File> createPdf() async {
     final pdf = pw.Document();
+    final customFont = await loadCustomFont();
 
-    final ByteData logoBytes = await rootBundle.load('assets/logo.png');
-    final ByteData qrBytes = await rootBundle.load('assets/qr.png');
+    final ByteData logoBytes =
+        await rootBundle.load('assets/images/app_logo_navyBlue.png');
+    final ByteData qrBytes = await rootBundle.load('assets/images/qr_code.png');
 
     final Uint8List logo = logoBytes.buffer.asUint8List();
     final Uint8List qr = qrBytes.buffer.asUint8List();
 
-    final double amount = 100000.00;
-    final String currency = "₦";
-    final String status = "Successful";
-    final String transactionType = "Slydo to Slydo";
-    final String receiverUsername = "@prineygladhair";
-    final String receiverAccountNumber = "542764367";
-    final String senderUsername = "@gbemiglad";
-    final String senderAccountNumber = "546789032";
-    final String referenceNumber = "00065234179306328977635";
-    final String category = "Shopping";
-    final String description = "Hair";
-    final DateTime transactionDate = DateTime(2024, 3, 28, 12, 6, 34);
+    final String currency = worldCurrencies[transaction?.currency] ?? "";
+    final String? status = transaction?.status;
+    const String transactionType = "Slydo to Slydo";
+    final String receiverUsername = "@${transaction?.toCustomer}";
+    final String receiverAccountNumber = "${"-"}";
+    final String senderUsername = "@${transaction?.fromCustomer}";
+    final String senderAccountNumber = "${"-"}";
+    final String referenceNumber = "${"-"}";
+    final String category = "${transaction?.category}";
+    final String description = "${transaction?.description}";
 
     pdf.addPage(
       pw.Page(
         build: (pw.Context context) {
           return pw.Column(
-            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            crossAxisAlignment: pw.CrossAxisAlignment.end,
             children: [
-              pw.Center(
-                child: pw.Image(
-                  pw.MemoryImage(logo),
-                  height: 50,
-                ),
+              pw.Row(
+                mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                children: [
+                  _buildAppTitle(logo),
+                  _buildTransactionReceiptText(),
+                ],
               ),
+              pw.SizedBox(height: 5),
+              _buildDate(),
+              pw.SizedBox(height: 30),
+              _buildPDFAmountIconText("Amount", customFont, currency),
               pw.SizedBox(height: 10),
-              pw.Center(
-                child: pw.Text(
-                  "Transaction Receipt",
-                  style: pw.TextStyle(
-                      fontSize: 18, fontWeight: pw.FontWeight.bold),
-                ),
-              ),
+              // _buildAmountWord(),
+              buildPdfReceiptDetail("Status", status ?? "", true),
               pw.SizedBox(height: 10),
-              pw.Center(
-                child: pw.Text(
-                  DateFormat('dd MMMM, yyyy, HH:mm:ss').format(transactionDate),
-                  style: const pw.TextStyle(
-                      fontSize: 16, color: PdfColors.grey700),
-                ),
-              ),
-              pw.Divider(),
-              buildPdfReceiptDetail(
-                  "Amount", "$currency${amount.toStringAsFixed(2)}"),
-              buildPdfReceiptDetail("Status", status),
-              buildPdfReceiptDetail("Transaction Type", transactionType),
+              buildPdfReceiptDetail("Transaction Type", transactionType, false),
+              pw.SizedBox(height: 10),
               buildPdfReceiptDetail("Receiver Details",
-                  "$receiverUsername\n$receiverAccountNumber"),
-              buildPdfReceiptDetail(
-                  "Sender Details", "$senderUsername\n$senderAccountNumber"),
-              buildPdfReceiptDetail("Reference Number", referenceNumber),
-              buildPdfReceiptDetail("Category", category),
-              buildPdfReceiptDetail("Description", description),
-              pw.Divider(),
-              pw.SizedBox(height: 20),
-              pw.Center(
-                child: pw.Text(
-                  "Scan QR to download SLYDO APP",
-                  style: pw.TextStyle(
-                      fontSize: 16, fontWeight: pw.FontWeight.bold),
-                ),
-              ),
+                  "$receiverUsername\n$receiverAccountNumber", false),
               pw.SizedBox(height: 10),
-              pw.Center(
-                child: pw.Image(
-                  pw.MemoryImage(qr),
-                  height: 100,
-                ),
-              ),
+              buildPdfReceiptDetail("Sender Details",
+                  "$senderUsername\n$senderAccountNumber", false),
               pw.SizedBox(height: 10),
-              pw.Center(
-                child: pw.Text(
-                  "Experience the convenience of Slydo...",
-                  style: const pw.TextStyle(
-                      fontSize: 14, color: PdfColors.grey700),
-                  textAlign: pw.TextAlign.center,
-                ),
-              ),
+              buildPdfReceiptDetail("Reference Number", referenceNumber, false),
+              pw.SizedBox(height: 10),
+              buildPdfReceiptDetail("Category", category, false),
+              pw.SizedBox(height: 10),
+              buildPdfReceiptDetail("Description", description, false),
+              pw.SizedBox(height: 10),
+              buildPdfHorizontalDotBorder(),
+              pw.SizedBox(height: 15),
+              _buildPdfQrScan(qr),
+              pw.SizedBox(height: 15),
+              _buildDescription(),
             ],
           );
         },
@@ -458,7 +433,16 @@ class _TransactionDetailState extends State<TransactionDetail> {
     return file;
   }
 
-  pw.Widget buildPdfReceiptDetail(String title, String value) {
+  pw.Widget buildPdfReceiptDetail(String title, String value, bool? isColor) {
+    String? status = "";
+    if (transaction!.status! == 'Paid' || transaction!.status! == 'Settled') {
+      status = 'done';
+    } else if (transaction!.status! == 'Pending') {
+      status = 'processing';
+    } else if (transaction!.status! == 'Cancelled') {
+      status = 'cancel';
+    }
+
     return pw.Padding(
       padding: const pw.EdgeInsets.symmetric(vertical: 8.0),
       child: pw.Row(
@@ -476,14 +460,60 @@ class _TransactionDetailState extends State<TransactionDetail> {
               value,
               style: pw.TextStyle(
                 fontSize: 16,
-                fontWeight: pw.FontWeight.bold,
-                color: PdfColors.black,
+                fontWeight: pw.FontWeight.normal,
+                color: isColor == true
+                    ? checkStatusTextPdfColor(status)
+                    : PdfColors.black,
               ),
               textAlign: pw.TextAlign.right,
             ),
           ),
         ],
       ),
+    );
+  }
+
+  pw.Widget buildPdfHorizontalDotBorder() {
+    return pw.Padding(
+      padding: const pw.EdgeInsets.symmetric(vertical: 15),
+      child: pw.Row(
+        children: List.generate(48, (_) {
+          return pw.Padding(
+            padding: const pw.EdgeInsets.symmetric(horizontal: 1),
+            child: pw.Container(
+              width: 8,
+              height: 1,
+              color: PdfColor.fromHex("#324EAF"),
+            ),
+          );
+        }),
+      ),
+    );
+  }
+
+  pw.Widget _buildPDFAmountIconText(String text, pw.Font customFont, currency) {
+    return pw.Row(
+      mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+      children: [
+        pw.Text(
+          text,
+          style: pw.TextStyle(
+            fontWeight: pw.FontWeight.bold,
+            fontSize: 14,
+            font: customFont,
+            color: PdfColors.black,
+          ),
+        ),
+        pw.Text(
+          "$currency${moneyDisplayNormalizer(transaction?.amount)}",
+          style: pw.TextStyle(
+            fontWeight: pw.FontWeight.normal,
+            fontSize: 30,
+            color: PdfColor.fromHex("#324EAF"),
+            font: customFont,
+          ),
+        ),
+      ],
     );
   }
 
@@ -494,5 +524,122 @@ class _TransactionDetailState extends State<TransactionDetail> {
     } catch (e) {
       print('Error sharing PDF: $e');
     }
+  }
+
+  pw.Widget _buildAppTitle(Uint8List logo) {
+    return pw.Row(
+      children: [
+        pw.Center(
+          child: pw.Image(
+            pw.MemoryImage(logo),
+            height: 30,
+          ),
+        ),
+        pw.SizedBox(width: 5),
+        pw.Text(
+          'Slydo',
+          style: pw.TextStyle(
+            fontSize: 24.0,
+            fontWeight: pw.FontWeight.bold,
+            color: PdfColor.fromHex("#324EAF"),
+          ),
+        ),
+      ],
+    );
+  }
+
+  pw.Widget _buildTransactionReceiptText() {
+    return pw.Center(
+      child: pw.Text(
+        "Transaction Receipt",
+        style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold),
+      ),
+    );
+  }
+
+  pw.Widget _buildDate() {
+    String? formattedDate;
+    try {
+      final DateTime? dateTime =
+          DateTime.tryParse(transaction?.createdAt ?? "");
+      final DateFormat dateFormat = DateFormat("MMMM dd, yyyy, h:mm:ss");
+      dateTime != null ? formattedDate = dateFormat.format(dateTime) : "";
+    } catch (e) {
+      print("Error parsing date: $e");
+      formattedDate = "";
+    }
+    return pw.Text(
+      "$formattedDate",
+      style: pw.TextStyle(
+          fontSize: 14,
+          fontWeight: pw.FontWeight.normal,
+          color: PdfColors.black),
+    );
+  }
+
+  Future<pw.Font> loadCustomFont() async {
+    final fontData = await rootBundle.load('assets/fonts/Roboto-Medium.ttf');
+    return pw.Font.ttf(ByteData.sublistView(fontData.buffer.asUint8List()));
+  }
+
+  pw.Widget _buildPdfQrScan(Uint8List qr) {
+    return pw.Row(
+      mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+      children: [
+        pw.RichText(
+          text: pw.TextSpan(
+            children: [
+              pw.TextSpan(
+                text: "Scan QR to download ",
+                style: pw.TextStyle(
+                  fontSize: 20,
+                  fontWeight: pw.FontWeight.normal,
+                  color: PdfColors.black,
+                ),
+              ),
+              pw.WidgetSpan(
+                child: pw.SizedBox(width: 5),
+              ),
+              pw.TextSpan(
+                text: "SLYDO APP",
+                style: pw.TextStyle(
+                  fontSize: 20,
+                  fontWeight: pw.FontWeight.bold,
+                  color: PdfColor.fromHex("#324EAF"),
+                ),
+              ),
+            ],
+          ),
+        ),
+        pw.Image(
+          pw.MemoryImage(qr),
+          height: 100,
+        ),
+      ],
+    );
+  }
+
+  pw.Widget _buildDescription() {
+    return pw.Center(
+      child: pw.Text(
+        "Experience the convenience of Slydo, your all-in-one Super App. Send and receive money, make payments, buy & sell as a merchant and effortlessly share your daily moments & thoughts. Download Slydo now and simplify your business, financial & social interactions.",
+        style: pw.TextStyle(
+          fontSize: 14,
+          color: PdfColors.grey700,
+          fontWeight: pw.FontWeight.normal,
+        ),
+      ),
+    );
+  }
+
+  pw.Widget _buildAmountWord() {
+    return pw.Text(
+      "",
+      style: pw.TextStyle(
+        fontSize: 14,
+        color: PdfColors.grey700,
+        fontWeight: pw.FontWeight.normal,
+      ),
+    );
   }
 }
