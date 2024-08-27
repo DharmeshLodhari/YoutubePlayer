@@ -252,10 +252,11 @@ class _QRCodeViewState extends State<QRCodeView> {
           if (mounted) setState(() {});
         }
       }
-    } else if (scanDataList[scanDataList.length - 1] == "transactions") {
-      final result =
-          await Navigator.of(MyGlobals().navigationKey.currentContext!)
-              .pushNamed(Routes.TRANSACTIONS, arguments: {'page': 0});
+    } else if (scanDataList[qrCodeIndex] == "transactions") {
+      final transactionId = scanDataList.last;
+      final result = await Navigator.of(context).pushNamed(
+          Routes.TRANSACTION_DETAIL,
+          arguments: {'transaction': transactionId.toString()});
 
       // Handle the result here
       if (result != null) {
@@ -264,10 +265,11 @@ class _QRCodeViewState extends State<QRCodeView> {
           if (mounted) setState(() {});
         }
       }
-    } else if (scanDataList[scanDataList.length - 1] == "payout") {
-      final result =
-          await Navigator.of(MyGlobals().navigationKey.currentContext!)
-              .pushNamed(Routes.TRANSACTIONS, arguments: {'page': 1});
+    } else if (scanDataList[qrCodeIndex] == "payout") {
+      final bankTransactionId = scanDataList.last;
+      final result = await Navigator.of(context).pushNamed(
+          Routes.PAYOUT_TRANSACTION_DETAIL,
+          arguments: {'transaction': bankTransactionId});
 
       // Handle the result here
       if (result != null) {

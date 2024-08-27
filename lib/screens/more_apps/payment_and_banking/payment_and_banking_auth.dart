@@ -1140,6 +1140,7 @@ class PaymentAndBankingAuth extends AuthService {
         final timeStamp = item["credited_at"] ?? item["created_at"];
 
         final Payout payout = Payout(
+          id: item['id'],
           uuid: item['id'],
           status: item['status'],
           amount: item['amount'],
@@ -1171,6 +1172,20 @@ class PaymentAndBankingAuth extends AuthService {
       throw "Server Error";
     } else {
       throw json.decode(response.body);
+    }
+  }
+
+  // detail for bank transaction
+  Future<Payout> getSingleBankTransaction(String transactionId) async {
+    final String url =
+        "${AppConfig.baseUrl}/api/v1/transactions/payout/$transactionId/";
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers);
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return Payout.fromJson(json.decode(response.body));
+    } else {
+      final jsonData = json.decode(response.body);
+      throw jsonData;
     }
   }
 

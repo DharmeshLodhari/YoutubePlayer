@@ -63,6 +63,7 @@ class CreditCard {
 }
 
 class Transaction {
+  int? id;
   String? status;
   String? uuid;
   String? description;
@@ -86,6 +87,7 @@ class Transaction {
 
   // Pass in as named parameter in constructor
   Transaction({
+    this.id,
     this.status,
     this.uuid,
     this.description,
@@ -123,6 +125,7 @@ class Transaction {
         "";
 
     return Transaction(
+      id: json['id'],
       status: json['status'],
       uuid: json['slug'],
       description: json['description'],

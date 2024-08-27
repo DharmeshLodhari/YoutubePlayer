@@ -62,7 +62,14 @@ class _PayoutTransactionDetailState extends State<PayoutTransactionDetail> {
   }
 
   void fetchPayout() async {
-    payout = arguments['transaction'];
+    final transactionFromArgs = widget.arguments['transaction'];
+    if (transactionFromArgs is String) {
+      payout = await PaymentAndBankingAuth()
+          .getSingleBankTransaction(transactionFromArgs);
+    } else {
+      payout = transactionFromArgs;
+    }
+    if (mounted) setState(() {});
   }
 
   void getSlydoAccount() async {
@@ -570,11 +577,14 @@ class _PayoutTransactionDetailState extends State<PayoutTransactionDetail> {
   }
 
   Widget getSubtitle() {
-    final DateTime transactionTime =
-        DateTime.parse(payout!.timeStamp!).toLocal();
-    final String date = DateFormat("dd/MM/yyyy").format(transactionTime);
-    final String time = DateFormat("hh:mm a").format(transactionTime);
-
+    String date = "";
+    String time = "";
+    if (payout?.timeStamp != null) {
+      final DateTime transactionTime =
+          DateTime.parse(payout!.timeStamp!).toLocal();
+      date = DateFormat("dd/MM/yyyy").format(transactionTime);
+      time = DateFormat("hh:mm a").format(transactionTime);
+    }
     return Text(
       "$date • $time",
       softWrap: false,
@@ -584,16 +594,16 @@ class _PayoutTransactionDetailState extends State<PayoutTransactionDetail> {
   }
 
   Widget getLeading() {
-    final String? url = payout!.bankLogo;
+    final String? url = payout?.bankLogo;
 
-    final String imageUrl = url!.replaceAll('https//', 'https://');
+    final String imageUrl = url?.replaceAll('https//', 'https://') ?? "";
 
     if (url == "") {
       return CircleAvatar(
         backgroundColor: navyBlue,
         radius: 25,
         child: Text(
-          getInitials(payout!.bankName!).toUpperCase(),
+          getInitials(payout?.bankName ?? "").toUpperCase(),
           style: TextStyle(color: white, fontWeight: FontWeight.w700),
         ),
       );
@@ -623,7 +633,7 @@ class _PayoutTransactionDetailState extends State<PayoutTransactionDetail> {
 
   Widget getSender() {
     return Text(
-      appendStringDot(payout!.bankName!, 20),
+      appendStringDot(payout?.bankName ?? "", 20),
       style: TextStyle(
         color: blackFont,
         fontWeight: FontWeight.bold,
@@ -637,7 +647,7 @@ class _PayoutTransactionDetailState extends State<PayoutTransactionDetail> {
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         Text(
-          worldCurrencies[payout!.currency!]!,
+          worldCurrencies[payout?.currency] ?? "NGN",
           style: TextStyle(
             color: blackFont,
             fontWeight: FontWeight.bold,
@@ -646,7 +656,7 @@ class _PayoutTransactionDetailState extends State<PayoutTransactionDetail> {
           ),
         ),
         Text(
-          moneyDisplayNormalizer(int.parse(payout!.amount.toString())),
+          moneyDisplayNormalizer(int.parse(payout?.amount.toString() ?? "0")),
           style: TextStyle(
               color: blackFont, fontWeight: FontWeight.bold, fontSize: 14),
         ),
@@ -688,24 +698,24 @@ class _PayoutTransactionDetailState extends State<PayoutTransactionDetail> {
         transactionOrPayoutTile(
           'assets/images/payout/status.svg',
           AppLocalization.of(context)!.status,
-          payout!.status!,
+          payout?.status ?? "",
           true,
         ),
         transactionOrPayoutTile(
           'assets/images/payout/account_name.svg',
           AppLocalization.of(context)!.accountNameHint,
-          payout!.accountName!,
+          payout?.accountName ?? "",
           false,
         ),
         transactionOrPayoutTile(
             'assets/images/payout/account_number.svg',
             AppLocalization.of(context)!.accountNumberHint,
-            payout!.accountNumber!,
+            payout?.accountNumber ?? "",
             false),
         transactionOrPayoutTile(
             'assets/images/payout/description.svg',
             AppLocalization.of(context)!.description,
-            messageDecoderWithEmoji(payout!.description) ?? '---',
+            messageDecoderWithEmoji(payout?.description ?? "") ?? '---',
             false),
       ],
     );
@@ -732,15 +742,16 @@ class _PayoutTransactionDetailState extends State<PayoutTransactionDetail> {
       gapless: true,
     );
 
-    final ui.Picture picture = painter.toPicture(80);
-    final ui.Image image = await picture.toImage(80, 80);
+    final ui.Picture picture = painter.toPicture(100);
+    final ui.Image image = await picture.toImage(100, 100);
     final ByteData? byteData =
         await image.toByteData(format: ui.ImageByteFormat.png);
     return byteData!.buffer.asUint8List();
   }
 
   String getTransactionUrl() {
-    final String url = '${AppConfig.baseUrl}/api/v1/transactions/payout/';
+    final String url =
+        '${AppConfig.baseUrl}/api/v1/transactions/payout/${payout?.id}';
     return url;
   }
 }

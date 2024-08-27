@@ -697,15 +697,16 @@ class _TransactionDetailState extends State<TransactionDetail> {
       gapless: true,
     );
 
-    final ui.Picture picture = painter.toPicture(80);
-    final ui.Image image = await picture.toImage(80, 80);
+    final ui.Picture picture = painter.toPicture(100);
+    final ui.Image image = await picture.toImage(100, 100);
     final ByteData? byteData =
         await image.toByteData(format: ui.ImageByteFormat.png);
     return byteData!.buffer.asUint8List();
   }
 
   String getTransactionUrl() {
-    final String url = '${AppConfig.baseUrl}/api/v1/transactions/';
+    final String url =
+        '${AppConfig.baseUrl}/api/v1/transactions/${transaction?.id}';
     return url;
   }
 }
