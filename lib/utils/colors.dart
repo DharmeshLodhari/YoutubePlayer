@@ -43,6 +43,9 @@ Color starYellowDark = HexColor("#FFA500");
 Color graphWitheBackground = HexColor("#F3F3F3");
 Color selectedListItemBackgroundBlue = HexColor("#F8F9FF");
 Color yarnBlack = HexColor("#151515");
+Color lightRed = HexColor("#FBEAE9");
+Color lightYellow = HexColor("#FEF6E7");
+Color lightGreenBg = HexColor("#E7F6EC");
 Color transparent = Colors.transparent;
 
 Color greyDarkBackground = HexColor("#F0F2F5");

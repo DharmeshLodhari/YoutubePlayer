@@ -97,13 +97,11 @@ class _DisplayProductState extends State<DisplayProduct> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                Stack(
-                  children: [
-                    SizedBox(
-                      height: 155,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(15),
-                        clipBehavior: Clip.antiAliasWithSaveLayer,
+                Flexible(
+                  child: Stack(
+                    children: [
+                      SizedBox(
+                        height: 155,
                         child: CachedNetworkImage(
                           imageUrl: widget.product.cover!,
                           fit: BoxFit.cover,
@@ -111,37 +109,36 @@ class _DisplayProductState extends State<DisplayProduct> {
                           errorWidget: productAndServiceBigErrorWidget,
                         ),
                       ),
-                    ),
-                    if (widget.isProductShowIcon == true)
-                      Positioned(
-                        top: 10,
-                        left: 10,
-                        child: Image.asset(
-                          "assets/images/appIcon/heart.png",
-                          height: 17,
-                          width: 17,
-                        ),
-                      )
-                    else
-                      Container(),
-                    Positioned(
-                      left: 10,
-                      bottom: 10,
-                      child: getRating(
-                          numberOfRating: widget.product.rating?.toInt()),
-                    ),
+                      if (widget.isProductShowIcon == true)
+                        Positioned(
+                          top: 10,
+                          left: 10,
+                          child: Image.asset(
+                            "assets/images/appIcon/heart.png",
+                            height: 17,
+                            width: 17,
+                          ),
+                        )
+                      else
+                        Container(),
+                      // Positioned(
+                      //   left: 10,
+                      //   bottom: 10,
+                      //   child: getRating(
+                      //       numberOfRating: widget.product.rating?.toInt()),
+                      // ),
 
-                    if (widget.product.variantModels?.isEmpty ?? false)
-                      productStockAndDetailTag(),
+                      // if (widget.product.variantModels?.isEmpty ?? false)
+                      //   productStockAndDetailTag(),
 
-                    displayShoppingCartControls(),
-                    // TODO: to be added in future
-                    // Positioned(right: 10, top: 10, child: favouriteIcon())
-                  ],
+                      displayShoppingCartControls(),
+                      // TODO: to be added in future
+                      // Positioned(right: 10, top: 10, child: favouriteIcon())
+                    ],
+                  ),
                 ),
-                const SizedBox(
-                  height: 10,
-                ),
+                _buildProductDiscountAndTag(),
+                const SizedBox(height: 8),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 2.0),
                   child: Column(
@@ -177,6 +174,17 @@ class _DisplayProductState extends State<DisplayProduct> {
                           fontSize: 10,
                           color: yarnBlack,
                         ),
+                      ),
+                      const SizedBox(
+                        height: 2,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          getRating(
+                              numberOfRating: widget.product.rating?.toInt()),
+                          _getProductReviews(),
+                        ],
                       ),
                       const SizedBox(
                         height: 2,
@@ -421,7 +429,7 @@ class _DisplayProductState extends State<DisplayProduct> {
     );
   }
 
-  Widget productStockAndDetailTag() {
+  /*Widget productStockAndDetailTag() {
     if (widget.product.availableFrom?.isAfter(DateTime.now()) ?? false) {
       return Positioned(
         top: 10,
@@ -445,9 +453,9 @@ class _DisplayProductState extends State<DisplayProduct> {
     } else {
       return const SizedBox();
     }
-  }
+  }*/
 
-  Widget buildDiscountPrice() {
+  /*Widget buildDiscountPrice() {
     if (widget.product.discountedPrice != null &&
         widget.product.discountedPrice != 0) {
       if (widget.product.checkProductDiscount()) {
@@ -456,6 +464,40 @@ class _DisplayProductState extends State<DisplayProduct> {
             right: 10,
             child: showDiscountValue(widget.product.discountType!,
                 widget.product.discountValue!, widget.product.currency));
+      } else {
+        return const SizedBox();
+      }
+    } else {
+      return const SizedBox();
+    }
+    // if ((widget.product.pricePercentageChange != null) &
+    // (widget.product.pricePercentageChange != 0.0)) ...[
+    // Positioned(
+    // top: 8,
+    // right: 8,
+    // child: Container(
+    // padding: EdgeInsets.only(
+    // left: 6.0, right: 6.0, top: 4.0, bottom: 4.0),
+    // decoration: BoxDecoration(
+    // color: naturalGreen,
+    // borderRadius: BorderRadius.all(Radius.circular(8)),
+    // ),
+    // child: Text(
+    // "${widget.product.pricePercentageChange!.toString()}% off",
+    // style: TextStyle(
+    // color: Colors.white,
+    // ),
+    // ),
+    // ),
+    // )
+  }*/
+
+  Widget buildDiscountPrice() {
+    if (widget.product.discountedPrice != null &&
+        widget.product.discountedPrice != 0) {
+      if (widget.product.checkProductDiscount()) {
+        return showDiscountValue(widget.product.discountType!,
+            widget.product.discountValue!, widget.product.currency);
       } else {
         return const SizedBox();
       }
@@ -720,6 +762,53 @@ class _DisplayProductState extends State<DisplayProduct> {
       ),
     );
   }
+
+  Widget _getProductReviews() {
+    return const Text(
+      "()",
+      style: TextStyle(
+          fontWeight: FontWeight.w400,
+          fontSize: 12,
+          fontFamily: 'Inter',
+          color: Colors.grey),
+    );
+  }
+
+  Widget _buildProductDiscountAndTag() {
+    if (widget.product.availableFrom?.isAfter(DateTime.now()) ?? false) {
+      return SizedBox(
+        width: double.infinity,
+        height: 30,
+        child: showColoredLabeledWidgetProductStock(
+          text: AppLocalization.of(context)!.comingSoon,
+          color: lightYellow,
+          product: widget.product,
+        ),
+      );
+    } else if (widget.product.trackInventory == true &&
+        widget.product.quantity! <= 0) {
+      return SizedBox(
+        width: double.infinity,
+        height: 30,
+        child: showColoredLabeledWidgetProductStock(
+          text: AppLocalization.of(context)!.outOfStock,
+          color: lightRed,
+          product: widget.product,
+        ),
+      );
+    } else if ((widget.product.discountedPrice != null &&
+            widget.product.discountedPrice != 0) ||
+        (widget.product.pricePercentageChange != null &&
+            widget.product.pricePercentageChange != 0.0)) {
+      return SizedBox(
+        width: double.infinity,
+        height: 30,
+        child: buildDiscountPrice(),
+      );
+    } else {
+      return const SizedBox();
+    }
+  }
 }
 
 class DisplayService extends StatefulWidget {
@@ -802,17 +891,11 @@ class _DisplayServiceState extends State<DisplayService> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                Stack(
-                  children: [
-                    SizedBox(
-                      height: 155,
-                      child: ClipRRect(
-                        borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(10),
-                            bottomLeft: Radius.circular(10),
-                            bottomRight: Radius.circular(10),
-                            topRight: Radius.circular(10)),
-                        clipBehavior: Clip.antiAliasWithSaveLayer,
+                Flexible(
+                  child: Stack(
+                    children: [
+                      SizedBox(
+                        height: 155,
                         child: CachedNetworkImage(
                           imageUrl: widget.service.cover!,
                           fit: BoxFit.cover,
@@ -820,20 +903,21 @@ class _DisplayServiceState extends State<DisplayService> {
                           errorWidget: productAndServiceBigErrorWidget,
                         ),
                       ),
-                    ),
-                    Positioned(
-                      right: 10,
-                      bottom: 10,
-                      child: getRating(
-                        numberOfRating: widget.service.rating?.toInt(),
-                      ),
-                    ),
-                    serviceStockAndDetailTag(),
-                    displayShoppingCartControls(),
-                    //TODO: to be implemented later in future
-                    // Positioned(right: 10, top: 10, child: favouriteIcon())
-                  ],
+                      // Positioned(
+                      //   right: 10,
+                      //   bottom: 10,
+                      //   child: getRating(
+                      //     numberOfRating: widget.service.rating?.toInt(),
+                      //   ),
+                      // ),
+                      // serviceStockAndDetailTag(),
+                      displayShoppingCartControls(),
+                      //TODO: to be implemented later in future
+                      // Positioned(right: 10, top: 10, child: favouriteIcon())
+                    ],
+                  ),
                 ),
+                serviceStockAndDetailTag(),
                 const SizedBox(
                   height: 7,
                 ),
@@ -878,6 +962,15 @@ class _DisplayServiceState extends State<DisplayService> {
                         ),
                       ),
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          getRating(
+                            numberOfRating: widget.service.rating?.toInt(),
+                          ),
+                          _getServiceReviews(),
+                        ],
+                      ),
+                      Row(
                         children: [
                           Text(
                             worldCurrencies[widget.service.currency!]!,
@@ -912,21 +1005,43 @@ class _DisplayServiceState extends State<DisplayService> {
     );
   }
 
-  Widget serviceStockAndDetailTag() {
+/*  Widget serviceStockAndDetailTag() {
     if (widget.service.availableFrom?.isAfter(DateTime.now()) ?? false) {
       return Positioned(
         top: 10,
         right: 10,
-        child: showColoredLabeledWidget(
+        child: showColoredLabeledWidgetService(
             text: AppLocalization.of(context)!.comingSoon, color: starYellow),
       );
     } else if (widget.service.isAvailable == false) {
       return Positioned(
         top: 10,
         right: 10,
-        child: showColoredLabeledWidget(
+        child: showColoredLabeledWidgetService(
             text: AppLocalization.of(context)!.outOfStock, color: red),
       );
+    } else {
+      return const SizedBox();
+    }
+  }*/
+
+  Widget serviceStockAndDetailTag() {
+    if (widget.service.availableFrom?.isAfter(DateTime.now()) ?? false) {
+      return SizedBox(
+          width: double.infinity,
+          height: 30,
+          child: showColoredLabeledWidgetService(
+              service: widget.service,
+              text: AppLocalization.of(context)!.comingSoon,
+              color: lightYellow));
+    } else if (widget.service.isAvailable == false) {
+      return SizedBox(
+          width: double.infinity,
+          height: 30,
+          child: showColoredLabeledWidgetService(
+              service: widget.service,
+              text: AppLocalization.of(context)!.outOfStock,
+              color: lightRed));
     } else {
       return const SizedBox();
     }
@@ -1195,6 +1310,17 @@ class _DisplayServiceState extends State<DisplayService> {
                 showToast(message: "Shared in Yarn successfully");
               }
             }));
+  }
+
+  Widget _getServiceReviews() {
+    return const Text(
+      "()",
+      style: TextStyle(
+          fontWeight: FontWeight.w400,
+          fontSize: 12,
+          fontFamily: 'Inter',
+          color: Colors.grey),
+    );
   }
 }
 

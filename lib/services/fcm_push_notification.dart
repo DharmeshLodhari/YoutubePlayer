@@ -76,7 +76,7 @@ Future<void> fcmBackgroundMessageHandler(RemoteMessage remoteMessage) async {
         ? decodeNotificationIOS(remoteMessage.data)
         : decodeNotification(remoteMessage.data);
 
-    debugPrint("DATA:----- $dataOfNotification");
+    debugPrint(":DATA----- $dataOfNotification");
     //If {dataOfNotification['data'] != null} this is true, the app will send local notification else the app sends a push notification.
 
     if (dataOfNotification['data'] != null &&
@@ -215,6 +215,20 @@ class PushNotificationService {
   FirebaseMessaging get fcm => _fcm;
 
   Future<void> initialize() async {
+    _fcm.setForegroundNotificationPresentationOptions(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+
+    _fcm.requestPermission(
+        sound: true,
+        provisional: false,
+        criticalAlert: false,
+        carPlay: true,
+        badge: true,
+        announcement: false,
+        alert: true);
     //to stop automatically recreates the token when we deregister user in logout
     _fcm.setAutoInitEnabled(false);
 
@@ -562,13 +576,12 @@ class PushNotificationService {
 Map<String, dynamic> decodeNotification(Map<String, dynamic> message) {
   debugPrint("DATA:- $message");
   final Map<String, dynamic> notification = {};
-  final Map<String, dynamic> decodeNotification =
-      jsonDecode(message["notification"]);
-  notification["body"] = decodeNotification["body"] ?? "";
-  notification["title"] = decodeNotification["title"] ?? "";
-  notification["actions"] =
-      decodeNotification["actions"] ?? decodeNotification["click_action"] ?? "";
-  notification['image'] = decodeNotification['image'];
+  // final Map<String, dynamic> decodeNotification =
+  //     jsonDecode(message["notification"]);
+  notification["body"] = message["body"] ?? "";
+  notification["title"] = message["title"] ?? "";
+  notification["actions"] = message["actions"] ?? message["click_action"] ?? "";
+  notification['image'] = message['image'];
 
   if (message["data"] != null) {
     final Map<String, dynamic> decodedInnerData =

@@ -974,6 +974,10 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             _buildProductImagesWidgets(),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4.0),
+              child: productStockAndDetailTag(),
+            ),
             Container(
               padding: const EdgeInsets.only(top: 24),
               child: Column(
@@ -1129,13 +1133,22 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   Widget _buildReviewList() {
     return reviewList.isEmpty
         ? Center(
-            child: Text(
-              "No Review yet",
-              style: TextStyle(
-                color: blackFont,
-                fontSize: 14,
-                fontFamily: "Inter",
-              ),
+            child: Column(
+              children: [
+                Image.asset(
+                  "assets/images/reviews.png",
+                  height: 100,
+                  width: 100,
+                ),
+                Text(
+                  "No review to show",
+                  style: TextStyle(
+                    color: blackFont,
+                    fontSize: 16,
+                    fontFamily: "Inter",
+                  ),
+                ),
+              ],
             ),
           )
         : Column(
@@ -1249,24 +1262,20 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                             AspectRatio(
                               aspectRatio: 1.5,
                               child: Center(
-                                  child: ClipRRect(
-                                borderRadius:
-                                    const BorderRadius.all(Radius.circular(10)),
-                                child: Stack(
-                                  children: [
-                                    CachedNetworkImage(
-                                      placeholder: (context, url) => Center(
-                                          child: CircularLoadingIndicator()),
-                                      imageUrl: displayProductImages?[0] ?? "",
-                                      fit: BoxFit.cover,
-                                      height: double.infinity,
-                                      width: double.infinity,
-                                      errorWidget:
-                                          productAndServiceBigErrorWidget,
-                                    ),
-                                    productStockAndDetailTag(),
-                                  ],
-                                ),
+                                  child: Stack(
+                                children: [
+                                  CachedNetworkImage(
+                                    placeholder: (context, url) => Center(
+                                        child: CircularLoadingIndicator()),
+                                    imageUrl: displayProductImages?[0] ?? "",
+                                    fit: BoxFit.cover,
+                                    height: double.infinity,
+                                    width: double.infinity,
+                                    errorWidget:
+                                        productAndServiceBigErrorWidget,
+                                  ),
+                                  // productStockAndDetailTag(),
+                                ],
                               )),
                             ),
                             // getOutOfStockTag(),
@@ -1303,28 +1312,23 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                                         child: Stack(
                                           children: [
                                             Center(
-                                              child: ClipRRect(
-                                                borderRadius:
-                                                    const BorderRadius.all(
-                                                        Radius.circular(10)),
-                                                child: Stack(
-                                                  children: [
-                                                    CachedNetworkImage(
-                                                      placeholder: (context,
-                                                              url) =>
-                                                          Center(
-                                                              child:
-                                                                  CircularLoadingIndicator()),
-                                                      imageUrl: item!,
-                                                      fit: BoxFit.cover,
-                                                      height: double.infinity,
-                                                      width: double.infinity,
-                                                      errorWidget:
-                                                          productAndServiceBigErrorWidget,
-                                                    ),
-                                                    productStockAndDetailTag(),
-                                                  ],
-                                                ),
+                                              child: Stack(
+                                                children: [
+                                                  CachedNetworkImage(
+                                                    placeholder: (context,
+                                                            url) =>
+                                                        Center(
+                                                            child:
+                                                                CircularLoadingIndicator()),
+                                                    imageUrl: item!,
+                                                    fit: BoxFit.cover,
+                                                    height: double.infinity,
+                                                    width: double.infinity,
+                                                    errorWidget:
+                                                        productAndServiceBigErrorWidget,
+                                                  ),
+                                                  // productStockAndDetailTag(),
+                                                ],
                                               ),
                                             ),
                                             // getOutOfStockTag(),
@@ -1391,27 +1395,34 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   Widget productStockAndDetailTag() {
     if ((product?.variantModels?.isEmpty ?? false) &&
         (product?.availableFrom?.isAfter(DateTime.now()) ?? false)) {
-      return Positioned(
-        top: 20,
-        right: 10,
-        child: showColoredLabeledWidget(
-            text: AppLocalization.of(context)!.comingSoon, color: starYellow),
+      return SizedBox(
+        width: double.infinity,
+        height: 30,
+        child: showColoredLabeledWidgetProductDetails(
+            product: product,
+            selectedVariant: selectedVariant,
+            text: AppLocalization.of(context)!.comingSoon,
+            color: lightYellow),
       );
     } else if ((product?.variantModels?.isEmpty ?? false) &&
         product?.trackInventory == true &&
         ((product?.quantity ?? 0) <= 0)) {
-      return Positioned(
-        top: 20,
-        right: 10,
-        child: showColoredLabeledWidget(
-            text: AppLocalization.of(context)!.outOfStock, color: red),
+      return SizedBox(
+        width: double.infinity,
+        height: 30,
+        child: showColoredLabeledWidgetProductDetails(
+            product: product,
+            selectedVariant: selectedVariant,
+            text: AppLocalization.of(context)!.outOfStock,
+            color: lightRed),
       );
     } else if ((product?.discountedPrice != null &&
             product?.discountedPrice != 0) ||
         (product?.pricePercentageChange != null &&
                 product?.pricePercentageChange != 0.0 ||
             selectedVariant != null)) {
-      return buildDiscountPrice();
+      return SizedBox(
+          width: double.infinity, height: 30, child: buildDiscountPrice());
     } else {
       return const SizedBox();
     }

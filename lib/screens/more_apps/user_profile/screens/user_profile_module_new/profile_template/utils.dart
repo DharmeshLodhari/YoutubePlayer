@@ -6,6 +6,7 @@ import 'package:Slydo/screens/moments/models/moments_model.dart';
 import 'package:Slydo/screens/moments/screens/moments_service.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/channel_model.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
+import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/user_post/user_post_auth.dart';
 import 'package:Slydo/screens/more_apps/user_post/user_post_list.dart';
@@ -18,6 +19,7 @@ import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module
 import 'package:Slydo/screens/more_apps/user_profile/tiles/moment_tab_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/myfeed.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
+import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/widget/keep_alive_page.dart';
 import 'package:flutter/material.dart';
 
@@ -279,7 +281,7 @@ String getGroupUsername(String channelUsername) {
   }
 }
 
-Widget showDiscountValue(
+/*Widget showDiscountValue(
     String discountType, num discountValue, String? currency) {
   return Container(
     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
@@ -295,9 +297,43 @@ Widget showDiscountValue(
       ),
     ),
   );
+}*/
+
+Widget showDiscountValue(
+    String discountType, num discountValue, String? currency) {
+  return Container(
+    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+    color: lightGreenBg,
+    child: RichText(
+      text: TextSpan(
+        text:
+            "-${discountType == "percentage" ? "$discountValue% OFF" : worldCurrencies[currency!]! + moneyDisplayNormalizer(discountValue.toInt()).toString()}",
+        style: TextStyle(
+          color: naturalGreen,
+          fontSize: 12,
+          fontFamily: 'Inter',
+          fontWeight: FontWeight.w700,
+        ),
+        children: [
+          const WidgetSpan(child: SizedBox(width: 3)),
+          TextSpan(
+            text: 'Discount Sales',
+            style: TextStyle(
+              fontSize: 12,
+              fontFamily: 'Inter',
+              color: blackFont,
+            ),
+          ),
+        ],
+      ),
+      textAlign: TextAlign.center,
+      softWrap: true,
+      overflow: TextOverflow.ellipsis,
+    ),
+  );
 }
 
-Widget showColoredLabeledWidget({required String text, required Color color}) {
+/*Widget showColoredLabeledWidget({required String text, required Color color}) {
   return Container(
     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
     decoration:
@@ -312,4 +348,132 @@ Widget showColoredLabeledWidget({required String text, required Color color}) {
       ),
     ),
   );
+}*/
+
+Widget showColoredLabeledWidgetProductDetails(
+    {required String text,
+    required Color color,
+    Product? product,
+    Variant? selectedVariant}) {
+  return Container(
+    alignment: Alignment.center,
+    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+    color: color,
+    child: Text(
+      text,
+      style: TextStyle(
+        color: getProductDetailsColors(product!, selectedVariant),
+        fontSize: 10,
+        fontFamily: 'Inter',
+        fontWeight: FontWeight.w700,
+      ),
+    ),
+  );
+}
+
+Widget showColoredLabeledWidgetServiceDetails(
+    {required String text, required Color color, required Service? service}) {
+  return Container(
+    alignment: Alignment.center,
+    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+    color: color,
+    child: Text(
+      text,
+      style: TextStyle(
+        color: getServiceDetailsColors(service!),
+        fontSize: 10,
+        fontFamily: 'Inter',
+        fontWeight: FontWeight.w700,
+      ),
+    ),
+  );
+}
+
+Color getServiceDetailsColors(Service service) {
+  if (service.availableFrom?.isAfter(DateTime.now()) ?? false) {
+    return starYellow;
+  } else if (service.isAvailable == false) {
+    return red;
+  } else {
+    return transparent;
+  }
+}
+
+Color getProductDetailsColors(Product product, Variant? selectedVariant) {
+  if ((product.variantModels?.isEmpty ?? false) &&
+      (product.availableFrom?.isAfter(DateTime.now()) ?? false)) {
+    return starYellow;
+  } else if ((product.variantModels?.isEmpty ?? false) &&
+      product.trackInventory == true &&
+      ((product.quantity ?? 0) <= 0)) {
+    return red;
+  } else if ((product.discountedPrice != null &&
+          product.discountedPrice != 0) ||
+      (product.pricePercentageChange != null &&
+              product.pricePercentageChange != 0.0 ||
+          selectedVariant != null)) {
+    return naturalGreen;
+  } else {
+    return transparent;
+  }
+}
+
+Widget showColoredLabeledWidgetService(
+    {required String text, required Color color, required Service service}) {
+  return Container(
+    alignment: Alignment.center,
+    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+    color: color,
+    child: Text(
+      text,
+      style: TextStyle(
+        color: getServiceStockTextColors(service),
+        fontSize: 10,
+        fontFamily: 'Inter',
+        fontWeight: FontWeight.w700,
+      ),
+    ),
+  );
+}
+
+Color getServiceStockTextColors(Service service) {
+  if (service.availableFrom?.isAfter(DateTime.now()) ?? false) {
+    return starYellow;
+  } else if (service.isAvailable == false) {
+    return red;
+  } else {
+    return transparent;
+  }
+}
+
+Widget showColoredLabeledWidgetProductStock(
+    {required String text, required Color color, required Product product}) {
+  return Container(
+    alignment: Alignment.center,
+    color: color,
+    child: Text(
+      text,
+      style: TextStyle(
+        color: getProductStockTextColors(product),
+        fontSize: 10,
+        fontFamily: 'Inter',
+        fontWeight: FontWeight.w700,
+      ),
+    ),
+  );
+}
+
+Color getProductStockTextColors(Product product) {
+  if (product.availableFrom?.isAfter(DateTime.now()) ?? false) {
+    return starYellow;
+  } else if (product.trackInventory == true && product.quantity! <= 0) {
+    return red;
+  } else if ((product.discountedPrice != null &&
+          product.discountedPrice != 0) ||
+      (product.pricePercentageChange != null &&
+          product.pricePercentageChange != 0.0)) {
+    return naturalGreen;
+  } else {
+    return transparent;
+  }
 }

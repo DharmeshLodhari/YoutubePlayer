@@ -586,6 +586,10 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
         Column(
           children: [
             _buildServiceImagesWidgets(),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4.0),
+              child: serviceStockAndDetailTag(),
+            ),
             Container(
               padding: const EdgeInsets.only(right: 16, left: 16, top: 24),
               child: Column(
@@ -684,13 +688,22 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   Widget _buildReviewList() {
     return reviewList.isEmpty
         ? Center(
-            child: Text(
-              "No Review yet",
-              style: TextStyle(
-                color: blackFont,
-                fontSize: 14,
-                fontFamily: "Inter",
-              ),
+            child: Column(
+              children: [
+                Image.asset(
+                  "assets/images/reviews.png",
+                  height: 100,
+                  width: 100,
+                ),
+                Text(
+                  "No review to show",
+                  style: TextStyle(
+                    color: blackFont,
+                    fontSize: 16,
+                    fontFamily: "Inter",
+                  ),
+                ),
+              ],
             ),
           )
         : Column(
@@ -877,22 +890,18 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                     AspectRatio(
                       aspectRatio: 1.5,
                       child: Center(
-                        child: ClipRRect(
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(10)),
-                          child: CachedNetworkImage(
-                            placeholder: (context, url) =>
-                                Center(child: CircularLoadingIndicator()),
-                            imageUrl: imgList![0]!,
-                            fit: BoxFit.cover,
-                            height: double.infinity,
-                            width: double.infinity,
-                            errorWidget: productAndServiceBigErrorWidget,
-                          ),
+                        child: CachedNetworkImage(
+                          placeholder: (context, url) =>
+                              Center(child: CircularLoadingIndicator()),
+                          imageUrl: imgList![0]!,
+                          fit: BoxFit.cover,
+                          height: double.infinity,
+                          width: double.infinity,
+                          errorWidget: productAndServiceBigErrorWidget,
                         ),
                       ),
                     ),
-                    serviceStockAndDetailTag(),
+                    // serviceStockAndDetailTag(),
                     // getOutOfStockTag(),
                   ],
                 )
@@ -918,23 +927,19 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                               .map((item) => Stack(
                                     children: [
                                       Center(
-                                        child: ClipRRect(
-                                          borderRadius: const BorderRadius.all(
-                                              Radius.circular(10)),
-                                          child: CachedNetworkImage(
-                                            placeholder: (context, url) => Center(
-                                                child:
-                                                    CircularLoadingIndicator()),
-                                            imageUrl: item!,
-                                            errorWidget:
-                                                productAndServiceBigErrorWidget,
-                                            fit: BoxFit.cover,
-                                            height: double.infinity,
-                                            width: double.infinity,
-                                          ),
+                                        child: CachedNetworkImage(
+                                          placeholder: (context, url) => Center(
+                                              child:
+                                                  CircularLoadingIndicator()),
+                                          imageUrl: item!,
+                                          errorWidget:
+                                              productAndServiceBigErrorWidget,
+                                          fit: BoxFit.cover,
+                                          height: double.infinity,
+                                          width: double.infinity,
                                         ),
                                       ),
-                                      serviceStockAndDetailTag(),
+                                      // serviceStockAndDetailTag(),
                                       // getOutOfStockTag(),
                                     ],
                                   ))
@@ -973,18 +978,26 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
 
   Widget serviceStockAndDetailTag() {
     if (service?.availableFrom?.isAfter(DateTime.now()) ?? false) {
-      return Positioned(
-        top: 20,
-        right: 10,
-        child: showColoredLabeledWidget(
-            text: AppLocalization.of(context)!.comingSoon, color: starYellow),
+      return SizedBox(
+        width: double.infinity,
+        height: 30,
+        child: showColoredLabeledWidgetServiceDetails(
+            service: service,
+            text: AppLocalization.of(context)!.comingSoon,
+            color: lightYellow),
       );
     } else if (service?.isAvailable == false) {
-      return Positioned(
-        top: 20,
-        right: 10,
-        child: showColoredLabeledWidget(
-            text: AppLocalization.of(context)!.outOfStock, color: red),
+      return SizedBox(
+        width: double.infinity,
+        height: 30,
+        child: Positioned(
+          top: 20,
+          right: 10,
+          child: showColoredLabeledWidgetServiceDetails(
+              service: service,
+              text: AppLocalization.of(context)!.outOfStock,
+              color: lightRed),
+        ),
       );
     } else {
       return const SizedBox();
