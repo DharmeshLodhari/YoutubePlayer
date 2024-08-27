@@ -252,6 +252,30 @@ class _QRCodeViewState extends State<QRCodeView> {
           if (mounted) setState(() {});
         }
       }
+    } else if (scanDataList[scanDataList.length - 1] == "transactions") {
+      final result =
+          await Navigator.of(MyGlobals().navigationKey.currentContext!)
+              .pushNamed(Routes.TRANSACTIONS, arguments: {'page': 0});
+
+      // Handle the result here
+      if (result != null) {
+        if (result == 'back pressed') {
+          canShowDialogBox = true;
+          if (mounted) setState(() {});
+        }
+      }
+    } else if (scanDataList[scanDataList.length - 1] == "payout") {
+      final result =
+          await Navigator.of(MyGlobals().navigationKey.currentContext!)
+              .pushNamed(Routes.TRANSACTIONS, arguments: {'page': 1});
+
+      // Handle the result here
+      if (result != null) {
+        if (result == 'back pressed') {
+          canShowDialogBox = true;
+          if (mounted) setState(() {});
+        }
+      }
     } else if (scanDataList[qrCodeIndex - 1] == 'anonymous-shopping-cart') {
       try {
         final ShoppingCartModelFromQrCode? shoppingCartModel =
@@ -577,12 +601,5 @@ class _QRCodeViewState extends State<QRCodeView> {
     service.currency = userBloc.user.currency;
     service.pictureMap = [];
     return service;
-  }
-
-  Order getOrder(String orderId) {
-    final Order order = Order();
-    order.id = orderId;
-    order.createdAt = "";
-    return order;
   }
 }

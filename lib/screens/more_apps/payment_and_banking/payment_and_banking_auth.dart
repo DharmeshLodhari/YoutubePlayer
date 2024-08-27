@@ -1146,9 +1146,12 @@ class PaymentAndBankingAuth extends AuthService {
           currency: item['currency'],
           timeStamp: timeStamp,
           bankName: item["customer_bank_account"]["bank"]["name"],
+          customerUsername: item["customer_bank_account"]["customer_username"],
           bankLogo: item["customer_bank_account"]["bank"]["logo_url"],
           accountName: item["customer_bank_account"]["account_name"],
           accountNumber: item["customer_bank_account"]["account_number"],
+          referenceNumber: item["reference_number"] ?? "-",
+          category: item["category"] ?? "-",
         );
         if (item['description'] == null) {
           payout.description = "---";

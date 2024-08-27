@@ -85,27 +85,28 @@ class Transaction {
   String displayCustomer;
 
   // Pass in as named parameter in constructor
-  Transaction(
-      {this.status,
-      this.uuid,
-      this.description,
-      this.payee,
-      this.avatar,
-      this.currency,
-      this.createdAt,
-      this.userType = "User",
-      this.toCustomer = "",
-      this.fromCustomer = "",
-      this.displayFromCustomer = "",
-      this.displayToCustomer = "",
-      this.displayCustomer = "",
-      this.category,
-      this.note,
-      this.latitude,
-      this.longitude,
-      this.isAnonymous,
-      this.amount,
-      this.isCredit});
+  Transaction({
+    this.status,
+    this.uuid,
+    this.description,
+    this.payee,
+    this.avatar,
+    this.currency,
+    this.createdAt,
+    this.userType = "User",
+    this.toCustomer = "",
+    this.fromCustomer = "",
+    this.displayFromCustomer = "",
+    this.displayToCustomer = "",
+    this.displayCustomer = "",
+    this.category,
+    this.note,
+    this.latitude,
+    this.longitude,
+    this.isAnonymous,
+    this.amount,
+    this.isCredit,
+  });
 
   factory Transaction.fromJson(Map<String, dynamic> json) {
     final bool isCredit = json["is_credit"];
@@ -122,26 +123,27 @@ class Transaction {
         "";
 
     return Transaction(
-        status: json['status'],
-        uuid: json['slug'],
-        description: json['description'],
-        payee: payee,
-        avatar: avatar,
-        currency: json['currency'],
-        createdAt: json['created_at'],
-        category: json['category'],
-        note: json['notes'],
-        userType: json["user_type"] ?? "User",
-        latitude: json['latitude'] ?? "",
-        longitude: json['longitude'] ?? "",
-        amount: json['amount'],
-        displayFromCustomer: json["display_from_customer"] ?? "",
-        displayToCustomer: json["display_to_customer"] ?? "",
-        displayCustomer: displayCustomer,
-        fromCustomer: json['from_customer'] ?? "",
-        toCustomer: json['to_customer'] ?? "",
-        isAnonymous: json['is_anonymous'] ?? false,
-        isCredit: isCredit);
+      status: json['status'],
+      uuid: json['slug'],
+      description: json['description'],
+      payee: payee,
+      avatar: avatar,
+      currency: json['currency'],
+      createdAt: json['created_at'],
+      category: json['category'],
+      note: json['notes'],
+      userType: json["user_type"] ?? "User",
+      latitude: json['latitude'] ?? "",
+      longitude: json['longitude'] ?? "",
+      amount: json['amount'],
+      displayFromCustomer: json["display_from_customer"] ?? "",
+      displayToCustomer: json["display_to_customer"] ?? "",
+      displayCustomer: displayCustomer,
+      fromCustomer: json['from_customer'] ?? "",
+      toCustomer: json['to_customer'] ?? "",
+      isAnonymous: json['is_anonymous'] ?? false,
+      isCredit: isCredit,
+    );
   }
 }
 

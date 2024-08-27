@@ -82,15 +82,17 @@ class _CashOutTransactionsListState extends State<CashOutTransactionsList> {
         child: Scaffold(
           key: _scaffoldKey,
           backgroundColor: lightGrey,
-          body: SmartRefresher(
-              enablePullDown: true,
-              header: WaterDropHeader(
-                complete: Container(),
-                waterDropColor: navyBlue,
-              ),
-              controller: _refreshController,
-              onRefresh: _onRefresh,
-              child: _buildPayoutTransactionList()),
+          body: SafeArea(
+            child: SmartRefresher(
+                enablePullDown: true,
+                header: WaterDropHeader(
+                  complete: Container(),
+                  waterDropColor: navyBlue,
+                ),
+                controller: _refreshController,
+                onRefresh: _onRefresh,
+                child: _buildPayoutTransactionList()),
+          ),
         ),
       ),
     );

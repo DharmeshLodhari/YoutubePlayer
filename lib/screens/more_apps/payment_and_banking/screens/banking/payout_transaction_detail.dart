@@ -1,8 +1,13 @@
 import 'dart:io';
+import 'dart:ui' as ui;
 
 import 'package:Slydo/data/currency.dart';
+import 'package:Slydo/data/database_helper.dart';
+import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/models/virtual_account.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
@@ -11,11 +16,12 @@ import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
-import 'package:intl/intl.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../../../../utils/global_key.dart';
@@ -42,16 +48,48 @@ class _PayoutTransactionDetailState extends State<PayoutTransactionDetail> {
   final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
   bool isLoading = false;
+  VirtualAccount? virtualAccount;
+  String accountNumber = "";
+  String bankName = "";
+  String accountName = "";
 
   @override
   void initState() {
     arguments = widget.arguments;
     fetchPayout();
+    getSlydoAccount();
     super.initState();
   }
 
   void fetchPayout() async {
     payout = arguments['transaction'];
+  }
+
+  void getSlydoAccount() async {
+    isLoading = true;
+    setState(() {});
+    bool isFromServer = false;
+
+    virtualAccount = await DatabaseHelper().getVirtualAccount();
+
+    if (virtualAccount == null) {
+      virtualAccount = await PaymentAndBankingAuth().getVirtualAccountDetail();
+      isFromServer = true;
+    }
+
+    isLoading = false;
+
+    if (virtualAccount != null) {
+      if (isFromServer) {
+        await DatabaseHelper().saveVirtualAccount(virtualAccount!);
+      }
+    }
+
+    accountNumber = virtualAccount?.accountNumber ?? "";
+    bankName = virtualAccount?.financialInstitution?.name ?? "";
+    accountName = virtualAccount?.accountName ?? "";
+
+    if (mounted) setState(() {});
   }
 
   @override
@@ -217,22 +255,25 @@ class _PayoutTransactionDetailState extends State<PayoutTransactionDetail> {
 
     final ByteData logoBytes =
         await rootBundle.load('assets/images/app_logo_navyBlue.png');
-    final ByteData qrBytes = await rootBundle.load('assets/images/qr_code.png');
 
     final Uint8List logo = logoBytes.buffer.asUint8List();
-    final Uint8List qr = qrBytes.buffer.asUint8List();
 
     final String currency = worldCurrencies[payout?.currency] ?? "";
     final String? status = payout?.status;
     const String transactionType = "Bank Transfer";
     final String receiverUsername = "${payout?.accountName}";
-    final String receiverAccountNumber = "${payout?.accountNumber}";
-    final String senderUsername = "${"_"}";
-    final String senderAccountNumber = "-";
+    final String receiverAccountNumber =
+        "${payout?.bankName} | ${payout?.accountNumber}";
+    final String senderUsername = "${payout?.customerUsername}";
+    final String senderAccountNumber = "$bankName | $accountNumber";
     final String receivingBank = "${payout?.bankName}";
-    final String referenceNumber = "-";
-    final String category = "_";
+    final String referenceNumber = "${payout?.referenceNumber}";
+    final String category = "${payout?.category}";
     final String description = "${payout?.description}";
+
+    // Generate QR code image
+    final Uint8List qrCodeImage =
+        await _generateQRCodeImage(getTransactionUrl());
 
     pdf.addPage(
       pw.Page(
@@ -291,7 +332,7 @@ class _PayoutTransactionDetailState extends State<PayoutTransactionDetail> {
               pw.SizedBox(height: 5),
               buildPdfHorizontalDotBorder(),
               pw.SizedBox(height: 15),
-              _buildPdfQrScan(qr),
+              _buildPdfQrScan(qrCodeImage),
               pw.SizedBox(height: 15),
               _buildDescription(),
             ],
@@ -460,7 +501,7 @@ class _PayoutTransactionDetailState extends State<PayoutTransactionDetail> {
     return pw.Font.ttf(ByteData.sublistView(fontData.buffer.asUint8List()));
   }
 
-  pw.Widget _buildPdfQrScan(Uint8List qr) {
+  pw.Widget _buildPdfQrScan(Uint8List qrCodeImage) {
     return pw.Row(
       mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
       children: [
@@ -490,8 +531,9 @@ class _PayoutTransactionDetailState extends State<PayoutTransactionDetail> {
           ),
         ),
         pw.Image(
-          pw.MemoryImage(qr),
+          pw.MemoryImage(qrCodeImage),
           height: 100,
+          width: 100,
         ),
       ],
     );
@@ -673,5 +715,32 @@ class _PayoutTransactionDetailState extends State<PayoutTransactionDetail> {
     debugPrint("go to Map Called !");
     // MapsLauncher.launchCoordinates(double.parse(transaction!.latitude!),
     //     double.parse(transaction!.longitude!));
+  }
+
+  Future<Uint8List> _generateQRCodeImage(String data) async {
+    final qrValidationResult = QrValidator.validate(
+      data: data,
+      version: QrVersions.auto,
+      errorCorrectionLevel: QrErrorCorrectLevel.Q,
+    );
+    final qrCode = qrValidationResult.qrCode;
+
+    final painter = QrPainter.withQr(
+      qr: qrCode!,
+      emptyColor: const Color(0xFFFFFFFF),
+      color: const Color(0xFF000000),
+      gapless: true,
+    );
+
+    final ui.Picture picture = painter.toPicture(80);
+    final ui.Image image = await picture.toImage(80, 80);
+    final ByteData? byteData =
+        await image.toByteData(format: ui.ImageByteFormat.png);
+    return byteData!.buffer.asUint8List();
+  }
+
+  String getTransactionUrl() {
+    final String url = '${AppConfig.baseUrl}/api/v1/transactions/payout/';
+    return url;
   }
 }

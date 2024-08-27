@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/data/state_notifiers/basket_bloc.dart';
@@ -272,6 +273,7 @@ class Product extends PurchasableItem {
   double? rating;
   bool? canRate;
   bool? enableInSuperStore;
+  int? reviewScore;
 
   // List<dynamic>? variant;
   List<Variant>? variantModels;
@@ -380,6 +382,7 @@ class Product extends PurchasableItem {
     this.isChecked = false,
     this.priceRange,
     this.originalPrice,
+    this.reviewScore,
     // this.itemUpdatedBy,
     // this.qty,
   });
@@ -423,6 +426,7 @@ class Product extends PurchasableItem {
       'added_by': itemAddedBy,
       'search_keywords': searchKeywords,
       'is_checked': isChecked,
+      'review_score': reviewScore ?? 0,
       // 'item_updated_by': itemUpdatedBy,
       // 'qty': qty,
     };
@@ -480,6 +484,7 @@ class Product extends PurchasableItem {
           ? []
           : List<String>.from(searchKeywords!.map((x) => x)),
       'is_checked': isChecked,
+      'review_score': reviewScore ?? 0,
       // "item_updated_by": itemUpdatedBy?.toJson(),
       // 'qty': qty,
     };
@@ -581,6 +586,8 @@ class Product extends PurchasableItem {
   }
 
   factory Product.fromJson(object) {
+    final Random random = Random();
+
     List<String> getProductImages(List? data) {
       final List<String> images = [];
 
@@ -678,6 +685,7 @@ class Product extends PurchasableItem {
           : List<String>.from(object["search_keywords"].map((x) => x)),
       priceRange: object["price_range"] ?? "0",
       originalPrice: object["original_price"] ?? 0,
+      reviewScore: object["review_score"] ?? random.nextInt(5),
       // itemUpdatedBy: object["item_updated_by"] == null
       //     ? null
       //     : UserFollowers.fromJson(object["item_updated_by"]),

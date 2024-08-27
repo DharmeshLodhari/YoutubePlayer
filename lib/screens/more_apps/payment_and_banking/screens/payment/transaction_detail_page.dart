@@ -1,6 +1,8 @@
 import 'dart:io';
+import 'dart:ui' as ui;
 
 import 'package:Slydo/data/currency.dart';
+import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/locator.dart';
@@ -21,6 +23,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:provider/provider.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 import 'package:share_plus/share_plus.dart';
 
 // ignore: must_be_immutable
@@ -311,27 +314,31 @@ class _TransactionDetailState extends State<TransactionDetail> {
       child: Row(
         children: [
           if (!transaction!.isCredit!)
-            Expanded(
-              child: OutlineCurvedButton(
-                onPressed: () async {
-                  if (appConfigurationModel?.enablePayment == true) {
-                    customerProfileBloc.customer = await UserAuth()
-                        .fetchCustomerProfile(transaction?.payee);
-                    Navigator.of(context).pushNamed(Routes.SEND_PAYMENT,
-                        arguments: <String, dynamic>{
-                          'isFromProfile': false,
-                          'transaction': transaction,
-                          'showMoreOption': true,
-                        });
-                  } else {
-                    showToast(message: 'Payment not available at the moment');
-                  }
-                },
-                backgroundColor: white,
-                textColor: navyBlue,
-                text: "Send Again",
-              ),
-            ),
+            (transaction?.payee?.contains("slydo") ?? false) ||
+                    (transaction?.displayCustomer.contains("slydo") ?? false)
+                ? Container()
+                : Expanded(
+                    child: OutlineCurvedButton(
+                      onPressed: () async {
+                        if (appConfigurationModel?.enablePayment == true) {
+                          customerProfileBloc.customer = await UserAuth()
+                              .fetchCustomerProfile(transaction?.payee);
+                          Navigator.of(context).pushNamed(Routes.SEND_PAYMENT,
+                              arguments: <String, dynamic>{
+                                'isFromProfile': false,
+                                'transaction': transaction,
+                                'showMoreOption': true,
+                              });
+                        } else {
+                          showToast(
+                              message: 'Payment not available at the moment');
+                        }
+                      },
+                      backgroundColor: white,
+                      textColor: navyBlue,
+                      text: "Send Again",
+                    ),
+                  ),
           const SizedBox(
             width: 15,
           ),
@@ -364,21 +371,22 @@ class _TransactionDetailState extends State<TransactionDetail> {
 
     final ByteData logoBytes =
         await rootBundle.load('assets/images/app_logo_navyBlue.png');
-    final ByteData qrBytes = await rootBundle.load('assets/images/qr_code.png');
 
     final Uint8List logo = logoBytes.buffer.asUint8List();
-    final Uint8List qr = qrBytes.buffer.asUint8List();
 
     final String currency = worldCurrencies[transaction?.currency] ?? "";
     final String? status = transaction?.status;
     const String transactionType = "Slydo to Slydo";
-    final String receiverUsername = "@${transaction?.toCustomer}";
-    final String receiverAccountNumber = "${"-"}";
-    final String senderUsername = "@${transaction?.fromCustomer}";
-    final String senderAccountNumber = "${"-"}";
-    final String referenceNumber = "${"-"}";
+    final String receiverName = getReceiverName();
+    final String receiverUserName = getReceiverUserName();
+    final String senderName = getSenderName();
+    final String senderUsername = getSenderUserName();
     final String category = "${transaction?.category}";
     final String description = "${transaction?.description}";
+
+    // Generate QR code image
+    final Uint8List qrCodeImage =
+        await _generateQRCodeImage(getTransactionUrl());
 
     pdf.addPage(
       pw.Page(
@@ -404,12 +412,12 @@ class _TransactionDetailState extends State<TransactionDetail> {
               buildPdfReceiptDetail("Transaction Type", transactionType, false),
               pw.SizedBox(height: 10),
               buildPdfReceiptDetail("Receiver Details",
-                  "$receiverUsername\n$receiverAccountNumber", false),
+                  "$receiverName\n$receiverUserName", false),
               pw.SizedBox(height: 10),
-              buildPdfReceiptDetail("Sender Details",
-                  "$senderUsername\n$senderAccountNumber", false),
-              pw.SizedBox(height: 10),
-              buildPdfReceiptDetail("Reference Number", referenceNumber, false),
+              buildPdfReceiptDetail(
+                  "Sender Details", "$senderName\n$senderUsername", false),
+              // pw.SizedBox(height: 10),
+              // buildPdfReceiptDetail("Reference Number", referenceNumber, false),
               pw.SizedBox(height: 10),
               buildPdfReceiptDetail("Category", category, false),
               pw.SizedBox(height: 10),
@@ -417,7 +425,7 @@ class _TransactionDetailState extends State<TransactionDetail> {
               pw.SizedBox(height: 10),
               buildPdfHorizontalDotBorder(),
               pw.SizedBox(height: 15),
-              _buildPdfQrScan(qr),
+              _buildPdfQrScan(qrCodeImage),
               pw.SizedBox(height: 15),
               _buildDescription(),
             ],
@@ -582,7 +590,7 @@ class _TransactionDetailState extends State<TransactionDetail> {
     return pw.Font.ttf(ByteData.sublistView(fontData.buffer.asUint8List()));
   }
 
-  pw.Widget _buildPdfQrScan(Uint8List qr) {
+  pw.Widget _buildPdfQrScan(Uint8List qrCodeImage) {
     return pw.Row(
       mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
       children: [
@@ -612,7 +620,8 @@ class _TransactionDetailState extends State<TransactionDetail> {
           ),
         ),
         pw.Image(
-          pw.MemoryImage(qr),
+          pw.MemoryImage(qrCodeImage), // Display the QR code image
+          width: 100,
           height: 100,
         ),
       ],
@@ -641,5 +650,62 @@ class _TransactionDetailState extends State<TransactionDetail> {
         fontWeight: pw.FontWeight.normal,
       ),
     );
+  }
+
+  String getReceiverName() {
+    if ((transaction?.displayToCustomer.contains('Slydo') ?? false) ||
+        (transaction?.displayToCustomer.contains('slydo') ?? false)) {
+      return 'Slydo International';
+    }
+    return "${transaction?.displayToCustomer}";
+  }
+
+  String getReceiverUserName() {
+    if (transaction?.toCustomer.contains('slydo') ?? false) {
+      return '@slydo';
+    }
+    return "@${transaction?.toCustomer}";
+  }
+
+  String getSenderName() {
+    if ((transaction?.displayFromCustomer.contains('Slydo') ?? false) ||
+        (transaction?.displayFromCustomer.contains('slydo') ?? false)) {
+      return 'Slydo International';
+    }
+    return "${transaction?.displayFromCustomer}";
+  }
+
+  String getSenderUserName() {
+    if (transaction?.fromCustomer.contains('slydo') ?? false) {
+      return '@slydo';
+    }
+    return "@${transaction?.fromCustomer}";
+  }
+
+  Future<Uint8List> _generateQRCodeImage(String data) async {
+    final qrValidationResult = QrValidator.validate(
+      data: data,
+      version: QrVersions.auto,
+      errorCorrectionLevel: QrErrorCorrectLevel.Q,
+    );
+    final qrCode = qrValidationResult.qrCode;
+
+    final painter = QrPainter.withQr(
+      qr: qrCode!,
+      emptyColor: const Color(0xFFFFFFFF),
+      color: const Color(0xFF000000),
+      gapless: true,
+    );
+
+    final ui.Picture picture = painter.toPicture(80);
+    final ui.Image image = await picture.toImage(80, 80);
+    final ByteData? byteData =
+        await image.toByteData(format: ui.ImageByteFormat.png);
+    return byteData!.buffer.asUint8List();
+  }
+
+  String getTransactionUrl() {
+    final String url = '${AppConfig.baseUrl}/api/v1/transactions/';
+    return url;
   }
 }

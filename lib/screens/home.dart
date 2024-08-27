@@ -353,11 +353,7 @@ class _HomeState extends State<Home> {
         width: MediaQuery.of(context).size.width,
         color: Colors.white,
         child: SingleChildScrollView(
-          child: Column(
-            children: [
-              _foregroundScreen(),
-            ],
-          ),
+          child: _foregroundScreen(),
         ),
       ),
     );

@@ -7,7 +7,6 @@ import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/customized_popup_menu.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:Slydo/widget/slide_action_button.dart';
@@ -31,8 +30,9 @@ class SlydoTransactionList extends StatefulWidget {
 
 class _SlydoTransactionListState extends State<SlydoTransactionList>
     with SingleTickerProviderStateMixin {
-  final GlobalKey<ScaffoldState> _scaffoldTransactionKey =
-      GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey =
+      GlobalKey<ScaffoldMessengerState>();
   late UserBloc userBloc;
 
   // Get list of users transactions
@@ -55,11 +55,6 @@ class _SlydoTransactionListState extends State<SlydoTransactionList>
 
   late CustomerProfileBloc customerProfileBloc;
 
-  final GlobalKey _key = LabeledGlobalKey("transactionListPopUpMenu");
-  late CustomizedPopUpMenu menu;
-  int selectedMenuItemIndex = 0;
-  bool isPopMenuOpen = false;
-  bool isFirstTime = true;
   AppConfigurationModel? appConfigurationModel;
 
   @override
@@ -75,111 +70,52 @@ class _SlydoTransactionListState extends State<SlydoTransactionList>
         getList();
       }
     });
-
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      // initializePopMenu();
-    });
-  }
-
-  void _refresh() {
-    count = 0;
-    next = "";
-    previous = "";
-    transactionList = [];
-    noItemInList = false;
-    isFirstTime = true;
-    isLoading = false;
-    if (mounted) setState(() {});
-    getList();
   }
 
   void _onRefresh() async {
     //check network connectivity and if true then refresh the list
     if (await checkConnection(context)) {
-      _refresh();
+      count = 0;
+      next = "";
+      previous = "";
+      transactionList = [];
+      noItemInList = false;
+      isLoading = false;
+      if (mounted) {
+        getList();
+      }
       _refreshController.refreshCompleted();
     } else {
       _refreshController.refreshCompleted();
     }
-  }
-
-  void menuItemSelectionChange(String value, int index) {
-    if (index == 4) {
-      newDateTimeRange = null;
-    } else {
-      selectedMenuItemIndex = index;
-    }
-
-    switch (value) {
-      case "received":
-        moneyIn = true;
-        break;
-      case "sent":
-        moneyIn = false;
-        break;
-
-      case "clear_date":
-        moneyIn =
-            moneyIn; // To maintain the 'filter value' when you clear the date.
-        break;
-
-      case "clear_all":
-        moneyIn = null;
-        userName = null;
-        newDateTimeRange = null;
-
-        selectedMenuItemIndex = 0;
-
-        break;
-
-      default:
-        moneyIn = null;
-        break;
-    }
-
-    setState(() {});
-    _onRefresh();
-  }
-
-  void menuStateChange(bool isOpen) {
-    isPopMenuOpen = isOpen;
-    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
     customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
-    menu = CustomizedPopUpMenu(
-      buttonKey: _key,
-      context: context,
-      childList: [
-        CustomizedPopUpMenuItem(title: "All", value: "all"),
-        CustomizedPopUpMenuItem(title: "Received", value: "received"),
-        CustomizedPopUpMenuItem(title: "Sent", value: "sent"),
-        CustomizedPopUpMenuItem(title: "Clear All", value: 'clear_all'),
-        CustomizedPopUpMenuItem(title: "Clear Date", value: 'clear_date'),
-      ],
-      selectedIndex: selectedMenuItemIndex,
-      right: 16,
-    );
-    menu.onChange = menuItemSelectionChange;
-    menu.menuState = menuStateChange;
 
     return WillPopScope(
       onWillPop: () async {
-        menu.closeMenu();
         customerProfileBloc.customer = null;
         return true;
       },
-      child: Scaffold(
-        key: _scaffoldTransactionKey,
-        backgroundColor: lightGrey,
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Expanded(child: _buildTransactionList()),
-          ],
+      child: ScaffoldMessenger(
+        key: _scaffoldMessengerKey,
+        child: Scaffold(
+          key: _scaffoldKey,
+          backgroundColor: lightGrey,
+          body: SafeArea(
+            child: SmartRefresher(
+                enablePullDown: true,
+                header: WaterDropHeader(
+                  complete: Container(),
+                  waterDropColor: navyBlue,
+                ),
+                controller: _refreshController,
+                onRefresh: _onRefresh,
+                child: _buildTransactionList()),
+          ),
         ),
       ),
     );
@@ -202,36 +138,6 @@ class _SlydoTransactionListState extends State<SlydoTransactionList>
         : const SizedBox.shrink();
   }
 
-  Widget popUpMenuButton() {
-    return SizedBox(
-      key: _key,
-      height: 34,
-      width: 34,
-      child: Card(
-        color: isPopMenuOpen ? navyBlue : iconBtnGrey,
-        elevation: 0,
-        margin: const EdgeInsets.symmetric(vertical: 10),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: IconButton(
-          icon: Icon(
-            Icons.filter_alt_rounded,
-            color: isPopMenuOpen ? Colors.white : Colors.black,
-            size: 20,
-          ),
-          onPressed: () {
-            if (menu.isMenuOpen) {
-              menu.closeMenu();
-            } else {
-              menu.openMenu();
-            }
-          },
-        ),
-      ),
-    );
-  }
-
   Widget _buildTransactionList() {
     return noItemInList
         ? NoItemInList(
@@ -239,31 +145,20 @@ class _SlydoTransactionListState extends State<SlydoTransactionList>
           )
         : isLoading && transactionList.isEmpty
             ? buildLoadingIndicator(isLoading: isLoading)
-            : SmartRefresher(
-                enablePullDown: true,
-                header: WaterDropHeader(
-                  complete: Container(),
-                  waterDropColor: navyBlue,
-                ),
-                controller: _refreshController,
-                onRefresh: _onRefresh,
-                child: SlidableAutoCloseBehavior(
-                  closeWhenOpened: true,
-                  child: ListView.builder(
-                    padding: const EdgeInsets.all(4),
-                    //+1 for progressbar
-                    itemCount: transactionList.length + 1,
-                    itemBuilder: (BuildContext context, int index) {
-                      if (index == transactionList.length) {
-                        return buildJumpingLoadingIndicator(
-                            isLoading: isLoading);
-                      } else {
-                        return _getSlidableWithLists(
-                            context, transactionList[index], index);
-                      }
-                    },
-                    controller: _scrollController,
-                  ),
+            : SlidableAutoCloseBehavior(
+                closeWhenOpened: true,
+                child: ListView.builder(
+                  //+1 for progressbar
+                  itemCount: transactionList.length + 1,
+                  itemBuilder: (BuildContext context, int index) {
+                    if (index == transactionList.length) {
+                      return buildJumpingLoadingIndicator(isLoading: isLoading);
+                    } else {
+                      return _getSlidableWithLists(
+                          context, transactionList[index], index);
+                    }
+                  },
+                  controller: _scrollController,
                 ),
               );
   }
@@ -296,29 +191,13 @@ class _SlydoTransactionListState extends State<SlydoTransactionList>
         transactionList.addAll(tempList);
 
         if (mounted) setState(() {});
-
-        if (isFirstTime && next != null && next != "") {
-          isFirstTime = false;
-          getList();
-        }
       }
       if (transactionList.isEmpty) {
         noItemInList = true;
 
         if (mounted) setState(() {});
       } else if (next == null && transactionList.length > 6) {
-        showReachedToBottomSnackBar();
-      }
-    }
-  }
-
-  void showReachedToBottomSnackBar() {
-    if (mounted) {
-      if (next == null &&
-          _scrollController.position.pixels ==
-              _scrollController.position.maxScrollExtent &&
-          _scrollController.position.pixels != 0) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        _scaffoldMessengerKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: const Duration(milliseconds: 500),
