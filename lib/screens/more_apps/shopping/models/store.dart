@@ -392,7 +392,7 @@ class Product extends PurchasableItem {
       "name": name,
       "description": description,
       "short_description":
-          getShortDescription(shortDescription ?? '', description ?? ''),
+      getShortDescription(shortDescription ?? '', description ?? ''),
       "price": price,
       "condition": condition,
       "category": category?.id,
@@ -442,7 +442,7 @@ class Product extends PurchasableItem {
       "name": name,
       "description": description,
       "short_description":
-          getShortDescription(shortDescription ?? '', description ?? ''),
+      getShortDescription(shortDescription ?? '', description ?? ''),
       "price": price,
       "condition": condition,
       "category": category,
@@ -656,12 +656,12 @@ class Product extends PurchasableItem {
       variantModels: object["variants"] == null
           ? []
           : List<Variant>.from(
-              object["variants"]!.map((x) => Variant.fromJson(x))),
+          object["variants"]!.map((x) => Variant.fromJson(x))),
       // addOns: object["add_ons"],
       addOnsModels: object["add_ons"] == null
           ? []
           : List<AddOns>.from(
-              object["add_ons"]!.map((x) => AddOns.fromJson(x))),
+          object["add_ons"]!.map((x) => AddOns.fromJson(x))),
       weight: object["weight"],
       weightSiUnit: object["weight_si_unit"],
       height: object["height"],
@@ -679,7 +679,7 @@ class Product extends PurchasableItem {
       itemAddedBy: object["added_by"] == null
           ? []
           : List<AddedBy>.from(
-              object["added_by"].map((x) => AddedBy.fromJson(x))),
+          object["added_by"].map((x) => AddedBy.fromJson(x))),
       searchKeywords: object["search_keywords"] == null
           ? <String>[]
           : List<String>.from(object["search_keywords"].map((x) => x)),
@@ -966,7 +966,7 @@ class Product extends PurchasableItem {
             addedBy.quantity = (addedBy.quantity ?? 0) - 1;
             if (addedBy.quantity == 0) {
               itemAddedBy?.removeWhere(
-                  (element) => element.user?.userName == currentUser?.userName);
+                      (element) => element.user?.userName == currentUser?.userName);
             }
           }
 
@@ -985,7 +985,7 @@ class Product extends PurchasableItem {
           itemAddedBy?.first.quantity = (itemAddedBy?.first.quantity ?? 0) - 1;
           if (itemAddedBy?.first.quantity == 0) {
             itemAddedBy?.removeWhere(
-                (element) => element.user?.userName == currentUser?.userName);
+                    (element) => element.user?.userName == currentUser?.userName);
           }
         }
       }
@@ -1173,11 +1173,11 @@ class Variant {
       addedBy: object["added_by"] == null
           ? []
           : List<AddedBy>.from(
-              object["added_by"]!.map((x) => AddedBy.fromJson(x))),
+          object["added_by"]!.map((x) => AddedBy.fromJson(x))),
       pictures: object['pictures'] == null
           ? []
           : List<Picture>.from(
-              object['pictures'].map((i) => Picture.fromJson(i))),
+          object['pictures'].map((i) => Picture.fromJson(i))),
       type: getVariantType(object),
       discountId: object['discount'],
       discountValue: object['discount_value'],
@@ -1212,7 +1212,7 @@ class Variant {
             variantAddedBy.quantity = (variantAddedBy.quantity ?? 0) - 1;
             if (variantAddedBy.quantity == 0) {
               addedBy?.removeWhere(
-                  (element) => element.user?.userName == currentUser?.userName);
+                      (element) => element.user?.userName == currentUser?.userName);
             }
           }
           isAlreadyPresent = true;
@@ -1230,7 +1230,7 @@ class Variant {
           addedBy?.first.quantity = (addedBy?.first.quantity ?? 0) - 1;
           if (addedBy?.first.quantity == 0) {
             addedBy?.removeWhere(
-                (element) => element.user?.userName == currentUser?.userName);
+                    (element) => element.user?.userName == currentUser?.userName);
           }
         }
       }
@@ -1319,24 +1319,24 @@ class Variant {
 
   Variant copyWith(
       {String? id,
-      String? title,
-      String? size,
-      String? colour,
-      VariantTypes? type,
-      String? price,
-      String? value,
-      List<File>? localImages,
-      List<String?>? serverImages,
-      int? quantity,
-      bool? isAvailable,
-      DateTime? availableFrom,
-      String? currency,
-      List<AddedBy>? addedBy,
-      bool? trackInventory,
-      int? discountValue,
-      String? discountType,
-      bool? discountIsActive,
-      int? discountedPrice}) {
+        String? title,
+        String? size,
+        String? colour,
+        VariantTypes? type,
+        String? price,
+        String? value,
+        List<File>? localImages,
+        List<String?>? serverImages,
+        int? quantity,
+        bool? isAvailable,
+        DateTime? availableFrom,
+        String? currency,
+        List<AddedBy>? addedBy,
+        bool? trackInventory,
+        int? discountValue,
+        String? discountType,
+        bool? discountIsActive,
+        int? discountedPrice}) {
     return Variant(
       id: id ?? this.id,
       title: title ?? this.title,
@@ -1494,7 +1494,7 @@ class AddOnOption {
             addOnsAddedBy.quantity = (addOnsAddedBy.quantity ?? 0) - 1;
             if (addOnsAddedBy.quantity == 0) {
               addedBy?.removeWhere(
-                  (element) => element.user?.userName == currentUser?.userName);
+                      (element) => element.user?.userName == currentUser?.userName);
             }
           }
           isAlreadyPresent = true;
@@ -1512,7 +1512,7 @@ class AddOnOption {
           addedBy?.first.quantity = (addedBy?.first.quantity ?? 0) - 1;
           if (addedBy?.first.quantity == 0) {
             addedBy?.removeWhere(
-                (element) => element.user?.userName == currentUser?.userName);
+                    (element) => element.user?.userName == currentUser?.userName);
           }
         }
       }
@@ -1552,16 +1552,16 @@ class AddOns {
 
   AddOns(
       {this.id,
-      this.options,
-      this.merchant,
-      this.name,
-      this.description,
-      this.inputType,
-      this.selectType,
-      this.isRequired,
-      this.isChecked,
-      this.createdAt,
-      this.groupValue});
+        this.options,
+        this.merchant,
+        this.name,
+        this.description,
+        this.inputType,
+        this.selectType,
+        this.isRequired,
+        this.isChecked,
+        this.createdAt,
+        this.groupValue});
 
   AddOns.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -1787,6 +1787,7 @@ class Service extends PurchasableItem {
   bool? canRate = false;
   List<String>? searchKeywords;
   bool isChecked = false;
+  int? reviewScore;
 
   Service({
     super.id,
@@ -1812,6 +1813,7 @@ class Service extends PurchasableItem {
     this.canRate,
     this.searchKeywords,
     this.isChecked = false,
+    this.reviewScore,
   });
 
   String? getMerchantUserName() {
@@ -1856,7 +1858,7 @@ class Service extends PurchasableItem {
       "name": name,
       "description": description,
       "short_description":
-          getShortDescription(shortDescription ?? '', description ?? ''),
+      getShortDescription(shortDescription ?? '', description ?? ''),
       "price": price,
       "category": category,
       "is_available": isAvailable,
@@ -1867,6 +1869,7 @@ class Service extends PurchasableItem {
       "provider_fullname": providerFullName,
       "search_keywords": searchKeywords,
       "is_checked": isChecked,
+      "review_score": reviewScore,
     };
   }
 
@@ -1876,7 +1879,7 @@ class Service extends PurchasableItem {
       "name": name,
       "description": description,
       "short_description":
-          getShortDescription(shortDescription ?? '', description ?? ''),
+      getShortDescription(shortDescription ?? '', description ?? ''),
       "price": price,
       "category": category,
       "is_available": isAvailable,
@@ -1892,6 +1895,7 @@ class Service extends PurchasableItem {
           ? []
           : List<String>.from(searchKeywords!.map((x) => x)),
       "is_checked": isChecked,
+      "review_score": reviewScore,
     };
   }
 
@@ -1921,6 +1925,7 @@ class Service extends PurchasableItem {
         ? <String>[]
         : List<String>.from(object["search_keywords"].map((x) => x));
     isChecked = object["is_checked"] ?? false;
+    reviewScore = object["review_score"] ?? false;
   }
 
   bool isServiceAvailableNow() {
@@ -1967,9 +1972,9 @@ class ProductCategory {
   final dynamic id;
 
   Map<String, dynamic> toJson() => {
-        "name": name,
-        "id": id,
-      };
+    "name": name,
+    "id": id,
+  };
 }
 
 // class ProductCategory {
@@ -2006,16 +2011,16 @@ class AddedBy {
   });
 
   factory AddedBy.fromJson(Map<String, dynamic> json) => AddedBy(
-        user: json["user"] == null
-            ? null
-            : SharedCartMemberModel.fromJson(json["user"]),
-        quantity: json["quantity"],
-      );
+    user: json["user"] == null
+        ? null
+        : SharedCartMemberModel.fromJson(json["user"]),
+    quantity: json["quantity"],
+  );
 
   Map<String, dynamic> toJson() => {
-        "user": user?.toJson(),
-        "quantity": quantity,
-      };
+    "user": user?.toJson(),
+    "quantity": quantity,
+  };
 }
 
 class Order {
@@ -2231,7 +2236,7 @@ class Order {
         const String type = "product";
 
         final Product products =
-            orderedProduct.copyWith(quantity: 1, withSelectedAddOn: true);
+        orderedProduct.copyWith(quantity: 1, withSelectedAddOn: true);
 
         Variant? variant;
         if (orderedProduct.variantModels != null &&
@@ -2252,7 +2257,7 @@ class Order {
   //todo: invetiget deprecating this function or delete this function
   String? getCustomerOrMerchantName(String? userName) {
     final customerOrMerchant =
-        customerName == userName ? merchant : customerName;
+    customerName == userName ? merchant : customerName;
     return customerOrMerchant;
   }
 
@@ -2385,7 +2390,7 @@ class Order {
       if (v.containsKey('Payment Successful') ||
           v.containsKey('Payment Received')) {
         if ((v['Payment Successful'] != null &&
-                v['Payment Successful'] != '') ||
+            v['Payment Successful'] != '') ||
             (v['Payment Received'] != null && v['Payment Received'] != '')) {
           return 'Paid';
         }

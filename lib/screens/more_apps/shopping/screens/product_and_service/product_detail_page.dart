@@ -112,7 +112,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   List<Variant>? variantsWithSize;
 
   Variant? availableVariant;
-
+  int selectedIndex = 0;
   @override
   void initState() {
     product = widget.arguments[
@@ -1288,23 +1288,23 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                             children: [
                               CarouselSlider(
                                 options: CarouselOptions(
-                                    enableInfiniteScroll: false,
-                                    viewportFraction: 1.0,
-                                    enlargeCenterPage: true,
-                                    autoPlay: false,
-                                    aspectRatio: 1.5,
-                                    onPageChanged: (index, _) {
-                                      sliderIndex.sink.add(index);
-                                    }),
+                                  enableInfiniteScroll: false,
+                                  viewportFraction: 1.0,
+                                  enlargeCenterPage: true,
+                                  autoPlay: false,
+                                  aspectRatio: 1.5,
+                                  onPageChanged: (index, _) {
+                                    setState(() {
+                                      selectedIndex = index;
+                                    });
+                                    sliderIndex.sink.add(index);
+                                  },
+                                ),
                                 items: displayProductImages!
                                     .map(
                                       (item) => GestureDetector(
                                         onTap: () {
                                           if (item != null) {
-                                            // Navigator.of(context).pushNamed(
-                                            //     Routes.PHOTO_VIEWER,
-                                            //     arguments: item);
-
                                             showSliderGallery(
                                                 displayProductImages);
                                           }
@@ -1338,37 +1338,79 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                                     )
                                     .toList(),
                               ),
-                              Positioned(
-                                bottom: 0,
-                                left: MediaQuery.of(context).size.width / 2 -
-                                    (5 * displayProductImages!.length),
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: displayProductImages!.map((url) {
-                                    final int index =
-                                        displayProductImages!.indexOf(url);
-                                    return Container(
-                                      width: 5.0,
-                                      height: 5.0,
-                                      margin: const EdgeInsets.symmetric(
-                                          vertical: 10.0, horizontal: 2.0),
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: snapshot.data == index
-                                            ? navyBlue
-                                            : navyBlueLight,
-                                      ),
-                                    );
-                                  }).toList(),
-                                ),
-                              )
+                              // Positioned(
+                              //   bottom: 0,
+                              //   left: MediaQuery.of(context).size.width / 2 -
+                              //       (5 * displayProductImages!.length),
+                              //   child: Row(
+                              //     crossAxisAlignment: CrossAxisAlignment.end,
+                              //     mainAxisAlignment: MainAxisAlignment.center,
+                              //     children: displayProductImages!.map((url) {
+                              //       final int index =
+                              //           displayProductImages!.indexOf(url);
+                              //       return Container(
+                              //         width: 5.0,
+                              //         height: 5.0,
+                              //         margin: const EdgeInsets.symmetric(
+                              //             vertical: 10.0, horizontal: 2.0),
+                              //         decoration: BoxDecoration(
+                              //           shape: BoxShape.circle,
+                              //           color: snapshot.data == index
+                              //               ? navyBlue
+                              //               : navyBlueLight,
+                              //         ),
+                              //       );
+                              //     }).toList(),
+                              //   ),
+                              // )
                             ],
                           ),
+                          const SizedBox(height: 12),
+                          _buildHorizontalProductImageList(), // Horizontal list
                         ],
                       ),
           );
         });
+  }
+
+  Widget _buildHorizontalProductImageList() {
+    return SizedBox(
+      height: 60,
+      child: ListView.builder(
+        shrinkWrap: true,
+        scrollDirection: Axis.horizontal,
+        itemCount: displayProductImages?.length ?? 0,
+        itemBuilder: (context, index) {
+          final String? imageUrl = displayProductImages?[index];
+          final bool isSelected = selectedIndex == index;
+
+          return GestureDetector(
+            onTap: () {
+              setState(() {
+                sliderIndex.sink.add(index);
+              });
+            },
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 5.0),
+              foregroundDecoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(5),
+                border:
+                    isSelected ? Border.all(color: black, width: 1.2) : null,
+              ),
+              child: CachedNetworkImage(
+                placeholder: (context, url) =>
+                    Center(child: CircularLoadingIndicator()),
+                imageUrl: imageUrl ?? "",
+                height: 60,
+                width: 60,
+                fit: BoxFit.cover,
+                errorWidget: productAndServiceBigErrorWidget,
+              ),
+            ),
+          );
+        },
+      ),
+    );
   }
 
   Future<void> showSliderGallery(List<String?>? displayProductImages) {

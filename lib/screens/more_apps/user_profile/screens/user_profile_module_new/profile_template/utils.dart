@@ -322,6 +322,7 @@ Widget showDiscountValue(
               fontSize: 12,
               fontFamily: 'Inter',
               color: blackFont,
+              fontWeight: FontWeight.w500,
             ),
           ),
         ],
@@ -354,37 +355,76 @@ Widget showColoredLabeledWidgetProductDetails(
     {required String text,
     required Color color,
     Product? product,
-    Variant? selectedVariant}) {
+    Variant? selectedVariant,
+    String? date}) {
   return Container(
     alignment: Alignment.center,
     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
     color: color,
-    child: Text(
-      text,
-      style: TextStyle(
-        color: getProductDetailsColors(product!, selectedVariant),
-        fontSize: 10,
-        fontFamily: 'Inter',
-        fontWeight: FontWeight.w700,
+    child: RichText(
+      text: TextSpan(
+        text: text,
+        style: TextStyle(
+          color: getProductDetailsColors(product!, selectedVariant),
+          fontSize: 12,
+          fontFamily: 'Inter',
+          fontWeight: FontWeight.w700,
+        ),
+        children: [
+          const WidgetSpan(child: SizedBox(width: 5)),
+          TextSpan(
+            text: date ?? "",
+            style: TextStyle(
+              fontSize: 12,
+              fontFamily: 'Inter',
+              color: blackFont,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
       ),
+      textAlign: TextAlign.center,
+      softWrap: true,
+      overflow: TextOverflow.ellipsis,
     ),
   );
 }
 
-Widget showColoredLabeledWidgetServiceDetails(
-    {required String text, required Color color, required Service? service}) {
+Widget showColoredLabeledWidgetServiceDetails({
+  required String text,
+  String? date,
+  required Color color,
+  required Service? service,
+}) {
   return Container(
     alignment: Alignment.center,
     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
     color: color,
-    child: Text(
-      text,
-      style: TextStyle(
-        color: getServiceDetailsColors(service!),
-        fontSize: 10,
-        fontFamily: 'Inter',
-        fontWeight: FontWeight.w700,
+    child: RichText(
+      text: TextSpan(
+        text: text,
+        style: TextStyle(
+          color: getServiceDetailsColors(service!),
+          fontSize: 12,
+          fontFamily: 'Inter',
+          fontWeight: FontWeight.w700,
+        ),
+        children: [
+          const WidgetSpan(child: SizedBox(width: 5)),
+          TextSpan(
+            text: date ?? "",
+            style: TextStyle(
+              fontSize: 12,
+              fontFamily: 'Inter',
+              color: blackFont,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
       ),
+      textAlign: TextAlign.center,
+      softWrap: true,
+      overflow: TextOverflow.ellipsis,
     ),
   );
 }
@@ -418,8 +458,11 @@ Color getProductDetailsColors(Product product, Variant? selectedVariant) {
   }
 }
 
-Widget showColoredLabeledWidgetService(
-    {required String text, required Color color, required Service service}) {
+Widget showColoredLabeledWidgetService({
+  required String text,
+  required Color color,
+  required Service service,
+}) {
   return Container(
     alignment: Alignment.center,
     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
@@ -447,18 +490,38 @@ Color getServiceStockTextColors(Service service) {
 }
 
 Widget showColoredLabeledWidgetProductStock(
-    {required String text, required Color color, required Product product}) {
+    {required String text,
+    required Color color,
+    required Product product,
+    String? date}) {
   return Container(
     alignment: Alignment.center,
     color: color,
-    child: Text(
-      text,
-      style: TextStyle(
-        color: getProductStockTextColors(product),
-        fontSize: 10,
-        fontFamily: 'Inter',
-        fontWeight: FontWeight.w700,
+    child: RichText(
+      text: TextSpan(
+        text: text,
+        style: TextStyle(
+          color: getProductStockTextColors(product),
+          fontSize: 10,
+          fontFamily: 'Inter',
+          fontWeight: FontWeight.w700,
+        ),
+        children: [
+          const WidgetSpan(child: SizedBox(width: 5)),
+          TextSpan(
+            text: date ?? "",
+            style: TextStyle(
+              fontSize: 12,
+              fontFamily: 'Inter',
+              color: blackFont,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
       ),
+      textAlign: TextAlign.center,
+      softWrap: true,
+      overflow: TextOverflow.ellipsis,
     ),
   );
 }

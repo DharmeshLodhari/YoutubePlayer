@@ -546,10 +546,10 @@ class _UserProductListState extends State<UserProductList> {
                 itemCount: 2,
                 itemBuilder: (context, index) {
                   return Card(
-                    color: Colors.grey,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
+                    color: Colors.red,
+                    // shape: RoundedRectangleBorder(
+                    //   borderRadius: BorderRadius.circular(12),
+                    // ),
                   );
                 },
               ),

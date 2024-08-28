@@ -1323,13 +1323,13 @@ Widget getClickableRatingBar(
   );
 }
 
-Widget getRating({required int? numberOfRating, double starSize = 8}) {
+Widget getRating({required int? numberOfRating, double starSize = 12}) {
   final List<Widget> widgets = [];
 
   for (int i = 1; i < 6; i++) {
     widgets.add(
       Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 1.0),
+        padding: const EdgeInsets.symmetric(horizontal: 0.5),
         child: Icon(
           SlydoAppIcon.star,
           color: getRatingColor(numberOfRating, i),

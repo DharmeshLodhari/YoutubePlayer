@@ -78,22 +78,15 @@ class _DisplayProductState extends State<DisplayProduct> {
         Navigator.pushNamed(context, '/product',
             arguments: {"product": widget.product});
       },
-      child: SizedBox(
-        width: 230,
-        child: Card(
-          semanticContainer: true,
-          clipBehavior: Clip.antiAliasWithSaveLayer,
-          color: Colors.white,
-          margin: EdgeInsets.only(
-              right: widget.giveRightPadding ? 10 : 0.0, bottom: 2),
-          elevation: 3,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          shadowColor: boxShadow,
-          child: Padding(
-            padding:
-                const EdgeInsets.only(right: 6, left: 6, top: 2, bottom: 2),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+        child: SizedBox(
+          width: 230,
+          child: Card(
+            semanticContainer: true,
+            color: Colors.transparent,
+            elevation: 0,
+            shadowColor: boxShadow,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
@@ -101,7 +94,7 @@ class _DisplayProductState extends State<DisplayProduct> {
                   child: Stack(
                     children: [
                       SizedBox(
-                        height: 155,
+                        height: 189,
                         child: CachedNetworkImage(
                           imageUrl: widget.product.cover!,
                           fit: BoxFit.cover,
@@ -179,16 +172,14 @@ class _DisplayProductState extends State<DisplayProduct> {
                         height: 2,
                       ),
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           getRating(
                               numberOfRating: widget.product.rating?.toInt()),
+                          const SizedBox(width: 5),
                           _getProductReviews(),
                         ],
                       ),
-                      const SizedBox(
-                        height: 2,
-                      ),
+                      const SizedBox(height: 5),
                       Row(
                           mainAxisSize: MainAxisSize.max,
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -658,12 +649,12 @@ class _DisplayProductState extends State<DisplayProduct> {
         }
       },
       child: RoundedBackgroundIcon(
-        height: 30,
-        width: 30,
+        height: 25,
+        width: 25,
         borderRadius: 20,
         icon: Icon(
           iconValue,
-          size: 14,
+          size: 12,
           color: iconColor,
         ),
         backgroundColor: iconBackgroundColor,
@@ -764,32 +755,34 @@ class _DisplayProductState extends State<DisplayProduct> {
   }
 
   Widget _getProductReviews() {
-    return const Text(
-      "()",
+    return Text(
+      "(${widget.product.reviewScore} reviews)",
       style: TextStyle(
           fontWeight: FontWeight.w400,
           fontSize: 12,
           fontFamily: 'Inter',
-          color: Colors.grey),
+          color: lightGray),
     );
   }
 
   Widget _buildProductDiscountAndTag() {
-    if (widget.product.availableFrom?.isAfter(DateTime.now()) ?? false) {
+    if ((widget.product.availableFrom?.isAfter(DateTime.now()) ?? false)) {
       return SizedBox(
         width: double.infinity,
-        height: 30,
+        height: 28,
         child: showColoredLabeledWidgetProductStock(
           text: AppLocalization.of(context)!.comingSoon,
           color: lightYellow,
+          date: formatDate1(widget.product.availableFrom),
           product: widget.product,
         ),
       );
     } else if (widget.product.trackInventory == true &&
-        widget.product.quantity! <= 0) {
+        (widget.product.variantModels?.isEmpty ?? false) &&
+        (widget.product.quantity ?? 0) <= 0) {
       return SizedBox(
         width: double.infinity,
-        height: 30,
+        height: 28,
         child: showColoredLabeledWidgetProductStock(
           text: AppLocalization.of(context)!.outOfStock,
           color: lightRed,
@@ -802,7 +795,7 @@ class _DisplayProductState extends State<DisplayProduct> {
             widget.product.pricePercentageChange != 0.0)) {
       return SizedBox(
         width: double.infinity,
-        height: 30,
+        height: 28,
         child: buildDiscountPrice(),
       );
     } else {
@@ -874,20 +867,15 @@ class _DisplayServiceState extends State<DisplayService> {
         Navigator.pushNamed(context, '/service-detail',
             arguments: {"service": currentService});
       },
-      child: SizedBox(
-        width: 230,
-        child: Card(
-          semanticContainer: true,
-          clipBehavior: Clip.antiAliasWithSaveLayer,
-          color: Colors.white,
-          margin: EdgeInsets.only(
-              right: widget.giveRightPadding ? 10 : 0.0, bottom: 2),
-          elevation: 3,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          shadowColor: boxShadow,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 6.0),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 5),
+        child: SizedBox(
+          width: 230,
+          child: Card(
+            semanticContainer: true,
+            color: Colors.transparent,
+            elevation: 0,
+            shadowColor: boxShadow,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
@@ -895,7 +883,7 @@ class _DisplayServiceState extends State<DisplayService> {
                   child: Stack(
                     children: [
                       SizedBox(
-                        height: 155,
+                        height: 189,
                         child: CachedNetworkImage(
                           imageUrl: widget.service.cover!,
                           fit: BoxFit.cover,
@@ -962,14 +950,15 @@ class _DisplayServiceState extends State<DisplayService> {
                         ),
                       ),
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           getRating(
                             numberOfRating: widget.service.rating?.toInt(),
                           ),
+                          const SizedBox(width: 5),
                           _getServiceReviews(),
                         ],
                       ),
+                      const SizedBox(height: 6),
                       Row(
                         children: [
                           Text(
@@ -1029,7 +1018,7 @@ class _DisplayServiceState extends State<DisplayService> {
     if (widget.service.availableFrom?.isAfter(DateTime.now()) ?? false) {
       return SizedBox(
           width: double.infinity,
-          height: 30,
+          height: 28,
           child: showColoredLabeledWidgetService(
               service: widget.service,
               text: AppLocalization.of(context)!.comingSoon,
@@ -1037,7 +1026,7 @@ class _DisplayServiceState extends State<DisplayService> {
     } else if (widget.service.isAvailable == false) {
       return SizedBox(
           width: double.infinity,
-          height: 30,
+          height: 28,
           child: showColoredLabeledWidgetService(
               service: widget.service,
               text: AppLocalization.of(context)!.outOfStock,
@@ -1130,12 +1119,12 @@ class _DisplayServiceState extends State<DisplayService> {
       iconColor = blackFont;
     }
     return RoundedBackgroundIcon(
-      height: 30,
-      width: 30,
+      height: 25,
+      width: 25,
       borderRadius: 20,
       icon: Icon(
         iconValue,
-        size: 14,
+        size: 12,
         color: iconColor,
       ),
       backgroundColor: iconBackgroundColor,
@@ -1313,13 +1302,14 @@ class _DisplayServiceState extends State<DisplayService> {
   }
 
   Widget _getServiceReviews() {
-    return const Text(
-      "()",
+    return Text(
+      "(${widget.service.reviewScore} reviews)",
       style: TextStyle(
-          fontWeight: FontWeight.w400,
-          fontSize: 12,
-          fontFamily: 'Inter',
-          color: Colors.grey),
+        fontWeight: FontWeight.w400,
+        fontSize: 12,
+        fontFamily: 'Inter',
+        color: lightGray,
+      ),
     );
   }
 }
