@@ -592,15 +592,23 @@ class PaymentAndBankingAuth extends AuthService {
 
   // Accept Payment with POST method with empty data  post
   Future<http.Response> acceptPaymentRequests(String paymentRequestId,
-      {String? messageId}) async {
+      {String? messageId, String? description}) async {
     String url =
         "${AppConfig.baseUrl}/api/v1/transactions/request-payment/accept/";
 
     if (messageId != null) {
       url += "?message-id=$messageId";
     }
+    final Map<String, dynamic> data;
+    if (description != null) {
+      data = {
+        "id": paymentRequestId,
+        "description": description,
+      };
+    } else {
+      data = {"id": paymentRequestId};
+    }
     debugPrint("URL:- $url");
-    final data = {"id": paymentRequestId};
     final headers = await getAuthHeaders();
     final data0 = jsonEncode(data);
     final response = await httpPatch(url, headers: headers, body: data0);

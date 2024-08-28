@@ -164,8 +164,8 @@ class _DisplayProductState extends State<DisplayProduct> {
                         style: TextStyle(
                           fontFamily: "Inter",
                           fontWeight: FontWeight.w400,
-                          fontSize: 10,
-                          color: yarnBlack,
+                          fontSize: 12,
+                          color: lightGray,
                         ),
                       ),
                       const SizedBox(
@@ -945,8 +945,8 @@ class _DisplayServiceState extends State<DisplayService> {
                         style: TextStyle(
                           fontFamily: "Inter",
                           fontWeight: FontWeight.w300,
-                          fontSize: 10,
-                          color: yarnBlack,
+                          fontSize: 12,
+                          color: lightGray,
                         ),
                       ),
                       Row(
