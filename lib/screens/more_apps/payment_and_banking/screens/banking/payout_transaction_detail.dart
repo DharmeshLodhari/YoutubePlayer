@@ -318,7 +318,7 @@ class _PayoutTransactionDetailState extends State<PayoutTransactionDetail> {
               buildPdfReceiptDetail(
                   title: "Sender Details",
                   value: senderUsername,
-                  subTitle: "$receivingBank\t$senderAccountNumber",
+                  subTitle: senderAccountNumber,
                   isColor: false),
               pw.SizedBox(height: 5),
               buildPdfReceiptDetail(
@@ -731,7 +731,7 @@ class _PayoutTransactionDetailState extends State<PayoutTransactionDetail> {
     final qrValidationResult = QrValidator.validate(
       data: data,
       version: QrVersions.auto,
-      errorCorrectionLevel: QrErrorCorrectLevel.Q,
+      errorCorrectionLevel: QrErrorCorrectLevel.L,
     );
     final qrCode = qrValidationResult.qrCode;
 
@@ -742,8 +742,8 @@ class _PayoutTransactionDetailState extends State<PayoutTransactionDetail> {
       gapless: true,
     );
 
-    final ui.Picture picture = painter.toPicture(100);
-    final ui.Image image = await picture.toImage(100, 100);
+    final ui.Picture picture = painter.toPicture(300);
+    final ui.Image image = await picture.toImage(300, 300);
     final ByteData? byteData =
         await image.toByteData(format: ui.ImageByteFormat.png);
     return byteData!.buffer.asUint8List();
