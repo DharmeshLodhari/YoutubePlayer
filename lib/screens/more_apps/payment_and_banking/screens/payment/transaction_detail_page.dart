@@ -304,7 +304,7 @@ class _TransactionDetailState extends State<TransactionDetail> {
   }
 
   String getNoteAndDiscription(String text) {
-    text = messageDecoderWithEmoji(appendStringDot(text, 35)) ?? '---';
+    text = messageDecoderWithEmoji(appendStringDot(text, 32)) ?? '---';
     return text;
   }
 
@@ -377,10 +377,9 @@ class _TransactionDetailState extends State<TransactionDetail> {
     final String currency = worldCurrencies[transaction?.currency] ?? "";
     final String? status = transaction?.status;
     const String transactionType = "Slydo to Slydo";
-    final String receiverName = getReceiverName();
     final String receiverUserName = getReceiverUserName();
-    final String senderName = getSenderName();
     final String senderUsername = getSenderUserName();
+    final String reference = getReference();
     final String category = "${transaction?.category}";
     final String description = "${transaction?.description}";
 
@@ -411,20 +410,19 @@ class _TransactionDetailState extends State<TransactionDetail> {
               pw.SizedBox(height: 10),
               buildPdfReceiptDetail("Transaction Type", transactionType, false),
               pw.SizedBox(height: 10),
-              buildPdfReceiptDetail("Receiver Details",
-                  "$receiverName\n$receiverUserName", false),
-              pw.SizedBox(height: 10),
               buildPdfReceiptDetail(
-                  "Sender Details", "$senderName\n$senderUsername", false),
-              // pw.SizedBox(height: 10),
-              // buildPdfReceiptDetail("Reference Number", referenceNumber, false),
+                  "Receiver Details", receiverUserName, false),
+              pw.SizedBox(height: 10),
+              buildPdfReceiptDetail("Sender Details", senderUsername, false),
+              pw.SizedBox(height: 10),
+              buildPdfReceiptDetail("Reference", reference, false),
               pw.SizedBox(height: 10),
               buildPdfReceiptDetail("Category", category, false),
               pw.SizedBox(height: 10),
               buildPdfReceiptDetail("Description", description, false),
               pw.SizedBox(height: 10),
               buildPdfHorizontalDotBorder(),
-              pw.SizedBox(height: 15),
+              pw.SizedBox(height: 10),
               _buildPdfQrScan(qrCodeImage),
               pw.SizedBox(height: 15),
               _buildDescription(),
@@ -621,8 +619,8 @@ class _TransactionDetailState extends State<TransactionDetail> {
         ),
         pw.Image(
           pw.MemoryImage(qrCodeImage), // Display the QR code image
-          width: 100,
-          height: 100,
+          width: 80,
+          height: 80,
         ),
       ],
     );
@@ -652,34 +650,48 @@ class _TransactionDetailState extends State<TransactionDetail> {
     );
   }
 
-  String getReceiverName() {
-    if ((transaction?.displayToCustomer.contains('Slydo') ?? false) ||
-        (transaction?.displayToCustomer.contains('slydo') ?? false)) {
-      return 'Slydo International';
-    }
-    return "${transaction?.displayToCustomer}";
-  }
-
   String getReceiverUserName() {
-    if (transaction?.toCustomer.contains('slydo') ?? false) {
-      return '@slydo';
+    if ((transaction?.isAnonymous ?? false) ||
+        (transaction?.toCustomer.contains('slydo') ?? false)) {
+      return 'Slydo International';
     }
     return "@${transaction?.toCustomer}";
   }
 
-  String getSenderName() {
-    if ((transaction?.displayFromCustomer.contains('Slydo') ?? false) ||
-        (transaction?.displayFromCustomer.contains('slydo') ?? false)) {
+  String getSenderUserName() {
+    if ((transaction?.isAnonymous ?? false) ||
+        (transaction?.fromCustomer.contains('slydo') ?? false)) {
       return 'Slydo International';
     }
-    return "${transaction?.displayFromCustomer}";
+    return "@${transaction?.fromCustomer}";
   }
 
-  String getSenderUserName() {
-    if (transaction?.fromCustomer.contains('slydo') ?? false) {
-      return '@slydo';
+  String getReference() {
+    if (transaction?.isAnonymous ?? false) {
+      return 'Anonymous Payment';
     }
-    return "@${transaction?.fromCustomer}";
+    if ((transaction?.toCustomer.contains('slydo_envelope') ?? false) ||
+        (transaction?.fromCustomer.contains('slydo_envelope') ?? false)) {
+      return 'Magic Envelope';
+    }
+    if ((transaction?.toCustomer.contains('slydo.payment.links') ?? false) ||
+        (transaction?.fromCustomer.contains('slydo.payment.links') ?? false)) {
+      return 'Payment Link';
+    }
+    if (transaction?.description?.contains('Merchandise Payment in Moment') ??
+        false) {
+      return 'Moment';
+    }
+    if (transaction?.description?.contains('Merchandise Payment in Yarn') ??
+        false) {
+      return 'Yarn';
+    }
+    if ((transaction?.description?.contains('Order') ?? false) ||
+        (transaction?.description?.contains('General Payment') ?? false) ||
+        (transaction?.description?.contains('Payment Request') ?? false)) {
+      return "${transaction?.description}";
+    }
+    return '-';
   }
 
   Future<Uint8List> _generateQRCodeImage(String data) async {
